@@ -34,6 +34,7 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool isDevModeEnabled,
     required bool useTorProxy,
     required int torProxyPort,
+    AppThemeMode themeMode = AppThemeMode.system,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -47,6 +48,7 @@ class SettingsRepository implements domain.SettingsRepository {
         isDevModeEnabled: isDevModeEnabled,
         useTorProxy: useTorProxy,
         torProxyPort: torProxyPort,
+        themeMode: themeMode,
       ),
     );
   }
@@ -65,6 +67,7 @@ class SettingsRepository implements domain.SettingsRepository {
       isDevModeEnabled: s.isDevModeEnabled,
       useTorProxy: s.useTorProxy,
       torProxyPort: s.torProxyPort,
+      themeMode: s.themeMode,
     );
   }
 
@@ -112,5 +115,10 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setTorProxyPort(int port) async {
     await _settingsDatasource.setTorProxyPort(port);
+  }
+
+  @override
+  Future<void> setThemeMode(AppThemeMode themeMode) async {
+    await _settingsDatasource.setThemeMode(themeMode);
   }
 }

@@ -15,14 +15,14 @@ jobs:
 
       - name: Install FVM
         run: |
-          curl -fsSL https://fvm.app/install.sh | bash
-          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+          curl -fsSL https://fvm.app/install.sh | bash -s -- 4.0.5
+          echo "$HOME/fvm/bin" >> $GITHUB_PATH
 
       - run: make fvm-check
       - run: make clean
       - run: make deps
       - run: make build-runner
-      - run: make l10n
+      - run: make translations
 
       - name: Create .env file
         run: |

@@ -40,15 +40,16 @@ enum BitcoinUnit {
 }
 
 enum Language {
-  unitedStatesEnglish('en', 'US'),
-  canadianFrench('fr', 'CA'),
-  franceFrench('fr', 'FR'),
-  spanish('es', 'ES');
+  unitedStatesEnglish('en', 'US', 'English'),
+  franceFrench('fr', 'FR', 'Français'),
+  spanish('es', 'ES', 'Español'),
+  finnish('fi', 'FI', 'Suomi');
 
   final String languageCode;
   final String? countryCode;
+  final String label;
 
-  const Language(this.languageCode, this.countryCode);
+  const Language(this.languageCode, this.countryCode, this.label);
 
   static Language fromName(String name) {
     try {
@@ -57,6 +58,19 @@ enum Language {
       log.warning('unsupported language fallback on default');
       return Language.unitedStatesEnglish;
     }
+  }
+}
+
+enum AppThemeMode {
+  light,
+  dark,
+  system;
+
+  factory AppThemeMode.fromName(String name) {
+    return AppThemeMode.values.firstWhere(
+      (themeMode) => themeMode.name == name,
+      orElse: () => AppThemeMode.system,
+    );
   }
 }
 
@@ -78,6 +92,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     bool? isDevModeEnabled,
     @Default(false) bool useTorProxy,
     @Default(9050) int torProxyPort,
+    @Default(AppThemeMode.system) AppThemeMode themeMode,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

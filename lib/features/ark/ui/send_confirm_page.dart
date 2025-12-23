@@ -46,7 +46,10 @@ class SendConfirmPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.arkSendConfirmTitle, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.arkSendConfirmTitle,
+          style: context.font.headlineMedium,
+        ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child:
@@ -54,8 +57,8 @@ class SendConfirmPage extends StatelessWidget {
                   ? FadingLinearProgress(
                     height: 3,
                     trigger: isLoading,
-                    backgroundColor: context.colour.surface,
-                    foregroundColor: context.colour.primary,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
                   )
                   : const SizedBox(height: 3),
         ),
@@ -69,7 +72,7 @@ class SendConfirmPage extends StatelessWidget {
                 Text(
                   context.loc.arkSendConfirmMessage,
                   style: context.font.bodyLarge,
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
                 const SizedBox(height: 24),
                 SendConfirmationDetailRow(
@@ -89,9 +92,9 @@ class SendConfirmPage extends StatelessWidget {
               Text(
                 error.message,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.error,
+                  color: context.appColors.error,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const SizedBox(height: 16),
             ],
@@ -101,8 +104,8 @@ class SendConfirmPage extends StatelessWidget {
                 context.read<ArkCubit>().onSendConfirmed();
               },
               disabled: isLoading,
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
             ),
           ],
         ),
@@ -124,12 +127,12 @@ class SendConfirmationDetailRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.surfaceContainer,
+              color: context.appColors.surfaceContainer,
             ),
           ),
           const Gap(8),
@@ -139,9 +142,9 @@ class SendConfirmationDetailRow extends StatelessWidget {
                     ? const LoadingLineContent()
                     : Text(
                       value!,
-                      textAlign: TextAlign.end,
+                      textAlign: .end,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.outlineVariant,
+                        color: context.appColors.outlineVariant,
                       ),
                     ),
           ),

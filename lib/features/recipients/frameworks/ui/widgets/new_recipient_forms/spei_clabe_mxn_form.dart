@@ -10,10 +10,10 @@ class SpeiClabeMxnForm extends StatefulWidget {
   const SpeiClabeMxnForm({super.key});
 
   @override
-  _SpeiClabeMxnFormState createState() => _SpeiClabeMxnFormState();
+  SpeiClabeMxnFormState createState() => SpeiClabeMxnFormState();
 }
 
-class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
+class SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _clabeFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
@@ -48,21 +48,19 @@ class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'CLABE',
             hintText: 'Enter CLABE number',
             focusNode: _clabeFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _clabe = value;
@@ -74,13 +72,11 @@ class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;
@@ -92,7 +88,7 @@ class _SpeiClabeMxnFormState extends State<SpeiClabeMxnForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

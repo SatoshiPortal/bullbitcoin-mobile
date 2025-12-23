@@ -28,7 +28,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
         child: Form(
           key: _formKey,
           child: ScrollableColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const Gap(24.0),
               PayAmountInputFields(
@@ -51,8 +51,8 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                     );
                   }
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
               const Gap(16.0),
             ],

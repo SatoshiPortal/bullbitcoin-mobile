@@ -54,8 +54,8 @@ class ConnectingPage extends StatelessWidget {
                   state.keyServerStatus == KeyServerStatus.offline;
 
               return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: .center,
+                crossAxisAlignment: .center,
                 children: [
                   if (!torOnline || !serverOnline)
                     Gif(
@@ -69,9 +69,9 @@ class ConnectingPage extends StatelessWidget {
                   const Gap(24),
                   BBText(
                     context.loc.recoverbullCheckingConnection,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     style: context.font.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                     ),
                   ),
                   const Gap(24),
@@ -91,9 +91,9 @@ class ConnectingPage extends StatelessWidget {
                     BBText(
                       state.error?.toTranslated(context) ??
                           context.loc.recoverbullConnectionFailed,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.error,
+                        color: context.appColors.error,
                       ),
                       maxLines: 3,
                     ),
@@ -101,8 +101,8 @@ class ConnectingPage extends StatelessWidget {
                     BBButton.big(
                       label: context.loc.recoverbullRetry,
                       textStyle: context.font.headlineLarge,
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onSecondary,
+                      bgColor: context.appColors.onSurface,
+                      textColor: context.appColors.surface,
                       onPressed: () {
                         context.read<RecoverBullBloc>()
                           ..add(const OnTorInitialization())
@@ -112,9 +112,9 @@ class ConnectingPage extends StatelessWidget {
                   ] else ...[
                     BBText(
                       context.loc.recoverbullPleaseWait,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                       maxLines: 2,
                     ),
@@ -149,7 +149,7 @@ class _StatusRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: context.colour.surface,
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -160,7 +160,7 @@ class _StatusRow extends StatelessWidget {
             child: BBText(
               label,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.onSurface,
               ),
             ),
           ),
@@ -168,7 +168,7 @@ class _StatusRow extends StatelessWidget {
             statusText,
             style: context.font.bodyMedium?.copyWith(
               color: statusColor,
-              fontWeight: FontWeight.w600,
+              fontWeight: .w600,
             ),
           ),
         ],
@@ -199,10 +199,10 @@ class _StatusRow extends StatelessWidget {
         isKeyServer ? (status as KeyServerStatus) : (status as TorStatus);
 
     return switch (statusEnum.toString().split('.').last) {
-      'online' => context.colour.inverseSurface,
-      'offline' => context.colour.error,
-      'connecting' => context.colour.secondary,
-      _ => context.colour.outline,
+      'online' => context.appColors.success,
+      'offline' => context.appColors.error,
+      'connecting' => context.appColors.textMuted,
+      _ => context.appColors.textMuted,
     };
   }
 

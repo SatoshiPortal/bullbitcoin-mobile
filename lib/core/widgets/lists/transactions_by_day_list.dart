@@ -20,8 +20,6 @@ class TransactionsByDayList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     if (transactionsByDay == null) {
       return Center(
         child: Column(
@@ -30,9 +28,9 @@ class TransactionsByDayList extends StatelessWidget {
             BBText(
               'Loading transactions...',
               maxLines: 2,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+                color: context.appColors.onSurface,
               ),
             ),
           ],
@@ -47,9 +45,9 @@ class TransactionsByDayList extends StatelessWidget {
             BBText(
               'No transactions yet.',
               maxLines: 2,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
+                color: context.appColors.onSurface,
               ),
             ),
           ],
@@ -80,7 +78,7 @@ class TransactionsByDayList extends StatelessWidget {
           final yesterday = DateTime(now.year, now.month, now.day - 1);
 
           return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               BBText(
                 date.compareTo(today) > 0
@@ -93,7 +91,7 @@ class TransactionsByDayList extends StatelessWidget {
                     ? DateFormat.MMMMd().format(date)
                     : DateFormat.yMMMMd().format(date),
                 style: context.font.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
+                  color: context.appColors.onSurface,
                 ),
               ),
               const Gap(16),

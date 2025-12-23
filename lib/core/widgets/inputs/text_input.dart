@@ -87,7 +87,7 @@ class _BBInputTextState extends State<BBInputText> {
 
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(2),
-      borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+      borderSide: BorderSide(color: context.appColors.border),
     );
   }
 
@@ -110,8 +110,8 @@ class _BBInputTextState extends State<BBInputText> {
               : TextInputType.multiline,
       textInputAction:
           shouldPreventNewlines
-              ? TextInputAction.done
-              : TextInputAction.newline,
+              ? .done
+              : .newline,
       inputFormatters: [
         if (shouldPreventNewlines)
           FilteringTextInputFormatter.deny(RegExp(r'\n')),
@@ -126,18 +126,17 @@ class _BBInputTextState extends State<BBInputText> {
       maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
       style:
           widget.style ??
-          context.font.headlineSmall?.copyWith(color: context.colour.secondary),
+          context.font.headlineSmall?.copyWith(
+            color: context.appColors.onSurface,
+          ),
       onTap: () => widget.onEnter?.call(),
       onSubmitted: widget.onDone,
-      textAlign: TextAlign.left,
+      textAlign: .left,
       textAlignVertical: TextAlignVertical.center,
       decoration: InputDecoration(
         hintText: widget.hint,
         hintStyle:
-            widget.hintStyle ??
-            TextStyle(
-              color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
-            ),
+            widget.hintStyle ?? TextStyle(color: context.appColors.textMuted),
         prefixIcon:
             widget.fixedPrefix != null
                 ? Container(
@@ -148,8 +147,8 @@ class _BBInputTextState extends State<BBInputText> {
                   child: Text(
                     widget.fixedPrefix!,
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.colour.secondary,
-                      fontWeight: FontWeight.w500,
+                      color: context.appColors.onSurface,
+                      fontWeight: .w500,
                     ),
                   ),
                 )
@@ -168,7 +167,7 @@ class _BBInputTextState extends State<BBInputText> {
         disabledBorder: _getBorder(context),
         contentPadding: const EdgeInsets.all(16),
         filled: true,
-        fillColor: context.colour.onPrimary,
+        fillColor: context.appColors.surface,
       ),
     );
   }

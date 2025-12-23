@@ -32,7 +32,7 @@ class CurrencySettingsScreen extends StatelessWidget {
         useRootNavigator: true,
         context: context,
         isScrollControlled: true,
-        backgroundColor: context.colour.secondaryFixedDim,
+        backgroundColor: context.appColors.surface,
         constraints: const BoxConstraints(maxWidth: double.infinity),
         builder: (context) {
           return CurrencyBottomSheet(
@@ -50,12 +50,12 @@ class CurrencySettingsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Currency',
-          color: context.colour.secondaryFixed,
+          title: context.loc.settingsCurrencyTitle,
+          color: context.appColors.background,
           onBack: context.pop,
         ),
       ),
-      backgroundColor: theme.colorScheme.secondaryFixed,
+      backgroundColor: context.appColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -66,11 +66,11 @@ class CurrencySettingsScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
                   ),
-                  tileColor: Colors.transparent,
+                  tileColor: context.appColors.transparent,
                   title: BBText(
                     context.loc.satsBitcoinUnitSettingsLabel,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.outlineVariant,
+                      color: context.appColors.onSurface,
                     ),
                   ),
                   trailing: const SatsBitcoinUnitSwitch(),
@@ -79,36 +79,36 @@ class CurrencySettingsScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
                   ),
-                  tileColor: Colors.transparent,
+                  tileColor: context.appColors.transparent,
                   title: BBText(
-                    'Default fiat currency',
+                    context.loc.currencySettingsDefaultFiatCurrencyLabel,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.outlineVariant,
+                      color: context.appColors.onSurface,
                     ),
                   ),
                   onTap:
                       currency == null ||
-                              availableCurrencies == null ||
-                              availableCurrencies.isEmpty
-                          ? null
-                          : () async {
-                            final selectedCurrency =
-                                await openCurrencyBottomSheet(
-                                  context: context,
-                                  availableCurrencies: availableCurrencies,
-                                  selected: currency,
-                                );
-                            // If the user selected a different currency, update it
-                            // in the settings.
-                            if (selectedCurrency != null &&
-                                selectedCurrency != currency) {
-                              if (context.mounted) {
-                                await context
-                                    .read<SettingsCubit>()
-                                    .changeCurrency(selectedCurrency);
-                              }
+                          availableCurrencies == null ||
+                          availableCurrencies.isEmpty
+                      ? null
+                      : () async {
+                          final selectedCurrency =
+                              await openCurrencyBottomSheet(
+                                context: context,
+                                availableCurrencies: availableCurrencies,
+                                selected: currency,
+                              );
+                          // If the user selected a different currency, update it
+                          // in the settings.
+                          if (selectedCurrency != null &&
+                              selectedCurrency != currency) {
+                            if (context.mounted) {
+                              await context
+                                  .read<SettingsCubit>()
+                                  .changeCurrency(selectedCurrency);
                             }
-                          },
+                          }
+                        },
                   trailing: const Icon(Icons.keyboard_arrow_down),
                 ),
               ],

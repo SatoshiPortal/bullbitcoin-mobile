@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -13,9 +14,9 @@ class TorConnectionStatusCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
-            Text('Connection Status', style: context.font.titleMedium),
+            Text(context.loc.torSettingsConnectionStatus, style: context.font.titleMedium),
             const Gap(16),
             Row(
               children: [
@@ -23,19 +24,19 @@ class TorConnectionStatusCard extends StatelessWidget {
                 const Gap(12),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Text(
-                        _getStatusTitle(status),
+                        _getStatusTitle(context, status),
                         style: context.font.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
+                          fontWeight: .w600,
                         ),
                       ),
                       const Gap(4),
                       Text(
-                        _getStatusDescription(status),
+                        _getStatusDescription(context, status),
                         style: context.font.bodySmall?.copyWith(
-                          color: context.colour.onSurface.withValues(
+                          color: context.appColors.onSurface.withValues(
                             alpha: 0.7,
                           ),
                         ),
@@ -51,29 +52,29 @@ class TorConnectionStatusCard extends StatelessWidget {
     );
   }
 
-  String _getStatusTitle(TorStatus status) {
+  String _getStatusTitle(BuildContext context, TorStatus status) {
     switch (status) {
       case TorStatus.online:
-        return 'Connected';
+        return context.loc.torSettingsStatusConnected;
       case TorStatus.connecting:
-        return 'Connecting...';
+        return context.loc.torSettingsStatusConnecting;
       case TorStatus.offline:
-        return 'Disconnected';
+        return context.loc.torSettingsStatusDisconnected;
       case TorStatus.unknown:
-        return 'Status Unknown';
+        return context.loc.torSettingsStatusUnknown;
     }
   }
 
-  String _getStatusDescription(TorStatus status) {
+  String _getStatusDescription(BuildContext context, TorStatus status) {
     switch (status) {
       case TorStatus.online:
-        return 'Tor proxy is running and ready';
+        return context.loc.torSettingsDescConnected;
       case TorStatus.connecting:
-        return 'Establishing Tor connection';
+        return context.loc.torSettingsDescConnecting;
       case TorStatus.offline:
-        return 'Tor proxy is not running';
+        return context.loc.torSettingsDescDisconnected;
       case TorStatus.unknown:
-        return 'Unable to determine Tor status. Ensure Orbot is installed and running.';
+        return context.loc.torSettingsDescUnknown;
     }
   }
 }
@@ -91,7 +92,7 @@ class _StatusIndicator extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        shape: .circle,
         color: color.withValues(alpha: 0.1),
       ),
       child: Center(
@@ -113,13 +114,13 @@ class _StatusIndicator extends StatelessWidget {
   Color _getStatusColor(BuildContext context, TorStatus status) {
     switch (status) {
       case TorStatus.online:
-        return Colors.green;
+        return context.appColors.success;
       case TorStatus.connecting:
-        return Colors.orange;
+        return context.appColors.warning;
       case TorStatus.offline:
-        return Colors.red;
+        return context.appColors.error;
       case TorStatus.unknown:
-        return context.colour.onSurface.withValues(alpha: 0.5);
+        return context.appColors.onSurface.withValues(alpha: 0.5);
     }
   }
 

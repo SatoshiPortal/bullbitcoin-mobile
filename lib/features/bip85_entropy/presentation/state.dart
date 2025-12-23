@@ -8,7 +8,8 @@ part 'state.freezed.dart';
 sealed class Bip85EntropyState with _$Bip85EntropyState {
   const factory Bip85EntropyState({
     Bip85EntropyError? error,
-    @Default([]) List<Bip85DerivationEntity> derivations,
-    @Default('') String xprvBase58,
+    @Default([])
+    List<({Bip85DerivationEntity derivation, String entropy})> derivations,
+    @Default(false) bool isLoading,
   }) = _Bip85EntropyState;
 }

@@ -46,7 +46,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
     emit(
       state.copyWith(
         status: BitBoxOperationStatus.waitingForPassword,
-        errorMessage: null,
+        error: null,
       ),
     );
   }
@@ -55,7 +55,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
     emit(
       state.copyWith(
         status: BitBoxOperationStatus.processing,
-        errorMessage: null,
+        error: null,
       ),
     );
   }
@@ -79,7 +79,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
         emit(
           state.copyWith(
             status: BitBoxOperationStatus.scanning,
-            errorMessage: null,
+            error: null,
           ),
         );
 
@@ -108,12 +108,11 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
         throw BitBoxError.operationFailed(message: e.toString());
       }
     } on BitBoxError catch (e) {
-      final message = e.message;
-      log.warning('BitBox operation failed: $message');
+      log.warning('BitBox operation failed: $e');
       emit(
         state.copyWith(
           status: BitBoxOperationStatus.error,
-          errorMessage: message,
+          error: e,
         ),
       );
       rethrow;
@@ -124,7 +123,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
         emit(
           state.copyWith(
             status: BitBoxOperationStatus.error,
-            errorMessage: interpretedMessage,
+            error: BitBoxError.operationFailed(message: interpretedMessage),
           ),
         );
       } else {
@@ -132,7 +131,7 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
         emit(
           state.copyWith(
             status: BitBoxOperationStatus.error,
-            errorMessage: e.toString(),
+            error: BitBoxError.operationFailed(message: e.toString()),
           ),
         );
       }

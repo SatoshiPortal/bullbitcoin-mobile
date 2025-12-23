@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:bb_mobile/core/labels/data/label_datasource.dart';
+import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -13,14 +15,17 @@ class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
+  final LabelDatasource _labelDatasource;
 
   WalletAddressRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
+    required LabelDatasource labelDatasource,
   }) : _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWallet = bdkWalletDatasource,
-       _lwkWallet = lwkWalletDatasource;
+       _lwkWallet = lwkWalletDatasource,
+       _labelDatasource = labelDatasource;
 
   Future<WalletAddress> getLastUnusedReceiveAddress({
     required String walletId,
@@ -49,6 +54,25 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
+    var labels = await _labelDatasource.fetchByRef(address);
+
+    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+      index++;
+      if (walletModel is PublicBdkWalletModel) {
+        address = await _bdkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+      } else {
+        final addressInfo = await _lwkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+        address = addressInfo.confidential;
+      }
+      labels = await _labelDatasource.fetchByRef(address);
+    }
+
     final walletAddressModel = WalletAddressModel(
       walletId: walletId,
       index: index,
@@ -57,7 +81,10 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final walletAddress = WalletAddressMapper.toEntity(walletAddressModel);
+    final walletAddress = WalletAddressMapper.toEntity(
+      walletAddressModel,
+      labels: labels.map((label) => label.toEntity()).toList(),
+    );
 
     return walletAddress;
   }
@@ -96,6 +123,25 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
+    var labels = await _labelDatasource.fetchByRef(address);
+
+    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+      index++;
+      if (walletModel is PublicBdkWalletModel) {
+        address = await _bdkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+      } else {
+        final addressInfo = await _lwkWallet.getAddressByIndex(
+          index,
+          wallet: walletModel,
+        );
+        address = addressInfo.confidential;
+      }
+      labels = await _labelDatasource.fetchByRef(address);
+    }
+
     final walletAddressModel = WalletAddressModel(
       walletId: walletId,
       index: index,
@@ -104,7 +150,10 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final walletAddress = WalletAddressMapper.toEntity(walletAddressModel);
+    final walletAddress = WalletAddressMapper.toEntity(
+      walletAddressModel,
+      labels: labels.map((label) => label.toEntity()).toList(),
+    );
 
     return walletAddress;
   }
@@ -117,9 +166,7 @@ class WalletAddressRepository {
     // Fetch wallet metadata and history in parallel
     final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
 
-    if (walletMetadata == null) {
-      throw WalletError.notFound(walletId);
-    }
+    if (walletMetadata == null) throw WalletError.notFound(walletId);
 
     final walletModel = WalletModel.fromMetadata(walletMetadata);
     final isBdkWallet = walletModel is PublicBdkWalletModel;
@@ -150,16 +197,11 @@ class WalletAddressRepository {
     );
 
     // Enrich addresses with balance and transaction data in parallel
-    final enrichedAddresses = await _enrichAddresses(
+    return await _enrichAddresses(
       addresses: addresses,
       walletModel: walletModel,
       isBdkWallet: isBdkWallet,
     );
-
-    // Return the enriched addresses
-    return enrichedAddresses.map((model) {
-      return WalletAddressMapper.toEntity(model);
-    }).toList();
   }
 
   Future<WalletAddressModel> _generateAddressModel({
@@ -168,13 +210,12 @@ class WalletAddressRepository {
     required String walletId,
     required bool isBdkWallet,
   }) async {
-    final address =
-        isBdkWallet
-            ? await _bdkWallet.getAddressByIndex(index, wallet: walletModel)
-            : (await _lwkWallet.getAddressByIndex(
-              index,
-              wallet: walletModel,
-            )).confidential;
+    final address = isBdkWallet
+        ? await _bdkWallet.getAddressByIndex(index, wallet: walletModel)
+        : (await _lwkWallet.getAddressByIndex(
+            index,
+            wallet: walletModel,
+          )).confidential;
 
     return WalletAddressModel(
       walletId: walletId,
@@ -185,36 +226,31 @@ class WalletAddressRepository {
     );
   }
 
-  // ignore: unused_element
-  Future<List<WalletAddressModel>> _enrichAddresses({
+  Future<List<WalletAddress>> _enrichAddresses({
     required List<WalletAddressModel> addresses,
     required WalletModel walletModel,
     required bool isBdkWallet,
   }) async {
-    final allTransactions =
-        isBdkWallet
-            ? await _bdkWallet.getTransactions(wallet: walletModel)
-            : await _lwkWallet.getTransactions(wallet: walletModel);
-    final addressBalances =
-        isBdkWallet
-            ? await _bdkWallet.getAddressBalancesSat(wallet: walletModel)
-            : await _lwkWallet.getAddressBalancesSat(wallet: walletModel);
+    final allTransactions = isBdkWallet
+        ? await _bdkWallet.getTransactions(wallet: walletModel)
+        : await _lwkWallet.getTransactions(wallet: walletModel);
+    final addressBalances = isBdkWallet
+        ? await _bdkWallet.getAddressBalancesSat(wallet: walletModel)
+        : await _lwkWallet.getAddressBalancesSat(wallet: walletModel);
 
     final enrichedAddresses = await Future.wait(
       addresses.map((addressModel) async {
         // Fetch balance and transactions in parallel
         final balanceSat = addressBalances[addressModel.address] ?? BigInt.zero;
 
-        final transactions =
-            allTransactions
-                .where(
-                  (tx) => tx.outputs.any(
-                    (element) => element.address == addressModel.address,
-                  ),
-                )
-                .toList();
+        final transactions = allTransactions
+            .where(
+              (tx) => tx.outputs.any(
+                (element) => element.address == addressModel.address,
+              ),
+            )
+            .toList();
 
-        // TODO: Get labels for the addresses
         return addressModel.copyWith(
           balanceSat: balanceSat.toInt(),
           nrOfTransactions: transactions.length,
@@ -222,7 +258,18 @@ class WalletAddressRepository {
         );
       }),
     );
-    return enrichedAddresses;
+
+    final result = <WalletAddress>[];
+    for (var model in enrichedAddresses) {
+      final labels = await _labelDatasource.fetchByRef(model.address);
+      final entity = WalletAddressMapper.toEntity(
+        model,
+        labels: labels.map((label) => label.toEntity()).toList(),
+      );
+      result.add(entity);
+    }
+
+    return result;
   }
 
   Future<List<WalletAddress>> getUsedChangeAddresses(
@@ -265,6 +312,10 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    return WalletAddressMapper.toEntity(walletAddressModel);
+    final labels = await _labelDatasource.fetchByRef(address);
+    return WalletAddressMapper.toEntity(
+      walletAddressModel,
+      labels: labels.map((label) => label.toEntity()).toList(),
+    );
   }
 }

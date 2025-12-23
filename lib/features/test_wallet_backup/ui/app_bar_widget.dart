@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -18,8 +19,10 @@ class AppBarWidget extends StatelessWidget {
   @override
   PreferredSizeWidget build(BuildContext context) {
     final wallets = context.watch<TestWalletBackupBloc>().state.wallets;
-    final selectedWallet =
-        context.watch<TestWalletBackupBloc>().state.selectedWallet;
+    final selectedWallet = context
+        .watch<TestWalletBackupBloc>()
+        .state
+        .selectedWallet;
 
     return AppBar(
       leading: IconButton(
@@ -70,11 +73,11 @@ Future<String?> _showWalletPicker({
       height: MediaQuery.of(context).size.height * 0.4,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Row(
             children: [
@@ -96,10 +99,10 @@ Future<String?> _showWalletPicker({
                   Center(
                     child: BBText(
                       wallet.isDefault
-                          ? 'Default Wallets'
-                          : wallet.displayLabel,
+                          ? context.loc.testBackupDefaultWallets
+                          : wallet.displayLabel(context),
                       style: context.font.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: .w600,
                         fontSize: 18,
                       ),
                     ),
@@ -108,7 +111,7 @@ Future<String?> _showWalletPicker({
             ),
           ),
           BBButton.big(
-            label: 'Confirm',
+            label: context.loc.testBackupConfirm,
             onPressed: () {
               final wallet = wallets[controller.selectedItem];
               context.read<TestWalletBackupBloc>().add(
@@ -116,8 +119,8 @@ Future<String?> _showWalletPicker({
               );
               Navigator.of(context).pop();
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
         ],
       ),

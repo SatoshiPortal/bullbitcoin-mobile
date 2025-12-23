@@ -15,7 +15,7 @@ class RevokeArkUsecase {
       for (final derivation in derivations) {
         if (derivation.application == Bip85Application.hex &&
             derivation.index == Ark.bip85Index) {
-          await _bip85Repository.revoke(derivation.path);
+          await _bip85Repository.revoke(derivation);
           break;
         }
       }

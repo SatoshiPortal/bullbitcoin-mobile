@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/cards/autoswap_warning_card.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/autoswap_warning_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -14,15 +16,20 @@ class HomeWarnings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<WalletBloc, WalletState>(
-      buildWhen:
-          (previous, current) =>
-              previous.showBackupWarning() != current.showBackupWarning() ||
-              previous.warnings != current.warnings,
+      buildWhen: (previous, current) =>
+          previous.showBackupWarning() != current.showBackupWarning() ||
+          previous.showAutoSwapDefaultEnabledWarning() !=
+              current.showAutoSwapDefaultEnabledWarning() ||
+          previous.warnings != current.warnings,
       builder: (context, state) {
         final showBackupWarning = state.showBackupWarning();
+        final showAutoSwapDefaultEnabledWarning = state
+            .showAutoSwapDefaultEnabledWarning();
         final serverWarning = state.warnings;
 
-        if (!showBackupWarning && serverWarning.isEmpty) {
+        if (!showBackupWarning &&
+            !showAutoSwapDefaultEnabledWarning &&
+            serverWarning.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -33,19 +40,25 @@ class HomeWarnings extends StatelessWidget {
             children: [
               if (showBackupWarning)
                 BackupCard(
-                  onTap:
-                      () => context.pushNamed(
-                        BackupSettingsSubroute.backupOptions.name,
-                      ),
+                  onTap: () => context.pushNamed(
+                    BackupSettingsSubroute.backupOptions.name,
+                  ),
                 ),
+
+              if (showAutoSwapDefaultEnabledWarning) ...[
+                if (showBackupWarning) const Gap(5),
+                AutoSwapWarningCard(
+                  onTap: () => AutoSwapWarningBottomSheet.show(context),
+                ),
+              ],
 
               for (final warning in serverWarning) ...[
                 const Gap(5),
                 InfoCard(
                   title: warning.title,
                   description: warning.description,
-                  tagColor: context.colour.error,
-                  bgColor: context.colour.secondaryFixedDim,
+                  tagColor: context.appColors.error,
+                  bgColor: context.appColors.errorContainer,
                   onTap: () => context.pushNamed(warning.actionRoute),
                 ),
               ],

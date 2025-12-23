@@ -10,10 +10,10 @@ class CbuCvuArgentinaForm extends StatefulWidget {
   const CbuCvuArgentinaForm({super.key});
 
   @override
-  _CbuCvuArgentinaFormState createState() => _CbuCvuArgentinaFormState();
+  CbuCvuArgentinaFormState createState() => CbuCvuArgentinaFormState();
 }
 
-class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
+class CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _cbuCvuFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
@@ -48,21 +48,19 @@ class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'CVU/CBU',
             hintText: 'Enter CVU/CBU number',
             focusNode: _cbuCvuFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _cbuCvu = value;
@@ -74,13 +72,11 @@ class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;
@@ -92,7 +88,7 @@ class _CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

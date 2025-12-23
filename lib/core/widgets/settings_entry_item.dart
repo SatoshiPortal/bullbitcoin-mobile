@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SettingsEntryItem extends StatelessWidget {
@@ -28,18 +29,18 @@ class SettingsEntryItem extends StatelessWidget {
     final effectiveIcon = isSuperUser ? Icons.admin_panel_settings : icon;
     final effectiveIconColor =
         isSuperUser
-            ? theme.colorScheme.primary
-            : (iconColor ?? theme.colorScheme.onSurface);
+            ? context.appColors.primary
+            : (iconColor ?? context.appColors.onSurface);
 
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-      tileColor: Colors.transparent,
+      tileColor: context.appColors.transparent,
       contentPadding: contentPadding,
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,
         style: theme.textTheme.bodyLarge?.copyWith(
-          color: textColor ?? theme.colorScheme.onSurface,
+          color: textColor ?? context.appColors.onSurface,
         ),
       ),
       trailing: trailing ?? const Icon(Icons.chevron_right),

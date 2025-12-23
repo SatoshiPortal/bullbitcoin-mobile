@@ -1,13 +1,14 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SnackBarUtils {
   static void showCopiedSnackBar(BuildContext context) {
     _showSnackBar(
       context,
-      const Text(
+      Text(
         'Copied to clipboard',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 14, color: Colors.white),
+        textAlign: .center,
+        style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
       ),
     );
   }
@@ -17,8 +18,8 @@ class SnackBarUtils {
       context,
       Text(
         message,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 14, color: Colors.white),
+        textAlign: .center,
+        style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
       ),
     );
   }
@@ -28,13 +29,12 @@ class SnackBarUtils {
   }
 
   static void _showSnackBar(BuildContext context, Widget content) {
-    final theme = Theme.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: content,
         duration: const Duration(seconds: 2),
-        backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
-        behavior: SnackBarBehavior.floating,
+        backgroundColor: context.appColors.onSurface.withAlpha(204),
+        behavior: .floating,
         elevation: 4,
         margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),

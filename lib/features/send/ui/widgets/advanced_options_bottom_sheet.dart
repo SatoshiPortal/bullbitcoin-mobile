@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -19,26 +20,31 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: context.appColors.onSecondary,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
             children: [
               Center(
                 child: BBText(
-                  "Advanced options",
+                  context.loc.sendAdvancedOptions,
                   style: context.font.headlineMedium,
+                  color: context.appColors.secondary,
                 ),
               ),
               Positioned(
                 right: 0,
                 child: IconButton(
                   iconSize: 24,
-                  icon: const Icon(Icons.close),
+                  icon: Icon(
+                    Icons.close,
+                    color: context.appColors.secondary,
+                  ),
                   onPressed: context.pop,
                 ),
               ),
@@ -46,11 +52,12 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(32),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               BBText(
-                "Replace-by-fee activated",
+                context.loc.sendReplaceByFeeActivated,
                 style: context.font.headlineMedium,
+                color: context.appColors.secondary,
               ),
               Switch(
                 value: isRBFEnabled,
@@ -64,17 +71,21 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           const Gap(24),
           ListTile(
             title: BBText(
-              "Select coins manually",
+              context.loc.sendSelectCoinsManually,
               style: context.font.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
+                fontWeight: .w500,
               ),
+              color: context.appColors.secondary,
             ),
-            trailing: const Icon(Icons.arrow_forward),
+            trailing: Icon(
+              Icons.arrow_forward,
+              color: context.appColors.secondary,
+            ),
             onTap: () {
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
+                backgroundColor: context.appColors.onSecondary,
                 constraints: const BoxConstraints(maxWidth: double.infinity),
                 useSafeArea: true,
                 builder:
@@ -87,10 +98,10 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           BBButton.big(
-            label: "Done",
+            label: context.loc.sendDone,
             onPressed: context.pop,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

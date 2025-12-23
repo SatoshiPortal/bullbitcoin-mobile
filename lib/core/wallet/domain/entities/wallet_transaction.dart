@@ -1,6 +1,9 @@
+import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
@@ -11,12 +14,12 @@ enum WalletTransactionStatus {
   pending,
   confirmed;
 
-  String get displayName {
+  String displayName(BuildContext context) {
     switch (this) {
       case WalletTransactionStatus.pending:
-        return 'Pending';
+        return context.loc.coreWalletTransactionStatusPending;
       case WalletTransactionStatus.confirmed:
-        return 'Confirmed';
+        return context.loc.coreWalletTransactionStatusConfirmed;
     }
   }
 }
@@ -37,7 +40,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     required bool isRbf,
     DateTime? confirmationTime,
     @Default(false) bool isToSelf,
-    @Default([]) List<String> labels,
+    @Default([]) List<Label> labels,
     String? unblindedUrl,
   }) = _WalletTransaction;
 
@@ -65,14 +68,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     }
   }
 
-  String? get toAddress {
-    final output = destinationOutput?.address;
+  String? get toAddress => destinationOutput?.address;
 
-    return output;
-  }
-
-  List<String>? get toAddressLabels {
-    final output = destinationOutput;
-    return output?.addressLabels;
-  }
+  List<Label>? get toAddressLabels => destinationOutput?.addressLabels;
 }

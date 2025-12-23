@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/price_input/balance_row.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
@@ -10,7 +9,6 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 class SendAmountPage extends StatefulWidget {
   const SendAmountPage({
@@ -37,6 +35,7 @@ class _SendAmountPageState extends State<SendAmountPage> {
   late BitcoinUnit _preferredBitcoinUnit;
   String? _error;
   int? _maxSpendableSat;
+  bool _isMax = false;
 
   @override
   void initState() {
@@ -124,8 +123,10 @@ class _SendAmountPageState extends State<SendAmountPage> {
     final inputAmount = _controller.text;
     final exchangeRate = context.read<ArkCubit>().state.exchangeRate;
     final bitcoinUnit = context.read<ArkCubit>().state.preferredBitcoinUnit;
-    final equivalentCurrencyCode =
-        context.read<ArkCubit>().state.equivalentCurrencyCode;
+    final equivalentCurrencyCode = context
+        .read<ArkCubit>()
+        .state
+        .equivalentCurrencyCode;
     String equivalentValue = '0';
     if (_currencyCode == BitcoinUnit.sats.code) {
       final amountSat = int.tryParse(inputAmount) ?? 0;
@@ -135,10 +136,9 @@ class _SendAmountPageState extends State<SendAmountPage> {
       equivalentValue = (amountBtc * exchangeRate).toStringAsFixed(2);
     } else {
       final amountFiat = double.tryParse(inputAmount) ?? 0;
-      equivalentValue =
-          bitcoinUnit == BitcoinUnit.sats
-              ? (amountFiat * 1e8 / exchangeRate).toStringAsFixed(0)
-              : (amountFiat / exchangeRate).toStringAsFixed(8);
+      equivalentValue = bitcoinUnit == BitcoinUnit.sats
+          ? (amountFiat * 1e8 / exchangeRate).toStringAsFixed(0)
+          : (amountFiat / exchangeRate).toStringAsFixed(8);
     }
     return '$equivalentValue $equivalentCurrencyCode';
   }
@@ -158,28 +158,30 @@ class _SendAmountPageState extends State<SendAmountPage> {
   Widget build(BuildContext context) {
     return GestureDetector(
       // tap outside input to close keyboard
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.loc.arkSendAmountTitle, style: context.font.headlineMedium),
+          title: Text(
+            context.loc.arkSendAmountTitle,
+            style: context.font.headlineMedium,
+          ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
-            child:
-                _isLoading
-                    ? FadingLinearProgress(
-                      height: 3,
-                      trigger: _isLoading,
-                      backgroundColor: context.colour.surface,
-                      foregroundColor: context.colour.primary,
-                    )
-                    : const SizedBox(height: 3),
+            child: _isLoading
+                ? FadingLinearProgress(
+                    height: 3,
+                    trigger: _isLoading,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
+                  )
+                : const SizedBox(height: 3),
           ),
         ),
         body: SafeArea(
           child: Form(
             child: ScrollableColumn(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               children: [
                 PriceInput(
                   currency: _currencyCode,
@@ -190,38 +192,41 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   amountController: _controller,
                   focusNode: _focusNode,
                   error: _error,
+                  readOnly: _isMax,
+                  isMax: _isMax,
                 ),
                 Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
-                    Divider(height: 1, color: context.colour.secondaryFixedDim),
+                    Divider(
+                      height: 1,
+                      color: context.appColors.secondaryFixedDim,
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: BalanceRow(
-                        balance:
-                            _preferredBitcoinUnit == BitcoinUnit.btc
-                                ? (_maxSpendableSat != null
-                                    ? (_maxSpendableSat! / 1e8).toStringAsFixed(
-                                      8,
-                                    )
-                                    : '0.00000000')
-                                : (_maxSpendableSat?.toString() ?? '0'),
+                        balance: _preferredBitcoinUnit == BitcoinUnit.btc
+                            ? (_maxSpendableSat != null
+                                  ? (_maxSpendableSat! / 1e8).toStringAsFixed(8)
+                                  : '0.00000000')
+                            : (_maxSpendableSat?.toString() ?? '0'),
                         currencyCode: _preferredBitcoinUnit.code,
-                        onMaxPressed: () async {
-                          await context
-                              .read<ArkCubit>()
-                              .onSendCurrencyCodeChanged(
-                                _preferredBitcoinUnit.code,
-                              );
-                          _controller.text = _calculateMaxAmountValue();
+                        isMax: _isMax,
+                        onMaxToggled: (value) async {
+                          setState(() {
+                            _isMax = value;
+                          });
+                          if (value) {
+                            await context
+                                .read<ArkCubit>()
+                                .onSendCurrencyCodeChanged(
+                                  _preferredBitcoinUnit.code,
+                                );
+                            _controller.text = _calculateMaxAmountValue();
+                          }
                         },
                         walletLabel: context.loc.arkInstantPayments,
                       ),
-                    ),
-                    const Gap(24),
-                    AmountDialPad(
-                      controller: _controller,
-                      inputCurrencyCode: _currencyCode,
                     ),
                   ],
                 ),
@@ -229,8 +234,8 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   label: context.loc.arkContinueButton,
                   onPressed: _submit,
                   disabled: _controller.text.isEmpty || _isLoading,
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),

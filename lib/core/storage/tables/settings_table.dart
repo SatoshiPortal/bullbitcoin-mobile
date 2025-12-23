@@ -13,4 +13,5 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   BoolColumn get useTorProxy => boolean().withDefault(const Constant(false))();
   IntColumn get torProxyPort => integer().withDefault(const Constant(9050))();
+  TextColumn get themeMode => text().withDefault(const Constant('system'))();
 }

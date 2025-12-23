@@ -60,7 +60,7 @@ class BuyInputScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: ScrollableColumn(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             const Gap(24),
             const BuyAmountInputFields(),
@@ -68,20 +68,20 @@ class BuyInputScreen extends StatelessWidget {
             const BuyDestinationInputFields(),
             const Spacer(),
             Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (isCreatingOrder)
                   const Center(child: CircularProgressIndicator()),
                 if (belowMinAmountError != null || aboveMaxAmountError != null)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       Text(
                         belowMinAmountError != null
                             ? context.loc.buyInputMinAmountError
                             : context.loc.buyInputMaxAmountError,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.error,
+                          color: context.appColors.error,
                         ),
                       ),
                       const Gap(4),
@@ -91,7 +91,7 @@ class BuyInputScreen extends StatelessWidget {
                             : aboveMaxAmountError!.maxAmountSat,
                         showFiat: false,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.error,
+                          color: context.appColors.error,
                         ),
                         overrideHideAmounts: true,
                       ),
@@ -104,8 +104,10 @@ class BuyInputScreen extends StatelessWidget {
                     InfoCard(
                       title: context.loc.buyInputKycPending,
                       description: context.loc.buyInputKycMessage,
-                      bgColor: context.colour.tertiary.withValues(alpha: 0.1),
-                      tagColor: context.colour.onTertiary,
+                      bgColor: context.appColors.tertiary.withValues(
+                        alpha: 0.1,
+                      ),
+                      tagColor: context.appColors.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
@@ -115,16 +117,18 @@ class BuyInputScreen extends StatelessWidget {
                           ExchangeRoute.exchangeKyc.name,
                         );
                       },
-                      bgColor: context.colour.primary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
                     ),
                   ] else if (showInsufficientBalanceError) ...[
                     InfoCard(
                       title: context.loc.buyInputInsufficientBalance,
                       description:
                           context.loc.buyInputInsufficientBalanceMessage,
-                      bgColor: context.colour.tertiary.withValues(alpha: 0.1),
-                      tagColor: context.colour.onTertiary,
+                      bgColor: context.appColors.tertiary.withValues(
+                        alpha: 0.1,
+                      ),
+                      tagColor: context.appColors.onTertiary,
                     ),
                     const Gap(16.0),
                     BBButton.big(
@@ -134,8 +138,8 @@ class BuyInputScreen extends StatelessWidget {
                           FundExchangeRoute.fundExchangeAccount.name,
                         );
                       },
-                      bgColor: context.colour.primary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
                     ),
                   ] else
                     BBButton.big(
@@ -146,8 +150,8 @@ class BuyInputScreen extends StatelessWidget {
                           const BuyEvent.createOrder(),
                         );
                       },
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onSecondary,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
                     ),
                 ] else ...[
                   const LoadingLineContent(height: 56, width: double.infinity),

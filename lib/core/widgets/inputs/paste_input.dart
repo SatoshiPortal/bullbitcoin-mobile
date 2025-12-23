@@ -21,9 +21,9 @@ class PasteInput extends StatelessWidget {
     return Container(
       height: 48,
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.colour.secondaryFixedDim),
+        border: Border.all(color: context.appColors.border),
       ),
       child: Row(
         children: [
@@ -34,18 +34,18 @@ class PasteInput extends StatelessWidget {
                     ? BBText(
                       hint,
                       style: context.font.labelSmall,
-                      color: context.colour.surfaceContainer,
+                      color: context.appColors.textMuted,
                     )
                     : BBText(
                       text.trim(),
                       style: context.font.bodyLarge,
-                      color: context.colour.secondary,
+                      color: context.appColors.text,
                     ),
           ),
           IconButton(
             visualDensity: VisualDensity.compact,
             iconSize: 20,
-            icon: Icon(Icons.paste_sharp, color: context.colour.secondary),
+            icon: Icon(Icons.paste_sharp, color: context.appColors.text),
             onPressed: () {
               Clipboard.getData(Clipboard.kTextPlain).then((value) {
                 if (value != null) {

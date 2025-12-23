@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -37,9 +38,9 @@ class SwapAmountInput extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
-        Text('Amount', style: context.font.bodyLarge),
+        Text(context.loc.swapAmountLabel, style: context.font.bodyLarge),
         const Gap(8),
         Card(
           elevation: 1,
@@ -52,8 +53,8 @@ class SwapAmountInput extends StatelessWidget {
               vertical: 16.0,
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
               children: [
                 if (isLoading)
                   const LoadingLineContent(
@@ -61,8 +62,8 @@ class SwapAmountInput extends StatelessWidget {
                   )
                 else
                   Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: TextFormField(
@@ -75,7 +76,7 @@ class SwapAmountInput extends StatelessWidget {
                           ],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter an amount';
+                              return context.loc.swapValidationEnterAmount;
                             }
                             final inputAmountSat =
                                 bitcoinUnit == BitcoinUnit.sats
@@ -84,12 +85,12 @@ class SwapAmountInput extends StatelessWidget {
                                       double.tryParse(value) ?? 0,
                                     );
                             if (inputAmountSat <= 0) {
-                              return 'Enter a positive amount';
+                              return context.loc.swapValidationPositiveAmount;
                             }
                             final balanceSat =
                                 fromWallet?.balanceSat.toInt() ?? 0;
                             if (inputAmountSat > balanceSat) {
-                              return 'Insufficient balance';
+                              return context.loc.swapValidationInsufficientBalance;
                             }
                             if ((swapLimits?.min ?? 0) > inputAmountSat) {
                               final minAmount =
@@ -98,7 +99,10 @@ class SwapAmountInput extends StatelessWidget {
                                         swapLimits?.min ?? 0,
                                       )
                                       : swapLimits?.min ?? 0;
-                              return 'Minimum amount is $minAmount $fromCurrency';
+                              return context.loc.swapValidationMinimumAmount(
+                                minAmount.toString(),
+                                fromCurrency,
+                              );
                             }
                             if ((swapLimits?.max ?? double.infinity) <
                                 inputAmountSat) {
@@ -108,17 +112,20 @@ class SwapAmountInput extends StatelessWidget {
                                         swapLimits?.max ?? 0,
                                       )
                                       : swapLimits?.max ?? 0;
-                              return 'Maximum amount is $maxAmount $fromCurrency';
+                              return context.loc.swapValidationMaximumAmount(
+                                maxAmount.toString(),
+                                fromCurrency,
+                              );
                             }
                             return null;
                           },
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: '0',
                             hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.colour.primary,
+                              color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
                           ),
@@ -133,7 +140,7 @@ class SwapAmountInput extends StatelessWidget {
                       Text(
                         fromCurrency,
                         style: context.font.displaySmall?.copyWith(
-                          color: context.colour.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ],

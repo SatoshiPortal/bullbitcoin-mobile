@@ -12,11 +12,10 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
     BuildContext context, {
     required Future<void> Function() onConfirm,
   }) {
-    final theme = Theme.of(context);
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: theme.colorScheme.onPrimary,
+      backgroundColor: context.appColors.onPrimary,
       useRootNavigator: true,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       builder: (context) => LogoutConfirmationBottomSheet(onConfirm: onConfirm),
@@ -33,35 +32,35 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Container(
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.colour.outline.withValues(alpha: 0.3),
+                  color: context.appColors.outline.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
               const SizedBox(height: 24),
-              Icon(Icons.logout, size: 48, color: context.colour.primary),
+              Icon(Icons.logout, size: 48, color: context.appColors.primary),
               const SizedBox(height: 16),
               BBText(
                 'Confirm Logout',
                 style: context.font.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const SizedBox(height: 8),
               BBText(
                 'Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary.withValues(alpha: 0.7),
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 maxLines: 4,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
               Row(
@@ -70,8 +69,8 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                     child: BBButton.small(
                       label: 'Cancel',
                       onPressed: () => Navigator.of(context).pop(),
-                      bgColor: context.colour.secondaryFixed,
-                      textColor: context.colour.secondary,
+                      bgColor: context.appColors.secondaryFixed,
+                      textColor: context.appColors.secondary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -82,8 +81,8 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                         Navigator.of(context).pop();
                         await onConfirm();
                       },
-                      bgColor: Colors.black,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.appColors.text,
+                      textColor: context.appColors.onPrimary,
                     ),
                   ),
                 ],

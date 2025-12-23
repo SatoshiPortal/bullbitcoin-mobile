@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
@@ -18,13 +21,27 @@ class LwkFacade {
     }
   }
 
+  static Future<void> delete(WalletModel walletModel) async {
+    try {
+      final dbPath = await _getDbPath(walletModel.dbName);
+      final dbFile = File(dbPath);
+
+      if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
+
+      await dbFile.delete();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   static Future<lwk.Wallet> createPublicWallet(WalletModel walletModel) async {
     try {
       if (walletModel is! PublicLwkWalletModel) {
         throw Exception('Wallet is not an LWK wallet');
       }
-      final network =
-          walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+      final network = walletModel.isTestnet
+          ? lwk.Network.testnet
+          : lwk.Network.mainnet;
       final descriptor = lwk.Descriptor(
         ctDescriptor: walletModel.combinedCtDescriptor,
       );
@@ -49,8 +66,9 @@ class LwkFacade {
       if (walletModel is! PrivateLwkWalletModel) {
         throw Exception('Wallet is not an LWK wallet');
       }
-      final network =
-          walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+      final network = walletModel.isTestnet
+          ? lwk.Network.testnet
+          : lwk.Network.mainnet;
       final descriptor = await lwk.Descriptor.newConfidential(
         mnemonic: walletModel.mnemonic,
         network: network,

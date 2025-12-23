@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
@@ -13,7 +13,7 @@ enum TxFormat { psbt, hex }
 class ScannedTransaction {
   final TxFormat format;
   final String data;
-  final RawBitcoinTxEntity tx;
+  final BitcoinTx tx;
 
   ScannedTransaction({
     required this.format,
@@ -33,7 +33,7 @@ class Bbqr {
   Future<(ScannedTransaction?, Bbqr)> scanTransaction(String payload) async {
     if (!BbqrOptions.isValid(payload)) {
       try {
-        final tx = await RawBitcoinTxEntity.fromBytes(hex.decode(payload));
+        final tx = await BitcoinTx.fromBytes(hex.decode(payload));
         return (
           ScannedTransaction(format: TxFormat.hex, data: payload, tx: tx),
           this,
@@ -59,7 +59,7 @@ class Bbqr {
         final bbqrJoiner = await bbqr.Joined.tryFromParts(parts: bbqrParts);
 
         try {
-          final tx = await RawBitcoinTxEntity.fromBytes(bbqrJoiner.data);
+          final tx = await BitcoinTx.fromBytes(bbqrJoiner.data);
           return (
             ScannedTransaction(
               format: TxFormat.hex,
@@ -72,7 +72,7 @@ class Bbqr {
 
         try {
           final psbtBase64 = base64.encode(bbqrJoiner.data);
-          final tx = await RawBitcoinTxEntity.fromPsbt(psbtBase64);
+          final tx = await BitcoinTx.fromPsbt(psbtBase64);
           return (
             ScannedTransaction(format: TxFormat.psbt, data: psbtBase64, tx: tx),
             this,
@@ -96,7 +96,7 @@ class Bbqr {
       if (minSplitNumber < BigInt.from(1)) minSplitNumber = BigInt.from(1);
 
       final defaultOptions = await bbqr.SplitOptions.default_();
-      final bbqrOptions = bbqr.SplitOptions.new(
+      final bbqrOptions = bbqr.SplitOptions(
         minVersion: defaultOptions.minVersion,
         maxVersion: defaultOptions.maxVersion,
         encoding: defaultOptions.encoding,

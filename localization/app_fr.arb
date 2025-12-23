@@ -27,6 +27,158 @@
       }
     }
   },
+  "coreSwapsStatusPending": "En attente",
+  "@coreSwapsStatusPending": {
+    "description": "Display name for pending swap status"
+  },
+  "coreSwapsStatusInProgress": "En cours",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "Terminé",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsStatusExpired": "Expiré",
+  "@coreSwapsStatusExpired": {
+    "description": "Display name for expired swap status"
+  },
+  "coreSwapsStatusFailed": "Échoué",
+  "@coreSwapsStatusFailed": {
+    "description": "Display name for failed swap status"
+  },
+  "coreSwapsActionClaim": "Réclamer",
+  "@coreSwapsActionClaim": {
+    "description": "Action label for claiming a swap"
+  },
+  "coreSwapsActionClose": "Fermer",
+  "@coreSwapsActionClose": {
+    "description": "Action label for closing a swap cooperatively"
+  },
+  "coreSwapsActionRefund": "Rembourser",
+  "@coreSwapsActionRefund": {
+    "description": "Action label for refunding a swap"
+  },
+  "coreSwapsLnReceivePending": "L'échange n'est pas encore initialisé.",
+  "@coreSwapsLnReceivePending": {
+    "description": "Status message for pending Lightning receive swap"
+  },
+  "coreSwapsLnReceivePaid": "L'expéditeur a payé la facture.",
+  "@coreSwapsLnReceivePaid": {
+    "description": "Status message for paid Lightning receive swap"
+  },
+  "coreSwapsLnReceiveClaimable": "L'échange est prêt à être réclamé.",
+  "@coreSwapsLnReceiveClaimable": {
+    "description": "Status message for claimable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveRefundable": "L'échange est prêt à être remboursé.",
+  "@coreSwapsLnReceiveRefundable": {
+    "description": "Status message for refundable Lightning receive swap"
+  },
+  "coreSwapsLnReceiveCanCoop": "L'échange sera complété sous peu.",
+  "@coreSwapsLnReceiveCanCoop": {
+    "description": "Status message for Lightning receive swap that can complete cooperatively"
+  },
+  "coreSwapsLnReceiveCompleted": "L'échange est terminé.",
+  "@coreSwapsLnReceiveCompleted": {
+    "description": "Status message for completed Lightning receive swap"
+  },
+  "coreSwapsLnReceiveExpired": "Échange expiré.",
+  "@coreSwapsLnReceiveExpired": {
+    "description": "Status message for expired Lightning receive swap"
+  },
+  "coreSwapsLnReceiveFailed": "Échange échoué.",
+  "@coreSwapsLnReceiveFailed": {
+    "description": "Status message for failed Lightning receive swap"
+  },
+  "coreSwapsLnSendPending": "L'échange n'est pas encore initialisé.",
+  "@coreSwapsLnSendPending": {
+    "description": "Status message for pending Lightning send swap"
+  },
+  "coreSwapsLnSendPaid": "La facture sera payée après confirmation de votre paiement.",
+  "@coreSwapsLnSendPaid": {
+    "description": "Status message for paid Lightning send swap"
+  },
+  "coreSwapsLnSendClaimable": "L'échange est prêt à être réclamé.",
+  "@coreSwapsLnSendClaimable": {
+    "description": "Status message for claimable Lightning send swap"
+  },
+  "coreSwapsLnSendRefundable": "L'échange est prêt à être remboursé.",
+  "@coreSwapsLnSendRefundable": {
+    "description": "Status message for refundable Lightning send swap"
+  },
+  "coreSwapsLnSendCanCoop": "L'échange sera complété sous peu.",
+  "@coreSwapsLnSendCanCoop": {
+    "description": "Status message for Lightning send swap that can complete cooperatively"
+  },
+  "coreSwapsLnSendCompletedRefunded": "L'échange a été remboursé.",
+  "@coreSwapsLnSendCompletedRefunded": {
+    "description": "Status message for Lightning send swap completed via refund"
+  },
+  "coreSwapsLnSendCompletedSuccess": "L'échange est terminé avec succès.",
+  "@coreSwapsLnSendCompletedSuccess": {
+    "description": "Status message for successfully completed Lightning send swap"
+  },
+  "coreSwapsLnSendExpired": "Échange expiré",
+  "@coreSwapsLnSendExpired": {
+    "description": "Status message for expired Lightning send swap"
+  },
+  "coreSwapsLnSendFailedRefunding": "L'échange sera remboursé sous peu.",
+  "@coreSwapsLnSendFailedRefunding": {
+    "description": "Status message for failed Lightning send swap that will be refunded"
+  },
+  "coreSwapsLnSendFailed": "Échange échoué.",
+  "@coreSwapsLnSendFailed": {
+    "description": "Status message for failed Lightning send swap"
+  },
+  "coreSwapsChainPending": "Le transfert n'est pas encore initialisé.",
+  "@coreSwapsChainPending": {
+    "description": "Status message for pending chain swap"
+  },
+  "coreSwapsChainPaid": "En attente de la confirmation du paiement du fournisseur de transfert. Cela peut prendre un certain temps.",
+  "@coreSwapsChainPaid": {
+    "description": "Status message for paid chain swap"
+  },
+  "coreSwapsChainClaimable": "Le transfert est prêt à être réclamé.",
+  "@coreSwapsChainClaimable": {
+    "description": "Status message for claimable chain swap"
+  },
+  "coreSwapsChainRefundable": "Le transfert est prêt à être remboursé.",
+  "@coreSwapsChainRefundable": {
+    "description": "Status message for refundable chain swap"
+  },
+  "coreSwapsChainCanCoop": "Le transfert sera complété sous peu.",
+  "@coreSwapsChainCanCoop": {
+    "description": "Status message for chain swap that can complete cooperatively"
+  },
+  "coreSwapsChainCompletedRefunded": "Le transfert a été remboursé.",
+  "@coreSwapsChainCompletedRefunded": {
+    "description": "Status message for chain swap completed via refund"
+  },
+  "coreSwapsChainCompletedSuccess": "Le transfert est terminé avec succès.",
+  "@coreSwapsChainCompletedSuccess": {
+    "description": "Status message for successfully completed chain swap"
+  },
+  "coreSwapsChainExpired": "Transfert expiré",
+  "@coreSwapsChainExpired": {
+    "description": "Status message for expired chain swap"
+  },
+  "coreSwapsChainFailedRefunding": "Le transfert sera remboursé sous peu.",
+  "@coreSwapsChainFailedRefunding": {
+    "description": "Status message for failed chain swap that will be refunded"
+  },
+  "coreSwapsChainFailed": "Transfert échoué.",
+  "@coreSwapsChainFailed": {
+    "description": "Status message for failed chain swap"
+  },
+  "coreWalletTransactionStatusPending": "En attente",
+  "@coreWalletTransactionStatusPending": {
+    "description": "Display name for pending wallet transaction status"
+  },
+  "coreWalletTransactionStatusConfirmed": "Confirmé",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
   "onboardingScreenTitle": "Bienvenue",
   "@onboardingScreenTitle": {
     "description": "Le titre de l'écran d'intégration"
@@ -192,6 +344,46 @@
   "@settingsGithubLabel": {
     "description": "Libellé du lien Github dans les paramètres"
   },
+  "settingsServicesStatusTitle": "État des services",
+  "@settingsServicesStatusTitle": {
+    "description": "Title for the services status section in the settings menu"
+  },
+  "settingsTorSettingsTitle": "Paramètres Tor",
+  "@settingsTorSettingsTitle": {
+    "description": "Title for the Tor settings section in app settings"
+  },
+  "settingsRecoverbullTitle": "Recoverbull",
+  "@settingsRecoverbullTitle": {
+    "description": "Title for the Recoverbull backup section in app settings"
+  },
+  "settingsLanguageTitle": "Langue",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "settingsArkTitle": "Ark",
+  "@settingsArkTitle": {
+    "description": "Title for the Ark protocol section in Bitcoin settings"
+  },
+  "settingsDevModeWarningTitle": "Mode développeur",
+  "@settingsDevModeWarningTitle": {
+    "description": "Title for the developer mode warning dialog"
+  },
+  "settingsDevModeWarningMessage": "Ce mode est risqué. En l'activant, vous reconnaissez que vous pourriez perdre de l'argent",
+  "@settingsDevModeWarningMessage": {
+    "description": "Warning message displayed when enabling developer mode"
+  },
+  "settingsDevModeUnderstandButton": "Je comprends",
+  "@settingsDevModeUnderstandButton": {
+    "description": "Button label to acknowledge developer mode warning"
+  },
+  "settingsSuperuserModeDisabledMessage": "Mode superutilisateur désactivé.",
+  "@settingsSuperuserModeDisabledMessage": {
+    "description": "Message shown when superuser mode is disabled"
+  },
+  "settingsSuperuserModeUnlockedMessage": "Mode superutilisateur déverrouillé !",
+  "@settingsSuperuserModeUnlockedMessage": {
+    "description": "Message shown when superuser mode is enabled"
+  },
   "walletOptionsUnnamedWalletFallback": "Portefeuille sans nom",
   "@walletOptionsUnnamedWalletFallback": {
     "description": "Nom de secours affiché pour les portefeuilles sans nom spécifié"
@@ -259,6 +451,90 @@
   "bitcoinSettingsElectrumServerTitle": "Paramètres du serveur Electrum",
   "@bitcoinSettingsElectrumServerTitle": {
     "description": "Titre de la section des paramètres du serveur Electrum dans les paramètres Bitcoin"
+  },
+  "mempoolSettingsTitle": "Mempool Server",
+  "@mempoolSettingsTitle": {
+    "description": "Title for mempool settings screen"
+  },
+  "mempoolSettingsDescription": "Configure custom mempool servers for different networks. Each network can use its own server for block explorer and fee estimation.",
+  "@mempoolSettingsDescription": {
+    "description": "Description text for mempool settings screen"
+  },
+  "mempoolSettingsDefaultServer": "Default Server",
+  "@mempoolSettingsDefaultServer": {
+    "description": "Label for default mempool server section"
+  },
+  "mempoolSettingsCustomServer": "Custom Server",
+  "@mempoolSettingsCustomServer": {
+    "description": "Label for custom mempool server section"
+  },
+  "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
+  "@mempoolNetworkBitcoinMainnet": {
+    "description": "Label for Bitcoin mainnet network option"
+  },
+  "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
+  "@mempoolNetworkBitcoinTestnet": {
+    "description": "Label for Bitcoin testnet network option"
+  },
+  "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
+  "@mempoolNetworkLiquidMainnet": {
+    "description": "Label for Liquid mainnet network option"
+  },
+  "mempoolNetworkLiquidTestnet": "Liquid Testnet",
+  "@mempoolNetworkLiquidTestnet": {
+    "description": "Label for Liquid testnet network option"
+  },
+  "mempoolCustomServerAdd": "Add Custom Server",
+  "@mempoolCustomServerAdd": {
+    "description": "Button text to add a custom mempool server"
+  },
+  "mempoolCustomServerEdit": "Edit",
+  "@mempoolCustomServerEdit": {
+    "description": "Button text to edit custom server"
+  },
+  "mempoolCustomServerDelete": "Delete",
+  "@mempoolCustomServerDelete": {
+    "description": "Button text to delete custom server"
+  },
+  "mempoolCustomServerLabel": "CUSTOM",
+  "@mempoolCustomServerLabel": {
+    "description": "Label badge for custom server"
+  },
+  "mempoolServerNotUsed": "Not used (custom server active)",
+  "@mempoolServerNotUsed": {
+    "description": "Label shown when default server is not used because custom server is active"
+  },
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "@mempoolCustomServerDeleteTitle": {
+    "description": "Title for delete confirmation dialog"
+  },
+  "mempoolCustomServerDeleteMessage": "Are you sure you want to delete this custom mempool server? The default server will be used instead.",
+  "@mempoolCustomServerDeleteMessage": {
+    "description": "Message for delete confirmation dialog"
+  },
+  "mempoolCustomServerUrl": "Server URL",
+  "@mempoolCustomServerUrl": {
+    "description": "Label for server URL input field"
+  },
+  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
+  "@mempoolCustomServerUrlEmpty": {
+    "description": "Error message when URL is empty"
+  },
+  "mempoolCustomServerSaveSuccess": "Custom server saved successfully",
+  "@mempoolCustomServerSaveSuccess": {
+    "description": "Success message after saving custom server"
+  },
+  "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
+  "@mempoolCustomServerBottomSheetDescription": {
+    "description": "Description text in add custom server bottom sheet"
+  },
+  "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
+  "@mempoolSettingsUseForFeeEstimation": {
+    "description": "Label for fee estimation toggle"
+  },
+  "mempoolSettingsUseForFeeEstimationDescription": "When enabled, this server will be used for fee estimation. When disabled, Bull Bitcoin's mempool server will be used instead.",
+  "@mempoolSettingsUseForFeeEstimationDescription": {
+    "description": "Description for fee estimation toggle"
   },
   "bitcoinSettingsAutoTransferTitle": "Paramètres de transfert automatique",
   "@bitcoinSettingsAutoTransferTitle": {
@@ -639,6 +915,10 @@
   "sendDone": "Terminé",
   "@sendDone": {
     "description": "Libellé du bouton pour terminer le flux d'envoi"
+  },
+  "sendSelectedUtxosInsufficient": "Les UTXO sélectionnés ne couvrent pas le montant requis",
+  "@sendSelectedUtxosInsufficient": {
+    "description": "Message d'erreur lorsque les UTXO sélectionnés ne couvrent pas le montant requis"
   },
   "sendAdvancedOptions": "Options avancées",
   "@sendAdvancedOptions": {
@@ -1839,29 +2119,9 @@
   "@payNotAvailable": {
     "description": "Texte pour information non disponible"
   },
-  "payContinue": "Continuer",
-  "@payContinue": {
-    "description": "Libellé du bouton pour continuer"
-  },
-  "paySelectNetwork": "Sélectionner le réseau",
-  "@paySelectNetwork": {
-    "description": "Titre de la barre d'application pour l'écran de sélection de réseau"
-  },
-  "payHowToPayInvoice": "Comment souhaitez-vous payer cette facture?",
-  "@payHowToPayInvoice": {
-    "description": "Question pour sélectionner le réseau de paiement"
-  },
   "payBitcoinOnchain": "Bitcoin on-chain",
   "@payBitcoinOnchain": {
     "description": "Option pour le paiement Bitcoin on-chain"
-  },
-  "payLightningNetwork": "Lightning Network",
-  "@payLightningNetwork": {
-    "description": "Option pour le paiement Lightning Network"
-  },
-  "payLiquidNetwork": "Liquid Network",
-  "@payLiquidNetwork": {
-    "description": "Option pour le paiement Liquid Network"
   },
   "payAboveMaxAmount": "Vous essayez de payer un montant supérieur au montant maximum pouvant être payé avec ce portefeuille.",
   "@payAboveMaxAmount": {
@@ -1890,14 +2150,6 @@
   "payPaymentInProgressDescription": "Votre paiement a été initié et le destinataire recevra les fonds après que votre transaction reçoive 1 confirmation on-chain.",
   "@payPaymentInProgressDescription": {
     "description": "Description pour le paiement en cours"
-  },
-  "payInvalidState": "État invalide",
-  "@payInvalidState": {
-    "description": "Message d'erreur pour un état invalide"
-  },
-  "payPleasePayInvoice": "Veuillez payer cette facture",
-  "@payPleasePayInvoice": {
-    "description": "Instruction pour payer la facture"
   },
   "payPriceRefreshIn": "Le prix sera actualisé dans ",
   "@payPriceRefreshIn": {
@@ -1935,97 +2187,9 @@
   "@payCopied": {
     "description": "Message de succès après la copie"
   },
-  "payPayee": "Bénéficiaire",
-  "@payPayee": {
-    "description": "Libellé pour le bénéficiaire dans le paiement de facture"
-  },
-  "payAccount": "Compte",
-  "@payAccount": {
-    "description": "Libellé pour les informations de compte"
-  },
-  "payAllCountries": "Tous les pays",
-  "@payAllCountries": {
-    "description": "Option de filtre pour tous les pays"
-  },
-  "payAllTypes": "Tous les types",
-  "@payAllTypes": {
-    "description": "Option de filtre pour tous les types"
-  },
-  "paySelectRecipient": "Sélectionner le destinataire",
-  "@paySelectRecipient": {
-    "description": "Titre de la barre d'application pour l'écran de sélection du destinataire"
-  },
-  "payWhoAreYouPaying": "Qui payez-vous?",
-  "@payWhoAreYouPaying": {
-    "description": "Question pour la sélection du destinataire"
-  },
-  "payNewRecipients": "Nouveaux destinataires",
-  "@payNewRecipients": {
-    "description": "Libellé de l'onglet pour les nouveaux destinataires"
-  },
-  "payMyFiatRecipients": "Mes destinataires fiat",
-  "@payMyFiatRecipients": {
-    "description": "Libellé de l'onglet pour les destinataires fiat enregistrés"
-  },
-  "payConfirmPayment": "Confirmer le paiement",
-  "@payConfirmPayment": {
-    "description": "Titre de l'écran de confirmation de paiement"
-  },
-  "payRecipientDetails": "Détails du destinataire",
-  "@payRecipientDetails": {
-    "description": "Libellé pour la section des détails du destinataire"
-  },
-  "payPayinAmount": "Montant à payer",
-  "@payPayinAmount": {
-    "description": "Libellé pour le montant à payer"
-  },
-  "payExchangeRate": "Taux de change",
-  "@payExchangeRate": {
-    "description": "Libellé pour le taux de change"
-  },
-  "payPayFromWallet": "Payer depuis le portefeuille",
-  "@payPayFromWallet": {
-    "description": "Libellé pour la sélection du portefeuille"
-  },
-  "payInstantPayments": "Paiements instantanés",
-  "@payInstantPayments": {
-    "description": "Description pour le portefeuille Lightning"
-  },
-  "paySecureBitcoinWallet": "Portefeuille Bitcoin sécurisé",
-  "@paySecureBitcoinWallet": {
-    "description": "Description pour le portefeuille Bitcoin standard"
-  },
-  "payFeePriority": "Priorité des frais",
-  "@payFeePriority": {
-    "description": "Libellé pour le paramètre de priorité des frais"
-  },
-  "payFastest": "Le plus rapide",
-  "@payFastest": {
-    "description": "Option de priorité des frais la plus rapide"
-  },
-  "payNetworkFees": "Frais de réseau",
-  "@payNetworkFees": {
-    "description": "Libellé pour les frais de réseau"
-  },
-  "payCalculating": "Calcul en cours...",
-  "@payCalculating": {
-    "description": "Texte d'état pendant le calcul des frais"
-  },
-  "payAdvancedSettings": "Paramètres avancés",
-  "@payAdvancedSettings": {
-    "description": "Libellé du bouton pour les paramètres avancés"
-  },
-  "paySelectWallet": "Sélectionner le portefeuille",
-  "@paySelectWallet": {
-    "description": "Titre de la barre d'application pour l'écran de sélection du portefeuille"
-  },
   "payWhichWallet": "De quel portefeuille souhaitez-vous payer?",
   "@payWhichWallet": {
     "description": "Question pour la sélection du portefeuille"
-  },
-  "payExternalWallet": "Portefeuille externe",
-  "@payExternalWallet": {
-    "description": "Option pour le paiement depuis un portefeuille externe"
   },
   "payExternalWalletDescription": "Payer depuis un autre portefeuille Bitcoin",
   "@payExternalWalletDescription": {
@@ -2035,17 +2199,9 @@
   "@payInsufficientBalance": {
     "description": "Message d'erreur pour solde insuffisant"
   },
-  "payAdvancedOptions": "Options avancées",
-  "@payAdvancedOptions": {
-    "description": "Titre pour le panneau des options avancées"
-  },
   "payRbfActivated": "Replace-by-fee activé",
   "@payRbfActivated": {
     "description": "Libellé pour le bouton RBF"
-  },
-  "paySelectCoinsManually": "Sélectionner les pièces manuellement",
-  "@paySelectCoinsManually": {
-    "description": "Libellé pour la sélection manuelle des pièces"
   },
   "transactionTitle": "Transactions",
   "@transactionTitle": {
@@ -2558,13 +2714,217 @@
   "@transactionListYesterday": {
     "description": "Libellé de date pour les transactions d'hier"
   },
-  "walletNameInstantPayments": "Paiements instantanés",
-  "@walletNameInstantPayments": {
-    "description": "Nom par défaut pour le portefeuille Liquid/paiements instantanés"
+  "transactionSwapDoNotUninstall": "Ne désinstallez pas l'application tant que l'échange n'est pas terminé.",
+  "@transactionSwapDoNotUninstall": {
+    "description": "Message d'avertissement pour ne pas désinstaller l'app pendant un échange"
   },
-  "walletNameSecureBitcoin": "Bitcoin sécurisé",
-  "@walletNameSecureBitcoin": {
-    "description": "Nom par défaut pour le portefeuille Bitcoin"
+  "transactionFeesDeductedFrom": "Ces frais seront déduits du montant envoyé",
+  "@transactionFeesDeductedFrom": {
+    "description": "Explication des frais déduits pour les échanges entrants"
+  },
+  "transactionFeesTotalDeducted": "Ceci est le total des frais déduits du montant envoyé",
+  "@transactionFeesTotalDeducted": {
+    "description": "Explication des frais déduits pour les échanges sortants"
+  },
+  "transactionLabelSendAmount": "Montant envoyé",
+  "@transactionLabelSendAmount": {
+    "description": "Libellé pour le montant envoyé dans les détails d'échange"
+  },
+  "transactionLabelReceiveAmount": "Montant reçu",
+  "@transactionLabelReceiveAmount": {
+    "description": "Libellé pour le montant reçu dans les détails d'échange"
+  },
+  "transactionLabelSendNetworkFees": "Frais réseau d'envoi",
+  "@transactionLabelSendNetworkFees": {
+    "description": "Libellé pour les frais réseau d'envoi dans les détails d'échange"
+  },
+  "transactionLabelReceiveNetworkFee": "Frais réseau de réception",
+  "@transactionLabelReceiveNetworkFee": {
+    "description": "Libellé pour les frais réseau de réception dans les détails d'échange"
+  },
+  "transactionLabelServerNetworkFees": "Frais réseau serveur",
+  "@transactionLabelServerNetworkFees": {
+    "description": "Libellé pour les frais réseau serveur dans les détails d'échange"
+  },
+  "transactionLabelPreimage": "Préimage",
+  "@transactionLabelPreimage": {
+    "description": "Libellé pour la préimage dans les détails d'échange Lightning"
+  },
+  "transactionOrderLabelReferenceNumber": "Numéro de référence",
+  "@transactionOrderLabelReferenceNumber": {
+    "description": "Libellé pour le numéro de référence dans les détails de commande"
+  },
+  "transactionOrderLabelOriginName": "Nom d'origine",
+  "@transactionOrderLabelOriginName": {
+    "description": "Libellé pour le nom d'origine dans la commande de paiement fiat"
+  },
+  "transactionOrderLabelOriginCedula": "Cédula d'origine",
+  "@transactionOrderLabelOriginCedula": {
+    "description": "Libellé pour la cédula d'origine dans la commande de paiement fiat"
+  },
+  "transactionDetailAccelerate": "Accélérer",
+  "@transactionDetailAccelerate": {
+    "description": "Libellé du bouton pour accélérer (RBF) une transaction non confirmée"
+  },
+  "transactionDetailLabelTransactionId": "ID de transaction",
+  "@transactionDetailLabelTransactionId": {
+    "description": "Libellé pour l'ID de transaction"
+  },
+  "transactionDetailLabelToWallet": "Vers le portefeuille",
+  "@transactionDetailLabelToWallet": {
+    "description": "Libellé pour le portefeuille de destination"
+  },
+  "transactionDetailLabelFromWallet": "Du portefeuille",
+  "@transactionDetailLabelFromWallet": {
+    "description": "Libellé pour le portefeuille source"
+  },
+  "transactionDetailLabelRecipientAddress": "Adresse du destinataire",
+  "@transactionDetailLabelRecipientAddress": {
+    "description": "Libellé pour l'adresse du destinataire"
+  },
+  "transactionDetailLabelAddress": "Adresse",
+  "@transactionDetailLabelAddress": {
+    "description": "Libellé pour l'adresse"
+  },
+  "transactionDetailLabelAddressNotes": "Notes d'adresse",
+  "@transactionDetailLabelAddressNotes": {
+    "description": "Libellé pour les notes d'adresse"
+  },
+  "transactionDetailLabelAmountReceived": "Montant reçu",
+  "@transactionDetailLabelAmountReceived": {
+    "description": "Libellé pour le montant reçu"
+  },
+  "transactionDetailLabelAmountSent": "Montant envoyé",
+  "@transactionDetailLabelAmountSent": {
+    "description": "Libellé pour le montant envoyé"
+  },
+  "transactionDetailLabelTransactionFee": "Frais de transaction",
+  "@transactionDetailLabelTransactionFee": {
+    "description": "Libellé pour les frais de transaction"
+  },
+  "transactionDetailLabelStatus": "Statut",
+  "@transactionDetailLabelStatus": {
+    "description": "Libellé pour le statut"
+  },
+  "transactionDetailLabelConfirmationTime": "Heure de confirmation",
+  "@transactionDetailLabelConfirmationTime": {
+    "description": "Libellé pour l'heure de confirmation"
+  },
+  "transactionDetailLabelOrderType": "Type de commande",
+  "@transactionDetailLabelOrderType": {
+    "description": "Libellé pour le type de commande"
+  },
+  "transactionDetailLabelOrderNumber": "Numéro de commande",
+  "@transactionDetailLabelOrderNumber": {
+    "description": "Libellé pour le numéro de commande"
+  },
+  "transactionDetailLabelPayinAmount": "Montant payé",
+  "@transactionDetailLabelPayinAmount": {
+    "description": "Libellé pour le montant payé"
+  },
+  "transactionDetailLabelPayoutAmount": "Montant reçu",
+  "@transactionDetailLabelPayoutAmount": {
+    "description": "Libellé pour le montant reçu"
+  },
+  "transactionDetailLabelExchangeRate": "Taux de change",
+  "@transactionDetailLabelExchangeRate": {
+    "description": "Libellé pour le taux de change"
+  },
+  "transactionDetailLabelPayinMethod": "Méthode de paiement",
+  "@transactionDetailLabelPayinMethod": {
+    "description": "Libellé pour la méthode de paiement"
+  },
+  "transactionDetailLabelPayoutMethod": "Méthode de réception",
+  "@transactionDetailLabelPayoutMethod": {
+    "description": "Libellé pour la méthode de réception"
+  },
+  "transactionDetailLabelPayinStatus": "Statut du paiement",
+  "@transactionDetailLabelPayinStatus": {
+    "description": "Libellé pour le statut du paiement"
+  },
+  "transactionDetailLabelOrderStatus": "Statut de la commande",
+  "@transactionDetailLabelOrderStatus": {
+    "description": "Libellé pour le statut de la commande"
+  },
+  "transactionDetailLabelPayoutStatus": "Statut du versement",
+  "@transactionDetailLabelPayoutStatus": {
+    "description": "Libellé pour le statut du versement"
+  },
+  "transactionDetailLabelCreatedAt": "Créé le",
+  "@transactionDetailLabelCreatedAt": {
+    "description": "Libellé pour la date de création"
+  },
+  "transactionDetailLabelCompletedAt": "Terminé le",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Libellé pour la date de fin"
+  },
+  "transactionDetailLabelTransferId": "ID du transfert",
+  "@transactionDetailLabelTransferId": {
+    "description": "Libellé pour l'ID du transfert"
+  },
+  "transactionDetailLabelSwapId": "ID de l'échange",
+  "@transactionDetailLabelSwapId": {
+    "description": "Libellé pour l'ID de l'échange"
+  },
+  "transactionDetailLabelTransferStatus": "Statut du transfert",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Libellé pour le statut du transfert"
+  },
+  "transactionDetailLabelSwapStatus": "Statut de l'échange",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Libellé pour le statut de l'échange"
+  },
+  "transactionDetailLabelRefunded": "Remboursé",
+  "@transactionDetailLabelRefunded": {
+    "description": "Libellé pour le statut remboursé"
+  },
+  "transactionDetailLabelLiquidTxId": "ID de transaction Liquid",
+  "@transactionDetailLabelLiquidTxId": {
+    "description": "Libellé pour l'ID de transaction Liquid"
+  },
+  "transactionDetailLabelBitcoinTxId": "ID de transaction Bitcoin",
+  "@transactionDetailLabelBitcoinTxId": {
+    "description": "Libellé pour l'ID de transaction Bitcoin"
+  },
+  "transactionDetailLabelTransferFees": "Frais de transfert",
+  "@transactionDetailLabelTransferFees": {
+    "description": "Libellé pour les frais de transfert"
+  },
+  "transactionDetailLabelSwapFees": "Frais d'échange",
+  "@transactionDetailLabelSwapFees": {
+    "description": "Libellé pour les frais d'échange"
+  },
+  "transactionDetailLabelSendNetworkFee": "Frais réseau d'envoi",
+  "@transactionDetailLabelSendNetworkFee": {
+    "description": "Libellé pour les frais réseau d'envoi"
+  },
+  "transactionDetailLabelTransferFee": "Frais de transfert",
+  "@transactionDetailLabelTransferFee": {
+    "description": "Libellé pour les frais de transfert (frais Boltz)"
+  },
+  "transactionDetailLabelPayjoinStatus": "Statut Payjoin",
+  "@transactionDetailLabelPayjoinStatus": {
+    "description": "Libellé pour le statut Payjoin"
+  },
+  "transactionDetailLabelPayjoinCompleted": "Terminé",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Statut Payjoin terminé"
+  },
+  "transactionDetailLabelPayjoinExpired": "Expiré",
+  "@transactionDetailLabelPayjoinExpired": {
+    "description": "Statut Payjoin expiré"
+  },
+  "transactionDetailLabelPayjoinCreationTime": "Heure de création Payjoin",
+  "@transactionDetailLabelPayjoinCreationTime": {
+    "description": "Libellé pour l'heure de création Payjoin"
+  },
+  "globalDefaultBitcoinWalletLabel": "Bitcoin sécurisé",
+  "@globalDefaultBitcoinWalletLabel": {
+    "description": "Étiquette par défaut pour les portefeuilles Bitcoin lorsqu'ils sont utilisés par défaut"
+  },
+  "globalDefaultLiquidWalletLabel": "Paiements instantanés",
+  "@globalDefaultLiquidWalletLabel": {
+    "description": "Étiquette par défaut pour les portefeuilles Liquid/paiements instantanés lorsqu'ils sont utilisés par défaut"
   },
   "walletTypeWatchOnly": "Lecture seule",
   "@walletTypeWatchOnly": {
@@ -3110,14 +3470,6 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Message d'erreur lorsque les détails de financement ne peuvent pas être chargés"
   },
-  "fundExchangeSinpeTitle": "SINPE Móvil",
-  "@fundExchangeSinpeTitle": {
-    "description": "Titre de l'écran pour le mode de paiement SINPE Móvil (Costa Rica)"
-  },
-  "fundExchangeSinpeDescription": "Envoyez des fonds à notre numéro de téléphone SINPE Móvil. Vous devez envoyer les fonds depuis le même numéro de téléphone associé à votre compte Bull Bitcoin. Si vous envoyez le paiement depuis un numéro différent, ou si vous demandez à quelqu'un d'autre de faire le paiement pour vous, ",
-  "@fundExchangeSinpeDescription": {
-    "description": "Description principale pour le mode de paiement SINPE Móvil expliquant les exigences"
-  },
   "fundExchangeSinpeDescriptionBold": "il sera rejeté.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Texte en gras avertissant que le paiement depuis un mauvais numéro sera rejeté"
@@ -3141,10 +3493,6 @@
   "fundExchangeSinpeLabelRecipientName": "Nom du destinataire",
   "@fundExchangeSinpeLabelRecipientName": {
     "description": "Libellé pour le nom du destinataire dans le virement SINPE"
-  },
-  "fundExchangeCrIbanCrcTitle": "Virement bancaire (CRC)",
-  "@fundExchangeCrIbanCrcTitle": {
-    "description": "Titre de l'écran pour le virement bancaire IBAN du Costa Rica en CRC (Colón)"
   },
   "fundExchangeCrIbanCrcDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
   "@fundExchangeCrIbanCrcDescription": {
@@ -3185,10 +3533,6 @@
   "fundExchangeCrIbanCrcLabelCedulaJuridica": "Cédula Jurídica",
   "@fundExchangeCrIbanCrcLabelCedulaJuridica": {
     "description": "Libellé pour Cédula Jurídica (numéro d'identification légale au Costa Rica)"
-  },
-  "fundExchangeCrIbanUsdTitle": "Virement bancaire (USD)",
-  "@fundExchangeCrIbanUsdTitle": {
-    "description": "Titre de l'écran pour le virement bancaire IBAN du Costa Rica en USD"
   },
   "fundExchangeCrIbanUsdDescription": "Envoyez un virement bancaire depuis votre compte bancaire en utilisant les détails ci-dessous ",
   "@fundExchangeCrIbanUsdDescription": {
@@ -4218,6 +4562,86 @@
   "@swapErrorInsufficientFunds": {
     "description": "Error when transaction cannot be built due to insufficient funds"
   },
+  "swapTransferTitle": "Transfert",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapExternalTransferLabel": "Transfert externe",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "De",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapToLabel": "Vers",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapAmountLabel": "Montant",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapReceiveExactAmountLabel": "Recevoir le montant exact",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Soustraire les frais du montant",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapExternalAddressHint": "Entrez l'adresse du portefeuille externe",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapValidationEnterAmount": "Veuillez entrer un montant",
+  "@swapValidationEnterAmount": {
+    "description": "Validation error when amount is empty"
+  },
+  "swapValidationPositiveAmount": "Entrez un montant positif",
+  "@swapValidationPositiveAmount": {
+    "description": "Validation error when amount is not positive"
+  },
+  "swapValidationInsufficientBalance": "Solde insuffisant",
+  "@swapValidationInsufficientBalance": {
+    "description": "Validation error when amount exceeds wallet balance"
+  },
+  "swapValidationMinimumAmount": "Le montant minimum est {amount} {currency}",
+  "@swapValidationMinimumAmount": {
+    "description": "Validation error when amount is below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationMaximumAmount": "Le montant maximum est {amount} {currency}",
+  "@swapValidationMaximumAmount": {
+    "description": "Validation error when amount exceeds maximum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "swapValidationSelectFromWallet": "Veuillez sélectionner un portefeuille source",
+  "@swapValidationSelectFromWallet": {
+    "description": "Validation error when no source wallet selected"
+  },
+  "swapValidationSelectToWallet": "Veuillez sélectionner un portefeuille de destination",
+  "@swapValidationSelectToWallet": {
+    "description": "Validation error when no destination wallet selected"
+  },
+  "swapDoNotUninstallWarning": "Ne désinstallez pas l'application avant que le transfert ne soit terminé !",
+  "@swapDoNotUninstallWarning": {
+    "description": "Warning message during pending transfer"
+  },
   "pinSecurityTitle": "Code PIN de sécurité",
   "@pinSecurityTitle": {
     "description": "AppBar title for PIN settings screen"
@@ -4339,6 +4763,14 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
+  "autoswapBaseBalanceInfoText": "Le solde de votre portefeuille de paiements instantanés reviendra à ce solde après un échange automatique.",
+  "@autoswapBaseBalanceInfoText": {
+    "description": "Info text explaining what happens to the balance after an autoswap"
+  },
+  "autoswapTriggerAtBalanceInfoText": "L'échange automatique se déclenchera lorsque votre solde dépasse ce montant.",
+  "@autoswapTriggerAtBalanceInfoText": {
+    "description": "Info text explaining when autoswap will trigger"
+  },
   "autoswapMaxFeeLabel": "Frais de Transfert Maximum",
   "@autoswapMaxFeeLabel": {
     "description": "Label for fee threshold percentage input field"
@@ -4396,6 +4828,46 @@
       }
     }
   },
+  "autoswapWarningCardTitle": "Le transfert automatique est activé.",
+  "@autoswapWarningCardTitle": {
+    "description": "Texte du titre affiché sur la carte d'avertissement de transfert automatique sur l'écran d'accueil"
+  },
+  "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
+  "@autoswapWarningCardSubtitle": {
+    "description": "Texte du sous-titre affiché sur la carte d'avertissement de transfert automatique sur l'écran d'accueil"
+  },
+  "autoswapWarningDescription": "Le transfert automatique garantit qu'un bon équilibre est maintenu entre votre portefeuille de paiements instantanés et votre portefeuille Bitcoin sécurisé.",
+  "@autoswapWarningDescription": {
+    "description": "Texte de description en haut de la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
+  "@autoswapWarningTitle": {
+    "description": "Texte du titre dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningBaseBalance": "Solde de base 0,01 BTC",
+  "@autoswapWarningBaseBalance": {
+    "description": "Texte du solde de base affiché dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningTriggerAmount": "Montant de déclenchement de 0,02 BTC",
+  "@autoswapWarningTriggerAmount": {
+    "description": "Texte du montant de déclenchement affiché dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningExplanation": "Lorsque votre solde dépasse le montant de déclenchement, un échange sera déclenché. Le montant de base sera conservé dans votre portefeuille de paiements instantanés et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
+  "@autoswapWarningExplanation": {
+    "description": "Texte d'explication dans la feuille d'avertissement de transfert automatique"
+  },
+  "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
+  "@autoswapWarningDontShowAgain": {
+    "description": "Libellé de la case à cocher pour ignorer l'avertissement de transfert automatique"
+  },
+  "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
+  "@autoswapWarningSettingsLink": {
+    "description": "Texte du lien pour naviguer vers les paramètres de transfert automatique depuis la feuille d'avertissement"
+  },
+  "autoswapWarningOkButton": "OK",
+  "@autoswapWarningOkButton": {
+    "description": "Libellé du bouton OK dans la feuille d'avertissement de transfert automatique"
+  },
   "autoswapLoadSettingsError": "Échec du chargement des paramètres de transfert automatique",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"
@@ -4438,6 +4910,10 @@
         "type": "String"
       }
     }
+  },
+  "autoswapTriggerBalanceError": "Le solde de déclenchement doit être au moins 2x le solde de base",
+  "@autoswapTriggerBalanceError": {
+    "description": "Validation error shown when trigger balance is less than 2x the base balance"
   },
   "arkNoTransactionsYet": "Aucune transaction pour le moment.",
   "@arkNoTransactionsYet": {
@@ -4746,6 +5222,399 @@
         "type": "String"
       }
     }
+  },
+  "arkSendSuccessTitle": "Envoi réussi",
+  "@arkSendSuccessTitle": {
+    "description": "Title shown after successful Ark send transaction"
+  },
+  "arkSendSuccessMessage": "Votre transaction Ark a été effectuée avec succès !",
+  "@arkSendSuccessMessage": {
+    "description": "Success message shown after Ark send transaction completes"
+  },
+  "arkBoardingUnconfirmed": "Embarquement non confirmé",
+  "@arkBoardingUnconfirmed": {
+    "description": "Label for unconfirmed boarding balance in Ark balance breakdown"
+  },
+  "arkBoardingConfirmed": "Embarquement confirmé",
+  "@arkBoardingConfirmed": {
+    "description": "Label for confirmed boarding balance in Ark balance breakdown"
+  },
+  "arkPreconfirmed": "Préconfirmé",
+  "@arkPreconfirmed": {
+    "description": "Label for preconfirmed balance in Ark balance breakdown"
+  },
+  "arkSettled": "Réglé",
+  "@arkSettled": {
+    "description": "Label for settled balance in Ark balance breakdown"
+  },
+  "arkAvailable": "Disponible",
+  "@arkAvailable": {
+    "description": "Label for available balance in Ark balance breakdown"
+  },
+  "arkNoBalanceData": "Aucune donnée de solde disponible",
+  "@arkNoBalanceData": {
+    "description": "Message shown when Ark balance data is not available"
+  },
+  "arkTxPending": "En attente",
+  "@arkTxPending": {
+    "description": "Status label for pending Ark transactions"
+  },
+  "arkTxBoarding": "Embarquement",
+  "@arkTxBoarding": {
+    "description": "Transaction type label for Ark boarding transactions"
+  },
+  "arkTxSettlement": "Règlement",
+  "@arkTxSettlement": {
+    "description": "Transaction type label for Ark settlement transactions"
+  },
+  "arkTxPayment": "Paiement",
+  "@arkTxPayment": {
+    "description": "Transaction type label for Ark payment transactions"
+  },
+  "arkSatsUnit": "sats",
+  "@arkSatsUnit": {
+    "description": "Unit label for satoshis in Ark transaction details"
+  },
+  "bitboxErrorPermissionDenied": "Les autorisations USB sont nécessaires pour se connecter aux appareils BitBox.",
+  "@bitboxErrorPermissionDenied": {
+    "description": "Error when USB permissions are not granted for BitBox"
+  },
+  "bitboxErrorNoDevicesFound": "Aucun appareil BitBox trouvé. Assurez-vous que votre appareil est allumé et connecté via USB.",
+  "@bitboxErrorNoDevicesFound": {
+    "description": "Error when no BitBox devices are detected"
+  },
+  "bitboxErrorMultipleDevicesFound": "Plusieurs appareils BitBox trouvés. Veuillez vous assurer qu'un seul appareil est connecté.",
+  "@bitboxErrorMultipleDevicesFound": {
+    "description": "Error when multiple BitBox devices are connected"
+  },
+  "bitboxErrorDeviceNotFound": "Appareil BitBox introuvable.",
+  "@bitboxErrorDeviceNotFound": {
+    "description": "Error when BitBox device cannot be found"
+  },
+  "bitboxErrorConnectionTypeNotInitialized": "Type de connexion non initialisé.",
+  "@bitboxErrorConnectionTypeNotInitialized": {
+    "description": "Error when connection type is not initialized"
+  },
+  "bitboxErrorNoActiveConnection": "Aucune connexion active à l'appareil BitBox.",
+  "@bitboxErrorNoActiveConnection": {
+    "description": "Error when there is no active connection to BitBox"
+  },
+  "bitboxErrorDeviceMismatch": "Incompatibilité d'appareil détectée.",
+  "@bitboxErrorDeviceMismatch": {
+    "description": "Error when connected device does not match expected device"
+  },
+  "bitboxErrorInvalidMagicBytes": "Format PSBT invalide détecté.",
+  "@bitboxErrorInvalidMagicBytes": {
+    "description": "Error when PSBT has invalid magic bytes"
+  },
+  "bitboxErrorDeviceNotPaired": "Appareil non appairé. Veuillez d'abord compléter le processus d'appairage.",
+  "@bitboxErrorDeviceNotPaired": {
+    "description": "Error when BitBox device is not paired"
+  },
+  "bitboxErrorHandshakeFailed": "Échec de l'établissement de la connexion sécurisée. Veuillez réessayer.",
+  "@bitboxErrorHandshakeFailed": {
+    "description": "Error when handshake with BitBox device fails"
+  },
+  "bitboxErrorOperationTimeout": "L'opération a expiré. Veuillez réessayer.",
+  "@bitboxErrorOperationTimeout": {
+    "description": "Error when BitBox operation times out"
+  },
+  "bitboxErrorConnectionFailed": "Échec de la connexion à l'appareil BitBox. Veuillez vérifier votre connexion.",
+  "@bitboxErrorConnectionFailed": {
+    "description": "Error when connection to BitBox device fails"
+  },
+  "bitboxErrorInvalidResponse": "Réponse invalide de l'appareil BitBox. Veuillez réessayer.",
+  "@bitboxErrorInvalidResponse": {
+    "description": "Error when BitBox returns an invalid response"
+  },
+  "bitboxErrorOperationCancelled": "L'opération a été annulée. Veuillez réessayer.",
+  "@bitboxErrorOperationCancelled": {
+    "description": "Error when BitBox operation is cancelled"
+  },
+  "bitboxActionUnlockDeviceTitle": "Déverrouiller l'appareil BitBox",
+  "@bitboxActionUnlockDeviceTitle": {
+    "description": "Title for unlock device action"
+  },
+  "bitboxActionPairDeviceTitle": "Appairer l'appareil BitBox",
+  "@bitboxActionPairDeviceTitle": {
+    "description": "Title for pair device action"
+  },
+  "bitboxActionImportWalletTitle": "Importer le portefeuille BitBox",
+  "@bitboxActionImportWalletTitle": {
+    "description": "Title for import wallet action"
+  },
+  "bitboxActionSignTransactionTitle": "Signer la transaction",
+  "@bitboxActionSignTransactionTitle": {
+    "description": "Title for sign transaction action"
+  },
+  "bitboxActionVerifyAddressTitle": "Vérifier l'adresse sur BitBox",
+  "@bitboxActionVerifyAddressTitle": {
+    "description": "Title for verify address action"
+  },
+  "bitboxActionUnlockDeviceButton": "Déverrouiller l'appareil",
+  "@bitboxActionUnlockDeviceButton": {
+    "description": "Button text for unlock device"
+  },
+  "bitboxActionPairDeviceButton": "Démarrer l'appairage",
+  "@bitboxActionPairDeviceButton": {
+    "description": "Button text for pair device"
+  },
+  "bitboxActionImportWalletButton": "Démarrer l'importation",
+  "@bitboxActionImportWalletButton": {
+    "description": "Button text for import wallet"
+  },
+  "bitboxActionSignTransactionButton": "Démarrer la signature",
+  "@bitboxActionSignTransactionButton": {
+    "description": "Button text for sign transaction"
+  },
+  "bitboxActionVerifyAddressButton": "Vérifier l'adresse",
+  "@bitboxActionVerifyAddressButton": {
+    "description": "Button text for verify address"
+  },
+  "bitboxActionUnlockDeviceProcessing": "Déverrouillage de l'appareil",
+  "@bitboxActionUnlockDeviceProcessing": {
+    "description": "Processing text for unlock device"
+  },
+  "bitboxActionPairDeviceProcessing": "Appairage de l'appareil",
+  "@bitboxActionPairDeviceProcessing": {
+    "description": "Processing text for pair device"
+  },
+  "bitboxActionImportWalletProcessing": "Importation du portefeuille",
+  "@bitboxActionImportWalletProcessing": {
+    "description": "Processing text for import wallet"
+  },
+  "bitboxActionSignTransactionProcessing": "Signature de la transaction",
+  "@bitboxActionSignTransactionProcessing": {
+    "description": "Processing text for sign transaction"
+  },
+  "bitboxActionVerifyAddressProcessing": "Affichage de l'adresse sur BitBox...",
+  "@bitboxActionVerifyAddressProcessing": {
+    "description": "Processing text for verify address"
+  },
+  "bitboxActionUnlockDeviceSuccess": "Appareil déverrouillé avec succès",
+  "@bitboxActionUnlockDeviceSuccess": {
+    "description": "Success text for unlock device"
+  },
+  "bitboxActionPairDeviceSuccess": "Appareil appairé avec succès",
+  "@bitboxActionPairDeviceSuccess": {
+    "description": "Success text for pair device"
+  },
+  "bitboxActionImportWalletSuccess": "Portefeuille importé avec succès",
+  "@bitboxActionImportWalletSuccess": {
+    "description": "Success text for import wallet"
+  },
+  "bitboxActionSignTransactionSuccess": "Transaction signée avec succès",
+  "@bitboxActionSignTransactionSuccess": {
+    "description": "Success text for sign transaction"
+  },
+  "bitboxActionVerifyAddressSuccess": "Adresse vérifiée avec succès",
+  "@bitboxActionVerifyAddressSuccess": {
+    "description": "Success text for verify address"
+  },
+  "bitboxActionUnlockDeviceSuccessSubtext": "Votre appareil BitBox est maintenant déverrouillé et prêt à être utilisé.",
+  "@bitboxActionUnlockDeviceSuccessSubtext": {
+    "description": "Success subtext for unlock device"
+  },
+  "bitboxActionPairDeviceSuccessSubtext": "Votre appareil BitBox est maintenant appairé et prêt à être utilisé.",
+  "@bitboxActionPairDeviceSuccessSubtext": {
+    "description": "Success subtext for pair device"
+  },
+  "bitboxActionImportWalletSuccessSubtext": "Votre portefeuille BitBox a été importé avec succès.",
+  "@bitboxActionImportWalletSuccessSubtext": {
+    "description": "Success subtext for import wallet"
+  },
+  "bitboxActionSignTransactionSuccessSubtext": "Votre transaction a été signée avec succès.",
+  "@bitboxActionSignTransactionSuccessSubtext": {
+    "description": "Success subtext for sign transaction"
+  },
+  "bitboxActionVerifyAddressSuccessSubtext": "L'adresse a été vérifiée sur votre appareil BitBox.",
+  "@bitboxActionVerifyAddressSuccessSubtext": {
+    "description": "Success subtext for verify address"
+  },
+  "bitboxActionUnlockDeviceProcessingSubtext": "Veuillez entrer votre mot de passe sur l'appareil BitBox...",
+  "@bitboxActionUnlockDeviceProcessingSubtext": {
+    "description": "Processing subtext for unlock device"
+  },
+  "bitboxActionPairDeviceProcessingSubtext": "Veuillez vérifier le code d'appairage sur votre appareil BitBox...",
+  "@bitboxActionPairDeviceProcessingSubtext": {
+    "description": "Processing subtext for pair device"
+  },
+  "bitboxActionImportWalletProcessingSubtext": "Configuration de votre portefeuille en lecture seule...",
+  "@bitboxActionImportWalletProcessingSubtext": {
+    "description": "Processing subtext for import wallet"
+  },
+  "bitboxActionSignTransactionProcessingSubtext": "Veuillez confirmer la transaction sur votre appareil BitBox...",
+  "@bitboxActionSignTransactionProcessingSubtext": {
+    "description": "Processing subtext for sign transaction"
+  },
+  "bitboxActionVerifyAddressProcessingSubtext": "Veuillez confirmer l'adresse sur votre appareil BitBox.",
+  "@bitboxActionVerifyAddressProcessingSubtext": {
+    "description": "Processing subtext for verify address"
+  },
+  "bitboxScreenConnectDevice": "Connectez votre appareil BitBox",
+  "@bitboxScreenConnectDevice": {
+    "description": "Main text when in initial state"
+  },
+  "bitboxScreenScanning": "Recherche d'appareils",
+  "@bitboxScreenScanning": {
+    "description": "Main text when scanning for devices"
+  },
+  "bitboxScreenConnecting": "Connexion au BitBox",
+  "@bitboxScreenConnecting": {
+    "description": "Main text when connecting to device"
+  },
+  "bitboxScreenPairingCode": "Code d'appairage",
+  "@bitboxScreenPairingCode": {
+    "description": "Main text when showing pairing code"
+  },
+  "bitboxScreenEnterPassword": "Entrer le mot de passe",
+  "@bitboxScreenEnterPassword": {
+    "description": "Main text when waiting for password"
+  },
+  "bitboxScreenVerifyAddress": "Vérifier l'adresse",
+  "@bitboxScreenVerifyAddress": {
+    "description": "Main text when showing address verification"
+  },
+  "bitboxScreenActionFailed": "{action} a échoué",
+  "@bitboxScreenActionFailed": {
+    "description": "Main text when action fails",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "bitboxScreenConnectSubtext": "Assurez-vous que votre BitBox02 est déverrouillé et connecté via USB.",
+  "@bitboxScreenConnectSubtext": {
+    "description": "Subtext for initial state"
+  },
+  "bitboxScreenScanningSubtext": "Recherche de votre appareil BitBox...",
+  "@bitboxScreenScanningSubtext": {
+    "description": "Subtext when scanning"
+  },
+  "bitboxScreenConnectingSubtext": "Établissement d'une connexion sécurisée...",
+  "@bitboxScreenConnectingSubtext": {
+    "description": "Subtext when connecting"
+  },
+  "bitboxScreenPairingCodeSubtext": "Vérifiez que ce code correspond à celui affiché sur votre BitBox02, puis confirmez sur l'appareil.",
+  "@bitboxScreenPairingCodeSubtext": {
+    "description": "Subtext when showing pairing code"
+  },
+  "bitboxScreenEnterPasswordSubtext": "Veuillez entrer votre mot de passe sur l'appareil BitBox pour continuer.",
+  "@bitboxScreenEnterPasswordSubtext": {
+    "description": "Subtext when waiting for password"
+  },
+  "bitboxScreenVerifyAddressSubtext": "Comparez cette adresse avec celle affichée sur votre BitBox02",
+  "@bitboxScreenVerifyAddressSubtext": {
+    "description": "Subtext when showing address verification"
+  },
+  "bitboxScreenUnknownError": "Une erreur inconnue s'est produite",
+  "@bitboxScreenUnknownError": {
+    "description": "Fallback error message"
+  },
+  "bitboxScreenWaitingConfirmation": "En attente de confirmation sur BitBox02...",
+  "@bitboxScreenWaitingConfirmation": {
+    "description": "Message shown while waiting for device confirmation"
+  },
+  "bitboxScreenAddressToVerify": "Adresse à vérifier :",
+  "@bitboxScreenAddressToVerify": {
+    "description": "Label for address verification"
+  },
+  "bitboxScreenVerifyOnDevice": "Veuillez vérifier cette adresse sur votre appareil BitBox",
+  "@bitboxScreenVerifyOnDevice": {
+    "description": "Instruction to verify address on device"
+  },
+  "bitboxScreenWalletTypeLabel": "Type de portefeuille :",
+  "@bitboxScreenWalletTypeLabel": {
+    "description": "Label for wallet type selector"
+  },
+  "bitboxScreenSelectWalletType": "Sélectionner le type de portefeuille",
+  "@bitboxScreenSelectWalletType": {
+    "description": "Title for wallet type selection modal"
+  },
+  "bitboxScreenSegwitBip84": "Segwit (BIP84)",
+  "@bitboxScreenSegwitBip84": {
+    "description": "Script type display name for BIP84"
+  },
+  "bitboxScreenSegwitBip84Subtitle": "Native SegWit - Recommandé",
+  "@bitboxScreenSegwitBip84Subtitle": {
+    "description": "Subtitle for BIP84 option"
+  },
+  "bitboxScreenNestedSegwitBip49": "Nested Segwit (BIP49)",
+  "@bitboxScreenNestedSegwitBip49": {
+    "description": "Script type display name for BIP49"
+  },
+  "bitboxScreenNestedSegwitBip49Subtitle": "P2WPKH-nested-in-P2SH",
+  "@bitboxScreenNestedSegwitBip49Subtitle": {
+    "description": "Subtitle for BIP49 option"
+  },
+  "bitboxScreenTroubleshootingTitle": "Dépannage BitBox02",
+  "@bitboxScreenTroubleshootingTitle": {
+    "description": "Title for troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingSubtitle": "Tout d'abord, assurez-vous que votre appareil BitBox02 est connecté au port USB de votre téléphone. Si votre appareil ne se connecte toujours pas à l'application, essayez ce qui suit :",
+  "@bitboxScreenTroubleshootingSubtitle": {
+    "description": "Subtitle for troubleshooting instructions"
+  },
+  "bitboxScreenTroubleshootingStep1": "Assurez-vous d'avoir le dernier firmware installé sur votre BitBox.",
+  "@bitboxScreenTroubleshootingStep1": {
+    "description": "Troubleshooting step 1"
+  },
+  "bitboxScreenTroubleshootingStep2": "Assurez-vous que les permissions USB sont activées sur votre téléphone.",
+  "@bitboxScreenTroubleshootingStep2": {
+    "description": "Troubleshooting step 2"
+  },
+  "bitboxScreenTroubleshootingStep3": "Redémarrez votre appareil BitBox02 en le débranchant et en le reconnectant.",
+  "@bitboxScreenTroubleshootingStep3": {
+    "description": "Troubleshooting step 3"
+  },
+  "bitboxScreenTryAgainButton": "Réessayer",
+  "@bitboxScreenTryAgainButton": {
+    "description": "Button to retry failed action"
+  },
+  "bitboxScreenManagePermissionsButton": "Gérer les permissions de l'application",
+  "@bitboxScreenManagePermissionsButton": {
+    "description": "Button to open app permissions settings"
+  },
+  "bitboxScreenNeedHelpButton": "Besoin d'aide ?",
+  "@bitboxScreenNeedHelpButton": {
+    "description": "Button to show help instructions"
+  },
+  "bitboxScreenDefaultWalletLabel": "Portefeuille BitBox",
+  "@bitboxScreenDefaultWalletLabel": {
+    "description": "Default label for imported BitBox wallet"
+  },
+  "bitboxCubitPermissionDenied": "Permission USB refusée. Veuillez accorder la permission pour accéder à votre appareil BitBox.",
+  "@bitboxCubitPermissionDenied": {
+    "description": "Error interpretation for permission denied"
+  },
+  "bitboxCubitDeviceNotFound": "Aucun appareil BitBox trouvé. Veuillez connecter votre appareil et réessayer.",
+  "@bitboxCubitDeviceNotFound": {
+    "description": "Error interpretation for device not found"
+  },
+  "bitboxCubitDeviceNotPaired": "Appareil non appairé. Veuillez d'abord compléter le processus d'appairage.",
+  "@bitboxCubitDeviceNotPaired": {
+    "description": "Error interpretation for device not paired"
+  },
+  "bitboxCubitHandshakeFailed": "Échec de l'établissement d'une connexion sécurisée. Veuillez réessayer.",
+  "@bitboxCubitHandshakeFailed": {
+    "description": "Error interpretation for handshake failure"
+  },
+  "bitboxCubitOperationTimeout": "L'opération a expiré. Veuillez réessayer.",
+  "@bitboxCubitOperationTimeout": {
+    "description": "Error interpretation for timeout"
+  },
+  "bitboxCubitConnectionFailed": "Échec de la connexion à l'appareil BitBox. Veuillez vérifier votre connexion.",
+  "@bitboxCubitConnectionFailed": {
+    "description": "Error interpretation for connection failure"
+  },
+  "bitboxCubitInvalidResponse": "Réponse invalide de l'appareil BitBox. Veuillez réessayer.",
+  "@bitboxCubitInvalidResponse": {
+    "description": "Error interpretation for invalid response"
+  },
+  "bitboxCubitOperationCancelled": "L'opération a été annulée. Veuillez réessayer.",
+  "@bitboxCubitOperationCancelled": {
+    "description": "Error interpretation for cancelled operation"
   },
   "advancedOptionsTitle": "Options avancées",
   "@advancedOptionsTitle": {
@@ -5068,10 +5937,6 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-  "payInsufficientBalance": "Solde insuffisant",
-  "@payInsufficientBalance": {
-    "description": "Error message when wallet balance is too low for payment"
-  },
   "payNetworkError": "Erreur réseau. Veuillez réessayer",
   "@payNetworkError": {
     "description": "Error message for network connectivity issues during payment"
@@ -5104,14 +5969,6 @@
   "@payEnterInvoice": {
     "description": "Placeholder text for invoice input field"
   },
-  "payAmount": "Montant",
-  "@payAmount": {
-    "description": "Label for payment amount field"
-  },
-  "payFee": "Frais",
-  "@payFee": {
-    "description": "Label for payment fee field"
-  },
   "payTotal": "Total",
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
@@ -5119,10 +5976,6 @@
   "payDescription": "Description",
   "@payDescription": {
     "description": "Label for payment description/memo field"
-  },
-  "payRecipient": "Destinataire",
-  "@payRecipient": {
-    "description": "Label for payment recipient field"
   },
   "payCancelPayment": "Annuler le Paiement",
   "@payCancelPayment": {
@@ -5762,6 +6615,229 @@
         "type": "String"
       }
     }
+  },
+  "sendSwapId": "ID d'échange",
+  "@sendSwapId": {
+    "description": "Label for swap identifier in transaction details"
+  },
+  "sendSendAmount": "Montant envoyé",
+  "@sendSendAmount": {
+    "description": "Label for amount being sent in swap"
+  },
+  "sendReceiveAmount": "Montant reçu",
+  "@sendReceiveAmount": {
+    "description": "Label for amount being received in swap"
+  },
+  "sendSendNetworkFee": "Frais de réseau d'envoi",
+  "@sendSendNetworkFee": {
+    "description": "Label for network fee on send side of swap"
+  },
+  "sendTransferFee": "Frais de transfert",
+  "@sendTransferFee": {
+    "description": "Label for total swap transfer fee"
+  },
+  "sendTransferFeeDescription": "Il s'agit des frais totaux déduits du montant envoyé",
+  "@sendTransferFeeDescription": {
+    "description": "Explanation of what the transfer fee represents"
+  },
+  "sendReceiveNetworkFee": "Frais de réseau de réception",
+  "@sendReceiveNetworkFee": {
+    "description": "Label for network fee on receive side"
+  },
+  "sendServerNetworkFees": "Frais de réseau du serveur",
+  "@sendServerNetworkFees": {
+    "description": "Label for Boltz server fees"
+  },
+  "sendConfirmSend": "Confirmer l'envoi",
+  "@sendConfirmSend": {
+    "description": "Title for send confirmation screen"
+  },
+  "sendSending": "Envoi en cours",
+  "@sendSending": {
+    "description": "Title shown while transaction is being sent"
+  },
+  "sendBroadcastingTransaction": "Diffusion de la transaction.",
+  "@sendBroadcastingTransaction": {
+    "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendSwapInProgressInvoice": "L'échange est en cours. La facture sera payée dans quelques secondes.",
+  "@sendSwapInProgressInvoice": {
+    "description": "Message for Liquid swap in progress"
+  },
+  "sendSwapInProgressBitcoin": "L'échange est en cours. Les transactions Bitcoin peuvent prendre du temps à confirmer. Vous pouvez retourner à l'accueil et attendre.",
+  "@sendSwapInProgressBitcoin": {
+    "description": "Message for Bitcoin swap in progress"
+  },
+  "sendSwapRefundInProgress": "Remboursement d'échange en cours",
+  "@sendSwapRefundInProgress": {
+    "description": "Title when swap failed and refund is processing"
+  },
+  "sendSwapFailed": "L'échange a échoué. Votre remboursement sera traité sous peu.",
+  "@sendSwapFailed": {
+    "description": "Message explaining swap failure and refund"
+  },
+  "sendSwapRefundCompleted": "Remboursement d'échange terminé",
+  "@sendSwapRefundCompleted": {
+    "description": "Title when refund has completed"
+  },
+  "sendRefundProcessed": "Votre remboursement a été traité.",
+  "@sendRefundProcessed": {
+    "description": "Message confirming refund completion"
+  },
+  "sendInvoicePaid": "Facture payée",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "sendPaymentProcessing": "Le paiement est en cours de traitement. Cela peut prendre jusqu'à une minute",
+  "@sendPaymentProcessing": {
+    "description": "Message while payment processes"
+  },
+  "sendPaymentWillTakeTime": "Le paiement prendra du temps",
+  "@sendPaymentWillTakeTime": {
+    "description": "Title warning of delayed payment"
+  },
+  "sendSwapInitiated": "Échange initié",
+  "@sendSwapInitiated": {
+    "description": "Title when chain swap begins"
+  },
+  "sendSwapWillTakeTime": "Cela prendra du temps à confirmer",
+  "@sendSwapWillTakeTime": {
+    "description": "Message warning swap confirmation takes time"
+  },
+  "sendSuccessfullySent": "Envoyé avec succès",
+  "@sendSuccessfullySent": {
+    "description": "Title for successful send completion"
+  },
+  "sendViewDetails": "Voir les détails",
+  "@sendViewDetails": {
+    "description": "Button to view transaction details"
+  },
+  "sendShowPsbt": "Afficher PSBT",
+  "@sendShowPsbt": {
+    "description": "Button to display PSBT for external signing"
+  },
+  "sendSignWithLedger": "Signer avec Ledger",
+  "@sendSignWithLedger": {
+    "description": "Button to sign transaction with Ledger hardware wallet"
+  },
+  "sendSignWithBitBox": "Signer avec BitBox",
+  "@sendSignWithBitBox": {
+    "description": "Button to sign transaction with BitBox hardware wallet"
+  },
+  "sendTransactionSignedLedger": "Transaction signée avec succès avec Ledger",
+  "@sendTransactionSignedLedger": {
+    "description": "Success message after Ledger signing"
+  },
+  "sendHighFeeWarningDescription": "Les frais totaux représentent {feePercent}% du montant que vous envoyez",
+  "@sendHighFeeWarningDescription": {
+    "description": "Warning message showing fee as percentage of send amount",
+    "placeholders": {
+      "feePercent": {
+        "type": "String"
+      }
+    }
+  },
+  "sendEnterAbsoluteFee": "Entrer les frais absolus en sats",
+  "@sendEnterAbsoluteFee": {
+    "description": "Placeholder for absolute fee input field"
+  },
+  "sendEnterRelativeFee": "Entrer les frais relatifs en sats/vB",
+  "@sendEnterRelativeFee": {
+    "description": "Placeholder for relative fee rate input field"
+  },
+  "sendErrorArkExperimentalOnly": "Les demandes de paiement ARK ne sont disponibles que depuis la fonctionnalité expérimentale Ark.",
+  "@sendErrorArkExperimentalOnly": {
+    "description": "Error when ARK payment is attempted without experimental feature enabled"
+  },
+  "sendErrorSwapCreationFailed": "Échec de la création de l'échange.",
+  "@sendErrorSwapCreationFailed": {
+    "description": "Error when swap creation fails"
+  },
+  "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
+  "@sendErrorInsufficientBalanceForPayment": {
+    "description": "Error when wallet balance is insufficient for payment"
+  },
+  "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
+  "@sendErrorInvalidAddressOrInvoice": {
+    "description": "Error when payment request is invalid"
+  },
+  "sendErrorBuildFailed": "Échec de la construction",
+  "@sendErrorBuildFailed": {
+    "description": "Error title when transaction build fails"
+  },
+  "sendErrorConfirmationFailed": "Échec de la confirmation",
+  "@sendErrorConfirmationFailed": {
+    "description": "Error title when transaction confirmation fails"
+  },
+  "sendErrorInsufficientBalanceForSwap": "Solde insuffisant pour payer cet échange via Liquid et hors des limites d'échange pour payer via Bitcoin.",
+  "@sendErrorInsufficientBalanceForSwap": {
+    "description": "Error when balance insufficient for swap through either network"
+  },
+  "sendErrorAmountBelowSwapLimits": "Le montant est inférieur aux limites d'échange",
+  "@sendErrorAmountBelowSwapLimits": {
+    "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountAboveSwapLimits": "Le montant est supérieur aux limites d'échange",
+  "@sendErrorAmountAboveSwapLimits": {
+    "description": "Error when amount exceeds maximum swap limit"
+  },
+  "sendErrorAmountBelowMinimum": "Montant inférieur à la limite d'échange minimale : {minLimit} sats",
+  "@sendErrorAmountBelowMinimum": {
+    "description": "Error with specific minimum swap amount",
+    "placeholders": {
+      "minLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorAmountAboveMaximum": "Montant supérieur à la limite d'échange maximale : {maxLimit} sats",
+  "@sendErrorAmountAboveMaximum": {
+    "description": "Error with specific maximum swap amount",
+    "placeholders": {
+      "maxLimit": {
+        "type": "String"
+      }
+    }
+  },
+  "sendErrorSwapFeesNotLoaded": "Frais d'échange non chargés",
+  "@sendErrorSwapFeesNotLoaded": {
+    "description": "Error when swap fee information is unavailable"
+  },
+  "sendErrorInsufficientFundsForFees": "Fonds insuffisants pour couvrir le montant et les frais",
+  "@sendErrorInsufficientFundsForFees": {
+    "description": "Error when wallet cannot cover transaction amount plus fees"
+  },
+  "sendErrorBroadcastFailed": "Échec de la diffusion de la transaction. Vérifiez votre connexion réseau et réessayez.",
+  "@sendErrorBroadcastFailed": {
+    "description": "Error when transaction broadcast fails"
+  },
+  "sendErrorBalanceTooLowForMinimum": "Solde trop bas pour le montant d'échange minimum",
+  "@sendErrorBalanceTooLowForMinimum": {
+    "description": "Error when balance is below minimum required for swap"
+  },
+  "sendErrorAmountExceedsMaximum": "Le montant dépasse le montant d'échange maximum",
+  "@sendErrorAmountExceedsMaximum": {
+    "description": "Error when amount is above maximum allowed for swap"
+  },
+  "sendErrorLiquidWalletRequired": "Un portefeuille Liquid doit être utilisé pour un échange de liquid vers lightning",
+  "@sendErrorLiquidWalletRequired": {
+    "description": "Error when wrong wallet type used for Liquid to Lightning swap"
+  },
+  "sendErrorBitcoinWalletRequired": "Un portefeuille Bitcoin doit être utilisé pour un échange de bitcoin vers lightning",
+  "@sendErrorBitcoinWalletRequired": {
+    "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
+  },
+  "sendErrorInsufficientFundsForPayment": "Fonds insuffisants disponibles pour effectuer ce paiement.",
+  "@sendErrorInsufficientFundsForPayment": {
+    "description": "Error when insufficient funds available"
+  },
+  "sendTypeSend": "Envoyer",
+  "@sendTypeSend": {
+    "description": "Send type name for Bitcoin/Liquid transactions"
+  },
+  "sendTypeSwap": "Échanger",
+  "@sendTypeSwap": {
+    "description": "Send type name for Lightning swap transactions"
   },
   "sellAmount": "Montant à vendre",
   "@sellAmount": {
@@ -6498,10 +7574,6 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "testBackupTitle": "Tester votre portefeuille",
-  "@testBackupTitle": {
-    "description": "AppBar title for test backup options screen"
-  },
   "testBackupWalletTitle": "Tester {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
@@ -6772,6 +7844,31 @@
       }
     }
   },
+  "recoverbullGoogleDriveCancelButton": "Annuler",
+  "@recoverbullGoogleDriveCancelButton": {
+    "description": "Cancel button text for delete confirmation dialog"
+  },
+  "recoverbullGoogleDriveDeleteButton": "Supprimer",
+  "@recoverbullGoogleDriveDeleteButton": {
+    "description": "Delete button text for vault backup"
+  },
+  "recoverbullGoogleDriveDeleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette sauvegarde de coffre-fort ? Cette action ne peut pas être annulée.",
+  "@recoverbullGoogleDriveDeleteConfirmation": {
+    "description": "Confirmation message for deleting a vault backup"
+  },
+  "recoverbullGoogleDriveDeleteVaultTitle": "Supprimer le coffre-fort",
+  "@recoverbullGoogleDriveDeleteVaultTitle": {
+    "description": "Title for delete vault confirmation dialog"
+  },
+  "recoverbullGoogleDriveErrorDisplay": "Erreur : {error}",
+  "@recoverbullGoogleDriveErrorDisplay": {
+    "description": "Error message display format",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "recoverbullBalance": "Solde : {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",
@@ -6927,6 +8024,10 @@
   "@recoverbullErrorUnexpected": {
     "description": "Error message for unexpected errors"
   },
+  "recoverbullUnexpectedError": "Erreur inattendue",
+  "@recoverbullUnexpectedError": {
+    "description": "Short unexpected error message"
+  },
   "recoverbullErrorSelectVault": "Échec de la sélection du coffre-fort",
   "@recoverbullErrorSelectVault": {
     "description": "Error message when vault selection fails"
@@ -7025,6 +8126,38 @@
         "type": "String"
       }
     }
+  },
+  "recoverbullGoogleDriveErrorDeleteFailed": "Échec de la suppression du coffre-fort de Google Drive",
+  "@recoverbullGoogleDriveErrorDeleteFailed": {
+    "description": "Error message when deleting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorExportFailed": "Échec de l'exportation du coffre-fort de Google Drive",
+  "@recoverbullGoogleDriveErrorExportFailed": {
+    "description": "Error message when exporting a drive backup fails"
+  },
+  "recoverbullGoogleDriveErrorFetchFailed": "Échec de la récupération des coffres-forts de Google Drive",
+  "@recoverbullGoogleDriveErrorFetchFailed": {
+    "description": "Error message when fetching drive backups fails"
+  },
+  "recoverbullGoogleDriveErrorGeneric": "Une erreur s'est produite. Veuillez réessayer.",
+  "@recoverbullGoogleDriveErrorGeneric": {
+    "description": "Generic error message for unknown errors"
+  },
+  "recoverbullGoogleDriveErrorSelectFailed": "Échec de la sélection du coffre-fort de Google Drive",
+  "@recoverbullGoogleDriveErrorSelectFailed": {
+    "description": "Error message when selecting/loading a drive backup fails"
+  },
+  "recoverbullGoogleDriveExportButton": "Exporter",
+  "@recoverbullGoogleDriveExportButton": {
+    "description": "Export button text for vault backup"
+  },
+  "recoverbullGoogleDriveNoBackupsFound": "Aucune sauvegarde trouvée",
+  "@recoverbullGoogleDriveNoBackupsFound": {
+    "description": "Message displayed when no backups are found in Google Drive"
+  },
+  "recoverbullGoogleDriveScreenTitle": "Coffres-forts Google Drive",
+  "@recoverbullGoogleDriveScreenTitle": {
+    "description": "Screen title for Google Drive vaults management"
   },
   "recoverbullRecoverBullServer": "Serveur RecoverBull",
   "@recoverbullRecoverBullServer": {
@@ -8439,6 +9572,10 @@
   "@importQrDeviceJadeStep10": {
     "description": "Jade instruction step 10"
   },
+  "importQrDeviceJadeFirmwareWarning": "Assurez-vous que votre appareil est mis à jour avec le dernier firmware",
+  "@importQrDeviceJadeFirmwareWarning": {
+    "description": "Warning message to update Jade firmware"
+  },
   "importQrDeviceKruxName": "Krux",
   "@importQrDeviceKruxName": {
     "description": "Name of Krux device"
@@ -8483,25 +9620,37 @@
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Cliquez sur les 3 points en haut à droite",
+  "importQrDeviceKeystoneStep2": "Entrez votre code PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Sélectionnez Connecter un Portefeuille Logiciel",
+  "importQrDeviceKeystoneStep3": "Cliquez sur les trois points en haut à droite",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Cliquez sur le bouton \"ouvrir la caméra\"",
+  "importQrDeviceKeystoneStep4": "Sélectionnez Connecter un Portefeuille Logiciel",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Scannez le code QR affiché sur votre appareil.",
+  "importQrDeviceKeystoneStep5": "Choisissez l'option portefeuille BULL",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "C'est fait !",
+  "importQrDeviceKeystoneStep6": "Sur votre appareil mobile, appuyez sur Ouvrir la Caméra",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
+  },
+  "importQrDeviceKeystoneStep7": "Scannez le code QR affiché sur votre Keystone",
+  "@importQrDeviceKeystoneStep7": {
+    "description": "Keystone instruction step 7"
+  },
+  "importQrDeviceKeystoneStep8": "Entrez une étiquette pour votre portefeuille Keystone et appuyez sur Importer",
+  "@importQrDeviceKeystoneStep8": {
+    "description": "Keystone instruction step 8"
+  },
+  "importQrDeviceKeystoneStep9": "La configuration est terminée",
+  "@importQrDeviceKeystoneStep9": {
+    "description": "Keystone instruction step 9"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {
@@ -8867,9 +10016,15 @@
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
-      "amount": {},
-      "frequency": {},
-      "network": {}
+      "amount": {
+        "type": "String"
+      },
+      "frequency": {
+        "type": "String"
+      },
+      "network": {
+        "type": "String"
+      }
     }
   },
   "exchangeAuthLoginFailed": "Échec de la connexion",
@@ -8968,7 +10123,9 @@
   "@withdrawConfirmError": {
     "description": "Error message on confirmation screen",
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "fundExchangeFundAccount": "Financer votre compte",
@@ -9063,7 +10220,9 @@
   "@dcaConfirmPaymentBalance": {
     "description": "Payment method balance format",
     "placeholders": {
-      "currency": {}
+      "currency": {
+        "type": "String"
+      }
     }
   },
   "dcaConfirmOrderType": "Type de commande",
@@ -9098,7 +10257,9 @@
   "@dcaConfirmError": {
     "description": "DCA confirmation error message",
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "dcaConfirmContinue": "Continuer",
@@ -9168,14 +10329,6 @@
   "buyConfirmExternalWallet": "Portefeuille Bitcoin externe",
   "@buyConfirmExternalWallet": {
     "description": "External wallet payout method"
-  },
-  "buyConfirmSecureWallet": "Portefeuille Bitcoin sécurisé",
-  "@buyConfirmSecureWallet": {
-    "description": "Secure wallet payout method"
-  },
-  "buyConfirmInstantWallet": "Portefeuille de paiement instantané",
-  "@buyConfirmInstantWallet": {
-    "description": "Instant payment wallet payout method"
   },
   "buyConfirmAwaitingConfirmation": "En attente de confirmation ",
   "@buyConfirmAwaitingConfirmation": {
@@ -9417,7 +10570,9 @@
   "@autoswapSaveError": {
     "description": "Error message when save fails",
     "placeholders": {
-      "error": {}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "electrumTitle": "Paramètres du serveur Electrum",
@@ -9448,8 +10603,12 @@
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
-      "network": {},
-      "environment": {}
+      "network": {
+        "type": "String"
+      },
+      "environment": {
+        "type": "String"
+      }
     }
   },
   "electrumMainnet": "Mainnet",
@@ -9524,7 +10683,9 @@
   "@electrumStopGapTooHighError": {
     "description": "Validation error for Stop Gap exceeding maximum",
     "placeholders": {
-      "maxStopGap": {}
+      "maxStopGap": {
+        "type": "String"
+      }
     }
   },
   "electrumTimeoutEmptyError": "Le délai d'attente ne peut pas être vide",
@@ -9539,7 +10700,9 @@
   "@electrumTimeoutTooHighError": {
     "description": "Validation error for Timeout exceeding maximum",
     "placeholders": {
-      "maxTimeout": {}
+      "maxTimeout": {
+        "type": "String"
+      }
     }
   },
   "electrumRetryCountEmptyError": "Le nombre de tentatives ne peut pas être vide",
@@ -9554,29 +10717,39 @@
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
-      "timeoutValue": {},
-      "recommended": {}
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidStopGapError": "Valeur d'écart d'arrêt invalide : {value}",
   "@electrumInvalidStopGapError": {
     "description": "Error message for invalid Stop Gap value from backend",
     "placeholders": {
-      "value": {}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidTimeoutError": "Valeur de délai d'attente invalide : {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
-      "value": {}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumInvalidRetryError": "Valeur de nombre de tentatives invalide : {value}",
   "@electrumInvalidRetryError": {
     "description": "Error message for invalid Retry Count value from backend",
     "placeholders": {
-      "value": {}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "electrumSaveFailedError": "Échec de l'enregistrement des options avancées",
@@ -9607,7 +10780,9 @@
   "@electrumDeleteConfirmation": {
     "description": "Confirmation message for server deletion",
     "placeholders": {
-      "serverUrl": {}
+      "serverUrl": {
+        "type": "String"
+      }
     }
   },
   "electrumCancel": "Annuler",
@@ -9633,10 +10808,6 @@
   "electrumDragToReorder": "(Appuyez longuement pour faire glisser et changer la priorité)",
   "@electrumDragToReorder": {
     "description": "Instruction text for reordering servers"
-  },
-  "electrumAddCustomServer": "Ajouter un serveur personnalisé",
-  "@electrumAddCustomServer": {
-    "description": "Button label to add a custom server"
   },
   "electrumLoadFailedError": "Échec du chargement des serveurs{reason}",
   "@electrumLoadFailedError": {
@@ -9790,7 +10961,9 @@
   "@arkAboutDustValue": {
     "description": "Dust value format",
     "placeholders": {
-      "dust": {}
+      "dust": {
+        "type": "int"
+      }
     }
   },
   "arkAboutSessionDuration": "Durée de la session",
@@ -9817,65 +10990,77 @@
   "@arkAboutCopiedMessage": {
     "description": "Snackbar message when field copied",
     "placeholders": {
-      "label": {}
+      "label": {
+        "type": "String"
+      }
     }
   },
   "arkAboutDurationSeconds": "{seconds} secondes",
   "@arkAboutDurationSeconds": {
     "description": "Duration format for seconds",
     "placeholders": {
-      "seconds": {}
+      "seconds": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationMinute": "{minutes} minute",
   "@arkAboutDurationMinute": {
     "description": "Duration format for singular minute",
     "placeholders": {
-      "minutes": {}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationMinutes": "{minutes} minutes",
   "@arkAboutDurationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
-      "minutes": {}
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationHour": "{hours} heure",
   "@arkAboutDurationHour": {
     "description": "Duration format for singular hour",
     "placeholders": {
-      "hours": {}
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationHours": "{hours} heures",
   "@arkAboutDurationHours": {
     "description": "Duration format for plural hours",
     "placeholders": {
-      "hours": {}
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationDay": "{days} jour",
   "@arkAboutDurationDay": {
     "description": "Duration format for singular day",
     "placeholders": {
-      "days": {}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "arkAboutDurationDays": "{days} jours",
   "@arkAboutDurationDays": {
     "description": "Duration format for plural days",
     "placeholders": {
-      "days": {}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "arkSendRecipientTitle": "Envoyer au destinataire",
   "@arkSendRecipientTitle": {
     "description": "Title for the ark send recipient page"
-  },
-  "arkSendRecipientHint": "Entrez une adresse de paiement ou une facture",
-  "@arkSendRecipientHint": {
-    "description": "Hint text for recipient address input field"
   },
   "arkSendRecipientError": "Veuillez entrer un destinataire",
   "@arkSendRecipientError": {
@@ -10253,6 +11438,10 @@
   "@exchangeFeatureUnifiedHistory": {
     "description": "Feature bullet point describing unified transaction history feature"
   },
+  "priceChartFetchingHistory": "Récupération de l'historique des prix...",
+  "@priceChartFetchingHistory": {
+    "description": "Message shown while fetching price history when no local data is available"
+  },
   "exchangeLandingDisclaimerLegal": "L'accès aux services d'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -10288,6 +11477,34 @@
   "exchangeHomeWithdrawButton": "Retrait",
   "@exchangeHomeWithdrawButton": {
     "description": "Button label for withdrawing funds from the exchange"
+  },
+  "exchangeSupportChatTitle": "Chat de Support",
+  "@exchangeSupportChatTitle": {
+    "description": "Title for the support chat screen"
+  },
+  "exchangeSupportChatEmptyState": "Aucun message pour le moment. Commencez une conversation !",
+  "@exchangeSupportChatEmptyState": {
+    "description": "Message shown when there are no chat messages"
+  },
+  "exchangeSupportChatInputHint": "Tapez un message...",
+  "@exchangeSupportChatInputHint": {
+    "description": "Placeholder text for the message input field"
+  },
+  "exchangeSupportChatMessageRequired": "Un message est requis",
+  "@exchangeSupportChatMessageRequired": {
+    "description": "Placeholder text when attachments are present but no message text"
+  },
+  "exchangeSupportChatMessageEmptyError": "Le message ne peut pas être vide",
+  "@exchangeSupportChatMessageEmptyError": {
+    "description": "Error message when trying to send an empty message"
+  },
+  "exchangeSupportChatYesterday": "Hier",
+  "@exchangeSupportChatYesterday": {
+    "description": "Label for yesterday in date formatting"
+  },
+  "exchangeSupportChatWalletIssuesInfo": "Ce chat est uniquement pour les problèmes liés à l'échange dans Funding/Achat/Vente/Retrait/Paiement.\nPour les problèmes liés au portefeuille, rejoignez le groupe Telegram en cliquant ici.",
+  "@exchangeSupportChatWalletIssuesInfo": {
+    "description": "Info message about wallet issues and telegram group link"
   },
   "exchangeDcaUnableToGetConfig": "Impossible d'obtenir la configuration DCA",
   "@exchangeDcaUnableToGetConfig": {
@@ -10374,12 +11591,10 @@
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
       "frequency": {
-        "type": "String",
-        "description": "The purchase frequency (e.g., 'day', 'week')"
+        "type": "String"
       },
       "network": {
-        "type": "String",
-        "description": "The network being used (e.g., 'Bitcoin Network')"
+        "type": "String"
       }
     }
   },
@@ -10570,5 +11785,386 @@
   "delete": "Supprimer",
   "@delete": {
     "description": "Generic delete button label"
+  },
+  "statusCheckTitle": "État des Services",
+  "@statusCheckTitle": {
+    "description": "Title for the service status screen"
+  },
+  "statusCheckLastChecked": "Dernière vérification : {time}",
+  "@statusCheckLastChecked": {
+    "description": "Label showing when services were last checked",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "statusCheckOnline": "En ligne",
+  "@statusCheckOnline": {
+    "description": "Status text when a service is online"
+  },
+  "statusCheckOffline": "Hors ligne",
+  "@statusCheckOffline": {
+    "description": "Status text when a service is offline"
+  },
+  "statusCheckUnknown": "Inconnu",
+  "@statusCheckUnknown": {
+    "description": "Status text when service status is unknown"
+  },
+  "torSettingsTitle": "Paramètres Tor",
+  "@torSettingsTitle": {
+    "description": "AppBar title for the Tor settings screen"
+  },
+  "torSettingsEnableProxy": "Activer le proxy Tor",
+  "@torSettingsEnableProxy": {
+    "description": "Label for the toggle to enable/disable Tor proxy"
+  },
+  "torSettingsProxyPort": "Port du proxy Tor",
+  "@torSettingsProxyPort": {
+    "description": "Title for Tor proxy port settings"
+  },
+  "torSettingsPortDisplay": "Port : {port}",
+  "@torSettingsPortDisplay": {
+    "description": "Display text showing current port number",
+    "placeholders": {
+      "port": {
+        "type": "int"
+      }
+    }
+  },
+  "torSettingsPortNumber": "Numéro de port",
+  "@torSettingsPortNumber": {
+    "description": "Label for port number input field"
+  },
+  "torSettingsPortHint": "9050",
+  "@torSettingsPortHint": {
+    "description": "Hint text for port input showing default value"
+  },
+  "torSettingsPortHelper": "Port Orbot par défaut : 9050",
+  "@torSettingsPortHelper": {
+    "description": "Helper text explaining default Orbot port"
+  },
+  "torSettingsPortValidationEmpty": "Veuillez entrer un numéro de port",
+  "@torSettingsPortValidationEmpty": {
+    "description": "Validation error when port is empty"
+  },
+  "torSettingsPortValidationInvalid": "Veuillez entrer un nombre valide",
+  "@torSettingsPortValidationInvalid": {
+    "description": "Validation error when port is not a valid number"
+  },
+  "torSettingsPortValidationRange": "Le port doit être entre 1 et 65535",
+  "@torSettingsPortValidationRange": {
+    "description": "Validation error when port is out of valid range"
+  },
+  "torSettingsSaveButton": "Enregistrer",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "torSettingsConnectionStatus": "État de connexion",
+  "@torSettingsConnectionStatus": {
+    "description": "Title for connection status card"
+  },
+  "torSettingsStatusConnected": "Connecté",
+  "@torSettingsStatusConnected": {
+    "description": "Status title when Tor is connected"
+  },
+  "torSettingsStatusConnecting": "Connexion en cours...",
+  "@torSettingsStatusConnecting": {
+    "description": "Status title when Tor is connecting"
+  },
+  "torSettingsStatusDisconnected": "Déconnecté",
+  "@torSettingsStatusDisconnected": {
+    "description": "Status title when Tor is disconnected"
+  },
+  "torSettingsStatusUnknown": "État inconnu",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "torSettingsDescConnected": "Le proxy Tor est actif et prêt",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescConnecting": "Établissement de la connexion Tor",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "torSettingsDescDisconnected": "Le proxy Tor n'est pas actif",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "torSettingsDescUnknown": "Impossible de déterminer l'état de Tor. Assurez-vous qu'Orbot est installé et en cours d'exécution.",
+  "@torSettingsDescUnknown": {
+    "description": "Description when Tor status is unknown"
+  },
+  "torSettingsInfoTitle": "Informations importantes",
+  "@torSettingsInfoTitle": {
+    "description": "Title for the Tor information card"
+  },
+  "torSettingsInfoDescription": "• Le proxy Tor s'applique uniquement à Bitcoin (pas Liquid)\n• Le port Orbot par défaut est 9050\n• Assurez-vous qu'Orbot est en cours d'exécution avant d'activer\n• La connexion peut être plus lente via Tor",
+  "@torSettingsInfoDescription": {
+    "description": "Information about Tor proxy usage"
+  },
+  "withdrawSuccessTitle": "Retrait initié",
+  "@withdrawSuccessTitle": {
+    "description": "Title shown when withdrawal is successfully initiated"
+  },
+  "withdrawSuccessOrderDetails": "Détails de la commande",
+  "@withdrawSuccessOrderDetails": {
+    "description": "Button label to view order details after withdrawal"
+  },
+  "withdrawConfirmBankAccount": "Compte bancaire",
+  "@withdrawConfirmBankAccount": {
+    "description": "Default label for bank account in confirmation screen"
+  },
+  "withdrawOwnershipQuestion": "À qui appartient ce compte ?",
+  "@withdrawOwnershipQuestion": {
+    "description": "Question asking about account ownership"
+  },
+  "withdrawOwnershipMyAccount": "C'est mon compte",
+  "@withdrawOwnershipMyAccount": {
+    "description": "Option indicating the account belongs to the user"
+  },
+  "withdrawOwnershipOtherAccount": "C'est le compte de quelqu'un d'autre",
+  "@withdrawOwnershipOtherAccount": {
+    "description": "Option indicating the account belongs to someone else"
+  },
+  "walletAutoTransferBlockedTitle": "Transfert automatique bloqué",
+  "@walletAutoTransferBlockedTitle": {
+    "description": "Title for auto-swap fee warning when fees exceed threshold"
+  },
+  "walletAutoTransferBlockedMessage": "Tentative de transfert de {amount} BTC. Les frais actuels sont de {currentFee}% du montant du transfert et le seuil de frais est fixé à {thresholdFee}%",
+  "@walletAutoTransferBlockedMessage": {
+    "description": "Message explaining why auto-transfer was blocked",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currentFee": {
+        "type": "String"
+      },
+      "thresholdFee": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAutoTransferBlockButton": "Bloquer",
+  "@walletAutoTransferBlockButton": {
+    "description": "Button to block auto-transfer until next execution"
+  },
+  "walletAutoTransferAllowButton": "Autoriser",
+  "@walletAutoTransferAllowButton": {
+    "description": "Button to allow auto-transfer despite high fees"
+  },
+  "navigationTabWallet": "Portefeuille",
+  "@navigationTabWallet": {
+    "description": "Label for the Wallet tab in bottom navigation"
+  },
+  "navigationTabExchange": "Échange",
+  "@navigationTabExchange": {
+    "description": "Label for the Exchange tab in bottom navigation"
+  },
+  "buyUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "buyBelowMinAmountError": "Vous essayez d'acheter en dessous du montant minimum.",
+  "@buyBelowMinAmountError": {
+    "description": "Error message for amount below minimum during buy"
+  },
+  "buyAboveMaxAmountError": "Vous essayez d'acheter au-dessus du montant maximum.",
+  "@buyAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during buy"
+  },
+  "buyInsufficientFundsError": "Fonds insuffisants dans votre compte Bull Bitcoin pour compléter cet achat.",
+  "@buyInsufficientFundsError": {
+    "description": "Error message for insufficient funds during buy"
+  },
+  "buyOrderNotFoundError": "La commande d'achat n'a pas été trouvée. Veuillez réessayer.",
+  "@buyOrderNotFoundError": {
+    "description": "Error message for order not found during buy"
+  },
+  "buyOrderAlreadyConfirmedError": "Cette commande d'achat a déjà été confirmée.",
+  "@buyOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed buy order"
+  },
+  "withdrawUnauthenticatedError": "Vous n'êtes pas authentifié. Veuillez vous connecter pour continuer.",
+  "@withdrawUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during withdraw"
+  },
+  "withdrawBelowMinAmountError": "Vous essayez de retirer en dessous du montant minimum.",
+  "@withdrawBelowMinAmountError": {
+    "description": "Error message for amount below minimum during withdraw"
+  },
+  "withdrawAboveMaxAmountError": "Vous essayez de retirer au-dessus du montant maximum.",
+  "@withdrawAboveMaxAmountError": {
+    "description": "Error message for amount above maximum during withdraw"
+  },
+  "withdrawOrderNotFoundError": "L'ordre de retrait n'a pas été trouvé. Veuillez réessayer.",
+  "@withdrawOrderNotFoundError": {
+    "description": "Error message for order not found during withdraw"
+  },
+  "withdrawOrderAlreadyConfirmedError": "Cet ordre de retrait a déjà été confirmé.",
+  "@withdrawOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed withdrawal order"
+  },
+  "coreScreensPageNotFound": "Page non trouvée",
+  "@coreScreensPageNotFound": {
+    "description": "Error message shown when a page/route is not found"
+  },
+  "coreScreensLogsTitle": "Journaux",
+  "@coreScreensLogsTitle": {
+    "description": "AppBar title for logs viewer screen"
+  },
+  "coreScreensConfirmSend": "Confirmer l'envoi",
+  "@coreScreensConfirmSend": {
+    "description": "Title for confirm send action"
+  },
+  "coreScreensExternalTransfer": "Transfert externe",
+  "@coreScreensExternalTransfer": {
+    "description": "Title for external transfer action"
+  },
+  "coreScreensInternalTransfer": "Transfert interne",
+  "@coreScreensInternalTransfer": {
+    "description": "Title for internal transfer action"
+  },
+  "coreScreensConfirmTransfer": "Confirmer le transfert",
+  "@coreScreensConfirmTransfer": {
+    "description": "Title for confirm transfer action"
+  },
+  "coreScreensFromLabel": "De",
+  "@coreScreensFromLabel": {
+    "description": "Label for source/sender field"
+  },
+  "coreScreensToLabel": "À",
+  "@coreScreensToLabel": {
+    "description": "Label for destination/receiver field"
+  },
+  "coreScreensAmountLabel": "Montant",
+  "@coreScreensAmountLabel": {
+    "description": "Label for amount field"
+  },
+  "coreScreensNetworkFeesLabel": "Frais de réseau",
+  "@coreScreensNetworkFeesLabel": {
+    "description": "Label for network fees field"
+  },
+  "coreScreensFeePriorityLabel": "Priorité des frais",
+  "@coreScreensFeePriorityLabel": {
+    "description": "Label for fee priority field"
+  },
+  "coreScreensTransferIdLabel": "ID de transfert",
+  "@coreScreensTransferIdLabel": {
+    "description": "Label for transfer ID field"
+  },
+  "coreScreensTotalFeesLabel": "Frais totaux",
+  "@coreScreensTotalFeesLabel": {
+    "description": "Label for total fees field"
+  },
+  "coreScreensTransferFeeLabel": "Frais de transfert",
+  "@coreScreensTransferFeeLabel": {
+    "description": "Label for transfer fee field"
+  },
+  "coreScreensFeeDeductionExplanation": "Ceci est le total des frais déduits du montant envoyé",
+  "@coreScreensFeeDeductionExplanation": {
+    "description": "Explanation text for fee deduction"
+  },
+  "coreScreensReceiveNetworkFeeLabel": "Frais de réseau de réception",
+  "@coreScreensReceiveNetworkFeeLabel": {
+    "description": "Label for receive network fee field"
+  },
+  "coreScreensServerNetworkFeesLabel": "Frais de réseau du serveur",
+  "@coreScreensServerNetworkFeesLabel": {
+    "description": "Label for server network fees field"
+  },
+  "coreScreensSendAmountLabel": "Montant envoyé",
+  "@coreScreensSendAmountLabel": {
+    "description": "Label for send amount field"
+  },
+  "coreScreensReceiveAmountLabel": "Montant reçu",
+  "@coreScreensReceiveAmountLabel": {
+    "description": "Label for receive amount field"
+  },
+  "coreScreensSendNetworkFeeLabel": "Frais de réseau d'envoi",
+  "@coreScreensSendNetworkFeeLabel": {
+    "description": "Label for send network fee field"
+  },
+  "coreScreensConfirmButton": "Confirmer",
+  "@coreScreensConfirmButton": {
+    "description": "Text for confirm button"
+  },
+  "recoverbullErrorRejected": "Rejeté par le serveur de clés",
+  "@recoverbullErrorRejected": {
+    "description": "Error message when request is rejected by the key server"
+  },
+  "recoverbullErrorServiceUnavailable": "Service indisponible. Veuillez vérifier votre connexion.",
+  "@recoverbullErrorServiceUnavailable": {
+    "description": "Error message when key server service is unavailable"
+  },
+  "recoverbullErrorInvalidVaultFile": "Fichier de coffre invalide.",
+  "@recoverbullErrorInvalidVaultFile": {
+    "description": "Error message when vault file format is invalid"
+  },
+  "systemLabelSwaps": "Swaps",
+  "@systemLabelSwaps": {
+    "description": "System label for swap transactions"
+  },
+  "systemLabelAutoSwap": "Auto Swap",
+  "@systemLabelAutoSwap": {
+    "description": "System label for automatic swap transactions"
+  },
+  "systemLabelPayjoin": "Payjoin",
+  "@systemLabelPayjoin": {
+    "description": "System label for payjoin transactions"
+  },
+  "systemLabelSelfSpend": "Auto transfert",
+  "@systemLabelSelfSpend": {
+    "description": "System label for self-spend transactions"
+  },
+  "systemLabelExchangeBuy": "Achat",
+  "@systemLabelExchangeBuy": {
+    "description": "System label for exchange buy transactions"
+  },
+  "systemLabelExchangeSell": "Vente",
+  "@systemLabelExchangeSell": {
+    "description": "System label for exchange sell transactions"
+  },
+  "labelErrorNotFound": "Label \"{label}\" introuvable.",
+  "@labelErrorNotFound": {
+    "description": "Error message when a label is not found",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnsupportedType": "Ce type {type} n'est pas pris en charge",
+  "@labelErrorUnsupportedType": {
+    "description": "Error message when label type is not supported",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorUnexpected": "Erreur inattendue : {message}",
+  "@labelErrorUnexpected": {
+    "description": "Error message for unexpected label errors",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "labelErrorSystemCannotDelete": "Les labels système ne peuvent pas être supprimés.",
+  "@labelErrorSystemCannotDelete": {
+    "description": "Error message when trying to delete a system label"
+  },
+  "labelDeleteFailed": "Impossible de supprimer \"{label}\". Veuillez réessayer.",
+  "@labelDeleteFailed": {
+    "description": "Error message when label deletion fails",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
   }
 }

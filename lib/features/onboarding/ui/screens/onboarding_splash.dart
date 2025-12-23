@@ -30,7 +30,7 @@ class OnboardingSplash extends StatelessWidget {
             const _BG(),
             Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const Spacer(flex: 2),
                   SuperuserTapUnlocker(
@@ -44,8 +44,8 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingBullBitcoin,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 54,
-                      fontWeight: FontWeight.w500,
-                      color: context.colour.onPrimary,
+                      fontWeight: .w500,
+                      color: context.appColors.onPrimaryFixed,
                       height: 1,
                     ),
                   ),
@@ -53,8 +53,8 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingOwnYourMoney,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
-                      fontWeight: FontWeight.w500,
-                      color: context.colour.secondary,
+                      fontWeight: .w500,
+                      color: context.appColors.secondaryFixed,
                       height: 1,
                     ),
                   ),
@@ -64,8 +64,8 @@ class OnboardingSplash extends StatelessWidget {
                     child: BBText(
                       context.loc.onboardingSplashDescription,
                       style: context.font.labelSmall,
-                      color: context.colour.onPrimary,
-                      textAlign: TextAlign.center,
+                      color: context.appColors.onPrimaryFixed,
+                      textAlign: .center,
                       maxLines: 2,
                     ),
                   ),
@@ -102,11 +102,13 @@ class _Actions extends StatelessWidget {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         if (creating || loading) ...[
           Center(
-            child: CircularProgressIndicator(color: context.colour.onPrimary),
+            child: CircularProgressIndicator(
+              color: context.appColors.onPrimaryFixed,
+            ),
           ),
         ] else ...[
           const CreateWalletButton(),
@@ -142,11 +144,12 @@ class _Actions extends StatelessWidget {
               child: Text(
                 'Advanced Options',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.onPrimary.withValues(alpha: 0.9),
-                  decoration: TextDecoration.underline,
-                  decorationColor: context.colour.onPrimary.withValues(
+                  color: context.appColors.onPrimaryFixed.withValues(
                     alpha: 0.9,
                   ),
+                  decoration: TextDecoration.underline,
+                  decorationColor: context.appColors.onPrimaryFixed
+                      .withValues(alpha: 0.9),
                 ),
               ),
             ),
@@ -165,17 +168,17 @@ class _BG extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          color: context.colour.primary,
+          color: context.appColors.primaryFixed,
           height: double.infinity,
           width: double.infinity,
         ),
         Opacity(
-          opacity: 0.1,
+          opacity: 0.2,
           child: Transform.rotate(
             angle: 3.141,
             child: Image.asset(
               Assets.backgrounds.bgLong.path,
-              fit: BoxFit.cover,
+              fit: .cover,
               height: double.infinity,
               width: double.infinity,
             ),

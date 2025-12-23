@@ -58,10 +58,9 @@ class BdkWalletDatasource {
   Stream<String> get walletSyncFinishedStream =>
       _walletSyncFinishedController.stream;
 
-  bool isWalletSyncing({String? walletId}) =>
-      walletId == null
-          ? _activeSyncs.isNotEmpty
-          : _activeSyncs.containsKey(walletId);
+  bool isWalletSyncing({String? walletId}) => walletId == null
+      ? _activeSyncs.isNotEmpty
+      : _activeSyncs.containsKey(walletId);
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
@@ -105,10 +104,9 @@ class BdkWalletDatasource {
               url: electrumServer.url,
               // Only set the socks5 if it's not empty,
               //  otherwise bdk will throw an error
-              socks5:
-                  electrumServer.socks5?.isNotEmpty == true
-                      ? electrumServer.socks5
-                      : null,
+              socks5: electrumServer.socks5?.isNotEmpty == true
+                  ? electrumServer.socks5
+                  : null,
               retry: electrumServer.retry,
               timeout: electrumServer.timeout,
               stopGap: BigInt.from(electrumServer.stopGap),
@@ -177,10 +175,9 @@ class BdkWalletDatasource {
     }
 
     if (selected != null && selected.isNotEmpty) {
-      final selectableOutPoints =
-          selected
-              .map((utxo) => bdk.OutPoint(txid: utxo.txId, vout: utxo.vout))
-              .toList();
+      final selectableOutPoints = selected
+          .map((utxo) => bdk.OutPoint(txid: utxo.txId, vout: utxo.vout))
+          .toList();
       txBuilder.addUtxos(selectableOutPoints);
     }
     if (replaceByFee) txBuilder.enableRbf();
@@ -192,10 +189,9 @@ class BdkWalletDatasource {
     }
 
     // Make sure utxos that are unspendable are not used
-    final unspendableOutPoints =
-        unspendable
-            ?.map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
-            .toList();
+    final unspendableOutPoints = unspendable
+        ?.map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
+        .toList();
 
     // TODO: MOVE THIS TO THE TRANSACTION REPOSITORY, the repository should check the unspendable and spendable inputs
     // and build the transaction accordingly or return an error
@@ -203,10 +199,9 @@ class BdkWalletDatasource {
       // Check if there are unspents that are not in unspendableOutpoints so a transaction can be built
       final unspents = bdkWallet.listUnspent();
       final unspendableOutPointsSet = unspendableOutPoints.toSet();
-      final unspendableUtxos =
-          unspents.where((utxo) {
-            return unspendableOutPointsSet.contains(utxo.outpoint);
-          }).toList();
+      final unspendableUtxos = unspents.where((utxo) {
+        return unspendableOutPointsSet.contains(utxo.outpoint);
+      }).toList();
 
       if (unspendableUtxos.length == unspents.length) {
         throw NoSpendableUtxoException('All unspents are unspendable');
@@ -347,30 +342,28 @@ class BdkWalletDatasource {
         }
 
         // Map inputs and outputs to their respective models
-        final inputModels =
-            inputs.asMap().entries.map((entry) {
-              final input = entry.value;
-              final vin = entry.key;
-              final previousOutput = input.previousOutput;
-              final output = allTransactionOutputs.firstWhereOrNull(
-                (output) =>
-                    output.txId == previousOutput.txid &&
-                    output.vout == previousOutput.vout,
-              );
+        final inputModels = inputs.asMap().entries.map((entry) {
+          final input = entry.value;
+          final vin = entry.key;
+          final previousOutput = input.previousOutput;
+          final output = allTransactionOutputs.firstWhereOrNull(
+            (output) =>
+                output.txId == previousOutput.txid &&
+                output.vout == previousOutput.vout,
+          );
 
-              return TransactionInputModel.bitcoin(
-                txId: tx.txid,
-                vin: vin,
-                isOwn: output?.isOwn ?? false,
-                scriptSig: input.scriptSig?.bytes,
-                previousTxId: previousOutput.txid,
-                previousTxVout: previousOutput.vout,
-              );
-            }).toList();
-        final outputModels =
-            allTransactionOutputs
-                .where((output) => output.txId == tx.txid)
-                .toList();
+          return TransactionInputModel.bitcoin(
+            txId: tx.txid,
+            vin: vin,
+            isOwn: output?.isOwn ?? false,
+            scriptSig: input.scriptSig?.bytes,
+            previousTxId: previousOutput.txid,
+            previousTxVout: previousOutput.vout,
+          );
+        }).toList();
+        final outputModels = allTransactionOutputs
+            .where((output) => output.txId == tx.txid)
+            .toList();
 
         // Check if all inputs and outputs are owned by the wallet itself
         final isToSelf =
@@ -378,18 +371,17 @@ class BdkWalletDatasource {
             outputModels.every((output) => output.isOwn);
 
         final isIncoming = tx.received > tx.sent;
-        final netAmountSat =
-            isToSelf
-                ? // When sending to self, the fee is paid by this wallet and is
-                // the only thing that changes from the balance
-                tx.sent - (tx.fee ?? BigInt.zero)
-                : isIncoming
-                ? // If incoming, fee is paid by sender, so not deducted from
-                // wallet's balance
-                tx.received - tx.sent
-                : // If outgoing, fee is paid by this wallet, so deducted here
-                // to know the net amount
-                tx.sent - tx.received - (tx.fee ?? BigInt.zero);
+        final netAmountSat = isToSelf
+            ? // When sending to self, the fee is paid by this wallet and is
+              // the only thing that changes from the balance
+              tx.sent - (tx.fee ?? BigInt.zero)
+            : isIncoming
+            ? // If incoming, fee is paid by sender, so not deducted from
+              // wallet's balance
+              tx.received - tx.sent
+            : // If outgoing, fee is paid by this wallet, so deducted here
+              // to know the net amount
+              tx.sent - tx.received - (tx.fee ?? BigInt.zero);
 
         return WalletTransactionModel(
           txId: tx.txid,
@@ -446,10 +438,9 @@ class BdkWalletDatasource {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     const lastUnusedAddressIndex = bdk.AddressIndex.lastUnused();
 
-    final addressInfo =
-        isChange
-            ? bdkWallet.getInternalAddress(addressIndex: lastUnusedAddressIndex)
-            : bdkWallet.getAddress(addressIndex: lastUnusedAddressIndex);
+    final addressInfo = isChange
+        ? bdkWallet.getInternalAddress(addressIndex: lastUnusedAddressIndex)
+        : bdkWallet.getAddress(addressIndex: lastUnusedAddressIndex);
 
     final index = addressInfo.index;
 
@@ -611,6 +602,11 @@ class BdkWalletDatasource {
     final tx = bdk.BumpFeeTxBuilder(txid: txid, feeRate: feeRate);
     final (psbt, _) = await tx.finish(bdkWallet);
     return psbt.toString();
+  }
+
+  Future<void> delete({required WalletModel wallet}) async {
+    await BdkFacade.delete(wallet);
+    log.fine('Deleted wallet ${wallet.id} BDK database');
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart' as core;
 import 'package:bb_mobile/core/fees/fees_locator.dart';
+import 'package:bb_mobile/core/labels/labels_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
@@ -38,6 +39,7 @@ class TaskLocator {
   }
 
   static Future<void> registerDatasources(GetIt backgroundLocator) async {
+    LabelsLocator.registerDatasources(backgroundLocator);
     BlockchainLocator.registerDatasources(backgroundLocator);
     await ElectrumLocator.registerDatasources(backgroundLocator);
     // SeedLocator.registerDatasources();

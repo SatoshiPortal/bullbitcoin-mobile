@@ -34,12 +34,13 @@ class WalletCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(2),
         child: Material(
           elevation: 2,
-          color: context.colour.onPrimary,
+          shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
+          color: context.appColors.background,
           borderRadius: BorderRadius.circular(2),
           child: Container(
             height: 90,
             decoration: BoxDecoration(
-              color: context.colour.onPrimary,
+              color: context.appColors.background,
               border: Border(left: BorderSide(color: tagColor, width: 4)),
               borderRadius: BorderRadius.circular(2),
             ),
@@ -51,38 +52,38 @@ class WalletCard extends StatelessWidget {
                     vertical: 8,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: .start,
+                          mainAxisAlignment: .center,
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: .spaceBetween,
                               children: [
                                 BBText(
                                   title,
                                   style: context.font.bodyLarge,
-                                  color: context.colour.secondary,
+                                  color: context.appColors.secondary,
                                 ),
                                 const Gap(4),
                                 CurrencyText(
                                   balanceSat,
                                   showFiat: false,
                                   style: context.font.bodyLarge,
-                                  color: context.colour.secondary,
+                                  color: context.appColors.secondary,
                                 ),
                               ],
                             ),
                             const Gap(4),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: .spaceBetween,
                               children: [
                                 BBText(
                                   description,
                                   style: context.font.labelMedium,
-                                  color: context.colour.outline,
+                                  color: context.appColors.onSurfaceVariant,
                                 ),
                                 const Gap(4),
                                 CurrencyText(
@@ -90,7 +91,7 @@ class WalletCard extends StatelessWidget {
                                   showFiat: true,
                                   fiatCurrency: fiatCurrency,
                                   style: context.font.labelMedium,
-                                  color: context.colour.outline,
+                                  color: context.appColors.onSurfaceVariant,
                                 ),
                               ],
                             ),
@@ -100,7 +101,7 @@ class WalletCard extends StatelessWidget {
                       const Gap(8),
                       Icon(
                         Icons.chevron_right,
-                        color: context.colour.outline,
+                        color: context.appColors.onSurfaceVariant,
                         size: 24,
                       ),
                     ],
@@ -112,8 +113,8 @@ class WalletCard extends StatelessWidget {
                   right: 0,
                   child: FadingLinearProgress(
                     trigger: isSyncing,
-                    backgroundColor: context.colour.surface,
-                    foregroundColor: context.colour.onSecondaryFixed,
+                    backgroundColor: context.appColors.transparent,
+                    foregroundColor: context.appColors.onSecondaryFixed,
                     height: 3.0,
                   ),
                 ),

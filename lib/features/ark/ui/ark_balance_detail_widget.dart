@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
@@ -20,28 +21,31 @@ class ArkBalanceDetailWidget extends StatelessWidget {
       context: context,
       child: Container(
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
-                Text('Balance Breakdown', style: context.font.headlineMedium),
+                Text(context.loc.arkBalanceBreakdown, style: context.font.headlineMedium),
                 const Gap(24),
                 if (arkBalance != null) ...[
                   // Boarding Unconfirmed
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.schedule, color: context.colour.primary),
+                          Icon(
+                            Icons.schedule,
+                            color: context.appColors.primary,
+                          ),
                           const Gap(8),
                           Text(
-                            'Boarding Unconfirmed',
+                            context.loc.arkBoardingUnconfirmed,
                             style: context.font.bodyLarge,
                           ),
                         ],
@@ -56,17 +60,17 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Boarding Confirmed
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
                           Icon(
                             Icons.check_circle,
-                            color: context.colour.inverseSurface,
+                            color: context.appColors.success,
                           ),
                           const Gap(8),
                           Text(
-                            'Boarding Confirmed',
+                            context.loc.arkBoardingConfirmed,
                             style: context.font.bodyLarge,
                           ),
                         ],
@@ -81,16 +85,16 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Preconfirmed
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
                           Icon(
                             Icons.hourglass_empty,
-                            color: context.colour.secondary,
+                            color: context.appColors.warning,
                           ),
                           const Gap(8),
-                          Text('Preconfirmed', style: context.font.bodyLarge),
+                          Text(context.loc.arkPreconfirmed, style: context.font.bodyLarge),
                         ],
                       ),
                       CurrencyText(
@@ -103,16 +107,16 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Settled
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
                           Icon(
                             Icons.done_all,
-                            color: context.colour.inverseSurface,
+                            color: context.appColors.success,
                           ),
                           const Gap(8),
-                          Text('Settled', style: context.font.bodyLarge),
+                          Text(context.loc.arkSettled, style: context.font.bodyLarge),
                         ],
                       ),
                       CurrencyText(
@@ -125,16 +129,16 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   const Gap(16),
                   // Available
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Row(
                         children: [
                           Icon(
                             Icons.account_balance_wallet,
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           ),
                           const Gap(8),
-                          Text('Available', style: context.font.bodyLarge),
+                          Text(context.loc.arkAvailable, style: context.font.bodyLarge),
                         ],
                       ),
                       CurrencyText(
@@ -145,13 +149,13 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                     ],
                   ),
                   const Gap(16),
-                  Divider(color: context.colour.outline),
+                  Divider(color: context.appColors.border),
                   const Gap(16),
                   // Total
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
-                      Text('Total', style: context.font.titleLarge),
+                      Text(context.loc.arkTotal, style: context.font.titleLarge),
                       CurrencyText(
                         arkBalance!.completeTotal,
                         style: context.font.titleLarge,
@@ -161,7 +165,7 @@ class ArkBalanceDetailWidget extends StatelessWidget {
                   ),
                 ] else ...[
                   Text(
-                    'No balance data available',
+                    context.loc.arkNoBalanceData,
                     style: context.font.bodyLarge,
                   ),
                 ],
@@ -182,11 +186,11 @@ class ArkBalanceDetailWidget extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: AssetImage(Assets.backgrounds.bgInstantWallet.path),
-          fit: BoxFit.cover,
+          fit: .cover,
           colorFilter: null,
         ),
         border: Border(
-          bottom: BorderSide(color: theme.colorScheme.secondary, width: 9),
+          bottom: BorderSide(color: context.appColors.secondary, width: 9),
         ),
         borderRadius: BorderRadius.circular(2),
       ),
@@ -194,17 +198,17 @@ class ArkBalanceDetailWidget extends StatelessWidget {
         children: [
           Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     const Gap(16),
                     CurrencyText(
                       totalBalance,
                       style: theme.textTheme.displaySmall?.copyWith(
-                        color: theme.colorScheme.onPrimary,
+                        color: context.appColors.onPrimary,
                       ),
                       showFiat: false,
                     ),
@@ -224,9 +228,9 @@ class ArkBalanceDetailWidget extends StatelessWidget {
               onPressed: () => _showBalanceBreakdown(context),
               icon: Icon(
                 Icons.info_outline,
-                color: theme.colorScheme.onPrimary,
+                color: context.appColors.onPrimary,
               ),
-              tooltip: 'Balance breakdown',
+              tooltip: context.loc.arkBalanceBreakdownTooltip,
             ),
           ),
         ],

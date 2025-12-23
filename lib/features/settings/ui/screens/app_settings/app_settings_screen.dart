@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -22,7 +23,7 @@ class AppSettingsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('App Settings')),
+      appBar: AppBar(title: Text(context.loc.settingsAppSettingsTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -31,50 +32,46 @@ class AppSettingsScreen extends StatelessWidget {
               children: [
                 SettingsEntryItem(
                   icon: Icons.article,
-                  title: 'Logs',
+                  title: context.loc.logSettingsLogsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.logs.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.security,
-                  title: 'Tor Settings',
+                  title: context.loc.settingsTorSettingsTitle,
                   onTap: () {
                     context.pushNamed(TorSettingsRoute.torSettings.name);
                   },
                 ),
+                SettingsEntryItem(
+                  icon: Icons.language,
+                  title: context.loc.settingsLanguageTitle,
+                  trailing: DropdownButton<Language>(
+                    value: currentLanguage,
+                    underline: const SizedBox.shrink(),
+                    items: Language.values
+                        .map(
+                          (language) => DropdownMenuItem<Language>(
+                            value: language,
+                            child: Text(language.label),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (Language? newLanguage) {
+                      if (newLanguage != null) {
+                        context.read<SettingsCubit>().changeLanguage(
+                          newLanguage,
+                        );
+                      }
+                    },
+                  ),
+                ),
                 if (isSuperuser)
                   SettingsEntryItem(
-                    icon: Icons.language,
-                    title: 'Language',
-                    trailing: DropdownButton<Language>(
-                      value: currentLanguage,
-                      underline: const SizedBox.shrink(),
-                      items:
-                          Language.values
-                              .map(
-                                (language) => DropdownMenuItem<Language>(
-                                  value: language,
-                                  child: Text(
-                                    '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
-                                  ),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (Language? newLanguage) {
-                        if (newLanguage != null) {
-                          context.read<SettingsCubit>().changeLanguage(
-                            newLanguage,
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                if (isSuperuser)
-                  const SettingsEntryItem(
                     icon: Icons.developer_mode,
-                    title: 'Dev Mode',
-                    trailing: DevModeSwitch(),
+                    title: context.loc.appSettingsDevModeTitle,
+                    trailing: const DevModeSwitch(),
                   ),
               ],
             ),

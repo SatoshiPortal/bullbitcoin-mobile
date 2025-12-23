@@ -79,6 +79,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
     on<WalletDeleted>(_onDeleted);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
+    on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -183,6 +184,21 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       add(const RefreshArkWalletBalance());
 
+      final defaultLiquidWallet = wallets
+          .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
+          .firstOrNull;
+
+      AutoSwap? autoSwapSettings;
+      if (defaultLiquidWallet != null) {
+        try {
+          autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
+            isTestnet: defaultLiquidWallet.isTestnet,
+          );
+        } catch (e) {
+          log.fine('Failed to load autoswap settings: $e');
+        }
+      }
+
       emit(
         state.copyWith(
           status: WalletStatus.success,
@@ -190,6 +206,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           noWalletsFoundException: null,
           error: null,
           syncStatus: syncStatus,
+          autoSwapSettings: autoSwapSettings,
         ),
       );
       // After the wallets are synced we also restart the swap watcher.
@@ -537,6 +554,30 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       } catch (e) {
         emit(state.copyWith(isArkWalletLoading: false));
       }
+    }
+  }
+
+  Future<void> _onDismissAutoSwapWarning(
+    DismissAutoSwapWarning event,
+    Emitter<WalletState> emit,
+  ) async {
+    try {
+      final defaultLiquidWallet = state.defaultLiquidWallet();
+      if (defaultLiquidWallet == null) return;
+
+      final currentSettings = await _getAutoSwapSettingsUsecase.execute(
+        isTestnet: defaultLiquidWallet.isTestnet,
+      );
+
+      final updatedSettings = currentSettings.copyWith(showWarning: false);
+      await _saveAutoSwapSettingsUsecase.execute(
+        updatedSettings,
+        isTestnet: defaultLiquidWallet.isTestnet,
+      );
+
+      emit(state.copyWith(autoSwapSettings: updatedSettings));
+    } catch (e) {
+      log.severe('[WalletBloc] Failed to dismiss autoswap warning: $e');
     }
   }
 }

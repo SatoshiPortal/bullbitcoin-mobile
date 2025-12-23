@@ -30,51 +30,50 @@ class BBDropdown<T> extends StatelessWidget {
           popupMenuTheme: PopupMenuThemeData(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4.0),
-              side: BorderSide(color: context.colour.primary, width: 1.0),
+              side: BorderSide(color: context.appColors.primary, width: 1.0),
             ),
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             elevation: 8,
           ),
         ),
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButtonFormField<T>(
-            value: value,
-            items:
-                items.map((item) {
-                  return DropdownMenuItem<T>(
-                    value: item.value,
-                    child: Container(
-                      width: double.infinity,
-                      alignment: Alignment.centerLeft,
-                      child: item.child,
-                    ),
-                  );
-                }).toList(),
+            initialValue: value,
+            items: items.map((item) {
+              return DropdownMenuItem<T>(
+                value: item.value,
+                child: Container(
+                  width: double.infinity,
+                  alignment: Alignment.centerLeft,
+                  child: item.child,
+                ),
+              );
+            }).toList(),
             onChanged: onChanged,
             validator: validator,
             hint: hint,
-            dropdownColor: context.colour.onPrimary,
+            dropdownColor: context.appColors.onSecondary,
             menuMaxHeight: 240,
             itemHeight: height,
             alignment: Alignment.center,
             isExpanded: true,
             decoration: InputDecoration(
               filled: true,
-              fillColor: context.colour.onPrimary,
+              fillColor: context.appColors.surface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4.0),
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 0,
+                horizontal: 16.0,
                 vertical: 16.0,
               ),
               isDense: false,
             ),
             icon: Icon(
               Icons.keyboard_arrow_down,
-              color: context.colour.secondary,
+              color: context.appColors.primary,
             ),
           ),
         ),

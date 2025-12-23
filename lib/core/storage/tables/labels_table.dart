@@ -1,5 +1,13 @@
 import 'package:drift/drift.dart';
 
+// ! /!\ modifying these constants leads to a breaking change
+const swapLabelSystem = 'swaps';
+const autoSwapLabelSystem = 'auto-swap';
+const payjoinLabelSystem = 'payjoin';
+const selfSpendLabelSystem = 'self-spend';
+const exchangeBuyLabelSystem = 'exchange_buy';
+const exchangeSellLabelSystem = 'exchange_sell';
+
 enum LabelType {
   tx,
   address,

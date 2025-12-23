@@ -76,7 +76,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
         title: BBText(
           'Vault Recovery Server',
           style: context.font.headlineMedium,
-          color: context.colour.secondary,
+          color: context.appColors.onSurface,
         ),
       ),
       body:
@@ -85,7 +85,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
               : Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const Gap(24),
                     Icon(
@@ -95,8 +95,8 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       size: 64,
                       color:
                           _isUsingDefaultServer
-                              ? context.colour.primary
-                              : context.colour.tertiary,
+                              ? context.appColors.primary
+                              : context.appColors.tertiary,
                     ),
                     const Gap(32),
                     BBText(
@@ -104,26 +104,26 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           ? 'Using Default Server'
                           : 'Using Custom Server',
                       style: context.font.headlineMedium,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Gap(16),
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: context.colour.surfaceContainerHighest,
+                        color: context.appColors.cardBackground,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: context.colour.outline,
+                          color: context.appColors.border,
                           width: 1,
                         ),
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
                         children: [
                           BBText(
                             'Server URL:',
                             style: context.font.labelSmall?.copyWith(
-                              color: context.colour.onSurfaceVariant,
+                              color: context.appColors.textMuted,
                             ),
                           ),
                           const Gap(8),
@@ -141,17 +141,17 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                       InfoCard(
                         description:
                             'You are using a custom Recoverbull server. Make sure you trust this server.',
-                        tagColor: context.colour.error,
-                        bgColor: context.colour.error.withValues(alpha: 0.1),
+                        tagColor: context.appColors.error,
+                        bgColor: context.appColors.errorContainer,
                       ),
                       const Gap(24),
                     ],
                     BBText(
                       'We will connect to this server through Tor',
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurfaceVariant,
+                        color: context.appColors.textMuted,
                       ),
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Spacer(),
                     BBButton.big(
@@ -168,25 +168,25 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           ),
                         );
                       },
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.appColors.onSurface,
+                      textColor: context.appColors.surface,
                     ),
                     const Gap(16),
                     GestureDetector(
                       onTap: _openRecoverBullWebsite,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           Icon(
                             Icons.info_outline,
                             size: 20,
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           ),
                           const Gap(8),
                           BBText(
                             'Learn more about Recoverbull',
                             style: context.font.bodyMedium,
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           ),
                         ],
                       ),

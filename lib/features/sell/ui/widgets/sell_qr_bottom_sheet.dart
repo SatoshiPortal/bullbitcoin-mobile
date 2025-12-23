@@ -17,7 +17,7 @@ class SellQrBottomSheet extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: context.colour.onPrimary,
+      backgroundColor: context.appColors.onPrimary,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       isScrollControlled: true,
       builder: (context) {
@@ -43,11 +43,11 @@ class SellQrBottomSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               BBText(context.loc.sellQrCode, style: context.font.headlineSmall),
               IconButton(
@@ -61,11 +61,11 @@ class SellQrBottomSheet extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.appColors.surfaceFixed,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.5),
+                    color: context.appColors.overlay.withValues(alpha: 0.5),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

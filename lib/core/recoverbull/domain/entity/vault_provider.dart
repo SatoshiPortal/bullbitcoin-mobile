@@ -1,18 +1,20 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:flutter/material.dart';
 
 enum VaultProvider {
   googleDrive,
   iCloud,
   customLocation;
 
-  String get name {
+  String displayName(BuildContext context) {
     switch (this) {
       case VaultProvider.googleDrive:
-        return 'Google Drive';
+        return context.loc.recoverbullSelectGoogleDrive;
       case VaultProvider.iCloud:
-        return 'Apple iCloud';
+        return context.loc.recoverbullSelectAppleIcloud;
       case VaultProvider.customLocation:
-        return 'Custom location';
+        return context.loc.recoverbullSelectCustomLocationProvider;
     }
   }
 
@@ -27,13 +29,13 @@ enum VaultProvider {
     }
   }
 
-  String get description {
+  String description(BuildContext context) {
     switch (this) {
       case VaultProvider.googleDrive:
       case VaultProvider.iCloud:
-        return 'Quick & easy';
+        return context.loc.recoverbullSelectQuickAndEasy;
       case VaultProvider.customLocation:
-        return 'Take your time';
+        return context.loc.recoverbullSelectTakeYourTime;
     }
   }
 }

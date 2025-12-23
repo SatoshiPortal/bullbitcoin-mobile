@@ -51,12 +51,11 @@ class ReceiveRouter {
           child: MultiBlocListener(
             listeners: [
               BlocListener<ReceiveBloc, ReceiveState>(
-                listenWhen:
-                    (previous, current) =>
-                        // makes sure it doesn't go from payment received to payment in progress again
-                        previous.isPaymentReceived != true &&
-                        previous.isPaymentInProgress != true &&
-                        current.isPaymentInProgress == true,
+                listenWhen: (previous, current) =>
+                    // makes sure it doesn't go from payment received to payment in progress again
+                    previous.isPaymentReceived != true &&
+                    previous.isPaymentInProgress != true &&
+                    current.isPaymentInProgress == true,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final type = state.type;
@@ -81,10 +80,9 @@ class ReceiveRouter {
                 },
               ),
               BlocListener<ReceiveBloc, ReceiveState>(
-                listenWhen:
-                    (previous, current) =>
-                        previous.isPaymentReceived != true &&
-                        current.isPaymentReceived == true,
+                listenWhen: (previous, current) =>
+                    previous.isPaymentReceived != true &&
+                    current.isPaymentReceived == true,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final type = state.type;
@@ -125,19 +123,16 @@ class ReceiveRouter {
           // So we should start the bitcoin flow here if the state is not already
           //  in the bitcoin flow.
           final bloc = context.read<ReceiveBloc>();
-          if (bloc.state.type != ReceiveType.bitcoin) {
-            bloc.add(const ReceiveBitcoinStarted());
-          }
           final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
+          bloc.add(ReceiveBitcoinStarted(wallet));
           return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
         },
         routes: [
           GoRoute(
             name: ReceiveRoute.bitcoinAmount.name,
             path: ReceiveRoute.bitcoinAmount.path,
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: ReceiveAmountScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
             name: ReceiveRoute.payjoinInProgress.name,
@@ -169,11 +164,10 @@ class ReceiveRouter {
           }
           return NoTransitionPage(
             child: ReceiveAmountScreen(
-              onContinueNavigation:
-                  () => context.pushNamed(
-                    ReceiveRoute.lightningQr.name,
-                    extra: state.extra,
-                  ),
+              onContinueNavigation: () => context.pushNamed(
+                ReceiveRoute.lightningQr.name,
+                extra: state.extra,
+              ),
             ),
           );
         },
@@ -182,17 +176,17 @@ class ReceiveRouter {
             name: ReceiveRoute.lightningQr.name,
             path: ReceiveRoute.lightningQr.path,
             pageBuilder: (context, state) {
-              final wallet =
-                  state.extra is Wallet ? state.extra! as Wallet : null;
+              final wallet = state.extra is Wallet
+                  ? state.extra! as Wallet
+                  : null;
               return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
             },
             routes: [
               GoRoute(
                 name: ReceiveRoute.lightningAmount.name,
                 path: ReceiveRoute.lightningAmount.path,
-                pageBuilder:
-                    (context, state) =>
-                        const NoTransitionPage(child: ReceiveAmountScreen()),
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: ReceiveAmountScreen()),
               ),
               GoRoute(
                 name: ReceiveRoute.lightningPaymentInProgress.name,
@@ -245,9 +239,8 @@ class ReceiveRouter {
           GoRoute(
             name: ReceiveRoute.liquidAmount.name,
             path: ReceiveRoute.liquidAmount.path,
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: ReceiveAmountScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
         ],
       ),
@@ -317,7 +310,7 @@ class TabAScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Tab A')),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Text('Counter A: $count', style: const TextStyle(fontSize: 24)),
             ElevatedButton(
@@ -359,7 +352,7 @@ class TabBScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Tab B')),
       body: Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Text('Counter B: $count', style: const TextStyle(fontSize: 24)),
             ElevatedButton(

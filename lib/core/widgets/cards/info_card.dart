@@ -25,23 +25,23 @@ class InfoCard extends StatelessWidget {
     return InkWell(
       onTap: () => onTap?.call(),
       child: Container(
-        clipBehavior: Clip.hardEdge,
+        clipBehavior: .hardEdge,
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(2),
         ),
         child: IntrinsicHeight(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: .stretch,
+            mainAxisAlignment: .center,
             children: [
               Container(width: 4, color: tagColor),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: .start,
+                    mainAxisAlignment: .center,
                     children: [
                       Icon(
                         Icons.info_outline_rounded,
@@ -51,8 +51,8 @@ class InfoCard extends StatelessWidget {
                       const Gap(12),
                       Expanded(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: .center,
+                          crossAxisAlignment: .start,
                           children: [
                             if (title != null && title!.isNotEmpty) ...[
                               Text(
@@ -66,11 +66,11 @@ class InfoCard extends StatelessWidget {
                             Text(
                               description,
                               style: context.font.bodyMedium?.copyWith(
-                                color: context.colour.secondary,
+                                color: context.appColors.onSurfaceVariant,
                                 fontWeight:
                                     boldDescription
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                        ? .bold
+                                        : .normal,
                               ),
                             ),
                           ],

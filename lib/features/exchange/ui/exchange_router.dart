@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
+import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,6 +50,7 @@ class ExchangeRouter {
             return const ExchangeKycScreen();
           },
         ),
+        ExchangeSupportChatRouter.route,
       ],
     ),
     GoRoute(

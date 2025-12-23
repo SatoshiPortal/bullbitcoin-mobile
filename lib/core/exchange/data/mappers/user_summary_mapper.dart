@@ -5,6 +5,7 @@ class UserSummaryMapper {
   static UserSummary fromModelToEntity(UserSummaryModel model) {
     return UserSummary(
       userNumber: model.userNumber,
+      userId: model.userId,
       groups: model.groups,
       profile: _mapUserProfile(model.profile),
       email: model.email,

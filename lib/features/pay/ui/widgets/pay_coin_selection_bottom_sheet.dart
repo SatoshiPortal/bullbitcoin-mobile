@@ -12,51 +12,48 @@ class PayCoinSelectionBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final utxos = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).utxos
-              : <WalletUtxo>[],
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).utxos
+          : <WalletUtxo>[],
     );
 
     final selectedUtxos = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).selectedUtxos
-              : <WalletUtxo>[],
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).selectedUtxos
+          : <WalletUtxo>[],
     );
 
     final exchangeRate = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).exchangeRateEstimate
-              : 0.0,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).exchangeRateEstimate
+          : 0.0,
     );
 
     final fiatCurrency = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).currency.code
-              : 'CAD',
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).currency.code
+          : 'CAD',
     );
 
     final payinAmountSat = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? ConvertAmount.btcToSats(
-                (bloc.state as PayPaymentState).payOrder.payinAmount,
-              )
-              : 0,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? ConvertAmount.btcToSats(
+              (bloc.state as PayPaymentState).payOrder.payinAmount,
+            )
+          : 0,
     );
 
     return CommonCoinSelectionBottomSheet(
-      bitcoinUnit: BitcoinUnit.btc, // Pay always uses BTC
+      bitcoinUnit: BitcoinUnit.btc,
       exchangeRate: exchangeRate ?? 0.0,
       fiatCurrency: fiatCurrency,
       utxos: utxos,
-      selectedUtxos: selectedUtxos,
+      initialSelectedUtxos: selectedUtxos,
       amountToSendSat: payinAmountSat,
-      onUtxoSelected: (utxo) {
-        context.read<PayBloc>().add(PayEvent.utxoSelected(utxo: utxo));
+      onDone: (selectedUtxos) {
+        context.read<PayBloc>().add(
+          PayEvent.utxosSelected(utxos: selectedUtxos),
+        );
       },
     );
   }

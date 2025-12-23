@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart' show BBText;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -16,21 +17,26 @@ class AccountOwnershipWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
-          'Who does this account belong to?',
+          context.loc.withdrawOwnershipQuestion,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
-            fontWeight: FontWeight.w500,
+            color: context.appColors.secondary,
+            fontWeight: .w500,
           ),
         ),
         const Gap(8),
-        _buildRadioOption(context, 'This is my account', 'isOwner', true),
+        _buildRadioOption(
+          context,
+          context.loc.withdrawOwnershipMyAccount,
+          'isOwner',
+          true,
+        ),
         const Gap(8),
         _buildRadioOption(
           context,
-          "This is someone else's account",
+          context.loc.withdrawOwnershipOtherAccount,
           'isOwner',
           false,
         ),
@@ -53,36 +59,37 @@ class AccountOwnershipWidget extends StatelessWidget {
         height: 56,
         child: Material(
           elevation: 4,
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: BorderRadius.circular(4),
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
-                color:
-                    isSelected
-                        ? context.colour.primary
-                        : context.colour.surface,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.surface,
                 width: 1,
               ),
             ),
-            child: Row(
-              children: [
-                Radio<bool>(
-                  value: value,
-                  groupValue: (formData[key] as String?) == 'true',
-                  onChanged: (_) => onFormDataChanged(key, value.toString()),
-                  activeColor: context.colour.primary,
-                ),
-                const Gap(8),
-                Expanded(
-                  child: BBText(
-                    label,
-                    style: context.font.headlineSmall?.copyWith(
-                      color: context.colour.secondary,
+            child: RadioGroup<bool>(
+              groupValue: (formData[key] as String?) == 'true',
+              onChanged: (_) => onFormDataChanged(key, value.toString()),
+              child: Row(
+                children: [
+                  Radio<bool>(
+                    value: value,
+                    activeColor: context.appColors.primary,
+                  ),
+                  const Gap(8),
+                  Expanded(
+                    child: BBText(
+                      label,
+                      style: context.font.headlineSmall?.copyWith(
+                        color: context.appColors.secondary,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

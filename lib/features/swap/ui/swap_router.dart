@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
@@ -28,10 +29,10 @@ class SwapRouter {
           child: BlocListener<TransferBloc, TransferState>(
             listenWhen:
                 (previous, current) =>
-                    previous.swap == null &&
                     previous.signedPsbt.isEmpty &&
-                    current.swap != null &&
-                    current.signedPsbt.isNotEmpty,
+                    current.signedPsbt.isNotEmpty &&
+                    ((current.swap != null && current.swap is ChainSwap) ||
+                        current.isSameChainTransfer),
             listener: (context, state) {
               context.pushNamed(
                 SwapRoute.confirmSwap.name,

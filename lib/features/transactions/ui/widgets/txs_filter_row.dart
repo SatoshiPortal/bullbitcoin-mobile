@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_item.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
       (TransactionsCubit cubit) => cubit.state.filter,
     );
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: .horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         children:
@@ -26,13 +27,16 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
                 padding: const EdgeInsets.only(right: 8.0),
                 child: TxsFilterItem(
                   title: switch (filter) {
-                    TransactionsFilter.all => 'All',
-                    TransactionsFilter.send => 'Send',
-                    TransactionsFilter.receive => 'Receive',
-                    TransactionsFilter.swap => 'Transfer',
-                    TransactionsFilter.payjoin => 'Payjoin',
-                    TransactionsFilter.sell => 'Sell',
-                    TransactionsFilter.buy => 'Buy',
+                    TransactionsFilter.all => context.loc.transactionFilterAll,
+                    TransactionsFilter.send => context.loc.transactionFilterSend,
+                    TransactionsFilter.receive =>
+                      context.loc.transactionFilterReceive,
+                    TransactionsFilter.swap =>
+                      context.loc.transactionFilterTransfer,
+                    TransactionsFilter.payjoin =>
+                      context.loc.transactionFilterPayjoin,
+                    TransactionsFilter.sell => context.loc.transactionFilterSell,
+                    TransactionsFilter.buy => context.loc.transactionFilterBuy,
                   },
                   isSelected: selectedFilter == filter,
                   onTap: () {

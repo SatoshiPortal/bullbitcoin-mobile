@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/logout_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/not_logged_in_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -16,7 +17,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
     final state = context.select((ExchangeCubit cubit) => cubit.state);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Exchange Settings')),
+      appBar: AppBar(title: Text(context.loc.settingsExchangeSettingsTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -25,7 +26,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
               children: [
                 SettingsEntryItem(
                   icon: Icons.account_circle,
-                  title: 'Account Information',
+                  title: context.loc.exchangeSettingsAccountInformationTitle,
                   onTap: () {
                     if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
@@ -36,7 +37,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.security,
-                  title: 'Security Settings',
+                  title: context.loc.exchangeSettingsSecuritySettingsTitle,
                   onTap: () {
                     if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
@@ -117,7 +118,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                 // ),
                 SettingsEntryItem(
                   icon: Icons.share,
-                  title: 'Referrals',
+                  title: context.loc.exchangeSettingsReferralsTitle,
                   onTap: () {
                     if (state.notLoggedIn) {
                       NotLoggedInBottomSheet.show(context);
@@ -129,7 +130,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                 if (state.notLoggedIn)
                   SettingsEntryItem(
                     icon: Icons.login,
-                    title: 'Log In',
+                    title: context.loc.exchangeSettingsLogInTitle,
                     onTap: () {
                       context.goNamed(ExchangeRoute.exchangeLanding.name);
                     },
@@ -137,7 +138,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                 if (!state.notLoggedIn)
                   SettingsEntryItem(
                     icon: Icons.logout,
-                    title: 'Log Out',
+                    title: context.loc.exchangeSettingsLogOutTitle,
                     onTap: () {
                       if (state.notLoggedIn) {
                         NotLoggedInBottomSheet.show(context);

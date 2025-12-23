@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -22,21 +23,24 @@ class FundExchangeWarningScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.fundExchangeTitle), scrolledUnderElevation: 0.0),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeTitle),
+        scrolledUnderElevation: 0.0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center, // or start, end, etc.
+            mainAxisAlignment: .center, // or start, end, etc.
             children: [
               const Gap(24.0),
               CircleAvatar(
                 radius: 32,
-                backgroundColor: theme.colorScheme.tertiary,
+                backgroundColor: context.appColors.tertiary,
                 child: Icon(
                   Icons.shield_outlined,
                   size: 32,
-                  color: theme.colorScheme.onSurface,
+                  color: context.appColors.onSurface,
                 ),
               ),
               const Gap(8.0),
@@ -48,14 +52,14 @@ class FundExchangeWarningScreen extends StatelessWidget {
               BBText(
                 context.loc.fundExchangeWarningDescription,
                 style: theme.textTheme.headlineSmall,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Gap(24.0),
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       BBText(
                         context.loc.fundExchangeWarningTacticsTitle,
@@ -66,7 +70,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
                         (tactic) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               const Text('• ', style: TextStyle(fontSize: 14)),
                               Expanded(
@@ -85,7 +89,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
               ),
               const Gap(24.0),
               CheckboxListTile(
-                tileColor: theme.colorScheme.secondaryFixedDim,
+                tileColor: context.appColors.secondaryFixedDim,
                 contentPadding: const EdgeInsets.all(8.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
@@ -100,7 +104,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   context.loc.fundExchangeWarningConfirmation,
                   style: theme.textTheme.bodyLarge,
                 ),
-                controlAffinity: ListTileControlAffinity.leading,
+                controlAffinity: .leading,
               ),
             ],
           ),
@@ -162,8 +166,8 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   );
               }
             },
-            bgColor: theme.colorScheme.primary,
-            textColor: theme.colorScheme.onPrimary,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
         ),
       ),

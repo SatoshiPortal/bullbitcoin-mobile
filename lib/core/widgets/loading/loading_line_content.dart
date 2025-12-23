@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -16,15 +17,15 @@ class LoadingLineContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade100,
+      baseColor: context.appColors.shimmerBase,
+      highlightColor: context.appColors.shimmerHighlight,
       child: Padding(
         padding: padding,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
           children: [
-            Container(width: width, height: height, color: Colors.white),
+            Container(width: width, height: height, color: context.appColors.surface),
           ],
         ),
       ),

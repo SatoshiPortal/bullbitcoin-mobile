@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
@@ -45,51 +46,55 @@ class AutoSwapFeeWarning extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.colour.surface,
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(8),
         // ignore: deprecated_member_use
-        border: Border.all(color: context.colour.error.withOpacity(0.5)),
+        border: Border.all(color: context.appColors.error.withOpacity(0.5)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
-            'Auto Transfer Blocked',
+            context.loc.walletAutoTransferBlockedTitle,
             style: context.font.titleMedium,
-            color: context.colour.error,
+            color: context.appColors.error,
           ),
           const Gap(12),
           BBText(
-            'Attempting to transfer $swapAmountBtc BTC. Current fee is $currentSwapFeePercent% of the transfer amount and the fee threshold is set to ${autoSwapSettings.feeThresholdPercent}%',
+            context.loc.walletAutoTransferBlockedMessage(
+              swapAmountBtc,
+              currentSwapFeePercent.toString(),
+              autoSwapSettings.feeThresholdPercent.toString(),
+            ),
             style: context.font.bodyMedium,
           ),
           const Gap(12),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: .end,
             children: [
               BBButton.small(
-                label: 'Block',
+                label: context.loc.walletAutoTransferBlockButton,
                 onPressed: () {
                   context.read<WalletBloc>().add(
                     const BlockAutoSwapUntilNextExecution(),
                   );
                 },
-                bgColor: context.colour.error,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.error,
+                textColor: context.appColors.onSecondary,
                 height: 32,
                 width: 80,
                 textStyle: context.font.bodyMedium,
               ),
               const Gap(16),
               BBButton.small(
-                label: 'Allow',
+                label: context.loc.walletAutoTransferAllowButton,
                 onPressed: () {
                   context.read<WalletBloc>().add(
                     const ExecuteAutoSwapFeeOverride(),
                   );
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
                 height: 32,
                 width: 80,
                 textStyle: context.font.bodyMedium,

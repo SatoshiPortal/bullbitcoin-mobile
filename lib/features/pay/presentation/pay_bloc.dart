@@ -85,7 +85,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     on<PaySendPaymentConfirmed>(_onSendPaymentConfirmed);
     on<PayPollOrderStatus>(_onPollOrderStatus);
     on<PayReplaceByFeeChanged>(_onReplaceByFeeChanged);
-    on<PayUtxoSelected>(_onUtxoSelected);
+    on<PayUtxosSelected>(_onUtxosSelected);
     on<PayLoadUtxos>(_onLoadUtxos);
     on<PayUpdateOrderStatus>(_onUpdateOrderStatus);
   }
@@ -222,7 +222,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         );
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
-          feeRate: fastestFee.value as double,
         );
       }
     } catch (e) {
@@ -240,10 +239,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       final createdPayOrder = await _placePayOrderUsecase.execute(
         orderAmount: walletSelectionState.amount,
         recipientId: walletSelectionState.selectedRecipient.id,
-        network:
-            event.wallet.isLiquid
-                ? OrderBitcoinNetwork.liquid
-                : OrderBitcoinNetwork.bitcoin,
+        network: event.wallet.isLiquid
+            ? OrderBitcoinNetwork.liquid
+            : OrderBitcoinNetwork.bitcoin,
       );
 
       if (!event.wallet.isLiquid) {
@@ -405,27 +403,19 @@ class PayBloc extends Bloc<PayEvent, PayState> {
             message: 'Transaction fees not calculated. Please try again.',
           );
         }
-        final bitcoinFees = await _getNetworkFeesUsecase.execute(
-          isLiquid: false,
-        );
-        final fastestFee = bitcoinFees.fastest;
 
         final preparedSend = await _prepareBitcoinSendUsecase.execute(
           walletId: wallet.id,
           address: payPaymentState.payOrder.bitcoinAddress!,
           amountSat: payinAmountSat,
           networkFee: NetworkFee.absolute(absoluteFees),
-          selectedInputs:
-              payPaymentState.selectedUtxos.isNotEmpty
-                  ? payPaymentState.selectedUtxos
-                  : null,
+          selectedInputs: payPaymentState.selectedUtxos.isNotEmpty
+              ? payPaymentState.selectedUtxos
+              : null,
           replaceByFee: payPaymentState.replaceByFee,
         );
         final absoluteFeesUpdated = await _calculateBitcoinAbsoluteFeesUsecase
-            .execute(
-              psbt: preparedSend.unsignedPsbt,
-              feeRate: fastestFee.value as double,
-            );
+            .execute(psbt: preparedSend.unsignedPsbt);
         emit(payPaymentState.copyWith(absoluteFees: absoluteFeesUpdated));
         final signedTx = await _signBitcoinTxUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
@@ -546,20 +536,14 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   }
 
   // From Sell: Select/deselect UTXOs
-  Future<void> _onUtxoSelected(
-    PayUtxoSelected event,
+  Future<void> _onUtxosSelected(
+    PayUtxosSelected event,
     Emitter<PayState> emit,
   ) async {
     if (state is! PayPaymentState) return;
 
     final payPaymentState = state as PayPaymentState;
-    final selectedUtxos = List.of(payPaymentState.selectedUtxos);
-
-    if (selectedUtxos.contains(event.utxo)) {
-      selectedUtxos.remove(event.utxo);
-    } else {
-      selectedUtxos.add(event.utxo);
-    }
+    final selectedUtxos = event.utxos;
 
     emit(payPaymentState.copyWith(selectedUtxos: selectedUtxos));
     await _recalculateFees(emit);
@@ -648,15 +632,13 @@ class PayBloc extends Bloc<PayEvent, PayState> {
           address: dummyAddressForFeeCalculation.address,
           amountSat: payinAmountSat,
           networkFee: fastestFee,
-          selectedInputs:
-              payPaymentState.selectedUtxos.isNotEmpty
-                  ? payPaymentState.selectedUtxos
-                  : null,
+          selectedInputs: payPaymentState.selectedUtxos.isNotEmpty
+              ? payPaymentState.selectedUtxos
+              : null,
           replaceByFee: payPaymentState.replaceByFee,
         );
         final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: preparedSend.unsignedPsbt,
-          feeRate: fastestFee.value as double,
         );
         emit(payPaymentState.copyWith(absoluteFees: absoluteFees));
       }

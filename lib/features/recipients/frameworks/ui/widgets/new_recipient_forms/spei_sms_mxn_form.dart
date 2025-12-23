@@ -10,10 +10,10 @@ class SpeiSmsMxnForm extends StatefulWidget {
   const SpeiSmsMxnForm({super.key});
 
   @override
-  _SpeiSmsMxnFormState createState() => _SpeiSmsMxnFormState();
+  SpeiSmsMxnFormState createState() => SpeiSmsMxnFormState();
 }
 
-class _SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
+class SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _institutionCodeFocusNode = FocusNode();
   final FocusNode _phoneNumberFocusNode = FocusNode();
@@ -52,21 +52,19 @@ class _SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Institution Code',
             hintText: 'Enter institution code',
             focusNode: _institutionCodeFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _phoneNumberFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _institutionCode = value;
@@ -78,13 +76,11 @@ class _SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
             labelText: 'Phone Number',
             hintText: 'Enter phone number',
             focusNode: _phoneNumberFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _phoneNumber = value;
@@ -96,13 +92,11 @@ class _SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;
@@ -114,7 +108,7 @@ class _SpeiSmsMxnFormState extends State<SpeiSmsMxnForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

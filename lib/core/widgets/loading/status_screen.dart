@@ -31,10 +31,10 @@ class StatusScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = hasError ? context.colour.error : null;
+    final textColor = hasError ? context.appColors.error : null;
 
     return Scaffold(
-      backgroundColor: context.colour.onSecondary,
+      backgroundColor: context.appColors.onSecondary,
       body: StackedPage(
         bottomChild:
             (!isLoading && onTap != null)
@@ -44,8 +44,8 @@ class StatusScreen extends StatelessWidget {
                           ? (buttonText ?? 'Try Again')
                           : (buttonText ?? 'Continue'),
                   onPressed: onTap ?? () {},
-                  textColor: context.colour.onPrimary,
-                  bgColor: context.colour.secondary,
+                  textColor: context.appColors.onPrimary,
+                  bgColor: context.appColors.secondary,
                 )
                 : const SizedBox.shrink(),
         child: SafeArea(
@@ -53,7 +53,7 @@ class StatusScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: .start,
                 children: [
                   if (hasError)
                     Icon(

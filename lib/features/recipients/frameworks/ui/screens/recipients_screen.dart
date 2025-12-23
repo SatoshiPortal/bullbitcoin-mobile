@@ -40,8 +40,8 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
                         ? FadingLinearProgress(
                           height: 3,
                           trigger: isLoading,
-                          backgroundColor: context.colour.surface,
-                          foregroundColor: context.colour.primary,
+                          backgroundColor: context.appColors.surface,
+                          foregroundColor: context.appColors.primary,
                         )
                         : const SizedBox(height: 3),
           ),
@@ -56,7 +56,7 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
               Text(
                 'Who are you paying?',
                 style: context.font.labelMedium?.copyWith(
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
               ),
               const Gap(16.0),

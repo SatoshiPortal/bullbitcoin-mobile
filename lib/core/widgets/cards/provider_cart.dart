@@ -45,7 +45,7 @@ class _ProviderCardState extends State<ProviderCard>
     return ScaleTransition(
       scale: _scaleAnimation,
       child: Material(
-        color: Colors.transparent,
+        color: context.appColors.transparent,
         child: InkWell(
           onTapDown: (_) => _controller.forward(),
           onTapUp: (_) => _controller.reverse(),
@@ -57,7 +57,7 @@ class _ProviderCardState extends State<ProviderCard>
           borderRadius: BorderRadius.circular(8),
           child: Ink(
             decoration: BoxDecoration(
-              color: context.colour.onPrimary,
+              color: context.appColors.surface,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Container(
@@ -69,25 +69,25 @@ class _ProviderCardState extends State<ProviderCard>
                     height: 48,
                     child: Image.asset(
                       widget.provider.iconPath,
-                      fit: BoxFit.cover,
+                      fit: .cover,
                     ),
                   ),
                   const Gap(12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(
-                          widget.provider.name,
+                          widget.provider.displayName(context),
                           style: context.font.headlineMedium,
                         ),
                         const Gap(10),
-                        OptionsTag(text: widget.provider.description),
+                        OptionsTag(text: widget.provider.description(context)),
                       ],
                     ),
                   ),
                   const Gap(8),
-                  Icon(Icons.arrow_forward, color: context.colour.secondary),
+                  Icon(Icons.arrow_forward, color: context.appColors.onSurface),
                 ],
               ),
             ),

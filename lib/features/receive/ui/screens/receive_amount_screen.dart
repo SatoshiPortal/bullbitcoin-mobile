@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_entry.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_numberpad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -16,14 +15,13 @@ class ReceiveAmountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ReceiveBloc, ReceiveState>(
-      listenWhen:
-          (previous, current) =>
-              // Only listen on confirmed amount changes
-              previous.confirmedAmountSat != current.confirmedAmountSat &&
-              // Only listen when no amount exception is present
-              current.amountException == null &&
-              // Prevent using the amount from a previous receive type
-              previous.type == current.type,
+      listenWhen: (previous, current) =>
+          // Only listen on confirmed amount changes
+          previous.confirmedAmountSat != current.confirmedAmountSat &&
+          // Only listen when no amount exception is present
+          current.amountException == null &&
+          // Prevent using the amount from a previous receive type
+          previous.type == current.type,
       listener: (context, state) {
         onContinueNavigation?.call() ?? context.pop();
       },
@@ -84,10 +82,8 @@ class _AmountPageState extends State<AmountPage> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ReceiveBloc, ReceiveState>(
-      listenWhen:
-          (previous, current) =>
-              previous.inputAmountCurrencyCode !=
-              current.inputAmountCurrencyCode,
+      listenWhen: (previous, current) =>
+          previous.inputAmountCurrencyCode != current.inputAmountCurrencyCode,
       listener: (context, state) {
         // Clear the controller when currency changes
         _amountController.clear();
@@ -96,16 +92,15 @@ class _AmountPageState extends State<AmountPage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        behavior: HitTestBehavior.translucent,
+        behavior: .translucent,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: .spaceEvenly,
+          crossAxisAlignment: .stretch,
           children: [
             ReceiveAmountEntry(
               amountController: _amountController,
               focusNode: _amountFocusNode,
             ),
-            ReceiveNumberPad(amountController: _amountController),
             ReceiveAmountContinueButton(
               onContinueNavigation: widget.onContinueNavigation,
             ),
@@ -144,8 +139,8 @@ class ReceiveAmountContinueButton extends StatelessWidget {
           }
         },
         disabled: creatingSwap || amountException != null,
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
+        bgColor: context.appColors.secondary,
+        textColor: context.appColors.onSecondary,
       ),
     );
   }

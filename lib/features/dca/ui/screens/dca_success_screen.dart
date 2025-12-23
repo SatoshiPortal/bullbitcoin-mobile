@@ -42,30 +42,37 @@ class DcaSuccessScreen extends StatelessWidget {
         body: SafeArea(
           child: ScrollableColumn(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: .center,
             children: [
               const Spacer(),
               Icon(
                 Icons.check_circle,
                 size: 72,
-                color: context.colour.inverseSurface,
+                color: context.appColors.inverseSurface,
               ),
               const Gap(24),
               Text(
                 context.loc.dcaSuccessTitle,
                 style: Theme.of(context).textTheme.displaySmall,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Gap(16),
               Text(
                 switch (frequency) {
-                  DcaBuyFrequency.hourly => context.loc.dcaSuccessMessageHourly(amount),
-                  DcaBuyFrequency.daily => context.loc.dcaSuccessMessageDaily(amount),
-                  DcaBuyFrequency.weekly => context.loc.dcaSuccessMessageWeekly(amount),
-                  DcaBuyFrequency.monthly => context.loc.dcaSuccessMessageMonthly(amount),
+                  DcaBuyFrequency.hourly => context.loc.dcaSuccessMessageHourly(
+                    amount,
+                  ),
+                  DcaBuyFrequency.daily => context.loc.dcaSuccessMessageDaily(
+                    amount,
+                  ),
+                  DcaBuyFrequency.weekly => context.loc.dcaSuccessMessageWeekly(
+                    amount,
+                  ),
+                  DcaBuyFrequency.monthly => context.loc
+                      .dcaSuccessMessageMonthly(amount),
                 },
                 style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const Spacer(),
               BBButton.big(
@@ -73,8 +80,8 @@ class DcaSuccessScreen extends StatelessWidget {
                 onPressed: () {
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
               const Gap(16.0),
             ],

@@ -21,15 +21,17 @@ class DatabaseSeeds {
             isDevModeEnabled: false,
             useTorProxy: false,
             torProxyPort: 9050,
+            themeMode: 'system',
           ),
         );
   }
 
   static Future<void> seedDefaultElectrumServers(SqliteDatabase db) async {
     final serversData = [
-      (ApiServiceConstants.bbElectrumUrl, false, false, 0),
+      (ApiServiceConstants.fulcrumElectrumUrl, false, false, 0),
+      (ApiServiceConstants.bbElectrumUrl, false, false, 1),
       (ApiServiceConstants.bbLiquidElectrumUrlPath, false, true, 0),
-      (ApiServiceConstants.publicElectrumUrl, false, false, 1),
+      (ApiServiceConstants.publicElectrumUrl, false, false, 2),
       (ApiServiceConstants.publicLiquidElectrumUrlPath, false, true, 1),
       (ApiServiceConstants.publicElectrumTestUrl, true, false, 0),
       (ApiServiceConstants.publicliquidElectrumTestUrlPath, true, true, 0),
@@ -76,11 +78,13 @@ class DatabaseSeeds {
         .insert(
           const AutoSwapRow(
             id: 1,
-            enabled: false,
-            balanceThresholdSats: 1000000,
-            feeThresholdPercent: 3.0,
+            enabled: true,
+            balanceThresholdSats: 500000,
+            triggerBalanceSats: 1000000,
+            feeThresholdPercent: 1.0,
             blockTillNextExecution: false,
             alwaysBlock: false,
+            showWarning: true,
           ),
         );
     await db
@@ -88,11 +92,13 @@ class DatabaseSeeds {
         .insert(
           const AutoSwapRow(
             id: 2,
-            enabled: false,
-            balanceThresholdSats: 1000000,
-            feeThresholdPercent: 3.0,
+            enabled: true,
+            balanceThresholdSats: 500000,
+            triggerBalanceSats: 1000000,
+            feeThresholdPercent: 1.0,
             blockTillNextExecution: false,
             alwaysBlock: false,
+            showWarning: true,
           ),
         );
   }
@@ -108,5 +114,43 @@ class DatabaseSeeds {
             isPermissionGranted: false,
           ),
         );
+  }
+
+  static Future<void> seedDefaultMempoolServers(SqliteDatabase db) async {
+    final serversData = [
+      (ApiServiceConstants.bbMempoolUrlPath, false, false),
+      (ApiServiceConstants.testnetMempoolUrlPath, true, false),
+      (ApiServiceConstants.bbLiquidMempoolUrlPath, false, true),
+      (ApiServiceConstants.bbLiquidMempoolTestnetUrlPath, true, true),
+    ];
+
+    for (final (url, isTestnet, isLiquid) in serversData) {
+      final server = MempoolServerRow(
+        url: url,
+        isTestnet: isTestnet,
+        isLiquid: isLiquid,
+        isCustom: false,
+      );
+
+      await db.into(db.mempoolServers).insertOnConflictUpdate(server);
+    }
+  }
+
+  static Future<void> seedDefaultMempoolSettings(SqliteDatabase db) async {
+    final networks = [
+      'bitcoinMainnet',
+      'bitcoinTestnet',
+      'liquidMainnet',
+      'liquidTestnet',
+    ];
+
+    for (final network in networks) {
+      final settings = MempoolSettingsRow(
+        network: network,
+        useForFeeEstimation: true,
+      );
+
+      await db.into(db.mempoolSettings).insertOnConflictUpdate(settings);
+    }
   }
 }

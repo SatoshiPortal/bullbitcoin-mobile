@@ -12,10 +12,10 @@ class AmountInputFormatter extends TextInputFormatter {
   ) {
     final decimalPlaces =
         (inputCurrencyCode == 'sats' || inputCurrencyCode == 'L-sats')
-            ? 0
-            : inputCurrencyCode == 'BTC' || inputCurrencyCode == 'L-BTC'
-            ? 8
-            : 2; // Fiat currencies default to 2 decimals, can be adjusted if needed with a map
+        ? 0
+        : inputCurrencyCode == 'BTC' || inputCurrencyCode == 'L-BTC'
+        ? 8
+        : 2; // Fiat currencies default to 2 decimals, can be adjusted if needed with a map
 
     var newText = newValue.text;
 
@@ -37,10 +37,13 @@ class AmountInputFormatter extends TextInputFormatter {
     }
 
     // Apply regex validation - only truncate if necessary, don't manipulate cursor aggressively
-    final regex =
-        decimalPlaces == 0
-            ? RegExp(r'^\d+')
-            : RegExp(r'^\d+\.?\d{0,' + '$decimalPlaces' + '}');
+    final regex = decimalPlaces == 0
+        ? RegExp(r'^\d+')
+        : RegExp(
+            r'^\d+\.?\d{0,'
+            '$decimalPlaces'
+            '}',
+          );
     final match = regex.firstMatch(newText);
 
     if (match != null) {

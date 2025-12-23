@@ -18,7 +18,7 @@ class RecoverbullVaultProviderSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         if (description != null) ...[
           BBText(description!, style: context.font.bodySmall),

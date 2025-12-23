@@ -1,9 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx_vin.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx_vout.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:drift/drift.dart';
 
 @DataClassName('TransactionModel')
@@ -29,21 +27,19 @@ class Transactions extends Table {
 }
 
 extension TransactionModelExtension on TransactionModel {
-  static RawBitcoinTxEntity toEntity(TransactionModel row) {
-    return RawBitcoinTxEntity(
+  static BitcoinTx toEntity(TransactionModel row) {
+    return BitcoinTx(
       txid: row.txid,
       version: row.version,
       size: BigInt.parse(row.size),
       vsize: BigInt.parse(row.vsize),
       locktime: row.locktime,
-      vin:
-          (json.decode(row.vin) as List)
-              .map((e) => TxVin.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      vout:
-          (json.decode(row.vout) as List)
-              .map((e) => TxVout.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      vin: (json.decode(row.vin) as List)
+          .map((e) => TxVin.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      vout: (json.decode(row.vout) as List)
+          .map((e) => TxVout.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

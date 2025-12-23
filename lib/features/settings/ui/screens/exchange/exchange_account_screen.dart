@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class ExchangeAccountScreen extends StatelessWidget {
@@ -6,24 +8,31 @@ class ExchangeAccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Exchange Account')),
-      body: const Center(
+      appBar: AppBar(title: Text(context.loc.exchangeAccountTitle)),
+      body: Center(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             children: [
-              Icon(Icons.account_balance_wallet, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
-              Text(
-                'Exchange Account Settings',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Icon(
+                Icons.account_balance_wallet,
+                size: 64,
+                color: context.appColors.textMuted,
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 16),
               Text(
-                'This feature is coming soon.',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-                textAlign: TextAlign.center,
+                context.loc.exchangeAccountSettingsTitle,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: .bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                context.loc.exchangeAccountComingSoon,
+                style: TextStyle(fontSize: 16, color: context.appColors.textMuted),
+                textAlign: .center,
               ),
             ],
           ),

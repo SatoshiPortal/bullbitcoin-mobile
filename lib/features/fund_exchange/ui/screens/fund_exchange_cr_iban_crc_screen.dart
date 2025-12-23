@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -32,8 +33,8 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .start,
             children: [
               BBText(
                 context.loc.fundExchangeCrIbanCrcTitle,
@@ -50,7 +51,7 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
                     TextSpan(
                       text: context.loc.fundExchangeCrIbanCrcDescriptionBold,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: .bold,
                       ),
                     ),
                     TextSpan(
@@ -72,17 +73,20 @@ class FundExchangeCrIbanCrcScreen extends StatelessWidget {
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(
-                  label: context.loc.fundExchangeCrIbanCrcLabelPaymentDescription,
+                  label:
+                      context.loc.fundExchangeCrIbanCrcLabelPaymentDescription,
                   value: details?.code,
-                  helpText: context.loc.fundExchangeCrIbanCrcPaymentDescriptionHelp,
+                  helpText:
+                      context.loc.fundExchangeCrIbanCrcPaymentDescriptionHelp,
                 ),
                 const Gap(16.0),
                 InfoCard(
-                  description: context.loc.fundExchangeCrIbanCrcTransferCodeWarning,
-                  bgColor: theme.colorScheme.inverseSurface.withValues(
+                  description:
+                      context.loc.fundExchangeCrIbanCrcTransferCodeWarning,
+                  bgColor: context.appColors.inverseSurface.withValues(
                     alpha: 0.1,
                   ),
-                  tagColor: theme.colorScheme.secondary,
+                  tagColor: context.appColors.secondary,
                 ),
                 const Gap(24.0),
                 FundExchangeDetail(

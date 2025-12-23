@@ -10,10 +10,10 @@ class SpeiCardMxnForm extends StatefulWidget {
   const SpeiCardMxnForm({super.key});
 
   @override
-  _SpeiCardMxnFormState createState() => _SpeiCardMxnFormState();
+  SpeiCardMxnFormState createState() => SpeiCardMxnFormState();
 }
 
-class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
+class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _institutionCodeFocusNode = FocusNode();
   final FocusNode _debitCardFocusNode = FocusNode();
@@ -52,21 +52,19 @@ class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Institution Code',
             hintText: 'Enter institution code',
             focusNode: _institutionCodeFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _debitCardFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _institutionCode = value;
@@ -78,13 +76,11 @@ class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             labelText: 'Debit Card Number',
             hintText: 'Enter debit card number',
             focusNode: _debitCardFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _debitCard = value;
@@ -96,13 +92,11 @@ class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;
@@ -114,7 +108,7 @@ class _SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

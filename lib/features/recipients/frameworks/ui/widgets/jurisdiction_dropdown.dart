@@ -24,7 +24,8 @@ class JurisdictionsDropdown extends StatelessWidget {
 
     return Material(
       elevation: 4,
-      color: context.colour.onPrimary,
+      shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
+      color: context.appColors.surface,
       borderRadius: BorderRadius.circular(4.0),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -33,9 +34,10 @@ class JurisdictionsDropdown extends StatelessWidget {
           alignment: Alignment.centerLeft,
           underline: const SizedBox.shrink(),
           borderRadius: BorderRadius.circular(4.0),
+          dropdownColor: context.appColors.surface,
           icon: Icon(
             Icons.keyboard_arrow_down,
-            color: context.colour.secondary,
+            color: context.appColors.onSurface,
           ),
           value: selectedJurisdiction,
           onChanged: onChanged,

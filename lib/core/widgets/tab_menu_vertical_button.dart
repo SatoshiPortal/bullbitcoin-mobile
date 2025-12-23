@@ -20,11 +20,16 @@ class TabMenuVerticalButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color:
-            onTap != null ? context.colour.onSecondary : context.colour.surface,
+            onTap != null
+                ? context.appColors.surface
+                : context.appColors.border,
         borderRadius: BorderRadius.circular(2.76),
-        border: Border.all(color: context.colour.surface, width: 0.69),
+        border: Border.all(color: context.appColors.border, width: 0.69),
         boxShadow: [
-          BoxShadow(color: context.colour.surface, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: context.appColors.border,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: InkWell(

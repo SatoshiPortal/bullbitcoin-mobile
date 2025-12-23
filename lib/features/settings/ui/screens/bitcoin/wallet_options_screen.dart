@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -19,42 +20,46 @@ class WalletOptionsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(wallet?.displayLabel ?? 'Unnamed Wallet')),
+      appBar: AppBar(
+        title: Text(
+          wallet?.displayLabel(context) ??
+              context.loc.walletOptionsUnnamedWalletFallback,
+        ),
+      ),
       body: SafeArea(
-        child:
-            wallet == null
-                ? const Center(child: Text('Wallet not found'))
-                : Column(
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        children: [
-                          SettingsEntryItem(
-                            icon: Icons.account_balance_wallet,
-                            title: 'Wallet Details',
-                            onTap: () {
-                              context.pushNamed(
-                                SettingsRoute.walletDetailsSelectedWallet.name,
-                                pathParameters: {'walletId': walletId},
-                              );
-                            },
-                          ),
-                          SettingsEntryItem(
-                            icon: Icons.currency_bitcoin,
-                            title: 'Addresses',
-                            onTap: () {
-                              context.pushNamed(
-                                SettingsRoute.walletAddresses.name,
-                                pathParameters: {'walletId': walletId},
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+        child: wallet == null
+            ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
+            : Column(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      children: [
+                        SettingsEntryItem(
+                          icon: Icons.account_balance_wallet,
+                          title: context.loc.walletOptionsWalletDetailsTitle,
+                          onTap: () {
+                            context.pushNamed(
+                              SettingsRoute.walletDetailsSelectedWallet.name,
+                              pathParameters: {'walletId': walletId},
+                            );
+                          },
+                        ),
+                        SettingsEntryItem(
+                          icon: Icons.currency_bitcoin,
+                          title: context.loc.addressViewAddressesTitle,
+                          onTap: () {
+                            context.pushNamed(
+                              SettingsRoute.walletAddresses.name,
+                              pathParameters: {'walletId': walletId},
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
       ),
     );
   }

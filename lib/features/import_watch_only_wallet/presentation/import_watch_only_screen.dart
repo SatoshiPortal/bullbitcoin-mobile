@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -69,7 +70,7 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           Center(
                             child: BBText(
                               state.error,
-                              style: const TextStyle(color: Colors.red),
+                              style: TextStyle(color: context.appColors.error),
                             ),
                           ),
                         const Gap(32),

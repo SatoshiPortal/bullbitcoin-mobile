@@ -64,7 +64,7 @@ class _OnboardingPhysicalRecoveryState extends State<OnboardingPhysicalRecovery>
                           padding: const EdgeInsets.only(bottom: 16),
                           child: SingleChildScrollView(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              crossAxisAlignment: .stretch,
                               children: [
                                 IgnorePointer(
                                   ignoring:

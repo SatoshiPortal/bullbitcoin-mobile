@@ -23,7 +23,7 @@ class ProgressScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
           if (isLoading)
             Center(
@@ -40,9 +40,9 @@ class ProgressScreen extends StatelessWidget {
             const Gap(16),
             BBText(
               title!,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: context.font.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
               ),
             ),
           ],
@@ -50,7 +50,7 @@ class ProgressScreen extends StatelessWidget {
             const Gap(16),
             BBText(
               description!,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               style: context.font.bodySmall,
               maxLines: 3,
             ),

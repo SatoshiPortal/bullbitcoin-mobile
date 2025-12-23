@@ -14,10 +14,10 @@ class BankAccountCopForm extends StatefulWidget {
   const BankAccountCopForm({super.key});
 
   @override
-  _BankAccountCopFormState createState() => _BankAccountCopFormState();
+  BankAccountCopFormState createState() => BankAccountCopFormState();
 }
 
-class _BankAccountCopFormState extends State<BankAccountCopForm> {
+class BankAccountCopFormState extends State<BankAccountCopForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _accountNumberFocusNode = FocusNode();
   final FocusNode _documentIdFocusNode = FocusNode();
@@ -67,23 +67,23 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           // Institution Number Dropdown
           Text(
             'Bank Institution',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              fontWeight: .w500,
+              color: context.appColors.onSurface,
             ),
-            textAlign: TextAlign.left,
+            textAlign: .left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -94,17 +94,16 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                 decoration: const InputDecoration(border: InputBorder.none),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
-                value: _institutionNumber,
+                initialValue: _institutionNumber,
                 onChanged: (value) {
                   setState(() {
                     _institutionNumber = value;
                   });
                 },
-                validator:
-                    (v) =>
-                        (v == null) ? "Please select a bank institution" : null,
+                validator: (v) =>
+                    (v == null) ? "Please select a bank institution" : null,
                 items: [
                   const DropdownMenuItem<CopBankInstitutionsViewModel?>(
                     value: null,
@@ -129,15 +128,15 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             'Account Type',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              fontWeight: .w500,
+              color: context.appColors.onSurface,
             ),
-            textAlign: TextAlign.left,
+            textAlign: .left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -148,7 +147,7 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                 borderRadius: BorderRadius.circular(4.0),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
                 value: _accountType,
                 onChanged: (value) {
@@ -177,13 +176,11 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             hintText: 'Enter bank account number',
             focusNode: _accountNumberFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _documentIdFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _accountNumber = value;
@@ -195,15 +192,15 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             'ID Document Type',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              fontWeight: .w500,
+              color: context.appColors.onSurface,
             ),
-            textAlign: TextAlign.left,
+            textAlign: .left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -214,7 +211,7 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
                 borderRadius: BorderRadius.circular(4.0),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                 ),
                 value: _documentType,
                 onChanged: (value) {
@@ -256,13 +253,11 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             },
             hintText: 'Enter document number',
             focusNode: _documentIdFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _documentId = value;
@@ -274,13 +269,11 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             labelText: 'Name of the recipient',
             hintText: "Enter recipient name",
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;
@@ -292,7 +285,7 @@ class _BankAccountCopFormState extends State<BankAccountCopForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

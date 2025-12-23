@@ -21,7 +21,7 @@ sealed class SellEvent with _$SellEvent {
   const factory SellEvent.pollOrderStatus() = SellPollOrderStatus;
   const factory SellEvent.replaceByFeeChanged({required bool replaceByFee}) =
       SellReplaceByFeeChanged;
-  const factory SellEvent.utxoSelected({required WalletUtxo utxo}) =
-      SellUtxoSelected;
+  const factory SellEvent.utxosSelected({required List<WalletUtxo> utxos}) =
+      SellUtxosSelected;
   const factory SellEvent.loadUtxos() = SellLoadUtxos;
 }

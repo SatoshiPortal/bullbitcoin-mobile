@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -17,51 +18,74 @@ class SwapFromWalletDropdown extends StatelessWidget {
       (TransferBloc bloc) => bloc.state.fromWallet,
     );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
-        Text('From', style: context.font.bodyLarge),
+        Text(context.loc.swapFromLabel, style: context.font.bodyLarge),
         const Gap(4),
         if (wallets.isEmpty)
           const LoadingLineContent()
         else
           BBDropdown<Wallet>(
-            items:
-                wallets
-                    .where((wallet) => wallet.isLiquid || wallet.signsLocally)
-                    .map(
-                      (wallet) => DropdownMenuItem(
-                        value: wallet,
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              wallet.isLiquid
-                                  ? 'assets/logos/liquid.png'
-                                  : 'assets/logos/bitcoin.png',
-                              width: 20,
-                              height: 20,
-                            ),
-                            const Gap(8),
-                            Text(wallet.displayLabel),
-                          ],
+            items: wallets
+                .where((wallet) => wallet.signsLocally)
+                .map(
+                  (wallet) => DropdownMenuItem(
+                    value: wallet,
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          wallet.isLiquid
+                              ? 'assets/logos/liquid.png'
+                              : 'assets/logos/bitcoin.png',
+                          width: 20,
+                          height: 20,
                         ),
-                      ),
-                    )
-                    .toList(),
+                        const Gap(8),
+                        Text(wallet.displayLabel(context)),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
             value: selected,
             validator: (value) {
               if (value == null) {
-                return 'Please select a wallet to transfer from';
+                return context.loc.swapValidationSelectFromWallet;
               }
               return null;
             },
             onChanged: (value) {
               if (value != null) {
-                context.read<TransferBloc>().add(
-                  TransferWalletsChanged(
-                    fromWallet: value,
-                    toWallet: context.read<TransferBloc>().state.toWallet!,
-                  ),
-                );
+                final bloc = context.read<TransferBloc>();
+                final currentToWallet = bloc.state.toWallet;
+
+                // If Liquid wallet selected in From, ensure To is Bitcoin
+                if (value.isLiquid &&
+                    currentToWallet != null &&
+                    currentToWallet.isLiquid) {
+                  // Find Secure Bitcoin (default Bitcoin wallet)
+                  final secureBitcoin = wallets
+                      .where((w) => !w.isLiquid && w.isDefault)
+                      .firstOrNull;
+                  if (secureBitcoin != null) {
+                    bloc.add(
+                      TransferWalletsChanged(
+                        fromWallet: value,
+                        toWallet: secureBitcoin,
+                      ),
+                    );
+                    return;
+                  }
+                }
+
+                if (currentToWallet != null) {
+                  bloc.add(
+                    TransferWalletsChanged(
+                      fromWallet: value,
+                      toWallet: currentToWallet,
+                    ),
+                  );
+                }
               }
             },
           ),

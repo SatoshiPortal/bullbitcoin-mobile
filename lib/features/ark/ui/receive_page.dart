@@ -29,17 +29,23 @@ class _ReceivePageState extends State<ReceivePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.loc.arkReceiveTitle, style: context.font.headlineMedium),
+        title: Text(
+          context.loc.arkReceiveTitle,
+          style: context.font.headlineMedium,
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             const Gap(16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BBSegmentFull(
-                items: {context.loc.arkReceiveSegmentArk, context.loc.arkReceiveSegmentBoarding},
+                items: {
+                  context.loc.arkReceiveSegmentArk,
+                  context.loc.arkReceiveSegmentBoarding,
+                },
                 initialValue: _selectedOption,
                 onSelected: (value) {
                   setState(() {
@@ -50,7 +56,10 @@ class _ReceivePageState extends State<ReceivePage> {
             ),
             const Gap(16),
             ReceiveQR(
-              qrData: _selectedOption! == context.loc.arkReceiveSegmentBoarding ? btcAddress : arkAddress,
+              qrData:
+                  _selectedOption! == context.loc.arkReceiveSegmentBoarding
+                      ? btcAddress
+                      : arkAddress,
             ),
             const Gap(16),
             ArkCopyAddressSection(
@@ -78,7 +87,7 @@ class ReceiveQR extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: BorderRadius.circular(12),
         ),
         child:
@@ -121,14 +130,14 @@ class _ArkCopyAddressSectionState extends State<ArkCopyAddressSection> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           Text(addressLabel, style: context.font.bodyMedium),
           const Gap(6),
           CopyInput(
             text: currentAddress,
             clipboardText: currentAddress,
-            overflow: TextOverflow.ellipsis,
+            overflow: .ellipsis,
             canShowValueModal: true,
             modalTitle: addressLabel,
             modalContent:

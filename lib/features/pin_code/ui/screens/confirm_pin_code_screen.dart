@@ -29,7 +29,10 @@ class ConfirmPinCodeScreen extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(onBack: backHandler, title: context.loc.pinCodeAuthentication),
+          flexibleSpace: TopBar(
+            onBack: backHandler,
+            title: context.loc.pinCodeAuthentication,
+          ),
         ),
         body: SafeArea(
           child: Column(
@@ -39,14 +42,14 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: .stretch,
                       children: [
                         const Gap(30),
                         Text(
                           context.loc.pinCodeConfirmTitle,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                           style: context.font.headlineMedium?.copyWith(
-                            color: context.colour.outline,
+                            color: context.appColors.outline,
                           ),
                           maxLines: 3,
                         ),
@@ -72,7 +75,9 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                                   ),
                               rightIcon:
                                   obscurePinCode
-                                      ? const Icon(Icons.visibility_off_outlined)
+                                      ? const Icon(
+                                        Icons.visibility_off_outlined,
+                                      )
                                       : const Icon(Icons.visibility_outlined),
                               onlyNumbers: true,
                               onChanged: (value) {},
@@ -80,15 +85,19 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                           },
                         ),
                         const Gap(2),
-                        BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
+                        BlocSelector<
+                          PinCodeSettingBloc,
+                          PinCodeSettingState,
+                          bool
+                        >(
                           selector: (state) => state.showConfirmationError,
                           builder: (context, showError) {
                             return showError
                                 ? Text(
                                   context.loc.pinCodeMismatchError,
-                                  textAlign: TextAlign.start,
+                                  textAlign: .start,
                                   style: context.font.labelSmall?.copyWith(
-                                    color: context.colour.error,
+                                    color: context.appColors.error,
                                   ),
                                 )
                                 : const SizedBox.shrink();
@@ -152,13 +161,15 @@ class _ConfirmButton extends StatelessWidget {
             textStyle: context.font.headlineLarge,
             disabled: !canConfirm,
             bgColor:
-                canConfirm ? context.colour.secondary : context.colour.outline,
+                canConfirm
+                    ? context.appColors.secondary
+                    : context.appColors.outline,
             onPressed: () {
               context.read<PinCodeSettingBloc>().add(
                 const PinCodeSettingPinCodeConfirmed(),
               );
             },
-            textColor: context.colour.onSecondary,
+            textColor: context.appColors.onSecondary,
           );
         },
       ),

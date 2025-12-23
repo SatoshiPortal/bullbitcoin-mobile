@@ -20,41 +20,51 @@ class DcaWalletRadioList extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasError = errorText != null && errorText!.isNotEmpty;
     final borderColor =
-        hasError ? context.colour.error : context.colour.onSecondaryFixed;
+        hasError
+            ? context.appColors.error
+            : context.appColors.onSecondaryFixed;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
       children: [
-        Text(context.loc.dcaSelectWalletTypeLabel, style: context.font.bodyMedium),
+        Text(
+          context.loc.dcaSelectWalletTypeLabel,
+          style: context.font.bodyMedium,
+        ),
         const Gap(4),
-        ...DcaNetwork.values.map((walletType) {
-          return Column(
-            children: [
-              RadioListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(color: borderColor),
-                ),
-                title: Text(switch (walletType) {
-                  DcaNetwork.bitcoin => context.loc.dcaWalletTypeBitcoin,
-                  DcaNetwork.lightning => context.loc.dcaWalletTypeLightning,
-                  DcaNetwork.liquid => context.loc.dcaWalletTypeLiquid,
-                }, style: context.font.headlineSmall),
-                subtitle: Text(switch (walletType) {
-                  DcaNetwork.bitcoin => context.loc.dcaWalletBitcoinSubtitle,
-                  DcaNetwork.lightning =>
-                    context.loc.dcaWalletLightningSubtitle,
-                  DcaNetwork.liquid => context.loc.dcaWalletLiquidSubtitle,
-                }, style: context.font.bodySmall),
-                value: walletType,
-                groupValue: selectedWallet,
-                onChanged: onChanged,
-              ),
-              const Gap(16),
-            ],
-          );
-        }),
+        RadioGroup<DcaNetwork>(
+          groupValue: selectedWallet,
+          onChanged: onChanged ?? (_) {},
+          child: Column(
+            children:
+                DcaNetwork.values.map((walletType) {
+                  return Column(
+                    children: [
+                      RadioListTile(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: borderColor),
+                        ),
+                        title: Text(switch (walletType) {
+                          DcaNetwork.bitcoin => context.loc.dcaWalletTypeBitcoin,
+                          DcaNetwork.lightning => context.loc.dcaWalletTypeLightning,
+                          DcaNetwork.liquid => context.loc.dcaWalletTypeLiquid,
+                        }, style: context.font.headlineSmall),
+                        subtitle: Text(switch (walletType) {
+                          DcaNetwork.bitcoin => context.loc.dcaWalletBitcoinSubtitle,
+                          DcaNetwork.lightning =>
+                            context.loc.dcaWalletLightningSubtitle,
+                          DcaNetwork.liquid => context.loc.dcaWalletLiquidSubtitle,
+                        }, style: context.font.bodySmall),
+                        value: walletType,
+                      ),
+                      const Gap(16),
+                    ],
+                  );
+                }).toList(),
+          ),
+        ),
         if (hasError) ...[
           const Gap(4),
           Text(

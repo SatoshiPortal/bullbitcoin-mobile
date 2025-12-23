@@ -29,6 +29,15 @@ sealed class TransferState with _$TransferState {
     String? externalAddressError,
     @Default(true) bool receiveExactAmount,
     @Default('') String amount,
+    String? receiveAddress,
+    @Default(true) bool replaceByFee,
+    @Default([]) List<WalletUtxo> selectedUtxos,
+    @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
+    NetworkFee? customFee,
+    List<WalletUtxo>? utxos,
+    int? bitcoinTxSize,
+    double? exchangeRate,
+    String? fiatCurrencyCode,
   }) = _TransferState;
   const TransferState._();
 
@@ -111,6 +120,65 @@ sealed class TransferState with _$TransferState {
       return FormatAmount.sats(absoluteFees!);
     } else {
       return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
+  }
+
+  bool get isSameChainTransfer {
+    if (sendToExternal) return false;
+    return fromWallet?.isLiquid == false && toWallet?.isLiquid == false;
+  }
+
+  bool get shouldShowAdvancedOptions {
+    return fromWallet?.isLiquid == false;
+  }
+
+  int get selectedUtxoTotalSat {
+    return selectedUtxos.fold(
+      0,
+      (previousValue, element) => previousValue + element.amountSat.toInt(),
+    );
+  }
+
+  bool get isCoinSelectionValid {
+    if (selectedUtxos.isEmpty) return false;
+    return selectedUtxoTotalSat >= confirmedAmountSat;
+  }
+
+  int get confirmedAmountSat {
+    if (isSameChainTransfer) {
+      return inputAmountSat;
+    }
+    if (swap != null && swap is ChainSwap) {
+      return (swap as ChainSwap).paymentAmount;
+    }
+    return inputAmountSat;
+  }
+
+  NetworkFee? get selectedFee {
+    if (fromWallet == null) return null;
+    switch (selectedFeeOption) {
+      case FeeSelection.fastest:
+        return fromWallet!.isLiquid
+            ? liquidNetworkFees?.fastest
+            : bitcoinNetworkFees?.fastest;
+      case FeeSelection.economic:
+        return fromWallet!.isLiquid
+            ? liquidNetworkFees?.economic
+            : bitcoinNetworkFees?.economic;
+      case FeeSelection.slow:
+        return fromWallet!.isLiquid
+            ? liquidNetworkFees?.slow
+            : bitcoinNetworkFees?.slow;
+      case FeeSelection.custom:
+        return customFee;
+    }
+  }
+
+  String get formattedSelectedUtxoTotal {
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(selectedUtxoTotalSat);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat));
     }
   }
 }

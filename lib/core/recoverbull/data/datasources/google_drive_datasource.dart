@@ -80,11 +80,10 @@ class GoogleDriveAppDatasource {
     final filename = vault.filename;
     final jsonVault = vault.toFile();
 
-    final file =
-        drive.File()
-          ..name = filename
-          ..mimeType = 'application/json'
-          ..parents = ['appDataFolder'];
+    final file = drive.File()
+      ..name = filename
+      ..mimeType = 'application/json'
+      ..parents = ['appDataFolder'];
 
     await _driveApi!.files.create(
       file,

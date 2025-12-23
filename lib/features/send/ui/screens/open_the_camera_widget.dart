@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/send/ui/screens/full_screen_scanner_page.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -13,7 +14,7 @@ class OpenTheCameraWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: context.colour.secondaryFixedDim,
+      color: context.appColors.background,
       child: Column(
         children: [
           const Gap(30),
@@ -22,11 +23,11 @@ class OpenTheCameraWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Text(
-              'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
+              context.loc.sendScanBitcoinQRCode,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.outlineVariant,
+                color: context.appColors.text,
               ),
-              textAlign: TextAlign.center,
+              textAlign: .center,
               maxLines: 2,
             ),
           ),
@@ -38,20 +39,19 @@ class OpenTheCameraWidget extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   PageRouteBuilder(
-                    pageBuilder:
-                        (context, _, _) => FullScreenScannerPage(
-                          onScannedPaymentRequest: onScannedPaymentRequest,
-                        ),
+                    pageBuilder: (context, _, _) => FullScreenScannerPage(
+                      onScannedPaymentRequest: onScannedPaymentRequest,
+                    ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) =>
                             child,
                   ),
                 );
               },
-              label: 'Open the Camera',
-              bgColor: Colors.transparent,
-              borderColor: context.colour.surfaceContainer,
-              textColor: context.colour.secondary,
+              label: context.loc.sendOpenTheCamera,
+              bgColor: context.appColors.surface,
+              borderColor: context.appColors.text,
+              textColor: context.appColors.text,
             ),
           ),
           const Gap(24),

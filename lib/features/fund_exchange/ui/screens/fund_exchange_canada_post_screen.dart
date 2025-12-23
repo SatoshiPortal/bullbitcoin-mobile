@@ -31,8 +31,8 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: .center,
+            crossAxisAlignment: .start,
             children: [
               BBText(
                 context.loc.fundExchangeCanadaPostTitle,
@@ -49,7 +49,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                 context.loc.fundExchangeCanadaPostStep7,
               ].map(
                 (step) => Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Expanded(
                       child: Text(step, style: const TextStyle(fontSize: 14)),
@@ -69,7 +69,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                       BBText(
                         context.loc.fundExchangeCanadaPostQrCodeLabel,
                         style: theme.textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                       const Gap(8.0),
                       if (details?.code == null)

@@ -7,6 +7,7 @@ abstract class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
     ReceiveType? type,
     Wallet? wallet,
+    @Default([]) List<Wallet> wallets,
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
@@ -35,11 +36,10 @@ abstract class ReceiveState with _$ReceiveState {
   }
 
   bool get swapLimitsFetched => swapLimits != null;
-  bool get isInputAmountFiat =>
-      ![
-        BitcoinUnit.btc.code,
-        BitcoinUnit.sats.code,
-      ].contains(inputAmountCurrencyCode);
+  bool get isInputAmountFiat => ![
+    BitcoinUnit.btc.code,
+    BitcoinUnit.sats.code,
+  ].contains(inputAmountCurrencyCode);
 
   int get inputAmountSat {
     int amountSat = 0;
@@ -130,8 +130,8 @@ abstract class ReceiveState with _$ReceiveState {
             if (note.isNotEmpty) 'message': note,
             'assetid':
                 wallet != null && wallet!.network == Network.liquidMainnet
-                    ? AssetConstants.lbtcMainnet
-                    : AssetConstants.lbtcTestnet,
+                ? AssetConstants.lbtcMainnet
+                : AssetConstants.lbtcTestnet,
           },
         );
         return bip21Uri.toString();

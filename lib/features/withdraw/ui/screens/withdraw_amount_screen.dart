@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
@@ -43,13 +44,13 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                   },
                 )
                 : null,
-        title: const Text('Withdraw fiat'),
+        title: Text(context.loc.withdrawAmountTitle),
       ),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: ScrollableColumn(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               const Gap(40.0),
               WithdrawAmountInputFields(
@@ -63,7 +64,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
               ),
               const Spacer(),
               BBButton.big(
-                label: 'Continue',
+                label: context.loc.withdrawAmountContinue,
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     context.read<WithdrawBloc>().add(
@@ -74,8 +75,8 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                     );
                   }
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.onSurface,
+                textColor: context.appColors.surface,
               ),
               const Gap(16.0),
             ],

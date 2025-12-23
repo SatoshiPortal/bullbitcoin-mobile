@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 
 class MinimumAmountThresholdException extends BullException {
   final int minimumThresholdSats;
@@ -11,12 +12,22 @@ class MinimumAmountThresholdException extends BullException {
         'Minimum balance threshold is $minimumThresholdSats ${bitcoinUnit.code}',
       );
 
-  String displayMessage() {
+  String displayMessage([AppLocalizations? loc]) {
+    if (loc == null) {
+      if (bitcoinUnit == BitcoinUnit.btc) {
+        final btcAmount = ConvertAmount.satsToBtc(minimumThresholdSats);
+        return 'Minimum balance threshold is $btcAmount BTC';
+      }
+      return 'Minimum balance threshold is $minimumThresholdSats sats';
+    }
+
     if (bitcoinUnit == BitcoinUnit.btc) {
       final btcAmount = ConvertAmount.satsToBtc(minimumThresholdSats);
-      return 'Minimum balance threshold is $btcAmount BTC';
+      return loc.autoswapMinimumThresholdErrorBtc(btcAmount.toString());
     }
-    return 'Minimum balance threshold is $minimumThresholdSats sats';
+    return loc.autoswapMinimumThresholdErrorSats(
+      minimumThresholdSats.toString(),
+    );
   }
 }
 
@@ -26,7 +37,12 @@ class MaximumFeeThresholdException extends BullException {
   MaximumFeeThresholdException(this.maximumThreshold)
     : super('Maximum fee threshold is $maximumThreshold%');
 
-  String displayMessage() => 'Maximum fee threshold is $maximumThreshold%';
+  String displayMessage([AppLocalizations? loc]) {
+    if (loc == null) {
+      return 'Maximum fee threshold is $maximumThreshold%';
+    }
+    return loc.autoswapMaximumFeeError(maximumThreshold.toString());
+  }
 }
 
 class AutoSwapProcessException extends BullException {

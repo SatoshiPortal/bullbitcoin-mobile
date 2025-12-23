@@ -11,10 +11,10 @@ class BankTransferCadForm extends StatefulWidget {
   const BankTransferCadForm({super.key});
 
   @override
-  _BankTransferCadFormState createState() => _BankTransferCadFormState();
+  BankTransferCadFormState createState() => BankTransferCadFormState();
 }
 
-class _BankTransferCadFormState extends State<BankTransferCadForm> {
+class BankTransferCadFormState extends State<BankTransferCadForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _institutionNumberFocusNode = FocusNode();
   final FocusNode _transitNumberFocusNode = FocusNode();
@@ -34,8 +34,10 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
   @override
   void initState() {
     super.initState();
-    _onlyOwnerPermitted =
-        context.read<RecipientsBloc>().state.onlyOwnerRecipients;
+    _onlyOwnerPermitted = context
+        .read<RecipientsBloc>()
+        .state
+        .onlyOwnerRecipients;
     if (_onlyOwnerPermitted) {
       _isMyAccount = true;
     }
@@ -74,21 +76,19 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
       key: _formKey,
       autovalidateMode: AutovalidateMode.disabled,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: .start,
+        mainAxisSize: .min,
         children: [
           BBTextFormField(
             labelText: 'Institution Number',
             hintText: 'Enter institution number',
             focusNode: _institutionNumberFocusNode,
             autofocus: true,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _transitNumberFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _institutionNumber = value;
@@ -100,13 +100,11 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Transit Number',
             hintText: 'Enter transit number',
             focusNode: _transitNumberFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _accountNumberFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _transitNumber = value;
@@ -118,13 +116,11 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Account Number',
             hintText: 'Enter account number',
             focusNode: _accountNumberFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _accountNumber = value;
@@ -136,13 +132,11 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Name',
             hintText: 'Enter recipient name',
             focusNode: _nameFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _defaultCommentFocusNode.requestFocus(),
-            validator:
-                (v) =>
-                    (v == null || v.trim().isEmpty)
-                        ? "This field can't be empty"
-                        : null,
+            validator: (v) => (v == null || v.trim().isEmpty)
+                ? "This field can't be empty"
+                : null,
             onChanged: (value) {
               setState(() {
                 _name = value;
@@ -154,7 +148,7 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Default Comment (optional)',
             hintText: 'Enter default comment',
             focusNode: _defaultCommentFocusNode,
-            textInputAction: TextInputAction.next,
+            textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: null,
             onChanged: (value) {
@@ -168,7 +162,7 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             labelText: 'Label (optional)',
             hintText: 'Enter a label for this recipient',
             focusNode: _labelFocusNode,
-            textInputAction: TextInputAction.done,
+            textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {
@@ -182,38 +176,37 @@ class _BankTransferCadFormState extends State<BankTransferCadForm> {
             'Who does this account belong to?',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: context.colour.onSurface,
+              fontWeight: .w500,
+              color: context.appColors.onSurface,
             ),
           ),
           const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text('This is my account'),
-            value: true,
+          RadioGroup<bool>(
             groupValue: _isMyAccount,
             onChanged: (value) {
-              setState(() {
-                _isMyAccount = value ?? true;
-              });
+              if (!_onlyOwnerPermitted) {
+                setState(() {
+                  _isMyAccount = value ?? false;
+                });
+              }
             },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
-          ),
-          const Gap(8.0),
-          RadioListTile<bool>(
-            title: const Text("This is someone else's account"),
-            value: false,
-            groupValue: _isMyAccount,
-            onChanged:
-                _onlyOwnerPermitted
-                    ? null
-                    : (value) {
-                      setState(() {
-                        _isMyAccount = value ?? false;
-                      });
-                    },
-            contentPadding: EdgeInsets.zero,
-            visualDensity: VisualDensity.compact,
+            child: const Column(
+              children: [
+                RadioListTile<bool>(
+                  title: Text('This is my account'),
+                  value: true,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+                Gap(8.0),
+                RadioListTile<bool>(
+                  title: Text("This is someone else's account"),
+                  value: false,
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
+            ),
           ),
           const Gap(24.0),
           RecipientFormContinueButton(onPressed: _submitForm),

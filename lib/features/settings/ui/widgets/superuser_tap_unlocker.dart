@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/multi_tap_trigger.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,9 @@ class SuperuserTapUnlocker extends StatelessWidget {
       onRequiredTaps: () async {
         await context.read<SettingsCubit>().toggleSuperuserMode(!isSuperuser);
       },
-      tapsReachedMessage:
-          isSuperuser ? 'Superuser mode disabled.' : 'Superuser mode unlocked!',
+      tapsReachedMessage: isSuperuser
+          ? context.loc.settingsSuperuserModeDisabledMessage
+          : context.loc.settingsSuperuserModeUnlockedMessage,
       tapsReachedMessageBackgroundColor: tapsReachedMessageBackgroundColor,
       tapsReachedMessageTextColor: tapsReachedMessageTextColor,
       child: child,

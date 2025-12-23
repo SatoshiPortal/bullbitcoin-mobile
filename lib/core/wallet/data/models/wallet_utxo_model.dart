@@ -14,6 +14,7 @@ sealed class WalletUtxoModel with _$WalletUtxoModel {
     required String address,
     required bool isExternalKeyChain,
   }) = BitcoinWalletUtxoModel;
+
   factory WalletUtxoModel.liquid({
     required String txId,
     required int vout,
@@ -22,6 +23,7 @@ sealed class WalletUtxoModel with _$WalletUtxoModel {
     required String standardAddress,
     required String confidentialAddress,
   }) = LiquidWalletUtxoModel;
+
   const WalletUtxoModel._();
 
   String get labelRef => '$txId:$vout';

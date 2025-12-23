@@ -18,7 +18,7 @@ class TestCompletedPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: <Widget>[
             const Spacer(),
             Column(
@@ -42,7 +42,7 @@ class TestCompletedPage extends StatelessWidget {
                 BBText(
                   context.loc.recoverbullTestSuccessDescription,
                   style: context.font.bodyMedium,
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
               ],
             ),
@@ -53,8 +53,8 @@ class TestCompletedPage extends StatelessWidget {
               ),
               child: BBButton.big(
                 label: context.loc.recoverbullGotIt,
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onPrimary,
                 onPressed: () {
                   context.goNamed(WalletRoute.walletHome.name);
                 },

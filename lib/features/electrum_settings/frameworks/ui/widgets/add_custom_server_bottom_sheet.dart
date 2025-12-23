@@ -100,7 +100,7 @@ class _AddCustomServerBottomSheetState
 
     return GestureDetector(
       // tap outside input to close keyboard
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: SafeArea(
         child: Padding(
@@ -111,8 +111,8 @@ class _AddCustomServerBottomSheetState
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: .start,
+                mainAxisSize: .min,
                 children: [
                   Row(
                     children: [
@@ -134,7 +134,7 @@ class _AddCustomServerBottomSheetState
                     controller: _controller,
                     focusNode: _focusNode,
                     autofocus: true,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: .done,
                     inputFormatters: [
                       // No whitespace allowed
                       FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -143,24 +143,20 @@ class _AddCustomServerBottomSheetState
                     ],
                     style: context.font.bodyLarge,
                     decoration: InputDecoration(
-                      fillColor: context.colour.onPrimary,
+                      fillColor: context.appColors.surface,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
-                        ),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
-                        ),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim.withValues(
+                          color: context.appColors.border.withValues(
                             alpha: 0.5,
                           ),
                         ),
@@ -175,7 +171,7 @@ class _AddCustomServerBottomSheetState
                         environment,
                       ),
                       hintStyle: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     onFieldSubmitted: (_) => _submit(),
@@ -202,7 +198,7 @@ class _AddCustomServerBottomSheetState
                       children: [
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               Text(
                                 context.loc.electrumEnableSsl,
@@ -213,9 +209,8 @@ class _AddCustomServerBottomSheetState
                                 Text(
                                   '(Auto-detected)',
                                   style: context.font.bodySmall?.copyWith(
-                                    color: context.colour.onSurface.withValues(
-                                      alpha: 0.6,
-                                    ),
+                                    color: context.appColors.onSurface
+                                        .withValues(alpha: 0.6),
                                   ),
                                 ),
                               ],
@@ -242,17 +237,19 @@ class _AddCustomServerBottomSheetState
                           ? context.loc.electrumLiquidSslInfo
                           : context.loc.electrumBitcoinServerInfo,
                       style: context.font.bodySmall?.copyWith(
-                        color: context.colour.onSurface.withValues(alpha: 0.6),
+                        color: context.appColors.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
-                      textAlign: TextAlign.start,
+                      textAlign: .start,
                     ),
                   ),
                   const Gap(24),
                   BBButton.big(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: context.appColors.onSurface,
+                    textColor: context.appColors.surface,
                   ),
                 ],
               ),

@@ -13,28 +13,31 @@ class HowToDecideBackupOption extends StatelessWidget {
       heightFactor: 0.75,
       child: Container(
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   const Spacer(),
                   BBText(
                     context.loc.backupWalletHowToDecideBackupModalTitle,
                     style: context.font.headlineMedium,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                   const Spacer(),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.close, color: context.colour.secondary),
+                    child: Icon(
+                      Icons.close,
+                      color: context.appColors.secondary,
+                    ),
                   ),
                 ],
               ),
@@ -45,7 +48,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       BBText(
                         context.loc.backupWalletHowToDecideBackupLosePhysical,
@@ -75,7 +78,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                                       .loc
                                       .backupWalletHowToDecideBackupPhysicalRecommendation,
                               style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
@@ -99,7 +102,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                                       .loc
                                       .backupWalletHowToDecideBackupEncryptedRecommendation,
                               style: context.font.labelMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: .bold,
                               ),
                             ),
                             TextSpan(

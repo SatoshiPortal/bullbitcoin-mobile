@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter/material.dart';
@@ -19,36 +20,40 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
 
     return BBText(
       (swap != null && swap.swapCompleted && swap.isChainSwap)
-          ? 'Transfer Completed'
+          ? context.loc.transactionStatusTransferCompleted
           : (swap != null && swap.swapInProgress && swap.isChainSwap)
-          ? 'Transfer In Progress'
+          ? context.loc.transactionStatusTransferInProgress
           : (swap != null &&
               swap.swapInProgress &&
               (swap.isLnSendSwap || swap.isLnReceiveSwap))
-          ? 'Payment In Progress'
+          ? context.loc.transactionStatusPaymentInProgress
           : swap != null && swap.swapRefunded
-          ? 'Payment Refunded'
+          ? context.loc.transactionStatusPaymentRefunded
           : swap != null &&
               (swap.status == SwapStatus.failed ||
                   swap.status == SwapStatus.expired)
           ? swap.status == SwapStatus.failed
-              ? (swap.isChainSwap ? 'Transfer Failed' : 'Swap Failed')
-              : (swap.isChainSwap ? 'Transfer Expired' : 'Swap Expired')
+              ? (swap.isChainSwap
+                  ? context.loc.transactionStatusTransferFailed
+                  : context.loc.transactionStatusSwapFailed)
+              : (swap.isChainSwap
+                  ? context.loc.transactionStatusTransferExpired
+                  : context.loc.transactionStatusSwapExpired)
           : isOrder == true && order != null
           ? order.orderType.value
           : transaction?.isOngoingPayjoinSender == true
-          ? 'Payjoin requested'
+          ? context.loc.transactionStatusPayjoinRequested
           : transaction?.isIncoming == true
-          ? 'Receive'
-          : 'Send',
+          ? context.loc.transactionFilterReceive
+          : context.loc.transactionFilterSend,
       style: context.font.headlineLarge?.copyWith(
         color:
             swap != null &&
                     (swap.status == SwapStatus.failed ||
                         swap.status == SwapStatus.expired)
                 ? swap.status == SwapStatus.failed
-                    ? context.colour.error
-                    : context.colour.error.withValues(alpha: 0.7)
+                    ? context.appColors.error
+                    : context.appColors.error.withValues(alpha: 0.7)
                 : null,
       ),
     );

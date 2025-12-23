@@ -1,8 +1,13 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class RecoverBullError extends BullException {
   RecoverBullError(super.message);
+
+  /// Returns the localized error message.
+  String toTranslated(BuildContext context) => message;
 }
 
 class ServerError extends RecoverBullError {
@@ -25,28 +30,57 @@ class ServerError extends RecoverBullError {
 }
 
 class InvalidCredentialsError extends ServerError {
-  InvalidCredentialsError()
-    : super('Wrong password for this backup file. Please check your password.');
+  InvalidCredentialsError() : super('InvalidCredentialsError');
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.recoverbullErrorInvalidCredentials;
 }
 
 class RateLimitedError extends ServerError {
   final Duration retryIn;
 
-  RateLimitedError({required this.retryIn})
-    : super(
-        'Rate-limited. Retry in ${retryIn.inMinutes == 0 ? "${retryIn.inSeconds} seconds" : "${retryIn.inMinutes} minutes"} ',
-      );
+  RateLimitedError({required this.retryIn}) : super('RateLimitedError');
+
+  @override
+  String toTranslated(BuildContext context) {
+    final seconds = retryIn.inSeconds;
+    final minutes = retryIn.inMinutes;
+
+    final String formattedTime;
+    if (seconds < 60) {
+      formattedTime = context.loc.durationSeconds(seconds.toString());
+    } else {
+      formattedTime =
+          minutes == 1
+              ? context.loc.durationMinute(minutes.toString())
+              : context.loc.durationMinutes(minutes.toString());
+    }
+
+    return context.loc.recoverbullErrorRateLimited(formattedTime);
+  }
 }
 
 class KeyServerErrorRejected extends ServerError {
-  KeyServerErrorRejected() : super('Rejected by the Key Server');
+  KeyServerErrorRejected() : super('KeyServerErrorRejected');
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.recoverbullErrorRejected;
 }
 
 class KeyServerErrorServiceUnavailable extends ServerError {
-  KeyServerErrorServiceUnavailable()
-    : super('Service unavailable. Please check your connection.');
+  KeyServerErrorServiceUnavailable() : super('KeyServerErrorServiceUnavailable');
+
+  @override
+  String toTranslated(BuildContext context) =>
+      context.loc.recoverbullErrorServiceUnavailable;
 }
 
 class InvalidVaultFileError extends BullException {
-  InvalidVaultFileError() : super('Invalid vault file.');
+  InvalidVaultFileError() : super('InvalidVaultFileError');
+
+  /// Returns the localized error message.
+  String toTranslated(BuildContext context) =>
+      context.loc.recoverbullErrorInvalidVaultFile;
 }
