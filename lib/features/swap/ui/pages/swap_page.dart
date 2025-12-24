@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -242,13 +243,9 @@ class SwapPageState extends State<SwapPage> {
                             outlined: true,
                             borderColor: context.appColors.secondary,
                             onPressed: () {
-                              showModalBottomSheet(
+                              BlurredBottomSheet.show(
                                 context: context,
-                                isScrollControlled: true,
-                                backgroundColor: context.appColors.onSecondary,
-                                constraints: const BoxConstraints(maxWidth: double.infinity),
-                                useSafeArea: true,
-                                builder: (BuildContext buildContext) => BlocProvider.value(
+                                child: BlocProvider.value(
                                   value: context.read<TransferBloc>(),
                                   child: const SwapAdvancedOptionsBottomSheet(),
                                 ),

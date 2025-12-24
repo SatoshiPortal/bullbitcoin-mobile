@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -9,13 +10,9 @@ class NotLoggedInBottomSheet extends StatelessWidget {
   const NotLoggedInBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.appColors.onPrimary,
-      useRootNavigator: true,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (context) => const NotLoggedInBottomSheet(),
+      child: const NotLoggedInBottomSheet(),
     );
   }
 

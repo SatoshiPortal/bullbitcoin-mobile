@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
@@ -14,15 +15,9 @@ class SellQrBottomSheet extends StatelessWidget {
     BuildContext context,
     String bip21InvoiceData,
   ) async {
-    await showModalBottomSheet(
+    await BlurredBottomSheet.show(
       context: context,
-      useRootNavigator: true,
-      backgroundColor: context.appColors.onPrimary,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      isScrollControlled: true,
-      builder: (context) {
-        return SellQrBottomSheet(bip21InvoiceData: bip21InvoiceData);
-      },
+      child: SellQrBottomSheet(bip21InvoiceData: bip21InvoiceData),
     );
   }
 

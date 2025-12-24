@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:bb_mobile/core/exchange/domain/entity/rate.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -141,20 +142,12 @@ class _PriceDisplay extends StatelessWidget {
       return;
     }
 
-    final selectedCurrency = await showModalBottomSheet<String?>(
+    final selectedCurrency = await BlurredBottomSheet.show<String?>(
       context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      isDismissible: true,
-      useSafeArea: true,
-      backgroundColor: context.appColors.secondaryFixedDim,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (sheetContext) {
-        return CurrencyBottomSheet(
-          availableCurrencies: availableCurrencies,
-          selectedValue: currency,
-        );
-      },
+      child: CurrencyBottomSheet(
+        availableCurrencies: availableCurrencies,
+        selectedValue: currency,
+      ),
     );
 
     if (selectedCurrency != null &&
