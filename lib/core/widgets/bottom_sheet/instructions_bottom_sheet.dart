@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -24,18 +25,14 @@ class InstructionsBottomSheet extends StatelessWidget {
     required List<String> instructions,
     VoidCallback? onClose,
   }) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      backgroundColor: context.appColors.transparent,
-      builder:
-          (_) => InstructionsBottomSheet(
-            title: title,
-            subtitle: subtitle,
-            instructions: instructions,
-            onClose: onClose,
-          ),
+      child: InstructionsBottomSheet(
+        title: title,
+        subtitle: subtitle,
+        instructions: instructions,
+        onClose: onClose,
+      ),
     );
   }
 
@@ -98,17 +95,16 @@ class InstructionsBottomSheet extends StatelessWidget {
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: .start,
-                  children:
-                      instructions
-                          .asMap()
-                          .entries
-                          .map(
-                            (entry) => _buildInstructionStep(
-                              '${entry.key + 1}. ${entry.value}',
-                              context,
-                            ),
-                          )
-                          .toList(),
+                  children: instructions
+                      .asMap()
+                      .entries
+                      .map(
+                        (entry) => _buildInstructionStep(
+                          '${entry.key + 1}. ${entry.value}',
+                          context,
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -96,10 +97,9 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
               const Gap(16),
               GestureDetector(
                 onTap: () {
-                  showModalBottomSheet(
+                  BlurredBottomSheet.show(
                     context: context,
-                    isScrollControlled: true,
-                    builder: (_) => const HowToDecideBackupOption(),
+                    child: const HowToDecideBackupOption(),
                   );
                 },
                 child: BBText(

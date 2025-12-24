@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -404,17 +405,12 @@ class _BottomButtons extends StatelessWidget {
           BBButton.big(
             label: context.loc.payAdvancedSettings,
             onPressed: () {
-              showModalBottomSheet(
+              BlurredBottomSheet.show(
                 context: context,
-                isScrollControlled: true,
-                backgroundColor: context.appColors.secondaryFixed,
-                constraints: const BoxConstraints(maxWidth: double.infinity),
-                useSafeArea: true,
-                builder:
-                    (BuildContext buildContext) => BlocProvider.value(
-                      value: context.read<PayBloc>(),
-                      child: const PayAdvancedOptionsBottomSheet(),
-                    ),
+                child: BlocProvider.value(
+                  value: context.read<PayBloc>(),
+                  child: const PayAdvancedOptionsBottomSheet(),
+                ),
               );
             },
             bgColor: context.appColors.transparent,
