@@ -3960,7 +3960,7 @@
   "@passwordLabel": {
     "description": "Libellé pour le champ de saisie du mot de passe"
   },
-  "pickPasswordInsteadButton": "Choisir un mot de passe à la place >>",
+  "pickPasswordInsteadButton": "Choisir un mot de passe >>",
   "@pickPasswordInsteadButton": {
     "description": "Libellé du bouton pour passer à la saisie du mot de passe"
   },
@@ -7967,7 +7967,7 @@
       }
     }
   },
-  "recoverbullEnterVaultKeyInstead": "Entrer une clé de coffre-fort à la place",
+  "recoverbullEnterVaultKeyInstead": "Entrer une clé de coffre-fort",
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
@@ -8255,7 +8255,7 @@
   "@recoverbullSelectVaultProvider": {
     "description": "Screen title for vault provider selection"
   },
-  "recoverbullSwitchToPassword": "Choisir un mot de passe plutôt",
+  "recoverbullSwitchToPassword": "Choisir un mot de passe",
   "@recoverbullSwitchToPassword": {
     "description": "Button text to switch from PIN to password input"
   },
