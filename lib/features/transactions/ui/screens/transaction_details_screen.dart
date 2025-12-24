@@ -31,6 +31,8 @@ class TransactionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final returnHome =
+        GoRouterState.of(context).uri.queryParameters['returnHome'] == 'true';
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -72,7 +74,9 @@ class TransactionDetailsScreen extends StatelessWidget {
               : context.loc.transactionDetailTitle,
           actionIcon: Icons.close,
           onAction: () {
-            if (context.canPop()) {
+            if (returnHome) {
+              context.goNamed(WalletRoute.walletHome.name);
+            } else if (context.canPop()) {
               context.pop();
             } else {
               context.goNamed(WalletRoute.walletHome.name);
