@@ -112,7 +112,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
             BBText(
               label,
               style: context.font.headlineMedium?.copyWith(
-                color: context.appColors.onSurface,
+                color: context.appColors.onSurfaceVariant,
                 fontWeight: .w500,
               ),
             ),
@@ -124,7 +124,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                   BBText(
                     value,
                     style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.onSurface,
+                      color: context.appColors.secondary,
                       fontWeight: .w700,
                     ),
                   ),
@@ -173,7 +173,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               BBText(
                 value,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.appColors.onSurface,
+                  color: context.appColors.secondary,
                   fontWeight: .w700,
                 ),
               ),

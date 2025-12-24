@@ -42,7 +42,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.appColors.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellBitcoinOnChain),
                     trailing: const Icon(Icons.chevron_right),
@@ -57,7 +57,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.appColors.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellLightningNetwork),
                     trailing: const Icon(Icons.chevron_right),
@@ -72,7 +72,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.appColors.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellLiquidNetwork),
                     trailing: const Icon(Icons.chevron_right),

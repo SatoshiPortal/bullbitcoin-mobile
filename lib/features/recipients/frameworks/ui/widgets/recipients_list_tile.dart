@@ -32,7 +32,7 @@ class RecipientsListTile extends StatelessWidget {
                 ? context.appColors.primary
                 : context.appColors.surface,
           ),
-          color: context.appColors.onPrimary,
+          color: context.appColors.onSecondary,
         ),
         child: Column(
           crossAxisAlignment: .start,

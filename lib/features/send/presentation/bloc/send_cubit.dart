@@ -1434,12 +1434,18 @@ class SendCubit extends Cubit<SendState> {
               0, // TODO (ishi): removed until server fees are implemented
         );
       }
-      // await Future.delayed(const Duration(seconds: 3));
-      // Start syncing the wallet now that the transaction is confirmed
-      await _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
 
       emit(
         state.copyWith(broadcastingTransaction: false, step: SendStep.success),
+      );
+
+      unawaited(
+        _getWalletUsecase
+            .execute(state.selectedWallet!.id, sync: true)
+            .catchError((e) {
+              log.warning('Failed to sync wallet after broadcast: $e');
+              return null;
+            }),
       );
     } on GetWalletException catch (e) {
       emit(
@@ -1532,7 +1538,6 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void _watchSendSwap(String swapId) {
-    // Cancel the previous subscription if it exists
     _swapSubscription?.cancel();
     _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
       log.info(
@@ -1542,17 +1547,29 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(lightningSwap: updatedSwap));
         if (updatedSwap.status == SwapStatus.canCoop ||
             updatedSwap.status == SwapStatus.completed) {
-          // Start syncing the wallet now that the swap is completed
-          _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
           emit(state.copyWith(step: SendStep.success));
+          unawaited(
+            _getWalletUsecase
+                .execute(state.selectedWallet!.id, sync: true)
+                .catchError((e) {
+                  log.warning('Failed to sync wallet after swap completed: $e');
+                  return null;
+                }),
+          );
         }
       }
       if (updatedSwap is ChainSwap) {
         emit(state.copyWith(chainSwap: updatedSwap));
         if (updatedSwap.status == SwapStatus.completed) {
-          // Start syncing the wallet now that the swap is completed
-          _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
           emit(state.copyWith(step: SendStep.success));
+          unawaited(
+            _getWalletUsecase
+                .execute(state.selectedWallet!.id, sync: true)
+                .catchError((e) {
+                  log.warning('Failed to sync wallet after swap completed: $e');
+                  return null;
+                }),
+          );
         }
       }
     });

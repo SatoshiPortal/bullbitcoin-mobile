@@ -58,7 +58,7 @@ class RecipientTypeSelector extends StatelessWidget {
     } else {
       return Material(
         elevation: 4,
-        color: context.appColors.onPrimary,
+        color: context.appColors.onSecondary,
         borderRadius: BorderRadius.circular(4.0),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),

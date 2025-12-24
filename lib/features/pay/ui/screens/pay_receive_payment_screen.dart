@@ -80,6 +80,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
               child: BBText(
                 context.loc.payPleasePayInvoice,
                 style: context.font.headlineMedium,
+                color: context.appColors.secondary,
               ),
             ),
             Center(
@@ -247,7 +248,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
           BBText(
             label,
             style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.surfaceContainer,
+              color: context.appColors.onSurfaceVariant,
             ),
           ),
           const Spacer(),
@@ -261,7 +262,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.appColors.error : null,
+                      color: isError ? context.appColors.error : context.appColors.secondary,
                     ),
                   ),
                 ),

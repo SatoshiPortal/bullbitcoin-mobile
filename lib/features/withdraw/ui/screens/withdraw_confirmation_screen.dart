@@ -196,7 +196,7 @@ class _DetailRow extends StatelessWidget {
                   Text(
                     title,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.surfaceContainer,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   Expanded(
@@ -205,7 +205,7 @@ class _DetailRow extends StatelessWidget {
                       textAlign: .end,
                       maxLines: 2,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.outlineVariant,
+                        color: context.appColors.secondary,
                       ),
                     ),
                   ),
