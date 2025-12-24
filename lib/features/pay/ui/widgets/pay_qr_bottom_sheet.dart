@@ -17,7 +17,7 @@ class PayQrBottomSheet extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: context.appColors.onPrimary,
+      backgroundColor: context.appColors.background,
       constraints: const BoxConstraints(maxWidth: double.infinity),
       isScrollControlled: true,
       builder: (context) {
@@ -49,7 +49,11 @@ class PayQrBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: .spaceBetween,
             children: [
-              BBText(context.loc.payQrCode, style: context.font.headlineSmall),
+              BBText(
+                context.loc.payQrCode,
+                style: context.font.headlineSmall,
+                color: context.appColors.secondary,
+              ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.close),

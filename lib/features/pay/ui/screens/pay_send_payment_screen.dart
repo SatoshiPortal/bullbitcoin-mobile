@@ -288,7 +288,7 @@ class _DetailRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final valueColor =
         onTap == null
-            ? context.appColors.outlineVariant
+            ? context.appColors.secondary
             : context.appColors.primary;
 
     return Padding(
@@ -302,7 +302,7 @@ class _DetailRow extends StatelessWidget {
                   Text(
                     title,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.surfaceContainer,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   Expanded(

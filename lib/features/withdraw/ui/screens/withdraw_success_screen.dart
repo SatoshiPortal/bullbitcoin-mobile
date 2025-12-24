@@ -71,10 +71,11 @@ class WithdrawSuccessScreen extends StatelessWidget {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,
                         pathParameters: {'orderId': order.orderId},
+                        queryParameters: {'returnToExchange': 'true'},
                       );
                     },
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
                 ),
             ],
