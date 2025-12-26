@@ -10043,6 +10043,10 @@
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
   },
+  "recipientsSearchHint": "Buscar destinatarios por nombre o etiqueta",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
   "withdrawAmountTitle": "Retirar fiat",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"

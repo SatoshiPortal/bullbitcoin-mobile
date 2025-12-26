@@ -9831,6 +9831,10 @@
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
   },
+  "recipientsSearchHint": "Etsi vastaanottajia nimen tai tunnisteen mukaan",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
   "withdrawAmountTitle": "Nosta varoja tililtäsi",
   "@withdrawAmountTitle": {
     "description": "AppBar title for withdraw amount screen"
