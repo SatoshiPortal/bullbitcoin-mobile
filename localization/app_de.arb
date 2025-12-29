@@ -11949,5 +11949,233 @@
     "ledgerSignTitle": "Transaktion unterzeichnen",
     "@ledgerSignTitle": {
         "description": "Title for signing a transaction with Ledger"
+    },
+    "electrumPrivacyNoticeSave": "Speichern",
+    "@electrumPrivacyNoticeSave": {
+        "description": "Save button in privacy notice dialog"
+    },
+    "save": "Speichern",
+    "@save": {
+        "description": "Generic save button label"
+    },
+    "transactionLabelStatus": "Status",
+    "@transactionLabelStatus": {
+        "description": "Label for transaction status"
+    },
+    "transactionPayjoinStatusCompleted": "Abgeschlossen",
+    "@transactionPayjoinStatusCompleted": {
+        "description": "Payjoin status: completed"
+    },
+    "recoverbullFailed": "Fehlgeschlagen",
+    "@recoverbullFailed": {
+        "description": "Status label indicating operation failure"
+    },
+    "walletDeletionFailedOkButton": "OK",
+    "@walletDeletionFailedOkButton": {
+        "description": "OK button label in wallet deletion failed dialog"
+    },
+    "dcaCancelButton": "Abbrechen",
+    "@dcaCancelButton": {
+        "description": "Cancel button in DCA dialog"
+    },
+    "arkSettleCancel": "Abbrechen",
+    "@arkSettleCancel": {
+        "description": "Cancel button on settle bottom sheet"
+    },
+    "sendChange": "Ändern",
+    "@sendChange": {
+        "description": "Label for change output in a transaction"
+    },
+    "exchangeAppSettingsSaveButton": "Speichern",
+    "@exchangeAppSettingsSaveButton": {
+        "description": "Button label for saving exchange app settings"
+    },
+    "okButton": "OK",
+    "@okButton": {
+        "description": "Button to dismiss coming soon message"
+    },
+    "arkAboutShow": "Anzeigen",
+    "@arkAboutShow": {
+        "description": "Button text to show hidden secret key"
+    },
+    "autoswapWarningOkButton": "OK",
+    "@autoswapWarningOkButton": {
+        "description": "OK button label in the autoswap warning bottom sheet"
+    },
+    "transactionFilterAll": "Alle",
+    "@transactionFilterAll": {
+        "description": "Filter option to show all transactions"
+    },
+    "sellSendPaymentAdvanced": "Erweiterte Einstellungen",
+    "@sellSendPaymentAdvanced": {
+        "description": "Advanced settings button"
+    },
+    "walletDeletionConfirmationCancelButton": "Abbrechen",
+    "@walletDeletionConfirmationCancelButton": {
+        "description": "Cancel button label in wallet deletion confirmation dialog"
+    },
+    "transactionSwapProgressCompleted": "Abgeschlossen",
+    "@transactionSwapProgressCompleted": {
+        "description": "Swap progress step: completed"
+    },
+    "exchangeDcaCancelDialogCancelButton": "Abbrechen",
+    "@exchangeDcaCancelDialogCancelButton": {
+        "description": "Button label to cancel the DCA cancellation dialog"
+    },
+    "importWatchOnlyType": "Typ",
+    "@importWatchOnlyType": {
+        "description": "Label for wallet script type field"
+    },
+    "electrumPrivacyNoticeCancel": "Abbrechen",
+    "@electrumPrivacyNoticeCancel": {
+        "description": "Cancel button in privacy notice dialog"
+    },
+    "passwordLabel": "Passwort",
+    "@passwordLabel": {
+        "description": "Label for password input field"
+    },
+    "transactionNoteSaveButton": "Speichern",
+    "@transactionNoteSaveButton": {
+        "description": "Button label to save a note"
+    },
+    "walletBalanceUnconfirmedIncoming": "Aktiv",
+    "@walletBalanceUnconfirmedIncoming": {
+        "description": "Label for unconfirmed incoming balance"
+    },
+    "exchangeAuthOk": "OK",
+    "@exchangeAuthOk": {
+        "description": "OK button in error dialog"
+    },
+    "transactionDetailLabelPayjoinCompleted": "Abgeschlossen",
+    "@transactionDetailLabelPayjoinCompleted": {
+        "description": "Payjoin completed status"
+    },
+    "electrumCancel": "Abbrechen",
+    "@electrumCancel": {
+        "description": "Cancel button label in delete dialog"
+    },
+    "arkCancelButton": "Abbrechen",
+    "@arkCancelButton": {
+        "description": "Cancel button label in settle bottom sheet"
+    },
+    "anErrorOccurred": "Es ist ein Fehler aufgetreten:",
+    "@anErrorOccurred": {
+        "description": "Generic error message"
+    },
+    "transactionSwapProgressInProgress": "Aktiv",
+    "@transactionSwapProgressInProgress": {
+        "description": "Generic swap progress step: in progress"
+    },
+    "payFailedPayments": "Fehlgeschlagen",
+    "@payFailedPayments": {
+        "description": "Filter for failed payments"
+    },
+    "coreSwapsStatusInProgress": "Aktiv",
+    "@coreSwapsStatusInProgress": {
+        "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    },
+    "arkType": "Typ",
+    "@arkType": {
+        "description": "Label for transaction type field in details table"
+    },
+    "autoswapSave": "Speichern",
+    "@autoswapSave": {
+        "description": "Save button label"
+    },
+    "cancelButton": "Abbrechen",
+    "@cancelButton": {
+        "description": "Button to cancel logout action"
+    },
+    "receiveSave": "Speichern",
+    "@receiveSave": {
+        "description": "Button label for saving receive details"
+    },
+    "recoverbullPassword": "Passwort",
+    "@recoverbullPassword": {
+        "description": "Label for password input type"
+    },
+    "torSettingsSaveButton": "Speichern",
+    "@torSettingsSaveButton": {
+        "description": "Save button label for Tor port settings"
+    },
+    "exchangeAuthLoginFailedOkButton": "OK",
+    "@exchangeAuthLoginFailedOkButton": {
+        "description": "OK button label in the login failed dialog"
+    },
+    "transactionStatusInProgress": "Aktiv",
+    "@transactionStatusInProgress": {
+        "description": "Status label for transactions in progress"
+    },
+    "electrumUnknownError": "Es ist ein Fehler aufgetreten:",
+    "@electrumUnknownError": {
+        "description": "Generic error message for unknown errors"
+    },
+    "sendAdvancedSettings": "Erweiterte Einstellungen",
+    "@sendAdvancedSettings": {
+        "description": "Title for advanced settings in the send flow"
+    },
+    "transactionDetailLabelStatus": "Status",
+    "@transactionDetailLabelStatus": {
+        "description": "Label for status"
+    },
+    "cancel": "Abbrechen",
+    "@cancel": {
+        "description": "Generic cancel button label"
+    },
+    "coreSwapsStatusFailed": "Fehlgeschlagen",
+    "@coreSwapsStatusFailed": {
+        "description": "Display name for failed swap status"
+    },
+    "pinAuthenticationTitle": "Legitimierung",
+    "@pinAuthenticationTitle": {
+        "description": "AppBar title for create/confirm PIN screens"
+    },
+    "addressViewChangeType": "Ändern",
+    "@addressViewChangeType": {
+        "description": "Address type label for internal/change addresses"
+    },
+    "pinCodeAuthentication": "Legitimierung",
+    "@pinCodeAuthentication": {
+        "description": "AppBar title for PIN code authentication screens"
+    },
+    "appUnlockScreenTitle": "Legitimierung",
+    "@appUnlockScreenTitle": {
+        "description": "Title of the app unlock screen"
+    },
+    "arkStatus": "Status",
+    "@arkStatus": {
+        "description": "Label for transaction status field in details table"
+    },
+    "coreSwapsStatusCompleted": "Abgeschlossen",
+    "@coreSwapsStatusCompleted": {
+        "description": "Display name for completed swap status"
+    },
+    "recoverbullGoogleDriveCancelButton": "Abbrechen",
+    "@recoverbullGoogleDriveCancelButton": {
+        "description": "Cancel button text for delete confirmation dialog"
+    },
+    "autoswapSaveButton": "Speichern",
+    "@autoswapSaveButton": {
+        "description": "Save button label at bottom of settings sheet"
+    },
+    "recoverbullRetry": "Erneut versuchen",
+    "@recoverbullRetry": {
+        "description": "Button text to retry failed operation"
+    },
+    "payAdvancedSettings": "Erweiterte Einstellungen",
+    "@payAdvancedSettings": {
+        "description": "Button for advanced settings"
+    },
+    "transactionNoteUpdateButton": "Aktualisieren",
+    "@transactionNoteUpdateButton": {
+        "description": "Button label to update a note"
+    },
+    "sellAdvancedSettings": "Erweiterte Einstellungen",
+    "@sellAdvancedSettings": {
+        "description": "Button for advanced settings"
+    },
+    "importWatchOnlyCancel": "Abbrechen",
+    "@importWatchOnlyCancel": {
+        "description": "Button to cancel watch-only import"
     }
 }
