@@ -1,4 +1,4 @@
-[![Analyze](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze.yml/badge.svg)](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze.yml) [![Build](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/build.yml/badge.svg)](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/build.yml)
+[![Analyze and Test](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze_and_test.yml/badge.svg?branch=develop)](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze_and_test.yml)
 
 # About BULL Wallet
 
@@ -16,37 +16,13 @@ At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant 
 
 Both these wallets are able to send and receive Lightning Network payments via the swap provider.
 
-## Translations
+### Translations
 
 [![Translation status](https://hosted.weblate.org/widget/bull/open-graph.png)](https://hosted.weblate.org/engage/bull/)
 
-[![Translation status](https://hosted.weblate.org/widget/bull/-/hy/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/en/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/fi/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/fr/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/de/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/it/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/ru/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/es/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
-[![Translation status](https://hosted.weblate.org/widget/bull/-/uk/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+### [Dependencies](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/pubspec.yaml#L9)
 
-
-## Core dependencies
-
-- [bdk](https://github.com/bitcoindevkit/bdk)
-- [bdk-flutter](https://github.com/LtbLightning/bdk-flutter)
-- [lwk](https://github.com/Blockstream/lwk)
-- [lwk-dart](https://github.com/SatoshiPortal/lwk-dart)
-- [boltz-rust](https://github.com/SatoshiPortal/boltz-rust)
-- [boltz-dart](https://github.com/SatoshiPortal/boltz-dart)
-
-## Default external service providers
-
-- mempool.space API for fee estimates
-- mempool.bullbitcoin.com / mempool.space for transaction and address explorer
-- bullbitcoin.com API for fiat prices
-- bullbitcoin.com and blockstream.info electrum servers for blockchain data
-- boltz.exchange for swap services
+### [Default service providers](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/lib/core/utils/constants.dart#L60)
 
 ### General features
 
@@ -83,8 +59,7 @@ We try to always use a wallet that is the same network as the recipient: if reci
 
 Automated selection of the wallet can be overridden by the user at any time. This will most likely trigger a warning that the user can choose to ignore.
 
-### Wallet security
-
+## Wallet security
 - An optional PIN from 4 to 8 digits can be set for access to the app.
 - The PIN is optional to prevent users from being accidentally locked out of a wallet without having first performed a backup.
 - Private keys are stored in secure storage and only accessed via the application when signing transactions, viewing the wallet’s private keys for back-up (mnemonic or xpriv). This prevents malicious applications from accessing the private keys. 
@@ -121,36 +96,16 @@ When installing the BULL Wallet app, a self-custodial wallet will be created, re
 
 When spending or selling Bitcoin, the exchange will create a payment invoice (BIP21) that will automatically be opened by the same application. All the user has to do is to confirm or reject that transaction. The experience will be functionally the same as that of a custodial exchange, with the exception that the user will have to do a backup of the Bitcoin wallet.
 
-## Current roadmap
+## Roadmap
 
-Suggestion to this roadmap can be proposed as Github issues.
-
-- [x] Bumping replace-by-fee transactions
-- [ ] Re-implement smarter coin selection and labelling
-- [x] One mnemonic: new wallets are always created as a BIP39 passphrase
-- [x] Good UX/UI for creating PSBTs from watch-only wallets
-- [x] Good UX/UI for decoding and broadcasting PSBTs
-- [x] Better UX/UI for importing watch-only wallets
-- [x] Integration of Coinkite's BBQR library to export public keys, export PSBTs and import PSBTs
-- [x] Bitcoin <> Liquid network swaps (depends on Boltz backend update)
-- [ ] Integrate a client-side passphrase strength estimator
-- [x] Encrypted cloud backups connected to a key server: RecoverBull
-- [ ] Store persistent encrypted wallet backup on device
-- [ ] Biometric authentication
-- [ ] Show fiat value of transactions at the approximated time they were made
-- [ ] Spanish and French translations
-- [x] Payjoin integration
-- [ ] Integrate Bull Bitcoin Fee multiple
-- [x] Auto-consolidation mode for spend
-- [ ] Small UTXO warning and consolidation suggestions
-- [ ] Configurable mempool explorer URLs
-- [ ] Configurable swap provider (similar to Electrum server)
+The roadmap is based on the Github issues. You can suggest your own ideas by creating a new issue. The issues are then prioritized by the maintainers according to their importance and feasibility.
 
 ## Acknowledgements 
 
-- The project is entirely financed by bullbitcoin.com 
+- The project is entirely financed by [bullbitcoin.com](https://bullbitcoin.com) 
 - Created by Francis Pouliot and Vishal Menon
-- Main developers: Vishal, Morteza and Sai
+- Maintainers: [i5hi](https://github.com/i5hi), [mocodesmo](https://github.com/mocodesmo), [ethicnology](https://github.com/ethicnology), [kumulynja](https://github.com/kumulynja), [basantagoswami](https://github.com/basantagoswami) and Q&A [kiranmetri](https://github.com/kiranmetri)
+- Thanks to all [contributors](https://github.com/SatoshiPortal/bullbitcoin-mobile/graphs/contributors)
 - Thanks to Raj for his work on Boltz-rust
 - Thanks to the BDK team: BitcoinZavior and ThunderBiscuit
 - Eternal gratitude to the Boltz team Michael and Killian
@@ -158,5 +113,3 @@ Suggestion to this roadmap can be proposed as Github issues.
 - Thanks to Blockstream for developing the Liquid Network 
 
 ![image](https://github.com/BullishNode/bullbitcoin-mobile/assets/75800272/a61e4ccc-897d-410f-b97b-37a7c2b240cb)
-
-This project is tested with BrowserStack
