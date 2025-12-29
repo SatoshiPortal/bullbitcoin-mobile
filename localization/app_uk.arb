@@ -16,5 +16,88 @@
                 "type": "String"
             }
         }
+    },
+    "arkAboutDurationSeconds": "{seconds} секунд",
+    "@arkAboutDurationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "arkAboutDurationMinute": "{minutes} хвилин",
+    "@arkAboutDurationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "arkAboutDurationMinutes": "{minutes} хвилин",
+    "@arkAboutDurationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "durationMinute": "{minutes} хвилин",
+    "@durationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "exchangeSettingsSecuritySettingsTitle": "Налаштування безпеки",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
+    },
+    "transactionNoteUpdateButton": "Оновлення",
+    "@transactionNoteUpdateButton": {
+        "description": "Button label to update a note"
+    },
+    "arkAboutTitle": "Про",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "arkDurationSeconds": "{seconds} секунд",
+    "@arkDurationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "String"
+            }
+        }
+    },
+    "arkDurationMinute": "{minutes} хвилин",
+    "@arkDurationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "arkDurationMinutes": "{minutes} хвилин",
+    "@arkDurationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "appStartupContactSupportButton": "### Зверніться до служби підтримки",
+    "@appStartupContactSupportButton": {
+        "description": "Button label to contact support when app startup fails"
+    },
+    "ledgerHelpTitle": "Усунення проблем",
+    "@ledgerHelpTitle": {
+        "description": "Title for Ledger troubleshooting help modal"
     }
 }
