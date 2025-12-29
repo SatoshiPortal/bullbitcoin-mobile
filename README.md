@@ -16,6 +16,21 @@ At launch, two wallets are generated: the Secure Bitcoin Wallet and the Instant 
 
 Both these wallets are able to send and receive Lightning Network payments via the swap provider.
 
+## Translations
+
+[![Translation status](https://hosted.weblate.org/widget/bull/open-graph.png)](https://hosted.weblate.org/engage/bull/)
+
+[![Translation status](https://hosted.weblate.org/widget/bull/-/hy/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/en/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/fi/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/fr/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/de/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/it/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/ru/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/es/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+[![Translation status](https://hosted.weblate.org/widget/bull/-/uk/multi-auto.svg)](https://hosted.weblate.org/engage/bull/)
+
+
 ## Core dependencies
 
 - [bdk](https://github.com/bitcoindevkit/bdk)
