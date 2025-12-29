@@ -12169,5 +12169,13 @@
     "importWatchOnlyCancel": "Annulla",
     "@importWatchOnlyCancel": {
         "description": "Button to cancel watch-only import"
+    },
+    "arkAboutTitle": "Informazioni",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "Impostazioni di sicurezza",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
     }
 }
