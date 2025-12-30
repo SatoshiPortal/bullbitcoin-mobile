@@ -12174,5 +12174,9 @@
     "bitcoinSettingsMempoolServerTitle": "Configuración del servidor Mempool",
     "@bitcoinSettingsMempoolServerTitle": {
         "description": "Title for the Mempool server settings section in Bitcoin settings"
+    },
+    "save": "Guardar",
+    "@save": {
+        "description": "Generic save button label"
     }
 }
