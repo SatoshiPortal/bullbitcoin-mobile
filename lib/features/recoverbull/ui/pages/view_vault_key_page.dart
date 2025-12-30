@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ class ViewVaultKeyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.appColors.surface,
       appBar: AppBar(title: Text(context.loc.recoverbullVaultKey)),
       body: SafeArea(
         child: Column(
@@ -20,22 +18,20 @@ class ViewVaultKeyPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(24),
               child: CopyInput(
-                text:
-                    vaultKey.length >= 6
-                        ? vaultKey.substring(0, 6) + '*' * (vaultKey.length - 6)
-                        : '',
+                text: vaultKey.length >= 6
+                    ? vaultKey.substring(0, 6) + '*' * (vaultKey.length - 6)
+                    : '',
                 canShowValueModal: true,
                 maxLines: 1,
 
                 clipboardText: vaultKey,
                 overflow: .clip,
-                modalContent:
-                    vaultKey
-                        .replaceAllMapped(
-                          RegExp('.{1,4}'),
-                          (match) => '${match.group(0)} ',
-                        )
-                        .trim(),
+                modalContent: vaultKey
+                    .replaceAllMapped(
+                      RegExp('.{1,4}'),
+                      (match) => '${match.group(0)} ',
+                    )
+                    .trim(),
               ),
             ),
           ],

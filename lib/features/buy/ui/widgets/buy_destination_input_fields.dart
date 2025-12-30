@@ -60,7 +60,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
           height: 56,
           child: Material(
             elevation: 4,
-            color: context.appColors.onPrimary,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
@@ -71,7 +71,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                 ),
                 initialValue: selectedWallet?.id,
                 items: [
@@ -117,7 +117,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
             height: 56,
             child: Material(
               elevation: 2,
-              color: context.appColors.onPrimary,
+              color: context.appColors.secondary,
               borderRadius: BorderRadius.circular(2.0),
               child: Center(
                 child: TextFormField(
