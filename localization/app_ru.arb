@@ -1,4 +1,20 @@
 {
+    "translationWarningTitle": "Переводы, созданные ИИ",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "Большинство переводов в этом приложении были созданы с помощью ИИ и могут содержать неточности. Если вы заметили ошибки или хотите помочь улучшить переводы, вы можете внести свой вклад через нашу платформу сообщества переводчиков.",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "Помочь улучшить переводы",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "Понятно",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
     "bitboxErrorMultipleDevicesFound": "Найдено несколько устройств BitBox. Пожалуйста, убедитесь, что подключено только одно устройство.",
     "@bitboxErrorMultipleDevicesFound": {
         "description": "Error when multiple BitBox devices are connected"

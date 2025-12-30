@@ -1,5 +1,21 @@
 {
     "@@locale": "es",
+    "translationWarningTitle": "Traducciones generadas por IA",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "La mayoría de las traducciones en esta aplicación fueron generadas usando IA y pueden contener inexactitudes. Si notas algún error o deseas ayudar a mejorar las traducciones, puedes contribuir a través de nuestra plataforma de traducción comunitaria.",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "Ayudar a mejorar traducciones",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "Entendido",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
     "durationSeconds": "{seconds} segundos",
     "@durationSeconds": {
         "description": "Duration format for seconds",

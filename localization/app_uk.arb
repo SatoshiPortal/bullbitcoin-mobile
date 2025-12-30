@@ -1,4 +1,20 @@
 {
+    "translationWarningTitle": "Переклади, створені ШІ",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "Більшість перекладів у цьому додатку були створені за допомогою ШІ і можуть містити неточності. Якщо ви помітили помилки або хочете допомогти покращити переклади, ви можете зробити свій внесок через нашу платформу спільноти перекладачів.",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "Допомогти покращити переклади",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "Зрозуміло",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
     "durationSeconds": "{seconds} секунд",
     "@durationSeconds": {
         "description": "Duration format for seconds",

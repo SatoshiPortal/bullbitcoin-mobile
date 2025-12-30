@@ -1,4 +1,20 @@
 {
+    "translationWarningTitle": "Traduzioni generate dall'IA",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "La maggior parte delle traduzioni in questa app sono state generate utilizzando l'IA e potrebbero contenere imprecisioni. Se noti errori o desideri aiutare a migliorare le traduzioni, puoi contribuire attraverso la nostra piattaforma di traduzione comunitaria.",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "Aiuta a migliorare le traduzioni",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "Capito",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
     "bitboxErrorMultipleDevicesFound": "Trovati più dispositivi BitBox. Assicurarsi che un solo dispositivo sia collegato.",
     "@bitboxErrorMultipleDevicesFound": {
         "description": "Error when multiple BitBox devices are connected"

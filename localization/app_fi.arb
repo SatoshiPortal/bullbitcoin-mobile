@@ -1,5 +1,21 @@
 {
     "@@locale": "fi",
+    "translationWarningTitle": "Tekoälyn luomat käännökset",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "Suurin osa tämän sovelluksen käännöksistä on luotu tekoälyllä ja ne voivat sisältää epätarkkuuksia. Jos huomaat virheitä tai haluat auttaa parantamaan käännöksiä, voit osallistua yhteisön käännösalustan kautta.",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "Auta parantamaan käännöksiä",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "Selvä",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
     "durationSeconds": "{seconds} sekuntia",
     "@durationSeconds": {
         "description": "Duration format for seconds",

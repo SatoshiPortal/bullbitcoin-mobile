@@ -1,4 +1,20 @@
 {
+    "translationWarningTitle": "AI生成的翻译",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "此应用程序中的大多数翻译都是使用AI生成的，可能存在不准确之处。如果您发现任何错误或想帮助改进翻译，可以通过我们的社区翻译平台进行贡献。",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "帮助改进翻译",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "知道了",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
     "bitboxErrorMultipleDevicesFound": "发现多处Box装置。 请确保只有一个装置连接起来.",
     "@bitboxErrorMultipleDevicesFound": {
         "description": "Error when multiple BitBox devices are connected"
