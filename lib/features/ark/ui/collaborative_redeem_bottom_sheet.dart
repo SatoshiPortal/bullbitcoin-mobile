@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -19,13 +20,9 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
   final int amount;
 
   static Future<void> show(BuildContext context, ArkCubit cubit, int amount) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      backgroundColor: context.appColors.transparent,
-      builder:
-          (_) => CollaborativeRedeemBottomSheet(cubit: cubit, amount: amount),
+      child: CollaborativeRedeemBottomSheet(cubit: cubit, amount: amount),
     );
   }
 

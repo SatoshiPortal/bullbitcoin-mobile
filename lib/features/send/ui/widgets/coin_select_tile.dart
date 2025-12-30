@@ -52,7 +52,10 @@ class CoinSelectTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: context.appColors.outlineVariant),
+          border: Border.all(
+            color: context.appColors.onSurfaceVariant,
+            width: 1.5,
+          ),
         ),
         child: Row(
           crossAxisAlignment: .start,
@@ -72,7 +75,7 @@ class CoinSelectTile extends StatelessWidget {
                         BBText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
-                            color: context.appColors.outlineVariant,
+                            color: context.appColors.onSurface,
                             fontWeight: .w500,
                           ),
                         ),
@@ -81,7 +84,7 @@ class CoinSelectTile extends StatelessWidget {
                     subtitle: BBText(
                       label,
                       style: context.font.labelMedium?.copyWith(
-                        color: context.appColors.outline,
+                        color: context.appColors.onSurfaceVariant,
                       ),
                     ),
                     trailing: RadioGroup<bool>(
@@ -97,7 +100,7 @@ class CoinSelectTile extends StatelessWidget {
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.outlineVariant,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -109,27 +112,27 @@ class CoinSelectTile extends StatelessWidget {
                       BBText(
                         context.loc.sendAddress,
                         style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.surfaceContainer,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       Expanded(
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.appColors.secondary,
+                            color: context.appColors.onSurface,
                           ),
                         ),
                       ),
                       BBText(
                         context.loc.sendType,
                         style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.surfaceContainer,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.appColors.secondary,
+                          color: context.appColors.onSurface,
                         ),
                       ),
                     ],

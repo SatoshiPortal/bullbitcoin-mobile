@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -14,12 +15,9 @@ class SettleBottomSheet extends StatelessWidget {
   final ArkCubit cubit;
 
   static Future<void> show(BuildContext context, ArkCubit cubit) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      backgroundColor: context.appColors.transparent,
-      builder: (_) => SettleBottomSheet(cubit: cubit),
+      child: SettleBottomSheet(cubit: cubit),
     );
   }
 

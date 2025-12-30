@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -174,31 +175,28 @@ Future<String?> _choosePassportDerivation(
     if (options.length == 1) return options.first['descriptor'];
 
     if (!context.mounted) return null;
-    final choice = await showModalBottomSheet<Map<String, String>>(
+    final choice = await BlurredBottomSheet.show<Map<String, String>>(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      builder: (ctx) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: .min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                child: Text(
-                  ctx.loc.importWatchOnlySelectDerivation,
-                  style: Theme.of(ctx).textTheme.titleMedium,
-                ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: .min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                context.loc.importWatchOnlySelectDerivation,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              for (final opt in options)
-                ListTile(
-                  title: Text(opt['label'] ?? ''),
-                  onTap: () => Navigator.of(ctx).pop(opt),
-                ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
+            ),
+            for (final opt in options)
+              ListTile(
+                title: Text(opt['label'] ?? ''),
+                onTap: () => Navigator.of(context).pop(opt),
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
     );
     return choice?['descriptor'];
   } catch (_) {

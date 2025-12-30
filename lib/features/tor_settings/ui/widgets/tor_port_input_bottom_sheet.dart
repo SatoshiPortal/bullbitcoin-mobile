@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -13,12 +14,9 @@ class TorPortInputBottomSheet extends StatefulWidget {
   final int currentPort;
 
   static Future<int?> show(BuildContext context, int currentPort) {
-    return showModalBottomSheet<int>(
+    return BlurredBottomSheet.show<int>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.appColors.surface,
-      useSafeArea: true,
-      builder: (context) => TorPortInputBottomSheet(currentPort: currentPort),
+      child: TorPortInputBottomSheet(currentPort: currentPort),
     );
   }
 

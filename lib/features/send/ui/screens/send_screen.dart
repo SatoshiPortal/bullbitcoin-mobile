@@ -27,6 +27,7 @@ import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -765,12 +766,9 @@ class _BottomButtons extends StatelessWidget {
             BBButton.big(
               label: context.loc.sendAdvancedSettings,
               onPressed: () {
-                showModalBottomSheet(
+                BlurredBottomSheet.show(
                   context: context,
-                  isScrollControlled: true,
-                  backgroundColor: context.appColors.onSecondary,
-                  constraints: const BoxConstraints(maxWidth: double.infinity),
-                  builder: (BuildContext buildContext) => BlocProvider.value(
+                  child: BlocProvider.value(
                     value: context.read<SendCubit>(),
                     child: const AdvancedOptionsBottomSheet(),
                   ),
@@ -996,14 +994,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
   Future<String?> _showFeeOptions(BuildContext context) async {
     final sendCubit = context.read<SendCubit>();
 
-    final selected = await showModalBottomSheet<String>(
-      useRootNavigator: true,
+    final selected = await BlurredBottomSheet.show<String>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.appColors.onSecondary,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (BuildContext buildContext) =>
-          BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
+      child: BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
     );
 
     return selected;
