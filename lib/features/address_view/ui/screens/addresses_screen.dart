@@ -64,12 +64,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.addressViewAddressesTitle),
-        scrolledUnderElevation: 0,
-        backgroundColor: context.appColors.transparent,
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(context.loc.addressViewAddressesTitle)),
       body: SafeArea(
         child: Column(
           children: [

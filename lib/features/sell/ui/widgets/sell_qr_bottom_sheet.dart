@@ -44,7 +44,11 @@ class SellQrBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: .spaceBetween,
             children: [
-              BBText(context.loc.sellQrCode, style: context.font.headlineSmall),
+              BBText(
+                context.loc.sellQrCode,
+                style: context.font.headlineSmall,
+                color: context.appColors.secondary,
+              ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.close),

@@ -88,7 +88,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                     builder: (context, priceChartState) {
                       final showChart = priceChartState.showChart;
                       final hasApiKey = context.select(
-                        (ExchangeCubit cubit) => cubit.state.apiKeyException == null,
+                        (ExchangeCubit cubit) =>
+                            cubit.state.apiKeyException == null,
                       );
 
                       return SliverAppBar(
@@ -144,7 +145,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                                           onPressed: () {
                                             context.pushNamed(
                                               ExchangeSupportChatRoute
-                                                  .supportChat.name,
+                                                  .supportChat
+                                                  .name,
                                             );
                                           },
                                         ),
@@ -202,26 +204,30 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_downward,
-                        label: context.loc.exchangeHomeDepositButton,
+                        label: context.loc.exchangeHomeWithdrawButton,
                         iconFirst: true,
-                        onPressed: () => context.pushNamed(
-                          FundExchangeRoute.fundExchangeAccount.name,
-                        ),
-                        bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onSecondary,
+                        disabled: false,
+                        onPressed: () =>
+                            context.pushNamed(WithdrawRoute.withdraw.name),
+                        bgColor: context.appColors.secondaryFixed,
+                        textColor: context.appColors.onSecondaryFixed,
+                        outlined: true,
+                        borderColor: context.appColors.onSecondaryFixed,
                       ),
                     ),
                     const Gap(4),
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_upward,
-                        label: context.loc.exchangeHomeWithdrawButton,
+                        label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
-                        disabled: false,
-                        onPressed: () =>
-                            context.pushNamed(WithdrawRoute.withdraw.name),
-                        bgColor: context.appColors.secondary,
-                        textColor: context.appColors.onSecondary,
+                        onPressed: () => context.pushNamed(
+                          FundExchangeRoute.fundExchangeAccount.name,
+                        ),
+                        bgColor: context.appColors.secondaryFixed,
+                        textColor: context.appColors.onSecondaryFixed,
+                        outlined: true,
+                        borderColor: context.appColors.onSecondaryFixed,
                       ),
                     ),
                   ],

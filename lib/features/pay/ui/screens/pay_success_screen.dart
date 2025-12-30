@@ -82,10 +82,11 @@ class PaySuccessScreen extends StatelessWidget {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,
                         pathParameters: {'orderId': order.orderId},
+                        queryParameters: {'returnToExchange': 'true'},
                       );
                     },
                     bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onPrimary,
+                    textColor: context.appColors.onSecondary,
                   ),
               ],
             ),

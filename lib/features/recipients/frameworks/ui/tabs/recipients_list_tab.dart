@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_list_tile.dart';
@@ -71,7 +72,8 @@ class RecipientsListTabState extends State<RecipientsListTab> {
     final searchLower = _searchQuery.toLowerCase();
     final filtered = recipients.where((recipient) {
       final displayName = recipient.displayName?.toLowerCase() ?? '';
-      return displayName.contains(searchLower);
+      final label = recipient.label?.toLowerCase() ?? '';
+      return displayName.contains(searchLower) || label.contains(searchLower);
     }).toList();
 
     // If search returns no results and there are more recipients to load, trigger loading
@@ -104,7 +106,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
         TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Search recipients by name',
+            hintText: context.loc.recipientsSearchHint,
             prefixIcon: const Icon(Icons.search),
             suffixIcon: _searchQuery.isNotEmpty
                 ? IconButton(
@@ -199,10 +201,9 @@ class RecipientsListTabState extends State<RecipientsListTab> {
             return Text(
               '$e',
               style: context.font.bodyMedium?.copyWith(
-                color:
-                    e == null
-                        ? context.appColors.transparent
-                        : context.appColors.error,
+                color: e == null
+                    ? context.appColors.transparent
+                    : context.appColors.error,
               ),
             );
           },

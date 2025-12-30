@@ -12179,4 +12179,5 @@
     "@autoswapWarningCardSubtitle": {
         "description": "Subtitle text shown on the autoswap warning card on home screen"
     }
+  }
 }

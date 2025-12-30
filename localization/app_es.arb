@@ -12179,4 +12179,5 @@
     "@save": {
         "description": "Generic save button label"
     }
+  }
 }

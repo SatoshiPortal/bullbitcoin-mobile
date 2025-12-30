@@ -32,7 +32,7 @@ class RecipientsListTile extends StatelessWidget {
                 ? context.appColors.primary
                 : context.appColors.surface,
           ),
-          color: context.appColors.onPrimary,
+          color: context.appColors.onSecondary,
         ),
         child: Column(
           crossAxisAlignment: .start,
@@ -73,12 +73,15 @@ class RecipientsListTile extends StatelessWidget {
                 label: 'Email',
                 value: recipient.email,
               ),
-              RecipientType.billPaymentCad => _InfoRow(
-                label: 'Payee',
-                value:
-                    recipient.payeeName ??
-                    recipient.payeeCode ??
-                    recipient.payeeAccountNumber,
+              RecipientType.billPaymentCad => Column(
+                crossAxisAlignment: .start,
+                children: [
+                  _InfoRow(label: 'Payee', value: recipient.payeeName),
+                  _InfoRow(
+                    label: 'Account Number',
+                    value: recipient.payeeAccountNumber,
+                  ),
+                ],
               ),
               RecipientType.bankTransferCad => _InfoRow(
                 label: 'Account',
@@ -128,6 +131,8 @@ class RecipientsListTile extends StatelessWidget {
                 value: recipient.phoneNumber,
               ),
             },
+            if (recipient.label != null)
+              _InfoRow(label: 'Label', value: recipient.label),
           ],
         ),
       ),

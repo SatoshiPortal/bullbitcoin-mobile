@@ -21,11 +21,10 @@ class Bip329LabelsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => Bip329LabelsCubit(
-            exportLabelsUsecase: locator<ExportLabelsUsecase>(),
-            importLabelsUsecase: locator<ImportLabelsUsecase>(),
-          ),
+      create: (context) => Bip329LabelsCubit(
+        exportLabelsUsecase: locator<ExportLabelsUsecase>(),
+        importLabelsUsecase: locator<ImportLabelsUsecase>(),
+      ),
       child: Scaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -87,8 +86,8 @@ class Bip329LabelsPage extends StatelessWidget {
                     BBButton.big(
                       label: context.loc.bip329LabelsImportButton,
                       onPressed: isLoading ? () {} : () => cubit.importLabels(),
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
                       iconData: Icons.file_upload,
                       iconFirst: true,
                       disabled: isLoading,
