@@ -12178,8 +12178,7 @@
     "save": "Sauvegarder",
     "@save": {
         "description": "Generic save button label"
-    }
-  },
+    },
   "durationMinute": "{minutes} minute",
   "@durationMinute": {
     "description": "Duration format for singular minute",

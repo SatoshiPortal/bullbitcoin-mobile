@@ -11962,8 +11962,7 @@
     "coreSwapsStatusPending": "Odottaa",
     "@coreSwapsStatusPending": {
         "description": "Display name for pending swap status"
-    }
-  },
+    },
   "durationMinute": "{minutes} minuutti",
   "@durationMinute": {
     "description": "Duration format for singular minute",

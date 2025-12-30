@@ -12174,8 +12174,7 @@
     "bitcoinSettingsMempoolServerTitle": "Configuración del servidor Mempool",
     "@bitcoinSettingsMempoolServerTitle": {
         "description": "Title for the Mempool server settings section in Bitcoin settings"
-    }
-  },
+    },
   "durationMinute": "{minutes} minuto",
   "@durationMinute": {
     "description": "Duration format for singular minute",

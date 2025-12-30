@@ -17,13 +17,7 @@ class PayQrBottomSheet extends StatelessWidget {
   ) async {
     await BlurredBottomSheet.show(
       context: context,
-      useRootNavigator: true,
-      backgroundColor: context.appColors.background,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      isScrollControlled: true,
-      builder: (context) {
-        return PayQrBottomSheet(bip21InvoiceData: bip21InvoiceData);
-      },
+      child: PayQrBottomSheet(bip21InvoiceData: bip21InvoiceData),
     );
   }
 
