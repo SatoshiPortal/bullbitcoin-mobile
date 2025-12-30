@@ -12030,5 +12030,153 @@
     "save": "Tallenna",
     "@save": {
         "description": "Generic save button label"
+    },
+    "coreSwapsActionRefund": "Palautus",
+    "@coreSwapsActionRefund": {
+        "description": "Action label for refunding a swap"
+    },
+    "coreSwapsLnReceivePending": "Swap ei ole vielä aloitettu.",
+    "@coreSwapsLnReceivePending": {
+        "description": "Status message for pending Lightning receive swap"
+    },
+    "coreSwapsLnReceivePaid": "Lähettäjä on maksanut laskun.",
+    "@coreSwapsLnReceivePaid": {
+        "description": "Status message for paid Lightning receive swap"
+    },
+    "coreSwapsLnReceiveClaimable": "Swap on valmis väittämään.",
+    "@coreSwapsLnReceiveClaimable": {
+        "description": "Status message for claimable Lightning receive swap"
+    },
+    "coreSwapsLnReceiveRefundable": "Swap on valmis hyvitettäväksi.",
+    "@coreSwapsLnReceiveRefundable": {
+        "description": "Status message for refundable Lightning receive swap"
+    },
+    "coreSwapsLnReceiveCanCoop": "Swap valmistuu hetkellisesti.",
+    "@coreSwapsLnReceiveCanCoop": {
+        "description": "Status message for Lightning receive swap that can complete cooperatively"
+    },
+    "coreSwapsLnReceiveCompleted": "Swap on valmis.",
+    "@coreSwapsLnReceiveCompleted": {
+        "description": "Status message for completed Lightning receive swap"
+    },
+    "coreSwapsLnSendPending": "Swap ei ole vielä aloitettu.",
+    "@coreSwapsLnSendPending": {
+        "description": "Status message for pending Lightning send swap"
+    },
+    "coreSwapsLnSendPaid": "Lasku maksetaan, kun maksusi saa vahvistuksen.",
+    "@coreSwapsLnSendPaid": {
+        "description": "Status message for paid Lightning send swap"
+    },
+    "coreSwapsLnSendClaimable": "Swap on valmis väittämään.",
+    "@coreSwapsLnSendClaimable": {
+        "description": "Status message for claimable Lightning send swap"
+    },
+    "coreSwapsLnSendRefundable": "Swap on valmis hyvitettäväksi.",
+    "@coreSwapsLnSendRefundable": {
+        "description": "Status message for refundable Lightning send swap"
+    },
+    "coreSwapsLnSendCanCoop": "Swap valmistuu hetkellisesti.",
+    "@coreSwapsLnSendCanCoop": {
+        "description": "Status message for Lightning send swap that can complete cooperatively"
+    },
+    "coreSwapsLnSendCompletedRefunded": "Swap on palautettu.",
+    "@coreSwapsLnSendCompletedRefunded": {
+        "description": "Status message for Lightning send swap completed via refund"
+    },
+    "coreSwapsLnSendCompletedSuccess": "Swap valmistuu onnistuneesti.",
+    "@coreSwapsLnSendCompletedSuccess": {
+        "description": "Status message for successfully completed Lightning send swap"
+    },
+    "coreSwapsLnSendFailedRefunding": "Swap palautetaan pian.",
+    "@coreSwapsLnSendFailedRefunding": {
+        "description": "Status message for failed Lightning send swap that will be refunded"
+    },
+    "coreSwapsChainPending": "Siirto ei ole vielä aloitettu.",
+    "@coreSwapsChainPending": {
+        "description": "Status message for pending chain swap"
+    },
+    "coreSwapsChainPaid": "Odottaa siirron tarjoajan maksua saada vahvistus. Tämä saattaa kestää jonkin aikaa valmistua.",
+    "@coreSwapsChainPaid": {
+        "description": "Status message for paid chain swap"
+    },
+    "coreSwapsChainClaimable": "Siirto on valmis vaatimaan.",
+    "@coreSwapsChainClaimable": {
+        "description": "Status message for claimable chain swap"
+    },
+    "coreSwapsChainRefundable": "Siirto on valmis hyvitettäväksi.",
+    "@coreSwapsChainRefundable": {
+        "description": "Status message for refundable chain swap"
+    },
+    "coreSwapsChainCanCoop": "Siirto tapahtuu hetkellisesti.",
+    "@coreSwapsChainCanCoop": {
+        "description": "Status message for chain swap that can complete cooperatively"
+    },
+    "coreSwapsChainCompletedRefunded": "Siirto on palautettu.",
+    "@coreSwapsChainCompletedRefunded": {
+        "description": "Status message for chain swap completed via refund"
+    },
+    "coreSwapsChainCompletedSuccess": "Siirto on suoritettu onnistuneesti.",
+    "@coreSwapsChainCompletedSuccess": {
+        "description": "Status message for successfully completed chain swap"
+    },
+    "coreSwapsChainFailedRefunding": "Siirto palautetaan pian.",
+    "@coreSwapsChainFailedRefunding": {
+        "description": "Status message for failed chain swap that will be refunded"
+    },
+    "autoswapBaseBalanceInfoText": "Pikalompakon saldo palaa tähän saldoon autoswapin jälkeen.",
+    "@autoswapBaseBalanceInfoText": {
+        "description": "Info text explaining what happens to the balance after an autoswap"
+    },
+    "autoswapWarningDescription": "Autoswap varmistaa, että välittömien maksujen ja turvallisen Bitcoin-lompakon välillä on hyvä tasapaino.",
+    "@autoswapWarningDescription": {
+        "description": "Description text at the top of the autoswap warning bottom sheet"
+    },
+    "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla:",
+    "@autoswapWarningTitle": {
+        "description": "Title text in the autoswap warning bottom sheet"
+    },
+    "autoswapWarningBaseBalance": "Tasapaino 0,01 BTC",
+    "@autoswapWarningBaseBalance": {
+        "description": "Base balance text shown in the autoswap warning bottom sheet"
+    },
+    "autoswapWarningTriggerAmount": "0,02 BTC",
+    "@autoswapWarningTriggerAmount": {
+        "description": "Trigger amount text shown in the autoswap warning bottom sheet"
+    },
+    "autoswapWarningExplanation": "Kun saldo ylittää laukaisumäärän, vaihdetaan. Perussumma säilytetään Instant Payments -lompakossasi ja jäljellä oleva summa vaihdetaan Bitcoin-lompakkoosi.",
+    "@autoswapWarningExplanation": {
+        "description": "Explanation text in the autoswap warning bottom sheet"
+    },
+    "autoswapWarningDontShowAgain": "Älä näytä tätä varoitusta uudelleen.",
+    "@autoswapWarningDontShowAgain": {
+        "description": "Checkbox label for dismissing the autoswap warning"
+    },
+    "autoswapWarningSettingsLink": "Vie minut autoswap-asetuksiin",
+    "@autoswapWarningSettingsLink": {
+        "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    },
+    "importQrDeviceKeystoneStep7": "Skannaa QR-koodi, joka näkyy Keystonessa",
+    "@importQrDeviceKeystoneStep7": {
+        "description": "Keystone instruction step 7"
+    },
+    "importQrDeviceKeystoneStep8": "Kirjoita Keystone-lompakkosi ja napauta Tuonti",
+    "@importQrDeviceKeystoneStep8": {
+        "description": "Keystone instruction step 8"
+    },
+    "bitcoinSettingsMempoolServerTitle": "Mempool-palvelimen asetukset",
+    "@bitcoinSettingsMempoolServerTitle": {
+        "description": "Title for the Mempool server settings section in Bitcoin settings"
+    },
+    "autoswapTriggerAtBalanceInfoText": "Autoswap käynnistyy, kun saldo ylittää tämän summan.",
+    "@autoswapTriggerAtBalanceInfoText": {
+        "description": "Info text explaining when autoswap will trigger"
+    },
+    "autoswapWarningCardTitle": "Autoswap on käytössä.",
+    "@autoswapWarningCardTitle": {
+        "description": "Title text shown on the autoswap warning card on home screen"
+    },
+    "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC.",
+    "@autoswapWarningCardSubtitle": {
+        "description": "Subtitle text shown on the autoswap warning card on home screen"
     }
 }
