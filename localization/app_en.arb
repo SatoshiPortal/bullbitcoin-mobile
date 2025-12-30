@@ -604,6 +604,14 @@
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"
   },
+  "exchangeSettingsRecipientsTitle": "Recipients",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transactions",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
   "exchangeTransactionsTitle": "Transactions",
   "@exchangeTransactionsTitle": {
     "description": "Title for the transactions section in exchange"

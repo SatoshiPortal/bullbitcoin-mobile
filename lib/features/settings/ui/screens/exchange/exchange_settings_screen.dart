@@ -46,6 +46,28 @@ class ExchangeSettingsScreen extends StatelessWidget {
                     }
                   },
                 ),
+                SettingsEntryItem(
+                  icon: Icons.people,
+                  title: context.loc.exchangeSettingsRecipientsTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeRecipients.name);
+                    }
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.history,
+                  title: context.loc.exchangeSettingsTransactionsTitle,
+                  onTap: () {
+                    if (state.notLoggedIn) {
+                      NotLoggedInBottomSheet.show(context);
+                    } else {
+                      context.pushNamed(SettingsRoute.exchangeTransactions.name);
+                    }
+                  },
+                ),
                 // SettingsEntryItem(
                 //   icon: Icons.currency_bitcoin,
                 //   title: 'Default Bitcoin Wallets',
