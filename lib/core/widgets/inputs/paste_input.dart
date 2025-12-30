@@ -29,23 +29,22 @@ class PasteInput extends StatelessWidget {
         children: [
           const Gap(15),
           Expanded(
-            child:
-                text.isEmpty
-                    ? BBText(
-                      hint,
-                      style: context.font.labelSmall,
-                      color: context.appColors.textMuted,
-                    )
-                    : BBText(
-                      text.trim(),
-                      style: context.font.bodyLarge,
-                      color: context.appColors.text,
-                    ),
+            child: text.isEmpty
+                ? BBText(
+                    hint,
+                    style: context.font.labelSmall,
+                    color: context.appColors.onSurface,
+                  )
+                : BBText(
+                    text.trim(),
+                    style: context.font.bodyLarge,
+                    color: context.appColors.onSurface,
+                  ),
           ),
           IconButton(
             visualDensity: VisualDensity.compact,
             iconSize: 20,
-            icon: Icon(Icons.paste_sharp, color: context.appColors.text),
+            icon: Icon(Icons.paste_sharp, color: context.appColors.onSurface),
             onPressed: () {
               Clipboard.getData(Clipboard.kTextPlain).then((value) {
                 if (value != null) {
