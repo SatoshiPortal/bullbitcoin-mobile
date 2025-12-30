@@ -43,13 +43,21 @@ class Bip329LabelsPage extends StatelessWidget {
                 exportSuccess: (labelsCount) {
                   SnackBarUtils.showSnackBar(
                     context,
-                    context.loc.bip329LabelsExportSuccess(labelsCount),
+                    labelsCount == 1
+                        ? context.loc.bip329LabelsExportSuccessSingular
+                        : context.loc.bip329LabelsExportSuccessPlural(
+                            labelsCount,
+                          ),
                   );
                 },
                 importSuccess: (labelsCount) {
                   SnackBarUtils.showSnackBar(
                     context,
-                    context.loc.bip329LabelsImportSuccess(labelsCount),
+                    labelsCount == 1
+                        ? context.loc.bip329LabelsImportSuccessSingular
+                        : context.loc.bip329LabelsImportSuccessPlural(
+                            labelsCount,
+                          ),
                   );
                 },
                 error: (message) {

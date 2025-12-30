@@ -156,9 +156,13 @@
     "@electrumPrivacyNoticeSave": {
         "description": "Save button in privacy notice dialog"
     },
-    "bip329LabelsImportSuccess": "{count, plural, =1{1 этикетка импортирована} other{{count} этикеток импортировано}}",
-    "@bip329LabelsImportSuccess": {
-        "description": "Success message after importing labels",
+    "bip329LabelsImportSuccessSingular": "1 метка импортирована",
+    "@bip329LabelsImportSuccessSingular": {
+        "description": "Success message after importing exactly 1 label"
+    },
+    "bip329LabelsImportSuccessPlural": "{count} меток импортировано",
+    "@bip329LabelsImportSuccessPlural": {
+        "description": "Success message after importing multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"
@@ -5327,9 +5331,13 @@
     "@transactionLabelCreatedAt": {
         "description": "Label for creation timestamp"
     },
-    "bip329LabelsExportSuccess": "{count, plural, =1{1 этикетка экспортирована} other{{count} этикеток экспортировано}}",
-    "@bip329LabelsExportSuccess": {
-        "description": "Success message after exporting labels",
+    "bip329LabelsExportSuccessSingular": "1 метка экспортирована",
+    "@bip329LabelsExportSuccessSingular": {
+        "description": "Success message after exporting exactly 1 label"
+    },
+    "bip329LabelsExportSuccessPlural": "{count} меток экспортировано",
+    "@bip329LabelsExportSuccessPlural": {
+        "description": "Success message after exporting multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"

@@ -9372,18 +9372,26 @@
     "@bip329LabelsExportButton": {
         "description": "Button text to export labels"
     },
-    "bip329LabelsExportSuccess": "{count, plural, =1{1 etiqueta exportada} other{{count} etiquetas exportadas}}",
-    "@bip329LabelsExportSuccess": {
-        "description": "Success message after exporting labels",
+    "bip329LabelsExportSuccessSingular": "1 etiqueta exportada",
+    "@bip329LabelsExportSuccessSingular": {
+        "description": "Success message after exporting exactly 1 label"
+    },
+    "bip329LabelsExportSuccessPlural": "{count} etiquetas exportadas",
+    "@bip329LabelsExportSuccessPlural": {
+        "description": "Success message after exporting multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"
             }
         }
     },
-    "bip329LabelsImportSuccess": "{count, plural, =1{1 etiqueta importada} other{{count} etiquetas importadas}}",
-    "@bip329LabelsImportSuccess": {
-        "description": "Success message after importing labels",
+    "bip329LabelsImportSuccessSingular": "1 etiqueta importada",
+    "@bip329LabelsImportSuccessSingular": {
+        "description": "Success message after importing exactly 1 label"
+    },
+    "bip329LabelsImportSuccessPlural": "{count} etiquetas importadas",
+    "@bip329LabelsImportSuccessPlural": {
+        "description": "Success message after importing multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"

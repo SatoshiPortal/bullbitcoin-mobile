@@ -4106,9 +4106,13 @@
     "@electrumPrivacyNoticeSave": {
         "description": "Save button in privacy notice dialog"
     },
-    "bip329LabelsImportSuccess": "{count, plural, =1{1 етикетка імпортована} other{{count} етикеток імпортовано}}",
-    "@bip329LabelsImportSuccess": {
-        "description": "Success message after importing labels",
+    "bip329LabelsImportSuccessSingular": "1 мітка імпортована",
+    "@bip329LabelsImportSuccessSingular": {
+        "description": "Success message after importing exactly 1 label"
+    },
+    "bip329LabelsImportSuccessPlural": "{count} міток імпортовано",
+    "@bip329LabelsImportSuccessPlural": {
+        "description": "Success message after importing multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"
@@ -7477,9 +7481,13 @@
     "@exchangeKycLevelLight": {
         "description": "KYC verification level: Light"
     },
-    "bip329LabelsExportSuccess": "{count, plural, =1{1 етикетка експортована} other{{count} етикеток експортовано}}",
-    "@bip329LabelsExportSuccess": {
-        "description": "Success message after exporting labels",
+    "bip329LabelsExportSuccessSingular": "1 мітка експортована",
+    "@bip329LabelsExportSuccessSingular": {
+        "description": "Success message after exporting exactly 1 label"
+    },
+    "bip329LabelsExportSuccessPlural": "{count} міток експортовано",
+    "@bip329LabelsExportSuccessPlural": {
+        "description": "Success message after exporting multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"

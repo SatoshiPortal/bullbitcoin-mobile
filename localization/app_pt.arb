@@ -152,9 +152,13 @@
     "@electrumPrivacyNoticeSave": {
         "description": "Save button in privacy notice dialog"
     },
-    "bip329LabelsImportSuccess": "{count, plural, =1{1 rótulo importado} other{{count} rótulos importados}}",
-    "@bip329LabelsImportSuccess": {
-        "description": "Success message after importing labels",
+    "bip329LabelsImportSuccessSingular": "1 rótulo importado",
+    "@bip329LabelsImportSuccessSingular": {
+        "description": "Success message after importing exactly 1 label"
+    },
+    "bip329LabelsImportSuccessPlural": "{count} rótulos importados",
+    "@bip329LabelsImportSuccessPlural": {
+        "description": "Success message after importing multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"
@@ -5327,9 +5331,13 @@
     "@transactionLabelCreatedAt": {
         "description": "Label for creation timestamp"
     },
-    "bip329LabelsExportSuccess": "{count, plural, =1{1 label exported} other{{count} labels exported}}",
-    "@bip329LabelsExportSuccess": {
-        "description": "Success message after exporting labels",
+    "bip329LabelsExportSuccessSingular": "1 rótulo exportado",
+    "@bip329LabelsExportSuccessSingular": {
+        "description": "Success message after exporting exactly 1 label"
+    },
+    "bip329LabelsExportSuccessPlural": "{count} rótulos exportados",
+    "@bip329LabelsExportSuccessPlural": {
+        "description": "Success message after exporting multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"

@@ -156,9 +156,13 @@
     "@electrumPrivacyNoticeSave": {
         "description": "Save button in privacy notice dialog"
     },
-    "bip329LabelsImportSuccess": "{count, plural, =1{1 etichetta importata} other{{count} etichette importate}}",
-    "@bip329LabelsImportSuccess": {
-        "description": "Success message after importing labels",
+    "bip329LabelsImportSuccessSingular": "1 etichetta importata",
+    "@bip329LabelsImportSuccessSingular": {
+        "description": "Success message after importing exactly 1 label"
+    },
+    "bip329LabelsImportSuccessPlural": "{count} etichette importate",
+    "@bip329LabelsImportSuccessPlural": {
+        "description": "Success message after importing multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"
@@ -5339,9 +5343,13 @@
     "@transactionLabelCreatedAt": {
         "description": "Label for creation timestamp"
     },
-    "bip329LabelsExportSuccess": "{count, plural, =1{1 etichetta esportata} other{{count} etichette esportate}}",
-    "@bip329LabelsExportSuccess": {
-        "description": "Success message after exporting labels",
+    "bip329LabelsExportSuccessSingular": "1 etichetta esportata",
+    "@bip329LabelsExportSuccessSingular": {
+        "description": "Success message after exporting exactly 1 label"
+    },
+    "bip329LabelsExportSuccessPlural": "{count} etichette esportate",
+    "@bip329LabelsExportSuccessPlural": {
+        "description": "Success message after exporting multiple labels",
         "placeholders": {
             "count": {
                 "type": "int"
