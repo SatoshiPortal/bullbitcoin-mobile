@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
 import 'package:flutter/material.dart';
@@ -102,6 +103,9 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                               context.read<SettingsCubit>().changeLanguage(
                                 newLanguage,
                               );
+                              if (newLanguage != Language.unitedStatesEnglish) {
+                                TranslationWarningBottomSheet.show(context);
+                              }
                             }
                           },
                         ),

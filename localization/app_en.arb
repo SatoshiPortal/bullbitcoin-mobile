@@ -1,5 +1,21 @@
 {
   "@@locale": "en",
+  "translationWarningTitle": "AI-Generated Translations",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "translationWarningDescription": "Most translations in this app were generated using AI and may contain inaccuracies. If you notice any errors or would like to help improve the translations, you can contribute through our community translation platform.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningContributeButton": "Help Improve Translations",
+  "@translationWarningContributeButton": {
+    "description": "Button to open Weblate translation platform"
+  },
+  "translationWarningDismissButton": "Got It",
+  "@translationWarningDismissButton": {
+    "description": "Button to dismiss the translation warning"
+  },
   "durationSeconds": "{seconds} seconds",
   "@durationSeconds": {
     "description": "Duration format for seconds",
@@ -9376,18 +9392,26 @@
   "@bip329LabelsExportButton": {
     "description": "Button text to export labels"
   },
-  "bip329LabelsExportSuccess": "{count, plural, =1{1 label exported} other{{count} labels exported}}",
-  "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels",
+  "bip329LabelsExportSuccessSingular": "1 label exported",
+  "@bip329LabelsExportSuccessSingular": {
+    "description": "Success message after exporting exactly 1 label"
+  },
+  "bip329LabelsExportSuccessPlural": "{count} labels exported",
+  "@bip329LabelsExportSuccessPlural": {
+    "description": "Success message after exporting multiple labels",
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "bip329LabelsImportSuccess": "{count, plural, =1{1 label imported} other{{count} labels imported}}",
-  "@bip329LabelsImportSuccess": {
-    "description": "Success message after importing labels",
+  "bip329LabelsImportSuccessSingular": "1 label imported",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} labels imported",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
     "placeholders": {
       "count": {
         "type": "int"
