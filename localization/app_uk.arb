@@ -4106,7 +4106,7 @@
     "@electrumPrivacyNoticeSave": {
         "description": "Save button in privacy notice dialog"
     },
-    "bip329LabelsImportSuccess": "{count, plural, =1{1 імпортований} інші {{count} етикетки імпортовані}}",
+    "bip329LabelsImportSuccess": "{count, plural, =1{1 етикетка імпортована} other{{count} етикеток імпортовано}}",
     "@bip329LabelsImportSuccess": {
         "description": "Success message after importing labels",
         "placeholders": {
@@ -7477,7 +7477,7 @@
     "@exchangeKycLevelLight": {
         "description": "KYC verification level: Light"
     },
-    "bip329LabelsExportSuccess": "{count, plural, =1{1} імпортований {{count} етикетки експортовані}}",
+    "bip329LabelsExportSuccess": "{count, plural, =1{1 етикетка експортована} other{{count} етикеток експортовано}}",
     "@bip329LabelsExportSuccess": {
         "description": "Success message after exporting labels",
         "placeholders": {

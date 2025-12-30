@@ -152,7 +152,7 @@
     "@electrumPrivacyNoticeSave": {
         "description": "Save button in privacy notice dialog"
     },
-    "bip329LabelsImportSuccess": "(conta, plural, =1{1 rótulo importado} outros rótulos{{count} importados}}",
+    "bip329LabelsImportSuccess": "{count, plural, =1{1 rótulo importado} other{{count} rótulos importados}}",
     "@bip329LabelsImportSuccess": {
         "description": "Success message after importing labels",
         "placeholders": {
