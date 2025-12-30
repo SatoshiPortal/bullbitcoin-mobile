@@ -12165,5 +12165,17 @@
     "importWatchOnlyCancel": "Cancel",
     "@importWatchOnlyCancel": {
         "description": "Button to cancel watch-only import"
+    },
+    "arkAboutTitle": "关于",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "安全设置",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
+    },
+    "transactionNoteUpdateButton": "更新",
+    "@transactionNoteUpdateButton": {
+        "description": "Button label to update a note"
     }
 }
