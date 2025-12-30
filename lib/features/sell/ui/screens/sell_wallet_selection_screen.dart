@@ -64,7 +64,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.appColors.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellExternalWallet),
                     subtitle: Text(context.loc.sellFromAnotherWallet),

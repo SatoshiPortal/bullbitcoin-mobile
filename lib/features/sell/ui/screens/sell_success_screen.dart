@@ -14,10 +14,9 @@ class SellSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellSuccessState
-              ? (bloc.state as SellSuccessState).sellOrder
-              : null,
+      (SellBloc bloc) => bloc.state is SellSuccessState
+          ? (bloc.state as SellSuccessState).sellOrder
+          : null,
     );
     return PopScope(
       canPop: false,
@@ -42,7 +41,11 @@ class SellSuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: .center,
               children: [
-                Icon(Icons.check_circle, size: 100, color: context.appColors.success),
+                Icon(
+                  Icons.check_circle,
+                  size: 100,
+                  color: context.appColors.success,
+                ),
                 const SizedBox(height: 20),
                 Text(
                   context.loc.sellOrderCompleted,
@@ -71,10 +74,11 @@ class SellSuccessScreen extends StatelessWidget {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,
                         pathParameters: {'orderId': order.orderId},
+                        queryParameters: {'returnToExchange': 'true'},
                       );
                     },
                     bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onPrimary,
+                    textColor: context.appColors.onSecondary,
                   ),
               ],
             ),
