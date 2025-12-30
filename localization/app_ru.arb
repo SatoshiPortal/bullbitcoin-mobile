@@ -12157,5 +12157,9 @@
     "importWatchOnlyCancel": "Отмена",
     "@importWatchOnlyCancel": {
         "description": "Button to cancel watch-only import"
+    },
+    "arkAboutTitle": "О проекте",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
     }
 }
