@@ -10,8 +10,12 @@ class TranslationWarningBottomSheet extends StatelessWidget {
   const TranslationWarningBottomSheet({super.key});
 
   static const String _weblateUrl = 'https://hosted.weblate.org/engage/bull/';
+  static bool _hasBeenShown = false;
 
   static Future<void> show(BuildContext context) {
+    if (_hasBeenShown) return Future.value();
+    _hasBeenShown = true;
+
     return BlurredBottomSheet.show(
       context: context,
       child: const TranslationWarningBottomSheet(),
