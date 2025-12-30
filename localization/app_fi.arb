@@ -11962,5 +11962,73 @@
     "coreSwapsStatusPending": "Odottaa",
     "@coreSwapsStatusPending": {
         "description": "Display name for pending swap status"
+    },
+    "coreSwapsStatusInProgress": "Käynnissä",
+    "@coreSwapsStatusInProgress": {
+        "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    },
+    "coreSwapsStatusCompleted": "Valmis",
+    "@coreSwapsStatusCompleted": {
+        "description": "Display name for completed swap status"
+    },
+    "coreSwapsStatusExpired": "Vanhentunut",
+    "@coreSwapsStatusExpired": {
+        "description": "Display name for expired swap status"
+    },
+    "coreSwapsStatusFailed": "Epäonnistui",
+    "@coreSwapsStatusFailed": {
+        "description": "Display name for failed swap status"
+    },
+    "coreSwapsActionClaim": "Lunastus",
+    "@coreSwapsActionClaim": {
+        "description": "Action label for claiming a swap"
+    },
+    "coreSwapsActionClose": "Sulje",
+    "@coreSwapsActionClose": {
+        "description": "Action label for closing a swap cooperatively"
+    },
+    "coreSwapsLnReceiveExpired": "Vanhentunut swap",
+    "@coreSwapsLnReceiveExpired": {
+        "description": "Status message for expired Lightning receive swap"
+    },
+    "coreSwapsLnReceiveFailed": "Swap epäonnistui",
+    "@coreSwapsLnReceiveFailed": {
+        "description": "Status message for failed Lightning receive swap"
+    },
+    "coreSwapsLnSendExpired": "Vanhentunut swap",
+    "@coreSwapsLnSendExpired": {
+        "description": "Status message for expired Lightning send swap"
+    },
+    "coreSwapsLnSendFailed": "Swap epäonnistui",
+    "@coreSwapsLnSendFailed": {
+        "description": "Status message for failed Lightning send swap"
+    },
+    "coreSwapsChainExpired": "Siirto vanhentunut",
+    "@coreSwapsChainExpired": {
+        "description": "Status message for expired chain swap"
+    },
+    "coreSwapsChainFailed": "Siirto epäonnistui",
+    "@coreSwapsChainFailed": {
+        "description": "Status message for failed chain swap"
+    },
+    "coreWalletTransactionStatusPending": "Vireillä",
+    "@coreWalletTransactionStatusPending": {
+        "description": "Display name for pending wallet transaction status"
+    },
+    "coreWalletTransactionStatusConfirmed": "Vahvistettu",
+    "@coreWalletTransactionStatusConfirmed": {
+        "description": "Display name for confirmed wallet transaction status"
+    },
+    "autoswapWarningOkButton": "OK",
+    "@autoswapWarningOkButton": {
+        "description": "OK button label in the autoswap warning bottom sheet"
+    },
+    "importQrDeviceKeystoneStep9": "Määritys valmis",
+    "@importQrDeviceKeystoneStep9": {
+        "description": "Keystone instruction step 9"
+    },
+    "save": "Tallenna",
+    "@save": {
+        "description": "Generic save button label"
     }
 }
