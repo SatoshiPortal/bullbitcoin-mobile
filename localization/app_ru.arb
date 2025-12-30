@@ -156,7 +156,7 @@
     "@electrumPrivacyNoticeSave": {
         "description": "Save button in privacy notice dialog"
     },
-    "bip329LabelsImportSuccess": "{count,плюрал, =1{1 этикетка импортная} другие {count} этикетки импортные}}",
+    "bip329LabelsImportSuccess": "{count, plural, =1{1 этикетка импортирована} other{{count} этикеток импортировано}}",
     "@bip329LabelsImportSuccess": {
         "description": "Success message after importing labels",
         "placeholders": {
@@ -5327,7 +5327,7 @@
     "@transactionLabelCreatedAt": {
         "description": "Label for creation timestamp"
     },
-    "bip329LabelsExportSuccess": "{count,плюрал, =1{1 этикетка экспортируется} другие {count} этикетки экспортируется}}",
+    "bip329LabelsExportSuccess": "{count, plural, =1{1 этикетка экспортирована} other{{count} этикеток экспортировано}}",
     "@bip329LabelsExportSuccess": {
         "description": "Success message after exporting labels",
         "placeholders": {

@@ -152,7 +152,7 @@
     "@sellAdvancedOptions": {
         "description": "Title for advanced options bottom sheet"
     },
-    "bip329LabelsImportSuccess": "{count, plural, =1{1 Label importiert} sonstige{{count} Label importiert}}}}",
+    "bip329LabelsImportSuccess": "{count, plural, =1{1 Label importiert} other{{count} Labels importiert}}",
     "@bip329LabelsImportSuccess": {
         "description": "Success message after importing labels",
         "placeholders": {
@@ -5211,7 +5211,7 @@
     "@transactionLabelCreatedAt": {
         "description": "Label for creation timestamp"
     },
-    "bip329LabelsExportSuccess": "{count, plural, =1{1 Label exportiert} sonstige{{count} Labels exportiert}}}}",
+    "bip329LabelsExportSuccess": "{count, plural, =1{1 Label exportiert} other{{count} Labels exportiert}}",
     "@bip329LabelsExportSuccess": {
         "description": "Success message after exporting labels",
         "placeholders": {
