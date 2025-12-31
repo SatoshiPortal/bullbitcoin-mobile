@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/exchange/data/models/support_chat_message_attachment_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/support_chat_message_model.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:dio/dio.dart';
 
 class ExchangeSupportChatDatasource {
@@ -67,27 +66,21 @@ class ExchangeSupportChatDatasource {
     List<SupportChatMessageAttachmentModel>? attachments,
   }) async {
     try {
-      log.fine('Datasource: Sending message with text: "$text"');
       final params = <String, dynamic>{'text': text, 'source': 'BULL Mobile'};
 
       final attachmentsList = attachments
           ?.where((attachment) => attachment.fileData != null)
           .map((attachment) {
-            log.fine('Datasource: Processing attachment - ${attachment.fileName} (${attachment.fileSize} bytes, ${attachment.fileType})');
-            final encoded = base64Encode(attachment.fileData!);
-            log.fine('Datasource: Base64 encoded length: ${encoded.length}');
             return {
               'fileName': attachment.fileName,
               'fileType': attachment.fileType,
               'fileSize': attachment.fileSize,
-              'fileData': encoded,
+              'fileData': base64Encode(attachment.fileData!),
             };
           })
           .toList();
 
       params['attachments'] = attachmentsList;
-      
-      log.fine('Datasource: Sending ${attachmentsList?.length ?? 0} attachments to API');
 
       final requestData = {
         'jsonrpc': '2.0',
@@ -102,21 +95,15 @@ class ExchangeSupportChatDatasource {
         options: Options(headers: {'X-API-Key': apiKey}),
       );
 
-      log.fine('Datasource: API response status: ${resp.statusCode}');
-
       if (resp.statusCode != 200) {
         throw Exception('Failed to send message');
       }
 
       final error = resp.data['error'];
       if (error != null) {
-        log.severe('Datasource: API error: $error');
         throw Exception('Failed to send message: $error');
       }
-      
-      log.fine('Datasource: Message sent successfully');
     } catch (e) {
-      log.severe('Datasource: Exception sending message: $e');
       rethrow;
     }
   }

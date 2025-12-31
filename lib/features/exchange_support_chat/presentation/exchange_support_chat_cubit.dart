@@ -38,7 +38,6 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
 
   Future<void> loadMessages({int? page}) async {
     try {
-      log.fine('Loading messages, page: ${page ?? "current"}');
       emit(state.copyWith(loadingMessages: true, errorLoadingMessages: ''));
 
       if (state.userId == null) {
@@ -49,7 +48,6 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
             throw Exception('User ID not found in user summary');
           }
           emit(state.copyWith(userId: userId));
-          log.fine('Set userId: $userId');
         } catch (_) {}
       }
 
@@ -59,22 +57,9 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         pageSize: 10,
       );
 
-      log.fine('Loaded ${messages.length} messages from API');
-      for (final msg in messages) {
-        final attachmentCount = msg.attachments?.length ?? 0;
-        log.fine('Message ${msg.messageId}: "${msg.text}" with $attachmentCount attachments');
-        if (attachmentCount > 0) {
-          for (final att in msg.attachments!) {
-            log.fine('  - Attachment: ${att.fileName} (ID: ${att.attachmentId})');
-          }
-        }
-      }
-
       final updatedMessages = pageToLoad == 1
           ? messages
           : [...state.messages, ...messages];
-
-      log.fine('Total messages after update: ${updatedMessages.length}');
 
       emit(
         state.copyWith(
@@ -84,7 +69,6 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         ),
       );
     } catch (e) {
-      log.severe('Failed to load messages: $e');
       emit(
         state.copyWith(
           loadingMessages: false,
@@ -299,16 +283,13 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
 
   Future<void> attachLogs() async {
     try {
-      log.fine('Starting log attachment process');
       emit(state.copyWith(errorPermissionDenied: ''));
 
       // Read all available logs
       List<String> logs;
       try {
         logs = await log.readLogs();
-        log.fine('Successfully read ${logs.length} log lines');
       } catch (e) {
-        log.warning('Failed to read logs: $e');
         // If logs file doesn't exist or can't be read, create a message explaining this
         logs = [
           'timestamp\tlevel\tmessage\terror\ttrace',
@@ -317,7 +298,6 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
       }
 
       if (logs.isEmpty) {
-        log.warning('No logs found, creating placeholder');
         // Create a minimal log entry if no logs exist
         logs = [
           'timestamp\tlevel\tmessage\terror\ttrace',
@@ -328,13 +308,11 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
       // Create log file content and encode as UTF-8
       final logContent = logs.join('\n');
       final bytes = Uint8List.fromList(utf8.encode(logContent));
-      
-      log.fine('Log content size: ${bytes.length} bytes');
 
       // Generate filename: timestamp.BullLog.random8alphanumeric
       final random = Random();
       final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-      
+
       // Generate random 8-character alphanumeric string
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       final randomAlphanumeric = String.fromCharCodes(
@@ -343,10 +321,8 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
           (_) => chars.codeUnitAt(random.nextInt(chars.length)),
         ),
       );
-      
+
       final fileName = '$timestamp.BullLog.$randomAlphanumeric.txt';
-      
-      log.fine('Generated log filename: $fileName');
 
       // Create attachment with text/plain MIME type (more likely to be accepted by server)
       final attachment = SupportChatMessageAttachment(
@@ -357,22 +333,14 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         fileData: bytes,
         createdAt: DateTime.now(),
       );
-      
-      log.fine('Created attachment with ID: ${attachment.attachmentId}');
 
       emit(
         state.copyWith(
           newMessageText: 'Here are my logs',
-          newMessageAttachments: [
-            ...state.newMessageAttachments,
-            attachment,
-          ],
+          newMessageAttachments: [...state.newMessageAttachments, attachment],
         ),
       );
-      
-      log.fine('Log attachment added to state successfully');
     } catch (e) {
-      log.severe('Failed to attach logs: $e');
       emit(
         state.copyWith(
           errorPermissionDenied: 'Failed to attach logs. Please try again.',
@@ -434,13 +402,6 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     }
 
     try {
-      log.fine('Sending message with text: "$messageText" and ${attachmentsToSend.length} attachments');
-      if (hasAttachments) {
-        for (final att in attachmentsToSend) {
-          log.fine('Attachment: ${att.fileName} (${att.fileSize} bytes, type: ${att.fileType})');
-        }
-      }
-      
       emit(state.copyWith(sendingMessage: true, errorSendingMessage: ''));
 
       final tempMessage = SupportChatMessage(
@@ -453,8 +414,6 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         attachments: attachmentsToSend,
       );
 
-      log.fine('Created temp message with ID: ${tempMessage.messageId}');
-
       emit(
         state.copyWith(
           messages: [tempMessage, ...state.messages],
@@ -463,27 +422,18 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         ),
       );
 
-      log.fine('Temp message added to state, now sending to API');
-
       await _sendMessageUsecase.execute(
         text: messageText,
         attachments: hasAttachments ? attachmentsToSend : null,
       );
 
-      log.fine('Message sent successfully to API, waiting 2 seconds before reloading');
-
       // Don't immediately reload - let the message appear naturally
       // The attachment might not be fully processed on the server yet
       await Future.delayed(const Duration(seconds: 2));
-      
-      log.fine('Reloading messages from server');
       await loadMessages(page: 1);
-      
-      log.fine('Messages reloaded, current message count: ${state.messages.length}');
 
       emit(state.copyWith(sendingMessage: false));
     } catch (e) {
-      log.severe('Failed to send message: $e');
       emit(
         state.copyWith(
           sendingMessage: false,
