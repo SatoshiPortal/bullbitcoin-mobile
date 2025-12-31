@@ -96,9 +96,8 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletKeystone,
-                onTap: () => context.pushNamed(
-                  ImportQrDeviceRoute.importKeystone.name,
-                ),
+                onTap: () =>
+                    context.pushNamed(ImportQrDeviceRoute.importKeystone.name),
               ),
               const Gap(16),
               if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
