@@ -60,7 +60,7 @@ class SellQrBottomSheet extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: context.appColors.surfaceFixed,
+                color: context.appColors.background,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -73,7 +73,12 @@ class SellQrBottomSheet extends StatelessWidget {
               child: SizedBox(
                 width: 280,
                 height: 280,
-                child: QrImageView(data: bip21InvoiceData, size: 280),
+                child: QrImageView(
+                  data: bip21InvoiceData,
+                  size: 280,
+                  // ignore: deprecated_member_use
+                  foregroundColor: context.appColors.secondary,
+                ),
               ),
             ),
           ),

@@ -145,11 +145,15 @@ class ReceiveQRDetails extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
               decoration: BoxDecoration(
-                color: context.appColors.onPrimary,
+                color: context.appColors.background,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: qrData.isNotEmpty
-                  ? QrImageView(data: qrData)
+                  ? QrImageView(
+                      data: qrData,
+                      // ignore: deprecated_member_use
+                      foregroundColor: context.appColors.secondary,
+                    )
                   : const LoadingBoxContent(height: 200),
             ),
           ),
@@ -371,7 +375,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
+        color: context.appColors.cardBackground,
         borderRadius: BorderRadius.circular(2),
         border: Border.all(color: context.appColors.surface),
         boxShadow: [
@@ -407,6 +411,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                       amountSat ?? 0,
                       showFiat: false,
                       style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
                     ),
                     BBText(
                       '~$amountEquivalent',
@@ -435,6 +440,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                     swap!.receieveAmount!,
                     showFiat: false,
                     style: context.font.bodyMedium,
+                    color: context.appColors.secondary,
                   ),
                 ],
               ),
@@ -456,6 +462,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                     child: BBText(
                       note.isNotEmpty ? note : '',
                       style: context.font.bodyMedium,
+                      color: context.appColors.secondary,
                       maxLines: 5,
                       textAlign: .end,
                     ),
@@ -488,7 +495,12 @@ class ReceiveLnSwapID extends StatelessWidget {
             color: context.appColors.onSurfaceVariant,
           ),
           const Spacer(),
-          BBText(swap.id, style: context.font.bodyLarge, textAlign: .end),
+          BBText(
+            swap.id,
+            style: context.font.bodyLarge,
+            color: context.appColors.secondary,
+            textAlign: .end,
+          ),
           const Gap(4),
           InkWell(
             child: Icon(Icons.copy, color: context.appColors.primary, size: 16),
@@ -527,7 +539,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
             amt,
             showFiat: false,
             style: context.font.bodySmall,
-            color: context.appColors.onSurfaceVariant,
+            color: context.appColors.secondary,
           ),
         ],
       ),
@@ -564,7 +576,7 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
                 swap.fees?.totalFees(null) ?? 0,
                 showFiat: false,
                 style: context.font.bodyLarge,
-                color: context.appColors.onSurfaceVariant,
+                color: context.appColors.secondary,
               ),
               const Gap(4),
               Icon(
