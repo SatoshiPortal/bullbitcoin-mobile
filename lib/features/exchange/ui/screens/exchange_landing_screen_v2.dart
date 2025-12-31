@@ -37,10 +37,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
           children: [
             // Background image with geometric pattern
             Positioned.fill(
-              child: Image.asset(
-                Assets.backgrounds.bgLong.path,
-                fit: .cover,
-              ),
+              child: Image.asset(Assets.backgrounds.bgLong.path, fit: .cover),
             ),
             SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
