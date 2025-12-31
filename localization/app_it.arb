@@ -1447,7 +1447,7 @@
     "@importQrDeviceKruxStep4": {
         "description": "Krux instruction step 4"
     },
-    "appStartupErrorMessageWithBackup": "Su v5.4.0 è stato scoperto un bug critico in una delle nostre dipendenze che influiscono sullo storage di chiave privata. La tua app è stata influenzata da questo. Dovrai eliminare questa applicazione e reinstallarla con il tuo seme di backup.",
+    "appStartupErrorMessageWithBackup": "Impossibile inizializzare. Elimina e reinstalla per risolvere.",
     "@appStartupErrorMessageWithBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
     },
@@ -5223,7 +5223,7 @@
     "@buyKYCLevel3": {
         "description": "Full verification tier"
     },
-    "appStartupErrorMessageNoBackup": "Su v5.4.0 è stato scoperto un bug critico in una delle nostre dipendenze che influiscono sullo storage di chiave privata. La tua app è stata influenzata da questo. Contatta il nostro team di supporto.",
+    "appStartupErrorMessageNoBackup": "Impossibile inizializzare. Elimina e reinstalla per risolvere. Se il tuo seed non è salvato, puoi visualizzarlo in Impostazioni->Impostazioni Bitcoin->Visualizza seed dopo la reinstallazione.",
     "@appStartupErrorMessageNoBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
     },

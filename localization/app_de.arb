@@ -1411,7 +1411,7 @@
     "@importQrDeviceKruxStep4": {
         "description": "Krux instruction step 4"
     },
-    "appStartupErrorMessageWithBackup": "Auf v5.4.0 wurde ein kritischer Fehler in einer unserer Abhängigkeiten entdeckt, die die private Schlüsselspeicherung beeinflussen. Ihre App wurde dadurch beeinflusst. Sie müssen diese App löschen und sie mit Ihrem gesicherten Saatgut neu installieren.",
+    "appStartupErrorMessageWithBackup": "Initialisierung fehlgeschlagen. Löschen und neu installieren, um das Problem zu beheben.",
     "@appStartupErrorMessageWithBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
     },
@@ -5095,7 +5095,7 @@
     "@buyKYCLevel3": {
         "description": "Full verification tier"
     },
-    "appStartupErrorMessageNoBackup": "Auf v5.4.0 wurde ein kritischer Fehler in einer unserer Abhängigkeiten entdeckt, die die private Schlüsselspeicherung beeinflussen. Ihre App wurde dadurch beeinflusst. Kontaktieren Sie unser Support-Team.",
+    "appStartupErrorMessageNoBackup": "Initialisierung fehlgeschlagen. Löschen und neu installieren, um das Problem zu beheben. Wenn Ihr Seed nicht gesichert ist, können Sie ihn nach der Neuinstallation unter Einstellungen->Bitcoin-Einstellungen->Seeds anzeigen einsehen.",
     "@appStartupErrorMessageNoBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
     },

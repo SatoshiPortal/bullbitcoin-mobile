@@ -4956,7 +4956,7 @@
     "@importQrDeviceKruxStep4": {
         "description": "Krux instruction step 4"
     },
-    "appStartupErrorMessageWithBackup": "На v5.4.0 критична помилка була виявлена в одному з наших залежностей, які впливають на зберігання приватного ключа. Ваш додаток був уражений цим. Ви повинні видалити цей додаток і перевстановити його з заднім насінням.",
+    "appStartupErrorMessageWithBackup": "Не вдалося ініціалізувати. Видаліть і переустановіть для виправлення.",
     "@appStartupErrorMessageWithBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
     },
@@ -7389,7 +7389,7 @@
     "@buyKYCLevel3": {
         "description": "Full verification tier"
     },
-    "appStartupErrorMessageNoBackup": "На v5.4.0 критична помилка була виявлена в одному з наших залежностей, які впливають на зберігання приватного ключа. Ваш додаток був уражений цим. Зв'язатися з нашою командою підтримки.",
+    "appStartupErrorMessageNoBackup": "Не вдалося ініціалізувати. Видаліть і переустановіть для виправлення. Якщо ваше насіння не збережено, ви можете переглянути його в Налаштування->Налаштування Bitcoin->Переглянути насіння після переустановки.",
     "@appStartupErrorMessageNoBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
     },

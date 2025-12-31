@@ -10932,11 +10932,11 @@
     "@appStartupErrorTitle": {
         "description": "Title shown when the app fails to start up properly"
     },
-    "appStartupErrorMessageWithBackup": "Versiossa v5.4.0 havaittiin kriittinen virhe yhdessä riippuvuuksistamme, joka vaikuttaa yksityisten avainten tallennukseen. Tämä sovellus on kärsinyt virheestä. Sinun on poistettava tämä sovellus ja asennettava se uudelleen varmuuskopioimallasi siemenellä.",
+    "appStartupErrorMessageWithBackup": "Alustus epäonnistui. Poista ja asenna uudelleen korjataksesi.",
     "@appStartupErrorMessageWithBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
     },
-    "appStartupErrorMessageNoBackup": "Versiossa v5.4.0 havaittiin kriittinen virhe yhdessä riippuvuuksistamme, joka vaikuttaa yksityisten avainten tallennukseen. Tämä sovellus on kärsinyt virheestä. Ota yhteyttä tukitiimiimme.",
+    "appStartupErrorMessageNoBackup": "Alustus epäonnistui. Poista ja asenna uudelleen korjataksesi. Jos siementäsi ei ole varmuuskopioitu, voit tarkastella sitä kohdassa Asetukset->Bitcoin-asetukset->Näytä siemenet uudelleenasennuksen jälkeen.",
     "@appStartupErrorMessageNoBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
     },
@@ -22889,14 +22889,6 @@
   "appStartupErrorTitle": "Käynnistysvirhe",
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
-  },
-  "appStartupErrorMessageWithBackup": "Versiossa v5.4.0 havaittiin kriittinen virhe yhdessä riippuvuuksistamme, joka vaikuttaa yksityisten avainten tallennukseen. Tämä sovellus on kärsinyt virheestä. Sinun on poistettava tämä sovellus ja asennettava se uudelleen varmuuskopioimallasi siemenellä.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
-  },
-  "appStartupErrorMessageNoBackup": "Versiossa v5.4.0 havaittiin kriittinen virhe yhdessä riippuvuuksistamme, joka vaikuttaa yksityisten avainten tallennukseen. Tämä sovellus on kärsinyt virheestä. Ota yhteyttä tukitiimiimme.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
   "appStartupContactSupportButton": "Ota yhteyttä tukeen",
   "@appStartupContactSupportButton": {

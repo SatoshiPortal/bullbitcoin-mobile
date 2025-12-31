@@ -1439,7 +1439,7 @@
     "@importQrDeviceKruxStep4": {
         "description": "Krux instruction step 4"
     },
-    "appStartupErrorMessageWithBackup": "На v5.4.0 был обнаружен критический жучок в одной из наших зависимостей, которые влияют на личное хранилище ключей. Это повлияло на ваше приложение. Вам придется удалить это приложение и переустановить его с резервным семенем.",
+    "appStartupErrorMessageWithBackup": "Не удалось инициализировать. Удалите и переустановите для исправления.",
     "@appStartupErrorMessageWithBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
     },
@@ -5211,7 +5211,7 @@
     "@buyKYCLevel3": {
         "description": "Full verification tier"
     },
-    "appStartupErrorMessageNoBackup": "На v5.4.0 был обнаружен критический жучок в одной из наших зависимостей, которые влияют на личное хранилище ключей. Это повлияло на ваше приложение. Свяжитесь с нашей группой поддержки.",
+    "appStartupErrorMessageNoBackup": "Не удалось инициализировать. Удалите и переустановите для исправления. Если ваше семя не сохранено, вы можете просмотреть его в Настройки->Настройки Bitcoin->Просмотр семян после переустановки.",
     "@appStartupErrorMessageNoBackup": {
         "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
     },

@@ -11144,11 +11144,11 @@
     "@appStartupErrorTitle": {
         "description": "Titre affiché lorsque l'application ne démarre pas correctement"
     },
-    "appStartupErrorMessageWithBackup": "Dans la version 5.4.0, un bogue critique a été découvert dans l'une de nos dépendances qui affecte le stockage des clés privées. Votre application a été affectée par cela. Vous devrez supprimer cette application et la réinstaller avec votre phrase de récupération sauvegardée.",
+    "appStartupErrorMessageWithBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger.",
     "@appStartupErrorMessageWithBackup": {
         "description": "Message d'erreur affiché lorsque le démarrage de l'application échoue en raison d'un problème de stockage de phrase de récupération et que l'utilisateur a une sauvegarde"
     },
-    "appStartupErrorMessageNoBackup": "Dans la version 5.4.0, un bogue critique a été découvert dans l'une de nos dépendances qui affecte le stockage des clés privées. Votre application a été affectée par cela. Contactez notre équipe d'assistance.",
+    "appStartupErrorMessageNoBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger. Si votre graine n'est pas sauvegardée, vous pouvez la consulter sous Paramètres->Paramètres Bitcoin->Voir les graines après la réinstallation.",
     "@appStartupErrorMessageNoBackup": {
         "description": "Message d'erreur affiché lorsque le démarrage de l'application échoue en raison d'un problème de stockage de phrase de récupération et que l'utilisateur n'a pas de sauvegarde"
     },
@@ -23317,14 +23317,6 @@
   "appStartupErrorTitle": "Erreur de démarrage",
   "@appStartupErrorTitle": {
     "description": "Titre affiché lorsque l'application ne démarre pas correctement"
-  },
-  "appStartupErrorMessageWithBackup": "Dans la version 5.4.0, un bogue critique a été découvert dans l'une de nos dépendances qui affecte le stockage des clés privées. Votre application a été affectée par cela. Vous devrez supprimer cette application et la réinstaller avec votre phrase de récupération sauvegardée.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Message d'erreur affiché lorsque le démarrage de l'application échoue en raison d'un problème de stockage de phrase de récupération et que l'utilisateur a une sauvegarde"
-  },
-  "appStartupErrorMessageNoBackup": "Dans la version 5.4.0, un bogue critique a été découvert dans l'une de nos dépendances qui affecte le stockage des clés privées. Votre application a été affectée par cela. Contactez notre équipe d'assistance.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Message d'erreur affiché lorsque le démarrage de l'application échoue en raison d'un problème de stockage de phrase de récupération et que l'utilisateur n'a pas de sauvegarde"
   },
   "appStartupContactSupportButton": "Contacter le support",
   "@appStartupContactSupportButton": {

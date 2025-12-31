@@ -11144,11 +11144,11 @@
     "@appStartupErrorTitle": {
         "description": "Título mostrado cuando la aplicación no se inicia correctamente"
     },
-    "appStartupErrorMessageWithBackup": "En la versión 5.4.0 se descubrió un error crítico en una de nuestras dependencias que afecta el almacenamiento de claves privadas. Su aplicación ha sido afectada por esto. Deberá eliminar esta aplicación y reinstalarla con su frase de recuperación respaldada.",
+    "appStartupErrorMessageWithBackup": "No se pudo inicializar. Elimine y reinstale para solucionar.",
     "@appStartupErrorMessageWithBackup": {
         "description": "Mensaje de error mostrado cuando el inicio de la aplicación falla debido a un problema de almacenamiento de frase de recuperación y el usuario tiene una copia de seguridad"
     },
-    "appStartupErrorMessageNoBackup": "En la versión 5.4.0 se descubrió un error crítico en una de nuestras dependencias que afecta el almacenamiento de claves privadas. Su aplicación ha sido afectada por esto. Contacte a nuestro equipo de soporte.",
+    "appStartupErrorMessageNoBackup": "No se pudo inicializar. Elimine y reinstale para solucionar. Si su semilla no está respaldada, puede verla en Configuración->Configuración de Bitcoin->Ver Semillas después de reinstalar.",
     "@appStartupErrorMessageNoBackup": {
         "description": "Mensaje de error mostrado cuando el inicio de la aplicación falla debido a un problema de almacenamiento de frase de recuperación y el usuario no tiene una copia de seguridad"
     },
@@ -23313,14 +23313,6 @@
   "appStartupErrorTitle": "Error de inicio",
   "@appStartupErrorTitle": {
     "description": "Título mostrado cuando la aplicación no se inicia correctamente"
-  },
-  "appStartupErrorMessageWithBackup": "En la versión 5.4.0 se descubrió un error crítico en una de nuestras dependencias que afecta el almacenamiento de claves privadas. Su aplicación ha sido afectada por esto. Deberá eliminar esta aplicación y reinstalarla con su frase de recuperación respaldada.",
-  "@appStartupErrorMessageWithBackup": {
-    "description": "Mensaje de error mostrado cuando el inicio de la aplicación falla debido a un problema de almacenamiento de frase de recuperación y el usuario tiene una copia de seguridad"
-  },
-  "appStartupErrorMessageNoBackup": "En la versión 5.4.0 se descubrió un error crítico en una de nuestras dependencias que afecta el almacenamiento de claves privadas. Su aplicación ha sido afectada por esto. Contacte a nuestro equipo de soporte.",
-  "@appStartupErrorMessageNoBackup": {
-    "description": "Mensaje de error mostrado cuando el inicio de la aplicación falla debido a un problema de almacenamiento de frase de recuperación y el usuario no tiene una copia de seguridad"
   },
   "appStartupContactSupportButton": "Contactar Soporte",
   "@appStartupContactSupportButton": {
