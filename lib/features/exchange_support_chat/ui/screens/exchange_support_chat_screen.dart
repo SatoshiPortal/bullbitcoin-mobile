@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -19,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({super.key});
@@ -32,6 +30,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
         sendMessageUsecase: locator<SendSupportChatMessageUsecase>(),
         getAttachmentUsecase: locator<GetSupportChatMessageAttachmentUsecase>(),
         getUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        createLogAttachmentUsecase: locator<CreateLogAttachmentUsecase>(),
       )..loadMessages(),
       child: Scaffold(
         appBar: AppBar(
@@ -91,20 +90,6 @@ class _ChatBodyState extends State<_ChatBody> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: InfoCard(
-            description: context.loc.exchangeSupportChatWalletIssuesInfo,
-            tagColor: context.appColors.primary,
-            bgColor: context.appColors.surfaceContainer,
-            onTap: () async {
-              final Uri url = Uri.parse(SettingsConstants.telegramSupportLink);
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              }
-            },
-          ),
-        ),
         Expanded(
           child:
               BlocConsumer<ExchangeSupportChatCubit, ExchangeSupportChatState>(
@@ -367,6 +352,23 @@ class _MessageInputState extends State<_MessageInput> {
                   ),
                 ),
                 const Gap(8),
+                SizedBox(
+                  width: 52,
+                  height: 52,
+                  child: BBButton.big(
+                    label: '',
+                    iconData: Icons.description,
+                    disabled: false,
+                    onPressed: () {
+                      context.read<ExchangeSupportChatCubit>().attachLogs();
+                    },
+                    bgColor: context.appColors.surfaceContainer,
+                    textColor: context.appColors.onSurface,
+                    width: 52,
+                    height: 52,
+                  ),
+                ),
+                const Gap(8),
                 Expanded(
                   child: BBInputText(
                     value: state.newMessageText,
@@ -441,6 +443,7 @@ class _AttachmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isImage = attachment.fileType?.startsWith('image/') ?? false;
     final isPdf = attachment.fileType == 'application/pdf';
+    final isLog = attachment.fileName?.contains('.BullLog.') ?? false;
     final isLoading = context.select(
       (ExchangeSupportChatCubit cubit) =>
           cubit.state.loadingAttachmentId == attachment.attachmentId,
@@ -559,6 +562,14 @@ class _AttachmentWidget extends StatelessWidget {
                       ? context.appColors.onSecondary
                       : context.appColors.secondary,
                 )
+              else if (isLog)
+                Icon(
+                  Icons.description,
+                  size: 30,
+                  color: isUserMessage
+                      ? context.appColors.onSecondary
+                      : context.appColors.secondary,
+                )
               else
                 Icon(
                   Icons.file_present,
@@ -618,6 +629,7 @@ class _AttachmentPreviewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isImage = attachment.fileType?.startsWith('image/') ?? false;
     final isPdf = attachment.fileType == 'application/pdf';
+    final isLog = attachment.fileName?.contains('.BullLog.') ?? false;
 
     return Stack(
       children: [
@@ -645,6 +657,8 @@ class _AttachmentPreviewWidget extends StatelessWidget {
                 )
               : isPdf
               ? const Icon(Icons.picture_as_pdf)
+              : isLog
+              ? const Icon(Icons.description)
               : const Icon(Icons.file_present),
         ),
         Positioned(
