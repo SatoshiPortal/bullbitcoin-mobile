@@ -1,18 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'dart:typed_data';
+
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
@@ -23,16 +20,19 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required SendSupportChatMessageUsecase sendMessageUsecase,
     required GetSupportChatMessageAttachmentUsecase getAttachmentUsecase,
     required GetExchangeUserSummaryUsecase getUserSummaryUsecase,
+    required CreateLogAttachmentUsecase createLogAttachmentUsecase,
   }) : _getMessagesUsecase = getMessagesUsecase,
        _sendMessageUsecase = sendMessageUsecase,
        _getAttachmentUsecase = getAttachmentUsecase,
        _getUserSummaryUsecase = getUserSummaryUsecase,
+       _createLogAttachmentUsecase = createLogAttachmentUsecase,
        super(const ExchangeSupportChatState());
 
   final GetSupportChatMessagesUsecase _getMessagesUsecase;
   final SendSupportChatMessageUsecase _sendMessageUsecase;
   final GetSupportChatMessageAttachmentUsecase _getAttachmentUsecase;
   final GetExchangeUserSummaryUsecase _getUserSummaryUsecase;
+  final CreateLogAttachmentUsecase _createLogAttachmentUsecase;
 
   bool _limitFetchingOlderMessages = false;
 
@@ -285,54 +285,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     try {
       emit(state.copyWith(errorPermissionDenied: ''));
 
-      // Read all available logs
-      List<String> logs;
-      try {
-        logs = await log.readLogs();
-      } catch (e) {
-        // If logs file doesn't exist or can't be read, create a message explaining this
-        logs = [
-          'timestamp\tlevel\tmessage\terror\ttrace',
-          '${DateTime.now().toIso8601String()}\tINFO\tNo logs file found or logs could not be read: $e\t\t',
-        ];
-      }
-
-      if (logs.isEmpty) {
-        // Create a minimal log entry if no logs exist
-        logs = [
-          'timestamp\tlevel\tmessage\terror\ttrace',
-          '${DateTime.now().toIso8601String()}\tINFO\tNo logs have been recorded yet\t\t',
-        ];
-      }
-
-      // Create log file content and encode as UTF-8
-      final logContent = logs.join('\n');
-      final bytes = Uint8List.fromList(utf8.encode(logContent));
-
-      // Generate filename: timestamp.BullLog.random8alphanumeric
-      final random = Random();
-      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
-
-      // Generate random 8-character alphanumeric string
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      final randomAlphanumeric = String.fromCharCodes(
-        Iterable.generate(
-          8,
-          (_) => chars.codeUnitAt(random.nextInt(chars.length)),
-        ),
-      );
-
-      final fileName = '$timestamp.BullLog.$randomAlphanumeric.txt';
-
-      // Create attachment with text/plain MIME type (more likely to be accepted by server)
-      final attachment = SupportChatMessageAttachment(
-        attachmentId: 'temp_logs_${DateTime.now().millisecondsSinceEpoch}',
-        fileName: fileName,
-        fileType: 'text/plain',
-        fileSize: bytes.length,
-        fileData: bytes,
-        createdAt: DateTime.now(),
-      );
+      final attachment = await _createLogAttachmentUsecase.execute();
 
       emit(
         state.copyWith(
