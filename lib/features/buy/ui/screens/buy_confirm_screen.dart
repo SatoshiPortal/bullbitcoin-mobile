@@ -78,7 +78,7 @@ class BuyConfirmScreen extends StatelessWidget {
                   child: BBText(
                     formattedPayInAmount,
                     style: context.font.displaySmall,
-                    color: context.appColors.outlineVariant,
+                    color: context.appColors.secondary,
                   ),
                 ),
                 const Gap(32),
@@ -142,7 +142,7 @@ class BuyConfirmScreen extends StatelessWidget {
                   context.read<BuyBloc>().add(const BuyEvent.confirmOrder());
                 },
                 bgColor: context.appColors.secondary,
-                textColor: context.appColors.onPrimary,
+                textColor: context.appColors.onSecondary,
               ),
             ],
           ),
