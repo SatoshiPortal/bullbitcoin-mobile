@@ -9976,6 +9976,18 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support Account",
+  "@exchangeSupportLoginSubtitle": {
+    "description": "Subtitle on support chat login screen"
+  },
+  "exchangeSupportLoginAccessMessage": "You will only have access to the support chat feature.",
+  "@exchangeSupportLoginAccessMessage": {
+    "description": "Message explaining limited access on support-only login"
+  },
+  "exchangeSupportLoginAccountInfo": "You will be creating an account with bullbitcoin.com that you can always access via our web app.",
+  "@exchangeSupportLoginAccountInfo": {
+    "description": "Information about account creation on support login screen"
+  },
   "exchangeHomeDeposit": "Deposit",
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
