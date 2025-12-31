@@ -9948,6 +9948,10 @@
   "@exchangeLandingLoginButton": {
     "description": "Button to proceed to login/signup"
   },
+  "exchangeLandingLoginToUseSupport": "Please login or sign up to use the support chat for exchange related issues.",
+  "@exchangeLandingLoginToUseSupport": {
+    "description": "Message prompting user to login to access support chat"
+  },
   "exchangeHomeDeposit": "Deposit",
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"

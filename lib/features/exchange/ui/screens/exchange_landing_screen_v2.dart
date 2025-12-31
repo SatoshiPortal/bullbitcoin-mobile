@@ -3,9 +3,13 @@ import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -31,16 +35,33 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
             color: context.appColors.onSecondary,
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.chat_bubble_outline,
+                color: context.appColors.onSecondary,
+                size: 24,
+              ),
+              onPressed: () {
+                final notLoggedIn = context
+                    .read<ExchangeCubit>()
+                    .state
+                    .notLoggedIn;
+                if (notLoggedIn) {
+                  _showLoginPromptDialog(context);
+                } else {
+                  context.pushNamed(ExchangeSupportChatRoute.supportChat.name);
+                }
+              },
+            ),
+          ],
         ),
         extendBodyBehindAppBar: true,
         body: Stack(
           children: [
             // Background image with geometric pattern
             Positioned.fill(
-              child: Image.asset(
-                Assets.backgrounds.bgLong.path,
-                fit: .cover,
-              ),
+              child: Image.asset(Assets.backgrounds.bgLong.path, fit: .cover),
             ),
             SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -193,6 +214,45 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showLoginPromptDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: BBText(
+          context.loc.exchangeSupportChatTitle,
+          style: context.font.headlineSmall,
+        ),
+        content: BBText(
+          context.loc.exchangeLandingLoginToUseSupport,
+          style: context.font.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: BBText(
+              context.loc.cancelButton,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.primary,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.goNamed(ExchangeRoute.exchangeAuth.name);
+            },
+            child: BBText(
+              context.loc.exchangeLoginButton,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.primary,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

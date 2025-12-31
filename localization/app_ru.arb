@@ -10028,6 +10028,10 @@
     "@exchangeLandingLoginButton": {
         "description": "Button to proceed to login/signup"
     },
+    "exchangeLandingLoginToUseSupport": "Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать чат поддержки для вопросов, связанных с биржей.",
+    "@exchangeLandingLoginToUseSupport": {
+        "description": "Message prompting user to login to access support chat"
+    },
     "torSettingsEnableProxy": "Включить Tor Proxy",
     "@torSettingsEnableProxy": {
         "description": "Label for the toggle to enable/disable Tor proxy"

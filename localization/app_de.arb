@@ -9860,6 +9860,10 @@
     "@exchangeLandingLoginButton": {
         "description": "Button to proceed to login/signup"
     },
+    "exchangeLandingLoginToUseSupport": "Bitte melden Sie sich an oder registrieren Sie sich, um den Support-Chat für Börsenfragen zu nutzen.",
+    "@exchangeLandingLoginToUseSupport": {
+        "description": "Message prompting user to login to access support chat"
+    },
     "torSettingsEnableProxy": "Tor Proxy aktivieren",
     "@torSettingsEnableProxy": {
         "description": "Label for the toggle to enable/disable Tor proxy"

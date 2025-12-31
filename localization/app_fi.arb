@@ -9732,6 +9732,10 @@
     "@exchangeLandingLoginButton": {
         "description": "Button to proceed to login/signup"
     },
+    "exchangeLandingLoginToUseSupport": "Ole hyvä ja kirjaudu sisään tai rekisteröidy käyttääksesi tukichattia pörssiongelmiin.",
+    "@exchangeLandingLoginToUseSupport": {
+        "description": "Message prompting user to login to access support chat"
+    },
     "exchangeHomeDeposit": "Talleta",
     "@exchangeHomeDeposit": {
         "description": "Deposit button label"
@@ -21685,6 +21689,10 @@
   "exchangeLandingLoginButton": "Kirjaudu tai rekisteröidy",
   "@exchangeLandingLoginButton": {
     "description": "Button to proceed to login/signup"
+  },
+  "exchangeLandingLoginToUseSupport": "Ole hyvä ja kirjaudu sisään tai rekisteröidy käyttääksesi tukichattia pörssiongelmiin.",
+  "@exchangeLandingLoginToUseSupport": {
+    "description": "Message prompting user to login to access support chat"
   },
   "exchangeHomeDeposit": "Talleta",
   "@exchangeHomeDeposit": {

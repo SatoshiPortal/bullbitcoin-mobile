@@ -9981,6 +9981,10 @@
     "@exchangeLandingLoginButton": {
         "description": "Button to proceed to login/signup"
     },
+    "exchangeLandingLoginToUseSupport": "Por favor, faça login ou inscreva-se para usar o chat de suporte para questões relacionadas à exchange.",
+    "@exchangeLandingLoginToUseSupport": {
+        "description": "Message prompting user to login to access support chat"
+    },
     "torSettingsEnableProxy": "Ativar Proxy Tor",
     "@torSettingsEnableProxy": {
         "description": "Label for the toggle to enable/disable Tor proxy"

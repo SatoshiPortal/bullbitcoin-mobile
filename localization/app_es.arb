@@ -9944,6 +9944,10 @@
     "@exchangeLandingLoginButton": {
         "description": "Button to proceed to login/signup"
     },
+    "exchangeLandingLoginToUseSupport": "Por favor, inicie sesión o regístrese para usar el chat de soporte para problemas relacionados con el exchange.",
+    "@exchangeLandingLoginToUseSupport": {
+        "description": "Message prompting user to login to access support chat"
+    },
     "exchangeHomeDeposit": "Depositar",
     "@exchangeHomeDeposit": {
         "description": "Deposit button label"
@@ -22109,6 +22113,10 @@
   "exchangeLandingLoginButton": "Iniciar sesión o registrarse",
   "@exchangeLandingLoginButton": {
     "description": "Button to proceed to login/signup"
+  },
+  "exchangeLandingLoginToUseSupport": "Por favor, inicie sesión o regístrese para usar el chat de soporte para problemas relacionados con el exchange.",
+  "@exchangeLandingLoginToUseSupport": {
+    "description": "Message prompting user to login to access support chat"
   },
   "exchangeHomeDeposit": "Depositar",
   "@exchangeHomeDeposit": {

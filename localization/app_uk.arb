@@ -10679,6 +10679,10 @@
     "@exchangeLandingLoginButton": {
         "description": "Button to proceed to login/signup"
     },
+    "exchangeLandingLoginToUseSupport": "Будь ласка, увійдіть або зареєструйтесь, щоб використовувати чат підтримки для питань, пов'язаних з біржею.",
+    "@exchangeLandingLoginToUseSupport": {
+        "description": "Message prompting user to login to access support chat"
+    },
     "torSettingsEnableProxy": "Увімкнути Tor Proxy",
     "@torSettingsEnableProxy": {
         "description": "Label for the toggle to enable/disable Tor proxy"
