@@ -9972,6 +9972,10 @@
   "@exchangeLandingLoginButton": {
     "description": "Button to proceed to login/signup"
   },
+  "exchangeLandingLoginToUseSupport": "Please login or sign up to use the support chat for exchange related issues.",
+  "@exchangeLandingLoginToUseSupport": {
+    "description": "Message prompting user to login to access support chat"
+  },
   "exchangeHomeDeposit": "Deposit",
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
@@ -11176,11 +11180,11 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "appStartupErrorMessageWithBackup": "On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. You will have to delete this app and reinstall it with your backed up seed.",
+  "appStartupErrorMessageWithBackup": "Could not initialize. Delete and reinstall to fix.",
   "@appStartupErrorMessageWithBackup": {
     "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
   },
-  "appStartupErrorMessageNoBackup": "On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. Contact our support team.",
+  "appStartupErrorMessageNoBackup": "Could not initialize. Delete and reinstall to fix. If your seed is not backed up, you can view it under Settings->Bitcoin Settings->View Seeds after reinstall.",
   "@appStartupErrorMessageNoBackup": {
     "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
