@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -100,7 +98,9 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                             .state
                             .notLoggedIn;
                         if (notLoggedIn) {
-                          _showLoginPromptDialog(context);
+                          context.pushNamed(
+                            ExchangeRoute.exchangeLoginForSupport.name,
+                          );
                         } else {
                           context.pushNamed(
                             ExchangeSupportChatRoute.supportChat.name,
@@ -141,45 +141,6 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                 ),
               ),
             ],
-    );
-  }
-
-  void _showLoginPromptDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: BBText(
-          context.loc.exchangeSupportChatTitle,
-          style: context.font.headlineSmall,
-        ),
-        content: BBText(
-          context.loc.exchangeLandingLoginToUseSupport,
-          style: context.font.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: BBText(
-              context.loc.cancelButton,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.primary,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              context.goNamed(ExchangeRoute.exchangeAuth.name);
-            },
-            child: BBText(
-              context.loc.exchangeLoginButton,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.primary,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
