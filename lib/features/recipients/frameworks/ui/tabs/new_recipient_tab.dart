@@ -88,6 +88,11 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           RecipientType.bankTransferCad => const BankTransferCadForm(),
           // EUROPE types
           RecipientType.sepaEur => const SepaEurForm(),
+          // Virtual IBAN and special payee types (system-managed, not user-created)
+          RecipientType.frVirtualAccount ||
+          RecipientType.frPayee ||
+          RecipientType.cjPayee =>
+            const SizedBox.shrink(),
           // MEXICO types
           RecipientType.speiClabeMxn => const SpeiClabeMxnForm(),
           RecipientType.speiSmsMxn => const SpeiSmsMxnForm(),

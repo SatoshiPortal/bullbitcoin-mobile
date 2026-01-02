@@ -120,6 +120,14 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
         );
       }(),
 
+      // Virtual IBAN and special payee types (system-managed, no user creation)
+      RecipientType.frVirtualAccount ||
+      RecipientType.frPayee ||
+      RecipientType.cjPayee =>
+        throw UnsupportedError(
+          'Cannot convert $type to model - system-managed recipient type',
+        ),
+
       RecipientType.speiClabeMxn => () {
         final d = details as SpeiClabeMxnDetails;
         return RecipientDetailsModel(

@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/price_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/virtual_iban_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -17,6 +18,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_reposi
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
@@ -34,6 +36,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_us
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_virtual_iban_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_virtual_iban_details_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
@@ -230,6 +234,28 @@ class ExchangeLocator {
         isTestnet: true,
       ),
       instanceName: 'testnetExchangeSupportChatRepository',
+    );
+
+    // Virtual IBAN Repositories
+    locator.registerLazySingleton<VirtualIbanRepository>(
+      () => VirtualIbanRepositoryImpl(
+        apiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: false,
+      ),
+      instanceName: 'mainnetVirtualIbanRepository',
+    );
+    locator.registerLazySingleton<VirtualIbanRepository>(
+      () => VirtualIbanRepositoryImpl(
+        apiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: true,
+      ),
+      instanceName: 'testnetVirtualIbanRepository',
     );
   }
 
@@ -472,6 +498,31 @@ class ExchangeLocator {
         labelDatasource: locator<LabelDatasource>(),
         batchLabelsUsecase: locator<BatchLabelsUsecase>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
+      ),
+    );
+
+    // Virtual IBAN Usecases
+    locator.registerFactory<GetVirtualIbanDetailsUsecase>(
+      () => GetVirtualIbanDetailsUsecase(
+        mainnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'mainnetVirtualIbanRepository',
+        ),
+        testnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'testnetVirtualIbanRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<CreateVirtualIbanUsecase>(
+      () => CreateVirtualIbanUsecase(
+        mainnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'mainnetVirtualIbanRepository',
+        ),
+        testnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'testnetVirtualIbanRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

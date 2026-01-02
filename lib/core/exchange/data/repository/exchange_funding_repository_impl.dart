@@ -40,6 +40,13 @@ class ExchangeFundingRepositoryImpl implements ExchangeFundingRepository {
         );
       }
 
+      // Confidential SEPA uses Virtual IBAN which is handled separately
+      if (fundingMethod == FundingMethod.confidentialSepa) {
+        throw UnsupportedError(
+          'Confidential SEPA funding details should be fetched through Virtual IBAN flow',
+        );
+      }
+
       final fundingDetailsRequestParams = FundingDetailsRequestParamsModel(
         jurisdiction: jurisdiction.code,
         paymentMethod: switch (fundingMethod) {
@@ -49,6 +56,8 @@ class ExchangeFundingRepositoryImpl implements ExchangeFundingRepository {
           FundingMethod.canadaPost => 'canadaPost',
           FundingMethod.instantSepa => 'instantSepa',
           FundingMethod.regularSepa => 'regularSepa',
+          FundingMethod.confidentialSepa =>
+            'confidentialSepa', // This won't be reached
           FundingMethod.speiTransfer => 'spei',
           FundingMethod.sinpe => 'sinpe',
           FundingMethod.crIbanCrc => 'CRIbanCRC',

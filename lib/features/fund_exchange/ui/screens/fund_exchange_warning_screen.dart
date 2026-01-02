@@ -164,6 +164,11 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeArsBankTransfer.name,
                   );
+                case FundingMethod.confidentialSepa:
+                  // Confidential SEPA is handled through a separate flow
+                  // and should not go through the warning screen.
+                  // If somehow reached, just pop back.
+                  context.pop();
               }
             },
             bgColor: context.appColors.primary,

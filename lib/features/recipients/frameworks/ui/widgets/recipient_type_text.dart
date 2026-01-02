@@ -19,6 +19,9 @@ class RecipientTypeText extends StatelessWidget {
       RecipientType.bankTransferCad => 'Bank Transfer',
       // EUROPE types
       RecipientType.sepaEur => 'SEPA Transfer',
+      RecipientType.frVirtualAccount => 'Confidential SEPA',
+      RecipientType.frPayee => 'SEPA Payee',
+      RecipientType.cjPayee => 'CJ Payee',
       // MEXICO types
       RecipientType.speiClabeMxn => 'SPEI CLABE',
       RecipientType.speiSmsMxn => 'SPEI SMS',

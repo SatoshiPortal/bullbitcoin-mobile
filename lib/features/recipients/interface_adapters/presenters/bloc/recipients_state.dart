@@ -57,10 +57,13 @@ sealed class RecipientsState with _$RecipientsState {
   List<RecipientViewModel>? get selectableRecipients {
     // Apply filters to the full recipient list based on the allowed recipient types
     // and ownership criteria.
+    // Note: FR_VIRTUAL_ACCOUNT is excluded as it's a special system-created recipient
+    // for Confidential SEPA and should not appear in normal recipient lists.
     final filtered =
         recipients
             ?.where(
               (recipient) =>
+                  recipient.type != RecipientType.frVirtualAccount &&
                   selectableRecipientTypes.any(
                     (type) => type == recipient.type,
                   ) &&

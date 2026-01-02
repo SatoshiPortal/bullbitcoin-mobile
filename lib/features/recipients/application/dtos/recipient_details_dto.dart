@@ -138,6 +138,13 @@ class RecipientDetailsDto {
           corporateName: d.corporateName,
         );
       }(),
+      // Virtual IBAN and special payee types (system-managed, no user creation)
+      RecipientType.frVirtualAccount ||
+      RecipientType.frPayee ||
+      RecipientType.cjPayee =>
+        throw UnsupportedError(
+          'Cannot convert $type to DTO - system-managed recipient type',
+        ),
 
       // MEXICO
       RecipientType.speiClabeMxn => () {
@@ -341,6 +348,14 @@ class RecipientDetailsDto {
           firstname: firstname,
           lastname: lastname,
           corporateName: corporateName,
+        );
+
+      // Virtual IBAN and special payee types (system-managed, no user creation)
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+      case RecipientType.cjPayee:
+        throw UnsupportedError(
+          'Cannot convert $recipientType to domain - system-managed recipient type',
         );
 
       // MEXICO

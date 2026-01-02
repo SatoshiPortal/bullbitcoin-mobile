@@ -12222,5 +12222,130 @@
         "type": "String"
       }
     }
+  },
+
+  "confidentialSepaTitle": "Confidential SEPA",
+  "@confidentialSepaTitle": {
+    "description": "Title for the Confidential SEPA / Virtual IBAN feature"
+  },
+  "confidentialSepaDescription": "Receive a personal virtual IBAN for private EUR deposits and withdrawals",
+  "@confidentialSepaDescription": {
+    "description": "Description for the Confidential SEPA feature"
+  },
+  "confidentialSepaFeaturesTitle": "Key Features",
+  "@confidentialSepaFeaturesTitle": {
+    "description": "Title for the key features section"
+  },
+  "confidentialSepaBullet1": "Your own personal virtual IBAN",
+  "@confidentialSepaBullet1": {
+    "description": "First bullet point for Confidential SEPA features"
+  },
+  "confidentialSepaBullet2": "Private transfers - your bank only sees your name",
+  "@confidentialSepaBullet2": {
+    "description": "Second bullet point for Confidential SEPA features"
+  },
+  "confidentialSepaBullet3": "Instant activation - start using immediately",
+  "@confidentialSepaBullet3": {
+    "description": "Third bullet point for Confidential SEPA features"
+  },
+  "confidentialSepaWarningTitle": "Important",
+  "@confidentialSepaWarningTitle": {
+    "description": "Warning title for Confidential SEPA"
+  },
+  "confidentialSepaWarningDesc": "The name on your bank transfers must exactly match your Bull Bitcoin account name shown below. Transfers with mismatched names will be rejected.",
+  "@confidentialSepaWarningDesc": {
+    "description": "Warning description for Confidential SEPA"
+  },
+  "accountOwnerName": "Account Owner Name",
+  "@accountOwnerName": {
+    "description": "Label for account owner name field"
+  },
+  "confirmLegalName": "I confirm this is my legal name as it appears on my bank account",
+  "@confirmLegalName": {
+    "description": "Checkbox label for confirming legal name"
+  },
+  "activateConfidentialSepa": "Activate Confidential SEPA",
+  "@activateConfidentialSepa": {
+    "description": "Button label to activate Confidential SEPA"
+  },
+  "activatingConfidentialSepaTitle": "Activating Confidential SEPA",
+  "@activatingConfidentialSepaTitle": {
+    "description": "Title shown while VIBAN is being activated"
+  },
+  "activatingConfidentialSepaDesc": "Creating your personal virtual IBAN. This may take a few minutes.",
+  "@activatingConfidentialSepaDesc": {
+    "description": "Description shown while VIBAN is being activated"
+  },
+  "useRegularSepaInstead": "Use Regular SEPA Instead",
+  "@useRegularSepaInstead": {
+    "description": "Button to fallback to regular SEPA"
+  },
+  "confidentialSepaActivatedTitle": "Confidential SEPA Activated",
+  "@confidentialSepaActivatedTitle": {
+    "description": "Title shown when VIBAN is successfully activated"
+  },
+  "confidentialSepaActivatedFundingDesc": "Your personal virtual IBAN is ready. You can now deposit EUR privately.",
+  "@confidentialSepaActivatedFundingDesc": {
+    "description": "Description for activated VIBAN in funding context"
+  },
+  "confidentialSepaActivatedSellDesc": "Your personal virtual IBAN is ready. You can now receive EUR payouts privately.",
+  "@confidentialSepaActivatedSellDesc": {
+    "description": "Description for activated VIBAN in sell context"
+  },
+  "confidentialSepaActivatedWithdrawDesc": "Your personal virtual IBAN is ready. You can now withdraw EUR privately.",
+  "@confidentialSepaActivatedWithdrawDesc": {
+    "description": "Description for activated VIBAN in withdraw context"
+  },
+  "showVirtualIbanDetails": "Show Virtual IBAN Details",
+  "@showVirtualIbanDetails": {
+    "description": "Button to show VIBAN details"
+  },
+  "privacyBankingTitle": "Privacy Banking",
+  "@privacyBankingTitle": {
+    "description": "Title for the VIBAN details screen"
+  },
+  "virtualIbanNameWarning": "Transfers must be sent from a bank account in your name. Mismatched names will be rejected.",
+  "@virtualIbanNameWarning": {
+    "description": "Warning about name matching on VIBAN details screen"
+  },
+  "virtualIbanAccountNumber": "Virtual IBAN Account Number",
+  "@virtualIbanAccountNumber": {
+    "description": "Label for the virtual IBAN number"
+  },
+  "recipientName": "Recipient Name",
+  "@recipientName": {
+    "description": "Label for recipient name"
+  },
+  "bankAccountCountry": "Bank Account Country",
+  "@bankAccountCountry": {
+    "description": "Label for bank account country"
+  },
+  "bankAddress": "Bank Address",
+  "@bankAddress": {
+    "description": "Label for bank address"
+  },
+  "bicCode": "BIC Code",
+  "@bicCode": {
+    "description": "Label for BIC code"
+  },
+  "newBadge": "NEW",
+  "@newBadge": {
+    "description": "Badge text for new features"
+  },
+  "copiedToClipboard": "Copied to clipboard",
+  "@copiedToClipboard": {
+    "description": "Toast message when something is copied to clipboard"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Generic continue button label"
+  },
+  "fundExchangeMethodConfidentialSepaSubtitle": "Private deposits to your personal IBAN",
+  "@fundExchangeMethodConfidentialSepaSubtitle": {
+    "description": "Subtitle for Confidential SEPA funding method"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Generic error title"
   }
 }
