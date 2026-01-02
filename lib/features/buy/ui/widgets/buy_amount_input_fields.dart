@@ -83,7 +83,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                     mainAxisSize: .min,
                     mainAxisAlignment: .spaceBetween,
                     children: [
-                      Expanded(
+                        Expanded(
                         child: TextFormField(
                           controller: _amountController,
                           keyboardType: const TextInputType.numberWithOptions(
@@ -109,7 +109,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                               decimalDigits: amountInputDecimals,
                             ).format(0),
                             hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.appColors.primary,
+                              color: context.appColors.onSurfaceVariant,
                             ),
                             border: InputBorder.none,
                           ),
@@ -229,7 +229,9 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                             value: currencyCode,
                             child: Text(
                               '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
-                              style: context.font.headlineSmall,
+                              style: context.font.headlineSmall?.copyWith(
+                                color: context.appColors.secondary,
+                              ),
                             ),
                           ),
                         )

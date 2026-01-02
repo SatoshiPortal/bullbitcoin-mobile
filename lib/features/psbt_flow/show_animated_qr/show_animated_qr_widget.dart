@@ -113,13 +113,17 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
 
         return Container(
           decoration: BoxDecoration(
-            color: context.appColors.surfaceFixed,
+            color: context.appColors.background,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             mainAxisAlignment: .start,
             children: [
-              QrImageView(data: state.parts[state.currentIndex]),
+              QrImageView(
+                data: state.parts[state.currentIndex],
+                // ignore: deprecated_member_use
+                foregroundColor: context.appColors.secondary,
+              ),
               const Gap(16),
               if (widget.showSlider) ...[
                 Padding(

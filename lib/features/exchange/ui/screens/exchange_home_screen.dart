@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
@@ -90,9 +91,6 @@ class ExchangeHomeScreen extends StatelessWidget {
                   BlocBuilder<PriceChartCubit, PriceChartState>(
                     builder: (context, priceChartState) {
                       final showChart = priceChartState.showChart;
-                      final hasApiKey = context.select(
-                        (ExchangeCubit cubit) => cubit.state.apiKeyException == null,
-                      );
 
                       return SliverAppBar(
                         backgroundColor: Colors.transparent,
@@ -115,7 +113,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                                   },
                                 )
                               : SizedBox(
-                                  width: hasApiKey ? 96 : 48,
+                                  width: 96,
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -134,28 +132,40 @@ class ExchangeHomeScreen extends StatelessWidget {
                                               .showChart();
                                         },
                                       ),
-                                      if (hasApiKey)
-                                        IconButton(
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
-                                          visualDensity: VisualDensity.compact,
-                                          icon: Icon(
-                                            Icons.chat_bubble_outline,
-                                            color: context.appColors.onPrimary,
-                                            size: 24,
-                                          ),
-                                          onPressed: () {
+                                      IconButton(
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
+                                        visualDensity: VisualDensity.compact,
+                                        icon: Icon(
+                                          Icons.chat_bubble_outline,
+                                          color: context.appColors.onPrimary,
+                                          size: 24,
+                                        ),
+                                        onPressed: () {
+                                          final notLoggedIn = context
+                                              .read<ExchangeCubit>()
+                                              .state
+                                              .notLoggedIn;
+                                          if (notLoggedIn) {
+                                            context.pushNamed(
+                                              ExchangeRoute
+                                                  .exchangeLoginForSupport
+                                                  .name,
+                                            );
+                                          } else {
                                             context.pushNamed(
                                               ExchangeSupportChatRoute
-                                                  .supportChat.name,
+                                                  .supportChat
+                                                  .name,
                                             );
-                                          },
-                                        ),
+                                          }
+                                        },
+                                      ),
                                     ],
                                   ),
                                 ),
                         ),
-                        leadingWidth: showChart ? 56 : (hasApiKey ? 112 : 56),
+                        leadingWidth: showChart ? 56 : 112,
                         actionsIconTheme: IconThemeData(
                           color: context.appColors.onPrimary,
                           size: 24,
@@ -205,11 +215,11 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_downward,
-                        label: context.loc.exchangeHomeDepositButton,
+                        label: context.loc.exchangeHomeWithdrawButton,
                         iconFirst: true,
-                        onPressed: () => context.pushNamed(
-                          FundExchangeRoute.fundExchangeAccount.name,
-                        ),
+                        disabled: false,
+                        onPressed: () =>
+                            context.pushNamed(WithdrawRoute.withdraw.name),
                         bgColor: context.appColors.secondaryFixed,
                         textColor: context.appColors.onSecondaryFixed,
                         outlined: true,
@@ -220,11 +230,11 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_upward,
-                        label: context.loc.exchangeHomeWithdrawButton,
+                        label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
-                        disabled: false,
-                        onPressed: () =>
-                            context.pushNamed(WithdrawRoute.withdraw.name),
+                        onPressed: () => context.pushNamed(
+                          FundExchangeRoute.fundExchangeAccount.name,
+                        ),
                         bgColor: context.appColors.secondaryFixed,
                         textColor: context.appColors.onSecondaryFixed,
                         outlined: true,
