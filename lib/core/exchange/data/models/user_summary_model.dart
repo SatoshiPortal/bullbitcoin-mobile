@@ -19,6 +19,7 @@ sealed class UserSummaryModel with _$UserSummaryModel {
     String? currency,
     required UserDcaModel dca,
     required UserAutoBuyModel autoBuy,
+    @Default(true) bool emailNotificationsEnabled,
   }) = _UserSummaryModel;
 
   factory UserSummaryModel.fromJson(Map<String, dynamic> json) =>
@@ -38,6 +39,7 @@ sealed class UserSummaryModel with _$UserSummaryModel {
       currency: currency,
       dca: dca.toEntity(),
       autoBuy: autoBuy.toEntity(),
+      emailNotificationsEnabled: emailNotificationsEnabled,
     );
   }
 }

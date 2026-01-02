@@ -7,5 +7,6 @@ abstract class ExchangeUserRepository {
     String? currency,
     bool? dcaEnabled,
     String? autoBuyEnabled,
+    bool? emailNotificationsEnabled,
   });
 }

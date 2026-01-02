@@ -17,6 +17,7 @@ abstract class ExchangeState with _$ExchangeState {
     DeleteExchangeApiKeyException? deleteApiKeyException,
     String? selectedLanguage,
     String? selectedCurrency,
+    bool? selectedEmailNotifications,
     @Default(false) bool isSaving,
   }) = _ExchangeState;
 

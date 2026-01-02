@@ -103,6 +103,7 @@ sealed class UserSummary with _$UserSummary {
     String? currency,
     required UserDca dca,
     required UserAutoBuy autoBuy,
+    @Default(true) bool emailNotificationsEnabled,
   }) = _UserSummary;
 
   factory UserSummary.fromJson(Map<String, dynamic> json) =>

@@ -24,6 +24,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   final _ordersPath = '/ak/api-orders';
   final _orderTriggerPath = '/ak/api-ordertrigger';
   final _recipientsPath = '/ak/api-recipients';
+  final _kycPath = '/ak/api-kyc';
 
   BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
     : _http = bullbitcoinApiHttpClient;
@@ -582,6 +583,217 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
 
     return resp.data['result'] as Map<String, dynamic>;
+  }
+
+  // ==================== Recipients API ====================
+
+  /// List recipients with optional filters for default wallets
+  Future<List<Map<String, dynamic>>> listMyRecipients({
+    required String apiKey,
+    List<String>? recipientTypes,
+    bool? isDefault,
+  }) async {
+    final filters = <String, dynamic>{};
+    if (recipientTypes != null) {
+      filters['recipientTypes'] = recipientTypes;
+    }
+    if (isDefault != null) {
+      filters['isDefault'] = isDefault;
+    }
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listMyRecipients',
+        'params': {'filters': filters},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list recipients');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to list recipients: $error');
+    }
+
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements.cast<Map<String, dynamic>>();
+  }
+
+  /// Create a new recipient (default wallet)
+  Future<Map<String, dynamic>> createMyRecipient({
+    required String apiKey,
+    required String recipientType,
+    required String address,
+    required bool isOwner,
+    required bool isDefault,
+  }) async {
+    final recipientDetails = _buildRecipientDetails(recipientType, address);
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createMyRecipient',
+        'params': {
+          'element': {
+            'recipientType': recipientType,
+            'isOwner': isOwner,
+            'isDefault': isDefault,
+            ...recipientDetails,
+          },
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      final message = error['message'] ?? 'Unknown error';
+      throw Exception('Failed to create recipient: $message');
+    }
+
+    return resp.data['result']['element'] as Map<String, dynamic>;
+  }
+
+  /// Update an existing recipient
+  Future<Map<String, dynamic>> updateMyRecipient({
+    required String apiKey,
+    required String recipientId,
+    String? address,
+    bool? isDefault,
+  }) async {
+    final params = <String, dynamic>{'recipientId': recipientId};
+
+    if (address != null) {
+      params['address'] = address;
+    }
+    if (isDefault != null) {
+      params['isDefault'] = isDefault;
+    }
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'updateMyRecipient',
+        'params': params,
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to update recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      final message = error['message'] ?? 'Unknown error';
+      throw Exception('Failed to update recipient: $message');
+    }
+
+    return resp.data['result']['element'] as Map<String, dynamic>;
+  }
+
+  Map<String, dynamic> _buildRecipientDetails(
+    String recipientType,
+    String address,
+  ) {
+    switch (recipientType) {
+      case 'OUT_BITCOIN_ADDRESS':
+        return {'bitcoinAddress': address};
+      case 'OUT_LIGHTNING_ADDRESS':
+        return {'lightningAddress': address};
+      case 'OUT_LIQUID_ADDRESS':
+        return {'liquidAddress': address};
+      default:
+        return {'address': address};
+    }
+  }
+
+  // ==================== Order Stats API ====================
+
+  /// Get order statistics for the user
+  Future<Map<String, dynamic>> getOrderStats({required String apiKey}) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'getOrderStats',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get order stats');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get order stats: $error');
+    }
+
+    return resp.data['result']['element'] as Map<String, dynamic>;
+  }
+
+  // ==================== KYC Upload API ====================
+
+  /// Upload a KYC document file
+  Future<void> uploadKycDocument({
+    required String apiKey,
+    required List<int> fileBytes,
+    required String fileName,
+    required String docType,
+    required String sourceDetail,
+  }) async {
+    final formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(fileBytes, filename: fileName),
+      'kycIDDocument':
+          '{"jsonrpc":"2.0","id":1,"method":"createMyKYCIDDocument","params":{"element":{"idTypeCode":"$docType","sourceDetail":"$sourceDetail"}}}',
+    });
+
+    final resp = await _http.post(
+      _kycPath,
+      data: formData,
+      options: Options(
+        headers: {'X-API-Key': apiKey, 'Content-Type': 'multipart/form-data'},
+      ),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('File upload failed with status: ${resp.statusCode}');
+    }
+
+    final responseData = resp.data as Map<String, dynamic>?;
+    if (responseData != null) {
+      if (responseData.containsKey('error') ||
+          responseData.containsKey('errors')) {
+        throw Exception('File upload failed: API returned error in response');
+      }
+
+      if (!responseData.containsKey('elements') ||
+          responseData['elements'] is! List ||
+          (responseData['elements'] as List).isEmpty) {
+        // Check for alternative success response format
+        if (!responseData.containsKey('result')) {
+          throw Exception('File upload failed: Invalid response format');
+        }
+      }
+    }
   }
 }
 
