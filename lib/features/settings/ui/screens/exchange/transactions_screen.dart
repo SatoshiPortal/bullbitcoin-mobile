@@ -10,7 +10,7 @@ class ExchangeTransactionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<TransactionsCubit>(
-      create: (context) => locator<TransactionsCubit>()..loadTxs(),
+      create: (context) => locator<TransactionsCubit>(param2: true)..loadTxs(),
       child: const TransactionsScreen(),
     );
   }
