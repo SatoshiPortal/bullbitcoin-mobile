@@ -20,7 +20,7 @@ class BuyConfirmDetailRow extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: context.appColors.surfaceContainer,
+              color: context.appColors.onSurfaceVariant,
             ),
           ),
 
@@ -32,7 +32,7 @@ class BuyConfirmDetailRow extends StatelessWidget {
                       value!,
                       textAlign: .end,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: context.appColors.outlineVariant,
+                        color: context.appColors.secondary,
                       ),
                     ),
           ),

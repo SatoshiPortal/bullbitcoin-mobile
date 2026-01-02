@@ -33,6 +33,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bip21_uri/bip21_uri.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -90,7 +91,10 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     on<SellWalletSelected>(_onWalletSelected);
     on<SellExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
     on<SellOrderRefreshTimePassed>(_onOrderRefreshTimePassed);
-    on<SellSendPaymentConfirmed>(_onSendPaymentConfirmed);
+    on<SellSendPaymentConfirmed>(
+      _onSendPaymentConfirmed,
+      transformer: droppable(), // Prevent multiple simultaneous confirmations
+    );
     on<SellPollOrderStatus>(_onPollOrderStatus);
     on<SellReplaceByFeeChanged>(_onReplaceByFeeChanged);
     on<SellUtxosSelected>(_onUtxosSelected);

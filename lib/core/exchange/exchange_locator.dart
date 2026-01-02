@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_reposi
 import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
@@ -460,6 +461,10 @@ class ExchangeLocator {
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),
+    );
+
+    locator.registerFactory<CreateLogAttachmentUsecase>(
+      () => CreateLogAttachmentUsecase(),
     );
 
     locator.registerFactory<LabelExchangeOrdersUsecase>(

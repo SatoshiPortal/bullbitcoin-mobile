@@ -36,18 +36,16 @@ class ImportColdcardQPage extends StatelessWidget {
               Assets.misc.qRPlaceholder.path,
               height: 200,
               width: 200,
-              color: context.appColors.text,
             ),
             Gap(Device.screen.height * 0.05),
             Column(
               children: [
                 BBButton.small(
                   label: context.loc.importColdcardButtonOpenCamera,
-                  onPressed:
-                      () => context.pushNamed(
-                        ImportWatchOnlyWalletRoutes.scan.name,
-                        extra: SignerDeviceEntity.coldcardQ,
-                      ),
+                  onPressed: () => context.pushNamed(
+                    ImportWatchOnlyWalletRoutes.scan.name,
+                    extra: SignerDeviceEntity.coldcardQ,
+                  ),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,
@@ -56,8 +54,8 @@ class ImportColdcardQPage extends StatelessWidget {
                 Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importColdcardButtonInstructions,
-                  onPressed:
-                      () => ColdcardQInstructionsBottomSheet.show(context),
+                  onPressed: () =>
+                      ColdcardQInstructionsBottomSheet.show(context),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,
@@ -65,12 +63,9 @@ class ImportColdcardQPage extends StatelessWidget {
                 Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importColdcardButtonPurchase,
-                  onPressed:
-                      () => launchUrl(
-                        Uri.parse(
-                          'https://store.coinkite.com/promo/BULLBITCOIN',
-                        ),
-                      ),
+                  onPressed: () => launchUrl(
+                    Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
+                  ),
                   bgColor: context.appColors.surface,
                   textColor: context.appColors.text,
                   outlined: true,

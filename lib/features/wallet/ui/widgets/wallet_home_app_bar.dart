@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -40,9 +41,6 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
     final showChart = context.select(
       (PriceChartCubit cubit) => cubit.state.showChart,
     );
-    final hasApiKey = context.select(
-      (ExchangeCubit cubit) => cubit.state.apiKeyException == null,
-    );
 
     return AppBar(
       backgroundColor: context.appColors.transparent,
@@ -68,7 +66,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                 },
               )
             : SizedBox(
-                width: hasApiKey ? 96 : 48,
+                width: 96,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -85,27 +83,36 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                         context.read<PriceChartCubit>().showChart();
                       },
                     ),
-                    if (hasApiKey)
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        visualDensity: VisualDensity.compact,
-                        icon: Icon(
-                          Icons.chat_bubble_outline,
-                          color: context.appColors.onPrimary,
-                          size: 24,
-                        ),
-                        onPressed: () {
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      visualDensity: VisualDensity.compact,
+                      icon: Icon(
+                        Icons.chat_bubble_outline,
+                        color: context.appColors.onPrimary,
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
+                        if (notLoggedIn) {
+                          context.pushNamed(
+                            ExchangeRoute.exchangeLoginForSupport.name,
+                          );
+                        } else {
                           context.pushNamed(
                             ExchangeSupportChatRoute.supportChat.name,
                           );
-                        },
-                      ),
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),
       ),
-      leadingWidth: showChart ? 56 : (hasApiKey ? 112 : 56),
+      leadingWidth: showChart ? 56 : 112,
       actionsIconTheme: IconThemeData(
         color: context.appColors.onPrimary,
         size: 24,

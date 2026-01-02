@@ -48,7 +48,8 @@ enum Language {
   russian('ru', 'RU', 'Русский'),
   german('de', 'DE', 'Deutsch'),
   italian('it', 'IT', 'Italiano'),
-  portuguese('pt', 'PT', 'Português');
+  portuguese('pt', 'PT', 'Português'),
+  simplifiedChinese('zh', 'CN', '简体中文');
 
   final String languageCode;
   final String? countryCode;

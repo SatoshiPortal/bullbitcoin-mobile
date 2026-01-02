@@ -47,39 +47,40 @@ class Schema10To11 {
 
     // Delete any existing custom entries for the fulcrum server
     await (m.database.delete(electrumServers)..where(
-          (e) =>
+          (t) =>
               electrumServers.url.equals(fulcrumUrl) |
               electrumServers.url.equals(fulcrumUrlWithoutProtocol),
         ))
         .go();
 
-    // Get all Bitcoin mainnet servers and update their priority
-    final serversToUpdate =
+    // Get all Bitcoin mainnet servers to update their priority
+    final btcMainnetServers =
         await (m.database.select(electrumServers)..where(
-              (e) =>
+              (t) =>
                   electrumServers.isTestnet.equals(0) &
                   electrumServers.isLiquid.equals(0),
             ))
             .get();
 
-    for (final server in serversToUpdate) {
-      final url = server.read('url') as String;
-      final isTestnet = server.read('is_testnet') as bool;
-      final isLiquid = server.read('is_liquid') as bool;
-      final priority = server.read('priority') as int;
-      final isCustom = server.read('is_custom') as bool;
+    // Update each server's priority by incrementing it
+    for (final server in btcMainnetServers) {
+      final serverUrl = server.data['url'] as String;
+      final serverIsTestnet = server.data['is_testnet'] as int;
+      final serverIsLiquid = server.data['is_liquid'] as int;
+      final serverPriority = server.data['priority'] as int;
+      final serverIsCustom = server.data['is_custom'] as int;
 
-      await m.database
-          .into(electrumServers)
-          .insertOnConflictUpdate(
-            RawValuesInsertable({
-              'url': Constant(url),
-              'is_testnet': Constant(isTestnet),
-              'is_liquid': Constant(isLiquid),
-              'priority': Constant(priority + 1),
-              'is_custom': Constant(isCustom),
-            }),
-          );
+      await (m.database.update(
+        electrumServers,
+      )..where((t) => electrumServers.url.equals(serverUrl))).write(
+        RawValuesInsertable({
+          'url': Constant<String>(serverUrl),
+          'is_testnet': Constant<int>(serverIsTestnet),
+          'is_liquid': Constant<int>(serverIsLiquid),
+          'priority': Constant<int>(serverPriority + 1),
+          'is_custom': Constant<int>(serverIsCustom),
+        }),
+      );
     }
 
     await m.database
@@ -131,10 +132,10 @@ class Schema10To11 {
           .into(mempoolServers)
           .insert(
             RawValuesInsertable({
-              'url': Constant(server['url']),
-              'is_testnet': Constant(server['isTestnet']),
-              'is_liquid': Constant(server['isLiquid']),
-              'is_custom': Constant(server['isCustom']),
+              'url': Constant(server['url'] as String),
+              'is_testnet': Constant(server['isTestnet'] as bool),
+              'is_liquid': Constant(server['isLiquid'] as bool),
+              'is_custom': Constant(server['isCustom'] as bool),
             }),
             mode: InsertMode.insertOrReplace,
           );
