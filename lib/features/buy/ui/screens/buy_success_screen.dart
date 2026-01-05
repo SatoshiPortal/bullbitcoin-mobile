@@ -29,10 +29,9 @@ class BuySuccessScreen extends StatelessWidget {
     final payoutAmountSat = ConvertAmount.btcToSats(
       payoutAmountBtc,
     ); // Convert sats to BTC
-    final formattedPayOutAmount =
-        bitcoinUnit == BitcoinUnit.sats
-            ? FormatAmount.sats(payoutAmountSat)
-            : FormatAmount.btc(buyOrder.payoutAmount);
+    final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
+        ? FormatAmount.sats(payoutAmountSat)
+        : FormatAmount.btc(buyOrder.payoutAmount);
     final payoutTime = buyOrder.scheduledPayoutTime;
 
     return PopScope(
@@ -63,7 +62,11 @@ class BuySuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: .center,
               children: [
-                Icon(Icons.check_circle, size: 100, color: context.appColors.success),
+                Icon(
+                  Icons.check_circle,
+                  size: 100,
+                  color: context.appColors.success,
+                ),
                 const SizedBox(height: 20),
                 Text(
                   context.loc.buyYouBought(formattedPayOutAmount),
@@ -122,7 +125,7 @@ class BuySuccessScreen extends StatelessWidget {
                     );
                   },
                   bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onPrimary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),
