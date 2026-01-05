@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -15,7 +16,6 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -76,7 +76,7 @@ class TransactionDetailsTable extends StatelessWidget {
             copyValue: txId,
             displayWidget: GestureDetector(
               onTap: () async {
-                final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+                final mempoolUrlBuilder = sl<MempoolUrlBuilder>();
 
                 final String mempoolUrl;
                 if (isLiquid) {

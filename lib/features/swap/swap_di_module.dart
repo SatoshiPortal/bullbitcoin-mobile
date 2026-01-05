@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/infra/di/feature_di_module.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 
@@ -67,26 +70,23 @@ class SwapDiModule implements FeatureDiModule {
       ),
     );
     sl.registerFactory<VerifyChainSwapAmountSendUsecase>(
-      () => VerifyChainSwapAmountSendUsecase(
-        walletRepository: sl(),
-      ),
+      () => VerifyChainSwapAmountSendUsecase(walletRepository: sl()),
     );
 
-    // NOTE: CreateChainSwapToExternalUsecase might already be registered in send
-    // sl.registerFactory<CreateChainSwapToExternalUsecase>(
-    //   () => CreateChainSwapToExternalUsecase(
-    //     walletRepository: sl(),
-    //     seedRepository: sl(),
-    //     swapRepository: sl<BoltzSwapRepository>(
-    //       instanceName:
-    //           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-    //     ),
-    //     swapRepositoryTestnet: sl<BoltzSwapRepository>(
-    //       instanceName: LocatorInstanceNameConstants
-    //           .boltzTestnetSwapRepositoryInstanceName,
-    //     ),
-    //   ),
-    // );
+    sl.registerFactory<CreateChainSwapToExternalUsecase>(
+      () => CreateChainSwapToExternalUsecase(
+        walletRepository: sl(),
+        seedRepository: sl(),
+        swapRepository: sl<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        swapRepositoryTestnet: sl<BoltzSwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ),
+      ),
+    );
   }
 
   @override

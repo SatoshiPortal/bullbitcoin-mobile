@@ -5,9 +5,9 @@ import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_success_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum BuyRoute {
   buy('/buy'),
@@ -26,7 +26,7 @@ class BuyRouter {
     ShellRoute(
       builder: (context, state, child) {
         return BlocProvider(
-          create: (_) => locator<BuyBloc>()..add(const BuyEvent.started()),
+          create: (_) => sl<BuyBloc>()..add(const BuyEvent.started()),
           child: child,
         );
       },
@@ -38,18 +38,16 @@ class BuyRouter {
             return MultiBlocListener(
               listeners: [
                 BlocListener<BuyBloc, BuyState>(
-                  listenWhen:
-                      (previous, current) =>
-                          previous.apiKeyException == null &&
-                          current.apiKeyException != null,
+                  listenWhen: (previous, current) =>
+                      previous.apiKeyException == null &&
+                      current.apiKeyException != null,
                   listener: (context, state) {
                     context.goNamed(ExchangeRoute.exchangeHome.name);
                   },
                 ),
                 BlocListener<BuyBloc, BuyState>(
-                  listenWhen:
-                      (previous, current) =>
-                          previous.buyOrder == null && current.buyOrder != null,
+                  listenWhen: (previous, current) =>
+                      previous.buyOrder == null && current.buyOrder != null,
                   listener: (context, state) {
                     context.pushNamed(BuyRoute.buyConfirmation.name);
                   },
@@ -64,10 +62,9 @@ class BuyRouter {
               path: BuyRoute.buyConfirmation.path,
               builder: (context, state) {
                 return BlocListener<BuyBloc, BuyState>(
-                  listenWhen:
-                      (previous, current) =>
-                          previous.buyOrder?.isPayinCompleted != true &&
-                          current.buyOrder?.isPayinCompleted == true,
+                  listenWhen: (previous, current) =>
+                      previous.buyOrder?.isPayinCompleted != true &&
+                      current.buyOrder?.isPayinCompleted == true,
                   listener: (context, state) {
                     context.goNamed(
                       BuyRoute.buySuccess.name,
@@ -97,15 +94,13 @@ class BuyRouter {
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<BuyBloc>()
-                    ..add(BuyEvent.accelerateTransactionPressed(orderId)),
+          create: (context) =>
+              sl<BuyBloc>()
+                ..add(BuyEvent.accelerateTransactionPressed(orderId)),
           child: BlocListener<BuyBloc, BuyState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.buyOrder?.unbatchedBuyOnchainFees == null &&
-                    current.buyOrder?.unbatchedBuyOnchainFees != null,
+            listenWhen: (previous, current) =>
+                previous.buyOrder?.unbatchedBuyOnchainFees == null &&
+                current.buyOrder?.unbatchedBuyOnchainFees != null,
             listener: (context, state) {
               context.pushReplacementNamed(
                 BuyRoute.buyAccelerateSuccess.name,
@@ -124,10 +119,8 @@ class BuyRouter {
         final orderId = state.pathParameters['orderId']!;
 
         return BlocProvider(
-          create:
-              (context) =>
-                  locator<BuyBloc>()
-                    ..add(BuyEvent.refreshOrder(orderId: orderId)),
+          create: (context) =>
+              sl<BuyBloc>()..add(BuyEvent.refreshOrder(orderId: orderId)),
           child: const BuyAccelerateSuccessScreen(),
         );
       },

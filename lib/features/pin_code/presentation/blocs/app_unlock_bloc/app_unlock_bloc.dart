@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
-import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
-import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/get_latest_unlock_attempt_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -109,10 +109,9 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
 
       emit(
         state.copyWith(
-          status:
-              attemptResult.success
-                  ? AppUnlockStatus.success
-                  : AppUnlockStatus.inProgress,
+          status: attemptResult.success
+              ? AppUnlockStatus.success
+              : AppUnlockStatus.inProgress,
           isVerifying: false,
           failedAttempts: attemptResult.failedAttempts,
           timeoutSeconds: attemptResult.timeout,

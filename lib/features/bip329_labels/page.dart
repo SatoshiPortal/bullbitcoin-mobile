@@ -9,11 +9,11 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bip329_labels/cubit.dart';
 import 'package:bb_mobile/features/bip329_labels/state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class Bip329LabelsPage extends StatelessWidget {
   const Bip329LabelsPage({super.key});
@@ -21,11 +21,10 @@ class Bip329LabelsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => Bip329LabelsCubit(
-            exportLabelsUsecase: locator<ExportLabelsUsecase>(),
-            importLabelsUsecase: locator<ImportLabelsUsecase>(),
-          ),
+      create: (context) => Bip329LabelsCubit(
+        exportLabelsUsecase: sl<ExportLabelsUsecase>(),
+        importLabelsUsecase: sl<ImportLabelsUsecase>(),
+      ),
       child: Scaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,

@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
-import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -106,8 +106,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       }
 
       // all here future migration calls
-      final doDefaultWalletsExist =
-          await _checkForExistingDefaultWalletsUsecase.execute();
+      final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
+          .execute();
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
-import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
+import 'package:bb_mobile/features/pin_code/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/pin_code/domain/entities/unlock_attempt.dart';
+import 'package:bb_mobile/features/pin_code/domain/services/timeout_calculator.dart';
 
 class GetLatestUnlockAttemptUsecase {
   final FailedUnlockAttemptsRepository _failedUnlockAttemptsRepository;
@@ -13,8 +13,8 @@ class GetLatestUnlockAttemptUsecase {
        _timeoutCalculator = timeoutCalculator;
 
   Future<UnlockAttempt> execute() async {
-    final attempts =
-        await _failedUnlockAttemptsRepository.getFailedUnlockAttempts();
+    final attempts = await _failedUnlockAttemptsRepository
+        .getFailedUnlockAttempts();
 
     final timeout = _timeoutCalculator.calculateTimeout(attempts);
 

@@ -9,11 +9,11 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 extension _CurrencyIconExtension on String {
   String get currencyIcon {
@@ -130,7 +130,7 @@ class _PriceDisplay extends StatelessWidget {
           blocState.availableCurrencies!.isNotEmpty) {
         availableCurrencies = blocState.availableCurrencies!;
       } else {
-        final usecase = locator<GetAvailableCurrenciesUsecase>();
+        final usecase = sl<GetAvailableCurrenciesUsecase>();
         availableCurrencies = await usecase.execute();
       }
     } catch (e) {

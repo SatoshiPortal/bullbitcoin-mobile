@@ -8,12 +8,12 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:boltz/boltz.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 Future<void> doMigration0_2to0_3() async {
   final secureStorageDatasource = MigrationSecureStorageDatasource();
-  final hiveDatasource = locator<OldHiveDatasource>();
+  final hiveDatasource = sl<OldHiveDatasource>();
   final oldWalletRepository = OldWalletRepository(hiveDatasource);
 
   final oldWallets = await oldWalletRepository.fetch();
@@ -57,10 +57,9 @@ Future<void> doMigration0_2to0_3() async {
 }
 
 Future<Map<String, dynamic>> updateSwaps(Map<String, dynamic> walletObj) async {
-  walletObj['swaps'] =
-      walletObj['swaps'].map((swapTx) => swapTx as Map<String, dynamic>).map((
-        swapTx,
-      ) {
+  walletObj['swaps'] = walletObj['swaps']
+      .map((swapTx) => swapTx as Map<String, dynamic>)
+      .map((swapTx) {
         final isSubmarine = swapTx['isSubmarine'] == true;
         if (isSubmarine) {
           swapTx['lockupTxid'] = swapTx['txid'];
@@ -68,47 +67,38 @@ Future<Map<String, dynamic>> updateSwaps(Map<String, dynamic> walletObj) async {
           swapTx['claimTxid'] = swapTx['txid'];
         }
 
-        swapTx['lnSwapDetails'] =
-            OldLnSwapDetails(
-              swapType:
-                  swapTx['isSubmarine'] == true
-                      ? SwapType.submarine
-                      : SwapType.reverse,
-              invoice:
-                  swapTx['invoice'] != null
-                      ? (swapTx['invoice'] as String)
-                      : '', //TODO:
-              boltzPubKey:
-                  swapTx['boltzPubkey'] != null
-                      ? (swapTx['boltzPubkey'] as String)
-                      : '',
-              keyIndex:
-                  swapTx['keyIndex'] != null ? swapTx['keyIndex'] as int : 0,
-              myPublicKey:
-                  swapTx['publicKey'] != null
-                      ? swapTx['publicKey'] as String
-                      : '',
-              electrumUrl:
-                  swapTx['electrumUrl'] != null
-                      ? swapTx['electrumUrl'] as String
-                      : '',
-              locktime:
-                  swapTx['locktime'] != null ? swapTx['locktime'] as int : 0,
-              sha256:
-                  swapTx['sha256'] != null
-                      ? swapTx['sha256'] as String
-                      : '', // TODO: Should do this?
-              // hash160: swapTx['hash160'] as String, // TODO: Should do this?
-              // blindingKey:
-              //     swapTx['blindingKey'] as String, // TODO: Should do this?
-            ).toJson();
+        swapTx['lnSwapDetails'] = OldLnSwapDetails(
+          swapType: swapTx['isSubmarine'] == true
+              ? SwapType.submarine
+              : SwapType.reverse,
+          invoice: swapTx['invoice'] != null
+              ? (swapTx['invoice'] as String)
+              : '', //TODO:
+          boltzPubKey: swapTx['boltzPubkey'] != null
+              ? (swapTx['boltzPubkey'] as String)
+              : '',
+          keyIndex: swapTx['keyIndex'] != null ? swapTx['keyIndex'] as int : 0,
+          myPublicKey: swapTx['publicKey'] != null
+              ? swapTx['publicKey'] as String
+              : '',
+          electrumUrl: swapTx['electrumUrl'] != null
+              ? swapTx['electrumUrl'] as String
+              : '',
+          locktime: swapTx['locktime'] != null ? swapTx['locktime'] as int : 0,
+          sha256: swapTx['sha256'] != null
+              ? swapTx['sha256'] as String
+              : '', // TODO: Should do this?
+          // hash160: swapTx['hash160'] as String, // TODO: Should do this?
+          // blindingKey:
+          //     swapTx['blindingKey'] as String, // TODO: Should do this?
+        ).toJson();
         return swapTx;
-      }).toList();
+      })
+      .toList();
 
-  walletObj['transactions'] =
-      walletObj['transactions'].map((tx) => tx as Map<String, dynamic>).map((
-        tx,
-      ) {
+  walletObj['transactions'] = walletObj['transactions']
+      .map((tx) => tx as Map<String, dynamic>)
+      .map((tx) {
         final txHasSwap = tx['swapTx'] != null;
         final swapTxHasInvoice = txHasSwap && tx['swapTx']['invoice'] != null;
         if (swapTxHasInvoice) {
@@ -119,35 +109,31 @@ Future<Map<String, dynamic>> updateSwaps(Map<String, dynamic> walletObj) async {
             tx['swapTx']['claimTxid'] = tx['swapTx']['txid'];
           }
 
-          tx['swapTx']['lnSwapDetails'] =
-              OldLnSwapDetails(
-                swapType: isSubmarine ? SwapType.submarine : SwapType.reverse,
-                invoice: tx['swapTx']['invoice'] as String,
-                boltzPubKey: tx['swapTx']['boltzPubkey'] as String,
-                keyIndex:
-                    tx['swapTx']['keyIndex'] != null
-                        ? tx['swapTx']['keyIndex'] as int
-                        : 0,
-                myPublicKey: tx['swapTx']['publicKey'] as String,
-                electrumUrl: tx['swapTx']['electrumUrl'] as String,
-                locktime: tx['swapTx']['locktime'] as int,
-                sha256:
-                    tx['swapTx']['sha256'] != null
-                        ? tx['swapTx']['sha256'] as String
-                        : '',
-                hash160:
-                    tx['swapTx']['hash160'] != null
-                        ? tx['swapTx']['hash160'] as String
-                        : '',
-                blindingKey:
-                    tx['swapTx']['hash160'] != null
-                        ? tx['swapTx']['blindingKey'] as String
-                        : '',
-              ).toJson();
+          tx['swapTx']['lnSwapDetails'] = OldLnSwapDetails(
+            swapType: isSubmarine ? SwapType.submarine : SwapType.reverse,
+            invoice: tx['swapTx']['invoice'] as String,
+            boltzPubKey: tx['swapTx']['boltzPubkey'] as String,
+            keyIndex: tx['swapTx']['keyIndex'] != null
+                ? tx['swapTx']['keyIndex'] as int
+                : 0,
+            myPublicKey: tx['swapTx']['publicKey'] as String,
+            electrumUrl: tx['swapTx']['electrumUrl'] as String,
+            locktime: tx['swapTx']['locktime'] as int,
+            sha256: tx['swapTx']['sha256'] != null
+                ? tx['swapTx']['sha256'] as String
+                : '',
+            hash160: tx['swapTx']['hash160'] != null
+                ? tx['swapTx']['hash160'] as String
+                : '',
+            blindingKey: tx['swapTx']['hash160'] != null
+                ? tx['swapTx']['blindingKey'] as String
+                : '',
+          ).toJson();
           return tx;
         }
         return tx;
-      }).toList();
+      })
+      .toList();
 
   return walletObj;
 }

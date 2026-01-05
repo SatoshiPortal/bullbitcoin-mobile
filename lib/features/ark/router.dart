@@ -15,10 +15,10 @@ import 'package:bb_mobile/features/ark/ui/send_confirm_page.dart';
 import 'package:bb_mobile/features/ark/ui/send_recipient_page.dart';
 import 'package:bb_mobile/features/ark/ui/send_success_page.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum ArkRoute {
   arkWalletDetail('/ark-wallet-detail'),
@@ -47,14 +47,14 @@ class ArkRouter {
 
       return BlocProvider(
         create:
-            // TODO: move the ArkCubit DI to locator
+            // TODO: move the ArkCubit DI to sl
             (context) => ArkCubit(
               wallet: wallet,
               convertSatsToCurrencyAmountUsecase:
-                  locator<ConvertSatsToCurrencyAmountUsecase>(),
+                  sl<ConvertSatsToCurrencyAmountUsecase>(),
               getAvailableCurrenciesUsecase:
-                  locator<GetAvailableCurrenciesUsecase>(),
-              getSettingsUsecase: locator<GetSettingsUsecase>(),
+                  sl<GetAvailableCurrenciesUsecase>(),
+              getSettingsUsecase: sl<GetSettingsUsecase>(),
               walletBloc: context.read<WalletBloc>(),
             )..load(),
 
@@ -94,9 +94,8 @@ class ArkRouter {
           final prefilledCurrencyCode =
               state.uri.queryParameters['currencyCode'];
           return BlocListener<ArkCubit, ArkState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.sendAddress == null && current.sendAddress != null,
+            listenWhen: (previous, current) =>
+                previous.sendAddress == null && current.sendAddress != null,
             listener: (BuildContext context, ArkState state) {
               context.pushNamed(
                 ArkRoute.arkSendAmount.name,
@@ -119,9 +118,8 @@ class ArkRouter {
           final prefilledCurrencyCode =
               state.uri.queryParameters['currencyCode'];
           return BlocListener<ArkCubit, ArkState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.amountSat == null && current.amountSat != null,
+            listenWhen: (previous, current) =>
+                previous.amountSat == null && current.amountSat != null,
             listener: (BuildContext context, ArkState state) {
               context.pushNamed(ArkRoute.arkSendConfirm.name);
             },
@@ -135,16 +133,14 @@ class ArkRouter {
       GoRoute(
         name: ArkRoute.arkSendConfirm.name,
         path: ArkRoute.arkSendConfirm.path,
-        builder:
-            (context, state) => BlocListener<ArkCubit, ArkState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.txid.isEmpty && current.txid.isNotEmpty,
-              listener: (BuildContext context, ArkState state) {
-                context.goNamed(ArkRoute.arkSendSuccess.name);
-              },
-              child: const SendConfirmPage(),
-            ),
+        builder: (context, state) => BlocListener<ArkCubit, ArkState>(
+          listenWhen: (previous, current) =>
+              previous.txid.isEmpty && current.txid.isNotEmpty,
+          listener: (BuildContext context, ArkState state) {
+            context.goNamed(ArkRoute.arkSendSuccess.name);
+          },
+          child: const SendConfirmPage(),
+        ),
       ),
       GoRoute(
         name: ArkRoute.arkSendSuccess.name,

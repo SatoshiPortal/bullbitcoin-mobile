@@ -14,12 +14,12 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
   const ExchangeSupportChatScreen({super.key});
@@ -28,10 +28,10 @@ class ExchangeSupportChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ExchangeSupportChatCubit(
-        getMessagesUsecase: locator<GetSupportChatMessagesUsecase>(),
-        sendMessageUsecase: locator<SendSupportChatMessageUsecase>(),
-        getAttachmentUsecase: locator<GetSupportChatMessageAttachmentUsecase>(),
-        getUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
+        getMessagesUsecase: sl<GetSupportChatMessagesUsecase>(),
+        sendMessageUsecase: sl<SendSupportChatMessageUsecase>(),
+        getAttachmentUsecase: sl<GetSupportChatMessageAttachmentUsecase>(),
+        getUserSummaryUsecase: sl<GetExchangeUserSummaryUsecase>(),
       )..loadMessages(),
       child: Scaffold(
         appBar: AppBar(

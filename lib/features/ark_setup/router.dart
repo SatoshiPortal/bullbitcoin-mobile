@@ -4,9 +4,9 @@ import 'package:bb_mobile/features/ark_setup/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark_setup/setup_page.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum ArkSetupRoute {
   arkSetup('/ark/setup');
@@ -24,17 +24,15 @@ class ArkSetupRouter {
       final wallet = context.watch<WalletBloc>().state.arkWallet;
 
       return BlocProvider(
-        create:
-            (context) => ArkSetupCubit(
-              getDefaultSeedUsecase: locator<GetDefaultSeedUsecase>(),
-              createArkSecretUsecase: locator<CreateArkSecretUsecase>(),
-              wallet: wallet,
-              walletBloc: context.read<WalletBloc>(),
-            ),
+        create: (context) => ArkSetupCubit(
+          getDefaultSeedUsecase: sl<GetDefaultSeedUsecase>(),
+          createArkSecretUsecase: sl<CreateArkSecretUsecase>(),
+          wallet: wallet,
+          walletBloc: context.read<WalletBloc>(),
+        ),
         child: BlocListener<WalletBloc, WalletState>(
-          listenWhen:
-              (previous, current) =>
-                  previous.arkWallet == null && current.arkWallet != null,
+          listenWhen: (previous, current) =>
+              previous.arkWallet == null && current.arkWallet != null,
           listener: (context, state) {
             context.goNamed(WalletRoute.walletHome.name);
           },

@@ -3,9 +3,9 @@ import 'package:bb_mobile/features/dca/ui/screens/dca_confirmation_screen.dart';
 import 'package:bb_mobile/features/dca/ui/screens/dca_screen.dart';
 import 'package:bb_mobile/features/dca/ui/screens/dca_success_screen.dart';
 import 'package:bb_mobile/features/dca/ui/screens/dca_wallet_selection_screen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum DcaRoute {
   dca('/dca'),
@@ -24,12 +24,11 @@ class DcaRouter {
     path: DcaRoute.dca.path,
     builder: (context, state) {
       return BlocProvider<DcaBloc>(
-        create: (_) => locator<DcaBloc>()..add(const DcaEvent.started()),
+        create: (_) => sl<DcaBloc>()..add(const DcaEvent.started()),
         child: BlocListener<DcaBloc, DcaState>(
-          listenWhen:
-              (previous, current) =>
-                  previous is DcaBuyInputState &&
-                  current is DcaWalletSelectionState,
+          listenWhen: (previous, current) =>
+              previous is DcaBuyInputState &&
+              current is DcaWalletSelectionState,
           listener: (context, state) {
             context.pushNamed(
               DcaRoute.dcaWalletSelection.name,
@@ -49,10 +48,9 @@ class DcaRouter {
           return BlocProvider.value(
             value: dcaBloc,
             child: BlocListener<DcaBloc, DcaState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is DcaWalletSelectionState &&
-                      current is DcaConfirmationState,
+              listenWhen: (previous, current) =>
+                  previous is DcaWalletSelectionState &&
+                  current is DcaConfirmationState,
               listener: (context, state) {
                 context.pushNamed(
                   DcaRoute.dcaConfirmation.name,
@@ -72,10 +70,9 @@ class DcaRouter {
           return BlocProvider.value(
             value: dcaBloc,
             child: BlocListener<DcaBloc, DcaState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is DcaConfirmationState &&
-                      current is DcaSuccessState,
+              listenWhen: (previous, current) =>
+                  previous is DcaConfirmationState &&
+                  current is DcaSuccessState,
               listener: (context, state) {
                 context.pushNamed(
                   DcaRoute.dcaSuccess.name,

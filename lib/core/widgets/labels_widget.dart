@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/label_text.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class LabelsWidget extends StatefulWidget {
   const LabelsWidget({super.key, required this.labels, this.onDelete});
@@ -20,7 +20,7 @@ class LabelsWidget extends StatefulWidget {
 }
 
 class _LabelsWidgetState extends State<LabelsWidget> {
-  final _deleteLabelUsecase = locator<DeleteLabelUsecase>();
+  final _deleteLabelUsecase = sl<DeleteLabelUsecase>();
   final Set<String> _deletingLabels = {};
 
   Future<void> _deleteLabel(Label label) async {

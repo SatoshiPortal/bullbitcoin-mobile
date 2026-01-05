@@ -31,9 +31,7 @@ class RecipientsDiModule implements FeatureDiModule {
       ),
     );
     sl.registerLazySingleton<BullbitcoinApiKeyProvider>(
-      () => BullbitcoinApiKeyProvider(
-        secureStorage: sl(),
-      ),
+      () => BullbitcoinApiKeyProvider(secureStorage: sl()),
     );
 
     sl.registerLazySingleton<Dio>(
@@ -92,10 +90,8 @@ class RecipientsDiModule implements FeatureDiModule {
       ),
     );
     sl.registerFactory<CheckSinpeUsecase>(
-      () => CheckSinpeUsecase(
-        recipientsGateway: sl(),
-        settingsRepository: sl(),
-      ),
+      () =>
+          CheckSinpeUsecase(recipientsGateway: sl(), settingsRepository: sl()),
     );
     sl.registerFactory<ListCadBillersUsecase>(
       () => ListCadBillersUsecase(

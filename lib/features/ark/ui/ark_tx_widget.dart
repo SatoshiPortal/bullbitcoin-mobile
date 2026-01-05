@@ -6,12 +6,12 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum ArkTransactionType { boarding, commitment, redeem }
 
@@ -103,12 +103,10 @@ class ArkTxWidget extends StatelessWidget {
                   if (tx is ark_wallet.Transaction_Boarding)
                     GestureDetector(
                       onTap: () async {
-                        final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+                        final mempoolUrlBuilder = sl<MempoolUrlBuilder>();
 
-                        final mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
-                          txid,
-                          isTestnet: false,
-                        );
+                        final mempoolUrl = await mempoolUrlBuilder
+                            .bitcoinTxidUrl(txid, isTestnet: false);
 
                         await launchUrl(Uri.parse(mempoolUrl));
                       },

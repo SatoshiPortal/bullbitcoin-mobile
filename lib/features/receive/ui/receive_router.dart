@@ -8,11 +8,11 @@ import 'package:bb_mobile/features/receive/ui/screens/receive_payment_received_s
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_scaffold.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum ReceiveRoute {
   receiveBitcoin('/receive/bitcoin'),
@@ -47,7 +47,7 @@ class ReceiveRouter {
       return ReceiveScaffold(
         wallet: wallet,
         child: BlocProvider<ReceiveBloc>(
-          create: (_) => locator<ReceiveBloc>(param1: wallet),
+          create: (_) => sl<ReceiveBloc>(param1: wallet),
           child: MultiBlocListener(
             listeners: [
               BlocListener<ReceiveBloc, ReceiveState>(

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
+import 'package:bb_mobile/features/pin_code/domain/services/timeout_calculator.dart';
 
 class ExponentialTimeoutCalculator implements TimeoutCalculator {
   final int timeoutMultiplier; // In seconds

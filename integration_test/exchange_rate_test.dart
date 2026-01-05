@@ -3,24 +3,23 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final bitcoinPriceDatasource = locator<BullbitcoinApiDatasource>(
+  final bitcoinPriceDatasource = sl<BullbitcoinApiDatasource>(
     instanceName: 'mainnetExchangeApiDatasource',
   );
-  final getAvailableCurrenciesUsecase =
-      locator<GetAvailableCurrenciesUsecase>();
+  final getAvailableCurrenciesUsecase = sl<GetAvailableCurrenciesUsecase>();
   final convertCurrencyToSatsAmountUsecase =
-      locator<ConvertCurrencyToSatsAmountUsecase>();
+      sl<ConvertCurrencyToSatsAmountUsecase>();
   final convertSatsToCurrencyAmountUsecase =
-      locator<ConvertSatsToCurrencyAmountUsecase>();
+      sl<ConvertSatsToCurrencyAmountUsecase>();
 
   const currency = 'USD';
   final bitcoinPrice = await bitcoinPriceDatasource.getPrice(currency);

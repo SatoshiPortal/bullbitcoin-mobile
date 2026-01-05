@@ -4,13 +4,13 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
+import 'package:bb_mobile/features/pin_code/presentation/blocs/app_unlock_bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
   const PinCodeUnlockScreen({super.key, this.onSuccess, this.canPop = false});
@@ -21,7 +21,7 @@ class PinCodeUnlockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => locator<AppUnlockBloc>()..add(const AppUnlockStarted()),
+      create: (_) => sl<AppUnlockBloc>()..add(const AppUnlockStarted()),
       child: BlocListener<AppUnlockBloc, AppUnlockState>(
         listener: (context, state) async {
           if (state.status == AppUnlockStatus.success) {
@@ -89,17 +89,16 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                           AppUnlockState,
                           (String, bool)
                         >(
-                          selector:
-                              (state) => (state.pinCode, state.obscurePinCode),
+                          selector: (state) =>
+                              (state.pinCode, state.obscurePinCode),
                           builder: (context, data) {
                             final (pinCode, obscurePinCode) = data;
                             return BBInputText(
                               value: pinCode,
                               obscure: obscurePinCode,
-                              onRightTap:
-                                  () => context.read<AppUnlockBloc>().add(
-                                    AppUnlockPinCodeObscureToggled(),
-                                  ),
+                              onRightTap: () => context
+                                  .read<AppUnlockBloc>()
+                                  .add(AppUnlockPinCodeObscureToggled()),
                               rightIcon: const Icon(
                                 Icons.visibility_off_outlined,
                               ),
@@ -114,26 +113,23 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                           AppUnlockState,
                           (bool, int)
                         >(
-                          selector:
-                              (state) => (
-                                state.showError,
-                                state.failedAttempts,
-                              ),
+                          selector: (state) =>
+                              (state.showError, state.failedAttempts),
                           builder: (context, data) {
                             final (showError, failedAttempts) = data;
                             return showError && failedAttempts > 0
                                 ? Text(
-                                  context.loc.appUnlockIncorrectPinError(
-                                    failedAttempts,
-                                    failedAttempts == 1
-                                        ? context.loc.appUnlockAttemptSingular
-                                        : context.loc.appUnlockAttemptPlural,
-                                  ),
-                                  textAlign: .start,
-                                  style: context.font.labelSmall?.copyWith(
-                                    color: context.appColors.error,
-                                  ),
-                                )
+                                    context.loc.appUnlockIncorrectPinError(
+                                      failedAttempts,
+                                      failedAttempts == 1
+                                          ? context.loc.appUnlockAttemptSingular
+                                          : context.loc.appUnlockAttemptPlural,
+                                    ),
+                                    textAlign: .start,
+                                    style: context.font.labelSmall?.copyWith(
+                                      color: context.appColors.error,
+                                    ),
+                                  )
                                 : const SizedBox.shrink();
                           },
                         ),
@@ -147,14 +143,12 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                 child: DialPad(
                   disableFeedback: true,
                   onlyDigits: true,
-                  onNumberPressed:
-                      (value) => context.read<AppUnlockBloc>().add(
-                        AppUnlockPinCodeNumberAdded(int.parse(value)),
-                      ),
-                  onBackspacePressed:
-                      () => context.read<AppUnlockBloc>().add(
-                        const AppUnlockPinCodeNumberRemoved(),
-                      ),
+                  onNumberPressed: (value) => context.read<AppUnlockBloc>().add(
+                    AppUnlockPinCodeNumberAdded(int.parse(value)),
+                  ),
+                  onBackspacePressed: () => context.read<AppUnlockBloc>().add(
+                    const AppUnlockPinCodeNumberRemoved(),
+                  ),
                 ),
               ),
               const Gap(16),
@@ -177,10 +171,9 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   label: context.loc.appUnlockButton,
                   textStyle: context.font.headlineLarge,
                   disabled: !canSubmit,
-                  bgColor:
-                      canSubmit
-                          ? context.appColors.secondary
-                          : context.appColors.outline,
+                  bgColor: canSubmit
+                      ? context.appColors.secondary
+                      : context.appColors.outline,
                   onPressed: () {
                     if (canSubmit) {
                       context.read<AppUnlockBloc>().add(

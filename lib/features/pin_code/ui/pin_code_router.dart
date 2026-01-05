@@ -1,20 +1,20 @@
 import 'dart:ui';
 
-import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/pin_code/ui/pin_code_unlock_screen.dart';
 import 'package:go_router/go_router.dart';
 
-enum AppUnlockRoute {
+enum PinCodeRoute {
   appUnlock('/app-unlock');
 
   final String path;
 
-  const AppUnlockRoute(this.path);
+  const PinCodeRoute(this.path);
 }
 
-class AppUnlockRouter {
+class PinCodeRouter {
   static final route = GoRoute(
-    name: AppUnlockRoute.appUnlock.name,
-    path: AppUnlockRoute.appUnlock.path,
+    name: PinCodeRoute.appUnlock.name,
+    path: PinCodeRoute.appUnlock.path,
     builder: (context, state) {
       final onSuccess = state.extra as VoidCallback?;
 

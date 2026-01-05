@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/infra/di/feature_di_module.dart';
 import 'package:bb_mobile/features/address_view/address_view_di_module.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_di_module.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_di_module.dart';
-import 'package:bb_mobile/features/app_unlock/app_unlock_di_module.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_di_module.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_di_module.dart';
 import 'package:bb_mobile/features/bip85_entropy/bip85_entropy_di_module.dart';
@@ -51,17 +50,17 @@ Future<void> initializeDependencies() async {
   // Ideally features should be as independent as possible,
   // communicating only via well-defined, strict interfaces (facades) if necessary.
   final featureModules = <FeatureDiModule>[
+    PinCodeDiModule(), // Depends on core storage;
     AddressViewDiModule(), // Depends on core wallet
     AllSeedViewDiModule(), // Depends on core seed, core wallet
     AppStartupDiModule(), // Depends on core settings, core wallet, core seed, app_unlock, core storage, test_wallet_backup, pin_code, core tor
-    AppUnlockDiModule(), // Depends on core storage, pin_code
     AutoSwapDiModule(), // Depends on core swaps, core settings, core wallet
     BackupSettingsDiModule(), // Depends on core wallet, core settings
     Bip85EntropyDiModule(), // Depends on core bip85, core seed
     BitBoxDiModule(), // Depends on core bitbox
     BitcoinPriceDiModule(), // Depends on core exchange, core settings
     BroadcastSignedTxDiModule(), // Depends on core blockchain
-    BuyDiModule(), // Depends on core wallet, core exchange, core fees
+    BuyDiModule(), // Depends on core wallet, core exchange, core fees, core settings
     DcaDiModule(), // Depends on core exchange, core settings, core wallet
     ElectrumSettingsDiModule(), // Depends on core electrum
     ExchangeDiModule(), // Depends on core exchange
@@ -73,17 +72,16 @@ Future<void> initializeDependencies() async {
     MempoolSettingsDiModule(), // Depends on core mempool
     OnboardingDiModule(), // Depends on core wallet
     PayDiModule(), // Depends on core exchange, core blockchain, core fees, core wallet, send, recipients
-    PinCodeDiModule(), // Depends on core storage; TODO: check what can be moved to core (since the pin code repository is needed both in settings as in app unlock)
-    ReceiveDiModule(), // Depends on core wallet, core swaps, core seed, core exchange, core payjoin, core labels
-    RecipientsDiModule(), // Depends on core settings; TODO: frameworks should be moved to core (FlutterSecureStorage, BullbitcoinApiKeyProvider, Dio instances)
+    ReceiveDiModule(), // Depends on core wallet, core swaps, core seed, core exchange, core payjoin, core labels, core settings
+    RecipientsDiModule(), // TODO: frameworks should be moved to core (FlutterSecureStorage, BullbitcoinApiKeyProvider, Dio instances)
     ReplaceByFeeDiModule(), // Depends on core wallet
-    SellDiModule(), // Depends on core exchange, core blockchain, core fees, core wallet, core labels, send
-    SendDiModule(), // Depends on core wallet, core swaps, core seed, core blockchain, core fees, core payjoin, core exchange
+    SellDiModule(), // Depends on core exchange, core blockchain, core fees, core wallet, core labels, send, core settings
+    SendDiModule(), // Depends on core wallet, core swaps, core seed, core settings, core blockchain, core fees, core payjoin, core exchange
     SettingsDiModule(), // Depends on core settings, core storage, core ark
     StatusCheckDiModule(), // Depends on core status, core wallet
     SwapDiModule(), // Depends on core swaps, core wallet, core seed, core blockchain, core fees, send; NOTE: many use cases might be duplicates from send
     TestWalletBackupDiModule(), // Depends on core wallet, core seed, core settings
-    TorSettingsDiModule(), // Depends on core settings, core tor
+    TorSettingsDiModule(), // Depends on core settings
     TransactionsDiModule(), // Depends on core wallet, core swaps, core exchange, core payjoin, core labels, core settings
     WalletDiModule(), // Depends on core wallet, core swaps, core settings, core tor, core ark
     WithdrawDiModule(), // Depends on core exchange, core settings

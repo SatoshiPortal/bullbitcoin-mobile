@@ -10,11 +10,11 @@ import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.d
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({super.key, this.loading = false});
@@ -120,24 +120,18 @@ class _Actions extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder:
-                        (context) => MultiBlocProvider(
-                          providers: [
-                            BlocProvider(
-                              create:
-                                  (_) =>
-                                      locator<ElectrumSettingsBloc>()..add(
-                                        const ElectrumSettingsLoaded(
-                                          isLiquid: false,
-                                        ),
-                                      ),
+                    builder: (context) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (_) => sl<ElectrumSettingsBloc>()
+                            ..add(
+                              const ElectrumSettingsLoaded(isLiquid: false),
                             ),
-                            BlocProvider(
-                              create: (_) => locator<TorSettingsCubit>(),
-                            ),
-                          ],
-                          child: const AdvancedOptions(),
                         ),
+                        BlocProvider(create: (_) => sl<TorSettingsCubit>()),
+                      ],
+                      child: const AdvancedOptions(),
+                    ),
                   ),
                 );
               },
@@ -148,8 +142,9 @@ class _Actions extends StatelessWidget {
                     alpha: 0.9,
                   ),
                   decoration: TextDecoration.underline,
-                  decorationColor: context.appColors.onPrimaryFixed
-                      .withValues(alpha: 0.9),
+                  decorationColor: context.appColors.onPrimaryFixed.withValues(
+                    alpha: 0.9,
+                  ),
                 ),
               ),
             ),

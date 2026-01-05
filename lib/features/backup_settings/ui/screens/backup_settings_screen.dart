@@ -8,11 +8,11 @@ import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_war
 import 'package:bb_mobile/features/bip329_labels/router.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
   const BackupSettingsScreen({super.key});
@@ -25,7 +25,7 @@ class _BackupSettingsScreenState extends State<BackupSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => locator<BackupSettingsCubit>()..checkBackupStatus(),
+      create: (context) => sl<BackupSettingsCubit>()..checkBackupStatus(),
       child: const _Screen(),
     );
   }

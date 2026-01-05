@@ -23,12 +23,12 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_cubit.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class LedgerRouteParams {
   final String? psbt;
@@ -55,12 +55,11 @@ class LedgerActionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => LedgerOperationCubit(
-            scanLedgerDevicesUsecase: locator<ScanLedgerDevicesUsecase>(),
-            connectLedgerDeviceUsecase: locator<ConnectLedgerDeviceUsecase>(),
-            requestedDeviceType: parameters?.requestedDeviceType,
-          ),
+      create: (context) => LedgerOperationCubit(
+        scanLedgerDevicesUsecase: sl<ScanLedgerDevicesUsecase>(),
+        connectLedgerDeviceUsecase: sl<ConnectLedgerDeviceUsecase>(),
+        requestedDeviceType: parameters?.requestedDeviceType,
+      ),
       child: _LedgerActionView(action: action, parameters: parameters),
     );
   }
@@ -379,30 +378,29 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       isScrollControlled: true,
       backgroundColor: context.appColors.surface,
       constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder:
-          (BuildContext buildContext) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: .stretch,
-                  children: [
-                    const Gap(16),
-                    BBText(
-                      context.loc.ledgerWalletTypeSelectTitle,
-                      style: context.font.headlineMedium,
-                    ),
-                    const Gap(16),
-                    SelectableList(
-                      selectedValue: _selectedScriptType.name,
-                      items: scriptTypeItems,
-                    ),
-                    const Gap(24),
-                  ],
+      builder: (BuildContext buildContext) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: .stretch,
+              children: [
+                const Gap(16),
+                BBText(
+                  context.loc.ledgerWalletTypeSelectTitle,
+                  style: context.font.headlineMedium,
                 ),
-              ),
+                const Gap(16),
+                SelectableList(
+                  selectedValue: _selectedScriptType.name,
+                  items: scriptTypeItems,
+                ),
+                const Gap(24),
+              ],
             ),
           ),
+        ),
+      ),
     );
 
     if (selected != null) {
@@ -452,7 +450,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         return Platform.isIOS
             ? context.loc.ledgerInstructionsIos
             : (widget.parameters?.requestedDeviceType != null &&
-                !widget.parameters!.requestedDeviceType!.supportsBluetooth)
+                  !widget.parameters!.requestedDeviceType!.supportsBluetooth)
             ? context.loc.ledgerInstructionsAndroidUsb
             : context.loc.ledgerInstructionsAndroidDual;
       case LedgerOperationStatus.scanning:
@@ -495,7 +493,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   Future<WatchOnlyWalletEntity> _executeImportWallet(
     LedgerDeviceEntity device,
   ) {
-    return locator<GetLedgerWatchOnlyWalletUsecase>().execute(
+    return sl<GetLedgerWatchOnlyWalletUsecase>().execute(
       label: context.loc.ledgerDefaultWalletLabel,
       device: device,
       scriptType: _selectedScriptType,
@@ -519,7 +517,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       throw Exception(context.loc.ledgerErrorMissingScriptTypeSign);
     }
 
-    final result = locator<SignPsbtLedgerUsecase>().execute(
+    final result = sl<SignPsbtLedgerUsecase>().execute(
       device,
       psbt: psbt,
       derivationPath: derivationPath,
@@ -545,7 +543,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       throw Exception(context.loc.ledgerErrorMissingScriptTypeVerify);
     }
 
-    return locator<VerifyAddressLedgerUsecase>().execute(
+    return sl<VerifyAddressLedgerUsecase>().execute(
       device: device,
       address: address,
       derivationPath: derivationPath,

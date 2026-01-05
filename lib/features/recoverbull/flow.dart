@@ -4,9 +4,9 @@ import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/connecting_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/server_confirmation_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class RecoverBullFlowNavigator extends StatefulWidget {
   const RecoverBullFlowNavigator({super.key});
@@ -18,7 +18,7 @@ class RecoverBullFlowNavigator extends StatefulWidget {
 
 class _RecoverBullFlowNavigatorState extends State<RecoverBullFlowNavigator> {
   final _navigatorKey = GlobalKey<NavigatorState>();
-  final _fetchPermissionUsecase = locator<FetchPermissionUsecase>();
+  final _fetchPermissionUsecase = sl<FetchPermissionUsecase>();
 
   @override
   Widget build(BuildContext context) {

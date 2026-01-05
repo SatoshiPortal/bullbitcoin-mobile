@@ -4,15 +4,15 @@ import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/transactions/bitcoin_transaction_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final sqlite = locator<SqliteDatabase>();
+  final sqlite = sl<SqliteDatabase>();
   final electrumDatasource = ElectrumRemoteDatasource(
     server: ElectrumServerModel(
       url: ApiServiceConstants.bbElectrumUrl,

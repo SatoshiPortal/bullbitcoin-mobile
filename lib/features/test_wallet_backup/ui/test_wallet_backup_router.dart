@@ -1,9 +1,9 @@
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/flow.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,15 +27,13 @@ class TestWalletBackupRouter {
           TestPhysicalBackupFlow.backup;
 
       return BlocProvider(
-        create:
-            (context) => TestWalletBackupBloc(
-              loadWalletsForNetworkUsecase:
-                  locator<LoadWalletsForNetworkUsecase>(),
-              getMnemonicFromFingerprintUsecase:
-                  locator<GetMnemonicFromFingerprintUsecase>(),
-              completePhysicalBackupVerificationUsecase:
-                  locator<CompletePhysicalBackupVerificationUsecase>(),
-            )..add(const LoadWallets()),
+        create: (context) => TestWalletBackupBloc(
+          loadWalletsForNetworkUsecase: sl<LoadWalletsForNetworkUsecase>(),
+          getMnemonicFromFingerprintUsecase:
+              sl<GetMnemonicFromFingerprintUsecase>(),
+          completePhysicalBackupVerificationUsecase:
+              sl<CompletePhysicalBackupVerificationUsecase>(),
+        )..add(const LoadWallets()),
         child: TestPhysicalBackupFlowNavigator(flow: flow),
       );
     },

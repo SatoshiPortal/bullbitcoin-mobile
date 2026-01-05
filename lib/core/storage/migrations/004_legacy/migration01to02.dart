@@ -13,14 +13,14 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_see
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 Future<void> doMigration0_1to0_2() async {
   try {
     final secureStorageDatasource = MigrationSecureStorageDatasource();
-    final hiveDatasource = locator<OldHiveDatasource>();
+    final hiveDatasource = sl<OldHiveDatasource>();
     final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
 
     final walletIdsRaw = hiveDatasource.getValue(OldStorageKeys.wallets.name);
@@ -195,26 +195,23 @@ updateWalletObj(
 Future<Map<String, dynamic>> addIsLiquidFalse(
   Map<String, dynamic> walletObj,
 ) async {
-  walletObj['transactions'] =
-      walletObj['transactions']
-          .map((tx) => tx as Map<String, dynamic>)
-          .map((tx) => tx..addAll({'isLiquid': false}))
-          .toList();
+  walletObj['transactions'] = walletObj['transactions']
+      .map((tx) => tx as Map<String, dynamic>)
+      .map((tx) => tx..addAll({'isLiquid': false}))
+      .toList();
 
   if (walletObj['myAddressBook'] != null) {
-    walletObj['myAddressBook'] =
-        walletObj['myAddressBook']
-            .map((addr) => addr as Map<String, dynamic>)
-            .map((addr) => addr..addAll({'isLiquid': false}))
-            .toList();
+    walletObj['myAddressBook'] = walletObj['myAddressBook']
+        .map((addr) => addr as Map<String, dynamic>)
+        .map((addr) => addr..addAll({'isLiquid': false}))
+        .toList();
   }
 
   if (walletObj['externalAddressBook'] != null) {
-    walletObj['externalAddressBook'] =
-        walletObj['externalAddressBook']
-            .map((addr) => addr as Map<String, dynamic>)
-            .map((addr) => addr..addAll({'isLiquid': false}))
-            .toList();
+    walletObj['externalAddressBook'] = walletObj['externalAddressBook']
+        .map((addr) => addr as Map<String, dynamic>)
+        .map((addr) => addr..addAll({'isLiquid': false}))
+        .toList();
   }
 
   return walletObj;

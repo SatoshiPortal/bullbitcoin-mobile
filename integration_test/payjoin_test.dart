@@ -14,12 +14,12 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 import 'package:test/test.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -28,13 +28,13 @@ Future<void> main({bool isInitialized = false}) async {
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
-  final walletRepository = locator<WalletRepository>();
-  final addressRepository = locator<WalletAddressRepository>();
-  final utxoRepository = locator<WalletUtxoRepository>();
-  final payjoinRepository = locator<PayjoinRepository>();
-  final receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
-  final sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
-  final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
+  final walletRepository = sl<WalletRepository>();
+  final addressRepository = sl<WalletAddressRepository>();
+  final utxoRepository = sl<WalletUtxoRepository>();
+  final payjoinRepository = sl<PayjoinRepository>();
+  final receiveWithPayjoinUsecase = sl<ReceiveWithPayjoinUsecase>();
+  final sendWithPayjoinUsecase = sl<SendWithPayjoinUsecase>();
+  final prepareBitcoinSendUsecase = sl<PrepareBitcoinSendUsecase>();
 
   final receiverMnemonic = dotenv.env['TEST_ALICE_MNEMONIC'];
   final senderMnemonic = dotenv.env['TEST_BOB_MNEMONIC'];
@@ -47,7 +47,7 @@ Future<void> main({bool isInitialized = false}) async {
   }
 
   setUpAll(() async {
-    await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
+    await sl<SetEnvironmentUsecase>().execute(Environment.testnet);
 
     final receiverSeedModel = SeedModel.mnemonic(
       mnemonicWords: receiverMnemonic.split(' '),

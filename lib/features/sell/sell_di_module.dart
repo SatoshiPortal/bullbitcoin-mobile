@@ -40,11 +40,6 @@ class SellDiModule implements FeatureDiModule {
         settingsRepository: sl(),
       ),
     );
-
-    // NOTE: GetAddressAtIndexUsecase might already be registered in core - leaving here to preserve original behavior
-    // sl.registerFactory<GetAddressAtIndexUsecase>(
-    //   () => GetAddressAtIndexUsecase(walletAddressRepository: sl()),
-    // );
   }
 
   @override

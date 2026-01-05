@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/bip85_entropy/bip85_home_page.dart';
 import 'package:bb_mobile/features/bip85_entropy/presentation/cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum Bip85EntropyRoute {
   bip85Home('/bip85-home');
@@ -14,11 +14,8 @@ enum Bip85EntropyRoute {
 
 class Bip85EntropyRouter {
   static final route = ShellRoute(
-    builder:
-        (context, state, child) => BlocProvider(
-          create: (_) => locator<Bip85EntropyCubit>(),
-          child: child,
-        ),
+    builder: (context, state, child) =>
+        BlocProvider(create: (_) => sl<Bip85EntropyCubit>(), child: child),
     routes: [
       GoRoute(
         name: Bip85EntropyRoute.bip85Home.name,

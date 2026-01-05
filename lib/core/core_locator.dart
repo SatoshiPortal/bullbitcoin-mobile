@@ -16,7 +16,6 @@ import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
-import 'package:bb_mobile/locator.dart';
 
 class CoreLocator {
   static void register() {

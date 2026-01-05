@@ -37,11 +37,11 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_rout
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum SettingsRoute {
   settings('/settings'),
@@ -84,7 +84,7 @@ class SettingsRouter {
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
     builder: (context, state) => BlocProvider(
-      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+      create: (_) => sl<ServiceStatusCubit>()..checkStatus(),
       child: const AllSettingsScreen(),
     ),
     routes: [
@@ -247,7 +247,7 @@ class SettingsRouter {
               final walletId = state.pathParameters['walletId']!;
               return BlocProvider(
                 create: (_) =>
-                    locator<AddressViewBloc>(param1: walletId, param2: 10),
+                    sl<AddressViewBloc>(param1: walletId, param2: 10),
                 child: AddressesScreen(walletId: walletId),
               );
             },
@@ -263,7 +263,7 @@ class SettingsRouter {
         path: SettingsRoute.legacySeeds.path,
         name: SettingsRoute.legacySeeds.name,
         builder: (context, state) => BlocProvider(
-          create: (_) => locator<LegacySeedViewCubit>(),
+          create: (_) => sl<LegacySeedViewCubit>(),
           child: const LegacySeedViewScreen(),
         ),
       ),
@@ -271,7 +271,7 @@ class SettingsRouter {
         path: SettingsRoute.allSeedView.path,
         name: SettingsRoute.allSeedView.name,
         builder: (context, state) => BlocProvider(
-          create: (_) => locator<AllSeedViewCubit>(),
+          create: (_) => sl<AllSeedViewCubit>(),
           child: const AllSeedViewScreen(),
         ),
       ),

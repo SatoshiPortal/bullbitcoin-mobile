@@ -37,19 +37,13 @@ class SendDiModule implements FeatureDiModule {
       ),
     );
     sl.registerFactory<PrepareLiquidSendUsecase>(
-      () => PrepareLiquidSendUsecase(
-        liquidWalletRepository: sl(),
-      ),
+      () => PrepareLiquidSendUsecase(liquidWalletRepository: sl()),
     );
     sl.registerFactory<SignLiquidTxUsecase>(
-      () => SignLiquidTxUsecase(
-        liquidWalletRepository: sl(),
-      ),
+      () => SignLiquidTxUsecase(liquidWalletRepository: sl()),
     );
     sl.registerFactory<SignBitcoinTxUsecase>(
-      () => SignBitcoinTxUsecase(
-        bitcoinWalletRepository: sl(),
-      ),
+      () => SignBitcoinTxUsecase(bitcoinWalletRepository: sl()),
     );
     sl.registerFactory<CreateSendSwapUsecase>(
       () => CreateSendSwapUsecase(
@@ -58,9 +52,8 @@ class SendDiModule implements FeatureDiModule {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: sl<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         walletRepository: sl(),
         seedRepository: sl(),
@@ -73,9 +66,8 @@ class SendDiModule implements FeatureDiModule {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: sl<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -83,14 +75,10 @@ class SendDiModule implements FeatureDiModule {
       () => SelectBestWalletUsecase(),
     );
     sl.registerFactory<CalculateBitcoinAbsoluteFeesUsecase>(
-      () => CalculateBitcoinAbsoluteFeesUsecase(
-        bitcoinWalletRepository: sl(),
-      ),
+      () => CalculateBitcoinAbsoluteFeesUsecase(bitcoinWalletRepository: sl()),
     );
     sl.registerFactory<CalculateLiquidAbsoluteFeesUsecase>(
-      () => CalculateLiquidAbsoluteFeesUsecase(
-        liquidWalletRepository: sl(),
-      ),
+      () => CalculateLiquidAbsoluteFeesUsecase(liquidWalletRepository: sl()),
     );
   }
 

@@ -15,7 +15,8 @@ import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
-import 'package:bb_mobile/features/exchange/exchange_locator.dart' as features;
+import 'package:bb_mobile/features/exchange/exchange_di_module.dart'
+    as features;
 import 'package:get_it/get_it.dart';
 
 class TaskLocator {
@@ -101,7 +102,7 @@ class TaskLocator {
   }
 
   static void registerFeatures(GetIt backgroundLocator) {
-    features.ExchangeLocator.setup(backgroundLocator);
+    features.ExchangeDiModule().registerDrivingAdapters();
     ArkCoreLocator.setup(backgroundLocator);
     StatusLocator.setup(backgroundLocator);
   }
