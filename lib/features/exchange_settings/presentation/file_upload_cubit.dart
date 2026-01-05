@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_state.dart';
@@ -8,78 +9,132 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class FileUploadCubit extends Cubit<FileUploadState> {
   FileUploadCubit({
     required UploadKycDocumentUsecase uploadKycDocumentUsecase,
+    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
   }) : _uploadKycDocumentUsecase = uploadKycDocumentUsecase,
-       super(const FileUploadState());
+       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+       super(const FileUploadState()) {
+    _loadUserData();
+  }
 
   final UploadKycDocumentUsecase _uploadKycDocumentUsecase;
+  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
 
-  Future<void> pickFiles() async {
+  /// Load user data to get userId and secure file upload status
+  Future<void> _loadUserData() async {
+    emit(state.copyWith(isLoadingUser: true, error: null));
+
+    try {
+      final userSummary = await _getExchangeUserSummaryUsecase.execute();
+
+      // Determine server submitted count based on status
+      // If secureFileUpload is underReview, assume max files are submitted
+      // This is a simplification - ideally we'd query the actual KYC list
+      final status = userSummary.kycDocumentStatus?.secureFileUpload;
+      final serverCount =
+          status?.isUnderReview == true || status?.isAccepted == true
+              ? FileToUpload.maxFileCount
+              : 0;
+
+      emit(
+        state.copyWith(
+          isLoadingUser: false,
+          userId: userSummary.userId,
+          secureFileUploadStatus:
+              userSummary.kycDocumentStatus?.secureFileUpload,
+          serverSubmittedCount: serverCount,
+        ),
+      );
+    } catch (e) {
+      log.severe('Error loading user data: $e');
+      emit(
+        state.copyWith(
+          isLoadingUser: false,
+          error: 'Failed to load user data',
+        ),
+      );
+    }
+  }
+
+  /// Refresh user data (e.g., after upload)
+  Future<void> refreshUserData() async {
+    await _loadUserData();
+  }
+
+  /// Pick and upload a single file in one action (like BB-Exchange UX)
+  Future<void> pickAndUploadFile() async {
+    // Check if user can add more files (considering server-side count)
+    if (!state.canAddMoreFiles) {
+      emit(state.copyWith(error: 'A file has already been submitted.'));
+      return;
+    }
+
+    emit(state.copyWith(isUploading: true, error: null));
+
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowMultiple: true,
+        allowMultiple: false,
         allowedExtensions: FileToUpload.allowedExtensions,
         withData: true,
       );
 
       if (result == null || result.files.isEmpty) {
+        emit(state.copyWith(isUploading: false));
         return;
       }
 
-      final newFiles = <UploadingFile>[];
-      final currentCount = state.files.length;
+      final file = result.files.first;
 
-      for (var i = 0; i < result.files.length; i++) {
-        final file = result.files[i];
-
-        if (currentCount + newFiles.length >= FileToUpload.maxFileCount) {
-          emit(
-            state.copyWith(
-              error:
-                  'Maximum ${FileToUpload.maxFileCount} files allowed. Some files were not added.',
-            ),
-          );
-          break;
-        }
-
-        final validationResult = _validateFile(file);
-        if (!validationResult.isValid) {
-          emit(
-            state.copyWith(
-              error: '${file.name}: ${validationResult.error?.message}',
-            ),
-          );
-          continue;
-        }
-
-        if (file.bytes != null) {
-          final fileToUpload = FileToUpload(
-            fileName: file.name,
-            bytes: file.bytes!,
-            sizeInBytes: file.size,
-          );
-
-          newFiles.add(
-            UploadingFile(
-              file: fileToUpload,
-              status: FileUploadStatus.pending,
-              index: currentCount + newFiles.length,
-            ),
-          );
-        }
-      }
-
-      if (newFiles.isNotEmpty) {
+      final validationResult = _validateFile(file);
+      if (!validationResult.isValid) {
         emit(
           state.copyWith(
-            files: [...state.files, ...newFiles],
-            error: null,
+            isUploading: false,
+            error: validationResult.error?.message,
+          ),
+        );
+        return;
+      }
+
+      if (file.bytes == null) {
+        emit(
+          state.copyWith(
+            isUploading: false,
+            error: 'Failed to read file',
+          ),
+        );
+        return;
+      }
+
+      // Generate standardized filename like BB-Exchange
+      final standardizedFileName =
+          state.userId != null ? 'doc-${state.userId}-ID' : file.name;
+
+      final uploadResult = await _uploadKycDocumentUsecase.execute(
+        fileBytes: file.bytes!,
+        fileName: standardizedFileName,
+      );
+
+      if (uploadResult.isSuccess) {
+        emit(
+          state.copyWith(
+            isUploading: false,
+            uploadComplete: true,
+          ),
+        );
+        // Refresh user data to update the secure file upload status
+        await refreshUserData();
+      } else {
+        emit(
+          state.copyWith(
+            isUploading: false,
+            error: uploadResult.errorMessage ?? 'Upload failed',
           ),
         );
       }
     } catch (e) {
-      log.severe('Error picking files: $e');
-      emit(state.copyWith(error: 'Failed to pick files'));
+      log.severe('Error picking/uploading file: $e');
+      emit(state.copyWith(isUploading: false, error: 'Failed to upload file'));
     }
   }
 
@@ -98,89 +153,6 @@ class FileUploadCubit extends Cubit<FileUploadState> {
     }
 
     return FileValidationResult.valid();
-  }
-
-  void removeFile(int index) {
-    final updatedFiles = state.files.where((f) => f.index != index).toList();
-
-    final reindexedFiles = <UploadingFile>[];
-    for (var i = 0; i < updatedFiles.length; i++) {
-      reindexedFiles.add(updatedFiles[i].copyWith(index: i));
-    }
-
-    emit(state.copyWith(files: reindexedFiles, error: null));
-  }
-
-  Future<void> uploadFiles() async {
-    if (state.files.isEmpty) {
-      emit(state.copyWith(error: 'No files selected'));
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        isUploading: true,
-        error: null,
-        uploadComplete: false,
-        uploadedCount: 0,
-      ),
-    );
-
-    var uploadedCount = 0;
-    final updatedFiles = <UploadingFile>[];
-
-    for (final file in state.files) {
-      final uploadingFile = file.copyWith(status: FileUploadStatus.uploading);
-      emit(
-        state.copyWith(
-          files: [
-            ...updatedFiles,
-            uploadingFile,
-            ...state.files.skip(updatedFiles.length + 1),
-          ],
-        ),
-      );
-
-      try {
-        final result = await _uploadKycDocumentUsecase.execute(
-          fileBytes: file.file.bytes,
-          fileName: file.file.fileName,
-        );
-
-        if (result.isSuccess) {
-          updatedFiles.add(file.copyWith(status: FileUploadStatus.success));
-          uploadedCount++;
-        } else {
-          updatedFiles.add(
-            file.copyWith(
-              status: FileUploadStatus.failed,
-              errorMessage: result.errorMessage ?? 'Upload failed',
-            ),
-          );
-        }
-      } catch (e) {
-        log.severe('Error uploading file: $e');
-        updatedFiles.add(
-          file.copyWith(
-            status: FileUploadStatus.failed,
-            errorMessage: 'Upload failed',
-          ),
-        );
-      }
-    }
-
-    emit(
-      state.copyWith(
-        isUploading: false,
-        files: updatedFiles,
-        uploadComplete: true,
-        uploadedCount: uploadedCount,
-      ),
-    );
-  }
-
-  void clearFiles() {
-    emit(const FileUploadState());
   }
 
   void clearError() {

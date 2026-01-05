@@ -1,4 +1,6 @@
+import 'dart:convert' show base64Encode;
 import 'dart:math' show pow;
+import 'dart:typed_data' show Uint8List;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
@@ -759,7 +761,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
   // ==================== KYC Upload API ====================
 
-  /// Upload a KYC document file
+  /// Upload a KYC document file using base64 encoding (same approach as chat)
   Future<void> uploadKycDocument({
     required String apiKey,
     required List<int> fileBytes,
@@ -767,18 +769,37 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String docType,
     required String sourceDetail,
   }) async {
-    final formData = FormData.fromMap({
-      'file': MultipartFile.fromBytes(fileBytes, filename: fileName),
-      'kycIDDocument':
-          '{"jsonrpc":"2.0","id":1,"method":"createMyKYCIDDocument","params":{"element":{"idTypeCode":"$docType","sourceDetail":"$sourceDetail"}}}',
-    });
+    // Determine file type from extension
+    final extension = fileName.split('.').last.toLowerCase();
+    final fileType = switch (extension) {
+      'jpg' || 'jpeg' => 'image/jpeg',
+      'png' => 'image/png',
+      'pdf' => 'application/pdf',
+      'gif' => 'image/gif',
+      'webp' => 'image/webp',
+      _ => 'application/octet-stream',
+    };
+
+    final requestData = {
+      'jsonrpc': '2.0',
+      'id': '1',
+      'method': 'createMyKYCIDDocument',
+      'params': {
+        'element': {
+          'idTypeCode': docType,
+          'sourceDetail': sourceDetail,
+          'fileName': fileName,
+          'fileType': fileType,
+          'fileSize': fileBytes.length,
+          'fileData': base64Encode(Uint8List.fromList(fileBytes)),
+        },
+      },
+    };
 
     final resp = await _http.post(
       _kycPath,
-      data: formData,
-      options: Options(
-        headers: {'X-API-Key': apiKey, 'Content-Type': 'multipart/form-data'},
-      ),
+      data: requestData,
+      options: Options(headers: {'X-API-Key': apiKey}),
     );
 
     if (resp.statusCode != 200) {
@@ -787,18 +808,9 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
     final responseData = resp.data as Map<String, dynamic>?;
     if (responseData != null) {
-      if (responseData.containsKey('error') ||
-          responseData.containsKey('errors')) {
-        throw Exception('File upload failed: API returned error in response');
-      }
-
-      if (!responseData.containsKey('elements') ||
-          responseData['elements'] is! List ||
-          (responseData['elements'] as List).isEmpty) {
-        // Check for alternative success response format
-        if (!responseData.containsKey('result')) {
-          throw Exception('File upload failed: Invalid response format');
-        }
+      final error = responseData['error'];
+      if (error != null) {
+        throw Exception('File upload failed: $error');
       }
     }
   }

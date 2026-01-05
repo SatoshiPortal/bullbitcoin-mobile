@@ -700,6 +700,10 @@
   "@exchangeFileUploadButton": {
     "description": "Button label for uploading files in exchange"
   },
+  "exchangeFileUploadSuccess": "File uploaded successfully",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
+  },
   "exchangeAccountTitle": "Exchange Account",
   "@exchangeAccountTitle": {
     "description": "Title for the exchange account section"
@@ -877,6 +881,26 @@
         "type": "int"
       }
     }
+  },
+  "exchangeFileUploadStatusReady": "Ready",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "In Review",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Accepted",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadInReviewMessage": "Your documents are currently under review. You cannot upload more files until the review is complete.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Your documents have been accepted. No additional uploads are needed.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
   },
   "exchangeStatisticsTitle": "Statistics",
   "@exchangeStatisticsTitle": {

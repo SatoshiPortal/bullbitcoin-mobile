@@ -14,7 +14,7 @@ class FileToUpload {
   static const int maxFileSizeBytes = 10 * 1024 * 1024;
 
   /// Maximum number of files that can be uploaded
-  static const int maxFileCount = 3;
+  static const int maxFileCount = 1;
 
   /// Allowed file extensions
   static const List<String> allowedExtensions = [
@@ -132,7 +132,7 @@ extension FileValidationErrorX on FileValidationError {
       case FileValidationError.invalidExtension:
         return 'Invalid file type. Allowed: PDF, JPG, PNG, GIF, HEIC';
       case FileValidationError.tooManyFiles:
-        return 'Maximum 3 files allowed';
+        return 'Only 1 file allowed';
       case FileValidationError.emptyFile:
         return 'File is empty';
     }

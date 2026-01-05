@@ -1,7 +1,5 @@
-import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
@@ -20,17 +18,10 @@ class ExchangeFileUploadScreen extends StatelessWidget {
           (!previous.uploadComplete && current.uploadComplete),
       listener: (context, state) {
         if (state.uploadComplete) {
-          final message = state.hasFailures
-              ? context.loc.exchangeFileUploadPartialSuccess(
-                  state.uploadedCount,
-                  state.files.length,
-                )
-              : context.loc.exchangeFileUploadAllSuccess;
-
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                message,
+                context.loc.exchangeFileUploadSuccess,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
@@ -38,9 +29,7 @@ class ExchangeFileUploadScreen extends StatelessWidget {
                 ),
               ),
               duration: const Duration(seconds: 3),
-              backgroundColor: state.hasFailures
-                  ? context.appColors.error
-                  : context.appColors.onSurface.withAlpha(204),
+              backgroundColor: context.appColors.onSurface.withAlpha(204),
               behavior: SnackBarBehavior.floating,
               elevation: 4,
               margin: const EdgeInsets.only(bottom: 100, left: 40, right: 40),
@@ -68,54 +57,10 @@ class ExchangeFileUploadScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Instructions
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: context.appColors.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.appColors.overlay.withValues(alpha: 0.05),
-                        spreadRadius: 1,
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BBText(
-                        context.loc.exchangeFileUploadDocumentsTitle,
-                        style: context.font.headlineSmall?.copyWith(
-                          color: context.appColors.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      BBText(
-                        context.loc.exchangeFileUploadInstructionsWithParams(
-                          FileToUpload.maxFileCount,
-                        ),
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
                 // Error message
-                _ErrorMessage(),
-                // File list
-                Expanded(
-                  child: _FileList(),
-                ),
-                const SizedBox(height: 16),
-                // Actions
-                _ActionButtons(),
+                const _ErrorMessage(),
+                // Upload option card (similar to BB-Exchange UploadOption)
+                const _UploadOptionCard(),
               ],
             ),
           ),
@@ -126,6 +71,8 @@ class ExchangeFileUploadScreen extends StatelessWidget {
 }
 
 class _ErrorMessage extends StatelessWidget {
+  const _ErrorMessage();
+
   @override
   Widget build(BuildContext context) {
     final error = context.select(
@@ -177,277 +124,184 @@ class _ErrorMessage extends StatelessWidget {
   }
 }
 
-class _FileList extends StatelessWidget {
+/// Upload option card similar to BB-Exchange UploadOption widget
+class _UploadOptionCard extends StatelessWidget {
+  const _UploadOptionCard();
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<FileUploadCubit>().state;
 
-    if (!state.hasFiles) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.cloud_upload_outlined,
-              size: 64,
-              color: context.appColors.textMuted.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            BBText(
-              context.loc.exchangeFileUploadNoFilesSelected,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.textMuted,
-              ),
-            ),
-            const SizedBox(height: 8),
-            BBText(
-              context.loc.exchangeFileUploadSelectFilesHint,
-              style: context.font.bodySmall?.copyWith(
-                color: context.appColors.textMuted.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+    // Ignore interaction when uploading or when file is already uploaded (like BB-Exchange IgnoreField)
+    final shouldIgnore = state.isUploading ||
+        state.secureUploadStatus != SecureUploadStatus.upload;
 
-    return ListView.separated(
-      itemCount: state.files.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final file = state.files[index];
-        return _FileItem(file: file);
-      },
+    return IgnorePointer(
+      ignoring: shouldIgnore,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: shouldIgnore ? 0.5 : 1.0,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: context.appColors.surface,
+            border: Border.all(
+              color: context.appColors.outline.withValues(alpha: 0.3),
+            ),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    BBText(
+                      context.loc.exchangeFileUploadDocumentTitle,
+                      style: context.font.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: context.appColors.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    BBText(
+                      context.loc.exchangeFileUploadInstructions,
+                      style: context.font.bodySmall?.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              if (state.isLoadingUser)
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: context.appColors.primary,
+                  ),
+                )
+              else
+                _UploadStatusButton(
+                  status: state.secureUploadStatus,
+                  isUploading: state.isUploading,
+                  onPressed: () {
+                    context.read<FileUploadCubit>().pickAndUploadFile();
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _FileItem extends StatelessWidget {
-  const _FileItem({required this.file});
+/// Status button similar to BB-Exchange _KycUploadButton
+class _UploadStatusButton extends StatelessWidget {
+  const _UploadStatusButton({
+    required this.status,
+    required this.isUploading,
+    required this.onPressed,
+  });
 
-  final UploadingFile file;
+  final SecureUploadStatus status;
+  final bool isUploading;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final isUploading = context.select(
-      (FileUploadCubit cubit) => cubit.state.isUploading,
-    );
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: context.appColors.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: _getBorderColor(context),
-        ),
-      ),
-      child: Row(
-        children: [
-          _buildStatusIcon(context),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BBText(
-                  file.file.fileName,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                BBText(
-                  _getFileSizeString(file.file.sizeInBytes),
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.textMuted,
-                  ),
-                ),
-                if (file.errorMessage != null) ...[
-                  const SizedBox(height: 4),
-                  BBText(
-                    file.errorMessage!,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.error,
-                    ),
-                  ),
-                ],
-              ],
+    switch (status) {
+      case SecureUploadStatus.upload:
+        return InkWell(
+          onTap: isUploading ? null : onPressed,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
             ),
-          ),
-          if (!isUploading &&
-              file.status != FileUploadStatus.uploading &&
-              file.status != FileUploadStatus.success)
-            IconButton(
-              icon: Icon(
-                Icons.close,
-                color: context.appColors.textMuted,
-                size: 20,
-              ),
-              onPressed: () {
-                context.read<FileUploadCubit>().removeFile(file.index);
-              },
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: context.appColors.surfaceContainerHighest,
             ),
-        ],
-      ),
-    );
-  }
-
-  Color _getBorderColor(BuildContext context) {
-    switch (file.status) {
-      case FileUploadStatus.success:
-        return context.appColors.success;
-      case FileUploadStatus.failed:
-        return context.appColors.error;
-      case FileUploadStatus.uploading:
-        return context.appColors.primary;
-      case FileUploadStatus.pending:
-        return context.appColors.outline.withValues(alpha: 0.3);
-    }
-  }
-
-  Widget _buildStatusIcon(BuildContext context) {
-    switch (file.status) {
-      case FileUploadStatus.success:
-        return Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.appColors.success.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(Icons.check, color: context.appColors.success, size: 24),
-        );
-      case FileUploadStatus.failed:
-        return Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.appColors.error.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.error_outline,
-            color: context.appColors.error,
-            size: 24,
-          ),
-        );
-      case FileUploadStatus.uploading:
-        return Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.appColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: context.appColors.primary,
-            ),
-          ),
-        );
-      case FileUploadStatus.pending:
-        return Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: context.appColors.textMuted.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.description_outlined,
-            color: context.appColors.textMuted,
-            size: 24,
-          ),
-        );
-    }
-  }
-
-  String _getFileSizeString(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    return '${(bytes / (1024 * 1024)).toStringAsFixed(2)} MB';
-  }
-}
-
-class _ActionButtons extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final state = context.watch<FileUploadCubit>().state;
-    final cubit = context.read<FileUploadCubit>();
-
-    return Column(
-      children: [
-        if (state.canAddMoreFiles && !state.isUploading) ...[
-          SizedBox(
-            width: double.infinity,
-            child: BBButton.big(
-              label: state.hasFiles
-                  ? context.loc.exchangeFileUploadAddMoreFiles
-                  : context.loc.exchangeFileUploadSelectFiles,
-              onPressed: () => cubit.pickFiles(),
-              bgColor: context.appColors.surfaceContainerHighest,
-              textColor: context.appColors.onSurface,
-              iconData: Icons.add,
-            ),
-          ),
-          const SizedBox(height: 12),
-        ],
-        if (state.hasFiles)
-          SizedBox(
-            width: double.infinity,
-            child: state.isUploading
-                ? Container(
-                    height: 52,
-                    decoration: BoxDecoration(
-                      color: context.appColors.onSurface,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: context.appColors.surface,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        BBText(
-                          context.loc.exchangeFileUploadUploading,
-                          style: context.font.headlineLarge?.copyWith(
-                            color: context.appColors.surface,
-                          ),
-                        ),
-                      ],
+            child: isUploading
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: context.appColors.primary,
                     ),
                   )
-                : BBButton.big(
-                    label: context.loc.exchangeFileUploadUploadCount(
-                      state.pendingCount + state.failedCount,
-                    ),
-                    onPressed: () => cubit.uploadFiles(),
-                    disabled: state.pendingCount == 0 && state.failedCount == 0,
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
-                    iconData: Icons.cloud_upload,
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.upload_file,
+                        size: 20,
+                        color: context.appColors.onSurface,
+                      ),
+                      const SizedBox(width: 4),
+                      BBText(
+                        context.loc.exchangeFileUploadButton,
+                        style: context.font.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: context.appColors.onSurface,
+                        ),
+                      ),
+                    ],
                   ),
           ),
-        if (state.hasFiles && !state.isUploading && state.uploadComplete) ...[
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: BBButton.big(
-              label: context.loc.exchangeFileUploadClearAll,
-              onPressed: () => cubit.clearFiles(),
-              bgColor: context.appColors.error.withValues(alpha: 0.1),
-              textColor: context.appColors.error,
+        );
+
+      case SecureUploadStatus.inReview:
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: context.appColors.warning.withValues(alpha: 0.6),
+              width: 1.5,
             ),
           ),
-        ],
-      ],
-    );
+          child: BBText(
+            context.loc.exchangeFileUploadStatusInReview,
+            style: context.font.labelMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: context.appColors.warning,
+            ),
+          ),
+        );
+
+      case SecureUploadStatus.accepted:
+        return Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 8,
+          ),
+          decoration: BoxDecoration(
+            color: context.appColors.success.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: BBText(
+            context.loc.exchangeFileUploadStatusAccepted,
+            style: context.font.labelMedium?.copyWith(
+              color: context.appColors.success,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        );
+    }
   }
 }
+
+

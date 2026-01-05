@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/upload_kyc_document_usecase.dart';
@@ -166,6 +167,7 @@ class ExchangeSettingsLocator {
     locator.registerFactory<FileUploadCubit>(
       () => FileUploadCubit(
         uploadKycDocumentUsecase: locator<UploadKycDocumentUsecase>(),
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
       ),
     );
 
