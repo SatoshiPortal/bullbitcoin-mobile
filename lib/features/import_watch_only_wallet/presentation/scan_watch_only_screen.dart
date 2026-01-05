@@ -36,10 +36,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
         fit: .expand,
         children: [
           QrScannerWidget(
-            scanDelay:
-                widget.signerDevice?.supportedQrType == QrType.urqr
-                    ? Duration.zero
-                    : const Duration(milliseconds: 100),
+            scanDelay: widget.signerDevice?.supportedQrType == QrType.urqr
+                ? const Duration(milliseconds: 50)
+                : const Duration(milliseconds: 100),
             resolution: ResolutionPreset.high,
             onScanned: (data) async {
               if (_handled) return;
@@ -49,15 +48,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 String signerData = data;
                 if (widget.signerDevice == SignerDeviceEntity.krux) {
                   signerData = Descriptor.parse(data).external;
-                } else if (widget.signerDevice == SignerDeviceEntity.passport) {
-                  final selectedDescriptor = await _choosePassportDerivation(
-                    context,
-                    data,
-                  );
-                  if (selectedDescriptor == null) return;
-                  signerData = selectedDescriptor;
-                } else if (widget.signerDevice == SignerDeviceEntity.keystone) {
-                  final selectedDescriptor = await _chooseKeystoneDerivation(
+                } else if (widget.signerDevice == SignerDeviceEntity.passport ||
+                    widget.signerDevice == SignerDeviceEntity.keystone) {
+                  final selectedDescriptor = await _chooseDerivation(
                     context,
                     data,
                   );
@@ -92,6 +85,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 }
               } catch (e) {
                 log.warning(e.toString());
+                _handled = false;
               }
             },
           ),
@@ -108,10 +102,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                   Clipboard.setData(ClipboardData(text: _scanned));
                   showCopiedSnackBar(context);
                 },
-                label:
-                    _scanned.length > 30
-                        ? '${_scanned.substring(0, 10)}…${_scanned.substring(_scanned.length - 10)}'
-                        : _scanned,
+                label: _scanned.length > 30
+                    ? '${_scanned.substring(0, 10)}…${_scanned.substring(_scanned.length - 10)}'
+                    : _scanned,
                 bgColor: context.appColors.transparent,
               ),
             ),
@@ -155,66 +148,7 @@ void showCopiedSnackBar(BuildContext context) {
   );
 }
 
-// Passport exports multiple derivations so we need to let the user choose which one to use
-Future<String?> _choosePassportDerivation(
-  BuildContext context,
-  String data,
-) async {
-  try {
-    final parsed = json.decode(data);
-    if (parsed is! Map<String, dynamic>) return null;
-
-    final options = <Map<String, String>>[];
-
-    void addIfPresent(String key, String label) {
-      if (!parsed.containsKey(key)) return;
-      final descriptor = parsed[key];
-      if (descriptor is String) {
-        options.add({'key': key, 'label': label, 'descriptor': descriptor});
-      }
-    }
-
-    addIfPresent('bip84', 'Segwit (BIP84)');
-    addIfPresent('bip49', 'Nested Segwit (BIP49)');
-    addIfPresent('bip44', 'Legacy (BIP44)');
-
-    if (options.isEmpty) return null;
-    if (options.length == 1) return options.first['descriptor'];
-
-    if (!context.mounted) return null;
-    final choice = await BlurredBottomSheet.show<Map<String, String>>(
-      context: context,
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                context.loc.importWatchOnlySelectDerivation,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            for (final opt in options)
-              ListTile(
-                title: Text(opt['label'] ?? ''),
-                onTap: () => Navigator.of(context).pop(opt),
-              ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-    return choice?['descriptor'];
-  } catch (_) {
-    return null;
-  }
-}
-
-Future<String?> _chooseKeystoneDerivation(
-  BuildContext context,
-  String data,
-) async {
+Future<String?> _chooseDerivation(BuildContext context, String data) async {
   try {
     final parsed = json.decode(data);
     if (parsed is! Map<String, dynamic>) return null;
