@@ -14,6 +14,7 @@ abstract class ExchangeRecipientRepository {
   /// Remove a wallet as default (sets isDefault to false)
   Future<void> deleteDefaultWallet({
     required String recipientId,
+    required WalletAddressType walletType,
+    required String address,
   });
 }
-

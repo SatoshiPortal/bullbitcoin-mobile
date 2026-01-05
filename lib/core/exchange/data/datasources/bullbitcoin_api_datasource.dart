@@ -671,16 +671,23 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   Future<Map<String, dynamic>> updateMyRecipient({
     required String apiKey,
     required String recipientId,
+    required String recipientType,
     String? address,
     bool? isDefault,
+    bool isOwner = true,
   }) async {
-    final params = <String, dynamic>{'recipientId': recipientId};
+    final element = <String, dynamic>{
+      'recipientId': recipientId,
+      'recipientType': recipientType,
+      'isOwner': isOwner,
+    };
 
     if (address != null) {
-      params['address'] = address;
+      // For updates, use the generic 'address' field (not type-specific fields)
+      element['address'] = address;
     }
     if (isDefault != null) {
-      params['isDefault'] = isDefault;
+      element['isDefault'] = isDefault;
     }
 
     final resp = await _http.post(
@@ -689,7 +696,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'updateMyRecipient',
-        'params': params,
+        'params': {'element': element},
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -711,13 +718,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     String recipientType,
     String address,
   ) {
+    // For OUT_BITCOIN_ADDRESS, OUT_LIGHTNING_ADDRESS, OUT_LIQUID_ADDRESS,
+    // the API expects the generic 'address' field, not type-specific fields
     switch (recipientType) {
       case 'OUT_BITCOIN_ADDRESS':
-        return {'bitcoinAddress': address};
       case 'OUT_LIGHTNING_ADDRESS':
-        return {'lightningAddress': address};
       case 'OUT_LIQUID_ADDRESS':
-        return {'liquidAddress': address};
+        return {'address': address};
       default:
         return {'address': address};
     }

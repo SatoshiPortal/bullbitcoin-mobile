@@ -19,7 +19,9 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
        _isTestnet = isTestnet;
 
   Future<String> _getApiKey() async {
-    final apiKey = await _bullbitcoinApiKeyDatasource.get(isTestnet: _isTestnet);
+    final apiKey = await _bullbitcoinApiKeyDatasource.get(
+      isTestnet: _isTestnet,
+    );
     if (apiKey == null || !apiKey.isActive) {
       throw ApiKeyException(
         'API key not found. Please login to your Bull Bitcoin account.',
@@ -88,6 +90,7 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
         result = await _bullbitcoinApiDatasource.updateMyRecipient(
           apiKey: apiKey,
           recipientId: existingRecipientId,
+          recipientType: walletType.recipientTypeValue,
           address: address,
           isDefault: true,
         );
@@ -113,6 +116,8 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
   @override
   Future<void> deleteDefaultWallet({
     required String recipientId,
+    required WalletAddressType walletType,
+    required String address,
   }) async {
     try {
       final apiKey = await _getApiKey();
@@ -120,6 +125,8 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
       await _bullbitcoinApiDatasource.updateMyRecipient(
         apiKey: apiKey,
         recipientId: recipientId,
+        recipientType: walletType.recipientTypeValue,
+        address: address,
         isDefault: false,
       );
     } catch (e) {
@@ -128,4 +135,3 @@ class ExchangeRecipientRepositoryImpl implements ExchangeRecipientRepository {
     }
   }
 }
-

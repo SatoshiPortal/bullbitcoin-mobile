@@ -164,6 +164,8 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     try {
       await _deleteDefaultWalletUsecase.execute(
         recipientId: existingWallet!.recipientId!,
+        walletType: type,
+        address: existingWallet.address,
       );
 
       final updatedWallets = _removeWalletFromState(type);
