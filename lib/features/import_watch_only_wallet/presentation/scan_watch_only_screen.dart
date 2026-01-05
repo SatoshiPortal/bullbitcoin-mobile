@@ -37,8 +37,8 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
         children: [
           QrScannerWidget(
             scanDelay: widget.signerDevice?.supportedQrType == QrType.urqr
-                ? const Duration(milliseconds: 50)
-                : const Duration(milliseconds: 100),
+                ? const Duration(milliseconds: 10)
+                : const Duration(milliseconds: 50),
             resolution: ResolutionPreset.high,
             onScanned: (data) async {
               if (_handled) return;
