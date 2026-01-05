@@ -10,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class AutoSwapWarningBottomSheet extends StatefulWidget {
+class AutoSwapWarningBottomSheet extends StatelessWidget {
   const AutoSwapWarningBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
@@ -19,15 +19,6 @@ class AutoSwapWarningBottomSheet extends StatefulWidget {
       child: const AutoSwapWarningBottomSheet(),
     );
   }
-
-  @override
-  State<AutoSwapWarningBottomSheet> createState() =>
-      _AutoSwapWarningBottomSheetState();
-}
-
-class _AutoSwapWarningBottomSheetState
-    extends State<AutoSwapWarningBottomSheet> {
-  bool _dontShowAgain = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,82 +33,73 @@ class _AutoSwapWarningBottomSheetState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           BBText(
+            context.loc.autoswapInfoTitle,
+            style: context.font.headlineMedium,
+            color: context.appColors.onSurface,
+          ),
+          const Gap(12),
+          BBText(
             context.loc.autoswapWarningDescription,
             style: context.font.bodyMedium,
             color: context.appColors.onSurface,
           ),
           const Gap(16),
-
           BBText(
             context.loc.autoswapWarningTitle,
-            style: context.font.headlineSmall,
-            color: context.appColors.onSurface,
-          ),
-          const Gap(16),
-          BBText(
-            context.loc.autoswapWarningBaseBalance,
             style: context.font.bodyLarge,
             color: context.appColors.onSurface,
           ),
           const Gap(8),
           BBText(
-            context.loc.autoswapWarningTriggerAmount,
-            style: context.font.bodyLarge,
+            context.loc.autoswapWarningBaseBalance,
+            style: context.font.bodyMedium,
             color: context.appColors.onSurface,
           ),
-          const Gap(24),
+          const Gap(4),
+          BBText(
+            context.loc.autoswapWarningTriggerAmount,
+            style: context.font.bodyMedium,
+            color: context.appColors.onSurface,
+          ),
+          const Gap(16),
           BBText(
             context.loc.autoswapWarningExplanation,
             style: context.font.bodyMedium,
             color: context.appColors.onSurface,
           ),
-          const Gap(16),
-
-          Row(
-            children: [
-              Checkbox(
-                value: _dontShowAgain,
-                onChanged: (value) {
-                  setState(() {
-                    _dontShowAgain = value ?? false;
-                  });
-                },
-              ),
-              Expanded(
-                child: BBText(
-                  context.loc.autoswapWarningDontShowAgain,
-                  style: context.font.bodyMedium,
-                  color: context.appColors.onSurface,
-                ),
-              ),
-            ],
-          ),
-          const Gap(16),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).pop();
-              context.pushNamed(SettingsRoute.autoswapSettings.name);
-            },
-            child: BBText(
-              context.loc.autoswapWarningSettingsLink,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.error,
-                decoration: TextDecoration.underline,
-              ),
-            ),
-          ),
           const Gap(24),
           BBButton.big(
-            label: context.loc.autoswapWarningOkButton,
+            label: context.loc.autoswapInfoDismissButton,
             onPressed: () {
-              if (_dontShowAgain) {
-                context.read<WalletBloc>().add(const DismissAutoSwapWarning());
-              }
+              context.read<WalletBloc>().add(const DismissAutoSwapWarning());
               Navigator.of(context).pop();
             },
             bgColor: context.appColors.onSurface,
-            textStyle: context.font.headlineLarge,
             textColor: context.appColors.surface,
+          ),
+          const Gap(12),
+          BBButton.big(
+            label: context.loc.autoswapInfoSettingsButton,
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.pushNamed(SettingsRoute.autoswapSettings.name);
+            },
+            bgColor: context.appColors.surface,
+            textColor: context.appColors.onSurface,
+            outlined: true,
+          ),
+          const Gap(16),
+          Center(
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: BBText(
+                context.loc.autoswapInfoRemindLater,
+                style: context.font.bodyMedium?.copyWith(
+                  decoration: TextDecoration.underline,
+                ),
+                color: context.appColors.onSurfaceVariant,
+              ),
+            ),
           ),
         ],
       ),

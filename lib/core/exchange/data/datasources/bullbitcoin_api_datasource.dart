@@ -27,6 +27,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   final _orderTriggerPath = '/ak/api-ordertrigger';
   final _recipientsPath = '/ak/api-recipients';
   final _kycPath = '/ak/api-kyc';
+  final _messagesPath = '/ak/api-commcenter';
 
   BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
     : _http = bullbitcoinApiHttpClient;
@@ -812,6 +813,46 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       if (error != null) {
         throw Exception('File upload failed: $error');
       }
+    }
+  }
+
+  // ==================== Announcements API ====================
+
+  Future<List<Map<String, dynamic>>> listAnnouncements({
+    required String apiKey,
+  }) async {
+    try {
+      final resp = await _http.post(
+        _messagesPath,
+        data: {
+          'jsonrpc': '2.0',
+          'id': '1',
+          'method': 'listAnnouncements',
+          'params': {
+            'paginator': {'pageSize': 5, 'page': 1},
+            'sortBy': {'id': 'updatedAt', 'sort': 'desc'},
+          },
+        },
+        options: Options(headers: {'X-API-Key': apiKey}),
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        throw Exception('Failed to list announcements');
+      }
+
+      final error = resp.data['error'];
+      if (error != null) {
+        throw Exception('Failed to list announcements: $error');
+      }
+
+      final result = resp.data['result'] as Map<String, dynamic>?;
+      if (result == null) {
+        return [];
+      }
+      final items = result['elements'] as List<dynamic>? ?? [];
+      return items.cast<Map<String, dynamic>>();
+    } catch (e) {
+      rethrow;
     }
   }
 }

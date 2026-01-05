@@ -4967,11 +4967,11 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
-  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this balance after an autoswap.",
+  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this target balance after an autoswap.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this amount.",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this maximum balance.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
@@ -5032,7 +5032,7 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap is enabled.",
+  "autoswapWarningCardTitle": "Autoswap is enabled",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -5040,7 +5040,7 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "autoswapWarningDescription": "Autoswap ensures that a good balance is maintained between your Instant Payments and Secure Bitcoin Wallet.",
+  "autoswapWarningDescription": "Autoswap ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
@@ -5048,15 +5048,15 @@
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "autoswapWarningBaseBalance": "Base Balance 0.01 BTC",
+  "autoswapWarningBaseBalance": "Target Balance 0.01 BTC",
   "@autoswapWarningBaseBalance": {
-    "description": "Base balance text shown in the autoswap warning bottom sheet"
+    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
-  "autoswapWarningTriggerAmount": "Trigger Amount of 0.02 BTC",
+  "autoswapWarningTriggerAmount": "Maximum Balance of 0.02 BTC",
   "@autoswapWarningTriggerAmount": {
-    "description": "Trigger amount text shown in the autoswap warning bottom sheet"
+    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
   },
-  "autoswapWarningExplanation": "When your balance exceeds the trigger amount, a swap will be triggered. The base amount will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
+  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
@@ -5071,6 +5071,22 @@
   "autoswapWarningOkButton": "OK",
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
+  },
+  "autoswapInfoTitle": "Autoswap is active",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "autoswapInfoDismissButton": "Got it, don't show again",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "autoswapInfoSettingsButton": "Configure settings",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "autoswapInfoRemindLater": "Remind me later",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
   },
   "autoswapLoadSettingsError": "Failed to load auto swap settings",
   "@autoswapLoadSettingsError": {
@@ -5115,9 +5131,9 @@
       }
     }
   },
-  "autoswapTriggerBalanceError": "Trigger balance must be at least 2x the base balance",
+  "autoswapTriggerBalanceError": "Maximum balance must be at least 2x the target balance",
   "@autoswapTriggerBalanceError": {
-    "description": "Validation error shown when trigger balance is less than 2x the base balance"
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
   },
   "arkNoTransactionsYet": "No transactions yet.",
   "@arkNoTransactionsYet": {

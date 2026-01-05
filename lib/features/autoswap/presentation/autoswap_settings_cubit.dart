@@ -144,7 +144,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
             int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
       }
 
-      // Validate trigger balance is at least 2x the base balance
+      // Validate maximum balance is at least 2x the target balance
       if (triggerBalanceSats < 2 * balanceThresholdSats) {
         emit(
           state.copyWith(saving: false, error: 'autoswapTriggerBalanceError'),
@@ -329,7 +329,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
             int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
       }
 
-      // Validate trigger balance is at least 2x the base balance
+      // Validate maximum balance is at least 2x the target balance
       if (triggerBalanceSats < 2 * balanceThresholdSats) {
         emit(
           state.copyWith(saving: false, error: 'autoswapTriggerBalanceError'),

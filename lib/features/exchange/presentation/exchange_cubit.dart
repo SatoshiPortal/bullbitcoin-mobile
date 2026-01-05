@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
@@ -16,10 +17,12 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required SaveExchangeApiKeyUsecase saveExchangeApiKeyUsecase,
     required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
     required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
+    required GetAnnouncementsUsecase getAnnouncementsUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
        _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
+       _getAnnouncementsUsecase = getAnnouncementsUsecase,
        super(const ExchangeState());
 
   Timer? _pollingTimer;
@@ -28,6 +31,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final SaveExchangeApiKeyUsecase _saveExchangeApiKeyUsecase;
   final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
+  final GetAnnouncementsUsecase _getAnnouncementsUsecase;
 
   Future<void> fetchUserSummary({bool force = false}) async {
     try {
@@ -49,6 +53,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         );
       }
 
+      loadAnnouncements();
       startPolling();
     } catch (e) {
       log.severe('$ExchangeCubit init: $e');
@@ -166,6 +171,29 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       if (e is DeleteExchangeApiKeyException) {
         emit(state.copyWith(deleteApiKeyException: e));
       }
+    }
+  }
+
+  void loadAnnouncements() async {
+    emit(
+      state.copyWith(loadingAnnouncements: true, errLoadingAnnouncements: null),
+    );
+    try {
+      final announcements = await _getAnnouncementsUsecase.execute();
+      emit(
+        state.copyWith(
+          announcements: announcements,
+          loadingAnnouncements: false,
+        ),
+      );
+    } catch (e) {
+      log.warning('Failed to load announcements: $e');
+      emit(
+        state.copyWith(
+          errLoadingAnnouncements: e.toString(),
+          loadingAnnouncements: false,
+        ),
+      );
     }
   }
 

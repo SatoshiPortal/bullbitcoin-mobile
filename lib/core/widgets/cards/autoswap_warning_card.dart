@@ -16,35 +16,44 @@ class AutoSwapWarningCard extends StatelessWidget {
         onTap();
       },
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: context.appColors.secondary,
+          color: context.appColors.surfaceContainer,
+          border: Border.all(
+            color: context.appColors.surfaceContainerHighest,
+            width: 1,
+          ),
           borderRadius: BorderRadius.circular(2),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.swap_horiz,
-              color: context.appColors.onSecondary,
-              size: 32,
+              Icons.check_circle_outline,
+              color: context.appColors.success,
+              size: 24,
             ),
-            const Gap(16),
+            const Gap(14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BBText(
                     context.loc.autoswapWarningCardTitle,
-                    style: context.font.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    color: context.appColors.onSecondary,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.onSurface,
                   ),
-                  const Gap(4),
-                  BBText(
-                    context.loc.autoswapWarningCardSubtitle,
-                    style: context.font.bodySmall,
-                    color: context.appColors.onSecondary,
+                  const Gap(2),
+                  GestureDetector(
+                    onTap: () {
+                      onTap();
+                    },
+                    child: Text(
+                      'Click to learn more, disable or configure',
+                      style: context.font.bodySmall?.copyWith(
+                        decoration: TextDecoration.underline,
+                        color: context.appColors.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                 ],
               ),

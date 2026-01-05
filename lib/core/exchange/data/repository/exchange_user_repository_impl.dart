@@ -2,7 +2,9 @@ import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/mappers/user_summary_mapper.dart';
+import 'package:bb_mobile/core/exchange/data/models/announcement_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 
@@ -89,6 +91,38 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         rethrow;
       } else {
         throw Exception('Failed to save user preferences: $e');
+      }
+    }
+  }
+
+  @override
+  Future<List<Announcement>> listAnnouncements() async {
+    try {
+      final apiKey = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+      if (apiKey == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+      try {
+        final announcementDataList =
+            await _bullbitcoinApiDatasource.listAnnouncements(
+          apiKey: apiKey.key,
+        );
+        final announcements = announcementDataList
+            .map((json) => AnnouncementModel.fromJson(json).toEntity())
+            .toList();
+        return announcements;
+      } catch (e) {
+        throw Exception('Failed to fetch announcements: $e');
+      }
+    } catch (e) {
+      if (e is ApiKeyException) {
+        rethrow;
+      } else {
+        throw Exception('Failed to fetch announcements: $e');
       }
     }
   }
