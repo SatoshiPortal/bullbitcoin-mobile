@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -18,6 +19,9 @@ abstract class ExchangeState with _$ExchangeState {
     String? selectedLanguage,
     String? selectedCurrency,
     @Default(false) bool isSaving,
+    @Default([]) List<Announcement> announcements,
+    @Default(false) bool loadingAnnouncements,
+    String? errLoadingAnnouncements,
   }) = _ExchangeState;
 
   const ExchangeState._();

@@ -23,6 +23,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_us
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
@@ -296,6 +297,18 @@ class ExchangeLocator {
 
     locator.registerFactory<GetExchangeUserSummaryUsecase>(
       () => GetExchangeUserSummaryUsecase(
+        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'mainnetExchangeUserRepository',
+        ),
+        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'testnetExchangeUserRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetAnnouncementsUsecase>(
+      () => GetAnnouncementsUsecase(
         mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
           instanceName: 'mainnetExchangeUserRepository',
         ),
