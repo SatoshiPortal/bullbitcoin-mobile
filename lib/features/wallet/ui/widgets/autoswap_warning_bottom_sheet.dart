@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -22,6 +23,17 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final autoSwapSettings = context.select(
+      (WalletBloc bloc) => bloc.state.autoSwapSettings,
+    );
+
+    final targetBalanceBtc = autoSwapSettings != null
+        ? ConvertAmount.satsToBtc(autoSwapSettings.balanceThresholdSats).toString()
+        : '0.01';
+    final maxBalanceBtc = autoSwapSettings != null
+        ? ConvertAmount.satsToBtc(autoSwapSettings.triggerBalanceSats).toString()
+        : '0.02';
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -51,13 +63,13 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
           ),
           const Gap(8),
           BBText(
-            context.loc.autoswapWarningBaseBalance,
+            'Target Balance $targetBalanceBtc BTC',
             style: context.font.bodyMedium,
             color: context.appColors.onSurface,
           ),
           const Gap(4),
           BBText(
-            context.loc.autoswapWarningTriggerAmount,
+            'Maximum Balance of $maxBalanceBtc BTC',
             style: context.font.bodyMedium,
             color: context.appColors.onSurface,
           ),
