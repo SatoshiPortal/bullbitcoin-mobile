@@ -634,10 +634,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createMyRecipient',
-        'params': {
-          'recipientType': 'FR_VIRTUAL_ACCOUNT',
-          'isOwner': true,
-        },
+        'params': {'recipientType': 'FR_VIRTUAL_ACCOUNT', 'isOwner': true},
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -669,11 +666,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createMyRecipient',
-        'params': {
-          'recipientType': 'FR_PAYEE',
-          'isOwner': true,
-          'iban': iban,
-        },
+        'params': {'recipientType': 'FR_PAYEE', 'isOwner': true, 'iban': iban},
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );

@@ -42,3 +42,4 @@ class GetVirtualIbanDetailsException extends BullException {
   GetVirtualIbanDetailsException(super.message);
 }
 
+

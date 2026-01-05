@@ -24,10 +24,9 @@ class VirtualIbanRouter {
     return ShellRoute(
       builder: (context, state, child) {
         return BlocProvider(
-          create:
-              (_) =>
-                  locator<VirtualIbanBloc>(param1: location)
-                    ..add(const VirtualIbanEvent.started()),
+          create: (_) =>
+              locator<VirtualIbanBloc>(param1: location)
+                ..add(const VirtualIbanEvent.started()),
           child: child,
         );
       },
@@ -93,11 +92,11 @@ class _VirtualIbanStateRouter extends StatelessWidget {
       },
       listener: (context, state) {
         state.maybeWhen(
-          pending: (_, __, ___, ____) {
+          pending: (_, _, _, _) {
             // Navigate to pending screen when VIBAN is created but not active
             context.goNamed(VirtualIbanRoute.pending.name);
           },
-          active: (_, __, ___) {
+          active: (_, _, _) {
             // Navigate to active screen when VIBAN is activated
             context.goNamed(VirtualIbanRoute.active.name);
           },
@@ -106,20 +105,17 @@ class _VirtualIbanStateRouter extends StatelessWidget {
       },
       builder: (context, state) {
         return state.maybeWhen(
-          notSubmitted: (_, __, ___, ____, _____) =>
-              const VirtualIbanIntroScreen(),
-          pending: (_, __, ___, ____) => const VirtualIbanPendingScreen(),
-          active: (_, __, ___) => const VirtualIbanActiveScreen(),
+          notSubmitted: (_, _, _, _, _) => const VirtualIbanIntroScreen(),
+          pending: (_, _, _, _) => const VirtualIbanPendingScreen(),
+          active: (_, _, _) => const VirtualIbanActiveScreen(),
           error: (exception) => Scaffold(
             appBar: AppBar(title: const Text('Error')),
             body: Center(child: Text('Error: $exception')),
           ),
-          orElse: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
+          orElse: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
         );
       },
     );
   }
 }
-

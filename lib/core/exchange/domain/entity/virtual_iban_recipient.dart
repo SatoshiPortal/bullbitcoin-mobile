@@ -39,3 +39,4 @@ sealed class VirtualIbanRecipient with _$VirtualIbanRecipient {
   bool get isPending => !isActive;
 }
 
+

@@ -92,10 +92,9 @@ class _ConfidentialSepaMethodTile extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (navContext) => BlocProvider(
-          create:
-              (_) =>
-                  locator<VirtualIbanBloc>(param1: VirtualIbanLocation.funding)
-                    ..add(const VirtualIbanEvent.started()),
+          create: (_) =>
+              locator<VirtualIbanBloc>(param1: VirtualIbanLocation.funding)
+                ..add(const VirtualIbanEvent.started()),
           child: const _VirtualIbanFlowScreen(),
         ),
       ),
@@ -115,20 +114,18 @@ class _VirtualIbanFlowScreen extends StatelessWidget {
       },
       builder: (context, state) {
         return state.when(
-          initial: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
-          loading: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
-          notSubmitted: (_, __, ___, ____, _____) {
+          initial: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
+          loading: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
+          notSubmitted: (_, _, _, _, _) {
             // Dynamically import to avoid circular dependency
             return const _VirtualIbanIntroScreenWrapper();
           },
-          pending: (_, __, ___, ____) {
+          pending: (_, _, _, _) {
             return const _VirtualIbanPendingScreenWrapper();
           },
-          active: (_, __, ___) {
+          active: (_, _, _) {
             return const _VirtualIbanActiveScreenWrapper();
           },
           error: (exception) => Scaffold(
@@ -192,22 +189,14 @@ class _VirtualIbanIntroContent extends StatelessWidget {
     return BlocBuilder<VirtualIbanBloc, VirtualIbanState>(
       builder: (context, state) {
         return state.maybeWhen(
-          notSubmitted: (
-            userSummary,
-            location,
-            nameConfirmed,
-            isCreating,
-            error,
-          ) {
+          notSubmitted: (userSummary, location, nameConfirmed, isCreating, error) {
             final theme = Theme.of(context);
             final userFullName =
                 '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
                     .trim();
 
             return Scaffold(
-              appBar: AppBar(
-                title: Text(context.loc.confidentialSepaTitle),
-              ),
+              appBar: AppBar(title: Text(context.loc.confidentialSepaTitle)),
               body: _buildIntroBody(
                 context,
                 theme,
@@ -218,9 +207,8 @@ class _VirtualIbanIntroContent extends StatelessWidget {
               ),
             );
           },
-          orElse: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
+          orElse: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
         );
       },
     );
@@ -358,16 +346,15 @@ class _VirtualIbanIntroContent extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                   value: nameConfirmed,
-                  onChanged:
-                      isCreating
-                          ? null
-                          : (value) {
-                            context.read<VirtualIbanBloc>().add(
-                              VirtualIbanEvent.nameConfirmationToggled(
-                                confirmed: value ?? false,
-                              ),
-                            );
-                          },
+                  onChanged: isCreating
+                      ? null
+                      : (value) {
+                          context.read<VirtualIbanBloc>().add(
+                            VirtualIbanEvent.nameConfirmationToggled(
+                              confirmed: value ?? false,
+                            ),
+                          );
+                        },
                   title: BBText(
                     context.loc.confirmLegalName,
                     style: theme.textTheme.bodyLarge,
@@ -396,28 +383,26 @@ class _VirtualIbanIntroContent extends StatelessWidget {
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child:
-                isCreating
-                    ? const Center(child: CircularProgressIndicator())
-                    : SizedBox(
-                      width: double.infinity,
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed:
-                            nameConfirmed
-                                ? () {
-                                  context.read<VirtualIbanBloc>().add(
-                                    const VirtualIbanEvent.createRequested(),
-                                  );
-                                }
-                                : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: context.appColors.primary,
-                          foregroundColor: context.appColors.onPrimary,
-                        ),
-                        child: Text(context.loc.activateConfidentialSepa),
+            child: isCreating
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: nameConfirmed
+                          ? () {
+                              context.read<VirtualIbanBloc>().add(
+                                const VirtualIbanEvent.createRequested(),
+                              );
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: context.appColors.primary,
+                        foregroundColor: context.appColors.onPrimary,
                       ),
+                      child: Text(context.loc.activateConfidentialSepa),
                     ),
+                  ),
           ),
         ),
       ],
@@ -433,9 +418,7 @@ class _VirtualIbanPendingContent extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.confidentialSepaTitle),
-      ),
+      appBar: AppBar(title: Text(context.loc.confidentialSepaTitle)),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -504,9 +487,7 @@ class _VirtualIbanActiveContent extends StatelessWidget {
             final theme = Theme.of(context);
 
             return Scaffold(
-              appBar: AppBar(
-                title: Text(context.loc.privacyBankingTitle),
-              ),
+              appBar: AppBar(title: Text(context.loc.privacyBankingTitle)),
               body: SafeArea(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
@@ -602,9 +583,8 @@ class _VirtualIbanActiveContent extends StatelessWidget {
               ),
             );
           },
-          orElse: () => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
+          orElse: () =>
+              const Scaffold(body: Center(child: CircularProgressIndicator())),
         );
       },
     );
