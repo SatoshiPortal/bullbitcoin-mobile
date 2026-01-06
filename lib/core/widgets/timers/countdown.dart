@@ -16,10 +16,10 @@ class Countdown extends StatefulWidget {
   });
 
   @override
-  _CountdownState createState() => _CountdownState();
+  CountdownState createState() => CountdownState();
 }
 
-class _CountdownState extends State<Countdown> {
+class CountdownState extends State<Countdown> {
   late Duration remainingTime;
   late Timer? timer;
 
@@ -90,8 +90,8 @@ class _CountdownState extends State<Countdown> {
       style:
           widget.textStyle ??
           context.font.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: context.colour.primary,
+            fontWeight: .w500,
+            color: context.appColors.primary,
           ),
     );
   }

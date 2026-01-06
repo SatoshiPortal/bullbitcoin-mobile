@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -33,29 +34,28 @@ class CoinSelectionBottomSheet extends StatelessWidget {
       0,
       (previousValue, element) => previousValue + element.amountSat.toInt(),
     );
-    final selectedUtxoTotal =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
-            : FormatAmount.sats(selectedUtxoTotalSat);
+    final selectedUtxoTotal = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
+        : FormatAmount.sats(selectedUtxoTotalSat);
     final amountToSendSat = context.select(
       (SendCubit send) => send.state.confirmedAmountSat ?? 0,
     );
-    final amountToSend =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
-            : FormatAmount.sats(amountToSendSat);
+    final amountToSend = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
+        : FormatAmount.sats(amountToSendSat);
+    final isAmountSufficient = selectedUtxoTotalSat > amountToSendSat;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
             children: [
               Center(
                 child: BBText(
-                  "Select amount",
+                  context.loc.sendSelectAmount,
                   style: context.font.headlineMedium,
                 ),
               ),
@@ -73,9 +73,18 @@ class CoinSelectionBottomSheet extends StatelessWidget {
           BBText(selectedUtxoTotal, style: context.font.displaySmall),
           const Gap(8),
           BBText(
-            'Amount requested: $amountToSend',
+            '${context.loc.sendAmountRequested}$amountToSend',
             style: context.font.bodySmall,
           ),
+          if (!isAmountSufficient) ...[
+            const Gap(8),
+            BBText(
+              context.loc.sendSelectedUtxosInsufficient,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.error,
+              ),
+            ),
+          ],
           const Gap(24),
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
@@ -84,9 +93,8 @@ class CoinSelectionBottomSheet extends StatelessWidget {
               return CoinSelectTile(
                 utxo: utxo,
                 selected: selectedUtxos.contains(utxo),
-                onTap:
-                    () async =>
-                        await context.read<SendCubit>().utxoSelected(utxo),
+                onTap: () async =>
+                    await context.read<SendCubit>().utxoSelected(utxo),
                 exchangeRate: exchangeRate,
                 bitcoinUnit: bitcoinUnit!,
                 fiatCurrency: fiatCurrency,
@@ -98,10 +106,11 @@ class CoinSelectionBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           BBButton.big(
-            label: "Done",
+            label: context.loc.sendDone,
             onPressed: context.pop,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
+            disabled: !isAmountSufficient,
           ),
           const Gap(24),
         ],

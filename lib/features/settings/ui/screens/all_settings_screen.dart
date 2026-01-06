@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
@@ -56,16 +57,18 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
             child: Column(
               children: [
                 SettingsEntryItem(
-                  icon: Icons.account_balance_wallet,
-                  title: 'Exchange Settings',
+                  icon: Icons.currency_exchange,
+                  title: context.loc.settingsExchangeSettingsTitle,
                   onTap: () {
                     if (Platform.isIOS) {
                       final isSuperuser =
                           context.read<SettingsCubit>().state.isSuperuser ??
                           false;
                       if (isSuperuser) {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -77,8 +80,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       }
                     } else {
-                      final notLoggedIn =
-                          context.read<ExchangeCubit>().state.notLoggedIn;
+                      final notLoggedIn = context
+                          .read<ExchangeCubit>()
+                          .state
+                          .notLoggedIn;
                       if (notLoggedIn) {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
@@ -88,36 +93,22 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.save_alt,
-                  title: 'Wallet Backup',
+                  icon: Icons.save,
+                  title: context.loc.settingsWalletBackupTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
                   },
                 ),
                 SettingsEntryItem(
                   icon: Icons.currency_bitcoin,
-                  title: 'Bitcoin Settings',
+                  title: context.loc.settingsBitcoinSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.bitcoinSettings.name);
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.security,
-                  title: 'Security Pin',
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.pinCode.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.attach_money,
-                  title: 'Currency',
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.currency.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.settings,
-                  title: 'App Settings',
+                  icon: Icons.app_settings_alt,
+                  title: context.loc.settingsAppSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.appSettings.name);
                   },
@@ -125,7 +116,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
 
                 SettingsEntryItem(
                   icon: Icons.description,
-                  title: 'Terms of Service',
+                  title: context.loc.settingsTermsOfServiceTitle,
                   onTap: () {
                     final url = Uri.parse(
                       SettingsConstants.termsAndConditionsLink,
@@ -135,13 +126,12 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 ),
                 SettingsEntryItem(
                   icon: Icons.monitor_heart,
-                  iconColor:
-                      serviceStatusLoading
-                          ? Colors.grey
-                          : serviceStatus.allServicesOnline
-                          ? Colors.green
-                          : Colors.red,
-                  title: 'Services Status',
+                  iconColor: serviceStatusLoading
+                      ? context.appColors.textMuted
+                      : serviceStatus.allServicesOnline
+                      ? context.appColors.success
+                      : context.appColors.error,
+                  title: context.loc.settingsServicesStatusTitle,
                   onTap: () {
                     context.pushNamed(StatusCheckRoute.serviceStatus.name);
                   },
@@ -154,19 +144,19 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       bottomNavigationBar: BottomAppBar(
         height: 150,
         padding: EdgeInsets.zero,
-        color: Colors.transparent,
+        color: context.appColors.transparent,
         child: SafeArea(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               if (appVersion != null)
                 ListTile(
-                  tileColor: theme.colorScheme.secondaryFixedDim,
+                  tileColor: context.appColors.surfaceContainerHighest,
                   title: Center(
                     child: Text(
-                      'App version: $appVersion',
+                      '${context.loc.settingsAppVersionLabel}$appVersion',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.secondary,
+                        color: context.appColors.onSurface,
                       ),
                     ),
                   ),
@@ -177,7 +167,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 24),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: .spaceEvenly,
                   children: [
                     InkWell(
                       onTap: () {
@@ -187,14 +177,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         launchUrl(url, mode: LaunchMode.externalApplication);
                       },
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           const Icon(FontAwesomeIcons.telegram),
                           const Gap(8),
                           Text(
-                            'Telegram',
+                            context.loc.settingsTelegramLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.secondary,
+                              color: context.appColors.onSurface,
                             ),
                           ),
                         ],
@@ -208,14 +198,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         launchUrl(url, mode: LaunchMode.externalApplication);
                       },
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: .min,
                         children: [
                           const Icon(FontAwesomeIcons.github),
                           const Gap(8),
                           Text(
-                            'Github',
+                            context.loc.settingsGithubLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.secondary,
+                              color: context.appColors.onSurface,
                             ),
                           ),
                         ],

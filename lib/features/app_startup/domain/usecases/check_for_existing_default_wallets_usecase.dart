@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
@@ -16,7 +17,6 @@ class CheckForExistingDefaultWalletsUsecase {
        _seedRepository = seedRepository;
 
   Future<bool> execute() async {
-    // Check if wallets exist for the selected environment
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
     final defaultWallets = await _walletRepository.getWallets(
@@ -24,16 +24,24 @@ class CheckForExistingDefaultWalletsUsecase {
       environment: environment,
     );
 
-    // Check if there are any default wallets
     if (defaultWallets.isNotEmpty) {
-      // Check that the seed for the default wallets exist
+      log.fine('FINE: found default wallet');
       for (final wallet in defaultWallets) {
-        // This will throw if the seed is not found or can not be decrypted
-        await _seedRepository.get(wallet.masterFingerprint);
+        try {
+          await _seedRepository.get(wallet.masterFingerprint);
+          log.fine('FINE: Seed Found');
+        } catch (e) {
+          log.severe(
+            'Seed not found for default wallet with fingerprint: ${wallet.masterFingerprint}',
+            error: e,
+          );
+          rethrow;
+        }
       }
-      return true; // Default wallets and seeds exist
+      return true;
     } else {
-      return false; // No default wallets found
+      log.fine('No default wallets found');
+      return false;
     }
   }
 }

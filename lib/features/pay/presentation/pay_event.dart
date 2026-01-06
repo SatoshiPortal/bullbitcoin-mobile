@@ -22,8 +22,8 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.pollOrderStatus() = PayPollOrderStatus;
   const factory PayEvent.replaceByFeeChanged({required bool replaceByFee}) =
       PayReplaceByFeeChanged;
-  const factory PayEvent.utxoSelected({required WalletUtxo utxo}) =
-      PayUtxoSelected;
+  const factory PayEvent.utxosSelected({required List<WalletUtxo> utxos}) =
+      PayUtxosSelected;
   const factory PayEvent.loadUtxos() = PayLoadUtxos;
   const factory PayEvent.updateOrderStatus({required String orderId}) =
       PayUpdateOrderStatus;

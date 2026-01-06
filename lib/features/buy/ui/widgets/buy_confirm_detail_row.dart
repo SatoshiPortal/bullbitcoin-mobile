@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 
@@ -14,12 +15,12 @@ class BuyConfirmDetailRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: .spaceBetween,
         children: [
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.surfaceContainer,
+              color: context.appColors.onSurfaceVariant,
             ),
           ),
 
@@ -29,9 +30,9 @@ class BuyConfirmDetailRow extends StatelessWidget {
                     ? const LoadingLineContent()
                     : Text(
                       value!,
-                      textAlign: TextAlign.end,
+                      textAlign: .end,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.outlineVariant,
+                        color: context.appColors.secondary,
                       ),
                     ),
           ),

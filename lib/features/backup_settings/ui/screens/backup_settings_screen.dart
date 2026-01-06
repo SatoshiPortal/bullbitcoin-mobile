@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
@@ -48,31 +48,28 @@ class _Screen extends StatelessWidget {
             ),
           ),
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Gap(20),
-                  const _BackupTestStatusWidget(),
-                  const Spacer(),
-                  if (state.lastEncryptedBackup != null) ...[
-                    const _ViewVaultKeyButton(),
-                    const Gap(12),
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: _BackupTestStatusWidget(),
+                    ),
+                    const Gap(40),
+                    const _StartBackupButton(),
+                    if (state.lastEncryptedBackup != null)
+                      const _ViewVaultKeyButton(),
+                    if (state.lastEncryptedBackup != null ||
+                        state.lastPhysicalBackup != null)
+                      const _TestBackupButton(),
+                    const _RecoverBullSettingsButton(),
+                    const _Bip329LabelsButton(),
+                    if (state.error != null) ErrorWidget(error: state.error!),
                   ],
-                  if (state.lastEncryptedBackup != null ||
-                      state.lastPhysicalBackup != null) ...[
-                    const _TestBackupButton(),
-                    const Gap(12),
-                  ],
-                  const _StartBackupButton(),
-                  const Gap(12),
-                  const _Bip329LabelsButton(),
-                  const Gap(12),
-                  const _RecoverBullSettingsButton(),
-                  const Gap(20),
-                  if (state.error != null) ErrorWidget(error: state.error!),
-                ],
+                ),
               ),
             ),
           ),
@@ -90,7 +87,7 @@ class _BackupTestStatusWidget extends StatelessWidget {
     return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
       builder: (context, state) {
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             _StatusRow(
               label: context.loc.backupSettingsPhysicalBackup,
@@ -125,8 +122,9 @@ class _StatusRow extends StatelessWidget {
               ? context.loc.backupSettingsTested
               : context.loc.backupSettingsNotTested,
           style: context.font.bodyMedium?.copyWith(
-            color:
-                isTested ? context.colour.inverseSurface : context.colour.error,
+            color: isTested
+                ? context.appColors.success
+                : context.appColors.error,
           ),
         ),
       ],
@@ -139,17 +137,13 @@ class _TestBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.big(
-      label: context.loc.backupSettingsTestBackup,
-      onPressed:
-          () => context.pushNamed(
-            BackupSettingsSubroute.backupOptions.name,
-            extra: BackupSettingsFlow.test,
-          ),
-      borderColor: context.colour.secondary,
-      outlined: true,
-      bgColor: Colors.transparent,
-      textColor: context.colour.secondary,
+    return SettingsEntryItem(
+      icon: Icons.verified,
+      title: context.loc.backupSettingsTestBackup,
+      onTap: () => context.pushNamed(
+        BackupSettingsSubroute.backupOptions.name,
+        extra: BackupSettingsFlow.test,
+      ),
     );
   }
 }
@@ -159,15 +153,14 @@ class _StartBackupButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.big(
-      label: context.loc.backupSettingsStartBackup,
-      onPressed:
-          () => context.pushNamed(
-            BackupSettingsSubroute.backupOptions.name,
-            extra: BackupSettingsFlow.backup,
-          ),
-      bgColor: context.colour.primary,
-      textColor: context.colour.onPrimary,
+    return SettingsEntryItem(
+      icon: Icons.save_as,
+      iconColor: context.appColors.primary,
+      title: context.loc.backupSettingsStartBackup,
+      onTap: () => context.pushNamed(
+        BackupSettingsSubroute.backupOptions.name,
+        extra: BackupSettingsFlow.backup,
+      ),
     );
   }
 }
@@ -177,9 +170,10 @@ class _ViewVaultKeyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.big(
-      label: context.loc.backupSettingsViewVaultKey,
-      onPressed: () async {
+    return SettingsEntryItem(
+      icon: Icons.vpn_key,
+      title: context.loc.backupSettingsViewVaultKey,
+      onTap: () async {
         final confirmed = await ViewVaultKeyWarningBottomSheet.show(context);
         if (confirmed == true) {
           if (!context.mounted) return;
@@ -192,10 +186,6 @@ class _ViewVaultKeyButton extends StatelessWidget {
           );
         }
       },
-      borderColor: context.colour.secondary,
-      outlined: true,
-      bgColor: Colors.transparent,
-      textColor: context.colour.secondary,
     );
   }
 }
@@ -212,20 +202,24 @@ class ErrorWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.colour.error),
+        border: Border.all(color: context.appColors.error),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
-              Icon(Icons.error_outline, color: context.colour.error, size: 20),
+              Icon(
+                Icons.error_outline,
+                color: context.appColors.error,
+                size: 20,
+              ),
               const Gap(8),
               Text(
                 context.loc.backupSettingsError,
                 style: context.font.titleSmall?.copyWith(
-                  color: context.colour.error,
-                  fontWeight: FontWeight.bold,
+                  color: context.appColors.error,
+                  fontWeight: .bold,
                 ),
               ),
             ],
@@ -234,7 +228,7 @@ class ErrorWidget extends StatelessWidget {
           Text(
             error.toString(),
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
         ],
@@ -248,11 +242,10 @@ class _Bip329LabelsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.big(
-      label: context.loc.backupSettingsLabelsButton,
-      onPressed: () => context.push(Bip329LabelsRouter.route.path),
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
+    return SettingsEntryItem(
+      icon: Icons.sell,
+      title: context.loc.backupSettingsLabelsButton,
+      onTap: () => context.push(Bip329LabelsRouter.route.path),
     );
   }
 }
@@ -262,9 +255,12 @@ class _RecoverBullSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BBButton.big(
-      label: context.loc.backupSettingsRecoverBullSettings,
-      onPressed: () {
+    return SettingsEntryItem(
+      icon: Icons.cloud_circle,
+      iconColor: context.appColors.secondary,
+      textColor: context.appColors.secondary,
+      title: context.loc.backupSettingsRecoverBullSettings,
+      onTap: () {
         context.pushNamed(
           RecoverBullRoute.recoverbullFlows.name,
           extra: RecoverBullFlowsExtra(
@@ -273,10 +269,6 @@ class _RecoverBullSettingsButton extends StatelessWidget {
           ),
         );
       },
-      borderColor: context.colour.secondary,
-      outlined: true,
-      bgColor: Colors.transparent,
-      textColor: context.colour.secondary,
     );
   }
 }

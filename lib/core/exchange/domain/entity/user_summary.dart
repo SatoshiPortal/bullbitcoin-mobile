@@ -94,6 +94,7 @@ sealed class UserAutoBuy with _$UserAutoBuy {
 sealed class UserSummary with _$UserSummary {
   const factory UserSummary({
     required int userNumber,
+    String? userId,
     required List<String> groups,
     required UserProfile profile,
     required String email,

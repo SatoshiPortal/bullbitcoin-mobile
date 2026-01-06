@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -22,12 +23,12 @@ class TransactionsScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         title: TopBar(
-          title: 'Transactions',
+          title: context.loc.transactionTitle,
           onBack: () {
             context.pop();
           },
         ),
-        backgroundColor: context.colour.onPrimary,
+        backgroundColor: context.appColors.onPrimary,
         elevation: 0,
       ),
       body: const _Screen(),
@@ -42,7 +43,7 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         const TxsFilterRow(),
         const TxsSyncingIndicator(),
@@ -50,9 +51,9 @@ class _Screen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: BBText(
-              'Error - $err',
+              context.loc.transactionError(err.toString()),
               style: context.font.bodyLarge,
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
         const Gap(16.0),

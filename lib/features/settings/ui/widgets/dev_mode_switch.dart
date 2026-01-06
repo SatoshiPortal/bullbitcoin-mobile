@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -16,24 +17,31 @@ class DevModeSwitch extends StatelessWidget {
       context: context,
       child: Container(
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
-                Text('Dev Mode', style: context.font.headlineMedium),
+                Text(
+                  context.loc.settingsDevModeWarningTitle,
+                  style: context.font.headlineMedium?.copyWith(
+                    color: context.appColors.onSurface,
+                  ),
+                ),
                 const Gap(16),
                 Text(
-                  'This mode is risky. By enabling it, you acknowledge that you may lose money',
-                  style: context.font.bodyMedium,
+                  context.loc.settingsDevModeWarningMessage,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurface,
+                  ),
                 ),
                 const Gap(16),
                 BBButton.big(
-                  label: 'I understand',
+                  label: context.loc.settingsDevModeUnderstandButton,
                   onPressed: () {
                     context.read<SettingsCubit>().toggleDevMode(
                       true,
@@ -41,8 +49,8 @@ class DevModeSwitch extends StatelessWidget {
                     );
                     context.pop();
                   },
-                  bgColor: context.colour.primary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -28,7 +29,7 @@ class SwapInProgressPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Internal Transfer'),
+          title: Text(context.loc.swapInternalTransferTitle),
           automaticallyImplyLeading: false,
         ),
         body: SafeArea(
@@ -52,56 +53,72 @@ class SwapInProgressPage extends StatelessWidget {
                         ),
                         const Gap(8),
                         Text(
-                          'Transfer Pending',
-                          style: context.font.headlineLarge,
+                          context.loc.swapTransferPendingTitle,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
-                          'The transfer is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
-                          style: context.font.bodyMedium,
+                          context.loc.swapTransferPendingMessage,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                       if (swap?.status == SwapStatus.completed &&
                           swap?.refundTxid == null) ...[
                         Text(
-                          'Transfer completed',
-                          style: context.font.headlineLarge,
+                          context.loc.swapTransferCompletedTitle,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
-                          'Wow, you waited! The transfer has completed sucessfully.',
-                          style: context.font.bodyMedium,
+                          context.loc.swapTransferCompletedMessage,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                       if (swap?.status == SwapStatus.refundable) ...[
                         Text(
-                          'Transfer Refund In Progress',
-                          style: context.font.headlineLarge,
+                          context.loc.swapTransferRefundInProgressTitle,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
-                          'There was an error with the transfer. Your refund is in progress.',
-                          style: context.font.bodyMedium,
+                          context.loc.swapTransferRefundInProgressMessage,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                       if (swap?.status == SwapStatus.completed &&
                           swap?.refundTxid != null) ...[
                         Text(
-                          'Transfer Refunded',
-                          style: context.font.headlineLarge,
+                          context.loc.swapTransferRefundedTitle,
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                         ),
                         const Gap(8),
                         Text(
-                          'The transfer has been sucessfully refunded.',
-                          style: context.font.bodyMedium,
+                          context.loc.swapTransferRefundedMessage,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
                           maxLines: 4,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                         ),
                       ],
                     ],
@@ -110,19 +127,18 @@ class SwapInProgressPage extends StatelessWidget {
                 const Spacer(flex: 2),
                 if (swap?.status != SwapStatus.completed) ...[
                   InfoCard(
-                    description:
-                        'Do not uninstall the app until the transfer completes!',
-                    tagColor: context.colour.tertiary,
-                    bgColor: context.colour.secondaryFixed,
+                    description: context.loc.swapDoNotUninstallWarning,
+                    tagColor: context.appColors.tertiary,
+                    bgColor: context.appColors.warningContainer,
                     boldDescription: true,
                   ),
                   const Gap(16),
                 ],
                 BBButton.big(
-                  label: 'Go home',
+                  label: context.loc.swapGoHomeButton,
                   onPressed: () => context.goNamed(WalletRoute.walletHome.name),
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onSecondary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
                 const Gap(32),
               ],

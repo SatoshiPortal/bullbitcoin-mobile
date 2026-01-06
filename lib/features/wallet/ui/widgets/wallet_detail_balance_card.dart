@@ -35,12 +35,12 @@ class WalletDetailBalanceCard extends StatelessWidget {
                 ? Assets.backgrounds.bgInstantWallet.path
                 : Assets.backgrounds.bgSecureWallet.path,
           ),
-          fit: BoxFit.cover,
+          fit: .cover,
           colorFilter:
               signer == SignerEntity.none
                   ? ColorFilter.mode(
                     context.theme.secondaryHeaderColor,
-                    BlendMode.color,
+                    .color,
                   )
                   : null,
         ),
@@ -48,10 +48,10 @@ class WalletDetailBalanceCard extends StatelessWidget {
           bottom: BorderSide(
             color:
                 isLiquid && signer == SignerEntity.local
-                    ? theme.colorScheme.tertiary
+                    ? context.appColors.tertiary
                     : !isLiquid && signer == SignerEntity.local
-                    ? theme.colorScheme.onTertiary
-                    : theme.colorScheme.secondary,
+                    ? context.appColors.onTertiary
+                    : context.appColors.secondary,
             width: 9,
           ),
         ),
@@ -62,17 +62,17 @@ class WalletDetailBalanceCard extends StatelessWidget {
           if (hasSyncingIndicator) const TxsSyncingIndicator(),
           Center(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: .min,
+              mainAxisAlignment: .center,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     const Gap(16),
                     CurrencyText(
                       balanceSat,
                       style: theme.textTheme.displaySmall?.copyWith(
-                        color: theme.colorScheme.onPrimary,
+                        color: context.appColors.onPrimary,
                       ),
                       showFiat: false,
                     ),

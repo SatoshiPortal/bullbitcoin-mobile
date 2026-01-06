@@ -1,4 +1,5 @@
 // core/router/error_screen.dart
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class RouteErrorScreen extends StatelessWidget {
@@ -6,9 +7,9 @@ class RouteErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text('Page not found'),
+        child: Text(context.loc.coreScreensPageNotFound),
       ),
     );
   }

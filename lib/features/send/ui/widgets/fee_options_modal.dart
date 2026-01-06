@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -37,10 +38,10 @@ class FeeOptionsModal extends StatelessWidget {
       child: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               const Gap(16),
-              BBText('Select network fee', style: context.font.headlineMedium),
+              BBText(context.loc.sendSelectNetworkFee, style: context.font.headlineMedium),
               const Gap(16),
               SelectableList(
                 selectedValue: selectedFeeOption.title(),

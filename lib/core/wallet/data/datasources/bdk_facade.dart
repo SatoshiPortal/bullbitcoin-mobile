@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
@@ -21,8 +24,9 @@ class BdkFacade {
       throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
     }
 
-    final network =
-        walletModel.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final network = walletModel.isTestnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
 
     final external = await bdk.Descriptor.create(
       descriptor: walletModel.externalDescriptor,
@@ -54,8 +58,9 @@ class BdkFacade {
       throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');
     }
 
-    final network =
-        walletModel.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final network = walletModel.isTestnet
+        ? bdk.Network.testnet
+        : bdk.Network.bitcoin;
 
     final bdkMnemonic = await bdk.Mnemonic.fromString(walletModel.mnemonic);
     final secretKey = await bdk.DescriptorSecretKey.create(
@@ -124,6 +129,15 @@ class BdkFacade {
     return '${dir.path}/$dbName';
   }
 
+  static Future<void> delete(WalletModel walletModel) async {
+    final dbPath = await _getDbPath(walletModel.dbName);
+    final dbFile = File(dbPath);
+
+    if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
+
+    await dbFile.delete();
+  }
+
   static Future<void> sync(
     WalletModel wallet,
     ElectrumServerModel electrumServer,
@@ -135,10 +149,9 @@ class BdkFacade {
           url: electrumServer.url,
           // Only set the socks5 if it's not empty,
           //  otherwise bdk will throw an error
-          socks5:
-              electrumSettings.socks5?.isNotEmpty == true
-                  ? electrumSettings.socks5
-                  : null,
+          socks5: electrumSettings.socks5?.isNotEmpty == true
+              ? electrumSettings.socks5
+              : null,
           retry: electrumSettings.retry,
           timeout: electrumSettings.timeout,
           stopGap: BigInt.from(electrumSettings.stopGap),

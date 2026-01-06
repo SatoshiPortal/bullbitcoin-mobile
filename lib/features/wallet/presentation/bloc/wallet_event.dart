@@ -55,3 +55,7 @@ class ElectrumSyncResultChanged extends WalletEvent {
   final ElectrumSyncResult result;
   const ElectrumSyncResultChanged(this.result);
 }
+
+class DismissAutoSwapWarning extends WalletEvent {
+  const DismissAutoSwapWarning();
+}

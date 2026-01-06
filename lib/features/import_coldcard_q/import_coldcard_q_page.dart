@@ -22,12 +22,12 @@ class ImportColdcardQPage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             BBText(
               context.loc.importColdcardDescription,
               style: context.font.bodyLarge,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               maxLines: 2,
             ),
 
@@ -42,36 +42,32 @@ class ImportColdcardQPage extends StatelessWidget {
               children: [
                 BBButton.small(
                   label: context.loc.importColdcardButtonOpenCamera,
-                  onPressed:
-                      () => context.pushNamed(
-                        ImportWatchOnlyWalletRoutes.scan.name,
-                        extra: SignerDeviceEntity.coldcardQ,
-                      ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  onPressed: () => context.pushNamed(
+                    ImportWatchOnlyWalletRoutes.scan.name,
+                    extra: SignerDeviceEntity.coldcardQ,
+                  ),
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
 
                 Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importColdcardButtonInstructions,
-                  onPressed:
-                      () => ColdcardQInstructionsBottomSheet.show(context),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  onPressed: () =>
+                      ColdcardQInstructionsBottomSheet.show(context),
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
                 Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importColdcardButtonPurchase,
-                  onPressed:
-                      () => launchUrl(
-                        Uri.parse(
-                          'https://store.coinkite.com/promo/BULLBITCOIN',
-                        ),
-                      ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  onPressed: () => launchUrl(
+                    Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
+                  ),
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
               ],

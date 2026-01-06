@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class TransactionDirectionBadge extends StatelessWidget {
@@ -11,18 +12,16 @@ class TransactionDirectionBadge extends StatelessWidget {
   final bool isSwap;
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Container(
       width: 72,
       height: 72,
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.surface),
-        color: theme.colorScheme.onPrimary,
+        border: Border.all(color: context.appColors.surface),
+        color: context.appColors.onSecondary,
         borderRadius: BorderRadius.circular(60),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow,
+            color: context.appColors.scrim,
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -34,7 +33,7 @@ class TransactionDirectionBadge extends StatelessWidget {
             : isIncoming
             ? Icons.south_east
             : Icons.north_east,
-        color: theme.colorScheme.secondary,
+        color: context.appColors.secondary,
       ),
     );
   }

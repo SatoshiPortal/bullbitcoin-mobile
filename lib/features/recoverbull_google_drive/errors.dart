@@ -1,9 +1,13 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:flutter/material.dart';
 
-class RecoverBullGoogleDriveError extends BullException {
-  RecoverBullGoogleDriveError(super.message);
+abstract class RecoverBullGoogleDriveError {
+  String toTranslated(BuildContext context);
 }
 
 class FetchAllDriveFilesError extends RecoverBullGoogleDriveError {
-  FetchAllDriveFilesError() : super('Failed to fetch all drive backups');
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullGoogleDriveErrorFetchFailed;
+  }
 }

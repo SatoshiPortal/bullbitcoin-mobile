@@ -47,8 +47,8 @@ class BBTextFormField extends StatelessWidget {
     final isDisabled = disabled ?? false;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: .start,
+      mainAxisSize: .min,
       children: [
         if (labelText != null)
           Text(
@@ -58,11 +58,11 @@ class BBTextFormField extends StatelessWidget {
                 context.font.bodyLarge?.copyWith(
                   color:
                       isDisabled
-                          ? context.colour.outline
-                          : context.colour.secondary,
-                  fontWeight: FontWeight.w500,
+                          ? context.appColors.outline
+                          : context.appColors.secondary,
+                  fontWeight: .w500,
                 ),
-            textAlign: TextAlign.left,
+            textAlign: .left,
           ),
         const SizedBox(height: 8),
         TextFormField(
@@ -72,33 +72,39 @@ class BBTextFormField extends StatelessWidget {
           textInputAction: textInputAction,
           inputFormatters: inputFormatters,
           style: (style ?? context.font.bodyLarge)?.copyWith(
-            color: isDisabled ? context.colour.outline : null,
+            color: isDisabled ? context.appColors.outline : null,
           ),
           enabled: !isDisabled,
           decoration: InputDecoration(
             fillColor:
                 isDisabled
-                    ? context.colour.surfaceContainerHighest
-                    : context.colour.onPrimary,
+                    ? context.appColors.surfaceContainerHighest
+                    : context.appColors.onSecondary,
             filled: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+              borderSide: BorderSide(
+                color: context.appColors.secondaryFixedDim,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+              borderSide: BorderSide(
+                color: context.appColors.secondaryFixedDim,
+              ),
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
               borderSide: BorderSide(
-                color: context.colour.secondaryFixedDim.withValues(alpha: 0.5),
+                color: context.appColors.secondaryFixedDim.withValues(
+                  alpha: 0.5,
+                ),
               ),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
             hintText: hintText,
             hintStyle: context.font.bodyMedium?.copyWith(
-              color: context.colour.outline,
+              color: context.appColors.outline,
             ),
             prefixIcon:
                 prefixText != null
@@ -107,7 +113,8 @@ class BBTextFormField extends StatelessWidget {
                       child: Text(
                         prefixText!,
                         style: (style ?? context.font.bodyLarge)?.copyWith(
-                          color: isDisabled ? context.colour.outline : null,
+                          color:
+                              isDisabled ? context.appColors.outline : null,
                         ),
                       ),
                     )
@@ -123,7 +130,8 @@ class BBTextFormField extends StatelessWidget {
                       child: Text(
                         suffixText!,
                         style: (style ?? context.font.bodyLarge)?.copyWith(
-                          color: isDisabled ? context.colour.outline : null,
+                          color:
+                              isDisabled ? context.appColors.outline : null,
                         ),
                       ),
                     )

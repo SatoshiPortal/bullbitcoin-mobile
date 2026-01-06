@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
@@ -14,15 +15,9 @@ class SellQrBottomSheet extends StatelessWidget {
     BuildContext context,
     String bip21InvoiceData,
   ) async {
-    await showModalBottomSheet(
+    await BlurredBottomSheet.show(
       context: context,
-      useRootNavigator: true,
-      backgroundColor: context.colour.onPrimary,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      isScrollControlled: true,
-      builder: (context) {
-        return SellQrBottomSheet(bip21InvoiceData: bip21InvoiceData);
-      },
+      child: SellQrBottomSheet(bip21InvoiceData: bip21InvoiceData),
     );
   }
 
@@ -43,13 +38,17 @@ class SellQrBottomSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
-              BBText(context.loc.sellQrCode, style: context.font.headlineSmall),
+              BBText(
+                context.loc.sellQrCode,
+                style: context.font.headlineSmall,
+                color: context.appColors.secondary,
+              ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.close),
@@ -61,11 +60,11 @@ class SellQrBottomSheet extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.appColors.background,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.5),
+                    color: context.appColors.overlay.withValues(alpha: 0.5),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -74,7 +73,12 @@ class SellQrBottomSheet extends StatelessWidget {
               child: SizedBox(
                 width: 280,
                 height: 280,
-                child: QrImageView(data: bip21InvoiceData, size: 280),
+                child: QrImageView(
+                  data: bip21InvoiceData,
+                  size: 280,
+                  // ignore: deprecated_member_use
+                  foregroundColor: context.appColors.secondary,
+                ),
               ),
             ),
           ),

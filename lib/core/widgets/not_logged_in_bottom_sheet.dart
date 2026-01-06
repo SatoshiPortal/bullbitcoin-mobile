@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
@@ -9,14 +10,9 @@ class NotLoggedInBottomSheet extends StatelessWidget {
   const NotLoggedInBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
-    final theme = Theme.of(context);
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: theme.colorScheme.onPrimary,
-      useRootNavigator: true,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (context) => const NotLoggedInBottomSheet(),
+      child: const NotLoggedInBottomSheet(),
     );
   }
 
@@ -30,13 +26,13 @@ class NotLoggedInBottomSheet extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Container(
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.colour.outline.withValues(alpha: 0.3),
+                  color: context.appColors.outline.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -44,25 +40,25 @@ class NotLoggedInBottomSheet extends StatelessWidget {
               Icon(
                 Icons.account_circle_outlined,
                 size: 48,
-                color: context.colour.primary,
+                color: context.appColors.primary,
               ),
               const SizedBox(height: 16),
               BBText(
                 'You Are Not Logged in',
                 style: context.font.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const SizedBox(height: 8),
               BBText(
                 'Please log in to your Bull Bitcoin account to access exchange settings.',
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.secondary.withValues(alpha: 0.7),
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
               BBButton.big(
@@ -71,8 +67,8 @@ class NotLoggedInBottomSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onPrimary,
               ),
             ],
           ),

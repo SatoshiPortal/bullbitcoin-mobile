@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 
@@ -20,21 +22,15 @@ class ComingSoonBottomSheet extends StatelessWidget {
     String? icon,
     void Function()? onDismissed,
   }) {
-    final theme = Theme.of(context);
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: theme.colorScheme.onPrimary,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      useRootNavigator: true,
-      builder:
-          (context) => ComingSoonBottomSheet(
-            description:
-                description ??
-                'This feature is currently under development and will be available soon.',
-            icon: icon,
-            onDismissed: onDismissed,
-          ),
+      child: ComingSoonBottomSheet(
+        description:
+            description ??
+            'This feature is currently under development and will be available soon.',
+        icon: icon,
+        onDismissed: onDismissed,
+      ),
     );
   }
 
@@ -50,13 +46,13 @@ class ComingSoonBottomSheet extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               Container(
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                  color: context.appColors.outline.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -65,26 +61,26 @@ class ComingSoonBottomSheet extends StatelessWidget {
                 Icon(
                   Icons.construction,
                   size: 48,
-                  color: theme.colorScheme.primary,
+                  color: context.appColors.primary,
                 ),
                 const SizedBox(height: 16),
               ],
               Text(
                 'Feature Coming Soon',
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: .bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
               ),
               const SizedBox(height: 8),
               Text(
                 description,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: context.appColors.onSurface.withValues(alpha: 0.7),
                 ),
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                overflow: .ellipsis,
               ),
               const SizedBox(height: 24),
               BBButton.big(
@@ -93,8 +89,8 @@ class ComingSoonBottomSheet extends StatelessWidget {
                   Navigator.of(context).pop();
                   onDismissed?.call();
                 },
-                bgColor: theme.colorScheme.secondary,
-                textColor: theme.colorScheme.onPrimary,
+                bgColor: context.appColors.onSurface,
+                textColor: context.appColors.surface,
               ),
             ],
           ),

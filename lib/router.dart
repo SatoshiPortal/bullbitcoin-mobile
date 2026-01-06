@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -12,6 +14,7 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
@@ -37,6 +40,8 @@ import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -52,29 +57,33 @@ class AppRouter {
     initialLocation: WalletRoute.walletHome.path,
     routes: [
       ShellRoute(
+        notifyRootObserver: true,
         builder: (context, state, child) {
           final location = state.uri.toString();
-          final tabIndex =
-              location.startsWith(ExchangeRoute.exchangeHome.path) ? 1 : 0;
+          final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
+              ? 1
+              : 0;
           final isExchangeLanding = location.contains(
             ExchangeRoute.exchangeLanding.path,
           );
+          final isSupportChat = location.contains('/support-chat');
 
-          return PopScope(
-            canPop: false,
-            onPopInvokedWithResult: (didPop, _) {
-              context.goNamed(WalletRoute.walletHome.name);
-            },
-            child: Scaffold(
-              // The app bar of the exchange tab is done with a sliver app bar
-              // on the ExchangeHomeScreen itself.
-              appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
-              extendBodyBehindAppBar: true,
-              body: child,
-              bottomNavigationBar:
-                  isExchangeLanding
-                      ? null
-                      : BottomNavigationBar(
+          return BlocProvider(
+            create: (_) => locator<PriceChartCubit>(),
+            child: PopScope(
+              canPop: false,
+              onPopInvokedWithResult: (didPop, _) {
+                context.goNamed(WalletRoute.walletHome.name);
+              },
+              child: Scaffold(
+                // The app bar of the exchange tab is done with a sliver app bar
+                // on the ExchangeHomeScreen itself.
+                appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+                extendBodyBehindAppBar: true,
+                body: child,
+                bottomNavigationBar: isExchangeLanding || isSupportChat
+                    ? null
+                    : BottomNavigationBar(
                         currentIndex: tabIndex,
                         onTap: (index) {
                           if (index == 0) {
@@ -102,17 +111,20 @@ class AppRouter {
                             }
                           }
                         },
-                        items: const [
+                        items: [
                           BottomNavigationBarItem(
-                            icon: Icon(Icons.currency_bitcoin),
-                            label: 'Wallet',
+                            icon: const Icon(Icons.currency_bitcoin),
+                            label: context.loc.navigationTabWallet,
+                            backgroundColor: context.appColors.background,
                           ),
                           BottomNavigationBarItem(
-                            icon: Icon(Icons.attach_money),
-                            label: 'Exchange',
+                            icon: const Icon(Icons.attach_money),
+                            label: context.loc.navigationTabExchange,
+                            backgroundColor: context.appColors.background,
                           ),
                         ],
                       ),
+              ),
             ),
           );
         },
@@ -144,6 +156,7 @@ class AppRouter {
       ReplaceByFeeRouter.route,
       Bip85EntropyRouter.route,
       ElectrumSettingsRouter.route,
+      MempoolSettingsRoute.route,
       ArkSetupRouter.route,
       ArkRouter.route,
       ...ImportQrDeviceRouter.routes,

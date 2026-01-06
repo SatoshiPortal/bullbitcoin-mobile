@@ -9,6 +9,8 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_useca
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/instructions_bottom_sheet.dart';
@@ -94,20 +96,23 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: widget.action.title,
-          color: context.colour.secondaryFixed,
+          title: widget.action.toTitle(context),
+          color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
       body: BlocConsumer<BitBoxOperationCubit, BitBoxOperationState>(
         listener: (context, state) {
           if (state.isSuccess) {
-            SnackBarUtils.showSnackBar(context, widget.action.successText);
+            SnackBarUtils.showSnackBar(
+              context,
+              widget.action.toSuccessText(context),
+            );
             if (widget.action == const BitBoxAction.importWallet()) {
               if (state.result is WatchOnlyWalletEntity &&
                   state.connectedDevice != null) {
@@ -151,15 +156,15 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         _buildIconsForState(context, state),
         const Gap(24),
         BBText(
-          _getMainTextForState(state),
-          textAlign: TextAlign.center,
+          _getMainTextForState(context, state),
+          textAlign: .center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
-          _getSubTextForState(state),
-          textAlign: TextAlign.center,
-          color: context.colour.onSurfaceVariant,
+          _getSubTextForState(context, state),
+          textAlign: .center,
+          color: context.appColors.textMuted,
           style: context.font.bodyMedium,
         ),
         if (widget.action == const BitBoxAction.importWallet() &&
@@ -203,7 +208,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         icon = Icons.error;
     }
 
-    return Icon(icon, size: 80, color: context.colour.primary);
+    return Icon(icon, size: 80, color: context.appColors.primary);
   }
 
   Widget _buildPairingCodeDisplay(
@@ -215,15 +220,15 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: context.colour.surface,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: context.colour.primary.withValues(alpha: 0.3),
+              color: context.appColors.primary.withValues(alpha: 0.3),
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: context.colour.primary.withValues(alpha: 0.1),
+                color: context.appColors.primary.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -231,20 +236,20 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
           ),
           child: BBText(
             state.result?.toString() ?? '',
-            textAlign: TextAlign.center,
+            textAlign: .center,
             style: context.font.headlineMedium?.copyWith(
               fontFamily: 'monospace',
-              fontWeight: FontWeight.bold,
-              color: context.colour.primary,
+              fontWeight: .bold,
+              color: context.appColors.primary,
               letterSpacing: 2,
             ),
           ),
         ),
         const Gap(20),
         BBText(
-          'Waiting for confirmation on BitBox02...',
+          context.loc.bitboxScreenWaitingConfirmation,
           textAlign: TextAlign.center,
-          color: context.colour.onSurfaceVariant.withValues(alpha: 0.7),
+          color: context.appColors.textMuted.withValues(alpha: 0.7),
           style: context.font.bodyMedium,
         ),
       ],
@@ -295,24 +300,24 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     return Column(
       children: [
         BBText(
-          'Address to verify:',
+          context.loc.bitboxScreenAddressToVerify,
           style: context.font.bodyMedium,
-          color: context.colour.onSurfaceVariant.withValues(alpha: 0.8),
+          color: context.appColors.textMuted.withValues(alpha: 0.8),
         ),
         const Gap(12),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: context.colour.surface,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: context.colour.outline.withValues(alpha: 0.3),
+              color: context.appColors.border.withValues(alpha: 0.3),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: context.colour.shadow.withValues(alpha: 0.1),
+                color: context.appColors.border.withValues(alpha: 0.1),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -328,17 +333,17 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
             style: context.font.bodyLarge?.copyWith(
               fontSize: 18,
               fontFamily: 'monospace',
-              color: context.colour.onSurface,
+              color: context.appColors.text,
               letterSpacing: 1,
             ),
-            textAlign: TextAlign.center,
+            textAlign: .center,
           ),
         ),
         const Gap(12),
         BBText(
-          'Please verify this address on your BitBox device',
+          context.loc.bitboxScreenVerifyOnDevice,
           style: context.font.bodySmall,
-          color: context.colour.onSurfaceVariant.withValues(alpha: 0.6),
+          color: context.appColors.textMuted.withValues(alpha: 0.6),
           textAlign: TextAlign.center,
         ),
       ],
@@ -448,7 +453,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         return await locator<GetBitBoxWatchOnlyWalletUsecase>().execute(
           device: device,
           deviceType: widget.parameters?.requestedDeviceType,
-          label: 'BitBox Wallet',
+          label: context.loc.bitboxScreenDefaultWalletLabel,
           scriptType: _selectedScriptType,
         );
       });
@@ -464,20 +469,20 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         child: Column(
           children: [
             BBText(
-              'Wallet Type:',
+              context.loc.bitboxScreenWalletTypeLabel,
               style: context.font.bodyMedium,
-              color: context.colour.onSurfaceVariant,
+              color: context.appColors.textMuted,
             ),
             const Gap(12),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: context.colour.onSecondary,
+                color: context.appColors.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: context.colour.outline, width: 1),
+                border: Border.all(color: context.appColors.border, width: 1),
               ),
               child: Material(
-                color: Colors.transparent,
+                color: context.appColors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),
                   onTap: () => _showScriptTypeSelection(context),
@@ -487,19 +492,19 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                       vertical: 12,
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         Expanded(
                           child: BBText(
-                            _getScriptTypeDisplayName(_selectedScriptType),
+                            _getScriptTypeDisplayName(context, _selectedScriptType),
                             style: context.font.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: .w500,
                             ),
                           ),
                         ),
                         Icon(
                           Icons.arrow_drop_down,
-                          color: context.colour.onSurfaceVariant,
+                          color: context.appColors.textMuted,
                           size: 20,
                         ),
                       ],
@@ -514,12 +519,12 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     );
   }
 
-  String _getScriptTypeDisplayName(ScriptType scriptType) {
+  String _getScriptTypeDisplayName(BuildContext context, ScriptType scriptType) {
     switch (scriptType) {
       case ScriptType.bip84:
-        return 'Segwit (BIP84)';
+        return context.loc.bitboxScreenSegwitBip84;
       case ScriptType.bip49:
-        return 'Nested Segwit (BIP49)';
+        return context.loc.bitboxScreenNestedSegwitBip49;
       default:
         return '';
     }
@@ -527,50 +532,45 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
   Future<void> _showScriptTypeSelection(BuildContext context) async {
     final scriptTypeItems = [
-      const SelectableListItem(
+      SelectableListItem(
         value: 'bip84',
-        title: 'Segwit (BIP84)',
-        subtitle1: 'Native SegWit - Recommended',
+        title: context.loc.bitboxScreenSegwitBip84,
+        subtitle1: context.loc.bitboxScreenSegwitBip84Subtitle,
         subtitle2: '',
       ),
-      const SelectableListItem(
+      SelectableListItem(
         value: 'bip49',
-        title: 'Nested Segwit (BIP49)',
-        subtitle1: 'P2WPKH-nested-in-P2SH',
+        title: context.loc.bitboxScreenNestedSegwitBip49,
+        subtitle1: context.loc.bitboxScreenNestedSegwitBip49Subtitle,
         subtitle2: '',
       ),
     ];
 
-    final selected = await showModalBottomSheet<String>(
-      useRootNavigator: true,
+    final selected = await BlurredBottomSheet.show<String>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.colour.onSecondary,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder:
-          (BuildContext buildContext) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Gap(16),
-                    BBText(
-                      'Select Wallet Type',
-                      style: context.font.headlineMedium,
-                    ),
-                    const Gap(16),
-                    SelectableList(
-                      selectedValue: _selectedScriptType.name,
-                      items: scriptTypeItems,
-                    ),
-                    const Gap(24),
-                  ],
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: .stretch,
+              children: [
+                const Gap(16),
+                BBText(
+                  context.loc.bitboxScreenSelectWalletType,
+                  style: context.font.headlineMedium,
                 ),
-              ),
+                const Gap(16),
+                SelectableList(
+                  selectedValue: _selectedScriptType.name,
+                  items: scriptTypeItems,
+                ),
+                const Gap(24),
+              ],
             ),
           ),
+        ),
+      ),
     );
 
     if (selected != null) {
@@ -584,13 +584,12 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
   void _showInstructions(BuildContext context) {
     InstructionsBottomSheet.show(
       context,
-      title: 'BitBox02 Troubleshooting',
-      subtitle:
-          "First, make sure your BitBox02 device is connected to your phone USB port. If your device still doesn't connect with the app, try the following:",
+      title: context.loc.bitboxScreenTroubleshootingTitle,
+      subtitle: context.loc.bitboxScreenTroubleshootingSubtitle,
       instructions: [
-        'Make sure your phone has USB permissions enabled.',
-        'Restart your BitBox02 device by unplugging and reconnecting it.',
-        'Make sure you have the latest firmware installed on your BitBox.',
+        context.loc.bitboxScreenTroubleshootingStep1,
+        context.loc.bitboxScreenTroubleshootingStep2,
+        context.loc.bitboxScreenTroubleshootingStep3,
       ],
     );
   }
@@ -609,84 +608,83 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         if (state.isInitial)
           BBButton.big(
             onPressed: () => _executeAction(context),
-            label: widget.action.buttonText,
-            bgColor: context.colour.primary,
-            textColor: context.colour.onPrimary,
+            label: widget.action.toButtonText(context),
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
         if (state.isError) ...[
           BBButton.big(
             onPressed: () => context.read<BitBoxOperationCubit>().reset(),
-            label: 'Try Again',
-            bgColor: context.colour.primary,
-            textColor: context.colour.onPrimary,
+            label: context.loc.bitboxScreenTryAgainButton,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
-          if (state.errorMessage ==
-              const BitBoxError.permissionDenied().message) ...[
+          if (state.error case PermissionDeniedBitBoxError()) ...[
             const Gap(16),
             BBButton.big(
               onPressed: () => _openAppSettings(),
-              label: 'Manage App Permissions',
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              label: context.loc.bitboxScreenManagePermissionsButton,
+              bgColor: context.appColors.onSurface,
+              textColor: context.appColors.surface,
             ),
           ],
         ],
         const Gap(16),
         if (state.isInitial || state.isError)
           BBButton.small(
-            label: 'Need Help?',
+            label: context.loc.bitboxScreenNeedHelpButton,
             onPressed: () => _showInstructions(context),
-            bgColor: context.colour.onSecondary,
-            textColor: context.colour.secondary,
+            bgColor: context.appColors.surface,
+            textColor: context.appColors.text,
             outlined: true,
           ),
       ],
     );
   }
 
-  String _getMainTextForState(BitBoxOperationState state) {
+  String _getMainTextForState(BuildContext context, BitBoxOperationState state) {
     switch (state.status) {
       case BitBoxOperationStatus.initial:
-        return 'Connect Your BitBox Device';
+        return context.loc.bitboxScreenConnectDevice;
       case BitBoxOperationStatus.scanning:
-        return 'Scanning for Devices';
+        return context.loc.bitboxScreenScanning;
       case BitBoxOperationStatus.connecting:
-        return 'Connecting to BitBox';
+        return context.loc.bitboxScreenConnecting;
       case BitBoxOperationStatus.processing:
-        return widget.action.processingText;
+        return widget.action.toProcessingText(context);
       case BitBoxOperationStatus.showingPairingCode:
-        return 'Pairing Code';
+        return context.loc.bitboxScreenPairingCode;
       case BitBoxOperationStatus.waitingForPassword:
-        return 'Enter Password';
+        return context.loc.bitboxScreenEnterPassword;
       case BitBoxOperationStatus.showingAddressVerification:
-        return 'Verify Address';
+        return context.loc.bitboxScreenVerifyAddress;
       case BitBoxOperationStatus.success:
-        return widget.action.successText;
+        return widget.action.toSuccessText(context);
       case BitBoxOperationStatus.error:
-        return '${widget.action.title} Failed';
+        return context.loc.bitboxScreenActionFailed(widget.action.toTitle(context));
     }
   }
 
-  String _getSubTextForState(BitBoxOperationState state) {
+  String _getSubTextForState(BuildContext context, BitBoxOperationState state) {
     switch (state.status) {
       case BitBoxOperationStatus.initial:
-        return 'Make sure your BitBox02 is unlocked and connected via USB.';
+        return context.loc.bitboxScreenConnectSubtext;
       case BitBoxOperationStatus.scanning:
-        return 'Looking for your BitBox device...';
+        return context.loc.bitboxScreenScanningSubtext;
       case BitBoxOperationStatus.connecting:
-        return 'Establishing secure connection...';
+        return context.loc.bitboxScreenConnectingSubtext;
       case BitBoxOperationStatus.processing:
-        return widget.action.processingSubText;
+        return widget.action.toProcessingSubText(context);
       case BitBoxOperationStatus.showingPairingCode:
-        return 'Verify this code matches your BitBox02 screen, then confirm on the device.';
+        return context.loc.bitboxScreenPairingCodeSubtext;
       case BitBoxOperationStatus.waitingForPassword:
-        return 'Please enter your password on the BitBox device to continue.';
+        return context.loc.bitboxScreenEnterPasswordSubtext;
       case BitBoxOperationStatus.showingAddressVerification:
-        return 'Compare this address with your BitBox02 screen';
+        return context.loc.bitboxScreenVerifyAddressSubtext;
       case BitBoxOperationStatus.success:
-        return widget.action.successSubText;
+        return widget.action.toSuccessSubText(context);
       case BitBoxOperationStatus.error:
-        return state.errorMessage ?? 'Unknown error occurred';
+        return state.error?.toTranslated(context) ?? context.loc.bitboxScreenUnknownError;
     }
   }
 }

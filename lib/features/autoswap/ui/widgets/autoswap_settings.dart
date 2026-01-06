@@ -1,9 +1,12 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -46,63 +49,87 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
     );
 
     return BlocListener<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-      listenWhen:
-          (previous, current) =>
-              previous.successfullySaved != current.successfullySaved &&
-              current.successfullySaved,
+      listenWhen: (previous, current) =>
+          previous.successfullySaved != current.successfullySaved &&
+          current.successfullySaved,
       listener: (context, state) {
         Navigator.of(context).pop();
       },
-      child: Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
-        ),
-        decoration: BoxDecoration(
-          color: context.colour.onPrimary,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _Header(),
+      child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
+        builder: (context, state) {
+          final enabled = state.enabledToggle;
 
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: SingleChildScrollView(
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
+          return Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+            ),
+            decoration: BoxDecoration(
+              color: context.appColors.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(32),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: .min,
+              crossAxisAlignment: .stretch,
+              children: [
+                _Header(),
+                Flexible(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (!loading) ...[
-                          const Gap(16),
-                          _EnabledToggle(),
-                          const Gap(16),
-                          _AmountThresholdField(),
-                          const Gap(16),
-                          _FeeThresholdField(),
-                          const Gap(16),
-                          _WalletSelectionDropdown(),
-                          const Gap(16),
-                          _AlwaysBlockToggle(),
-                          const Gap(32),
-                          _SaveButton(),
-                        ],
-                        const Gap(30),
-                      ],
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: SingleChildScrollView(
+                      keyboardDismissBehavior: .onDrag,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: loading
+                            ? const SizedBox.shrink()
+                            : Column(
+                                crossAxisAlignment: .start,
+                                children: [
+                                  const Gap(16),
+                                  _EnabledToggle(),
+                                  const Gap(16),
+                                  Stack(
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment: .start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          _AmountThresholdField(),
+                                          const Gap(16),
+                                          _TriggerBalanceField(),
+                                          const Gap(16),
+                                          _FeeThresholdField(),
+                                          const Gap(16),
+                                          _WalletSelectionDropdown(),
+                                          const Gap(16),
+                                          _AlwaysBlockToggle(),
+                                          const Gap(32),
+                                          _SaveButton(),
+                                        ],
+                                      ),
+                                      if (!enabled)
+                                        Positioned.fill(
+                                          child: IgnorePointer(
+                                            child: Container(
+                                              color: context.appColors.overlay,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -146,26 +173,19 @@ class _EnabledToggle extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             BBText(
               context.loc.autoswapEnableToggleLabel,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.text,
               ),
             ),
-            Switch(
+            BBSwitch(
               value: enabled,
-              activeColor: context.colour.onSecondary,
-              activeTrackColor: context.colour.secondary,
-              inactiveThumbColor: context.colour.onSecondary,
-              inactiveTrackColor: context.colour.surface,
-              trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) => Colors.transparent,
-              ),
               onChanged: (value) {
                 context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(
                   value,
@@ -192,12 +212,12 @@ class _AmountThresholdField extends StatelessWidget {
       (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
     );
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           context.loc.autoswapMaxBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.appColors.text,
           ),
         ),
         const Gap(8),
@@ -207,19 +227,24 @@ class _AmountThresholdField extends StatelessWidget {
               child: BBInputText(
                 value: amountThresholdInput ?? '',
                 onlyNumbers: true,
-                rightIcon: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: context.colour.surface,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: context.colour.secondaryFixedDim),
-                  ),
-                  child: BBText(
-                    bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
-                    style: context.font.bodyMedium,
+                rightIcon: GestureDetector(
+                  onTap: () {
+                    context.read<AutoSwapSettingsCubit>().toggleBitcoinUnit();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.appColors.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: context.appColors.border),
+                    ),
+                    child: BBText(
+                      bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
+                      style: context.font.bodyMedium,
+                    ),
                   ),
                 ),
                 onChanged: (value) {
@@ -234,17 +259,96 @@ class _AmountThresholdField extends StatelessWidget {
         if (amountThresholdError != null) ...[
           const Gap(8),
           BBText(
-            amountThresholdError.displayMessage(),
+            amountThresholdError.displayMessage(context.loc),
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
         ],
         const Gap(4),
         BBText(
-          context.loc.autoswapMaxBalanceInfoText,
+          context.loc.autoswapBaseBalanceInfoText,
           style: context.font.labelSmall?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TriggerBalanceField extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final triggerBalanceSatsInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.triggerBalanceSatsInput,
+    );
+    final bitcoinUnit = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
+    );
+    final error = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.error,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        BBText(
+          'Maximum Instant Wallet Balance',
+          style: context.font.bodyLarge?.copyWith(
+            color: context.appColors.text,
+          ),
+        ),
+        const Gap(8),
+        Row(
+          children: [
+            Expanded(
+              child: BBInputText(
+                value: triggerBalanceSatsInput ?? '',
+                onlyNumbers: true,
+                rightIcon: GestureDetector(
+                  onTap: () {
+                    context.read<AutoSwapSettingsCubit>().toggleBitcoinUnit();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.appColors.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: context.appColors.border),
+                    ),
+                    child: BBText(
+                      bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
+                      style: context.font.bodyMedium,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  context.read<AutoSwapSettingsCubit>().onTriggerBalanceChanged(
+                    value,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        if (error == 'autoswapTriggerBalanceError') ...[
+          const Gap(8),
+          BBText(
+            context.loc.autoswapTriggerBalanceError,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.error,
+            ),
+          ),
+        ],
+        const Gap(4),
+        BBText(
+          context.loc.autoswapTriggerAtBalanceInfoText,
+          style: context.font.labelSmall?.copyWith(
+            color: context.appColors.textMuted,
           ),
         ),
       ],
@@ -263,12 +367,12 @@ class _FeeThresholdField extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           context.loc.autoswapMaxFeeLabel,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.secondary,
+            color: context.appColors.text,
           ),
         ),
         const Gap(8),
@@ -284,9 +388,9 @@ class _FeeThresholdField extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: context.colour.surface,
+                    color: context.appColors.surface,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: context.colour.secondaryFixedDim),
+                    border: Border.all(color: context.appColors.border),
                   ),
                   child: BBText('%', style: context.font.bodyMedium),
                 ),
@@ -302,9 +406,9 @@ class _FeeThresholdField extends StatelessWidget {
         if (feeThresholdError != null) ...[
           const Gap(8),
           BBText(
-            feeThresholdError.displayMessage(),
+            feeThresholdError.displayMessage(context.loc),
             style: context.font.bodySmall?.copyWith(
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
         ],
@@ -312,7 +416,7 @@ class _FeeThresholdField extends StatelessWidget {
         BBText(
           context.loc.autoswapMaxFeeInfoText,
           style: context.font.labelSmall?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
       ],
@@ -328,26 +432,19 @@ class _AlwaysBlockToggle extends StatelessWidget {
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: .spaceBetween,
           children: [
             BBText(
               context.loc.autoswapAlwaysBlockLabel,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.text,
               ),
             ),
-            Switch(
+            BBSwitch(
               value: alwaysBlock,
-              activeColor: context.colour.onSecondary,
-              activeTrackColor: context.colour.secondary,
-              inactiveThumbColor: context.colour.onSecondary,
-              inactiveTrackColor: context.colour.surface,
-              trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) => Colors.transparent,
-              ),
               onChanged: (value) {
                 context
                     .read<AutoSwapSettingsCubit>()
@@ -362,7 +459,7 @@ class _AlwaysBlockToggle extends StatelessWidget {
               ? context.loc.autoswapAlwaysBlockInfoEnabled
               : context.loc.autoswapAlwaysBlockInfoDisabled,
           style: context.font.labelSmall?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
       ],
@@ -383,15 +480,19 @@ class _WalletSelectionDropdown extends StatelessWidget {
       (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
     );
 
+    final selectedWallet = availableWallets
+        .where((wallet) => wallet.id == selectedWalletId)
+        .firstOrNull;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Row(
           children: [
             BBText(
               context.loc.autoswapRecipientWalletLabel,
               style: context.font.bodyLarge?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.text,
               ),
             ),
             if (enabled) ...[
@@ -399,81 +500,69 @@ class _WalletSelectionDropdown extends StatelessWidget {
               BBText(
                 context.loc.autoswapRecipientWalletRequired,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.colour.error,
+                  color: context.appColors.error,
                 ),
               ),
             ],
           ],
         ),
         const Gap(8),
-        DropdownButtonFormField<String>(
-          value: selectedWalletId,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color:
-                    enabled && selectedWalletId == null
-                        ? context.colour.error
-                        : context.colour.surfaceContainer,
-              ),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color:
-                    enabled && selectedWalletId == null
-                        ? context.colour.error
-                        : context.colour.surfaceContainer,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color:
-                    enabled && selectedWalletId == null
-                        ? context.colour.error
-                        : context.colour.primary,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-          ),
-          hint: BBText(
-            enabled ? context.loc.autoswapRecipientWalletPlaceholderRequired : context.loc.autoswapRecipientWalletPlaceholder,
-            style: context.font.bodyMedium?.copyWith(
-              color:
-                  enabled && selectedWalletId == null
-                      ? context.colour.error
-                      : context.colour.surfaceContainer,
-            ),
-          ),
-          items:
-              availableWallets.map((wallet) {
-                return DropdownMenuItem<String>(
-                  value: wallet.id,
-                  child: BBText(
-                    wallet.label ?? context.loc.autoswapRecipientWalletDefaultLabel,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary,
+        BBDropdown<Wallet>(
+          items: availableWallets
+              .map(
+                (wallet) => DropdownMenuItem(
+                  value: wallet,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          wallet.isLiquid
+                              ? 'assets/logos/liquid.png'
+                              : 'assets/logos/bitcoin.png',
+                          width: 20,
+                          height: 20,
+                        ),
+                        const Gap(8),
+                        Text(wallet.displayLabel(context)),
+                      ],
                     ),
                   ),
-                );
-              }).toList(),
-          onChanged: (walletId) {
-            context.read<AutoSwapSettingsCubit>().onWalletSelected(walletId);
+                ),
+              )
+              .toList(),
+          value: selectedWallet,
+          validator: enabled
+              ? (value) {
+                  if (value == null) {
+                    return context
+                        .loc
+                        .autoswapRecipientWalletPlaceholderRequired;
+                  }
+                  return null;
+                }
+              : null,
+          hint: BBText(
+            enabled
+                ? context.loc.autoswapRecipientWalletPlaceholderRequired
+                : context.loc.autoswapRecipientWalletPlaceholder,
+            style: context.font.bodyMedium?.copyWith(
+              color: enabled && selectedWalletId == null
+                  ? context.appColors.error
+                  : context.appColors.textMuted,
+            ),
+          ),
+          onChanged: (wallet) {
+            context.read<AutoSwapSettingsCubit>().onWalletSelected(wallet?.id);
           },
         ),
         const Gap(4),
         BBText(
           context.loc.autoswapRecipientWalletInfoText,
           style: context.font.labelSmall?.copyWith(
-            color:
-                enabled && selectedWalletId == null
-                    ? context.colour.error
-                    : context.colour.surfaceContainer,
+            color: enabled && selectedWalletId == null
+                ? context.appColors.error
+                : context.appColors.textMuted,
           ),
         ),
       ],
@@ -500,29 +589,27 @@ class _SaveButton extends StatelessWidget {
     return BBButton.big(
       label: context.loc.autoswapSaveButton,
       disabled: isDisabled,
-      onPressed:
-          isDisabled
-              ? () {}
-              : () {
-                context
-                    .read<AutoSwapSettingsCubit>()
-                    .updateSettings()
-                    .catchError((e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: BBText(
-                              context.loc.autoswapSaveErrorMessage(e.toString()),
-                              style: context.font.bodyMedium,
-                            ),
-                          ),
-                        );
-                      }
-                    });
-              },
-      bgColor: context.colour.secondary,
+      onPressed: isDisabled
+          ? () {}
+          : () {
+              context.read<AutoSwapSettingsCubit>().updateSettings().catchError(
+                (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: BBText(
+                          context.loc.autoswapSaveErrorMessage(e.toString()),
+                          style: context.font.bodyMedium,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              );
+            },
+      bgColor: context.appColors.onSurface,
       textStyle: context.font.headlineLarge,
-      textColor: context.colour.onSecondary,
+      textColor: context.appColors.surface,
     );
   }
 }

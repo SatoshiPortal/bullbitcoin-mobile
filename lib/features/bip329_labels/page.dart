@@ -21,11 +21,10 @@ class Bip329LabelsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => Bip329LabelsCubit(
-            exportLabelsUsecase: locator<ExportLabelsUsecase>(),
-            importLabelsUsecase: locator<ImportLabelsUsecase>(),
-          ),
+      create: (context) => Bip329LabelsCubit(
+        exportLabelsUsecase: locator<ExportLabelsUsecase>(),
+        importLabelsUsecase: locator<ImportLabelsUsecase>(),
+      ),
       child: Scaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -44,13 +43,21 @@ class Bip329LabelsPage extends StatelessWidget {
                 exportSuccess: (labelsCount) {
                   SnackBarUtils.showSnackBar(
                     context,
-                    context.loc.bip329LabelsExportSuccess(labelsCount),
+                    labelsCount == 1
+                        ? context.loc.bip329LabelsExportSuccessSingular
+                        : context.loc.bip329LabelsExportSuccessPlural(
+                            labelsCount,
+                          ),
                   );
                 },
                 importSuccess: (labelsCount) {
                   SnackBarUtils.showSnackBar(
                     context,
-                    context.loc.bip329LabelsImportSuccess(labelsCount),
+                    labelsCount == 1
+                        ? context.loc.bip329LabelsImportSuccessSingular
+                        : context.loc.bip329LabelsImportSuccessPlural(
+                            labelsCount,
+                          ),
                   );
                 },
                 error: (message) {
@@ -68,27 +75,27 @@ class Bip329LabelsPage extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
                   children: [
                     const Gap(20),
                     Center(child: FadingLinearProgress(trigger: isLoading)),
                     BBText(
                       context.loc.bip329LabelsHeading,
                       style: context.font.headlineLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Gap(16),
                     BBText(
                       context.loc.bip329LabelsDescription,
                       style: context.font.bodyLarge,
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
                     ),
                     const Spacer(),
                     BBButton.big(
                       label: context.loc.bip329LabelsImportButton,
                       onPressed: isLoading ? () {} : () => cubit.importLabels(),
-                      bgColor: Theme.of(context).colorScheme.primary,
-                      textColor: Theme.of(context).colorScheme.onPrimary,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
                       iconData: Icons.file_upload,
                       iconFirst: true,
                       disabled: isLoading,
@@ -97,8 +104,8 @@ class Bip329LabelsPage extends StatelessWidget {
                     BBButton.big(
                       label: context.loc.bip329LabelsExportButton,
                       onPressed: isLoading ? () {} : () => cubit.exportLabels(),
-                      bgColor: Theme.of(context).colorScheme.secondary,
-                      textColor: Theme.of(context).colorScheme.onSecondary,
+                      bgColor: context.appColors.onSurface,
+                      textColor: context.appColors.surface,
                       iconData: Icons.file_download,
                       iconFirst: true,
                       disabled: isLoading,

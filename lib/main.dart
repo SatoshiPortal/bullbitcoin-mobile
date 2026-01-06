@@ -6,6 +6,7 @@ import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -22,7 +23,6 @@ import 'package:bb_mobile/router.dart';
 import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
@@ -33,8 +33,8 @@ import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
-    await initFlutterRustBridgeDependencies();
     await initLogs();
+    await initFlutterRustBridgeDependencies();
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
@@ -43,17 +43,14 @@ class Bull {
 
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
+      dotenv.load(isOptional: true),
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),
-      dotenv.load(isOptional: true),
       LibBbqr.init(),
       LibArk.init(),
+      if (Platform.isAndroid) BitBoxFlutterApi.initialize(),
     ];
-
-    if (Platform.isAndroid) {
-      initTasks.add(BitBoxFlutterApi.initialize());
-    }
 
     await Future.wait(initTasks);
   }
@@ -65,7 +62,7 @@ class Bull {
   }
 
   static Future<void> initLocator() async {
-    await AppLocator.setup();
+    await AppLocator.setup(locator, SqliteDatabase());
     Bloc.observer = AppBlocObserver();
   }
 }
@@ -76,10 +73,7 @@ Future main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       // Initialize the background tasks before anything else
-      await Workmanager().initialize(
-        backgroundTasksHandler,
-        isInDebugMode: kDebugMode,
-      );
+      await Workmanager().initialize(backgroundTasksHandler);
       await Workmanager().cancelAll();
 
       await Bull.init();
@@ -177,13 +171,12 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
       providers: [
         BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
         BlocProvider(
-          create:
-              (_) => locator<AppStartupBloc>()..add(const AppStartupStarted()),
+          create: (_) =>
+              locator<AppStartupBloc>()..add(const AppStartupStarted()),
         ),
         BlocProvider(
-          create:
-              (_) =>
-                  locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
+          create: (_) =>
+              locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
@@ -195,11 +188,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
       child: MultiBlocListener(
         listeners: [
           BlocListener<AppStartupBloc, AppStartupState>(
-            listenWhen:
-                (previous, current) =>
-                    previous != current &&
-                    current is AppStartupSuccess &&
-                    current.hasDefaultWallets,
+            listenWhen: (previous, current) =>
+                previous != current &&
+                current is AppStartupSuccess &&
+                current.hasDefaultWallets,
             listener: (context, settings) {
               // If wallets exist and the app has started successfully,
               // we can start the wallet bloc to fetch the wallets.
@@ -207,9 +199,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             },
           ),
           BlocListener<SettingsCubit, SettingsState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.environment != current.environment,
+            listenWhen: (previous, current) =>
+                previous.environment != current.environment,
             listener: (context, settings) async {
               // Re-fetch user summary (re-init exchange bloc) and wallets
               //  when environment changes
@@ -218,22 +209,48 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             },
           ),
         ],
-        child: BlocSelector<SettingsCubit, SettingsState, Language?>(
-          selector: (settings) => settings.language,
-          builder:
-              (context, language) => MaterialApp.router(
-                title: 'BullBitcoin Wallet',
-                debugShowCheckedModeBanner: false,
-                routerConfig: AppRouter.router,
-                theme: AppTheme.themeData(AppThemeType.light),
-                locale: language?.locale,
-                localizationsDelegates: AppLocalizations.localizationsDelegates,
-                supportedLocales: AppLocalizations.supportedLocales,
-                builder: (_, child) {
-                  return AppStartupWidget(app: child!);
-                },
-              ),
-        ),
+        child:
+            BlocSelector<
+              SettingsCubit,
+              SettingsState,
+              (Language?, AppThemeMode?)
+            >(
+              selector: (settings) =>
+                  (settings.language, settings.storedSettings?.themeMode),
+              builder: (context, data) {
+                final (language, themeMode) = data;
+                final systemBrightness = MediaQuery.platformBrightnessOf(
+                  context,
+                );
+                final effectiveThemeMode = themeMode ?? AppThemeMode.system;
+
+                late final AppThemeType appThemeType;
+                switch (effectiveThemeMode) {
+                  case AppThemeMode.light:
+                    appThemeType = AppThemeType.light;
+                  case AppThemeMode.dark:
+                    appThemeType = AppThemeType.dark;
+                  case AppThemeMode.system:
+                    appThemeType = systemBrightness == .dark
+                        ? AppThemeType.dark
+                        : AppThemeType.light;
+                }
+
+                return MaterialApp.router(
+                  title: 'BullBitcoin Wallet',
+                  debugShowCheckedModeBanner: false,
+                  routerConfig: AppRouter.router,
+                  theme: AppTheme.themeData(appThemeType),
+                  locale: language?.locale,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  builder: (_, child) {
+                    return AppStartupWidget(app: child!);
+                  },
+                );
+              },
+            ),
       ),
     );
   }

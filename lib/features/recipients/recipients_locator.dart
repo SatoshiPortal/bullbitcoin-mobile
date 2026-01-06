@@ -13,18 +13,18 @@ import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delega
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 
 class RecipientsLocator {
-  static void setup() {
-    registerFrameworks();
-    registerDrivenInterfaceAdapters();
-    registerApplicationServicesAndUseCases();
-    registerDrivingInterfaceAdapters();
+  static void setup(GetIt locator) {
+    registerFrameworks(locator);
+    registerDrivenInterfaceAdapters(locator);
+    registerApplicationServicesAndUseCases(locator);
+    registerDrivingInterfaceAdapters(locator);
   }
 
-  static void registerFrameworks() {
+  static void registerFrameworks(GetIt locator) {
     locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
       () => BullbitcoinApiKeyProvider(
         secureStorage: locator<KeyValueStorageDatasource<String>>(
@@ -50,7 +50,7 @@ class RecipientsLocator {
     );
   }
 
-  static void registerDrivenInterfaceAdapters() {
+  static void registerDrivenInterfaceAdapters(GetIt locator) {
     // Only register the DelegatingRecipientsGateway here, since it
     // encapsulates both the mainnet and testnet gateways, which shouldn't be
     // used directly/independently for now.
@@ -70,7 +70,7 @@ class RecipientsLocator {
     );
   }
 
-  static void registerApplicationServicesAndUseCases() {
+  static void registerApplicationServicesAndUseCases(GetIt locator) {
     // Register application services and use cases here
     locator.registerFactory<AddRecipientUsecase>(
       () => AddRecipientUsecase(
@@ -98,7 +98,7 @@ class RecipientsLocator {
     );
   }
 
-  static void registerDrivingInterfaceAdapters() {
+  static void registerDrivingInterfaceAdapters(GetIt locator) {
     // Register presenters, controllers, etc. here
     locator.registerFactoryParam<
       RecipientsBloc,

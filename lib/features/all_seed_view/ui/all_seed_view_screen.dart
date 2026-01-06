@@ -36,22 +36,18 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
             appBar: AppBar(
               title: BBText(
                 context.loc.allSeedViewTitle,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+                style: const TextStyle(fontWeight: .bold, fontSize: 20),
               ),
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(3),
-                child:
-                    state.loading
-                        ? FadingLinearProgress(
-                          height: 3,
-                          trigger: state.loading,
-                          backgroundColor: context.colour.surface,
-                          foregroundColor: context.colour.primary,
-                        )
-                        : const SizedBox(height: 3),
+                child: state.loading
+                    ? FadingLinearProgress(
+                        height: 3,
+                        trigger: state.loading,
+                        backgroundColor: context.appColors.surface,
+                        foregroundColor: context.appColors.primary,
+                      )
+                    : const SizedBox(height: 3),
               ),
             ),
             body: Builder(
@@ -63,15 +59,21 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                       child: BBText(
                         context.loc.allSeedViewLoadingMessage,
                         style: context.font.bodyMedium,
-                        color: context.colour.onSurface.withValues(alpha: 0.7),
-                        textAlign: TextAlign.center,
+                        color: context.appColors.onSurface.withValues(
+                          alpha: 0.7,
+                        ),
+                        textAlign: .center,
                       ),
                     ),
                   );
                 }
                 if (state.error != null) {
                   return Center(
-                    child: BBText(state.error!, style: context.font.bodyLarge),
+                    child: BBText(
+                      state.error!,
+                      style: context.font.bodyLarge,
+                      color: context.appColors.error,
+                    ),
                   );
                 }
                 if (state.allSeeds.isEmpty) {
@@ -79,6 +81,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                     child: BBText(
                       context.loc.allSeedViewNoSeedsFound,
                       style: context.font.bodyLarge,
+                      color: context.appColors.onSurface,
                     ),
                   );
                 }
@@ -91,7 +94,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                             child: Icon(
                               Icons.visibility_off,
                               size: 120,
-                              color: context.colour.onSurface.withValues(
+                              color: context.appColors.onSurface.withValues(
                                 alpha: 0.3,
                               ),
                             ),
@@ -102,8 +105,8 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                           child: BBButton.big(
                             label: context.loc.allSeedViewShowSeedsButton,
                             onPressed: () => _showWarningDialog(context),
-                            bgColor: context.colour.secondary,
-                            textColor: context.colour.onSecondary,
+                            bgColor: context.appColors.secondary,
+                            textColor: context.appColors.onSecondary,
                           ),
                         ),
                       ],
@@ -119,9 +122,9 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                           state.existingWallets.length,
                         ),
                         style: context.font.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
-                        color: context.colour.onSurface,
+                        color: context.appColors.onSurface,
                       ),
                       const SizedBox(height: 8),
                       ...state.existingWallets.map<Widget>(
@@ -136,9 +139,9 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                           state.oldWallets.length,
                         ),
                         style: context.font.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: .bold,
                         ),
-                        color: context.colour.onSurface,
+                        color: context.appColors.onSurface,
                       ),
                       const SizedBox(height: 8),
                       ...state.oldWallets.map<Widget>(
@@ -162,23 +165,30 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          backgroundColor: context.colour.onPrimary,
+          backgroundColor: context.appColors.surface,
           title: Text(
             context.loc.allSeedViewSecurityWarningTitle,
             style: context.font.headlineSmall?.copyWith(
-              color: context.colour.onSurface,
+              color: context.appColors.onSurface,
             ),
           ),
           content: SingleChildScrollView(
             child: Text(
               context.loc.allSeedViewSecurityWarningMessage,
-              style: context.font.bodyMedium,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+              ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(context.loc.cancel, style: context.font.bodyMedium),
+              child: Text(
+                context.loc.cancel,
+                style: context.font.bodyMedium?.copyWith(
+                  color: context.appColors.onSurface,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -188,8 +198,8 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
               child: Text(
                 context.loc.allSeedViewIUnderstandButton,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.primary,
-                  fontWeight: FontWeight.bold,
+                  color: context.appColors.primary,
+                  fontWeight: .bold,
                 ),
               ),
             ),
@@ -208,24 +218,31 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
       barrierDismissible: false,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          backgroundColor: context.colour.onPrimary,
+          backgroundColor: context.appColors.surface,
           title: Text(
             context.loc.allSeedViewDeleteWarningTitle,
             style: context.font.headlineSmall?.copyWith(
-              color: context.colour.error,
-              fontWeight: FontWeight.bold,
+              color: context.appColors.error,
+              fontWeight: .bold,
             ),
           ),
           content: SingleChildScrollView(
             child: Text(
               context.loc.allSeedViewDeleteWarningMessage,
-              style: context.font.bodyMedium,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+              ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(context.loc.cancel, style: context.font.bodyMedium),
+              child: Text(
+                context.loc.cancel,
+                style: context.font.bodyMedium?.copyWith(
+                  color: context.appColors.onSurface,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -237,8 +254,8 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
               child: Text(
                 context.loc.delete,
                 style: context.font.bodyMedium?.copyWith(
-                  color: context.colour.error,
-                  fontWeight: FontWeight.bold,
+                  color: context.appColors.error,
+                  fontWeight: .bold,
                 ),
               ),
             ),
@@ -256,23 +273,23 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: context.colour.onPrimary,
+              color: context.appColors.surface,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: context.colour.primary, width: 2),
+              border: Border.all(color: context.appColors.outline, width: 1),
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Expanded(
                   child: BBText(
                     seed.mnemonicWords.join(' '),
                     style: context.font.bodyMedium,
-                    color: context.colour.secondary,
+                    color: context.appColors.onSurface,
                     maxLines: 5,
                   ),
                 ),
@@ -281,7 +298,7 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
                   IconButton(
                     icon: Icon(
                       Icons.delete_outline,
-                      color: context.colour.error,
+                      color: context.appColors.error,
                     ),
                     onPressed: () => _showDeleteWarningDialog(context, seed),
                     padding: EdgeInsets.zero,
@@ -295,16 +312,18 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
             Padding(
               padding: const EdgeInsets.only(top: 8.0, left: 8.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(
                     context.loc.allSeedViewPassphraseLabel,
-                    style: context.font.bodyLarge,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.onSurface,
+                    ),
                   ),
                   BBText(
                     seed.passphrase!,
                     style: context.font.bodyMedium,
-                    color: context.colour.onSurface,
+                    color: context.appColors.onSurface,
                   ),
                 ],
               ),

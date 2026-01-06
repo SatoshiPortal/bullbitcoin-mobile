@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -27,7 +30,7 @@ class ImportWalletPage extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               const Gap(16),
               BBText(
@@ -37,18 +40,15 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(12),
               TabMenuVerticalButton(
                 title: context.loc.importWalletImportMnemonic,
-                onTap:
-                    () => context.pushNamed(
-                      ImportMnemonicRoute.importMnemonicHome.name,
-                    ),
+                onTap: () => context.pushNamed(
+                  ImportMnemonicRoute.importMnemonicHome.name,
+                ),
               ),
               const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletImportWatchOnly,
-                onTap:
-                    () => context.pushNamed(
-                      ImportWatchOnlyWalletRoutes.import.name,
-                    ),
+                onTap: () =>
+                    context.pushNamed(ImportWatchOnlyWalletRoutes.import.name),
               ),
               const Gap(24),
               BBText(
@@ -58,48 +58,46 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(12),
               TabMenuVerticalButton(
                 title: context.loc.importWalletColdcardQ,
-                onTap:
-                    () => context.pushNamed(
-                      ImportColdcardQRoute.importColdcardQ.name,
-                    ),
+                onTap: () => context.pushNamed(
+                  ImportColdcardQRoute.importColdcardQ.name,
+                ),
               ),
               const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletSeedSigner,
-                onTap:
-                    () => context.pushNamed(
-                      ImportQrDeviceRoute.importSeedSigner.name,
-                    ),
+                onTap: () => context.pushNamed(
+                  ImportQrDeviceRoute.importSeedSigner.name,
+                ),
               ),
               const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletSpecter,
-                onTap:
-                    () => context.pushNamed(
-                      ImportQrDeviceRoute.importSpecter.name,
-                    ),
+                onTap: () =>
+                    context.pushNamed(ImportQrDeviceRoute.importSpecter.name),
               ),
               const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletKrux,
-                onTap:
-                    () =>
-                        context.pushNamed(ImportQrDeviceRoute.importKrux.name),
+                onTap: () =>
+                    context.pushNamed(ImportQrDeviceRoute.importKrux.name),
               ),
               const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletJade,
-                onTap:
-                    () =>
-                        context.pushNamed(ImportQrDeviceRoute.importJade.name),
+                onTap: () =>
+                    context.pushNamed(ImportQrDeviceRoute.importJade.name),
               ),
               const Gap(16),
               TabMenuVerticalButton(
                 title: context.loc.importWalletPassport,
-                onTap:
-                    () => context.pushNamed(
-                      ImportQrDeviceRoute.importPassport.name,
-                    ),
+                onTap: () =>
+                    context.pushNamed(ImportQrDeviceRoute.importPassport.name),
+              ),
+              const Gap(16),
+              TabMenuVerticalButton(
+                title: context.loc.importWalletKeystone,
+                onTap: () =>
+                    context.pushNamed(ImportQrDeviceRoute.importKeystone.name),
               ),
               const Gap(16),
               if (context.read<SettingsCubit>().state.isSuperuser ?? false) ...[
@@ -109,22 +107,18 @@ class ImportWalletPage extends StatelessWidget {
                 ),
                 const Gap(16),
                 TabMenuVerticalButton(
-                  title: context.loc.importWalletKeystone,
-                  onTap:
-                      () => context.pushNamed(
-                        ImportQrDeviceRoute.importKeystone.name,
-                      ),
-                ),
-                const Gap(16),
-                TabMenuVerticalButton(
-                  title: 'BitBox02',
-                  onTap:
-                      () => context.pushNamed(
-                        BitBoxRoute.importBitBox.name,
-                        extra: const BitBoxRouteParams(
-                          requestedDeviceType: SignerDeviceEntity.bitbox02,
+                  title: 'BitBox',
+                  onTap: () => Platform.isAndroid
+                      ? context.pushNamed(
+                          BitBoxRoute.importBitBox.name,
+                          extra: const BitBoxRouteParams(
+                            requestedDeviceType: SignerDeviceEntity.bitbox02,
+                          ),
+                        )
+                      : SnackBarUtils.showSnackBar(
+                          context,
+                          'BitBox is only supported on Android',
                         ),
-                      ),
                 ),
               ],
             ],

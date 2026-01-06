@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
@@ -24,7 +25,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -47,7 +48,7 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(32),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: .spaceBetween,
             children: [
               BBText(
                 context.loc.sellReplaceByFeeActivated,
@@ -67,23 +68,16 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
           ListTile(
             title: BBText(
               context.loc.sellSelectCoinsManually,
-              style: context.font.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: context.font.bodyLarge?.copyWith(fontWeight: .w500),
             ),
             trailing: const Icon(Icons.arrow_forward),
             onTap: () {
-              showModalBottomSheet(
+              BlurredBottomSheet.show(
                 context: context,
-                isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
-                constraints: const BoxConstraints(maxWidth: double.infinity),
-                useSafeArea: true,
-                builder:
-                    (BuildContext buildContext) => BlocProvider.value(
-                      value: context.read<SellBloc>(),
-                      child: const SellCoinSelectionBottomSheet(),
-                    ),
+                child: BlocProvider.value(
+                  value: context.read<SellBloc>(),
+                  child: const SellCoinSelectionBottomSheet(),
+                ),
               );
             },
           ),
@@ -91,8 +85,8 @@ class SellAdvancedOptionsBottomSheet extends StatelessWidget {
           BBButton.big(
             label: context.loc.sellDone,
             onPressed: context.pop,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
         ],
       ),

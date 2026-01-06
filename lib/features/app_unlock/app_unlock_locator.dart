@@ -8,10 +8,10 @@ import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exi
 import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class AppUnlockLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     // Repositories
     locator.registerLazySingleton<FailedUnlockAttemptsRepository>(
       () => FailedUnlockAttemptsRepository(

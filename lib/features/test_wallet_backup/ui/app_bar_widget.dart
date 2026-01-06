@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -18,8 +19,10 @@ class AppBarWidget extends StatelessWidget {
   @override
   PreferredSizeWidget build(BuildContext context) {
     final wallets = context.watch<TestWalletBackupBloc>().state.wallets;
-    final selectedWallet =
-        context.watch<TestWalletBackupBloc>().state.selectedWallet;
+    final selectedWallet = context
+        .watch<TestWalletBackupBloc>()
+        .state
+        .selectedWallet;
 
     return AppBar(
       leading: IconButton(
@@ -67,59 +70,67 @@ Future<String?> _showWalletPicker({
     context: context,
     isDismissible: true,
     child: Container(
-      height: MediaQuery.of(context).size.height * 0.4,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.4,
+      ),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.onSecondary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              const Spacer(),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
-          ),
-          const Gap(8),
-          Expanded(
-            child: CupertinoPicker(
-              scrollController: controller,
-              itemExtent: 70,
-              onSelectedItemChanged: (index) {},
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Column(
+          mainAxisSize: .min,
+          children: [
+            Row(
               children: [
-                for (final wallet in wallets)
-                  Center(
-                    child: BBText(
-                      wallet.isDefault
-                          ? 'Default Wallets'
-                          : wallet.displayLabel,
-                      style: context.font.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                      ),
-                    ),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: context.appColors.secondary,
                   ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
               ],
             ),
-          ),
-          BBButton.big(
-            label: 'Confirm',
-            onPressed: () {
-              final wallet = wallets[controller.selectedItem];
-              context.read<TestWalletBackupBloc>().add(
-                LoadMnemonicForWallet(wallet: wallet),
-              );
-              Navigator.of(context).pop();
-            },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
-          ),
-        ],
+            const Gap(8),
+            Expanded(
+              child: CupertinoPicker(
+                scrollController: controller,
+                itemExtent: 70,
+                onSelectedItemChanged: (index) {},
+                children: [
+                  for (final wallet in wallets)
+                    Center(
+                      child: BBText(
+                        wallet.isDefault
+                            ? context.loc.testBackupDefaultWallets
+                            : wallet.displayLabel(context),
+                        style: context.font.bodyLarge?.copyWith(
+                          fontWeight: .w600,
+                          fontSize: 18,
+                          color: context.appColors.secondary,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            BBButton.big(
+              label: context.loc.testBackupConfirm,
+              onPressed: () {
+                final wallet = wallets[controller.selectedItem];
+                context.read<TestWalletBackupBloc>().add(
+                  LoadMnemonicForWallet(wallet: wallet),
+                );
+                Navigator.of(context).pop();
+              },
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
+            ),
+          ],
+        ),
       ),
     ),
   );

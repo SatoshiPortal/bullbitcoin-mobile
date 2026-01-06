@@ -31,27 +31,20 @@ class BuyConfirmScreen extends StatelessWidget {
     final payoutAmountSat = ConvertAmount.btcToSats(
       payoutAmountBtc,
     ); // Convert sats to BTC
-    final formattedPayOutAmount =
-        bitcoinUnit == BitcoinUnit.sats
-            ? FormatAmount.sats(payoutAmountSat)
-            : FormatAmount.btc(buyOrder.payoutAmount);
+    final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
+        ? FormatAmount.sats(payoutAmountSat)
+        : FormatAmount.btc(buyOrder.payoutAmount);
     final formattedExchangeRate = FormatAmount.fiat(
       buyOrder.exchangeRateAmount!,
       buyOrder.exchangeRateCurrency!,
     );
     final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
-    final secureBitcoinWalletLabel = context.loc.buyConfirmSecureWallet;
-    final instantPaymentWalletLabel = context.loc.buyConfirmInstantWallet;
     final selectedWallet = context.select(
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
-    final payoutMethod =
-        selectedWallet == null
-            ? externalBitcoinWalletLabel
-            : selectedWallet.label ??
-                (selectedWallet.isLiquid
-                    ? instantPaymentWalletLabel
-                    : secureBitcoinWalletLabel);
+    final payoutMethod = selectedWallet == null
+        ? externalBitcoinWalletLabel
+        : selectedWallet.displayLabel(context);
 
     final isConfirmingOrder = context.select(
       (BuyBloc bloc) => bloc.state.isConfirmingOrder,
@@ -67,15 +60,15 @@ class BuyConfirmScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Center(
                   child: Container(
                     width: 72,
                     height: 72,
                     decoration: BoxDecoration(
-                      color: context.colour.secondaryFixedDim,
-                      shape: BoxShape.circle,
+                      color: context.appColors.secondaryFixedDim,
+                      shape: .circle,
                     ),
                     child: Image.asset(Assets.icons.btc.path),
                   ),
@@ -85,7 +78,7 @@ class BuyConfirmScreen extends StatelessWidget {
                   child: BBText(
                     formattedPayInAmount,
                     style: context.font.displaySmall,
-                    color: context.colour.outlineVariant,
+                    color: context.appColors.secondary,
                   ),
                 ),
                 const Gap(32),
@@ -115,19 +108,19 @@ class BuyConfirmScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               if (isConfirmingOrder || isRefreshingOrder)
                 const Center(child: CircularProgressIndicator())
               else
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: .center,
                   children: [
                     Text(
                       context.loc.buyConfirmAwaitingConfirmation,
                       style: context.font.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: context.colour.outline,
+                        fontWeight: .w500,
+                        color: context.appColors.outline,
                       ),
                     ),
                     const Gap(4),
@@ -148,8 +141,8 @@ class BuyConfirmScreen extends StatelessWidget {
                 onPressed: () {
                   context.read<BuyBloc>().add(const BuyEvent.confirmOrder());
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -16,18 +17,12 @@ class ReceiveEnterNote extends StatelessWidget {
   static Future showBottomSheet(BuildContext context) async {
     final receive = context.read<ReceiveBloc>();
 
-    await showModalBottomSheet(
+    await BlurredBottomSheet.show(
       context: context,
-      useRootNavigator: true,
-      backgroundColor: context.colour.onPrimary,
-      isScrollControlled: true,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (context) {
-        return BlocProvider.value(
-          value: receive,
-          child: const ReceiveEnterNote(),
-        );
-      },
+      child: BlocProvider.value(
+        value: receive,
+        child: const ReceiveEnterNote(),
+      ),
     );
   }
 
@@ -44,21 +39,25 @@ class ReceiveEnterNote extends StatelessWidget {
         MediaQuery.of(context).viewInsets.bottom,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: .min,
+        crossAxisAlignment: .stretch,
         children: [
           const Gap(22),
           Row(
             children: [
               const Gap(22),
               const Spacer(),
-              BBText(context.loc.receiveAddLabel, style: context.font.headlineMedium),
+              BBText(
+                context.loc.receiveAddLabel,
+                style: context.font.headlineMedium,
+                color: context.appColors.secondary,
+              ),
               const Spacer(),
               IconButton(
                 onPressed: () {
                   context.pop();
                 },
-                color: context.colour.secondary,
+                color: context.appColors.secondary,
                 icon: const Icon(Icons.close_sharp),
               ),
             ],
@@ -67,7 +66,7 @@ class ReceiveEnterNote extends StatelessWidget {
           BBInputText(
             hint: context.loc.receiveNotePlaceholder,
             hintStyle: context.font.bodyLarge?.copyWith(
-              color: context.colour.surfaceContainer,
+              color: context.appColors.onSurfaceVariant,
             ),
             value: currentNote,
             maxLength: NoteValidator.maxNoteLength,
@@ -80,7 +79,7 @@ class ReceiveEnterNote extends StatelessWidget {
             BBText(
               error.toString(),
               style: context.font.labelSmall?.copyWith(
-                color: context.colour.error,
+                color: context.appColors.error,
               ),
             ),
           ],
@@ -96,8 +95,8 @@ class ReceiveEnterNote extends StatelessWidget {
                 context.pop();
               }
             },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+            bgColor: context.appColors.secondary,
+            textColor: context.appColors.onSecondary,
           ),
           const Gap(24),
         ],

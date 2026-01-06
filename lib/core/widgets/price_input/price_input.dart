@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -37,69 +38,71 @@ class PriceInput extends StatelessWidget {
         Text(
           error ?? '',
           style: context.font.bodyLarge?.copyWith(
-            color: error != null ? context.colour.error : Colors.transparent,
+            color: error != null
+                ? context.appColors.error
+                : context.appColors.transparent,
           ),
           maxLines: 2,
         ),
         const Gap(8),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
             const Gap(24),
             Flexible(
               child: FittedBox(
-                fit: BoxFit.scaleDown,
+                fit: .scaleDown,
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: .min,
                   children: [
                     IntrinsicWidth(
-                      child:
-                          isMax
-                              ? Text(
-                                'MAX',
-                                style: context.font.displaySmall!.copyWith(
+                      child: isMax
+                          ? Text(
+                              'MAX',
+                              style: context.font.displaySmall!.copyWith(
+                                fontSize: 36,
+                                color: context.appColors.secondary,
+                              ),
+                            )
+                          : TextField(
+                              controller: amountController,
+                              focusNode: focusNode,
+                              keyboardType: TextInputType.numberWithOptions(
+                                signed: true,
+                                // We could pass the bitcoin unit to restrict the system DialPad
+                                // decimal: true
+                              ),
+                              inputFormatters: [AmountInputFormatter(currency)],
+                              showCursor: !readOnly,
+                              readOnly: readOnly,
+                              cursorColor: context.appColors.outline,
+                              cursorOpacityAnimates: true,
+                              cursorHeight: 30,
+                              style: context.font.displaySmall!.copyWith(
+                                fontSize: 36,
+                                color: context.appColors.secondary,
+                              ),
+                              textAlign: .center,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.zero,
+                                isDense: false,
+                                hintText:
+                                    focusNode != null && focusNode!.hasFocus
+                                    ? null
+                                    : "0",
+                                hintStyle: context.font.displaySmall!.copyWith(
                                   fontSize: 36,
-                                  color: context.colour.outlineVariant,
-                                ),
-                              )
-                              : TextField(
-                                controller: amountController,
-                                focusNode: focusNode,
-                                keyboardType: TextInputType.none,
-                                inputFormatters: [
-                                  AmountInputFormatter(currency),
-                                ],
-                                showCursor: !readOnly,
-                                readOnly: readOnly,
-                                cursorColor: context.colour.outline,
-                                cursorOpacityAnimates: true,
-                                cursorHeight: 30,
-                                style: context.font.displaySmall!.copyWith(
-                                  fontSize: 36,
-                                  color: context.colour.outlineVariant,
-                                ),
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.zero,
-                                  isDense: false,
-                                  hintText:
-                                      focusNode != null && focusNode!.hasFocus
-                                          ? null
-                                          : "0",
-                                  hintStyle: context.font.displaySmall!
-                                      .copyWith(
-                                        fontSize: 36,
-                                        color: context.colour.outlineVariant,
-                                      ),
+                                  color: context.appColors.secondary,
                                 ),
                               ),
+                            ),
                     ),
                     const Gap(8),
                     Text(
                       currency,
                       style: context.font.displaySmall?.copyWith(
-                        color: context.colour.outlineVariant,
+                        color: context.appColors.secondary,
                       ),
                       maxLines: 1,
                     ),
@@ -118,7 +121,7 @@ class PriceInput extends StatelessWidget {
                 },
                 child: Icon(
                   Icons.arrow_drop_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.secondary,
                   size: 40,
                 ),
               ),
@@ -128,7 +131,7 @@ class PriceInput extends StatelessWidget {
         Text(
           '~$amountEquivalent',
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.onSurfaceVariant,
           ),
         ),
         const Gap(14),
@@ -141,17 +144,17 @@ class PriceInput extends StatelessWidget {
               child: TextField(
                 onChanged: onNoteChanged,
                 textAlignVertical: TextAlignVertical.center,
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(2),
                     borderSide: BorderSide.none,
                   ),
-                  fillColor: context.colour.secondaryFixedDim,
+                  fillColor: context.appColors.secondaryFixedDim,
                   filled: true,
                   hintText: 'Add note',
                   hintStyle: context.font.labelSmall!.copyWith(
-                    color: context.colour.surfaceContainer,
+                    color: context.appColors.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -162,18 +165,12 @@ class PriceInput extends StatelessWidget {
   }
 
   Future<String?> _openPopup(BuildContext context, String selected) async {
-    final c = await showModalBottomSheet<String?>(
-      useRootNavigator: true,
+    final c = await BlurredBottomSheet.show<String?>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.colour.secondaryFixedDim,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (context) {
-        return CurrencyBottomSheet(
-          availableCurrencies: availableCurrencies,
-          selectedValue: selected,
-        );
-      },
+      child: CurrencyBottomSheet(
+        availableCurrencies: availableCurrencies,
+        selectedValue: selected,
+      ),
     );
 
     return c;
@@ -191,64 +188,99 @@ class CurrencyBottomSheet extends StatelessWidget {
   final String selectedValue;
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Gap(16),
-        Row(
-          children: [
-            const Gap(16 * 3),
-            const Spacer(),
-            Text('Currency', style: context.font.headlineMedium),
-            const Spacer(),
-            IconButton(
-              iconSize: 20,
-              onPressed: () => Navigator.pop(context),
-              color: context.colour.secondary,
-              icon: const Icon(Icons.close),
-            ),
-            const Gap(16),
-          ],
-        ),
-        const Gap(24),
-        for (final curr in availableCurrencies) ...[
-          InkWell(
-            onTap: () => Navigator.pop(context, curr),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 40),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 24,
-                    child: Text(
-                      curr.currencyIcon,
-                      style: context.font.headlineSmall,
-                    ),
-                  ),
-                  const Gap(16),
-                  Text(
-                    curr,
-                    style: context.font.headlineSmall?.copyWith(
-                      color:
-                          selectedValue == curr
-                              ? context.colour.primary
-                              : context.colour.secondary,
-                    ),
-                    textAlign: TextAlign.start,
-                  ),
-                ],
+    return Container(
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.8,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Gap(16),
+          Row(
+            children: [
+              const Gap(16 * 3),
+              const Spacer(),
+              Text(
+                'Currency',
+                style: context.font.headlineMedium?.copyWith(
+                  color: context.appColors.onSurface,
+                ),
               ),
+              const Spacer(),
+              IconButton(
+                iconSize: 20,
+                onPressed: () => Navigator.pop(context),
+                color: context.appColors.onSurface,
+                icon: const Icon(Icons.close),
+              ),
+              const Gap(16),
+            ],
+          ),
+          const Gap(24),
+          Flexible(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: availableCurrencies.length,
+              itemBuilder: (context, index) {
+                final curr = availableCurrencies[index];
+                return InkWell(
+                  onTap: () => Navigator.pop(context, curr),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 24,
+                      horizontal: 40,
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 24,
+                          child: Text(
+                            curr.currencyIcon,
+                            style: context.font.headlineSmall,
+                          ),
+                        ),
+                        const Gap(16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                curr.currencyName,
+                                style: context.font.headlineSmall?.copyWith(
+                                  color: selectedValue == curr
+                                      ? context.appColors.primary
+                                      : context.appColors.onSurface,
+                                ),
+                              ),
+                              const Gap(2),
+                              Text(
+                                curr,
+                                style: context.font.bodySmall?.copyWith(
+                                  color: context.appColors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
+          const Gap(24),
         ],
-        const Gap(24),
-      ],
+      ),
     );
   }
 }
 
 extension _CurrencyStrEx on String {
-  // This feels like it shouldn't be here and we should get this data differently
   String get currencyIcon {
     switch (this) {
       case 'USD':
@@ -287,6 +319,43 @@ extension _CurrencyStrEx on String {
       case 'BTC':
       default:
         return '₿';
+    }
+  }
+
+  String get currencyName {
+    switch (this) {
+      case 'USD':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'US',
+        )['name']!;
+      case 'EUR':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'EU',
+        )['name']!;
+      case 'CAD':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'CA',
+        )['name']!;
+      case 'CRC':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'CR',
+        )['name']!;
+      case 'MXN':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'MX',
+        )['name']!;
+      case 'ARS':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'AR',
+        )['name']!;
+      case 'COP':
+        return CountryConstants.countries.firstWhere(
+          (element) => element['code'] == 'CO',
+        )['name']!;
+      case 'sats':
+      case 'BTC':
+      default:
+        return this;
     }
   }
 }

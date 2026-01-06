@@ -1,10 +1,12 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/mempool_url.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -14,14 +16,14 @@ import 'package:url_launcher/url_launcher.dart';
 enum ArkTransactionType { boarding, commitment, redeem }
 
 extension ArkTransactionTypeExtension on ArkTransactionType {
-  String get name {
+  String toTranslated(BuildContext context) {
     switch (this) {
       case ArkTransactionType.boarding:
-        return 'Boarding';
+        return context.loc.arkTxBoarding;
       case ArkTransactionType.commitment:
-        return 'Settlement';
+        return context.loc.arkTxSettlement;
       case ArkTransactionType.redeem:
-        return 'Payment';
+        return context.loc.arkTxPayment;
     }
   }
 }
@@ -71,7 +73,7 @@ class ArkTxWidget extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8.0),
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: context.colour.onPrimary,
+          color: context.appColors.onPrimary,
           borderRadius: BorderRadius.circular(2.0),
           boxShadow: const [],
         ),
@@ -80,16 +82,16 @@ class ArkTxWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: context.colour.onPrimary,
+                color: context.appColors.onPrimary,
                 borderRadius: BorderRadius.circular(2.0),
-                border: Border.all(color: context.colour.surface),
+                border: Border.all(color: context.appColors.surface),
               ),
-              child: Icon(icon, color: context.colour.secondary),
+              child: Icon(icon, color: context.appColors.secondary),
             ),
             const Gap(16.0),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   CurrencyText(
                     sats,
@@ -101,16 +103,19 @@ class ArkTxWidget extends StatelessWidget {
                   if (tx is ark_wallet.Transaction_Boarding)
                     GestureDetector(
                       onTap: () async {
-                        await launchUrl(
-                          Uri.parse(
-                            MempoolUrl.bitcoinTxidUrl(txid, isTestnet: false),
-                          ),
+                        final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+
+                        final mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
+                          txid,
+                          isTestnet: false,
                         );
+
+                        await launchUrl(Uri.parse(mempoolUrl));
                       },
                       child: Text(
                         StringFormatting.truncateMiddle(txid),
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ),
@@ -118,7 +123,7 @@ class ArkTxWidget extends StatelessWidget {
               ),
             ),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: .end,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -126,13 +131,13 @@ class ArkTxWidget extends StatelessWidget {
                     vertical: 2.0,
                   ),
                   decoration: BoxDecoration(
-                    color: context.colour.secondary,
+                    color: context.appColors.secondary,
                     borderRadius: BorderRadius.circular(2.0),
                   ),
                   child: BBText(
-                    StringFormatting.capitalize(transactionType.name),
+                    transactionType.toTranslated(context),
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colour.onSecondary,
+                      color: context.appColors.onSecondary,
                     ),
                   ),
                 ),
@@ -143,14 +148,14 @@ class ArkTxWidget extends StatelessWidget {
                       BBText(
                         timeago.format(date),
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.outline,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color: context.appColors.inverseSurface,
                       ),
                     ],
                   )
@@ -158,16 +163,16 @@ class ArkTxWidget extends StatelessWidget {
                   Row(
                     children: [
                       BBText(
-                        'Pending',
+                        context.loc.arkTxPending,
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
                         Icons.schedule,
                         size: 12.0,
-                        color: context.colour.primary,
+                        color: context.appColors.primary,
                       ),
                     ],
                   ),

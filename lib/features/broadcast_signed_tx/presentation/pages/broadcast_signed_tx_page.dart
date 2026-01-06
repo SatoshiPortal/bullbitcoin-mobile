@@ -54,7 +54,7 @@ class BroadcastSignedTxPage extends StatelessWidget {
                     BBText(
                       state.error.toString(),
                       style: context.font.bodyMedium,
-                      color: context.colour.error,
+                      color: context.appColors.error,
                     ),
                   ],
 
@@ -67,8 +67,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                         BroadcastSignedTxRoute.broadcastScanQr.name,
                       );
                     },
-                    bgColor: context.colour.onPrimary,
-                    textColor: context.colour.secondary,
+                    bgColor: context.appColors.surface,
+                    textColor: context.appColors.text,
                     iconData: Icons.qr_code_scanner,
                     outlined: true,
                   ),
@@ -79,8 +79,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                         () => context.pushNamed(
                           BroadcastSignedTxRoute.broadcastScanNfc.name,
                         ),
-                    bgColor: context.colour.onPrimary,
-                    textColor: context.colour.secondary,
+                    bgColor: context.appColors.surface,
+                    textColor: context.appColors.text,
                     iconData: Icons.nfc,
                     outlined: true,
                   ),
@@ -102,8 +102,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                             padding: const EdgeInsets.all(16),
                             child: BBButton.big(
                               label: context.loc.broadcastSignedTxPushTxButton,
-                              bgColor: context.colour.secondary,
-                              textColor: context.colour.onPrimary,
+                              bgColor: context.appColors.primary,
+                              textColor: context.appColors.onPrimary,
                               onPressed: cubit.pushTxUri,
                             ),
                           ),
@@ -115,8 +115,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                             padding: const EdgeInsets.all(16),
                             child: BBButton.big(
                               label: context.loc.broadcastSignedTxBroadcast,
-                              bgColor: context.colour.secondary,
-                              textColor: context.colour.onPrimary,
+                              bgColor: context.appColors.primary,
+                              textColor: context.appColors.onPrimary,
                               onPressed: cubit.broadcastTransaction,
                             ),
                           ),
@@ -135,8 +135,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 100, right: 100),
                     child: BBButton.big(
                       label: context.loc.broadcastSignedTxDoneButton,
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onPrimary,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
                       onPressed:
                           () => context.goNamed(WalletRoute.walletHome.name),
                     ),

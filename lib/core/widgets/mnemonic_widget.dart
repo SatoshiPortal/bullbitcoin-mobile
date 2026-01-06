@@ -7,13 +7,12 @@ import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-typedef Mnemonic =
-    ({
-      String label,
-      String passphrase,
-      List<String> words,
-      bip39.Language language,
-    });
+typedef Mnemonic = ({
+  String label,
+  String passphrase,
+  List<String> words,
+  bip39.Language language,
+});
 
 class MnemonicWidget extends StatefulWidget {
   final bip39.Language language;
@@ -151,7 +150,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
             BBText(
               _error!.toString(),
               style: context.font.bodyMedium,
-              color: context.colour.onError,
+              color: context.appColors.error,
             ),
           ],
 
@@ -159,8 +158,8 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
           BBButton.big(
             label: widget.submitLabel,
             onPressed: onSubmit,
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.onSurface,
+            textColor: context.appColors.surface,
           ),
         ],
       ),
@@ -206,8 +205,8 @@ class MnemonicWordState extends State<MnemonicWord> {
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: context.colour.secondary),
-        color: context.colour.onPrimary,
+        border: Border.all(color: context.appColors.border),
+        color: context.appColors.surface,
       ),
       height: 41,
       child: Row(
@@ -217,20 +216,19 @@ class MnemonicWordState extends State<MnemonicWord> {
             width: 34,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color:
-                  widget.word.isEmpty
-                      ? context.colour.secondary
-                      : isValidWord
-                      ? Colors.green
-                      : Colors.red,
+              color: widget.word.isEmpty
+                  ? context.appColors.onSurface
+                  : isValidWord
+                  ? context.appColors.success
+                  : context.appColors.error,
 
               borderRadius: BorderRadius.circular(4),
             ),
             child: BBText(
               displayIndex,
               style: context.font.headlineMedium,
-              color: context.colour.onPrimary,
-              textAlign: TextAlign.right,
+              color: context.appColors.surface,
+              textAlign: .right,
             ),
           ),
           const Gap(4),
@@ -239,6 +237,9 @@ class MnemonicWordState extends State<MnemonicWord> {
               enableSuggestions: false,
               autocorrect: false,
               controller: _controller,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.text,
+              ),
               onChanged: (value) {
                 widget.onWordChanged((
                   index: widget.index,
@@ -246,18 +247,18 @@ class MnemonicWordState extends State<MnemonicWord> {
                 ));
               },
               focusNode: widget.focusNode,
-              clipBehavior: Clip.antiAliasWithSaveLayer,
+              clipBehavior: .antiAliasWithSaveLayer,
               onEditingComplete: widget.onComplete,
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.only(right: 8),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.only(right: 8),
                 border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
+                  borderSide: BorderSide(color: context.appColors.transparent),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
+                  borderSide: BorderSide(color: context.appColors.transparent),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
+                  borderSide: BorderSide(color: context.appColors.transparent),
                 ),
               ),
             ),
@@ -268,7 +269,7 @@ class MnemonicWordState extends State<MnemonicWord> {
                 _controller.clear();
                 widget.onWordChanged((index: widget.index, word: ''));
               },
-              icon: const Icon(Icons.close, size: 24),
+              icon: Icon(Icons.close, size: 24, color: context.appColors.text),
               padding: EdgeInsets.zero,
             ),
         ],
@@ -325,13 +326,13 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
   void _initializeFocusNodes() {
     focusNodes = List.generate(
       widget.words.length,
-      (index) =>
-          FocusNode()..addListener(() {
-            final focusedIndex = focusNodes.indexWhere((node) => node.hasFocus);
-            if (focusedIndex != -1 && _focusedDisplayIndex != focusedIndex) {
-              setState(() => _focusedDisplayIndex = focusedIndex);
-            }
-          }),
+      (index) => FocusNode()
+        ..addListener(() {
+          final focusedIndex = focusNodes.indexWhere((node) => node.hasFocus);
+          if (focusedIndex != -1 && _focusedDisplayIndex != focusedIndex) {
+            setState(() => _focusedDisplayIndex = focusedIndex);
+          }
+        }),
     );
   }
 
@@ -376,7 +377,7 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       key: key,
       height: height,
       child: ListView.separated(
-        scrollDirection: Axis.horizontal,
+        scrollDirection: .horizontal,
         itemCount: hints.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
@@ -389,8 +390,8 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final splitIndex =
-        (widget.words.length / MnemonicSentenceWidget.columns).floor();
+    final splitIndex = (widget.words.length / MnemonicSentenceWidget.columns)
+        .floor();
     final leftWords = List.generate(
       splitIndex,
       (i) => (index: i, word: widget.words[i]),
@@ -403,42 +404,40 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
     return Column(
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           spacing: 16,
           children: [
             Expanded(
               child: Column(
                 spacing: 16,
-                children:
-                    leftWords
-                        .map(
-                          (entry) => MnemonicWord(
-                            index: entry.index,
-                            word: entry.word,
-                            onWordChanged: widget.onWordChanged,
-                            focusNode: focusNodes[entry.index],
-                            onComplete: () => _focusNext(entry.index + 1),
-                          ),
-                        )
-                        .toList(),
+                children: leftWords
+                    .map(
+                      (entry) => MnemonicWord(
+                        index: entry.index,
+                        word: entry.word,
+                        onWordChanged: widget.onWordChanged,
+                        focusNode: focusNodes[entry.index],
+                        onComplete: () => _focusNext(entry.index + 1),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
             Expanded(
               child: Column(
                 spacing: 16,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    rightWords
-                        .map(
-                          (entry) => MnemonicWord(
-                            index: entry.index,
-                            word: entry.word,
-                            onWordChanged: widget.onWordChanged,
-                            focusNode: focusNodes[entry.index],
-                            onComplete: () => _focusNext(entry.index + 1),
-                          ),
-                        )
-                        .toList(),
+                crossAxisAlignment: .start,
+                children: rightWords
+                    .map(
+                      (entry) => MnemonicWord(
+                        index: entry.index,
+                        word: entry.word,
+                        onWordChanged: widget.onWordChanged,
+                        focusNode: focusNodes[entry.index],
+                        onComplete: () => _focusNext(entry.index + 1),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ],
@@ -466,26 +465,25 @@ class MnemonicLengthDropdown extends StatelessWidget {
       value: value,
       underline: const SizedBox(),
       style: context.font.bodyMedium?.copyWith(
-        fontWeight: FontWeight.w600,
-        color: context.colour.secondary,
+        fontWeight: .w600,
+        color: context.appColors.text,
       ),
-      dropdownColor: context.colour.onPrimary,
+      dropdownColor: context.appColors.surface,
       borderRadius: BorderRadius.circular(4),
-      items:
-          bip39.MnemonicLength.values
-              .map(
-                (length) => DropdownMenuItem(
-                  value: length,
-                  child: BBText(
-                    '${length.words} words',
-                    style: context.font.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: context.colour.secondary,
-                    ),
-                  ),
+      items: bip39.MnemonicLength.values
+          .map(
+            (length) => DropdownMenuItem(
+              value: length,
+              child: BBText(
+                '${length.words} words',
+                style: context.font.bodyMedium?.copyWith(
+                  fontWeight: .w600,
+                  color: context.appColors.text,
                 ),
-              )
-              .toList(),
+              ),
+            ),
+          )
+          .toList(),
       onChanged: (v) => onChanged(v ?? bip39.MnemonicLength.words12),
     );
   }
@@ -506,8 +504,8 @@ class _HintChip extends StatelessWidget {
         height: 38,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          color: context.colour.onPrimary,
-          border: Border.all(color: context.colour.surface),
+          color: context.appColors.surface,
+          border: Border.all(color: context.appColors.border),
         ),
         child: Center(child: BBText(word, style: context.font.bodyLarge)),
       ),

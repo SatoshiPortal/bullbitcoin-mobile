@@ -11,14 +11,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class CommonCoinSelectionBottomSheet extends StatelessWidget {
+class CommonCoinSelectionBottomSheet extends StatefulWidget {
   final BitcoinUnit bitcoinUnit;
   final double exchangeRate;
   final String fiatCurrency;
   final List<WalletUtxo> utxos;
-  final List<WalletUtxo> selectedUtxos;
+  final List<WalletUtxo> initialSelectedUtxos;
   final int amountToSendSat;
-  final Function(WalletUtxo) onUtxoSelected;
+  final Function(List<WalletUtxo>) onDone;
 
   const CommonCoinSelectionBottomSheet({
     super.key,
@@ -26,30 +26,67 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
     required this.exchangeRate,
     required this.fiatCurrency,
     required this.utxos,
-    required this.selectedUtxos,
+    required this.initialSelectedUtxos,
     required this.amountToSendSat,
-    required this.onUtxoSelected,
+    required this.onDone,
   });
 
   @override
+  State<CommonCoinSelectionBottomSheet> createState() =>
+      _CommonCoinSelectionBottomSheetState();
+}
+
+class _CommonCoinSelectionBottomSheetState
+    extends State<CommonCoinSelectionBottomSheet> {
+  late List<WalletUtxo> _selectedUtxos;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedUtxos = List.of(widget.initialSelectedUtxos);
+  }
+
+  void _onUtxoTapped(WalletUtxo utxo) {
+    setState(() {
+      if (_selectedUtxos.contains(utxo)) {
+        _selectedUtxos.remove(utxo);
+      } else {
+        _selectedUtxos.add(utxo);
+      }
+    });
+  }
+
+  void _onDonePressed() {
+    widget.onDone(_selectedUtxos);
+    context.pop();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final selectedUtxoTotalSat = selectedUtxos.fold(
+    final selectedUtxoTotalSat = _selectedUtxos.fold(
       0,
       (previousValue, element) => previousValue + element.amountSat.toInt(),
     );
-    final selectedUtxoTotal =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
-            : FormatAmount.sats(selectedUtxoTotalSat);
-    final amountToSend =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
-            : FormatAmount.sats(amountToSendSat);
+    final selectedUtxoTotal = widget.bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
+        : FormatAmount.sats(selectedUtxoTotalSat);
+    final amountToSend = widget.bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(widget.amountToSendSat))
+        : FormatAmount.sats(widget.amountToSendSat);
+
+    final isAmountSufficient = selectedUtxoTotalSat >= widget.amountToSendSat;
+
+    final selectedFiatEquivalent = widget.exchangeRate > 0
+        ? FormatAmount.fiat(
+            ConvertAmount.satsToFiat(selectedUtxoTotalSat, widget.exchangeRate),
+            widget.fiatCurrency,
+          )
+        : null;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           Stack(
             alignment: Alignment.center,
@@ -57,60 +94,84 @@ class CommonCoinSelectionBottomSheet extends StatelessWidget {
               Center(
                 child: BBText(
                   "Select amount",
-                  style: context.font.headlineMedium,
+                  style: context.font.headlineMedium?.copyWith(
+                    color: context.appColors.secondary,
+                  ),
                 ),
               ),
               Positioned(
                 right: 0,
                 child: IconButton(
                   iconSize: 24,
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close, color: context.appColors.secondary),
                   onPressed: context.pop,
                 ),
               ),
             ],
           ),
           const Gap(32),
-          BBText(selectedUtxoTotal, style: context.font.displaySmall),
+          BBText(
+            selectedUtxoTotal,
+            style: context.font.displaySmall?.copyWith(
+              color: context.appColors.secondary,
+            ),
+          ),
+          if (selectedFiatEquivalent != null) ...[
+            const Gap(4),
+            BBText(
+              '~$selectedFiatEquivalent',
+              style: context.font.bodyLarge?.copyWith(
+                color: context.appColors.onSurfaceVariant,
+              ),
+            ),
+          ],
           const Gap(8),
           BBText(
             'Amount requested: $amountToSend',
-            style: context.font.bodySmall,
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.onSurfaceVariant,
+            ),
           ),
+          if (!isAmountSufficient) ...[
+            const Gap(8),
+            BBText(
+              'Selected amount is insufficient',
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.error,
+              ),
+            ),
+          ],
           const Gap(24),
           ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (_, index) {
-              final utxo = utxos[index];
+              final utxo = widget.utxos[index];
               return CommonCoinSelectTile(
                 utxo: utxo,
-                selected: selectedUtxos.contains(utxo),
-                onTap: () => onUtxoSelected(utxo),
-                exchangeRate: exchangeRate,
-                bitcoinUnit: bitcoinUnit,
-                fiatCurrency: fiatCurrency,
+                selected: _selectedUtxos.contains(utxo),
+                onTap: () => _onUtxoTapped(utxo),
+                exchangeRate: widget.exchangeRate,
+                bitcoinUnit: widget.bitcoinUnit,
+                fiatCurrency: widget.fiatCurrency,
               );
             },
             separatorBuilder: (_, _) => const Gap(24),
-            itemCount: utxos.length,
+            itemCount: widget.utxos.length,
             shrinkWrap: true,
           ),
           const Gap(24),
           BBButton.big(
             label: "Done",
-            onPressed:
-                selectedUtxoTotalSat >= amountToSendSat
-                    ? () => context.pop()
-                    : () {},
-            disabled: selectedUtxoTotalSat < amountToSendSat,
-            bgColor:
-                selectedUtxoTotalSat >= amountToSendSat
-                    ? context.colour.secondary
-                    : context.colour.outlineVariant,
-            textColor:
-                selectedUtxoTotalSat >= amountToSendSat
-                    ? context.colour.onSecondary
-                    : context.colour.outline,
+            onPressed: selectedUtxoTotalSat >= widget.amountToSendSat
+                ? _onDonePressed
+                : () {},
+            disabled: selectedUtxoTotalSat < widget.amountToSendSat,
+            bgColor: selectedUtxoTotalSat >= widget.amountToSendSat
+                ? context.appColors.secondary
+                : context.appColors.outlineVariant,
+            textColor: selectedUtxoTotalSat >= widget.amountToSendSat
+                ? context.appColors.onSecondary
+                : context.appColors.outline,
           ),
           const Gap(24),
         ],
@@ -139,10 +200,9 @@ class CommonCoinSelectTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxoValue =
-        bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
-            : FormatAmount.sats(utxo.amountSat.toInt());
+    final utxoValue = bitcoinUnit == BitcoinUnit.btc
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
+        : FormatAmount.sats(utxo.amountSat.toInt());
 
     final fiatEquivalent = FormatAmount.fiat(
       ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
@@ -150,11 +210,9 @@ class CommonCoinSelectTile extends StatelessWidget {
     );
 
     final address = utxo.address;
-    final addressType =
-        utxo.addressKeyChain == WalletAddressKeyChain.external
-            ? 'Receive'
-            : 'Change';
-    final label = utxo.labels.join(', ');
+    final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
+        ? 'Receive'
+        : 'Change';
 
     return GestureDetector(
       onTap: onTap,
@@ -163,81 +221,77 @@ class CommonCoinSelectTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: context.colour.outlineVariant),
+          border: Border.all(color: context.appColors.outlineVariant),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   ListTile(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(2),
                     ),
-                    tileColor: Colors.transparent,
+                    tileColor: context.appColors.transparent,
                     contentPadding: EdgeInsets.zero,
                     title: Row(
                       children: [
                         BBText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colour.outlineVariant,
-                            fontWeight: FontWeight.w500,
+                            color: context.appColors.onSurface,
+                            fontWeight: .w500,
                           ),
                         ),
                       ],
                     ),
-                    subtitle: BBText(
-                      label,
-                      style: context.font.labelMedium?.copyWith(
-                        color: context.colour.outline,
-                      ),
-                    ),
-                    trailing: Radio<bool>(
-                      value: true,
+                    trailing: RadioGroup<bool>(
                       groupValue: selected,
                       onChanged: (_) => onTap(),
-                      activeColor: context.colour.secondary,
+                      child: Radio<bool>(
+                        value: true,
+                        activeColor: context.appColors.secondary,
+                      ),
                     ),
                   ),
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
-                      color: context.colour.outlineVariant,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
 
-                  Divider(color: context.colour.secondaryFixedDim),
+                  Divider(color: context.appColors.secondaryFixedDim),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       BBText(
                         'Address: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colour.surfaceContainer,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       Expanded(
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.colour.secondary,
+                            color: context.appColors.onSurface,
                           ),
                         ),
                       ),
                       BBText(
                         'Type: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.colour.surfaceContainer,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.secondary,
+                          color: context.appColors.onSurface,
                         ),
                       ),
                     ],

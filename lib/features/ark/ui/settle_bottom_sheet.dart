@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -14,12 +15,9 @@ class SettleBottomSheet extends StatelessWidget {
   final ArkCubit cubit;
 
   static Future<void> show(BuildContext context, ArkCubit cubit) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => SettleBottomSheet(cubit: cubit),
+      child: SettleBottomSheet(cubit: cubit),
     );
   }
 
@@ -27,7 +25,7 @@ class SettleBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: SafeArea(
@@ -37,13 +35,13 @@ class SettleBottomSheet extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   Container(
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: context.colour.outline.withValues(alpha: 0.3),
+                      color: context.appColors.border,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -51,23 +49,23 @@ class SettleBottomSheet extends StatelessWidget {
                   Icon(
                     Icons.check_circle_outline,
                     size: 48,
-                    color: context.colour.primary,
+                    color: context.appColors.primary,
                   ),
                   const Gap(16),
                   BBText(
                     context.loc.arkSettleTitle,
                     style: context.font.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: .bold,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                   const Gap(8),
                   BBText(
                     context.loc.arkSettleMessage,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary.withValues(alpha: 0.7),
+                      color: context.appColors.textMuted,
                     ),
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                     maxLines: 3,
                   ),
                   const Gap(24),
@@ -77,11 +75,11 @@ class SettleBottomSheet extends StatelessWidget {
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: context.colour.surface.withValues(alpha: 0.5),
+                      color: context.appColors.cardBackground,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         BBText(
                           context.loc.arkSettleIncludeRecoverable,
@@ -90,7 +88,7 @@ class SettleBottomSheet extends StatelessWidget {
                         Switch(
                           value: state.withRecoverableVtxos,
                           onChanged: cubit.onChangedSelectRecoverableVtxos,
-                          activeColor: context.colour.primary,
+                          activeThumbColor: context.appColors.primary,
                         ),
                       ],
                     ),
@@ -102,8 +100,8 @@ class SettleBottomSheet extends StatelessWidget {
                         child: BBButton.small(
                           label: context.loc.arkSettleCancel,
                           onPressed: () => Navigator.of(context).pop(),
-                          bgColor: context.colour.secondaryFixed,
-                          textColor: context.colour.secondary,
+                          bgColor: context.appColors.cardBackground,
+                          textColor: context.appColors.onSurface,
                         ),
                       ),
                       const Gap(12),
@@ -114,8 +112,8 @@ class SettleBottomSheet extends StatelessWidget {
                             Navigator.of(context).pop();
                             await cubit.settle(state.withRecoverableVtxos);
                           },
-                          bgColor: context.colour.primary,
-                          textColor: context.colour.onPrimary,
+                          bgColor: context.appColors.primary,
+                          textColor: context.appColors.onPrimary,
                         ),
                       ),
                     ],

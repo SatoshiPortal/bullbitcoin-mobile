@@ -19,14 +19,11 @@ class TransactionDetailsAmount extends StatelessWidget {
     final swap = tx?.swap;
     final isExternalChainSwap =
         swap is ChainSwap && swap.receiveWalletId == null;
-    final amountSat =
-        isSwap && swap != null
-            ? (isExternalChainSwap
-                ? swap.receieveAmount
-                : (tx?.isOutgoing == true
-                    ? swap.amountSat
-                    : swap.receieveAmount))
-            : tx?.amountSat;
+    final amountSat = isSwap && swap != null
+        ? (isExternalChainSwap
+              ? swap.receieveAmount
+              : (tx?.isOutgoing == true ? swap.amountSat : swap.receieveAmount))
+        : tx?.amountSat;
     final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrder &&
@@ -37,7 +34,7 @@ class TransactionDetailsAmount extends StatelessWidget {
             tx.order is FundingOrder);
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: .center,
       children: [
         CurrencyText(
           isOrder && !showOrderInFiat && orderAmountAndCurrency != null
@@ -45,17 +42,17 @@ class TransactionDetailsAmount extends StatelessWidget {
               : amountSat ?? 0,
           showFiat: false,
           style: context.font.displaySmall?.copyWith(
-            color: context.colour.outlineVariant,
-            fontWeight: FontWeight.w500,
+            color: context.appColors.secondary,
+            fontWeight: .w500,
           ),
           fiatAmount:
               isOrder && showOrderInFiat && orderAmountAndCurrency != null
-                  ? orderAmountAndCurrency.$1.toDouble()
-                  : null,
+              ? orderAmountAndCurrency.$1.toDouble()
+              : null,
           fiatCurrency:
               isOrder && showOrderInFiat && orderAmountAndCurrency != null
-                  ? orderAmountAndCurrency.$2
-                  : null,
+              ? orderAmountAndCurrency.$2
+              : null,
         ),
       ],
     );

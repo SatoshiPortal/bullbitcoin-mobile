@@ -1,4 +1,3 @@
-import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/widgets.dart';
 
 class StackedPage extends StatelessWidget {
@@ -16,18 +15,16 @@ class StackedPage extends StatelessWidget {
     return Stack(
       children: [
         child,
-        BottomCenter(
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(
-              bottom: 32,
-              top: 8,
-              left: 16,
-              right: 16,
-            ),
-            alignment: Alignment.bottomCenter,
-            child: bottomChild,
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.only(
+            bottom: 32,
+            top: 8,
+            left: 16,
+            right: 16,
           ),
+          alignment: Alignment.bottomCenter,
+          child: bottomChild,
         ),
       ],
     );

@@ -19,8 +19,10 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
 
   @override
   void initState() {
-    final bitcoinAddressInput =
-        context.read<BuyBloc>().state.bitcoinAddressInput;
+    final bitcoinAddressInput = context
+        .read<BuyBloc>()
+        .state
+        .bitcoinAddressInput;
     _bitcoinAddressInputController = TextEditingController(
       text: bitcoinAddressInput,
     );
@@ -49,11 +51,8 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
       (BuyBloc bloc) => bloc.state.selectedWallet,
     );
     final externalBitcoinWalletLabel = context.loc.buyConfirmExternalWallet;
-    final secureBitcoinWalletLabel = context.loc.buyConfirmSecureWallet;
-    final instantPaymentWalletLabel = context.loc.buyConfirmInstantWallet;
-
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.buySelectWallet, style: context.font.bodyMedium),
         const Gap(4.0),
@@ -61,7 +60,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
           height: 56,
           child: Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
@@ -72,33 +71,35 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                 ),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.onSurface,
                 ),
-                value: selectedWallet?.id,
+                initialValue: selectedWallet?.id,
                 items: [
                   ...wallets.map((w) {
-                    final label =
-                        w.label ??
-                        (w.isLiquid
-                            ? instantPaymentWalletLabel
-                            : secureBitcoinWalletLabel);
+                    final label = w.displayLabel(context);
                     return DropdownMenuItem(
                       value: w.id,
-                      child: Text(label, style: context.font.headlineSmall),
+                      child: Text(
+                        label,
+                        style: context.font.headlineSmall?.copyWith(
+                          color: context.appColors.secondary,
+                        ),
+                      ),
                     );
                   }),
                   DropdownMenuItem(
                     child: Text(
-                      // To not show the external wallet label before the wallets
-                      //  are loaded return an empty string if not started up.
                       !isStarted ? '' : externalBitcoinWalletLabel,
-                      style: context.font.headlineSmall,
+                      style: context.font.headlineSmall?.copyWith(
+                        color: context.appColors.secondary,
+                      ),
                     ),
                   ),
                 ],
                 onChanged: (value) {
-                  final selectedWallet =
-                      wallets.where((w) => w.id == value).firstOrNull;
+                  final selectedWallet = wallets
+                      .where((w) => w.id == value)
+                      .firstOrNull;
                   context.read<BuyBloc>().add(
                     BuyEvent.selectedWalletChanged(selectedWallet),
                   );
@@ -112,30 +113,38 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
         // bitcoin address manually.
         if (isStarted && selectedWallet == null) ...[
           const Gap(16.0),
-          Text(context.loc.buyEnterBitcoinAddress, style: context.font.bodyMedium),
+          Text(
+            context.loc.buyEnterBitcoinAddress,
+            style: context.font.bodyMedium,
+          ),
           const Gap(4.0),
           SizedBox(
             height: 56,
             child: Material(
               elevation: 2,
-              color: context.colour.onPrimary,
+              color: context.appColors.onSecondary,
               borderRadius: BorderRadius.circular(2.0),
               child: Center(
                 child: TextFormField(
                   controller: _bitcoinAddressInputController,
                   textAlignVertical: TextAlignVertical.center,
-                  style: context.font.headlineSmall,
+                  style: context.font.headlineSmall?.copyWith(
+                    color: context.appColors.secondary,
+                  ),
                   decoration: InputDecoration(
                     hintText: context.loc.buyBitcoinAddressHint,
                     hintStyle: context.font.headlineSmall?.copyWith(
-                      color: context.colour.outline,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
                     ),
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.paste, color: context.colour.secondary),
+                      icon: Icon(
+                        Icons.paste,
+                        color: context.appColors.secondary,
+                      ),
                       onPressed: () {
                         Clipboard.getData(Clipboard.kTextPlain).then((value) {
                           if (value?.text != null) {

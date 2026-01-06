@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/exchange/domain/errors/pay_error.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
@@ -90,24 +90,24 @@ class PaySendPaymentScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: isConfirmingPayment,
-              backgroundColor: context.colour.onPrimary,
-              foregroundColor: context.colour.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
             const Gap(24.0),
             Text(
               context.loc.payConfirmPayment,
               style: context.font.headlineMedium?.copyWith(
-                color: context.colour.secondary,
+                color: context.appColors.secondary,
               ),
             ),
             const Gap(4.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 Text(
                   context.loc.payPriceRefreshIn,
                   style: context.font.bodyMedium?.copyWith(
-                    color: context.colour.outline,
+                    color: context.appColors.outline,
                   ),
                 ),
                 if (order != null)
@@ -288,7 +288,9 @@ class _DetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final valueColor =
-        onTap == null ? context.colour.outlineVariant : context.colour.primary;
+        onTap == null
+            ? context.appColors.secondary
+            : context.appColors.primary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -296,24 +298,24 @@ class _DetailRow extends StatelessWidget {
           value == null
               ? const LoadingLineContent()
               : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Text(
                     title,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.surfaceContainer,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   Expanded(
                     child:
                         onTap == null
                             ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisAlignment: .end,
                               children: [
                                 Flexible(
                                   child: Text(
                                     value!,
-                                    textAlign: TextAlign.end,
+                                    textAlign: .end,
                                     maxLines: 2,
                                     style: context.font.bodyMedium?.copyWith(
                                       color: valueColor,
@@ -331,7 +333,7 @@ class _DetailRow extends StatelessWidget {
                                     },
                                     child: Icon(
                                       Icons.copy,
-                                      color: context.colour.primary,
+                                      color: context.appColors.primary,
                                       size: 16,
                                     ),
                                   ),
@@ -340,14 +342,14 @@ class _DetailRow extends StatelessWidget {
                             )
                             : GestureDetector(
                               onTap: onTap,
-                              behavior: HitTestBehavior.opaque,
+                              behavior: .opaque,
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: .end,
                                 children: [
                                   Flexible(
                                     child: Text(
                                       value!,
-                                      textAlign: TextAlign.end,
+                                      textAlign: .end,
                                       maxLines: 2,
                                       style: context.font.bodyMedium?.copyWith(
                                         color: valueColor,
@@ -374,7 +376,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Divider(color: context.colour.secondaryFixedDim, height: 1);
+    return Divider(color: context.appColors.secondaryFixedDim, height: 1);
   }
 }
 
@@ -403,23 +405,18 @@ class _BottomButtons extends StatelessWidget {
           BBButton.big(
             label: context.loc.payAdvancedSettings,
             onPressed: () {
-              showModalBottomSheet(
+              BlurredBottomSheet.show(
                 context: context,
-                isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
-                constraints: const BoxConstraints(maxWidth: double.infinity),
-                useSafeArea: true,
-                builder:
-                    (BuildContext buildContext) => BlocProvider.value(
-                      value: context.read<PayBloc>(),
-                      child: const PayAdvancedOptionsBottomSheet(),
-                    ),
+                child: BlocProvider.value(
+                  value: context.read<PayBloc>(),
+                  child: const PayAdvancedOptionsBottomSheet(),
+                ),
               );
             },
-            bgColor: Colors.transparent,
-            textColor: context.colour.secondary,
+            bgColor: context.appColors.transparent,
+            textColor: context.appColors.secondary,
             outlined: true,
-            borderColor: context.colour.secondary,
+            borderColor: context.appColors.secondary,
           ),
           const Gap(16),
         ],
@@ -427,8 +424,8 @@ class _BottomButtons extends StatelessWidget {
           label: context.loc.payContinue,
           disabled: isConfirmingPayment,
           onPressed: onContinuePressed,
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
         ),
       ],
     );
@@ -447,50 +444,19 @@ class _PayError extends StatelessWidget {
               : null,
     );
 
+    if (payError == null) return const SizedBox.shrink();
+
     return Center(
-      child: switch (payError) {
-        AboveMaxAmountPayError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.payAboveMaxAmount,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
-            ),
-            textAlign: TextAlign.center,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        child: Text(
+          payError.toTranslated(context),
+          style: context.font.bodyMedium?.copyWith(
+            color: context.appColors.error,
           ),
+          textAlign: TextAlign.center,
         ),
-        BelowMinAmountPayError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.payBelowMinAmount,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        InsufficientBalancePayError _ => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            context.loc.payInsufficientBalance,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        UnexpectedPayError(:final message) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Text(
-            message,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        _ => const SizedBox.shrink(),
-      },
+      ),
     );
   }
 }

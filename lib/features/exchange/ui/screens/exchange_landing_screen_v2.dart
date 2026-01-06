@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 class ExchangeLandingScreenV2 extends StatelessWidget {
   const ExchangeLandingScreenV2({super.key});
 
@@ -24,10 +25,11 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
         context.goNamed(WalletRoute.walletHome.name);
       },
       child: Scaffold(
-        backgroundColor: context.colour.secondary,
+        backgroundColor: context.appColors.secondaryFixed,
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           leading: BackButton(
-            color: context.colour.onSecondary,
+            color: context.appColors.onSecondaryFixed,
             onPressed: () => context.goNamed(WalletRoute.walletHome.name),
           ),
         ),
@@ -36,10 +38,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
           children: [
             // Background image with geometric pattern
             Positioned.fill(
-              child: Image.asset(
-                Assets.backgrounds.bgLong.path,
-                fit: BoxFit.cover,
-              ),
+              child: Image.asset(Assets.backgrounds.bgLong.path, fit: .cover),
             ),
             SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -58,7 +57,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         BBText(
                           context.loc.exchangeBrandName,
                           style: AppFonts.textTitleTheme.textStyle.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                             fontSize: 64,
                           ),
                         ),
@@ -66,7 +65,7 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                         BBText(
                           context.loc.exchangeLandingRecommendedExchange,
                           style: context.font.headlineSmall?.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                           ),
                         ),
                       ],
@@ -78,53 +77,53 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: context.colour.primary,
+                        color: context.appColors.primary,
                         width: 0,
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(
                           context.loc.exchangeFeatureSelfCustody,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureDcaOrders,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureSellBitcoin,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureBankTransfers,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureCustomerSupport,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                           ),
                         ),
                         const Gap(12),
                         BBText(
                           context.loc.exchangeFeatureUnifiedHistory,
                           style: context.font.bodyLarge?.copyWith(
-                            color: context.colour.onSecondary,
+                            color: context.appColors.onSecondaryFixed,
                           ),
                         ),
                       ],
@@ -135,26 +134,28 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: context.colour.primary.withValues(alpha: 0.1),
+                      color: context.appColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: context.colour.onSecondary,
+                          color: context.appColors.onSecondaryFixed,
                           size: 20,
                         ),
                         const Gap(8),
                         Expanded(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: .start,
                             children: [
                               BBText(
-                                context.loc.exchangeLandingDisclaimerNotAvailable,
+                                context
+                                    .loc
+                                    .exchangeLandingDisclaimerNotAvailable,
                                 style: context.font.bodySmall?.copyWith(
-                                  color: context.colour.onSecondary,
+                                  color: context.appColors.onSecondaryFixed,
                                 ),
                               ),
                             ],
@@ -180,8 +181,8 @@ class ExchangeLandingScreenV2 extends StatelessWidget {
                           );
                         }
                       },
-                      bgColor: context.colour.primary,
-                      textColor: context.colour.onSecondary,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onSecondaryFixed,
                     ),
                   ),
                   const Gap(32),

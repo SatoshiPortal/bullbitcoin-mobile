@@ -74,22 +74,23 @@ class PayReceivePaymentScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             Center(
               child: BBText(
                 context.loc.payPleasePayInvoice,
                 style: context.font.headlineMedium,
+                color: context.appColors.secondary,
               ),
             ),
             Center(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: .center,
                 children: [
                   BBText(
                     context.loc.payPriceRefreshIn,
                     style: context.font.bodyMedium,
-                    color: context.colour.outline,
+                    color: context.appColors.outline,
                   ),
                   Countdown(
                     until: order.confirmationDeadline,
@@ -117,7 +118,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
             Container(
               height: 1,
               width: double.infinity,
-              color: context.colour.secondaryFixedDim,
+              color: context.appColors.secondaryFixedDim,
             ),
             const Gap(16),
             _buildDetailRow(
@@ -204,20 +205,20 @@ class PayReceivePaymentScreen extends StatelessWidget {
                         SnackBarUtils.showCopiedSnackBar(context);
                       }
                     },
-                    bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.secondary,
                     outlined: true,
-                    borderColor: context.colour.secondary,
+                    borderColor: context.appColors.secondary,
                   ),
                 ),
                 const Gap(16),
                 Expanded(
                   child: BBButton.big(
                     label: context.loc.payShowQrCode,
-                    bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.secondary,
                     outlined: true,
-                    borderColor: context.colour.secondary,
+                    borderColor: context.appColors.secondary,
                     onPressed: () {
                       PayQrBottomSheet.show(context, bip21InvoiceData);
                     },
@@ -242,26 +243,26 @@ class PayReceivePaymentScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
             label,
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.surfaceContainer,
+              color: context.appColors.onSurfaceVariant,
             ),
           ),
           const Spacer(),
           Expanded(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: .end,
               children: [
                 Flexible(
                   child: BBText(
                     value,
-                    textAlign: TextAlign.end,
+                    textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.colour.error : null,
+                      color: isError ? context.appColors.error : context.appColors.secondary,
                     ),
                   ),
                 ),
@@ -274,7 +275,7 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     },
                     child: Icon(
                       Icons.copy,
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       size: 16,
                     ),
                   ),

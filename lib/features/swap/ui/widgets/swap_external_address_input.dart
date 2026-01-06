@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -23,9 +24,14 @@ class SwapExternalAddressInput extends StatelessWidget {
         );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
-        Text('To', style: context.font.bodyLarge),
+        Text(
+          context.loc.swapToLabel,
+          style: context.font.bodyLarge?.copyWith(
+            color: context.appColors.onSurface,
+          ),
+        ),
         const Gap(4),
         BBInputText(
           onChanged: (value) {
@@ -34,18 +40,18 @@ class SwapExternalAddressInput extends StatelessWidget {
             );
           },
           value: state.address,
-          hint: 'Enter external wallet address',
+          hint: context.loc.swapExternalAddressHint,
           hintStyle: context.font.bodyMedium?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
           maxLines: 1,
           rightIcon: Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: .min,
             children: [
               IconButton(
                 icon: Icon(
                   Icons.qr_code_scanner,
-                  color: context.colour.secondary,
+                  color: context.appColors.onSurface,
                   size: 20,
                 ),
                 onPressed: () async {
@@ -62,7 +68,7 @@ class SwapExternalAddressInput extends StatelessWidget {
               IconButton(
                 icon: Icon(
                   Icons.paste_sharp,
-                  color: context.colour.secondary,
+                  color: context.appColors.onSurface,
                   size: 20,
                 ),
                 onPressed: () {
@@ -88,7 +94,7 @@ class SwapExternalAddressInput extends StatelessWidget {
             child: BBText(
               state.error!,
               style: context.font.labelSmall,
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
       ],

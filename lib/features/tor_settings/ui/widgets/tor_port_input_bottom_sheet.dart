@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
@@ -12,12 +14,9 @@ class TorPortInputBottomSheet extends StatefulWidget {
   final int currentPort;
 
   static Future<int?> show(BuildContext context, int currentPort) {
-    return showModalBottomSheet<int>(
+    return BlurredBottomSheet.show<int>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.colour.secondaryFixed,
-      useSafeArea: true,
-      builder: (context) => TorPortInputBottomSheet(currentPort: currentPort),
+      child: TorPortInputBottomSheet(currentPort: currentPort),
     );
   }
 
@@ -42,16 +41,16 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
     super.dispose();
   }
 
-  String? _validatePort(String? value) {
+  String? _validatePort(String? value, BuildContext context) {
     if (value == null || value.isEmpty) {
-      return 'Please enter a port number';
+      return context.loc.torSettingsPortValidationEmpty;
     }
     final port = int.tryParse(value);
     if (port == null) {
-      return 'Please enter a valid number';
+      return context.loc.torSettingsPortValidationInvalid;
     }
     if (port < 1 || port > 65535) {
-      return 'Port must be between 1 and 65535';
+      return context.loc.torSettingsPortValidationRange;
     }
     return null;
   }
@@ -77,14 +76,14 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
       child: Form(
         key: _formKey,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             Stack(
               alignment: Alignment.center,
               children: [
                 Center(
                   child: BBText(
-                    'Tor Proxy Port',
+                    context.loc.torSettingsProxyPort,
                     style: context.font.headlineMedium,
                   ),
                 ),
@@ -103,22 +102,22 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
               controller: _controller,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                labelText: 'Port Number',
-                hintText: '9050',
-                border: OutlineInputBorder(),
-                helperText: 'Default Orbot port: 9050',
+              decoration: InputDecoration(
+                labelText: context.loc.torSettingsPortNumber,
+                hintText: context.loc.torSettingsPortHint,
+                border: const OutlineInputBorder(),
+                helperText: context.loc.torSettingsPortHelper,
               ),
-              validator: _validatePort,
+              validator: (value) => _validatePort(value, context),
               onFieldSubmitted: (_) => _submit(),
               autofocus: true,
             ),
             const Gap(24),
             BBButton.big(
-              label: 'Save',
+              label: context.loc.torSettingsSaveButton,
               onPressed: _submit,
-              bgColor: context.colour.primary,
-              textColor: context.colour.onPrimary,
+              bgColor: context.appColors.primary,
+              textColor: context.appColors.onPrimary,
             ),
           ],
         ),

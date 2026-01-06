@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipients_list_tile.dart';
@@ -14,10 +15,10 @@ class RecipientsListTab extends StatefulWidget {
   const RecipientsListTab({super.key});
 
   @override
-  _RecipientsListTabState createState() => _RecipientsListTabState();
+  RecipientsListTabState createState() => RecipientsListTabState();
 }
 
-class _RecipientsListTabState extends State<RecipientsListTab> {
+class RecipientsListTabState extends State<RecipientsListTab> {
   String? _jurisdictionFilter;
   String _searchQuery = '';
   List<RecipientViewModel>? _recipients;
@@ -40,20 +41,18 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
         _recipients = _applyFilters(
           state.filteredRecipientsByJurisdiction(_jurisdictionFilter),
         );
-        _jurisdictionFilter =
-            state.availableJurisdictions.length == 1
-                ? state.availableJurisdictions.first
-                : _jurisdictionFilter;
+        _jurisdictionFilter = state.availableJurisdictions.length == 1
+            ? state.availableJurisdictions.first
+            : _jurisdictionFilter;
       });
     });
     // Initialize the recipients list
     _recipients = _applyFilters(
       bloc.state.filteredRecipientsByJurisdiction(_jurisdictionFilter),
     );
-    _jurisdictionFilter =
-        bloc.state.availableJurisdictions.length == 1
-            ? bloc.state.availableJurisdictions.first
-            : _jurisdictionFilter;
+    _jurisdictionFilter = bloc.state.availableJurisdictions.length == 1
+        ? bloc.state.availableJurisdictions.first
+        : _jurisdictionFilter;
   }
 
   void _onScroll() {
@@ -71,11 +70,11 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
     if (_searchQuery.isEmpty) return recipients;
 
     final searchLower = _searchQuery.toLowerCase();
-    final filtered =
-        recipients.where((recipient) {
-          final displayName = recipient.displayName?.toLowerCase() ?? '';
-          return displayName.contains(searchLower);
-        }).toList();
+    final filtered = recipients.where((recipient) {
+      final displayName = recipient.displayName?.toLowerCase() ?? '';
+      final label = recipient.label?.toLowerCase() ?? '';
+      return displayName.contains(searchLower) || label.contains(searchLower);
+    }).toList();
 
     // If search returns no results and there are more recipients to load, trigger loading
     if (filtered.isEmpty &&
@@ -101,34 +100,33 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: .min,
+      crossAxisAlignment: .start,
       children: [
         TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Search recipients by name',
+            hintText: context.loc.recipientsSearchHint,
             prefixIcon: const Icon(Icons.search),
-            suffixIcon:
-                _searchQuery.isNotEmpty
-                    ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        setState(() {
-                          _searchController.clear();
-                          _searchQuery = '';
-                          _recipients = _applyFilters(
-                            context
-                                .read<RecipientsBloc>()
-                                .state
-                                .filteredRecipientsByJurisdiction(
-                                  _jurisdictionFilter,
-                                ),
-                          );
-                        });
-                      },
-                    )
-                    : null,
+            suffixIcon: _searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      setState(() {
+                        _searchController.clear();
+                        _searchQuery = '';
+                        _recipients = _applyFilters(
+                          context
+                              .read<RecipientsBloc>()
+                              .state
+                              .filteredRecipientsByJurisdiction(
+                                _jurisdictionFilter,
+                              ),
+                        );
+                      });
+                    },
+                  )
+                : null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -162,42 +160,40 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
               );
               _selectedRecipient =
                   newJurisdiction == null ||
-                          _selectedRecipient?.jurisdictionCode ==
-                              newJurisdiction
-                      ? _selectedRecipient
-                      : null;
+                      _selectedRecipient?.jurisdictionCode == newJurisdiction
+                  ? _selectedRecipient
+                  : null;
             });
           },
         ),
         const Gap(16.0),
         Expanded(
-          child:
-              _recipients == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : _recipients!.isEmpty
-                  ? Center(
-                    child: Text(
-                      'No recipients found.',
-                      style: context.font.bodyLarge,
-                    ),
-                  )
-                  : ListView.builder(
-                    controller: _scrollController,
-                    itemBuilder: (context, index) {
-                      final recipient = _recipients![index];
-                      return RecipientsListTile(
-                        recipient: recipient,
-                        selected: _selectedRecipient == recipient,
-                        onTap: () {
-                          setState(() {
-                            _selectedRecipient = recipient;
-                          });
-                        },
-                      );
-                    },
-                    shrinkWrap: true,
-                    itemCount: _recipients!.length,
+          child: _recipients == null
+              ? const Center(child: CircularProgressIndicator())
+              : _recipients!.isEmpty
+              ? Center(
+                  child: Text(
+                    'No recipients found.',
+                    style: context.font.bodyLarge,
                   ),
+                )
+              : ListView.builder(
+                  controller: _scrollController,
+                  itemBuilder: (context, index) {
+                    final recipient = _recipients![index];
+                    return RecipientsListTile(
+                      recipient: recipient,
+                      selected: _selectedRecipient == recipient,
+                      onTap: () {
+                        setState(() {
+                          _selectedRecipient = recipient;
+                        });
+                      },
+                    );
+                  },
+                  shrinkWrap: true,
+                  itemCount: _recipients!.length,
+                ),
         ),
         BlocSelector<RecipientsBloc, RecipientsState, Exception?>(
           selector: (state) => state.failedToHandleSelectedRecipient,
@@ -205,7 +201,9 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
             return Text(
               '$e',
               style: context.font.bodyMedium?.copyWith(
-                color: e == null ? Colors.transparent : context.colour.error,
+                color: e == null
+                    ? context.appColors.transparent
+                    : context.appColors.error,
               ),
             );
           },
@@ -219,8 +217,8 @@ class _RecipientsListTabState extends State<RecipientsListTab> {
               RecipientsEvent.selected(_selectedRecipient!),
             );
           },
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
+          bgColor: context.appColors.secondary,
+          textColor: context.appColors.onSecondary,
         ),
       ],
     );

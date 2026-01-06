@@ -27,8 +27,8 @@ class BlurredBottomSheet extends StatelessWidget {
       isScrollControlled: isScrollControlled,
       isDismissible: isDismissible,
       useSafeArea: true,
-      backgroundColor: context.colour.secondaryFixed,
-      barrierColor: context.colour.secondary.withAlpha(200),
+      backgroundColor: context.appColors.background,
+      barrierColor: context.appColors.surface.withAlpha(100),
       builder: (_) => BlurredBottomSheet(child: child),
     );
   }

@@ -27,11 +27,11 @@ class BackupOptionCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: context.colour.surface),
+          color: context.appColors.surface,
+          border: Border.all(color: context.appColors.border),
           boxShadow: [
             BoxShadow(
-              color: context.colour.surface,
+              color: context.appColors.border,
               offset: const Offset(0, 2),
             ),
           ],
@@ -42,20 +42,20 @@ class BackupOptionCard extends StatelessWidget {
             Expanded(
               flex: 6,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
-                  SizedBox(width: 36, height: 45, child: icon),
+                  SizedBox(width: 40, height: 40, child: icon),
                   const Gap(12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: .start,
                       children: [
                         BBText(title, style: context.font.headlineMedium),
                         const Gap(10),
                         BBText(
                           description,
                           style: context.font.bodySmall?.copyWith(
-                            color: context.colour.outline,
+                            color: context.appColors.textMuted,
                           ),
                           maxLines: 3,
                         ),
@@ -70,7 +70,10 @@ class BackupOptionCard extends StatelessWidget {
             SizedBox(
               width: 24,
               height: 24,
-              child: Icon(Icons.arrow_forward, color: context.colour.secondary),
+              child: Icon(
+                Icons.arrow_forward,
+                color: context.appColors.onSurface,
+              ),
             ),
           ],
         ),

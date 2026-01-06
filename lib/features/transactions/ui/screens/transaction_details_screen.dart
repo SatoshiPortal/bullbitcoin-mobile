@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
@@ -30,7 +32,10 @@ class TransactionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final returnHome =
+        GoRouterState.of(context).uri.queryParameters['returnHome'] == 'true';
+    final returnToExchange =
+        GoRouterState.of(context).uri.queryParameters['returnToExchange'] == 'true';
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -55,7 +60,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     final isOrderType = tx?.isOrder == true;
     final walletTransaction = tx?.walletTransaction;
     final swap = tx?.swap;
-    final swapAction = swap?.swapAction ?? '';
+    final swapAction = swap?.swapAction(context) ?? '';
     final isChainSwap = swap?.isChainSwap ?? false;
     final retryingSwap = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.retryingSwap,
@@ -65,13 +70,18 @@ class TransactionDetailsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title:
-              isOngoingSwap == true
-                  ? (isChainSwap ? 'Transfer Progress' : 'Swap Progress')
-                  : 'Transaction details',
+          title: isOngoingSwap == true
+              ? (isChainSwap
+                    ? context.loc.transactionDetailTransferProgress
+                    : context.loc.transactionDetailSwapProgress)
+              : context.loc.transactionDetailTitle,
           actionIcon: Icons.close,
           onAction: () {
-            if (context.canPop()) {
+            if (returnToExchange) {
+              context.goNamed(ExchangeRoute.exchangeHome.name);
+            } else if (returnHome) {
+              context.goNamed(WalletRoute.walletHome.name);
+            } else if (context.canPop()) {
               context.pop();
             } else {
               context.goNamed(WalletRoute.walletHome.name);
@@ -82,8 +92,8 @@ class TransactionDetailsScreen extends StatelessWidget {
           preferredSize: const Size.fromHeight(3.0),
           child: FadingLinearProgress(
             trigger: isBroadcastingPayjoinOriginalTx,
-            backgroundColor: context.colour.onPrimary,
-            foregroundColor: context.colour.primary,
+            backgroundColor: context.appColors.onPrimary,
+            foregroundColor: context.appColors.primary,
           ),
         ),
       ),
@@ -146,17 +156,16 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const Gap(16),
                   BBButton.big(
                     disabled: retryingSwap,
-                    label:
-                        isChainSwap
-                            ? 'Retry Transfer $swapAction'
-                            : 'Retry Swap $swapAction',
+                    label: isChainSwap
+                        ? context.loc.transactionDetailRetryTransfer(swapAction)
+                        : context.loc.transactionDetailRetrySwap(swapAction),
                     onPressed: () async {
                       await context.read<TransactionDetailsCubit>().processSwap(
                         swap,
                       );
                     },
-                    bgColor: theme.colorScheme.primary,
-                    textColor: theme.colorScheme.onPrimary,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
                 ],
                 const Gap(32),
@@ -169,7 +178,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const LoadingLineContent(height: 40)
                 else
                   BBButton.big(
-                    label: 'Add note',
+                    label: context.loc.transactionDetailAddNote,
                     disabled:
                         !(walletTransaction != null &&
                             walletTransaction.labels.length < 10),
@@ -183,10 +192,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                         );
                       }
                     },
-                    bgColor: Colors.transparent,
-                    textColor: theme.colorScheme.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.onSurface,
                     outlined: true,
-                    borderColor: theme.colorScheme.secondary,
+                    borderColor: context.appColors.onSurface,
                   ),
                 const Gap(16),
                 if (isOutgoing == true &&
@@ -197,15 +206,15 @@ class TransactionDetailsScreen extends StatelessWidget {
                     tx?.txId != null &&
                     swap == null)
                   BBButton.big(
-                    label: 'Accelerate',
+                    label: context.loc.transactionDetailAccelerate,
                     onPressed: () {
                       context.pushNamed(
                         ReplaceByFeeRoute.replaceByFeeFlow.name,
                         extra: walletTransaction,
                       );
                     },
-                    bgColor: theme.colorScheme.secondary,
-                    textColor: theme.colorScheme.onSecondary,
+                    bgColor: context.appColors.onSurface,
+                    textColor: context.appColors.surface,
                   ),
               ],
             ),

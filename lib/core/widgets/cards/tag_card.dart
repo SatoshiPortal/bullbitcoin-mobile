@@ -11,10 +11,13 @@ class OptionsTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
-        border: Border.all(color: context.colour.surface),
+        color: context.appColors.surface,
+        border: Border.all(color: context.appColors.border),
         boxShadow: [
-          BoxShadow(color: context.colour.surface, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: context.appColors.border,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: BBText(text, style: context.font.labelMedium),

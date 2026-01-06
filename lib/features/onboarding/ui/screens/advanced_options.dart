@@ -1,9 +1,13 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/features/tor_settings/ui/widgets/tor_proxy_widget.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +31,11 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
 
   @override
   Widget build(BuildContext context) {
+    final currentLanguage = context.select(
+      (SettingsCubit cubit) =>
+          cubit.state.language ?? Language.unitedStatesEnglish,
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Advanced Options')),
       body: SafeArea(
@@ -37,7 +46,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -47,7 +56,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                         child: Text(
                           'Configure advanced settings before creating or recovering your wallet',
                           style: context.font.bodyMedium?.copyWith(
-                            color: context.colour.onSurface.withValues(
+                            color: context.appColors.onSurface.withValues(
                               alpha: 0.7,
                             ),
                           ),
@@ -75,13 +84,39 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                           );
                         },
                       ),
+                      SettingsEntryItem(
+                        icon: Icons.language,
+                        title: context.loc.settingsLanguageTitle,
+                        trailing: DropdownButton<Language>(
+                          value: currentLanguage,
+                          underline: const SizedBox.shrink(),
+                          items: Language.values
+                              .map(
+                                (language) => DropdownMenuItem<Language>(
+                                  value: language,
+                                  child: Text(language.label),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (Language? newLanguage) {
+                            if (newLanguage != null) {
+                              context.read<SettingsCubit>().changeLanguage(
+                                newLanguage,
+                              );
+                              if (newLanguage != Language.unitedStatesEnglish) {
+                                TranslationWarningBottomSheet.show(context);
+                              }
+                            }
+                          },
+                        ),
+                      ),
                       const Gap(24),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           'You can change these settings later in App Settings',
                           style: context.font.bodySmall?.copyWith(
-                            color: context.colour.onSurface.withValues(
+                            color: context.appColors.onSurface.withValues(
                               alpha: 0.6,
                             ),
                           ),
@@ -96,8 +131,8 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                 child: BBButton.big(
                   label: 'Done',
                   onPressed: () => Navigator.of(context).pop(),
-                  bgColor: context.colour.primary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.onSurface,
+                  textColor: context.appColors.surface,
                 ),
               ),
             ],
