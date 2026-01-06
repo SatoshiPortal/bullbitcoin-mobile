@@ -9664,27 +9664,27 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "importQrDeviceKeystoneStep1": "Power on your Keystone device",
+  "importQrDeviceKeystoneStep1": "Power on your Keystone",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Enter your PIN",
+  "importQrDeviceKeystoneStep2": "Unlock it by entering your PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Click the three dots at the top right",
+  "importQrDeviceKeystoneStep3": "Tap the *** (three dots) in the top-right corner",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Select Connect Software Wallet",
+  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Choose BULL wallet option",
+  "importQrDeviceKeystoneStep5": "Select \"BULL\" from the list of wallets",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "On your mobile device, tap Open Camera",
+  "importQrDeviceKeystoneStep6": "On your mobile, click \"open camera\"",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
   },
@@ -9692,13 +9692,17 @@
   "@importQrDeviceKeystoneStep7": {
     "description": "Keystone instruction step 7"
   },
-  "importQrDeviceKeystoneStep8": "Enter a label for your Keystone wallet and tap Import",
+  "importQrDeviceKeystoneStep8": "In the BULL wallet, choose your preferred derivation type. If you are not sure, select \"Segwit (BIP84)\"",
   "@importQrDeviceKeystoneStep8": {
     "description": "Keystone instruction step 8"
   },
-  "importQrDeviceKeystoneStep9": "Setup is complete",
+  "importQrDeviceKeystoneStep9": "Enter a label for your Keystone wallet and tap \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
+  },
+  "importQrDeviceKeystoneStep10": "Your Keystone is now connected and ready to use with BULL Wallet.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {
