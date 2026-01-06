@@ -37,6 +37,21 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 part 'sqlite_database.g.dart';
+part 'data/datasources/transactions_local_datasource.dart';
+part 'data/datasources/wallet_metadatas_local_datasource.dart';
+part 'data/datasources/labels_local_datasource.dart';
+part 'data/datasources/settings_local_datasource.dart';
+part 'data/datasources/payjoin_senders_local_datasource.dart';
+part 'data/datasources/payjoin_receivers_local_datasource.dart';
+part 'data/datasources/electrum_servers_local_datasource.dart';
+part 'data/datasources/electrum_settings_local_datasource.dart';
+part 'data/datasources/mempool_servers_local_datasource.dart';
+part 'data/datasources/mempool_settings_local_datasource.dart';
+part 'data/datasources/swaps_local_datasource.dart';
+part 'data/datasources/auto_swap_local_datasource.dart';
+part 'data/datasources/bip85_derivations_local_datasource.dart';
+part 'data/datasources/recoverbull_local_datasource.dart';
+part 'data/datasources/prices_local_datasource.dart';
 
 @DriftDatabase(
   tables: [
@@ -55,6 +70,23 @@ part 'sqlite_database.g.dart';
     Bip85Derivations,
     Recoverbull,
     Prices,
+  ],
+  daos: [
+    TransactionsLocalDatasource,
+    WalletMetadatasLocalDatasource,
+    LabelsLocalDatasource,
+    SettingsLocalDatasource,
+    PayjoinSendersLocalDatasource,
+    PayjoinReceiversLocalDatasource,
+    ElectrumServersLocalDatasource,
+    ElectrumSettingsLocalDatasource,
+    MempoolServersLocalDatasource,
+    MempoolSettingsLocalDatasource,
+    SwapsLocalDatasource,
+    AutoSwapLocalDatasource,
+    Bip85DerivationsLocalDatasource,
+    RecoverbullLocalDatasource,
+    PricesLocalDatasource,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
