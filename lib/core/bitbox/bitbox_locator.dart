@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usec
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
-class BitBoxCoresl {
+class BitBoxCoreLocator {
   static void registerDatasources() {
     sl.registerLazySingleton<BitBoxDeviceDatasource>(
       () => BitBoxDeviceDatasource(),

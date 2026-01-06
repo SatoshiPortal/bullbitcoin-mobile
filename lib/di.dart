@@ -52,6 +52,10 @@ Future<void> initializeDependencies() async {
   final featureModules = <FeatureDiModule>[
     // TODO: Remove Ark dependency from Settings feature and merge with core settings and define a clear api/facade for it
     SettingsDiModule(), // Depends on core settings, core storage, core ark
+    // Remove core settings dependency and merge with core tor in features/tor and define a clear api/facade for it
+    TorSettingsDiModule(), // Depends on core settings
+    // TODO: Merge with core mempool in features/mempool and define a clear api/facade for it
+    MempoolSettingsDiModule(), // Depends on core mempool
     // TODO: Move core fees to features and define a clear api/facade for it
     PinCodeDiModule(), // Depends on core storage;
     // TODO: Move core labels to features and define a clear api/facade for it
@@ -66,17 +70,40 @@ Future<void> initializeDependencies() async {
     //  It would make sense if there is shared logic between different hardware wallets that can be abstracted away, which I think there is since
     //  the same operations are performed (connect, sign tx, sign message, etc.) just with different implementations under the hood.
     // TODO: Move core bip85 to features, refactor how it uses the seed feature and define a clear api/facade for it
+    // TODO: Remove the exchange dependency since the price feature itself or core could just have a bullbitcoin api client that can be used by the price feature independently of the exchange feature
+    BitcoinPriceDiModule(), // Depends on core exchange, core settings
+    // TODO: Merge Broadcast Signed Tx, core Blockchain and Electrum Settings and core Electrum in one Blockchain (Backends) feature and
+    //  define a clear api/facade to broadcast transactions and get the prioritized blockchain servers and optionally other blockchain related data
+    BroadcastSignedTxDiModule(), // Depends on core blockchain
+    ElectrumSettingsDiModule(), // Depends on core electrum
     Bip85EntropyDiModule(), // Depends on core bip85, core seed
     // TODO: Eliminate the dependency on swaps, merge core wallet in features/wallet and define a clear api/facade for it
     //  Also merge Ark wallet stuff in here since Ark is just another wallet implementation
     //  This will require quite some refactoring though.
     WalletDiModule(), // Depends on core wallet, core swaps, core settings, core tor, core ark
+    // TODO: Merge mnemonic and watch-only wallet import features into the wallets feature
+    ImportMnemonicDiModule(), // Depends on core wallet
+    ImportWatchOnlyWalletDiModule(), // Depends on core wallet
+    // TODO: Merge onboarding feature with wallets feature since it is meant to create/restore a wallet
+    OnboardingDiModule(), // Depends on core wallet
     // TODO: Merge core exchange in features/exchange and define a clear api/facade for it
     ExchangeDiModule(), // Depends on core exchange
+    // TODO: Refactor to use ports to other features and better domain definitions
+    //. no api/facade is needed since nothing else depends on it
+    AppStartupDiModule(), // Depends on core settings, core wallet, core seed, app_unlock, core storage, test_wallet_backup, pin_code, core tor
+    // TODO: Rename to Address Management feature and refactor to use a wallet address port and labels port
+    //  no api/facade is needed since nothing else depends on it for now
+    AddressViewDiModule(), // Depends on core wallet
     RecipientsDiModule(), // TODO: frameworks should be moved to core (FlutterSecureStorage, BullbitcoinApiKeyProvider, Dio instances)
     // TODO: Analyze what should be owned by fund exchange feature that is now in core exchange
     //  no api/facade is needed since nothing else depends on it
     FundExchangeDiModule(), // Depends on core exchange
+    // TODO: Refactor with ports to wallets, bip85 and seed features
+    //  no api/facade is needed since nothing else depends on it
+    BackupSettingsDiModule(), // Depends on core wallet, core settings
+    // TODO: Mege with Backup Settings into one Backups feature
+    //  no api/facade is needed since nothing else depends on it
+    TestWalletBackupDiModule(), // Depends on core wallet, core seed, core settings
     // TODO: Merge core swaps in features/swap and define a clear api/facade for it
     SwapDiModule(), // Depends on core swaps, core wallet, core seed, core blockchain, core fees, send; NOTE: many use cases might be duplicates from send
     // TODO: Move core payjoin to features/payjoin, refactor and define a clear api/facade for it
@@ -85,13 +112,24 @@ Future<void> initializeDependencies() async {
     WithdrawDiModule(), // Depends on core exchange, core settings
     // TODO: refactor with ports to other features and better domain definitions
     // and define a clear api/facade for other features to use
+    // TODO: Merge with core status in features/status and refactor with ports of
+    //  other features that expose their status info (wallet, exchange, etc.)
+    StatusCheckDiModule(), // Depends on core status, core wallet
     SendDiModule(), // Depends on core wallet, core swaps, core seed, core settings, core blockchain, core fees, core payjoin, core exchange
+    // TODO: Add replace by fee feature to Send feature, since it needs to repeat the prepare (build and sign tx) and confirm (broadcast tx) flow again
+    //  no api/facade is needed since nothing else depends on it, it's all internal to send feature and can be navigated to the replace by fee flow from for example
+    //  the transaction details screen in the Transaction History feature, the Transaction History feature shouldn't depend on the Send feature for this.
+    ReplaceByFeeDiModule(), // Depends on core wallet
     // TODO: refactor with ports to other features and better domain definitions
     // and define a clear api/facade for other features to use
     ReceiveDiModule(), // Depends on core wallet, core swaps, core seed, core exchange, core payjoin, core labels, core settings
     // TODO: refactor with ports to other features and better domain definitions
     //  no api/facade is needed since nothing else depends on it
     TransactionsDiModule(), // Depends on core wallet, core swaps, core exchange, core payjoin, core labels, core settings
+    // TODO: Analyze what should be owned by dca feature that is now in core exchange
+    //  refactor with ports to other features (receive) and better domain definitions
+    //  no api/facade is needed since nothing else depends on it
+    DcaDiModule(), // Depends on core exchange, core settings, core wallet
     // TODO: Analyze what should be owned by sell feature that is now in core exchange
     //  refactor with ports to other features and better domain definitions
     //  no api/facade is needed since nothing else depends on it
@@ -104,23 +142,9 @@ Future<void> initializeDependencies() async {
     //  refactor with ports to other features and better domain definitions
     //  no api/facade is needed since nothing else depends on it
     BuyDiModule(), // Depends on core wallet, core exchange, core fees, core settings
-
-    AddressViewDiModule(), // Depends on core wallet
-    AppStartupDiModule(), // Depends on core settings, core wallet, core seed, app_unlock, core storage, test_wallet_backup, pin_code, core tor
+    // TODO: Refactor so it uses send, receive and swaps features via ports
+    //  no api/facade is needed since nothing else depends on it
     AutoSwapDiModule(), // Depends on core swaps, core settings, core wallet
-    BackupSettingsDiModule(), // Depends on core wallet, core settings
-    BitcoinPriceDiModule(), // Depends on core exchange, core settings
-    BroadcastSignedTxDiModule(), // Depends on core blockchain
-    DcaDiModule(), // Depends on core exchange, core settings, core wallet
-    ElectrumSettingsDiModule(), // Depends on core electrum
-    ImportMnemonicDiModule(), // Depends on core wallet
-    ImportWatchOnlyWalletDiModule(), // Depends on core wallet
-    MempoolSettingsDiModule(), // Depends on core mempool
-    OnboardingDiModule(), // Depends on core wallet
-    ReplaceByFeeDiModule(), // Depends on core wallet
-    StatusCheckDiModule(), // Depends on core status, core wallet
-    TestWalletBackupDiModule(), // Depends on core wallet, core seed, core settings
-    TorSettingsDiModule(), // Depends on core settings
   ];
 
   for (final module in featureModules) {

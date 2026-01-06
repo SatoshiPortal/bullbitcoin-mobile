@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usec
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
-class Ledgersl {
+class LedgerLocator {
   static void registerDatasources() {
     sl.registerLazySingleton<LedgerDeviceDatasource>(
       () => LedgerDeviceDatasource(),
