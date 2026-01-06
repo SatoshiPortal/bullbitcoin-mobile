@@ -52,7 +52,7 @@ Future<void> initializeDependencies() async {
   final featureModules = <FeatureDiModule>[
     // TODO: Remove Ark dependency from Settings feature and merge with core settings and define a clear api/facade for it
     SettingsDiModule(), // Depends on core settings, core storage, core ark
-    // Remove core settings dependency and merge with core tor in features/tor and define a clear api/facade for it
+    // TODO: Manage all Tor settings in this feature itself so core settings can be removed as a dependency and merge with core tor in features/tor and define a clear api/facade for it
     TorSettingsDiModule(), // Depends on core settings
     // TODO: Merge with core mempool in features/mempool and define a clear api/facade for it
     MempoolSettingsDiModule(), // Depends on core mempool
