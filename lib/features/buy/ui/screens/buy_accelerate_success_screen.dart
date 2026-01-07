@@ -42,7 +42,11 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: .center,
               children: [
-                Icon(Icons.check_circle, size: 100, color: context.appColors.success),
+                Icon(
+                  Icons.check_circle,
+                  size: 100,
+                  color: context.appColors.success,
+                ),
                 const SizedBox(height: 20),
                 Text(
                   context.loc.buyBitcoinSent,
@@ -74,7 +78,7 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
                       );
                     },
                     bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onPrimary,
+                    textColor: context.appColors.onSecondary,
                   ),
               ],
             ),

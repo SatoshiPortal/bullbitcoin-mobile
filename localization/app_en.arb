@@ -4787,11 +4787,11 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
-  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this balance after an autoswap.",
+  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this target balance after an autoswap.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this amount.",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this maximum balance.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
@@ -4852,7 +4852,7 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap is enabled.",
+  "autoswapWarningCardTitle": "Autoswap is enabled",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -4860,7 +4860,7 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "autoswapWarningDescription": "Autoswap ensures that a good balance is maintained between your Instant Payments and Secure Bitcoin Wallet.",
+  "autoswapWarningDescription": "Autoswap ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
@@ -4868,15 +4868,15 @@
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "autoswapWarningBaseBalance": "Base Balance 0.01 BTC",
+  "autoswapWarningBaseBalance": "Target Balance 0.01 BTC",
   "@autoswapWarningBaseBalance": {
-    "description": "Base balance text shown in the autoswap warning bottom sheet"
+    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
-  "autoswapWarningTriggerAmount": "Trigger Amount of 0.02 BTC",
+  "autoswapWarningTriggerAmount": "Maximum Balance of 0.02 BTC",
   "@autoswapWarningTriggerAmount": {
-    "description": "Trigger amount text shown in the autoswap warning bottom sheet"
+    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
   },
-  "autoswapWarningExplanation": "When your balance exceeds the trigger amount, a swap will be triggered. The base amount will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
+  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
@@ -4891,6 +4891,22 @@
   "autoswapWarningOkButton": "OK",
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
+  },
+  "autoswapInfoTitle": "Autoswap is active",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "autoswapInfoDismissButton": "Got it, don't show again",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "autoswapInfoSettingsButton": "Configure settings",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "autoswapInfoRemindLater": "Remind me later",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
   },
   "autoswapLoadSettingsError": "Failed to load auto swap settings",
   "@autoswapLoadSettingsError": {
@@ -4935,9 +4951,9 @@
       }
     }
   },
-  "autoswapTriggerBalanceError": "Trigger balance must be at least 2x the base balance",
+  "autoswapTriggerBalanceError": "Maximum balance must be at least 2x the target balance",
   "@autoswapTriggerBalanceError": {
-    "description": "Validation error shown when trigger balance is less than 2x the base balance"
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
   },
   "arkNoTransactionsYet": "No transactions yet.",
   "@arkNoTransactionsYet": {
@@ -9648,27 +9664,27 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "importQrDeviceKeystoneStep1": "Power on your Keystone device",
+  "importQrDeviceKeystoneStep1": "Power on your Keystone",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Enter your PIN",
+  "importQrDeviceKeystoneStep2": "Unlock it by entering your PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Click the three dots at the top right",
+  "importQrDeviceKeystoneStep3": "Tap the *** (three dots) in the top-right corner",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Select Connect Software Wallet",
+  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Choose BULL wallet option",
+  "importQrDeviceKeystoneStep5": "Select \"BULL\" from the list of wallets",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "On your mobile device, tap Open Camera",
+  "importQrDeviceKeystoneStep6": "On your mobile, click \"open camera\"",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
   },
@@ -9676,13 +9692,17 @@
   "@importQrDeviceKeystoneStep7": {
     "description": "Keystone instruction step 7"
   },
-  "importQrDeviceKeystoneStep8": "Enter a label for your Keystone wallet and tap Import",
+  "importQrDeviceKeystoneStep8": "In the BULL wallet, choose your preferred derivation type. If you are not sure, select \"Segwit (BIP84)\"",
   "@importQrDeviceKeystoneStep8": {
     "description": "Keystone instruction step 8"
   },
-  "importQrDeviceKeystoneStep9": "Setup is complete",
+  "importQrDeviceKeystoneStep9": "Enter a label for your Keystone wallet and tap \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
+  },
+  "importQrDeviceKeystoneStep10": "Your Keystone is now connected and ready to use with BULL Wallet.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {

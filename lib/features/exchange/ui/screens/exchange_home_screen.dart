@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
@@ -63,6 +64,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                             if (!isFullyVerified) const ExchangeHomeKycCard(),
                             const Gap(12),
                             DcaListTile(hasDcaActive: hasDcaActive, dca: dca),
+                            const Gap(12),
+                            if (!notLoggedIn) const AnnouncementBanner(),
                             /*
                             SwitchListTile(
                               value: false,
@@ -212,11 +215,11 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_downward,
-                        label: context.loc.exchangeHomeWithdrawButton,
+                        label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
-                        disabled: false,
-                        onPressed: () =>
-                            context.pushNamed(WithdrawRoute.withdraw.name),
+                        onPressed: () => context.pushNamed(
+                          FundExchangeRoute.fundExchangeAccount.name,
+                        ),
                         bgColor: context.appColors.secondaryFixed,
                         textColor: context.appColors.onSecondaryFixed,
                         outlined: true,
@@ -227,11 +230,11 @@ class ExchangeHomeScreen extends StatelessWidget {
                     Expanded(
                       child: BBButton.big(
                         iconData: Icons.arrow_upward,
-                        label: context.loc.exchangeHomeDepositButton,
+                        label: context.loc.exchangeHomeWithdrawButton,
                         iconFirst: true,
-                        onPressed: () => context.pushNamed(
-                          FundExchangeRoute.fundExchangeAccount.name,
-                        ),
+                        disabled: false,
+                        onPressed: () =>
+                            context.pushNamed(WithdrawRoute.withdraw.name),
                         bgColor: context.appColors.secondaryFixed,
                         textColor: context.appColors.onSecondaryFixed,
                         outlined: true,

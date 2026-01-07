@@ -1,25 +1,23 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-// We don't need a full datasource since we only need to retrieve the API key
-// here. We should deprecate the BullbitcoinApiKeyDatasource in favor of this
-// simpler provider.
 class BullbitcoinApiKeyProvider {
-  final FlutterSecureStorage _secureStorage;
+  final KeyValueStorageDatasource<String> _secureStorage;
 
   static const String _apiKeyStorageKey = 'exchange_api_key';
   static const String _apiKeyTestnetStorageKey = 'exchange_api_key_testnet';
 
-  BullbitcoinApiKeyProvider({required FlutterSecureStorage secureStorage})
-    : _secureStorage = secureStorage;
+  BullbitcoinApiKeyProvider({
+    required KeyValueStorageDatasource<String> secureStorage,
+  }) : _secureStorage = secureStorage;
 
   Future<String?> getApiKey({required bool isTestnet}) async {
     try {
       final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
-      final jsonString = await _secureStorage.read(key: key);
+      final jsonString = await _secureStorage.getValue(key);
 
       if (jsonString == null || jsonString.isEmpty) {
         return null;
