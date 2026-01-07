@@ -83,9 +83,7 @@ class WalletAddressRepository {
 
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels
-          .map((label) => LabelModel.fromSqlite(label).toEntity())
-          .toList(),
+      labels: labels.map((label) => label.toEntity()).toList(),
     );
 
     return walletAddress;
@@ -154,9 +152,7 @@ class WalletAddressRepository {
 
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels
-          .map((label) => LabelModel.fromSqlite(label).toEntity())
-          .toList(),
+      labels: labels.map((label) => label.toEntity()).toList(),
     );
 
     return walletAddress;
@@ -268,9 +264,7 @@ class WalletAddressRepository {
       final labels = await _labelDatasource.fetchByRef(model.address);
       final entity = WalletAddressMapper.toEntity(
         model,
-        labels: labels
-            .map((label) => LabelModel.fromSqlite(label).toEntity())
-            .toList(),
+        labels: labels.map((label) => label.toEntity()).toList(),
       );
       result.add(entity);
     }
@@ -321,9 +315,7 @@ class WalletAddressRepository {
     final labels = await _labelDatasource.fetchByRef(address);
     return WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels
-          .map((label) => LabelModel.fromSqlite(label).toEntity())
-          .toList(),
+      labels: labels.map((label) => label.toEntity()).toList(),
     );
   }
 }

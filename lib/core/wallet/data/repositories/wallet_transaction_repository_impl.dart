@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/labels/data/label_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -12,6 +11,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -115,24 +115,20 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                     outputModel.labelRef,
                   );
                   final outputModelAddress = outputModel.address;
-                  final addressLabels = <LabelModel>[];
+                  final addressLabels = <Label>[];
                   if (outputModelAddress != null) {
                     final rows = await _labelDatasource.fetchByRef(
                       outputModelAddress,
                     );
-                    addressLabels.addAll(
-                      rows.map((model) => LabelModel.fromSqlite(model)),
-                    );
+                    addressLabels.addAll(rows.map((model) => model.toEntity()));
                   }
 
                   return TransactionOutputMapper.toEntity(
                     outputModel,
                     labels: outputLabels
-                        .map((model) => LabelModel.fromSqlite(model).toEntity())
-                        .toList(),
-                    addressLabels: addressLabels
                         .map((model) => model.toEntity())
                         .toList(),
+                    addressLabels: addressLabels.map((label) => label).toList(),
                     //isFrozen: isFrozen, // Todo: check if frozen
                   );
                 }),
@@ -145,9 +141,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               walletId: walletModel.id,
               inputs: inputs,
               outputs: outputs,
-              labels: labels
-                  .map((model) => LabelModel.fromSqlite(model).toEntity())
-                  .toList(),
+              labels: labels.map((model) => model.toEntity()).toList(),
               isRbf: walletTransactionModel.isRbf,
             );
           }).toList(),
