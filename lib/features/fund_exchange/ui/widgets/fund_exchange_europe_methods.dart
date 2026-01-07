@@ -24,11 +24,6 @@ class FundExchangeEuropeMethods extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Confidential SEPA - only for fully verified KYC users
-        if (isFullyVerifiedKyc) ...[
-          _ConfidentialSepaMethodTile(),
-          const Gap(16.0),
-        ],
         FundExchangeMethodListTile(
           method: FundingMethod.instantSepa,
           title: context.loc.fundExchangeMethodInstantSepa,
@@ -40,6 +35,11 @@ class FundExchangeEuropeMethods extends StatelessWidget {
           title: context.loc.fundExchangeMethodRegularSepa,
           subtitle: context.loc.fundExchangeMethodRegularSepaSubtitle,
         ),
+        // Confidential SEPA - only for fully verified KYC users
+        if (isFullyVerifiedKyc) ...[
+          const Gap(16.0),
+          _ConfidentialSepaMethodTile(),
+        ],
       ],
     );
   }

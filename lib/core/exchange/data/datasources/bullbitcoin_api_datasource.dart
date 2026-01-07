@@ -640,7 +640,12 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createMyRecipient',
-        'params': {'recipientType': 'FR_VIRTUAL_ACCOUNT', 'isOwner': true},
+        'params': {
+          'element': {
+            'recipientTypeFiat': 'FR_VIRTUAL_ACCOUNT',
+            'isOwner': true,
+          },
+        },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -655,9 +660,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       throw Exception('Failed to create virtual IBAN: $message');
     }
 
-    return VirtualIbanRecipientModel.fromJson(
-      resp.data['result'] as Map<String, dynamic>,
-    );
+    final result = resp.data['result'] as Map<String, dynamic>?;
+    final element = result?['element'] as Map<String, dynamic>?;
+    if (element == null) {
+      throw Exception('Failed to create virtual IBAN: Invalid response');
+    }
+
+    return VirtualIbanRecipientModel.fromJson(element);
   }
 
   /// Creates an FR_PAYEE recipient from a Virtual IBAN.
