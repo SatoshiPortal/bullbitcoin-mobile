@@ -3,9 +3,10 @@ import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attac
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/exchange_notification_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/share_attachment_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -29,10 +30,11 @@ class ExchangeSupportChatScreen extends StatelessWidget {
       create: (context) => ExchangeSupportChatCubit(
         getMessagesUsecase: locator<GetSupportChatMessagesUsecase>(),
         sendMessageUsecase: locator<SendSupportChatMessageUsecase>(),
-        getAttachmentUsecase: locator<GetSupportChatMessageAttachmentUsecase>(),
         getUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         createLogAttachmentUsecase: locator<CreateLogAttachmentUsecase>(),
         exchangeNotificationUsecase: locator<ExchangeNotificationUsecase>(),
+        pickImageAttachmentsUsecase: locator<PickImageAttachmentsUsecase>(),
+        shareAttachmentUsecase: locator<ShareAttachmentUsecase>(),
       )..loadMessages(),
       child: Scaffold(
         appBar: AppBar(

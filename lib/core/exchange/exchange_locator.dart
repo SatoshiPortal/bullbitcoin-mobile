@@ -2,6 +2,9 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/file_share_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/image_picker_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/permission_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_local_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_remote_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
@@ -34,11 +37,13 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/pick_image_attachments_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/exchange_notification_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/share_attachment_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
@@ -131,6 +136,19 @@ class ExchangeLocator {
         isTestnet: true,
       ),
       instanceName: 'testnetExchangeNotificationDatasource',
+    );
+
+    // Image picker, permission, and file share datasources
+    locator.registerLazySingleton<ImagePickerDatasource>(
+      () => ImagePickerDatasource(),
+    );
+
+    locator.registerLazySingleton<PermissionDatasource>(
+      () => PermissionDatasource(),
+    );
+
+    locator.registerLazySingleton<FileShareDatasource>(
+      () => FileShareDatasource(),
     );
   }
 
@@ -520,6 +538,20 @@ class ExchangeLocator {
 
     locator.registerFactory<CreateLogAttachmentUsecase>(
       () => CreateLogAttachmentUsecase(),
+    );
+
+    locator.registerFactory<PickImageAttachmentsUsecase>(
+      () => PickImageAttachmentsUsecase(
+        imagePickerDatasource: locator<ImagePickerDatasource>(),
+        permissionDatasource: locator<PermissionDatasource>(),
+      ),
+    );
+
+    locator.registerFactory<ShareAttachmentUsecase>(
+      () => ShareAttachmentUsecase(
+        getAttachmentUsecase: locator<GetSupportChatMessageAttachmentUsecase>(),
+        fileShareDatasource: locator<FileShareDatasource>(),
+      ),
     );
 
     locator.registerFactory<LabelExchangeOrdersUsecase>(
