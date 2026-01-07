@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/domain/label_error.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/features/labels/domain/delete_label_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/domain/label_error.dart';
+import 'package:bb_mobile/features/labels/label_system.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/label_text.dart';

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

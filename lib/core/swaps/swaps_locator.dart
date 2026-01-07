@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/features/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -92,9 +92,8 @@ class SwapsLocator {
     locator.registerLazySingleton<SwapWatcherService>(
       () => SwapWatcherService(
         boltzRepo: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         walletAddressRepository: locator<WalletAddressRepository>(),
         settingsRepository: locator<SettingsRepository>(),
@@ -113,9 +112,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -127,9 +125,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -150,9 +147,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),
@@ -165,9 +161,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),
@@ -188,9 +183,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -201,9 +195,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -214,9 +207,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -227,9 +219,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         walletRepository: locator<WalletRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
@@ -248,9 +239,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -263,9 +253,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

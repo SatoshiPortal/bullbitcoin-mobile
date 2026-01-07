@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/data/label_repository.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -43,8 +43,9 @@ class CreateReceiveSwapUsecase {
         throw Exception('Wallet not found');
       }
 
-      final swapRepository =
-          wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final swapRepository = wallet.network.isTestnet
+          ? _swapRepositoryTestnet
+          : _swapRepository;
       final (limits, fees) = await _swapRepository.getSwapLimitsAndFees(type);
       if (amountSat < limits.min) {
         throw Exception('Minimum Swap Amount: $limits.min sats');
@@ -68,15 +69,13 @@ class CreateReceiveSwapUsecase {
         );
       }
 
-      final btcElectrumUrl =
-          wallet.network.isTestnet
-              ? ApiServiceConstants.bbElectrumTestUrl
-              : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.bbElectrumTestUrl
+          : ApiServiceConstants.bbElectrumUrl;
 
-      final lbtcElectrumUrl =
-          wallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
-              : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.publicElectrumTestUrl
+          : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       final claimAddress = await _getReceiveAddressUsecase.execute(
         walletId: walletId,
