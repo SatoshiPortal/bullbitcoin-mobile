@@ -3,7 +3,7 @@ part of 'package:bb_mobile/core/storage/sqlite_database.dart';
 @DriftAccessor(tables: [Labels])
 class LabelsLocalDatasource extends DatabaseAccessor<SqliteDatabase>
     with _$LabelsLocalDatasourceMixin {
-  LabelsLocalDatasource({required SqliteDatabase database}) : super(database);
+  LabelsLocalDatasource(super.attachedDatabase);
 
   Future<void> store(List<LabelRow> rows) {
     return batch(

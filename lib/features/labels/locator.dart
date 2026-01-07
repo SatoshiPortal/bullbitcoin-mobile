@@ -13,7 +13,7 @@ import 'package:get_it/get_it.dart';
 class LabelsLocator {
   static void registerDatasources(GetIt locator) {
     locator.registerLazySingleton<LabelsLocalDatasource>(
-      () => LabelsLocalDatasource(database: locator<SqliteDatabase>()),
+      () => LabelsLocalDatasource(locator<SqliteDatabase>()),
     );
   }
 
