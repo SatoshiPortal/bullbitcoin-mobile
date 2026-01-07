@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
-import 'package:bb_mobile/features/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
@@ -100,7 +99,7 @@ class WalletLocator {
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
-        labelDatasource: locator<LabelDatasource>(),
+        labelDatasource: locator<LabelsLocalDatasource>(),
       ),
     );
 
@@ -109,14 +108,14 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        labelDatasource: locator<LabelDatasource>(),
+        labelDatasource: locator<LabelsLocalDatasource>(),
       ),
     );
 
     locator.registerLazySingleton<WalletTransactionRepository>(
       () => WalletTransactionRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
-        labelDatasource: locator<LabelDatasource>(),
+        labelDatasource: locator<LabelsLocalDatasource>(),
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         electrumServerPort: locator<ElectrumServerPort>(),

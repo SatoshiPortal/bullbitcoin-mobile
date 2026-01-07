@@ -1,21 +1,19 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/features/labels/data/label_datasource.dart';
 import 'package:bb_mobile/features/labels/domain/batch_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/label.dart';
-import 'package:bb_mobile/features/labels/label_system.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 
 class LabelExchangeOrdersUsecase {
-  final LabelDatasource _labelDatasource;
+  final LabelRepository _labelRepository;
   final BatchLabelsUsecase _batchLabelsUsecase;
   final ListAllOrdersUsecase _listAllOrdersUsecase;
 
   LabelExchangeOrdersUsecase({
-    required LabelDatasource labelDatasource,
+    required LabelRepository labelRepository,
     required BatchLabelsUsecase batchLabelsUsecase,
     required ListAllOrdersUsecase listAllOrdersUsecase,
-  }) : _labelDatasource = labelDatasource,
+  }) : _labelRepository = labelRepository,
        _batchLabelsUsecase = batchLabelsUsecase,
        _listAllOrdersUsecase = listAllOrdersUsecase;
 
@@ -71,7 +69,7 @@ class LabelExchangeOrdersUsecase {
 
   Future<bool> _hasExistingExchangeSystemLabels() async {
     try {
-      final allLabels = await _labelDatasource.fetchAll();
+      final allLabels = await _labelRepository.fetchAll();
       return allLabels.any(
         (label) =>
             label.label == LabelSystem.exchangeBuy.label ||
