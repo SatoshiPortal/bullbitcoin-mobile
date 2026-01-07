@@ -3,13 +3,9 @@ part of 'package:bb_mobile/core/storage/sqlite_database.dart';
 @DriftAccessor(tables: [Labels])
 class LabelsLocalDatasource extends DatabaseAccessor<SqliteDatabase>
     with _$LabelsLocalDatasourceMixin {
-  LabelsLocalDatasource(super.attachedDatabase);
+  LabelsLocalDatasource({required SqliteDatabase database}) : super(database);
 
-  Future<void> store(LabelRow row) {
-    return into(labels).insert(row.toCompanion(true));
-  }
-
-  Future<void> storeBatch(List<LabelRow> rows) {
+  Future<void> store(List<LabelRow> rows) {
     return batch(
       (batch) => batch.insertAll(
         labels,
@@ -31,7 +27,7 @@ class LabelsLocalDatasource extends DatabaseAccessor<SqliteDatabase>
     return attachedDatabase.managers.labels.get();
   }
 
-  Future<List<String>> fetchDistinctLabels() async {
+  Future<List<String>> fetchDistinct() async {
     final rows = await (selectOnly(
       labels,
       distinct: true,
