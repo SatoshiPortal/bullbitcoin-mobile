@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/labels/data/label_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -69,7 +69,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
               frozenUtxo.txId == model.txId && frozenUtxo.vout == model.vout,
         );
         // Get the possible address labels for the UTXO
-        List<LabelModel> addressLabels;
+        List<Label> addressLabels;
         switch (model) {
           case LiquidWalletUtxoModel _:
             final (standardAddressLabels, confidentialAddressLabels) = await (
@@ -78,32 +78,20 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
             ).wait;
 
             addressLabels = [
-              ...standardAddressLabels.map(
-                (model) => LabelModel.fromSqlite(model),
-              ),
-              ...confidentialAddressLabels.map(
-                (model) => LabelModel.fromSqlite(model),
-              ),
+              ...standardAddressLabels.map((model) => model.toEntity()),
+              ...confidentialAddressLabels.map((model) => model.toEntity()),
             ];
           case BitcoinWalletUtxoModel _:
             final rows = await _labelDatasource.fetchByRef(model.address);
-            addressLabels = rows
-                .map((model) => LabelModel.fromSqlite(model))
-                .toList();
+            addressLabels = rows.map((model) => model.toEntity()).toList();
         }
 
         return WalletUtxoMapper.toEntity(
           model,
           walletId: walletId,
-          labels: labelModels
-              .map((model) => LabelModel.fromSqlite(model).toEntity())
-              .toList(),
-          txLabels: txLabels
-              .map((model) => LabelModel.fromSqlite(model).toEntity())
-              .toList(),
-          addressLabels: addressLabels
-              .map((model) => model.toEntity())
-              .toList(),
+          labels: labelModels.map((model) => model.toEntity()).toList(),
+          txLabels: txLabels.map((model) => model.toEntity()).toList(),
+          addressLabels: addressLabels.map((label) => label).toList(),
           isFrozen: isFrozen,
         );
       }).toList(),
