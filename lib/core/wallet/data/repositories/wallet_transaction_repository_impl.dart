@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/labels/data/label_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/labels/data/label_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final LabelDatasource _labelDatasource;
+  final LabelsLocalDatasource _labelDatasource;
   final BdkWalletDatasource _bdkWalletTransactionDatasource;
   final LwkWalletDatasource _lwkWalletTransactionDatasource;
   // TODO: We should not pass a port into a repository, this is a dirty hack for now
@@ -24,7 +24,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
   WalletTransactionRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
-    required LabelDatasource labelDatasource,
+    required LabelsLocalDatasource labelDatasource,
     required BdkWalletDatasource bdkWalletTransactionDatasource,
     required LwkWalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerPort electrumServerPort,
@@ -115,14 +115,20 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                     outputModel.labelRef,
                   );
                   final outputModelAddress = outputModel.address;
-                  final addressLabels = outputModelAddress != null
-                      ? await _labelDatasource.fetchByRef(outputModelAddress)
-                      : <LabelModel>[];
+                  final addressLabels = <LabelModel>[];
+                  if (outputModelAddress != null) {
+                    final rows = await _labelDatasource.fetchByRef(
+                      outputModelAddress,
+                    );
+                    addressLabels.addAll(
+                      rows.map((model) => LabelModel.fromSqlite(model)),
+                    );
+                  }
 
                   return TransactionOutputMapper.toEntity(
                     outputModel,
                     labels: outputLabels
-                        .map((model) => model.toEntity())
+                        .map((model) => LabelModel.fromSqlite(model).toEntity())
                         .toList(),
                     addressLabels: addressLabels
                         .map((model) => model.toEntity())
@@ -139,7 +145,9 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               walletId: walletModel.id,
               inputs: inputs,
               outputs: outputs,
-              labels: labels.map((model) => model.toEntity()).toList(),
+              labels: labels
+                  .map((model) => LabelModel.fromSqlite(model).toEntity())
+                  .toList(),
               isRbf: walletTransactionModel.isRbf,
             );
           }).toList(),

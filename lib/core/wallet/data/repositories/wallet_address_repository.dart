@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:bb_mobile/features/labels/data/label_datasource.dart';
-import 'package:bb_mobile/features/labels/label_system.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -15,13 +15,13 @@ class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
-  final LabelDatasource _labelDatasource;
+  final LabelsLocalDatasource _labelDatasource;
 
   WalletAddressRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required LabelDatasource labelDatasource,
+    required LabelsLocalDatasource labelDatasource,
   }) : _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
@@ -83,7 +83,9 @@ class WalletAddressRepository {
 
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels.map((label) => label.toEntity()).toList(),
+      labels: labels
+          .map((label) => LabelModel.fromSqlite(label).toEntity())
+          .toList(),
     );
 
     return walletAddress;
@@ -152,7 +154,9 @@ class WalletAddressRepository {
 
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels.map((label) => label.toEntity()).toList(),
+      labels: labels
+          .map((label) => LabelModel.fromSqlite(label).toEntity())
+          .toList(),
     );
 
     return walletAddress;
@@ -264,7 +268,9 @@ class WalletAddressRepository {
       final labels = await _labelDatasource.fetchByRef(model.address);
       final entity = WalletAddressMapper.toEntity(
         model,
-        labels: labels.map((label) => label.toEntity()).toList(),
+        labels: labels
+            .map((label) => LabelModel.fromSqlite(label).toEntity())
+            .toList(),
       );
       result.add(entity);
     }
@@ -315,7 +321,9 @@ class WalletAddressRepository {
     final labels = await _labelDatasource.fetchByRef(address);
     return WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels.map((label) => label.toEntity()).toList(),
+      labels: labels
+          .map((label) => LabelModel.fromSqlite(label).toEntity())
+          .toList(),
     );
   }
 }
