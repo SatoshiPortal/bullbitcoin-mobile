@@ -10,10 +10,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-/// Screen shown when Virtual IBAN has been successfully activated.
-/// Shows success message and navigation options.
 class VirtualIbanActiveScreen extends StatelessWidget {
-  const VirtualIbanActiveScreen({super.key});
+  const VirtualIbanActiveScreen({super.key, this.onContinue});
+
+  final VoidCallback? onContinue;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,6 @@ class VirtualIbanActiveScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Success icon
                 CircleAvatar(
                   radius: 48,
                   backgroundColor: context.appColors.surfaceContainer,
@@ -44,16 +43,12 @@ class VirtualIbanActiveScreen extends StatelessWidget {
                   ),
                 ),
                 const Gap(24.0),
-
-                // Title
                 BBText(
                   context.loc.confidentialSepaActivatedTitle,
                   style: theme.textTheme.displaySmall,
                   textAlign: TextAlign.center,
                 ),
                 const Gap(16.0),
-
-                // Context-aware description
                 BBText(
                   _getActivationDescription(context, location),
                   style: theme.textTheme.headlineSmall,
@@ -71,17 +66,16 @@ class VirtualIbanActiveScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               BBButton.big(
-                label:
-                    location == VirtualIbanLocation.funding
-                        ? context.loc.showVirtualIbanDetails
-                        : context.loc.continueButton,
+                label: location == VirtualIbanLocation.funding
+                    ? context.loc.showVirtualIbanDetails
+                    : context.loc.continueButton,
                 onPressed: () {
-                  if (location == VirtualIbanLocation.funding) {
-                    // Navigate to details screen
+                  if (onContinue != null) {
+                    onContinue!();
+                  } else if (location == VirtualIbanLocation.funding) {
                     context.pushNamed(VirtualIbanRoute.details.name);
                   } else {
-                    // Return to the previous flow (sell/withdraw)
-                    context.pop();
+                    Navigator.of(context).pop(true);
                   }
                 },
                 bgColor: context.appColors.primary,
@@ -123,4 +117,3 @@ class VirtualIbanActiveScreen extends StatelessWidget {
     }
   }
 }
-

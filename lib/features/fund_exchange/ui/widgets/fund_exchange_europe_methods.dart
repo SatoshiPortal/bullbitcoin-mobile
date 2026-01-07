@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_method_list_tile.dart';
 import 'package:bb_mobile/features/virtual_iban/domain/virtual_iban_location.dart';
 import 'package:bb_mobile/features/virtual_iban/presentation/virtual_iban_bloc.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class FundExchangeEuropeMethods extends StatelessWidget {
   const FundExchangeEuropeMethods({super.key});
@@ -35,7 +37,6 @@ class FundExchangeEuropeMethods extends StatelessWidget {
           title: context.loc.fundExchangeMethodRegularSepa,
           subtitle: context.loc.fundExchangeMethodRegularSepaSubtitle,
         ),
-        // Confidential SEPA - only for fully verified KYC users
         if (isFullyVerifiedKyc) ...[
           const Gap(16.0),
           _ConfidentialSepaMethodTile(),
@@ -45,7 +46,6 @@ class FundExchangeEuropeMethods extends StatelessWidget {
   }
 }
 
-/// Tile for Confidential SEPA / Virtual IBAN funding method.
 class _ConfidentialSepaMethodTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,6 @@ class _ConfidentialSepaMethodTile extends StatelessWidget {
   }
 
   void _navigateToConfidentialSepa(BuildContext context) {
-    // Navigate to the Confidential SEPA / Virtual IBAN flow
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (navContext) => BlocProvider(
@@ -102,16 +101,13 @@ class _ConfidentialSepaMethodTile extends StatelessWidget {
   }
 }
 
-/// Screen that shows the Virtual IBAN flow based on state.
 class _VirtualIbanFlowScreen extends StatelessWidget {
   const _VirtualIbanFlowScreen();
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<VirtualIbanBloc, VirtualIbanState>(
-      listener: (context, state) {
-        // Handle state transitions if needed
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         return state.when(
           initial: () =>
@@ -119,7 +115,6 @@ class _VirtualIbanFlowScreen extends StatelessWidget {
           loading: () =>
               const Scaffold(body: Center(child: CircularProgressIndicator())),
           notSubmitted: (_, _, _, _, _) {
-            // Dynamically import to avoid circular dependency
             return const _VirtualIbanIntroScreenWrapper();
           },
           pending: (_, _, _, _) {
@@ -143,12 +138,7 @@ class _VirtualIbanIntroScreenWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use a delayed import approach
-    return Builder(
-      builder: (context) {
-        return const _VirtualIbanIntroContent();
-      },
-    );
+    return const _VirtualIbanIntroContent();
   }
 }
 
@@ -157,11 +147,7 @@ class _VirtualIbanPendingScreenWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        return const _VirtualIbanPendingContent();
-      },
-    );
+    return const _VirtualIbanPendingContent();
   }
 }
 
@@ -170,22 +156,15 @@ class _VirtualIbanActiveScreenWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        return const _VirtualIbanActiveContent();
-      },
-    );
+    return const _VirtualIbanActiveContent();
   }
 }
 
-// Content widgets that replicate the screen functionality inline
-// to avoid import issues with the virtual_iban feature
 class _VirtualIbanIntroContent extends StatelessWidget {
   const _VirtualIbanIntroContent();
 
   @override
   Widget build(BuildContext context) {
-    // Import the screen directly
     return BlocBuilder<VirtualIbanBloc, VirtualIbanState>(
       builder: (context, state) {
         return state.maybeWhen(
@@ -448,15 +427,6 @@ class _VirtualIbanPendingContent extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const Gap(32.0),
-                SizedBox(
-                  width: 200,
-                  child: LinearProgressIndicator(
-                    backgroundColor: context.appColors.surfaceContainerHighest,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      context.appColors.primary,
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -466,7 +436,14 @@ class _VirtualIbanPendingContent extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: OutlinedButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.of(context).pop();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.pushNamed(
+                  FundExchangeRoute.fundExchangeRegularSepa.name,
+                );
+              });
+            },
             child: Text(context.loc.useRegularSepaInstead),
           ),
         ),
@@ -611,12 +588,7 @@ class _DetailField extends StatelessWidget {
         const Gap(8.0),
         ListTile(
           title: Text(value),
-          trailing: IconButton(
-            onPressed: () {
-              // Copy to clipboard
-            },
-            icon: const Icon(Icons.copy),
-          ),
+          trailing: IconButton(onPressed: () {}, icon: const Icon(Icons.copy)),
         ),
       ],
     );

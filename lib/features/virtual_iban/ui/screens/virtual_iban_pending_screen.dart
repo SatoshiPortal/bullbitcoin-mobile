@@ -2,18 +2,23 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/virtual_iban/domain/virtual_iban_location.dart';
+import 'package:bb_mobile/features/virtual_iban/presentation/virtual_iban_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
-/// Screen shown when Virtual IBAN has been created but not yet activated.
-/// Polls for activation status in the background.
 class VirtualIbanPendingScreen extends StatelessWidget {
-  const VirtualIbanPendingScreen({super.key});
+  const VirtualIbanPendingScreen({super.key, this.onUseRegularSepa});
+
+  final VoidCallback? onUseRegularSepa;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final location = context.select((VirtualIbanBloc bloc) {
+      return bloc.state.location ?? VirtualIbanLocation.funding;
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -27,7 +32,6 @@ class VirtualIbanPendingScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Clock icon
                 CircleAvatar(
                   radius: 48,
                   backgroundColor: context.appColors.surfaceContainer,
@@ -38,24 +42,18 @@ class VirtualIbanPendingScreen extends StatelessWidget {
                   ),
                 ),
                 const Gap(24.0),
-
-                // Title
                 BBText(
                   context.loc.activatingConfidentialSepaTitle,
                   style: theme.textTheme.displaySmall,
                   textAlign: TextAlign.center,
                 ),
                 const Gap(16.0),
-
-                // Description
                 BBText(
-                  context.loc.activatingConfidentialSepaDesc,
+                  _getDescriptionText(context, location),
                   style: theme.textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
                 const Gap(32.0),
-
-                // Loading indicator
                 SizedBox(
                   width: 200,
                   child: LinearProgressIndicator(
@@ -74,10 +72,13 @@ class VirtualIbanPendingScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: BBButton.big(
-            label: context.loc.useRegularSepaInstead,
+            label: _getButtonText(context, location),
             onPressed: () {
-              // Navigate back to fund exchange or wherever makes sense
-              context.pop();
+              if (onUseRegularSepa != null) {
+                onUseRegularSepa!();
+              } else {
+                Navigator.of(context).pop();
+              }
             },
             outlined: true,
             borderColor: context.appColors.outline,
@@ -88,5 +89,21 @@ class VirtualIbanPendingScreen extends StatelessWidget {
       ),
     );
   }
-}
 
+  String _getDescriptionText(
+    BuildContext context,
+    VirtualIbanLocation location,
+  ) {
+    return context.loc.activatingConfidentialSepaDesc;
+  }
+
+  String _getButtonText(BuildContext context, VirtualIbanLocation location) {
+    switch (location) {
+      case VirtualIbanLocation.funding:
+        return context.loc.useRegularSepaInstead;
+      case VirtualIbanLocation.sell:
+      case VirtualIbanLocation.withdraw:
+        return context.loc.useRegularSepaInstead;
+    }
+  }
+}
