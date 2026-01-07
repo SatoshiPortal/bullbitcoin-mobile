@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/data/label_model.dart';
+import 'package:bb_mobile/features/labels/data/label_datasource.dart';
+import 'package:bb_mobile/features/labels/data/label_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';

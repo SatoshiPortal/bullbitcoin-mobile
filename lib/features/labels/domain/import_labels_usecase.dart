@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/data/label_repository.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bip329_labels/bip329_labels.dart' as bip329;
@@ -76,10 +76,9 @@ class ImportLabelsUsecase {
         label: bip329Label.label,
         origin: bip329Label.origin,
       ),
-      _ =>
-        throw ImportLabelsError(
-          'Unsupported label type: ${bip329Label.runtimeType}',
-        ),
+      _ => throw ImportLabelsError(
+        'Unsupported label type: ${bip329Label.runtimeType}',
+      ),
     };
   }
 }

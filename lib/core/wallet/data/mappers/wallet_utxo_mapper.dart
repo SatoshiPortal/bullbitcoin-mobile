@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';

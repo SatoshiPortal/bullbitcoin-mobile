@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/labels/domain/label_error.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/features/labels/data/label_model.dart';
+import 'package:bb_mobile/features/labels/domain/label_error.dart';
+import 'package:bb_mobile/features/labels/label_system.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:drift/drift.dart';

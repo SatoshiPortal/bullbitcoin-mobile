@@ -11,8 +11,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/label_transaction_usecase.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/features/labels/domain/label_transaction_usecase.dart';
+import 'package:bb_mobile/features/labels/label_system.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';

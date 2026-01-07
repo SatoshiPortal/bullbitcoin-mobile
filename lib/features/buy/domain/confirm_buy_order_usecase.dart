@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/features/labels/data/label_repository.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/label_system.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 

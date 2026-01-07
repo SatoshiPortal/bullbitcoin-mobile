@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/data/label_datasource.dart';
+import 'package:bb_mobile/features/labels/data/label_model.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
 
 class LabelRepository {
   final LabelDatasource _labelDatasource;
