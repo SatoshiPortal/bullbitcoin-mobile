@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

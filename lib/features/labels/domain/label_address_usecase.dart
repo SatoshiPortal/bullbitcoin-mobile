@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/domain/label_error.dart';
+import 'package:bb_mobile/features/labels/data/label_repository.dart';
+import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/domain/label_error.dart';
 
 class LabelAddressUsecase {
   final LabelRepository _labelRepository;

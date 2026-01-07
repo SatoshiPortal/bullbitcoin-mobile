@@ -35,9 +35,9 @@ import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_us
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/data/label_datasource.dart';
+import 'package:bb_mobile/features/labels/data/label_repository.dart';
+import 'package:bb_mobile/features/labels/domain/batch_labels_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
