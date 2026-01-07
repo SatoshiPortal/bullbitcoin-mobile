@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/exchange_notification_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
@@ -18,20 +20,47 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
     required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
     required GetAnnouncementsUsecase getAnnouncementsUsecase,
+    required ExchangeNotificationUsecase exchangeNotificationUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
        _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
        _getAnnouncementsUsecase = getAnnouncementsUsecase,
-       super(const ExchangeState());
-
-  Timer? _pollingTimer;
+       _exchangeNotificationUsecase = exchangeNotificationUsecase,
+       super(const ExchangeState()) {
+    _notificationSubscription = _exchangeNotificationUsecase.messageStream
+        .where((message) => message.type == 'user')
+        .listen((_) => fetchUserSummary());
+  }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final SaveExchangeApiKeyUsecase _saveExchangeApiKeyUsecase;
   final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
   final GetAnnouncementsUsecase _getAnnouncementsUsecase;
+  final ExchangeNotificationUsecase _exchangeNotificationUsecase;
+  StreamSubscription<NotificationMessage>? _notificationSubscription;
+
+  Future<void> connectWebSocket() async {
+    try {
+      await _exchangeNotificationUsecase.connect();
+    } catch (e) {
+      log.warning('WebSocket connection failed: $e');
+    }
+  }
+
+  void disconnectWebSocket() {
+    _exchangeNotificationUsecase.disconnect();
+  }
+
+  /// Call this when the network environment changes to reconnect to the correct WebSocket
+  Future<void> reconnectWebSocket() async {
+    try {
+      await _exchangeNotificationUsecase.reconnect();
+    } catch (e) {
+      log.warning('WebSocket reconnection failed: $e');
+    }
+  }
 
   Future<void> fetchUserSummary() async {
     try {
@@ -46,31 +75,16 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       emit(state.copyWith(selectedCurrency: userSummary.currency));
 
       loadAnnouncements();
-      startPolling();
     } catch (e) {
       log.severe('$ExchangeCubit init: $e');
       if (e is ApiKeyException) {
         emit(state.copyWith(apiKeyException: e));
-        // Stop polling if API key is invalid
-        stopPolling();
+        // Disconnect WebSocket if API key is invalid
+        disconnectWebSocket();
       } else if (e is GetExchangeUserSummaryException) {
         emit(state.copyWith(getUserSummaryException: e));
       }
     }
-  }
-
-  void startPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (!state.notLoggedIn) {
-        fetchUserSummary();
-      }
-    });
-  }
-
-  void stopPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = null;
   }
 
   Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
@@ -133,7 +147,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> logout() async {
     try {
-      stopPolling();
+      disconnectWebSocket();
 
       emit(state.copyWith(deleteApiKeyException: null));
       await _deleteExchangeApiKeyUsecase.execute();
@@ -181,7 +195,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   @override
   Future<void> close() {
-    stopPolling();
+    _notificationSubscription?.cancel();
+    disconnectWebSocket();
     return super.close();
   }
 }

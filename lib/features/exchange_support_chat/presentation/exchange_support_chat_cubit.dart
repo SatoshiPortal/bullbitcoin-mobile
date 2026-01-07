@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/exchange_notification_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
@@ -21,18 +24,26 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required GetSupportChatMessageAttachmentUsecase getAttachmentUsecase,
     required GetExchangeUserSummaryUsecase getUserSummaryUsecase,
     required CreateLogAttachmentUsecase createLogAttachmentUsecase,
+    required ExchangeNotificationUsecase exchangeNotificationUsecase,
   }) : _getMessagesUsecase = getMessagesUsecase,
        _sendMessageUsecase = sendMessageUsecase,
        _getAttachmentUsecase = getAttachmentUsecase,
        _getUserSummaryUsecase = getUserSummaryUsecase,
        _createLogAttachmentUsecase = createLogAttachmentUsecase,
-       super(const ExchangeSupportChatState());
+       _exchangeNotificationUsecase = exchangeNotificationUsecase,
+       super(const ExchangeSupportChatState()) {
+    _notificationSubscription = _exchangeNotificationUsecase.messageStream
+        .where((message) => message.type == 'message')
+        .listen((_) => loadMessages(page: 1));
+  }
 
   final GetSupportChatMessagesUsecase _getMessagesUsecase;
   final SendSupportChatMessageUsecase _sendMessageUsecase;
   final GetSupportChatMessageAttachmentUsecase _getAttachmentUsecase;
   final GetExchangeUserSummaryUsecase _getUserSummaryUsecase;
   final CreateLogAttachmentUsecase _createLogAttachmentUsecase;
+  final ExchangeNotificationUsecase _exchangeNotificationUsecase;
+  StreamSubscription<NotificationMessage>? _notificationSubscription;
 
   bool _limitFetchingOlderMessages = false;
 
@@ -399,5 +410,11 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _notificationSubscription?.cancel();
+    return super.close();
   }
 }
