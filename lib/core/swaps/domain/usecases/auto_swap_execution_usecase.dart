@@ -50,8 +50,10 @@ class AutoSwapExecutionUsecase {
     final autoSwapSettings = await swapRepository.getAutoSwapParams();
     // check if recipient wallet id is set
 
-    if (!autoSwapSettings.enabled) {
-      throw AutoSwapDisabledException('Auto swap is disabled');
+    if (!autoSwapSettings.enabled || autoSwapSettings.showWarning) {
+      throw AutoSwapDisabledException(
+        'Auto swap is disabled/warning not disabled yet.',
+      );
     }
     final environment = isTestnet ? Environment.testnet : Environment.mainnet;
     final wallets = await _walletRepository.getWallets(
