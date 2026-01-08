@@ -1395,6 +1395,10 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> broadcastTransaction({bool isPsbt = true}) async {
     try {
+      if (state.txId != null || state.broadcastingTransaction) {
+        log.warning('Transaction already being broadcast or broadcasted');
+        return;
+      }
       emit(state.copyWith(broadcastingTransaction: true));
 
       if (state.selectedWallet!.network.isLiquid) {
