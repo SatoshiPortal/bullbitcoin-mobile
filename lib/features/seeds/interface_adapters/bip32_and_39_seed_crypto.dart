@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/seeds/application/ports/seed_crypto_port.dart
 import 'package:bip32_keys/bip32_keys.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 
-class Bip32Bip39SeedCrypto implements SeedCryptoPort {
+class Bip32And39SeedCrypto implements SeedCryptoPort {
   @override
   Future<String> getFingerprintFromSeedSecret(SeedSecret seedSecret) async {
     final bytes = switch (seedSecret) {
