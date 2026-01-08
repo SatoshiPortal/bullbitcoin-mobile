@@ -76,7 +76,7 @@ class ShowPsbtScreen extends StatelessWidget {
             BBButton.big(
               label: context.loc.psbtFlowDone,
               bgColor: context.appColors.secondary,
-              textColor: context.appColors.onPrimary,
+              textColor: context.appColors.onSecondary,
               onPressed: () {
                 context.pushNamed(
                   BroadcastSignedTxRoute.broadcastHome.name,
