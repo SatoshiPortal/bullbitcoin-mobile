@@ -39,7 +39,14 @@ class ShowPsbtScreen extends StatelessWidget {
                   const Gap(16),
                 ],
 
-                if (signerDevice != null)
+                if ([
+                  SignerDeviceEntity.jade,
+                  SignerDeviceEntity.krux,
+                  SignerDeviceEntity.keystone,
+                  SignerDeviceEntity.passport,
+                  SignerDeviceEntity.seedsigner,
+                  SignerDeviceEntity.specter,
+                ].contains(signerDevice))
                   BBButton.small(
                     label: context.loc.psbtFlowInstructions,
                     onPressed: () {
@@ -66,8 +73,8 @@ class ShowPsbtScreen extends StatelessWidget {
                           break;
                       }
                     },
-                    bgColor: context.appColors.onSecondary,
-                    textColor: context.appColors.secondary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                     outlined: true,
                   ),
               ],
