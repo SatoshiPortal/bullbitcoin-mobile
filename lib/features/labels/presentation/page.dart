@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/labels/domain/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/export_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';

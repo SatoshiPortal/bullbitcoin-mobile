@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
-import 'package:bb_mobile/features/labels/locator.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -13,18 +12,18 @@ import 'package:bb_mobile/features/labels/labels.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final LabelsLocalDatasource _labelDatasource;
+  final FetchLabelByRefUsecase _fetchLabelByRefUsecase;
   final BdkWalletDatasource _bdkWalletDatasource;
   final LwkWalletDatasource _lwkWalletDatasource;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   WalletUtxoRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
-    required LabelsLocalDatasource labelDatasource,
+    required FetchLabelByRefUsecase fetchLabelByRefUsecase,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
-  }) : _labelDatasource = labelDatasource,
+  }) : _fetchLabelByRefUsecase = fetchLabelByRefUsecase,
        _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWalletDatasource = bdkWalletDatasource,
        _lwkWalletDatasource = lwkWalletDatasource,
@@ -61,8 +60,10 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
     final utxos = await Future.wait(
       utxoModels.map((model) async {
         // Get labels for the UTXO if any
-        final labelModels = await _labelDatasource.fetchByRef(model.labelRef);
-        final txLabels = await _labelDatasource.fetchByRef(model.txId);
+        final labelModels = await _fetchLabelByRefUsecase.execute(
+          model.labelRef,
+        );
+        final txLabels = await _fetchLabelByRefUsecase.execute(model.txId);
         // Check if the UTXO is frozen
         final isFrozen = frozenUtxos.any(
           (frozenUtxo) =>
@@ -73,25 +74,26 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
         switch (model) {
           case LiquidWalletUtxoModel _:
             final (standardAddressLabels, confidentialAddressLabels) = await (
-              _labelDatasource.fetchByRef(model.standardAddress),
-              _labelDatasource.fetchByRef(model.confidentialAddress),
+              _fetchLabelByRefUsecase.execute(model.standardAddress),
+              _fetchLabelByRefUsecase.execute(model.confidentialAddress),
             ).wait;
 
             addressLabels = [
-              ...standardAddressLabels.map((model) => model.toEntity()),
-              ...confidentialAddressLabels.map((model) => model.toEntity()),
+              ...standardAddressLabels,
+              ...confidentialAddressLabels,
             ];
           case BitcoinWalletUtxoModel _:
-            final rows = await _labelDatasource.fetchByRef(model.address);
-            addressLabels = rows.map((model) => model.toEntity()).toList();
+            addressLabels = await _fetchLabelByRefUsecase.execute(
+              model.address,
+            );
         }
 
         return WalletUtxoMapper.toEntity(
           model,
           walletId: walletId,
-          labels: labelModels.map((model) => model.toEntity()).toList(),
-          txLabels: txLabels.map((model) => model.toEntity()).toList(),
-          addressLabels: addressLabels.map((label) => label).toList(),
+          labels: labelModels,
+          txLabels: txLabels,
+          addressLabels: addressLabels,
           isFrozen: isFrozen,
         );
       }).toList(),

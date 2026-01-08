@@ -6,10 +6,10 @@ import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bip329_labels/bip329_labels.dart' as bip329;
 
 class ExportLabelsUsecase {
-  final LabelRepository _labelRepository;
+  final LabelsRepository _labelRepository;
   final _fileSystemRepository = FileSystemRepository();
 
-  ExportLabelsUsecase({required LabelRepository labelRepository})
+  ExportLabelsUsecase({required LabelsRepository labelRepository})
     : _labelRepository = labelRepository;
 
   Future<int> call() async {

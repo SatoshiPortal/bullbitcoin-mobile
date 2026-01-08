@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/label_transaction_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
@@ -82,7 +82,7 @@ class SellLocator {
         getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         getOrderUsecase: locator<GetOrderUsecase>(),
-        labelTransactionUsecase: locator<LabelTransactionUsecase>(),
+        storeLabelsUsecase: locator<StoreLabelsUsecase>(),
       ),
     );
   }

@@ -6,10 +6,10 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bip329_labels/bip329_labels.dart' as bip329;
 
 class ImportLabelsUsecase {
-  final LabelRepository _labelRepository;
+  final LabelsRepository _labelRepository;
   final _fileSystemRepository = FileSystemRepository();
 
-  ImportLabelsUsecase({required LabelRepository labelRepository})
+  ImportLabelsUsecase({required LabelsRepository labelRepository})
     : _labelRepository = labelRepository;
 
   Future<int> call() async {
@@ -32,7 +32,7 @@ class ImportLabelsUsecase {
         final label = _convertBip329ToLabel(bip329Label);
         labels.add(label);
       }
-      await _labelRepository.batch(labels);
+      await _labelRepository.store(labels);
 
       return labels.length;
     } catch (e) {

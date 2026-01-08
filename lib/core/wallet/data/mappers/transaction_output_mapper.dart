@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 
