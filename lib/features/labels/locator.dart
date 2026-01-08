@@ -1,13 +1,11 @@
+import 'package:bb_mobile/features/labels/data/label_local_datasource.dart';
 import 'package:bb_mobile/features/labels/data/label_repository.dart';
-import 'package:bb_mobile/features/labels/domain/batch_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/delete_label_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/fetch_distinct_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/import_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/label_address_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/label_transaction_usecase.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/delete_label_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/export_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/fetch_distinct_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
@@ -18,40 +16,31 @@ class LabelsLocator {
   }
 
   static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<LabelRepository>(
-      () => LabelRepository(labelDatasource: locator<LabelsLocalDatasource>()),
+    locator.registerLazySingleton<LabelsRepository>(
+      () => LabelsRepository(labelDatasource: locator<LabelsLocalDatasource>()),
     );
   }
 
   static void registerUseCases(GetIt locator) {
-    locator.registerFactory<LabelTransactionUsecase>(
-      () =>
-          LabelTransactionUsecase(labelRepository: locator<LabelRepository>()),
-    );
-
-    locator.registerFactory<LabelAddressUsecase>(
-      () => LabelAddressUsecase(labelRepository: locator<LabelRepository>()),
-    );
-
     locator.registerFactory<DeleteLabelUsecase>(
-      () => DeleteLabelUsecase(labelRepository: locator<LabelRepository>()),
+      () => DeleteLabelUsecase(labelRepository: locator<LabelsRepository>()),
     );
 
     locator.registerFactory<ExportLabelsUsecase>(
-      () => ExportLabelsUsecase(labelRepository: locator<LabelRepository>()),
+      () => ExportLabelsUsecase(labelRepository: locator<LabelsRepository>()),
     );
 
     locator.registerFactory<ImportLabelsUsecase>(
-      () => ImportLabelsUsecase(labelRepository: locator<LabelRepository>()),
+      () => ImportLabelsUsecase(labelRepository: locator<LabelsRepository>()),
     );
 
     locator.registerFactory<FetchDistinctLabelsUsecase>(
       () => FetchDistinctLabelsUsecase(
-        labelRepository: locator<LabelRepository>(),
+        labelRepository: locator<LabelsRepository>(),
       ),
     );
-    locator.registerFactory<BatchLabelsUsecase>(
-      () => BatchLabelsUsecase(labelRepository: locator<LabelRepository>()),
+    locator.registerFactory<StoreLabelsUsecase>(
+      () => StoreLabelsUsecase(labelRepository: locator<LabelsRepository>()),
     );
   }
 }

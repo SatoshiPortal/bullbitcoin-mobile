@@ -1,28 +1,28 @@
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/labels/data/label_local_datasource.dart';
 import 'package:bb_mobile/features/labels/data/label_row_mapper.dart';
 import 'package:bb_mobile/features/labels/domain/label.dart';
 
-class LabelRepository {
+class LabelsRepository {
   final LabelsLocalDatasource _labelsLocalDatasource;
 
-  LabelRepository({required LabelsLocalDatasource labelDatasource})
+  LabelsRepository({required LabelsLocalDatasource labelDatasource})
     : _labelsLocalDatasource = labelDatasource;
 
-  Future<void> store(Label label) async {
-    final model = LabelRowMapper.fromEntity(label);
-    await _labelsLocalDatasource.store([model]);
-  }
-
-  Future<void> batch(List<Label> labels) async {
-    final models = labels
+  Future<void> store(List<Label> labels) async {
+    final rows = labels
         .map((label) => LabelRowMapper.fromEntity(label))
         .toList();
-    await _labelsLocalDatasource.store(models);
+    await _labelsLocalDatasource.store(rows);
   }
 
   Future<List<Label>> fetchByLabel(String label) async {
-    final models = await _labelsLocalDatasource.fetchByLabel(label);
-    return models.map((model) => model.toEntity()).toList();
+    final rows = await _labelsLocalDatasource.fetchByLabel(label);
+    return rows.map((row) => row.toEntity()).toList();
+  }
+
+  Future<List<Label>> fetchByRef(String ref) async {
+    final rows = await _labelsLocalDatasource.fetchByRef(ref);
+    return rows.map((row) => row.toEntity()).toList();
   }
 
   Future<void> trashByLabel(String label) async {
@@ -30,21 +30,20 @@ class LabelRepository {
   }
 
   Future<void> trashLabel(Label label) async {
-    final model = LabelRowMapper.fromEntity(label);
+    final row = LabelRowMapper.fromEntity(label);
     await _labelsLocalDatasource.trashByLabelAndRef(
-      label: model.label,
-      ref: model.ref,
+      label: row.label,
+      ref: row.ref,
     );
   }
 
   Future<List<Label>> fetchAll() async {
-    final models = await _labelsLocalDatasource.fetchAll();
-    return models.map((model) => model.toEntity()).toList();
+    final rows = await _labelsLocalDatasource.fetchAll();
+    return rows.map((row) => row.toEntity()).toList();
   }
 
   Future<List<String>> fetchDistinct() async {
-    final models = await _labelsLocalDatasource.fetchDistinct();
-    return models;
+    return await _labelsLocalDatasource.fetchDistinct();
   }
 
   Future<void> trashAll() async => await _labelsLocalDatasource.trashAll();

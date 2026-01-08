@@ -1,10 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/features/labels/domain/delete_label_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/fetch_distinct_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/label.dart';
-import 'package:bb_mobile/features/labels/domain/label_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
@@ -18,6 +14,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
@@ -38,7 +35,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required GetOrderUsecase getOrderUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
-    required LabelTransactionUsecase labelTransactionUsecase,
+    required StoreLabelsUsecase storeLabelsUsecase,
     required DeleteLabelUsecase deleteLabelUsecase,
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
@@ -53,7 +50,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        _getOrderUsecase = getOrderUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _watchPayjoinUsecase = watchPayjoinUsecase,
-       _labelTransactionUsecase = labelTransactionUsecase,
+       _storeLabelsUsecase = storeLabelsUsecase,
        _deleteLabelUsecase = deleteLabelUsecase,
        _broadcastOriginalTransactionUsecase =
            broadcastOriginalTransactionUsecase,
@@ -70,7 +67,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final GetOrderUsecase _getOrderUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
-  final LabelTransactionUsecase _labelTransactionUsecase;
+  final StoreLabelsUsecase _storeLabelsUsecase;
   final DeleteLabelUsecase _deleteLabelUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
@@ -315,11 +312,12 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       return;
     }
 
-    final txLabel = await _labelTransactionUsecase.execute(
-      txid: state.walletTransaction!.txId,
-      origin: state.walletTransaction!.walletId,
+    final txLabel = Label.tx(
+      transactionId: state.walletTransaction!.txId,
       label: label,
+      origin: state.walletTransaction!.walletId,
     );
+    await _storeLabelsUsecase.execute([txLabel]);
 
     final updatedWalletransaction = state.transaction?.walletTransaction
         ?.copyWith(

@@ -11,8 +11,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summar
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/label_transaction_usecase.dart';
-import 'package:bb_mobile/features/labels/label_system.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -24,6 +22,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -65,7 +64,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
     required GetWalletUtxosUsecase getWalletUtxosUsecase,
     required GetOrderUsecase getOrderUsecase,
-    required LabelTransactionUsecase labelTransactionUsecase,
+    required StoreLabelsUsecase storeLabelsUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _getSettingsUsecase = getSettingsUsecase,
        _createSellOrderUsecase = createSellOrderUsecase,
@@ -84,7 +83,8 @@ class SellBloc extends Bloc<SellEvent, SellState> {
        _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _getOrderUsecase = getOrderUsecase,
-       _labelTransactionUsecase = labelTransactionUsecase,
+
+       _storeLabelsUsecase = storeLabelsUsecase,
        super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -119,7 +119,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetOrderUsecase _getOrderUsecase;
-  final LabelTransactionUsecase _labelTransactionUsecase;
+  final StoreLabelsUsecase _storeLabelsUsecase;
   Timer? _pollingTimer;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
@@ -416,11 +416,13 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         await _broadcastLiquidTransactionUsecase.execute(signedPset);
         final tx = await LiquidTx.fromPset(signedPset);
         final txid = tx.txid;
-        await _labelTransactionUsecase.execute(
-          txid: txid,
-          label: LabelSystem.exchangeSell.label,
-          origin: wallet.id,
-        );
+        await _storeLabelsUsecase.execute([
+          Label.tx(
+            transactionId: txid,
+            label: LabelSystem.exchangeSell.label,
+            origin: wallet.id,
+          ),
+        ]);
       } else {
         final absoluteFees = sellPaymentState.absoluteFees;
         if (absoluteFees == null) {
@@ -452,11 +454,13 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
         final txid = tx.txid;
-        await _labelTransactionUsecase.execute(
-          txid: txid,
-          label: LabelSystem.exchangeSell.label,
-          origin: wallet.id,
-        );
+        await _storeLabelsUsecase.execute([
+          Label.tx(
+            transactionId: txid,
+            label: LabelSystem.exchangeSell.label,
+            origin: wallet.id,
+          ),
+        ]);
       }
       // 5s delay gives backend time to register the 0 conf
       await Future.delayed(const Duration(seconds: 5));

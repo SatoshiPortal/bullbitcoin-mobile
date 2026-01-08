@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/features/labels/data/label_repository.dart';
-import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -12,6 +10,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:flutter/foundation.dart';
 
 class AutoSwapExecutionUsecase {
@@ -22,7 +21,7 @@ class AutoSwapExecutionUsecase {
   final BlockchainPort _blockchainPort;
   final SeedRepository _seedRepository;
   final WalletTransactionRepository _walletTxRepository;
-  final LabelRepository _labelRepository;
+  final StoreLabelsUsecase _storeLabelsUsecase;
 
   AutoSwapExecutionUsecase({
     required BoltzSwapRepository mainnetRepository,
@@ -32,7 +31,7 @@ class AutoSwapExecutionUsecase {
     required BlockchainPort blockchainPort,
     required SeedRepository seedRepository,
     required WalletTransactionRepository walletTxRepository,
-    required LabelRepository labelRepository,
+    required StoreLabelsUsecase storeLabelsUsecase,
   }) : _mainnetRepository = mainnetRepository,
        _testnetRepository = testnetRepository,
        _walletRepository = walletRepository,
@@ -40,7 +39,7 @@ class AutoSwapExecutionUsecase {
        _blockchainPort = blockchainPort,
        _seedRepository = seedRepository,
        _walletTxRepository = walletTxRepository,
-       _labelRepository = labelRepository;
+       _storeLabelsUsecase = storeLabelsUsecase;
 
   Future<Swap> execute({
     required bool isTestnet,
@@ -192,7 +191,7 @@ class AutoSwapExecutionUsecase {
       origin: defaultLiquidWallet.id,
       label: 'Auto-Swap',
     );
-    await _labelRepository.store(txLabel);
+    await _storeLabelsUsecase.execute([txLabel]);
 
     // sync at the end to ensure label is set
     await _walletTxRepository.getWalletTransaction(

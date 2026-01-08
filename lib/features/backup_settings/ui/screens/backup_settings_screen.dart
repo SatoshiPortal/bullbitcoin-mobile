@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/labels/router.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
