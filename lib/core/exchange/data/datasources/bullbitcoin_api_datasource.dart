@@ -1,6 +1,5 @@
-import 'dart:convert' show base64Encode;
+import 'dart:convert' show jsonEncode;
 import 'dart:math' show pow;
-import 'dart:typed_data' show Uint8List;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
@@ -762,7 +761,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
   // ==================== KYC Upload API ====================
 
-  /// Upload a KYC document file using base64 encoding (same approach as chat)
+  /// Upload a KYC document file using multipart form (same as BB-Exchange)
   Future<void> uploadKycDocument({
     required String apiKey,
     required List<int> fileBytes,
@@ -770,48 +769,45 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required String docType,
     required String sourceDetail,
   }) async {
-    // Determine file type from extension
-    final extension = fileName.split('.').last.toLowerCase();
-    final fileType = switch (extension) {
-      'jpg' || 'jpeg' => 'image/jpeg',
-      'png' => 'image/png',
-      'pdf' => 'application/pdf',
-      'gif' => 'image/gif',
-      'webp' => 'image/webp',
-      _ => 'application/octet-stream',
-    };
-
-    final requestData = {
-      'jsonrpc': '2.0',
-      'id': '1',
-      'method': 'createMyKYCIDDocument',
-      'params': {
-        'element': {
-          'idTypeCode': docType,
-          'sourceDetail': sourceDetail,
-          'fileName': fileName,
-          'fileType': fileType,
-          'fileSize': fileBytes.length,
-          'fileData': base64Encode(Uint8List.fromList(fileBytes)),
+    final formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(fileBytes, filename: fileName),
+      'kycIDDocument': jsonEncode({
+        'jsonrpc': '2.0',
+        'id': 1,
+        'method': 'createMyKYCIDDocument',
+        'params': {
+          'element': {
+            'idTypeCode': docType,
+            'sourceDetail': sourceDetail,
+          },
         },
-      },
-    };
+      }),
+    });
 
     final resp = await _http.post(
-      _kycPath,
-      data: requestData,
-      options: Options(headers: {'X-API-Key': apiKey}),
+      '$_kycPath/upload',
+      data: formData,
+      options: Options(
+        headers: {'X-API-Key': apiKey},
+        contentType: 'multipart/form-data',
+      ),
     );
 
     if (resp.statusCode != 200) {
       throw Exception('File upload failed with status: ${resp.statusCode}');
     }
 
+    // Check if response data indicates an error condition
     final responseData = resp.data as Map<String, dynamic>?;
     if (responseData != null) {
-      final error = responseData['error'];
-      if (error != null) {
-        throw Exception('File upload failed: $error');
+      // Check for various error indicators in the response
+      if (responseData.containsKey('error') ||
+          responseData.containsKey('errors') ||
+          (responseData.containsKey('result') &&
+              responseData['result'] is Map<String, dynamic> &&
+              (responseData['result']['error'] != null ||
+                  responseData['result']['errors'] != null))) {
+        throw Exception('File upload failed: API returned error in response');
       }
     }
   }
