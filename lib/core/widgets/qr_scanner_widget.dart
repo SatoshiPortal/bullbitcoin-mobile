@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/urqr/urqr.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_zxing/flutter_zxing.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class QrScannerWidget extends StatefulWidget {
   final void Function(String data) onScanned;
@@ -23,6 +25,32 @@ class QrScannerWidget extends StatefulWidget {
 class _ScannerState extends State<QrScannerWidget> {
   final UrQrReader _urReader = UrQrReader();
   String _progressText = '';
+  bool _cameraPermissionGranted = false;
+  bool _permissionDenied = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _requestCameraPermission();
+  }
+
+  Future<void> _requestCameraPermission() async {
+    final status = await Permission.camera.status;
+    if (status.isGranted) {
+      setState(() => _cameraPermissionGranted = true);
+      return;
+    }
+    if (status.isPermanentlyDenied) {
+      setState(() => _permissionDenied = true);
+      return;
+    }
+    final requestedStatus = await Permission.camera.request();
+    if (requestedStatus.isGranted) {
+      setState(() => _cameraPermissionGranted = true);
+    } else {
+      setState(() => _permissionDenied = true);
+    }
+  }
 
   @override
   void dispose() {
@@ -32,6 +60,44 @@ class _ScannerState extends State<QrScannerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_cameraPermissionGranted) {
+      if (_permissionDenied) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: .center,
+              children: [
+                Icon(
+                  Icons.camera_alt_outlined,
+                  size: 64,
+                  color: context.appColors.outline,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Camera permission is required to scan QR codes',
+                  style: context.font.bodyLarge,
+                  textAlign: .center,
+                ),
+                const SizedBox(height: 16),
+                BBButton.big(
+                  label: 'Open Settings',
+                  onPressed: () => openAppSettings(),
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      return Center(
+        child: CircularProgressIndicator(
+          color: context.appColors.primary,
+        ),
+      );
+    }
+
     return Stack(
       children: [
         ReaderWidget(
