@@ -1,5 +1,3 @@
-import 'package:bb_mobile/features/labels/data/label_repository.dart';
-import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -7,6 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
@@ -14,7 +13,7 @@ class CreateReceiveSwapUsecase {
   final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
-  final LabelRepository _labelRepository;
+  final StoreLabelsUsecase _storeLabelsUsecase;
 
   CreateReceiveSwapUsecase({
     required WalletRepository walletRepository,
@@ -22,13 +21,13 @@ class CreateReceiveSwapUsecase {
     required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    required LabelRepository labelRepository,
+    required StoreLabelsUsecase storeLabelsUsecase,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
        _swapRepositoryTestnet = swapRepositoryTestnet,
        _seedRepository = seedRepository,
        _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _labelRepository = labelRepository;
+       _storeLabelsUsecase = storeLabelsUsecase;
 
   Future<LnReceiveSwap> execute({
     required String walletId,
@@ -87,7 +86,7 @@ class CreateReceiveSwapUsecase {
           label: description,
           origin: wallet.id,
         );
-        await _labelRepository.store(addressLabel);
+        await _storeLabelsUsecase.execute([addressLabel]);
       }
 
       switch (type) {

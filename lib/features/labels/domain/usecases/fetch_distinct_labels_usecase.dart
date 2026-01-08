@@ -3,9 +3,9 @@ import 'package:bb_mobile/features/labels/domain/label_error.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class FetchDistinctLabelsUsecase {
-  final LabelRepository _labelRepository;
+  final LabelsRepository _labelRepository;
 
-  FetchDistinctLabelsUsecase({required LabelRepository labelRepository})
+  FetchDistinctLabelsUsecase({required LabelsRepository labelRepository})
     : _labelRepository = labelRepository;
 
   Future<List<String>> execute() async {

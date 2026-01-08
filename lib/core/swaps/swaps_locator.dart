@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/features/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -29,6 +28,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:get_it/get_it.dart';
 
 class SwapsLocator {
@@ -227,7 +227,7 @@ class SwapsLocator {
         blockchainPort: locator<BlockchainPort>(),
         seedRepository: locator<SeedRepository>(),
         walletTxRepository: locator<WalletTransactionRepository>(),
-        labelRepository: locator<LabelRepository>(),
+        storeLabelsUsecase: locator<StoreLabelsUsecase>(),
       ),
     );
     locator.registerFactory<CreateChainSwapUsecase>(

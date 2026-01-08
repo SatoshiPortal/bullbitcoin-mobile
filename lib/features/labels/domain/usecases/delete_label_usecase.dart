@@ -2,19 +2,19 @@ import 'package:bb_mobile/features/labels/data/label_repository.dart';
 import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
 
-class BatchLabelsUsecase {
-  final LabelRepository _labelRepository;
+class DeleteLabelUsecase {
+  final LabelsRepository _labelRepository;
 
-  BatchLabelsUsecase({required LabelRepository labelRepository})
+  DeleteLabelUsecase({required LabelsRepository labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<void> execute(List<Label> labels) async {
+  Future<void> execute(Label label) async {
     try {
-      await _labelRepository.batch(labels);
+      await _labelRepository.trashLabel(label);
     } on LabelError {
       rethrow;
     } catch (e) {
-      throw LabelError.unexpected('Failed to batch labels: $e');
+      throw LabelError.unexpected('Failed to delete label ${label.label}: $e');
     }
   }
 }

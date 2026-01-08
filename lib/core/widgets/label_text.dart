@@ -1,5 +1,4 @@
-import 'package:bb_mobile/features/labels/domain/label.dart';
-import 'package:bb_mobile/features/labels/label_system.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 

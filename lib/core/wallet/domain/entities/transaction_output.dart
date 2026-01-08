@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction_output.freezed.dart';

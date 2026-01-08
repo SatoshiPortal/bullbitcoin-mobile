@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -15,17 +14,17 @@ class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
-  final LabelsLocalDatasource _labelDatasource;
+  final FetchLabelByRefUsecase _fetchLabelByRefUsecase;
 
   WalletAddressRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required LabelsLocalDatasource labelDatasource,
+    required FetchLabelByRefUsecase fetchLabelByRefUsecase,
   }) : _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
-       _labelDatasource = labelDatasource;
+       _fetchLabelByRefUsecase = fetchLabelByRefUsecase;
 
   Future<WalletAddress> getLastUnusedReceiveAddress({
     required String walletId,
@@ -54,7 +53,7 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
-    var labels = await _labelDatasource.fetchByRef(address);
+    var labels = await _fetchLabelByRefUsecase.execute(address);
 
     while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
       index++;
@@ -70,7 +69,7 @@ class WalletAddressRepository {
         );
         address = addressInfo.confidential;
       }
-      labels = await _labelDatasource.fetchByRef(address);
+      labels = await _fetchLabelByRefUsecase.execute(address);
     }
 
     final walletAddressModel = WalletAddressModel(
@@ -83,7 +82,7 @@ class WalletAddressRepository {
 
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels.map((label) => label.toEntity()).toList(),
+      labels: labels,
     );
 
     return walletAddress;
@@ -123,7 +122,7 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
-    var labels = await _labelDatasource.fetchByRef(address);
+    var labels = await _fetchLabelByRefUsecase.execute(address);
 
     while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
       index++;
@@ -139,7 +138,7 @@ class WalletAddressRepository {
         );
         address = addressInfo.confidential;
       }
-      labels = await _labelDatasource.fetchByRef(address);
+      labels = await _fetchLabelByRefUsecase.execute(address);
     }
 
     final walletAddressModel = WalletAddressModel(
@@ -152,7 +151,7 @@ class WalletAddressRepository {
 
     final walletAddress = WalletAddressMapper.toEntity(
       walletAddressModel,
-      labels: labels.map((label) => label.toEntity()).toList(),
+      labels: labels,
     );
 
     return walletAddress;
@@ -261,11 +260,8 @@ class WalletAddressRepository {
 
     final result = <WalletAddress>[];
     for (var model in enrichedAddresses) {
-      final labels = await _labelDatasource.fetchByRef(model.address);
-      final entity = WalletAddressMapper.toEntity(
-        model,
-        labels: labels.map((label) => label.toEntity()).toList(),
-      );
+      final labels = await _fetchLabelByRefUsecase.execute(model.address);
+      final entity = WalletAddressMapper.toEntity(model, labels: labels);
       result.add(entity);
     }
 
@@ -312,10 +308,7 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final labels = await _labelDatasource.fetchByRef(address);
-    return WalletAddressMapper.toEntity(
-      walletAddressModel,
-      labels: labels.map((label) => label.toEntity()).toList(),
-    );
+    final labels = await _fetchLabelByRefUsecase.execute(address);
+    return WalletAddressMapper.toEntity(walletAddressModel, labels: labels);
   }
 }

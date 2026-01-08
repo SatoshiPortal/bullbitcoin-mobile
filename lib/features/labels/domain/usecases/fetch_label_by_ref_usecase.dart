@@ -2,19 +2,19 @@ import 'package:bb_mobile/features/labels/data/label_repository.dart';
 import 'package:bb_mobile/features/labels/domain/label.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
 
-class DeleteLabelUsecase {
-  final LabelRepository _labelRepository;
+class FetchLabelByRefUsecase {
+  final LabelsRepository _labelRepository;
 
-  DeleteLabelUsecase({required LabelRepository labelRepository})
+  FetchLabelByRefUsecase({required LabelsRepository labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<void> execute(Label label) async {
+  Future<List<Label>> execute(String ref) async {
     try {
-      await _labelRepository.trashLabel(label);
+      return await _labelRepository.fetchByRef(ref);
     } on LabelError {
       rethrow;
     } catch (e) {
-      throw LabelError.unexpected('Failed to delete label ${label.label}: $e');
+      throw LabelError.unexpected('Failed to fetch label by ref $ref: $e');
     }
   }
 }

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/labels/domain/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/export_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
