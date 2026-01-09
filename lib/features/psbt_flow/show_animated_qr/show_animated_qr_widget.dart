@@ -123,7 +123,7 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
                 data: state.parts[state.currentIndex],
                 // This color must stay hardcoded and not adapt to the theme.
                 // ColdCard can read only QR with white background.
-                backgroundColor: Colors.white,
+                backgroundColor: context.appColors.onPrimaryFixed,
               ),
               const Gap(16),
               if (widget.showSlider) ...[
