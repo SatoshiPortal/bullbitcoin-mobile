@@ -1518,6 +1518,8 @@
   "priceChartFetchingHistory": "Fetching Price History...",
   "priceChartFailedToLoad": "无法加载价格历史",
   "priceFailedToLoad": "无法加载价格",
+  "statusScreenTryAgain": "重试",
+  "statusScreenContinue": "继续",
   "sellDone": "Done",
   "payFromWallet": "From Wallet",
   "dcaConfirmRecurringBuyTitle": "同意 1. 采购",

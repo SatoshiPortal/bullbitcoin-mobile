@@ -1515,6 +1515,8 @@
   "priceChartFetchingHistory": "Fetching Price History...",
   "priceChartFailedToLoad": "Falha ao carregar histórico de preços",
   "priceFailedToLoad": "Falha ao carregar preço",
+  "statusScreenTryAgain": "Tentar novamente",
+  "statusScreenContinue": "Continuar",
   "sellDone": "Feito",
   "payFromWallet": "Da carteira",
   "dcaConfirmRecurringBuyTitle": "Confirmação Comprar",

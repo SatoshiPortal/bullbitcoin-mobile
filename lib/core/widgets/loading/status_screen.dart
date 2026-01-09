@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/progress_screen.dart';
 import 'package:bb_mobile/core/widgets/template/screen_template.dart';
@@ -39,8 +40,8 @@ class StatusScreen extends StatelessWidget {
         bottomChild: (!isLoading && onTap != null)
             ? BBButton.big(
                 label: hasError
-                    ? (buttonText ?? 'Try Again')
-                    : (buttonText ?? 'Continue'),
+                    ? (buttonText ?? context.loc.statusScreenTryAgain)
+                    : (buttonText ?? context.loc.statusScreenContinue),
                 onPressed: onTap ?? () {},
                 textColor: context.appColors.onSecondary,
                 bgColor: context.appColors.secondary,

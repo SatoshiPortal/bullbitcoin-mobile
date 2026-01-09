@@ -1518,6 +1518,8 @@
   "priceChartFetchingHistory": "Recuperare la cronologia dei prezzi...",
   "priceChartFailedToLoad": "Impossibile caricare la cronologia dei prezzi",
   "priceFailedToLoad": "Impossibile caricare il prezzo",
+  "statusScreenTryAgain": "Riprova",
+  "statusScreenContinue": "Continua",
   "sellDone": "Fatto",
   "payFromWallet": "Da Wallet",
   "dcaConfirmRecurringBuyTitle": "Confermare il Ricorso Comprare",

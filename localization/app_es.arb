@@ -3868,6 +3868,8 @@
   "priceChartFetchingHistory": "Obteniendo historial de precios...",
   "priceChartFailedToLoad": "Error al cargar el historial de precios",
   "priceFailedToLoad": "Error al cargar el precio",
+  "statusScreenTryAgain": "Intentar de nuevo",
+  "statusScreenContinue": "Continuar",
   "exchangeLandingDisclaimerLegal": "El acceso a los servicios de intercambio estará restringido a países donde Bull Bitcoin pueda operar legalmente y puede requerir KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Los servicios de intercambio de criptomonedas no están disponibles en la aplicación móvil de Bull Bitcoin.",
   "exchangeLoginButton": "Iniciar sesión o registrarse",

@@ -11877,6 +11877,14 @@
   "@priceFailedToLoad": {
     "description": "Error message shown when bitcoin price fails to load"
   },
+  "statusScreenTryAgain": "Try Again",
+  "@statusScreenTryAgain": {
+    "description": "Button text to retry after an error"
+  },
+  "statusScreenContinue": "Continue",
+  "@statusScreenContinue": {
+    "description": "Button text to proceed to next step"
+  },
   "exchangeLandingDisclaimerLegal": "Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
