@@ -19,7 +19,7 @@ import 'package:lwk/lwk.dart' as lwk;
 
 Future<void> doMigration0_1to0_2() async {
   try {
-    final secureStorageDatasource = MigrationSecureStorageDatasource();
+    final secureStorageDatasource = locator<MigrationSecureStorageDatasource>();
     final hiveDatasource = locator<OldHiveDatasource>();
     final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
 

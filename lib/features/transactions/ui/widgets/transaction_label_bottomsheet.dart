@@ -1,4 +1,7 @@
+import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -18,35 +21,23 @@ Future<void> showTransactionLabelBottomSheet(
 }) async {
   final detailsCubit = context.read<TransactionDetailsCubit>();
 
-  await showModalBottomSheet(
+  await BlurredBottomSheet.show(
     context: context,
-    useRootNavigator: true,
-    backgroundColor: context.colour.onPrimary,
-    isScrollControlled: true,
-    constraints: const BoxConstraints(maxWidth: double.infinity),
-    builder: (context) {
-      return BlocProvider.value(
-        value: detailsCubit,
-        child: TransactionLabelBottomsheet(
-          initialNote: initialNote,
-          onEditComplete: onEditComplete,
-          distinctLabelsFuture: detailsCubit.fetchDistinctLabels(),
-        ),
-      );
-    },
+    child: BlocProvider.value(
+      value: detailsCubit,
+      child: TransactionLabelBottomsheet(
+        distinctLabelsFuture: detailsCubit.fetchDistinctLabels(),
+      ),
+    ),
   );
 }
 
 class TransactionLabelBottomsheet extends StatefulWidget {
   const TransactionLabelBottomsheet({
     super.key,
-    this.initialNote,
-    this.onEditComplete,
     required this.distinctLabelsFuture,
   });
 
-  final String? initialNote;
-  final Function(String)? onEditComplete;
   final Future<List<String>> distinctLabelsFuture;
 
   @override
@@ -56,18 +47,8 @@ class TransactionLabelBottomsheet extends StatefulWidget {
 
 class _TransactionLabelBottomsheetState
     extends State<TransactionLabelBottomsheet> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialNote ?? '');
-    if (widget.initialNote != null) {
-      context.read<TransactionDetailsCubit>().onNoteChanged(
-        widget.initialNote!,
-      );
-    }
-  }
+  final _controller = TextEditingController();
+  String get trimmedLabel => _controller.text.trim();
 
   @override
   void dispose() {
@@ -75,19 +56,15 @@ class _TransactionLabelBottomsheetState
     super.dispose();
   }
 
-  void _onSuggestionTap(String label) {
-    _controller.text = label;
-    context.read<TransactionDetailsCubit>().onNoteChanged(label);
-  }
-
   Widget _buildSuggestions(List<String> existingLabels) {
     final height = Device.screen.height * 0.05;
-    final currentText = _controller.text.trim().toLowerCase();
+    final currentText = trimmedLabel.toLowerCase();
 
-    final suggestions =
-        existingLabels
-            .where((label) => label.toLowerCase().startsWith(currentText))
-            .toList();
+    final suggestions = existingLabels
+        .where((label) => label.toLowerCase().startsWith(currentText))
+        // don't show system labels
+        .where((label) => !LabelSystem.isSystemLabel(label))
+        .toList();
 
     if (suggestions.isEmpty ||
         (suggestions.length == 1 &&
@@ -98,14 +75,14 @@ class _TransactionLabelBottomsheetState
     return SizedBox(
       height: height,
       child: ListView.separated(
-        scrollDirection: Axis.horizontal,
+        scrollDirection: .horizontal,
         itemCount: suggestions.length,
         separatorBuilder: (_, _) => SizedBox(width: Device.screen.width * 0.01),
         itemBuilder: (context, index) {
           final suggestion = suggestions[index];
           return _LabelSuggestionChip(
             label: suggestion,
-            onTap: () => _onSuggestionTap(suggestion),
+            onTap: () => setState(() => _controller.text = suggestion),
           );
         },
       ),
@@ -115,7 +92,6 @@ class _TransactionLabelBottomsheetState
   @override
   Widget build(BuildContext context) {
     final state = context.watch<TransactionDetailsCubit>().state;
-    final isEditing = widget.initialNote != null;
 
     return FutureBuilder<List<String>>(
       future: widget.distinctLabelsFuture,
@@ -128,15 +104,15 @@ class _TransactionLabelBottomsheetState
             MediaQuery.of(context).viewInsets.bottom,
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: .min,
+            crossAxisAlignment: .stretch,
             children: [
               Gap(Device.screen.height * 0.01),
               Row(
                 children: [
                   const Spacer(),
                   BBText(
-                    isEditing ? 'Edit note' : 'Add note',
+                    context.loc.transactionNoteAddTitle,
                     style: context.font.headlineMedium,
                   ),
                   const Spacer(),
@@ -144,7 +120,7 @@ class _TransactionLabelBottomsheetState
                     onPressed: () {
                       context.pop();
                     },
-                    color: context.colour.secondary,
+                    color: context.appColors.onSurface,
                     icon: const Icon(Icons.close_sharp),
                   ),
                 ],
@@ -157,43 +133,39 @@ class _TransactionLabelBottomsheetState
               Gap(Device.screen.height * 0.01),
               BBInputText(
                 controller: _controller,
-                hint: 'Note',
+                value: _controller.text,
+                hint: context.loc.transactionNoteHint,
                 hintStyle: context.font.bodyLarge?.copyWith(
-                  color: context.colour.surfaceContainer,
+                  color: context.appColors.textMuted,
                 ),
-                maxLines: 2,
-                value: state.note ?? widget.initialNote ?? '',
+                maxLines: 1,
                 maxLength: NoteValidator.maxNoteLength,
-                onChanged: (note) {
-                  context.read<TransactionDetailsCubit>().onNoteChanged(note);
-                },
+                onChanged: (_) => setState(() {}),
               ),
               if (state.err != null) ...[
                 Gap(Device.screen.height * 0.01),
                 BBText(
                   state.err!.toString(),
-                  style: context.font.bodySmall?.copyWith(color: Colors.red),
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.error,
+                  ),
                 ),
               ],
               Gap(Device.screen.height * 0.03),
               BBButton.big(
-                label: isEditing ? 'Update' : 'Save',
-                disabled: state.err != null || _controller.text.trim().isEmpty,
+                label: context.loc.transactionNoteSaveButton,
+                disabled: state.err != null || trimmedLabel.isEmpty,
                 onPressed: () {
-                  final validation = NoteValidator.validate(_controller.text);
+                  final validation = NoteValidator.validate(trimmedLabel);
                   if (validation.isValid) {
-                    if (widget.onEditComplete != null) {
-                      widget.onEditComplete!(_controller.text.trim());
-                    } else {
-                      context
-                          .read<TransactionDetailsCubit>()
-                          .saveTransactionNote();
-                    }
+                    context
+                        .read<TransactionDetailsCubit>()
+                        .saveTransactionLabel(trimmedLabel);
                     context.pop();
                   }
                 },
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.onSurface,
+                textColor: context.appColors.surface,
               ),
               Gap(Device.screen.height * 0.03),
             ],
@@ -222,8 +194,8 @@ class _LabelSuggestionChip extends StatelessWidget {
         height: Device.screen.height * 0.05,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          color: context.colour.onPrimary,
-          border: Border.all(color: context.colour.surface),
+          color: context.appColors.surface,
+          border: Border.all(color: context.appColors.border),
         ),
         child: Center(child: BBText(label, style: context.font.bodyLarge)),
       ),

@@ -29,10 +29,9 @@ class BuySuccessScreen extends StatelessWidget {
     final payoutAmountSat = ConvertAmount.btcToSats(
       payoutAmountBtc,
     ); // Convert sats to BTC
-    final formattedPayOutAmount =
-        bitcoinUnit == BitcoinUnit.sats
-            ? FormatAmount.sats(payoutAmountSat)
-            : FormatAmount.btc(buyOrder.payoutAmount);
+    final formattedPayOutAmount = bitcoinUnit == BitcoinUnit.sats
+        ? FormatAmount.sats(payoutAmountSat)
+        : FormatAmount.btc(buyOrder.payoutAmount);
     final payoutTime = buyOrder.scheduledPayoutTime;
 
     return PopScope(
@@ -61,9 +60,13 @@ class BuySuccessScreen extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
-                const Icon(Icons.check_circle, size: 100, color: Colors.green),
+                Icon(
+                  Icons.check_circle,
+                  size: 100,
+                  color: context.appColors.success,
+                ),
                 const SizedBox(height: 20),
                 Text(
                   context.loc.buyYouBought(formattedPayOutAmount),
@@ -72,12 +75,12 @@ class BuySuccessScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 if (payoutTime != null)
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       Text(
                         context.loc.buyPayoutWillBeSentIn,
                         style: context.font.bodyMedium,
-                        textAlign: TextAlign.center,
+                        textAlign: .center,
                       ),
                       const Gap(4),
                       Countdown(
@@ -96,7 +99,7 @@ class BuySuccessScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 // Only show transaction acceleration option for Bitcoin on-chain
                 // orders by checking if the order has a bitcoin address. And only
@@ -121,8 +124,8 @@ class BuySuccessScreen extends StatelessWidget {
                       pathParameters: {'orderId': buyOrder.orderId},
                     );
                   },
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onPrimary,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ),

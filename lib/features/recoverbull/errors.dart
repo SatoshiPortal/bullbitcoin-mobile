@@ -140,3 +140,10 @@ class InvalidVaultCredentials extends RecoverBullError {
     return context.loc.recoverbullErrorInvalidCredentials;
   }
 }
+
+class InvalidVaultFileFormatError extends RecoverBullError {
+  @override
+  String toTranslated(BuildContext context) {
+    return context.loc.recoverbullSelectBackupFileNotValidError;
+  }
+}

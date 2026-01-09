@@ -43,18 +43,18 @@ class VaultSelectedPage extends StatelessWidget {
           children: [
             BBText(
               context.loc.recoverbullVaultImportedSuccess,
-              textAlign: TextAlign.left,
+              textAlign: .left,
               style: context.font.bodySmall,
             ),
             const Gap(16),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: context.colour.onSurface),
+                border: Border.all(color: context.appColors.onSurface),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(vault.id, style: context.font.headlineMedium),
                   const Gap(16),
@@ -76,8 +76,8 @@ class VaultSelectedPage extends StatelessWidget {
                       RecoverBullGoogleDriveRoute.listDriveVaults.name,
                       extra: flow,
                     ),
-                bgColor: Colors.transparent,
-                textColor: context.colour.secondary,
+                bgColor: context.appColors.transparent,
+                textColor: context.appColors.onSurface,
                 outlined: true,
               ),
               const Gap(16),
@@ -93,8 +93,8 @@ class VaultSelectedPage extends StatelessWidget {
                       RecoverBullRoute.recoverbullFlows.name,
                       extra: RecoverBullFlowsExtra(flow: flow, vault: vault),
                     ),
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
+                bgColor: context.appColors.onSurface,
+                textColor: context.appColors.surface,
               ),
             ),
           ],

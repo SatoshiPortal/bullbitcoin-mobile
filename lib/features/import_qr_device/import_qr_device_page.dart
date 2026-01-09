@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_qr_device/device_instructions_bottom_sheet.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
@@ -32,14 +33,23 @@ class ImportQrDevicePage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Device.screen.width * 0.05),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: .stretch,
           children: [
             BBText(
               context.loc.importQrDeviceScanPrompt(deviceName),
               style: context.font.bodyLarge,
-              textAlign: TextAlign.center,
+              textAlign: .center,
               maxLines: 2,
             ),
+
+            if (device == SignerDeviceEntity.jade) ...[
+              Gap(Device.screen.height * 0.03),
+              InfoCard(
+                description: context.loc.importQrDeviceJadeFirmwareWarning,
+                tagColor: context.appColors.warning,
+                bgColor: context.appColors.warningContainer,
+              ),
+            ],
 
             Gap(Device.screen.height * 0.05),
             Image.asset(
@@ -52,27 +62,25 @@ class ImportQrDevicePage extends StatelessWidget {
               children: [
                 BBButton.small(
                   label: context.loc.importQrDeviceButtonOpenCamera,
-                  onPressed:
-                      () => context.pushNamed(
-                        ImportWatchOnlyWalletRoutes.scan.name,
-                        extra: device,
-                      ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  onPressed: () => context.pushNamed(
+                    ImportWatchOnlyWalletRoutes.scan.name,
+                    extra: device,
+                  ),
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
 
                 Gap(Device.screen.height * 0.02),
                 BBButton.small(
                   label: context.loc.importQrDeviceButtonInstructions,
-                  onPressed:
-                      () => DeviceInstructionsBottomSheet.show(
-                        context,
-                        title: instructionsTitle,
-                        instructions: instructions,
-                      ),
-                  bgColor: context.colour.onSecondary,
-                  textColor: context.colour.secondary,
+                  onPressed: () => DeviceInstructionsBottomSheet.show(
+                    context,
+                    title: instructionsTitle,
+                    instructions: instructions,
+                  ),
+                  bgColor: context.appColors.surface,
+                  textColor: context.appColors.text,
                   outlined: true,
                 ),
               ],

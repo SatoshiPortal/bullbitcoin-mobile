@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -26,9 +27,8 @@ class WalletDetailsScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Wallet Details'),
+        title: Text(context.loc.walletOptionsWalletDetailsTitle),
         actions: [
           if (wallet != null && wallet.isDefault == false)
             IconButton(
@@ -52,21 +52,21 @@ class WalletDetailsScreen extends StatelessWidget {
             isDeletingWallet
                 ? Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       const CircularProgressIndicator(),
                       const Gap(16),
                       BBText(
-                        'Deleting wallet...',
+                        context.loc.walletDetailsDeletingMessage,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.textMuted,
                         ),
                       ),
                     ],
                   ),
                 )
                 : wallet == null
-                ? const Center(child: Text('Wallet not found'))
+                ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
                 : ListView(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -74,38 +74,46 @@ class WalletDetailsScreen extends StatelessWidget {
                   ),
                   children: [
                     _InfoField(
-                      label: 'Wallet fingerprint',
+                      label: context.loc.walletDetailsWalletFingerprintLabel,
                       value: wallet.masterFingerprint,
                     ),
                     const SizedBox(height: 18),
-                    _CopyField(label: 'Pubkey', value: wallet.xpub),
+                    _CopyField(
+                      label: context.loc.walletDetailsPubkeyLabel,
+                      value: wallet.xpub,
+                      copyLabel: context.loc.walletDetailsCopyButton,
+                    ),
                     const SizedBox(height: 18),
                     _CopyField(
-                      label: 'Descriptor',
+                      label: context.loc.walletDetailsDescriptorLabel,
                       value: wallet.externalPublicDescriptor,
+                      copyLabel: context.loc.walletDetailsCopyButton,
                     ),
                     const SizedBox(height: 18),
                     _InfoField(
-                      label: 'Address type',
+                      label: context.loc.walletDetailsAddressTypeLabel,
                       value: wallet.addressType,
                     ),
                     const SizedBox(height: 18),
-                    _InfoField(label: 'Network', value: wallet.networkString),
+                    _InfoField(
+                      label: context.loc.walletDetailsNetworkLabel,
+                      value: wallet.networkString,
+                    ),
                     const SizedBox(height: 18),
                     _InfoField(
-                      label: 'Derivation Path',
+                      label: context.loc.walletDetailsDerivationPathLabel,
                       value: wallet.derivationPath,
                     ),
                     const SizedBox(height: 18),
                     _InfoField(
-                      label: 'Signer',
+                      label: context.loc.walletDetailsSignerLabel,
                       value: wallet.signer.displayName,
                     ),
                     const SizedBox(height: 18),
                     _InfoField(
-                      label: 'Signer Device',
-                      value:
-                          wallet.signerDevice?.displayName ?? 'Not supported',
+                      label: context.loc.walletDetailsSignerDeviceLabel,
+                      value: wallet.signerDevice?.displayName ??
+                          context.loc.walletDetailsSignerDeviceNotSupported,
                     ),
                   ],
                 ),
@@ -122,19 +130,19 @@ class _InfoField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
         BBText(
           value,
           style: context.font.bodyMedium?.copyWith(
-            color: context.colour.outline,
+            color: context.appColors.onSurface,
           ),
         ),
       ],
@@ -145,17 +153,22 @@ class _InfoField extends StatelessWidget {
 class _CopyField extends StatelessWidget {
   final String label;
   final String value;
-  const _CopyField({required this.label, required this.value});
+  final String copyLabel;
+  const _CopyField({
+    required this.label,
+    required this.value,
+    required this.copyLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           label,
           style: context.font.bodyLarge?.copyWith(
-            color: context.colour.surfaceContainer,
+            color: context.appColors.textMuted,
           ),
         ),
         const Gap(4),
@@ -166,7 +179,7 @@ class _CopyField extends StatelessWidget {
             BBText(
               value,
               style: context.font.bodyMedium?.copyWith(
-                color: context.colour.outline,
+                color: context.appColors.onSurface,
               ),
             ),
 
@@ -176,17 +189,17 @@ class _CopyField extends StatelessWidget {
                 log.info('Copied $label to clipboard');
               },
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
-                    'Copy',
+                    copyLabel,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                       fontSize: 14,
                     ),
                   ),
                   const Gap(4),
-                  Icon(Icons.copy, size: 16, color: context.colour.primary),
+                  Icon(Icons.copy, size: 16, color: context.appColors.primary),
                 ],
               ),
             ),

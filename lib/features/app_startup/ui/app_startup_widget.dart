@@ -100,8 +100,8 @@ class AppStartupFailureScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: .center,
+            mainAxisSize: .min,
             children: [
               ListTile(
                 contentPadding: const EdgeInsets.symmetric(
@@ -111,15 +111,15 @@ class AppStartupFailureScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(2.0),
                 ),
-                tileColor: context.colour.error.withValues(alpha: 0.1),
+                tileColor: context.appColors.error.withValues(alpha: 0.1),
                 title: Row(
                   children: [
-                    Icon(Icons.error_outline, color: context.colour.error),
+                    Icon(Icons.error_outline, color: context.appColors.error),
                     const Gap(8),
                     Text(
                       context.loc.appStartupErrorTitle,
                       style: context.font.headlineLarge?.copyWith(
-                        color: context.colour.error,
+                        color: context.appColors.error,
                       ),
                     ),
                   ],
@@ -133,7 +133,9 @@ class AppStartupFailureScreen extends StatelessWidget {
                             : context.loc.appStartupErrorMessageNoBackup
                         : e.toString(),
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary.withValues(alpha: 0.7),
+                      color: context.appColors.secondary.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                   ),
                 ),
@@ -146,8 +148,8 @@ class AppStartupFailureScreen extends StatelessWidget {
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 },
                 label: context.loc.appStartupContactSupportButton,
-                bgColor: context.colour.primary,
-                textColor: context.colour.onPrimary,
+                bgColor: context.appColors.primary,
+                textColor: context.appColors.onPrimary,
               ),
               const SizedBox(height: 24),
               const ShareLogsWidget(),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -36,12 +37,12 @@ class ExchangeSecurityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Security Settings',
+          title: context.loc.exchangeSettingsSecuritySettingsTitle,
           onBack: () => context.pop(),
         ),
       ),
@@ -49,17 +50,17 @@ class ExchangeSecurityScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: context.colour.onPrimary,
+                  color: context.appColors.surface,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: context.colour.surface.withValues(alpha: 0.1),
+                      color: context.appColors.overlay.withValues(alpha: 0.05),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -67,25 +68,25 @@ class ExchangeSecurityScreen extends StatelessWidget {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: .start,
+                  mainAxisSize: .min,
                   children: [
                     BBText(
-                      'Manage 2FA and password',
+                      context.loc.exchangeSecurityManage2FAPasswordLabel,
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
                       width: double.infinity,
                       child: BBButton.big(
-                        label: 'Access Settings',
+                        label: context.loc.exchangeSecurityAccessSettingsButton,
                         onPressed: () {
                           _openSecurityWebView(context);
                         },
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
+                        bgColor: context.appColors.onSurface,
+                        textColor: context.appColors.surface,
                         iconData: Icons.arrow_forward,
                       ),
                     ),
@@ -153,7 +154,7 @@ class _SecurityWebViewScreenState extends State<_SecurityWebViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Security Settings'),
+        title: Text(context.loc.exchangeSettingsSecuritySettingsTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),

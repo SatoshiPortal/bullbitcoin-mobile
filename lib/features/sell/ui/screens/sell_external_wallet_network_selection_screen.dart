@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -28,8 +27,8 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: isCreatingSellOrder,
-              backgroundColor: context.colour.onPrimary,
-              foregroundColor: context.colour.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
             Expanded(
               child: ScrollableColumn(
@@ -38,12 +37,12 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   Text(
                     context.loc.sellHowToPayInvoice,
                     style: context.font.labelMedium?.copyWith(
-                      color: Colors.black,
+                      color: context.appColors.text,
                     ),
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.colour.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellBitcoinOnChain),
                     trailing: const Icon(Icons.chevron_right),
@@ -58,7 +57,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.colour.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellLightningNetwork),
                     trailing: const Icon(Icons.chevron_right),
@@ -73,7 +72,7 @@ class SellExternalWalletNetworkSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.colour.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellLiquidNetwork),
                     trailing: const Icon(Icons.chevron_right),
@@ -110,41 +109,16 @@ class _SellError extends StatelessWidget {
               : null,
     );
 
-    return Center(
-      child: switch (sellError) {
-        AboveMaxAmountSellError _ => Text(
-          context.loc.sellAboveMaxAmountError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        BelowMinAmountSellError _ => Text(
-          context.loc.sellBelowMinAmountError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
+    if (sellError == null) return const SizedBox.shrink();
 
-        UnauthenticatedSellError _ => Text(
-          context.loc.sellUnauthenticatedError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
+    return Center(
+      child: Text(
+        sellError.toTranslated(context),
+        style: context.font.bodyMedium?.copyWith(
+          color: context.appColors.error,
         ),
-        OrderNotFoundSellError _ => Text(
-          context.loc.sellOrderNotFoundError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        OrderAlreadyConfirmedSellError _ => Text(
-          context.loc.sellOrderAlreadyConfirmedError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        UnexpectedSellError _ => Text(
-          sellError.message,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        _ => const SizedBox.shrink(),
-      },
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }

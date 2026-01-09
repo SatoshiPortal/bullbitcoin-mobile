@@ -14,21 +14,42 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: context.colour.onPrimary,
-      title: const Text('Delete Wallet'),
-      content: const Text('Are you sure you want to delete this wallet?'),
+      backgroundColor: context.appColors.surface,
+      title: Text(
+        'Delete Wallet',
+        style: context.font.headlineSmall?.copyWith(
+          color: context.appColors.error,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Text(
+        'Are you sure you want to delete this wallet?',
+        style: context.font.bodyMedium?.copyWith(
+          color: context.appColors.onSurface,
+        ),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(
+            'Cancel',
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.onSurface,
+            ),
+          ),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
-            // Trigger wallet deletion logic
             context.read<WalletBloc>().add(WalletDeleted(walletId));
           },
-          child: const Text('Delete'),
+          child: Text(
+            'Delete',
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.error,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
       actionsAlignment: MainAxisAlignment.spaceBetween,

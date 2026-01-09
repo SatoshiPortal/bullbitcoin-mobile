@@ -56,9 +56,12 @@ class PaymentInProgressPage extends StatelessWidget {
 
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         children: [
-          BBText(context.loc.receivePaymentInProgress, style: context.font.headlineLarge),
+          BBText(
+            context.loc.receivePaymentInProgress,
+            style: context.font.headlineLarge,
+          ),
           if (isBitcoin) ...[
             BBText(
               context.loc.receiveBitcoinConfirmationMessage,
@@ -80,7 +83,7 @@ class PaymentInProgressPage extends StatelessWidget {
           BBText(
             '~$amountFiat',
             style: context.font.bodyLarge,
-            color: context.colour.surface,
+            color: context.appColors.surface,
           ),
         ],
       ),

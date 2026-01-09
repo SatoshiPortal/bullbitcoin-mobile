@@ -173,11 +173,10 @@ abstract class SendState with _$SendState {
         : scannedRawPaymentRequest;
   }
 
-  bool get isInputAmountFiat =>
-      ![
-        BitcoinUnit.btc.code,
-        BitcoinUnit.sats.code,
-      ].contains(inputAmountCurrencyCode);
+  bool get isInputAmountFiat => ![
+    BitcoinUnit.btc.code,
+    BitcoinUnit.sats.code,
+  ].contains(inputAmountCurrencyCode);
 
   int get inputAmountSat {
     int amountSat = 0;
@@ -202,19 +201,17 @@ abstract class SendState with _$SendState {
     return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
   }
 
-  double get confirmedAmountBtc =>
-      confirmedAmountSat != null
-          ? ConvertAmount.satsToBtc(confirmedAmountSat!)
-          : 0;
+  double get confirmedAmountBtc => confirmedAmountSat != null
+      ? ConvertAmount.satsToBtc(confirmedAmountSat!)
+      : 0;
 
   double get confirmedAmountFiat {
     return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
   }
 
-  double get confirmedSwapAmountBtc =>
-      lightningSwap != null
-          ? ConvertAmount.satsToBtc(lightningSwap!.paymentAmount)
-          : 0;
+  double get confirmedSwapAmountBtc => lightningSwap != null
+      ? ConvertAmount.satsToBtc(lightningSwap!.paymentAmount)
+      : 0;
 
   String get formattedConfirmedAmountBitcoin {
     if (bitcoinUnit == null) {
@@ -307,8 +304,9 @@ abstract class SendState with _$SendState {
   bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
-          ? false
-          : (inputAmountSat <= selectedWallet!.balanceSat.toInt());
+      ? false
+      : (inputAmountSat > 0 &&
+            inputAmountSat <= selectedWallet!.balanceSat.toInt());
 
   String sendTypeName() {
     switch (sendType) {
@@ -399,19 +397,17 @@ abstract class SendState with _$SendState {
       (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
       sendType == SendType.bitcoin && selectedWallet!.isLiquid;
 
-  FeeOptions? get feeOptions =>
-      selectedWallet == null
-          ? null
-          : selectedWallet!.isLiquid
-          ? liquidFeesList
-          : bitcoinFeesList;
+  FeeOptions? get feeOptions => selectedWallet == null
+      ? null
+      : selectedWallet!.isLiquid
+      ? liquidFeesList
+      : bitcoinFeesList;
 
-  int? get absoluteFees =>
-      selectedWallet == null
-          ? null
-          : selectedWallet!.isLiquid
-          ? liquidAbsoluteFees
-          : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+  int? get absoluteFees => selectedWallet == null
+      ? null
+      : selectedWallet!.isLiquid
+      ? liquidAbsoluteFees
+      : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
 
   int? get totalSwapFees {
     if (lightningSwap == null) return null;
@@ -421,11 +417,11 @@ abstract class SendState with _$SendState {
   bool get isSlowPayment =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
-          ? false
-          // ignore: avoid_bool_literals_in_conditional_expressions
-          : selectedWallet!.isLiquid
-          ? false
-          : true;
+      ? false
+      // ignore: avoid_bool_literals_in_conditional_expressions
+      : selectedWallet!.isLiquid
+      ? false
+      : true;
 }
 
 extension SendStateFeePercent on SendState {
@@ -462,18 +458,30 @@ class InvalidBitcoinStringException extends BullException {
   ]);
 }
 
+/// Exception for swap limit violations.
+/// Stored in SendState with min/max limit values for localized error messages.
+/// UI displays context-specific messages using sendErrorAmountBelowMinimum,
+/// sendErrorAmountAboveMaximum, sendErrorBalanceTooLowForMinimum, etc.
 class SwapLimitsException extends BullException {
-  SwapLimitsException(super.message);
+  SwapLimitsException(super.message, {this.minLimit, this.maxLimit});
+
+  final int? minLimit;
+  final int? maxLimit;
+
+  bool get isBelowMinimum => minLimit != null;
+  bool get isAboveMaximum => maxLimit != null;
 }
 
+/// Exception for transaction build failures.
+/// Stored in SendState and displayed by UI using sendErrorBuildFailed.
+/// The message parameter is for debugging/logging only.
 class BuildTransactionException extends BullException {
   BuildTransactionException(super.message);
-
-  String get title => 'Build Failed';
 }
 
+/// Exception for transaction confirmation failures.
+/// Stored in SendState and displayed by UI using sendErrorConfirmationFailed.
+/// The message parameter is for debugging/logging only.
 class ConfirmTransactionException extends BullException {
   ConfirmTransactionException(super.message);
-
-  String get title => 'Confirmation Failed';
 }

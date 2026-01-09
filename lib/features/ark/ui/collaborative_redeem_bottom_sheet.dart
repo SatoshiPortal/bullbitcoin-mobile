@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
@@ -18,13 +20,9 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
   final int amount;
 
   static Future<void> show(BuildContext context, ArkCubit cubit, int amount) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      isDismissible: true,
-      backgroundColor: Colors.transparent,
-      builder:
-          (_) => CollaborativeRedeemBottomSheet(cubit: cubit, amount: amount),
+      child: CollaborativeRedeemBottomSheet(cubit: cubit, amount: amount),
     );
   }
 
@@ -35,7 +33,7 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.4,
       ),
       decoration: BoxDecoration(
-        color: context.colour.onPrimary,
+        color: context.appColors.onPrimary,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: BlocBuilder<ArkCubit, ArkState>(
@@ -52,11 +50,11 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                   children: [
                     const Gap(20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         const Gap(24),
                         BBText(
-                          'Collaborative Redeem',
+                          context.loc.arkCollaborativeRedeem,
                           style: context.font.headlineMedium,
                         ),
                         GestureDetector(
@@ -72,13 +70,13 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       SwitchListTile(
                         value: state.withRecoverableVtxos,
                         onChanged: cubit.onChangedSelectRecoverableVtxos,
                         title: BBText(
-                          'Recoverable Vtxos',
+                          context.loc.arkRecoverableVtxos,
                           style: context.font.bodyMedium,
                         ),
                         contentPadding: EdgeInsets.zero,
@@ -88,22 +86,22 @@ class CollaborativeRedeemBottomSheet extends StatelessWidget {
                         children: [
                           Expanded(
                             child: BBButton.big(
-                              label: 'Cancel',
+                              label: context.loc.arkCancelButton,
                               onPressed: () => Navigator.of(context).pop(),
-                              bgColor: context.colour.surface,
-                              textColor: context.colour.onSurface,
+                              bgColor: context.appColors.surface,
+                              textColor: context.appColors.onSurface,
                             ),
                           ),
                           const Gap(16),
                           Expanded(
                             child: BBButton.big(
-                              label: 'Redeem',
+                              label: context.loc.arkRedeemButton,
                               onPressed: () async {
                                 Navigator.of(context).pop();
                                 await cubit.onSendConfirmed();
                               },
-                              bgColor: context.colour.primary,
-                              textColor: context.colour.onPrimary,
+                              bgColor: context.appColors.primary,
+                              textColor: context.appColors.onPrimary,
                             ),
                           ),
                         ],

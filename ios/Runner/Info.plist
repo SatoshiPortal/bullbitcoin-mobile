@@ -46,7 +46,7 @@
 		<key>NSCameraUsageDescription</key>
 		<string>This app needs access to your camera to scan QR codes</string>
 		<key>NSPhotoLibraryUsageDescription</key>
-		<string>This app needs access to your files to export and import wallet files like psbts, xpubs and recovery files</string>
+		<string>This app needs access to your photos and files to export and import wallet files like psbts, xpubs and recovery files, and to attach files in support chat</string>
 		<key>NSBluetoothPeripheralUsageDescription</key>
 		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
 		<key>NSBluetoothAlwaysUsageDescription</key>
@@ -67,6 +67,19 @@
 			<string>UIInterfaceOrientationPortraitUpsideDown</string>
 			<string>UIInterfaceOrientationLandscapeLeft</string>
 			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UIBackgroundModes</key>
+		<array>
+		    <string>fetch</string>
+			<string>processing</string>
+		</array>
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>com.bullbitcoin.mobile.bitcoin-sync-id</string>
+			<string>com.bullbitcoin.mobile.liquid-sync-id</string>
+			<string>com.bullbitcoin.mobile.swaps-sync-id</string>
+			<string>com.bullbitcoin.mobile.logs-prune-id</string>
+			<string>com.bullbitcoin.mobile.services-check-id</string>
 		</array>
 	</dict>
 </plist>

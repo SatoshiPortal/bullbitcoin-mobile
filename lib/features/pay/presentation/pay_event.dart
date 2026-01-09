@@ -3,10 +3,6 @@ part of 'pay_bloc.dart';
 @freezed
 sealed class PayEvent with _$PayEvent {
   const factory PayEvent.started() = PayStarted;
-  const factory PayEvent.newRecipientCreated(NewRecipient newRecipient) =
-      PayNewRecipientCreated;
-  const factory PayEvent.recipientSelected(Recipient recipient) =
-      PayRecipientSelected;
   const factory PayEvent.amountInputContinuePressed({
     required String amountInput,
     required FiatCurrency fiatCurrency,
@@ -26,8 +22,8 @@ sealed class PayEvent with _$PayEvent {
   const factory PayEvent.pollOrderStatus() = PayPollOrderStatus;
   const factory PayEvent.replaceByFeeChanged({required bool replaceByFee}) =
       PayReplaceByFeeChanged;
-  const factory PayEvent.utxoSelected({required WalletUtxo utxo}) =
-      PayUtxoSelected;
+  const factory PayEvent.utxosSelected({required List<WalletUtxo> utxos}) =
+      PayUtxosSelected;
   const factory PayEvent.loadUtxos() = PayLoadUtxos;
   const factory PayEvent.updateOrderStatus({required String orderId}) =
       PayUpdateOrderStatus;

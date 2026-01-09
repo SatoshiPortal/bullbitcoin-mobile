@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
     final theme = Theme.of(context);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -46,7 +47,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                 child: Text(
                   widget.label,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.surfaceContainer,
+                    color: context.appColors.onSurface,
                   ),
                 ),
               ),
@@ -55,33 +56,32 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
               Expanded(
                 flex: 3,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisAlignment: .end,
                   children: [
                     Flexible(
                       child:
                           widget.displayWidget ??
                           (widget.displayValue != null
                               ? Text(
-                                widget.displayValue!,
-                                textAlign: TextAlign.end,
-                                overflow: TextOverflow.clip,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  color: theme.colorScheme.outlineVariant,
-                                  decoration:
-                                      widget.isUnderline
-                                          ? TextDecoration.underline
-                                          : TextDecoration.none,
-                                ),
-                              )
+                                  widget.displayValue!,
+                                  textAlign: .end,
+                                  overflow: .clip,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: context.appColors.onSurface,
+                                    decoration: widget.isUnderline
+                                        ? TextDecoration.underline
+                                        : TextDecoration.none,
+                                  ),
+                                )
                               : const LoadingLineContent()),
                     ),
                     const Gap(8),
                     if (widget.copyValue != null &&
                         widget.copyValue!.isNotEmpty)
                       Material(
-                        color: Colors.transparent,
+                        color: context.appColors.transparent,
                         child: InkWell(
-                          splashColor: theme.colorScheme.primary.withAlpha(30),
+                          splashColor: context.appColors.primary.withAlpha(30),
                           onTap: () {
                             Clipboard.setData(
                               ClipboardData(text: widget.copyValue!),
@@ -91,14 +91,14 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                           child: Icon(
                             Icons.copy_outlined,
                             size: 18,
-                            color: theme.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                         ),
                       ),
                     if (widget.expandableChild != null) ...[
                       const Gap(8),
                       Material(
-                        color: Colors.transparent,
+                        color: context.appColors.transparent,
                         child: InkWell(
                           onTap: () {
                             setState(() {
@@ -108,7 +108,7 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                           child: Icon(
                             _expanded ? Icons.expand_less : Icons.expand_more,
                             size: 18,
-                            color: theme.colorScheme.primary,
+                            color: context.appColors.primary,
                           ),
                         ),
                       ),

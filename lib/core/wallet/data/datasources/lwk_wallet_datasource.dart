@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/lwk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
@@ -13,7 +14,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
-import 'package:path_provider/path_provider.dart';
 
 class LwkWalletDatasource {
   @visibleForTesting
@@ -32,23 +32,21 @@ class LwkWalletDatasource {
   Stream<String> get walletSyncFinishedStream =>
       _walletSyncFinishedController.stream;
 
-  bool isWalletSyncing({String? walletId}) =>
-      walletId == null
-          ? _activeSyncs.isNotEmpty
-          : _activeSyncs.containsKey(walletId);
+  bool isWalletSyncing({String? walletId}) => walletId == null
+      ? _activeSyncs.isNotEmpty
+      : _activeSyncs.containsKey(walletId);
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final balances = await lwkWallet.balances();
 
-      final lBtcAssetBalance =
-          balances.firstWhere((balance) {
-            final assetId = _lBtcAssetId(
-              wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
-            );
-            return balance.assetId == assetId;
-          }).value;
+      final lBtcAssetBalance = balances.firstWhere((balance) {
+        final assetId = _lBtcAssetId(
+          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+        );
+        return balance.assetId == assetId;
+      }).value;
 
       final balance = BalanceModel(
         confirmedSat: BigInt.from(lBtcAssetBalance),
@@ -81,7 +79,7 @@ class LwkWalletDatasource {
         //debugPrint('[Sync] New sync started for wallet: ${wallet.id}');
         _walletSyncStartedController.add(wallet.id);
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
-        final lwkWallet = await _createPublicWallet(wallet);
+        final lwkWallet = await LwkFacade.createPublicWallet(wallet);
         await lwkWallet.sync_(
           electrumUrl: electrumServer.url,
           validateDomain: electrumServer.validateDomain,
@@ -106,7 +104,7 @@ class LwkWalletDatasource {
 
   Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final utxos = await lwkWallet.utxos();
 
       final unspent = utxos.map((utxo) {
@@ -133,7 +131,7 @@ class LwkWalletDatasource {
   Future<({String standard, String confidential, int index})>
   getLastUnusedAddress({required WalletModel wallet}) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       // For LWK, address reuse is taken care of by the repository and the address history database,
       //  so here we just get the last unused address.
       final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
@@ -157,7 +155,7 @@ class LwkWalletDatasource {
     bool isChange = false,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       if (isChange) {
         throw Exception(
           'Change addresses are not retrievable with LWK at the moment.',
@@ -179,7 +177,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final addressInfo = await lwkWallet.address(index: index);
       final address = (
         index: addressInfo.index!,
@@ -203,7 +201,7 @@ class LwkWalletDatasource {
     required int offset,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final addresses = <({String standard, String confidential, int index})>[];
       for (int i = offset; i < offset + limit; i++) {
         final addressInfo = await lwkWallet.address(index: i);
@@ -246,7 +244,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final txs = await lwkWallet.txs();
       final txOutputLists = txs.map((tx) => tx.outputs).toList();
       final outputs = txOutputLists.expand((list) => list).toList();
@@ -273,7 +271,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final utxos = await lwkWallet.utxos();
       final addressBalances = <String, BigInt>{};
 
@@ -310,11 +308,12 @@ class LwkWalletDatasource {
     String? toAddress,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final transactions = await lwkWallet.txs();
       final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
-      final network =
-          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+      final network = wallet.isTestnet
+          ? Network.liquidTestnet
+          : Network.liquidMainnet;
       final lbtcAssetId = _lBtcAssetId(network);
       final walletTxs = await Future.wait(
         transactions.map((tx) async {
@@ -337,58 +336,56 @@ class LwkWalletDatasource {
           final isToSelf =
               tx.kind == 'redeposit' || finalBalance.abs() == tx.fee.toInt();
           int changeAmountInToSelf = 0;
-          final (inputs, outputs) =
-              await (
-                Future.wait(
-                  tx.inputs.asMap().entries.map((entry) async {
-                    final vin = entry.key;
-                    final input = entry.value;
-                    final walletInputAddress =
-                        usedAddressesMap[input.address.standard] ??
-                        usedAddressesMap[input.address.confidential];
-                    final isOwn = isToSelf || walletInputAddress != null;
-                    return TransactionInputModel.liquid(
-                      txId: tx.txid,
-                      vin: vin,
-                      isOwn: isOwn,
-                      value: input.unblinded.value,
-                      scriptPubkey: input.scriptPubkey,
-                      previousTxId: input.outpoint.txid,
-                      previousTxVout: input.outpoint.vout,
-                    );
-                  }),
-                ),
-                Future.wait(
-                  tx.outputs.asMap().entries.map((entry) async {
-                    final vout = entry.key;
-                    final output = entry.value;
-                    final walletOutputAddress =
-                        usedAddressesMap[output.address.standard] ??
-                        usedAddressesMap[output.address.confidential];
-                    final isOwn = isToSelf || walletOutputAddress != null;
-                    if (isToSelf && walletOutputAddress == null) {
-                      changeAmountInToSelf += output.unblinded.value.toInt();
-                    }
-                    return TransactionOutputModel.liquid(
-                      txId: tx.txid,
-                      vout: vout,
-                      isOwn: isOwn,
-                      value: output.unblinded.value,
-                      scriptPubkey: output.scriptPubkey,
-                      address: output.address.confidential,
-                    );
-                  }),
-                ),
-              ).wait;
+          final (inputs, outputs) = await (
+            Future.wait(
+              tx.inputs.asMap().entries.map((entry) async {
+                final vin = entry.key;
+                final input = entry.value;
+                final walletInputAddress =
+                    usedAddressesMap[input.address.standard] ??
+                    usedAddressesMap[input.address.confidential];
+                final isOwn = isToSelf || walletInputAddress != null;
+                return TransactionInputModel.liquid(
+                  txId: tx.txid,
+                  vin: vin,
+                  isOwn: isOwn,
+                  value: input.unblinded.value,
+                  scriptPubkey: input.scriptPubkey,
+                  previousTxId: input.outpoint.txid,
+                  previousTxVout: input.outpoint.vout,
+                );
+              }),
+            ),
+            Future.wait(
+              tx.outputs.asMap().entries.map((entry) async {
+                final vout = entry.key;
+                final output = entry.value;
+                final walletOutputAddress =
+                    usedAddressesMap[output.address.standard] ??
+                    usedAddressesMap[output.address.confidential];
+                final isOwn = isToSelf || walletOutputAddress != null;
+                if (isToSelf && walletOutputAddress == null) {
+                  changeAmountInToSelf += output.unblinded.value.toInt();
+                }
+                return TransactionOutputModel.liquid(
+                  txId: tx.txid,
+                  vout: vout,
+                  isOwn: isOwn,
+                  value: output.unblinded.value,
+                  scriptPubkey: output.scriptPubkey,
+                  address: output.address.confidential,
+                );
+              }),
+            ),
+          ).wait;
           final sumOutputs = outputs
               .map((i) => i.value?.toInt() ?? 0)
               .fold(0, (int a, b) => a + b);
-          final netAmountSat =
-              isToSelf
-                  ? sumOutputs - changeAmountInToSelf
-                  : isIncoming
-                  ? finalBalance
-                  : finalBalance.abs() - tx.fee.toInt();
+          final netAmountSat = isToSelf
+              ? sumOutputs - changeAmountInToSelf
+              : isIncoming
+              ? finalBalance
+              : finalBalance.abs() - tx.fee.toInt();
 
           return WalletTransactionModel(
             txId: tx.txid,
@@ -425,7 +422,7 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       if (networkFee.isAbsolute) {
         throw Exception('Absolute fee is not supported for liquid yet!');
       }
@@ -453,7 +450,7 @@ class LwkWalletDatasource {
     required PrivateLwkWalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await _createPrivateWallet(wallet);
+      final lwkWallet = await LwkFacade.createPrivateWallet(wallet);
       final signedPset = await lwkWallet.signTx(
         network: wallet.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
         pset: pset,
@@ -493,12 +490,13 @@ class LwkWalletDatasource {
     required WalletModel wallet,
   }) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
+      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
       final decoded = await lwkWallet.decodeTx(pset: pset);
 
       // Get the L-BTC asset ID for the network
-      final network =
-          wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
+      final network = wallet.isTestnet
+          ? Network.liquidTestnet
+          : Network.liquidMainnet;
       final lbtcAssetId = _lBtcAssetId(network);
 
       // Find the L-BTC balance in the decoded amounts
@@ -559,70 +557,9 @@ class LwkWalletDatasource {
     }
   }
 
-  Future<String> _getDbPath(String dbName) async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      return '${dir.path}/$dbName';
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
-  Future<lwk.Wallet> _createPublicWallet(WalletModel walletModel) async {
-    try {
-      if (walletModel is! PublicLwkWalletModel) {
-        throw Exception('Wallet is not an LWK wallet');
-      }
-      final network =
-          walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
-      final descriptor = lwk.Descriptor(
-        ctDescriptor: walletModel.combinedCtDescriptor,
-      );
-      final dbPath = await _getDbPath(walletModel.dbName);
-      final wallet = await lwk.Wallet.init(
-        network: network,
-        dbpath: dbPath,
-        descriptor: descriptor,
-      );
-      return wallet;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
-  Future<lwk.Wallet> _createPrivateWallet(WalletModel walletModel) async {
-    try {
-      if (walletModel is! PrivateLwkWalletModel) {
-        throw Exception('Wallet is not an LWK wallet');
-      }
-      final network =
-          walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
-      final descriptor = await lwk.Descriptor.newConfidential(
-        mnemonic: walletModel.mnemonic,
-        network: network,
-      );
-      final dbPath = await _getDbPath(walletModel.dbName);
-      final wallet = await lwk.Wallet.init(
-        network: network,
-        dbpath: dbPath,
-        descriptor: descriptor,
-      );
-      return wallet;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
+  Future<void> delete({required WalletModel wallet}) async {
+    await LwkFacade.delete(wallet);
+    log.fine('Deleted wallet ${wallet.id} LWK database');
   }
 }
 

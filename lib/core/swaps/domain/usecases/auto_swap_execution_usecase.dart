@@ -45,17 +45,21 @@ class AutoSwapExecutionUsecase {
     final autoSwapSettings = await swapRepository.getAutoSwapParams();
     // check if recipient wallet id is set
 
-    if (!autoSwapSettings.enabled) {
-      throw AutoSwapDisabledException('Auto swap is disabled');
+    if (!autoSwapSettings.enabled || autoSwapSettings.showWarning) {
+      throw AutoSwapDisabledException(
+        'Auto swap is disabled/warning not disabled yet.',
+      );
     }
     final environment = isTestnet ? Environment.testnet : Environment.mainnet;
     final wallets = await _walletRepository.getWallets(
       environment: environment,
     );
-    final defaultBitcoinWallet =
-        wallets.where((w) => w.isDefault && !w.isLiquid).firstOrNull;
-    final defaultLiquidWallet =
-        wallets.where((w) => w.isDefault && w.isLiquid).firstOrNull;
+    final defaultBitcoinWallet = wallets
+        .where((w) => w.isDefault && !w.isLiquid)
+        .firstOrNull;
+    final defaultLiquidWallet = wallets
+        .where((w) => w.isDefault && w.isLiquid)
+        .firstOrNull;
 
     if (defaultLiquidWallet == null || defaultBitcoinWallet == null) {
       throw Exception('No default wallets found');
@@ -68,12 +72,11 @@ class AutoSwapExecutionUsecase {
       await swapRepository.updateAutoSwapParams(updatedSwapSettings);
     }
 
-    final sendBitcoinWallet =
-        autoSwapSettings.recipientWalletId != null
-            ? wallets
-                .where((w) => w.id == autoSwapSettings.recipientWalletId)
-                .firstOrNull
-            : defaultBitcoinWallet;
+    final sendBitcoinWallet = autoSwapSettings.recipientWalletId != null
+        ? wallets
+              .where((w) => w.id == autoSwapSettings.recipientWalletId)
+              .firstOrNull
+        : defaultBitcoinWallet;
 
     if (sendBitcoinWallet == null) {
       // if user deleted the bitcoin wallet, this could be null
@@ -90,7 +93,7 @@ class AutoSwapExecutionUsecase {
     if (!autoSwapSettings.passedRequiredBalance(walletBalance)) {
       throw BalanceThresholdException(
         currentBalance: walletBalance,
-        requiredBalance: autoSwapSettings.balanceThresholdSats * 2,
+        requiredBalance: autoSwapSettings.triggerBalanceSats,
       );
     }
 
@@ -125,10 +128,9 @@ class AutoSwapExecutionUsecase {
             ? ApiServiceConstants.bbElectrumTestUrl
             : ApiServiceConstants.bbElectrumUrl;
 
-    final lbtcElectrumUrl =
-        defaultLiquidWallet.isTestnet
-            ? ApiServiceConstants.publicElectrumTestUrl
-            : ApiServiceConstants.bbLiquidElectrumUrlPath;
+    final lbtcElectrumUrl = defaultLiquidWallet.isTestnet
+        ? ApiServiceConstants.publicElectrumTestUrl
+        : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
     debugPrint(
       'Creating swap with amount: ${autoSwapSettings.swapAmount(walletBalance)} sats',

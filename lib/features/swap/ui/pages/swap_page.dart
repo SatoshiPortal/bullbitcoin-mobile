@@ -1,16 +1,20 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_amount_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_balance_row.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_external_address_input.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_from_wallet_dropdown.dart';
 import 'package:bb_mobile/features/swap/ui/widgets/swap_to_wallet_dropdown.dart';
+import 'package:bb_mobile/features/swap/ui/widgets/swap_advanced_options_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -18,10 +22,10 @@ import 'package:gap/gap.dart';
 class SwapPage extends StatefulWidget {
   const SwapPage({super.key});
   @override
-  _SwapPageState createState() => _SwapPageState();
+  SwapPageState createState() => SwapPageState();
 }
 
-class _SwapPageState extends State<SwapPage> {
+class SwapPageState extends State<SwapPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _amountController = TextEditingController();
   int _amountSat = 0;
@@ -40,12 +44,16 @@ class _SwapPageState extends State<SwapPage> {
       // calculate fees etc. in Stateless child Widgets like SwapAmountInput
       // and SwapFeesRow.
       setState(() {
-        _amountSat =
-            bitcoinUnit == BitcoinUnit.sats
-                ? int.tryParse(_amountController.text) ?? 0
-                : ConvertAmount.btcToSats(
-                  double.tryParse(_amountController.text) ?? 0,
-                );
+        _amountSat = bitcoinUnit == BitcoinUnit.sats
+            ? int.tryParse(_amountController.text) ?? 0
+            : ConvertAmount.btcToSats(
+                double.tryParse(_amountController.text) ?? 0,
+              );
+        _amountSat = bitcoinUnit == BitcoinUnit.sats
+            ? int.tryParse(_amountController.text) ?? 0
+            : ConvertAmount.btcToSats(
+                double.tryParse(_amountController.text) ?? 0,
+              );
       });
     });
   }
@@ -65,29 +73,28 @@ class _SwapPageState extends State<SwapPage> {
           _amountController.text = state.amount;
           final bitcoinUnit = state.bitcoinUnit;
           setState(() {
-            _amountSat =
-                bitcoinUnit == BitcoinUnit.sats
-                    ? int.tryParse(state.amount) ?? 0
-                    : ConvertAmount.btcToSats(
-                      double.tryParse(state.amount) ?? 0,
-                    );
+            _amountSat = bitcoinUnit == BitcoinUnit.sats
+                ? int.tryParse(state.amount) ?? 0
+                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
+            _amountSat = bitcoinUnit == BitcoinUnit.sats
+                ? int.tryParse(state.amount) ?? 0
+                : ConvertAmount.btcToSats(double.tryParse(state.amount) ?? 0);
           });
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Transfer'),
+          title: Text(context.loc.swapTransferTitle),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<TransferBloc, TransferState, bool>(
               selector: (state) => state.isStarting || state.isCreatingSwap,
-              builder:
-                  (context, isLoading) => FadingLinearProgress(
-                    height: 3,
-                    trigger: isLoading,
-                    backgroundColor: context.colour.onPrimary,
-                    foregroundColor: context.colour.primary,
-                  ),
+              builder: (context, isLoading) => FadingLinearProgress(
+                height: 3,
+                trigger: isLoading,
+                backgroundColor: context.appColors.onPrimary,
+                foregroundColor: context.appColors.primary,
+              ),
             ),
           ),
         ),
@@ -97,28 +104,27 @@ class _SwapPageState extends State<SwapPage> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   const Gap(12),
                   InfoCard(
-                    description:
-                        'Transfer Bitcoin seamlessly between your wallets. Only keep funds in the Instant Payment Wallet for day-to-day spending.',
-                    tagColor: context.colour.inverseSurface,
-                    bgColor: context.colour.inverseSurface.withValues(
+                    description: context.loc.swapInfoDescription,
+                    tagColor: context.appColors.inverseSurface,
+                    bgColor: context.appColors.inverseSurface.withValues(
                       alpha: 0.1,
                     ),
                   ),
                   const Gap(12),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.sendToExternal,
                         builder: (context, sendToExternal) {
                           return Text(
                             sendToExternal
-                                ? 'External Transfer'
-                                : 'Internal Transfer',
+                                ? context.loc.swapExternalTransferLabel
+                                : context.loc.swapInternalTransferTitle,
                             style: context.font.bodyLarge,
                           );
                         },
@@ -126,15 +132,8 @@ class _SwapPageState extends State<SwapPage> {
                       BlocSelector<TransferBloc, TransferState, bool>(
                         selector: (state) => state.sendToExternal,
                         builder: (context, sendToExternal) {
-                          return Switch(
+                          return BBSwitch(
                             value: sendToExternal,
-                            activeColor: context.colour.onSecondary,
-                            activeTrackColor: context.colour.secondary,
-                            inactiveThumbColor: context.colour.onSecondary,
-                            inactiveTrackColor: context.colour.surface,
-                            trackOutlineColor: WidgetStateProperty.resolveWith<
-                              Color?
-                            >((Set<WidgetState> states) => Colors.transparent),
                             onChanged: (value) {
                               context.read<TransferBloc>().add(
                                 TransferEvent.sendToExternalToggled(value),
@@ -179,61 +178,95 @@ class _SwapPageState extends State<SwapPage> {
                       return Text(
                         swapCreationError.message,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.colour.error,
+                          color: context.appColors.error,
                         ),
                         maxLines: 4,
                       );
                     },
                   ),
-                  const Gap(24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      BlocSelector<TransferBloc, TransferState, bool>(
-                        selector: (state) => state.receiveExactAmount,
-                        builder: (context, receiveExactAmount) {
-                          return Text(
-                            receiveExactAmount
-                                ? 'Receive exact amount'
-                                : 'Subtract fees from amount',
-                            style: context.font.bodyLarge,
-                          );
-                        },
-                      ),
-                      BlocSelector<TransferBloc, TransferState, bool>(
-                        selector: (state) => state.receiveExactAmount,
-                        builder: (context, receiveExactAmount) {
-                          return Switch(
-                            value: receiveExactAmount,
-                            activeColor: context.colour.onSecondary,
-                            activeTrackColor: context.colour.secondary,
-                            inactiveThumbColor: context.colour.onSecondary,
-                            inactiveTrackColor: context.colour.surface,
-                            trackOutlineColor: WidgetStateProperty.resolveWith<
-                              Color?
-                            >((Set<WidgetState> states) => Colors.transparent),
-                            onChanged: (value) {
-                              context.read<TransferBloc>().add(
-                                TransferEvent.receiveExactAmountToggled(value),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ],
+                  BlocSelector<TransferBloc, TransferState, bool>(
+                    selector: (state) => state.shouldShowAdvancedOptions && !state.isSameChainTransfer,
+                    builder: (context, showReceiveExactAmount) {
+                      if (!showReceiveExactAmount) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        children: [
+                          const Gap(24),
+                          Row(
+                            mainAxisAlignment: .spaceBetween,
+                            children: [
+                              BlocSelector<TransferBloc, TransferState, bool>(
+                                selector: (state) => state.receiveExactAmount,
+                                builder: (context, receiveExactAmount) {
+                                  return Text(
+                                    receiveExactAmount
+                                        ? context.loc.swapReceiveExactAmountLabel
+                                        : context.loc.swapSubtractFeesLabel,
+                                    style: context.font.bodyLarge,
+                                  );
+                                },
+                              ),
+                              BlocSelector<TransferBloc, TransferState, bool>(
+                                selector: (state) => state.receiveExactAmount,
+                                builder: (context, receiveExactAmount) {
+                                  return BBSwitch(
+                                    value: receiveExactAmount,
+                                    onChanged: (value) {
+                                      context.read<TransferBloc>().add(
+                                        TransferEvent.receiveExactAmountToggled(value),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
                   ),
                   const Gap(24),
                   BlocSelector<TransferBloc, TransferState, bool>(
-                    selector:
-                        (state) =>
-                            state.isStarting ||
-                            state.isCreatingSwap ||
-                            state.continueClicked,
+                    selector: (state) => state.shouldShowAdvancedOptions,
+                    builder: (context, showAdvancedOptions) {
+                      if (!showAdvancedOptions) {
+                        return const SizedBox.shrink();
+                      }
+                      return Column(
+                        crossAxisAlignment: .stretch,
+                        children: [
+                          BBButton.big(
+                            label: context.loc.sendAdvancedOptions,
+                            bgColor: context.appColors.transparent,
+                            textColor: context.appColors.secondary,
+                            outlined: true,
+                            borderColor: context.appColors.secondary,
+                            onPressed: () {
+                              BlurredBottomSheet.show(
+                                context: context,
+                                child: BlocProvider.value(
+                                  value: context.read<TransferBloc>(),
+                                  child: const SwapAdvancedOptionsBottomSheet(),
+                                ),
+                              );
+                            },
+                          ),
+                          const Gap(16),
+                        ],
+                      );
+                    },
+                  ),
+                  BlocSelector<TransferBloc, TransferState, bool>(
+                    selector: (state) =>
+                        state.isStarting ||
+                        state.isCreatingSwap ||
+                        state.continueClicked,
                     builder: (context, isLoading) {
                       return BBButton.big(
-                        label: 'Continue',
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onSecondary,
+                        label: context.loc.swapContinueButton,
+                        bgColor: context.appColors.secondary,
+                        textColor: context.appColors.onSecondary,
                         disabled: isLoading,
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) {

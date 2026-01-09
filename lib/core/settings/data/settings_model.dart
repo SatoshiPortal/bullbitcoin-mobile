@@ -10,6 +10,9 @@ class SettingsModel {
   final bool hideAmounts;
   final bool isSuperuser;
   final bool isDevModeEnabled;
+  final bool useTorProxy;
+  final int torProxyPort;
+  final AppThemeMode themeMode;
 
   const SettingsModel({
     required this.id,
@@ -20,6 +23,9 @@ class SettingsModel {
     required this.hideAmounts,
     required this.isSuperuser,
     required this.isDevModeEnabled,
+    required this.useTorProxy,
+    required this.torProxyPort,
+    required this.themeMode,
   });
 
   SettingsRow toSqlite() {
@@ -32,6 +38,9 @@ class SettingsModel {
       hideAmounts: hideAmounts,
       isSuperuser: isSuperuser,
       isDevModeEnabled: isDevModeEnabled,
+      useTorProxy: useTorProxy,
+      torProxyPort: torProxyPort,
+      themeMode: themeMode.name,
     );
   }
 
@@ -45,6 +54,9 @@ class SettingsModel {
       hideAmounts: row.hideAmounts,
       isSuperuser: row.isSuperuser,
       isDevModeEnabled: row.isDevModeEnabled,
+      useTorProxy: row.useTorProxy,
+      torProxyPort: row.torProxyPort,
+      themeMode: AppThemeMode.fromName(row.themeMode),
     );
   }
 }

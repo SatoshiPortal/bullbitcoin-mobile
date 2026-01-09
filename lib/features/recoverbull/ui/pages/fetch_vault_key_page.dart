@@ -125,7 +125,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: .start,
                   children: [
                     if (state.isLoading)
                       ProgressScreen(

@@ -10,6 +10,7 @@ part 'user_summary_model.g.dart';
 sealed class UserSummaryModel with _$UserSummaryModel {
   const factory UserSummaryModel({
     required int userNumber,
+    String? userId,
     required List<String> groups,
     required UserProfileModel profile,
     required String email,
@@ -28,6 +29,7 @@ sealed class UserSummaryModel with _$UserSummaryModel {
   UserSummary toEntity() {
     return UserSummary(
       userNumber: userNumber,
+      userId: userId,
       groups: groups,
       profile: profile.toEntity(),
       email: email,

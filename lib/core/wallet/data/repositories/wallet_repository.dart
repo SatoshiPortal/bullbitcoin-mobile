@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -17,13 +18,15 @@ import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:rxdart/transformers.dart';
 
 class WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServerPort _electrumServerPort;
+
+  final _electrumSyncResultController =
+      StreamController<ElectrumSyncResult>.broadcast();
 
   WalletRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
@@ -37,18 +40,20 @@ class WalletRepository {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
-    _startAutoSyncing();
   }
 
-  Stream<Wallet> get walletSyncStartedStream =>
-      _walletSyncStartedStream
-          .asyncMap((walletId) async => await getWallet(walletId))
-          .whereType<Wallet>();
+  Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
+      .asyncMap((walletId) async => await getWallet(walletId))
+      .where((event) => event != null)
+      .map((event) => event!);
 
-  Stream<Wallet> get walletSyncFinishedStream =>
-      _walletSyncFinishedStream
-          .asyncMap((walletId) async => await getWallet(walletId))
-          .whereType<Wallet>();
+  Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
+      .asyncMap((walletId) async => await getWallet(walletId))
+      .where((event) => event != null)
+      .map((event) => event!);
+
+  Stream<ElectrumSyncResult> get electrumSyncResultStream =>
+      _electrumSyncResultController.stream;
 
   bool isWalletSyncing({String? walletId}) =>
       _bdkWallet.isWalletSyncing(walletId: walletId) ||
@@ -66,14 +71,14 @@ class WalletRepository {
     // Derive and store the wallet metadata
     final walletLabel =
         isDefault &&
-                (network == Network.bitcoinMainnet ||
-                    network == Network.bitcoinTestnet)
-            ? 'Secure Bitcoin'
-            : isDefault &&
-                (network == Network.liquidMainnet ||
-                    network == Network.liquidTestnet)
-            ? 'Instant Payments'
-            : label;
+            (network == Network.bitcoinMainnet ||
+                network == Network.bitcoinTestnet)
+        ? 'Secure Bitcoin'
+        : isDefault &&
+              (network == Network.liquidMainnet ||
+                  network == Network.liquidTestnet)
+        ? 'Instant Payments'
+        : label;
 
     final metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
@@ -226,18 +231,12 @@ class WalletRepository {
       balanceSat: balance.totalSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
-      latestEncryptedBackup:
-          metadata.latestEncryptedBackup != null
-              ? DateTime.fromMillisecondsSinceEpoch(
-                metadata.latestEncryptedBackup!,
-              )
-              : null,
-      latestPhysicalBackup:
-          metadata.latestPhysicalBackup != null
-              ? DateTime.fromMillisecondsSinceEpoch(
-                metadata.latestPhysicalBackup!,
-              )
-              : null,
+      latestEncryptedBackup: metadata.latestEncryptedBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestEncryptedBackup!)
+          : null,
+      latestPhysicalBackup: metadata.latestPhysicalBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestPhysicalBackup!)
+          : null,
     );
   }
 
@@ -251,23 +250,20 @@ class WalletRepository {
     final metadatas = await _walletMetadataDatasource.fetchAll();
     if (metadatas.isEmpty) return [];
 
-    final filteredWallets =
-        metadatas
-            .where(
-              (wallet) =>
-                  (environment == null ||
-                      wallet.isMainnet == environment.isMainnet) &&
-                  (onlyDefaults == null ||
-                      onlyDefaults == false ||
-                      wallet.isDefault) &&
-                  (onlyBitcoin == null ||
-                      onlyBitcoin == false ||
-                      wallet.isBitcoin) &&
-                  (onlyLiquid == null ||
-                      onlyLiquid == false ||
-                      wallet.isLiquid),
-            )
-            .toList();
+    final filteredWallets = metadatas
+        .where(
+          (wallet) =>
+              (environment == null ||
+                  wallet.isMainnet == environment.isMainnet) &&
+              (onlyDefaults == null ||
+                  onlyDefaults == false ||
+                  wallet.isDefault) &&
+              (onlyBitcoin == null ||
+                  onlyBitcoin == false ||
+                  wallet.isBitcoin) &&
+              (onlyLiquid == null || onlyLiquid == false || wallet.isLiquid),
+        )
+        .toList();
 
     final balances = await Future.wait(
       filteredWallets.map((wallet) => _getBalance(wallet, sync: sync)),
@@ -296,18 +292,16 @@ class WalletRepository {
             balanceSat: balances[entry.key].totalSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
-            latestEncryptedBackup:
-                entry.value.latestEncryptedBackup != null
-                    ? DateTime.fromMillisecondsSinceEpoch(
-                      entry.value.latestEncryptedBackup!,
-                    )
-                    : null,
-            latestPhysicalBackup:
-                entry.value.latestPhysicalBackup != null
-                    ? DateTime.fromMillisecondsSinceEpoch(
-                      entry.value.latestPhysicalBackup!,
-                    )
-                    : null,
+            latestEncryptedBackup: entry.value.latestEncryptedBackup != null
+                ? DateTime.fromMillisecondsSinceEpoch(
+                    entry.value.latestEncryptedBackup!,
+                  )
+                : null,
+            latestPhysicalBackup: entry.value.latestPhysicalBackup != null
+                ? DateTime.fromMillisecondsSinceEpoch(
+                    entry.value.latestPhysicalBackup!,
+                  )
+                : null,
           ),
         )
         .toList();
@@ -372,8 +366,14 @@ class WalletRepository {
 
   Future<void> deleteWallet({required String walletId}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
-    if (metadata == null) {
-      throw WalletError.notFound(walletId);
+    if (metadata == null) throw WalletError.notFound(walletId);
+
+    if (metadata.isBitcoin) {
+      await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+    }
+
+    if (metadata.isLiquid) {
+      await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
     }
 
     // Delete wallet metadata from database
@@ -400,52 +400,6 @@ class WalletRepository {
     final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
 
     await _walletMetadataDatasource.store(updatedWalletMetadata);
-  }
-
-  Future<void> _startAutoSyncing() async {
-    // TODO: get from constants
-    // TODO(azad): shouldn't we store `autoSyncIntervalSeconds` in sqlite settings?
-    // @azad Yes we should, but for now it is not an option in the UI yet,
-    //  so OK as a constant for now. When we add the option to the UI, we can
-    //  move it to the settings table.
-    const autoSyncInterval = Duration(
-      seconds: SettingsConstants.autoSyncIntervalSeconds,
-    );
-
-    Timer.periodic(autoSyncInterval, (timer) async {
-      try {
-        final metadatas = await _walletMetadataDatasource.fetchAll();
-        for (final metadata in metadatas) {
-          // Only sync if the time since the last sync is greater than the interval
-          if (metadata.syncedAt == null ||
-              metadata.syncedAt!.compareTo(
-                    DateTime.now().subtract(autoSyncInterval),
-                  ) <=
-                  0) {
-            final wallet =
-                metadata.isLiquid
-                    ? WalletModel.publicLwk(
-                      combinedCtDescriptor: metadata.externalPublicDescriptor,
-                      isTestnet: metadata.isTestnet,
-                      id: metadata.id,
-                    )
-                    : WalletModel.publicBdk(
-                      externalDescriptor: metadata.externalPublicDescriptor,
-                      internalDescriptor: metadata.internalPublicDescriptor,
-                      isTestnet: metadata.isTestnet,
-                      id: metadata.id,
-                    );
-            await _syncWallet(wallet);
-          }
-        }
-      } catch (e, stackTrace) {
-        log.severe(
-          'Error during auto-syncing wallets',
-          error: e,
-          trace: stackTrace,
-        );
-      }
-    });
   }
 
   Future<BalanceModel> _getBalance(
@@ -483,6 +437,25 @@ class WalletRepository {
     return balance;
   }
 
+  Future<void> sync(Wallet wallet) async {
+    final walletModel = WalletModel.fromMetadata(
+      WalletMetadataModel(
+        id: wallet.id,
+        masterFingerprint: wallet.masterFingerprint,
+        xpubFingerprint: wallet.xpubFingerprint,
+        isEncryptedVaultTested: wallet.isEncryptedVaultTested,
+        isPhysicalBackupTested: wallet.isPhysicalBackupTested,
+        externalPublicDescriptor: wallet.externalPublicDescriptor,
+        internalPublicDescriptor: wallet.internalPublicDescriptor,
+        xpub: wallet.xpub,
+        isDefault: wallet.isDefault,
+        label: wallet.label,
+        signer: Signer.fromEntity(wallet.signer),
+      ),
+    );
+    await _syncWallet(walletModel);
+  }
+
   Future<void> _syncWallet(WalletModel wallet) async {
     try {
       final isLiquid = wallet is PublicLwkWalletModel;
@@ -505,6 +478,9 @@ class WalletRepository {
               electrumServer: electrumServer,
             );
           }
+          _electrumSyncResultController.add(
+            ElectrumSyncResult(isLiquid: isLiquid, success: true),
+          );
           return;
         } catch (e, stackTrace) {
           log.severe(
@@ -513,6 +489,9 @@ class WalletRepository {
             trace: stackTrace,
           );
           if (i == electrumServers.length - 1) {
+            _electrumSyncResultController.add(
+              ElectrumSyncResult(isLiquid: isLiquid, success: false),
+            );
             throw Exception('All Electrum servers failed to sync.');
           }
           continue;

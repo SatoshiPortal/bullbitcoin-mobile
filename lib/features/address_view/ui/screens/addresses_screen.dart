@@ -64,25 +64,24 @@ class _AddressesScreenState extends State<AddressesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.addressViewAddressesTitle),
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(context.loc.addressViewAddressesTitle)),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBSegmentFull(
-                items: {context.loc.addressViewReceiveType, context.loc.addressViewChangeType},
+                items: {
+                  context.loc.addressViewReceiveType,
+                  context.loc.addressViewChangeType,
+                },
                 initialValue: selectedTab,
                 onSelected: (value) {
                   if (value == context.loc.addressViewChangeType) {
                     ComingSoonBottomSheet.show(
                       context,
-                      description: context.loc.addressViewChangeAddressesDescription,
+                      description:
+                          context.loc.addressViewChangeAddressesDescription,
                     );
                     setState(() {
                       selectedTab = context.loc.addressViewChangeType;
@@ -100,23 +99,23 @@ class _AddressesScreenState extends State<AddressesScreen> {
             Expanded(
               child: BlocBuilder<AddressViewBloc, AddressViewState>(
                 builder: (context, state) {
-                  final addresses =
-                      showChangeAddresses
-                          ? state.changeAddresses
-                          : state.receiveAddresses;
-                  final hasReachedEnd =
-                      showChangeAddresses
-                          ? state.hasReachedEndOfChangeAddresses
-                          : state.hasReachedEndOfReceiveAddresses;
+                  final addresses = showChangeAddresses
+                      ? state.changeAddresses
+                      : state.receiveAddresses;
+                  final hasReachedEnd = showChangeAddresses
+                      ? state.hasReachedEndOfChangeAddresses
+                      : state.hasReachedEndOfReceiveAddresses;
 
                   if (state.isLoading && addresses.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state.error != null && addresses.isEmpty) {
                     return Center(
                       child: Text(
-                        context.loc.addressViewErrorLoadingAddresses(state.error!.toString()),
+                        context.loc.addressViewErrorLoadingAddresses(
+                          state.error!.toString(),
+                        ),
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.error,
+                          color: context.appColors.error,
                         ),
                       ),
                     );
@@ -127,7 +126,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                             ? context.loc.addressViewChangeAddressesComingSoon
                             : context.loc.addressViewNoAddressesFound,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.onSurface,
+                          color: context.appColors.onSurface,
                         ),
                       ),
                     );
@@ -148,15 +147,19 @@ class _AddressesScreenState extends State<AddressesScreen> {
                             address: address.address,
                             index: address.index,
                             balanceSat: address.balanceSat,
+                            labels: address.labels,
                           );
                         } else {
                           if (state.error != null &&
                               index == addresses.length) {
                             return Center(
                               child: Text(
-                                context.loc.addressViewErrorLoadingMoreAddresses(state.error!.toString()),
+                                context.loc
+                                    .addressViewErrorLoadingMoreAddresses(
+                                      state.error!.toString(),
+                                    ),
                                 style: context.font.bodyMedium?.copyWith(
-                                  color: context.colour.error,
+                                  color: context.appColors.error,
                                 ),
                               ),
                             );

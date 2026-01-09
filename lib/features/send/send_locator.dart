@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_extern
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
@@ -33,15 +34,15 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class SendLocator {
-  static void setup() {
-    registerUsecases();
-    registerBlocs();
+  static void setup(GetIt locator) {
+    registerUsecases(locator);
+    registerBlocs(locator);
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<DetectBitcoinStringUsecase>(
       () => DetectBitcoinStringUsecase(),
     );
@@ -73,9 +74,8 @@ class SendLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         walletRepository: locator<WalletRepository>(),
       ),
@@ -87,9 +87,8 @@ class SendLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -114,9 +113,8 @@ class SendLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -127,15 +125,19 @@ class SendLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
+      ),
+    );
+    locator.registerFactory<VerifyChainSwapAmountSendUsecase>(
+      () => VerifyChainSwapAmountSendUsecase(
+        walletRepository: locator<WalletRepository>(),
       ),
     );
   }
 
-  static void registerBlocs() {
+  static void registerBlocs(GetIt locator) {
     locator.registerFactoryParam<SendCubit, Wallet?, void>(
       (wallet, _) => SendCubit(
         wallet: wallet,
@@ -174,6 +176,8 @@ class SendLocator {
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),
         updateSendSwapLockupFeesUsecase:
             locator<UpdateSendSwapLockupFeesUsecase>(),
+        verifyChainSwapAmountSendUsecase:
+            locator<VerifyChainSwapAmountSendUsecase>(),
       ),
     );
   }

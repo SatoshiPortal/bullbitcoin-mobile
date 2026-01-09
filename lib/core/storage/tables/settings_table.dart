@@ -11,4 +11,7 @@ class Settings extends Table {
   BoolColumn get isSuperuser => boolean()();
   BoolColumn get isDevModeEnabled =>
       boolean().withDefault(const Constant(false))();
+  BoolColumn get useTorProxy => boolean().withDefault(const Constant(false))();
+  IntColumn get torProxyPort => integer().withDefault(const Constant(9050))();
+  TextColumn get themeMode => text().withDefault(const Constant('system'))();
 }

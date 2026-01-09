@@ -2,50 +2,42 @@ import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:satoshifier/enums/derivation.dart' as satoshifier;
 
 class WatchOnlyDetailsWidget extends StatelessWidget {
-  const WatchOnlyDetailsWidget({
-    required this.watchOnlyWallet,
-    required this.cubit,
-  });
-
   final WatchOnlyWalletEntity watchOnlyWallet;
-  final ImportWatchOnlyCubit cubit;
+  const WatchOnlyDetailsWidget({super.key, required this.watchOnlyWallet});
 
   @override
   Widget build(BuildContext context) {
     return watchOnlyWallet.when(
-      descriptor:
-          (_, _, _) => _DescriptorDetailsWidget(
-            entity: watchOnlyWallet as WatchOnlyDescriptorEntity,
-            cubit: cubit,
-          ),
-      xpub:
-          (_, _, _) => _XpubDetailsWidget(
-            entity: watchOnlyWallet as WatchOnlyXpubEntity,
-            cubit: cubit,
-          ),
+      descriptor: (_, _, _) => const _DescriptorDetailsWidget(),
+      xpub: (_, _, _) => const _XpubDetailsWidget(),
     );
   }
 }
 
 class _DescriptorDetailsWidget extends StatelessWidget {
-  const _DescriptorDetailsWidget({required this.entity, required this.cubit});
-
-  final WatchOnlyDescriptorEntity entity;
-  final ImportWatchOnlyCubit cubit;
+  const _DescriptorDetailsWidget();
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<ImportWatchOnlyCubit>();
+    final watchOnlyWallet =
+        context.watch<ImportWatchOnlyCubit>().state.watchOnlyWallet;
+    final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         LabeledTextInput(
           label: context.loc.importWatchOnlyDescriptor,
@@ -79,16 +71,17 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                   ),
                   icon: Icon(
                     Icons.keyboard_arrow_down,
-                    color: context.colour.secondary,
+                    color: context.appColors.text,
                   ),
-                  value: entity.signerDevice,
+                  initialValue: entity.signerDevice,
                   items:
                       [null, ...SignerDeviceEntity.values]
                           .map(
                             (value) => DropdownMenuItem<SignerDeviceEntity?>(
                               value: value,
                               child: BBText(
-                                value?.displayName ?? context.loc.importWatchOnlyUnknown,
+                                value?.displayName ??
+                                    context.loc.importWatchOnlyUnknown,
                                 style: context.font.headlineSmall,
                               ),
                             ),
@@ -117,8 +110,8 @@ class _DescriptorDetailsWidget extends StatelessWidget {
         BBButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
+          bgColor: context.appColors.onSurface,
+          textColor: context.appColors.surface,
         ),
         const Gap(24),
       ],
@@ -127,15 +120,18 @@ class _DescriptorDetailsWidget extends StatelessWidget {
 }
 
 class _XpubDetailsWidget extends StatelessWidget {
-  const _XpubDetailsWidget({required this.entity, required this.cubit});
-
-  final WatchOnlyXpubEntity entity;
-  final ImportWatchOnlyCubit cubit;
+  const _XpubDetailsWidget();
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<ImportWatchOnlyCubit>();
+    final watchOnlyWallet =
+        context.watch<ImportWatchOnlyCubit>().state.watchOnlyWallet;
+    final entity = watchOnlyWallet! as WatchOnlyXpubEntity;
+    final isXpub = entity.pubkey.startsWith('xpub');
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         BBText(
           context.loc.importWatchOnlyExtendedPublicKey,
@@ -144,20 +140,61 @@ class _XpubDetailsWidget extends StatelessWidget {
         const Gap(8),
         BBText(entity.pubkey, style: context.font.bodyMedium),
         const Gap(24),
-        BBText(
-          context.loc.importWatchOnlyType,
-          style: context.font.titleMedium,
-        ),
+        if (!isXpub) ...[
+          BBText('XPUB', style: context.font.titleMedium),
+          const Gap(8),
+          BBText(
+            entity.watchOnlyXpub.extendedPubkey.xpub,
+            style: context.font.bodyMedium,
+          ),
+          const Gap(24),
+        ],
+        BBText('Type', style: context.font.titleMedium),
         const Gap(8),
-        BBText(
-          entity.extendedPubkey.derivation.label,
-          style: context.font.bodyMedium,
-        ),
-        const Gap(24),
-        BBText(
-          context.loc.importWatchOnlyLabel,
-          style: context.font.titleMedium,
-        ),
+        if (!isXpub) ...[
+          BBText(
+            entity.extendedPubkey.derivation.label,
+            style: context.font.bodyMedium,
+          ),
+          const Gap(24),
+        ] else ...[
+          InfoCard(
+            title: context.loc.importWatchOnlyDisclaimerTitle,
+            description: context.loc.importWatchOnlyDisclaimerDescription,
+            bgColor: context.appColors.warning.withValues(alpha: 0.1),
+            tagColor: context.appColors.warning,
+          ),
+          SizedBox(
+            width: 260,
+            child: DropdownButtonFormField<satoshifier.Derivation>(
+              alignment: Alignment.centerLeft,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 24.0),
+              ),
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: context.appColors.text,
+              ),
+              initialValue: entity.extendedPubkey.derivation,
+              items:
+                  [...satoshifier.Derivation.values]
+                      .map(
+                        (value) => DropdownMenuItem<satoshifier.Derivation>(
+                          value: value,
+                          child: BBText(
+                            'BIP${value.purpose} - ${value.label}',
+                            style: context.font.headlineSmall,
+                          ),
+                        ),
+                      )
+                      .toList(),
+              onChanged: cubit.onDerivationChanged,
+            ),
+          ),
+          const Gap(24),
+        ],
+        BBText('Label', style: context.font.titleMedium),
         const Gap(8),
         BBInputText(
           onChanged: cubit.updateLabel,
@@ -168,8 +205,8 @@ class _XpubDetailsWidget extends StatelessWidget {
         BBButton.big(
           onPressed: cubit.import,
           label: context.loc.importWatchOnlyImport,
-          bgColor: context.colour.primary,
-          textColor: context.colour.onPrimary,
+          bgColor: context.appColors.primary,
+          textColor: context.appColors.onPrimary,
         ),
         const Gap(24),
       ],

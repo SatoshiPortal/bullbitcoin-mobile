@@ -9,14 +9,14 @@ import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class BuyLocator {
-  static void setup() {
-    registerBlocs();
+  static void setup(GetIt locator) {
+    registerBlocs(locator);
   }
 
-  static void registerBlocs() {
+  static void registerBlocs(GetIt locator) {
     locator.registerFactory<BuyBloc>(
       () => BuyBloc(
         getWalletsUsecase: locator<GetWalletsUsecase>(),

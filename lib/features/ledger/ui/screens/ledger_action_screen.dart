@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecas
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -87,13 +88,13 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: widget.action.getTitle(context),
-          color: context.colour.secondaryFixed,
+          color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
@@ -139,14 +140,14 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         const Gap(24),
         BBText(
           _getMainTextForState(context, state),
-          textAlign: TextAlign.center,
+          textAlign: .center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
           _getSubTextForState(context, state),
-          textAlign: TextAlign.center,
-          color: context.colour.onSurfaceVariant,
+          textAlign: .center,
+          color: context.appColors.textMuted,
           style: context.font.bodyMedium,
         ),
         if (widget.action is VerifyAddressLedgerAction && state.isProcessing)
@@ -169,14 +170,14 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   ) {
     if (state.status == LedgerOperationStatus.initial) {
       return Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: .min,
         children: [
           if (widget.parameters?.requestedDeviceType == null ||
               widget.parameters!.requestedDeviceType!.supportsBluetooth)
-            Icon(Icons.bluetooth, size: 60, color: context.colour.primary),
+            Icon(Icons.bluetooth, size: 60, color: context.appColors.primary),
           if (!Platform.isIOS) ...[
             const Gap(16),
-            Icon(Icons.usb, size: 60, color: context.colour.primary),
+            Icon(Icons.usb, size: 60, color: context.appColors.primary),
           ],
         ],
       );
@@ -188,7 +189,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         width: 80,
         height: 80,
         child: CircularProgressIndicator(
-          color: context.colour.primary,
+          color: context.appColors.primary,
           strokeWidth: 3,
         ),
       );
@@ -206,7 +207,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         return Container();
     }
 
-    return Icon(icon, size: 80, color: context.colour.primary);
+    return Icon(icon, size: 80, color: context.appColors.primary);
   }
 
   Widget _buildActionButtons(BuildContext context, LedgerOperationState state) {
@@ -216,15 +217,15 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           BBButton.big(
             onPressed: () => _startOperation(context),
             label: widget.action.getButtonText(context),
-            bgColor: context.colour.primary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
         if (state.isError) ...[
           BBButton.big(
             onPressed: () => context.read<LedgerOperationCubit>().reset(),
             label: context.loc.ledgerButtonTryAgain,
-            bgColor: context.colour.primary,
-            textColor: context.colour.onPrimary,
+            bgColor: context.appColors.primary,
+            textColor: context.appColors.onPrimary,
           ),
           if (state.errorMessage ==
               const LedgerError.permissionDenied().message) ...[
@@ -232,8 +233,8 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
             BBButton.big(
               onPressed: () => _openAppSettings(),
               label: context.loc.ledgerButtonManagePermissions,
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
+              bgColor: context.appColors.onSurface,
+              textColor: context.appColors.surface,
             ),
           ],
         ],
@@ -242,8 +243,8 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           BBButton.small(
             label: context.loc.ledgerButtonNeedHelp,
             onPressed: () => _showInstructions(context),
-            bgColor: context.colour.onSecondary,
-            textColor: context.colour.secondary,
+            bgColor: context.appColors.surface,
+            textColor: context.appColors.text,
             outlined: true,
           ),
       ],
@@ -260,16 +261,16 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         BBText(
           context.loc.ledgerVerifyAddressLabel,
           style: context.font.bodyMedium,
-          color: context.colour.onSurfaceVariant,
+          color: context.appColors.textMuted,
         ),
         const Gap(8),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: context.colour.surface,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: context.colour.outline, width: 1),
+            border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: SelectableText(
             address
@@ -291,40 +292,40 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         BBText(
           context.loc.ledgerWalletTypeLabel,
           style: context.font.bodyMedium,
-          color: context.colour.onSurfaceVariant,
+          color: context.appColors.textMuted,
         ),
         const Gap(12),
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: context.colour.onSecondary,
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: context.colour.outline,
-              width: 1,
-            ),
+            border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: Material(
-            color: Colors.transparent,
+            color: context.appColors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(8),
               onTap: () => _showScriptTypeSelection(context),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: .spaceBetween,
                   children: [
                     Expanded(
                       child: BBText(
                         _getScriptTypeDisplayName(context, _selectedScriptType),
                         style: context.font.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: .w500,
                         ),
                       ),
                     ),
                     Icon(
                       Icons.arrow_drop_down,
-                      color: context.colour.onSurfaceVariant,
+                      color: context.appColors.textMuted,
                       size: 20,
                     ),
                   ],
@@ -337,7 +338,10 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     );
   }
 
-  String _getScriptTypeDisplayName(BuildContext context, ScriptType scriptType) {
+  String _getScriptTypeDisplayName(
+    BuildContext context,
+    ScriptType scriptType,
+  ) {
     switch (scriptType) {
       case ScriptType.bip84:
         return context.loc.ledgerWalletTypeSegwit;
@@ -370,18 +374,14 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       ),
     ];
 
-    final selected = await showModalBottomSheet<String>(
-      useRootNavigator: true,
+    final selected = await BlurredBottomSheet.show<String>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.colour.onSecondary,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (BuildContext buildContext) => Padding(
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: .stretch,
               children: [
                 const Gap(16),
                 BBText(
@@ -420,7 +420,10 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
     }
   }
 
-  String _getMainTextForState(BuildContext context, LedgerOperationState state) {
+  String _getMainTextForState(
+    BuildContext context,
+    LedgerOperationState state,
+  ) {
     switch (state.status) {
       case LedgerOperationStatus.initial:
         return context.loc.ledgerConnectTitle;
@@ -433,7 +436,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case LedgerOperationStatus.success:
         return widget.action.getSuccessText(context);
       case LedgerOperationStatus.error:
-        return context.loc.ledgerActionFailedMessage(widget.action.getTitle(context));
+        return context.loc.ledgerActionFailedMessage(
+          widget.action.getTitle(context),
+        );
     }
   }
 
@@ -554,7 +559,10 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       case SignTransactionLedgerAction():
         context.pop(result);
       case VerifyAddressLedgerAction():
-        SnackBarUtils.showSnackBar(context, context.loc.ledgerSuccessAddressVerified);
+        SnackBarUtils.showSnackBar(
+          context,
+          context.loc.ledgerSuccessAddressVerified,
+        );
         context.pop();
     }
   }
@@ -597,7 +605,9 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         return context.loc.ledgerErrorBitcoinAppNotOpen;
       default:
         // Return the error message as-is if it's not a localization key
-        return errorMessage.isEmpty ? context.loc.ledgerErrorUnknown : errorMessage;
+        return errorMessage.isEmpty
+            ? context.loc.ledgerErrorUnknown
+            : errorMessage;
     }
   }
 }

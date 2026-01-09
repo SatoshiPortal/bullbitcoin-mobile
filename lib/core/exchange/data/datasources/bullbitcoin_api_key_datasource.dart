@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 
 class BullbitcoinApiKeyDatasource {
   static const String _apiKeyStorageKey = 'exchange_api_key';
@@ -35,7 +35,7 @@ class BullbitcoinApiKeyDatasource {
       final jsonString = await _secureStorage.getValue(key);
 
       if (jsonString == null || jsonString.isEmpty) {
-        log.info('No API key found in storage');
+        log.warning('No API key found in storage');
         return null;
       }
 

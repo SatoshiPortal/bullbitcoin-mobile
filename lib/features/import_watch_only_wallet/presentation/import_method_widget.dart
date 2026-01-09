@@ -13,21 +13,19 @@ class ImportMethodWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: .spaceBetween,
       children: [
         Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: .spaceEvenly,
           children: [
             const Gap(12),
-            BBButton.small(
+            BBButton.big(
               label: context.loc.importWatchOnlyScanQR,
-              onPressed:
-                  () => context.replaceNamed(
-                    ImportWatchOnlyWalletRoutes.scan.name,
-                  ),
+              onPressed: () =>
+                  context.replaceNamed(ImportWatchOnlyWalletRoutes.scan.name),
               iconData: Icons.qr_code_scanner,
-              bgColor: context.colour.onSecondary,
-              textColor: context.colour.secondary,
+              bgColor: context.appColors.secondary,
+              textColor: context.appColors.onSecondary,
               outlined: true,
             ),
 
@@ -37,29 +35,27 @@ class ImportMethodWidget extends StatelessWidget {
 
         Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: .spaceEvenly,
             children: [
-              BBButton.small(
+              BBButton.big(
                 label: context.loc.importWatchOnlyBuyDevice,
-                onPressed:
-                    () => launchUrl(
-                      Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
-                    ),
+                onPressed: () => launchUrl(
+                  Uri.parse('https://store.coinkite.com/promo/BULLBITCOIN'),
+                ),
                 iconData: Icons.shopping_cart,
-                bgColor: context.colour.onSecondary,
-                textColor: context.colour.secondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
                 outlined: true,
               ),
               const Gap(12),
-              BBButton.small(
+
+              BBButton.big(
                 label: context.loc.importWatchOnlyWalletGuides,
-                onPressed:
-                    () => launchUrl(
-                      Uri.parse('https://docs.bull.ethicnology.com'),
-                    ),
+                onPressed: () =>
+                    launchUrl(Uri.parse('https://docs.bull.ethicnology.com')),
                 iconData: Icons.lightbulb_outline,
-                bgColor: context.colour.onSecondary,
-                textColor: context.colour.secondary,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
                 outlined: true,
               ),
             ],

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_settings_datasource.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/core/tor/domain/value_objects/tor_proxy_config.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart';
@@ -14,8 +15,8 @@ class RecoverBullRemoteDatasource {
   }) : _recoverbullSettingsDatasource = recoverbullSettingsDatasource,
        _torDatasource = torDatasource;
 
-  Future<void> info() async {
-    final client = _torDatasource.httpClient;
+  Future<void> info({TorProxyConfig? externalProxy}) async {
+    final client = _torDatasource.httpClient(externalProxy: externalProxy);
     final url = await _recoverbullSettingsDatasource.fetch();
     try {
       final info = await KeyServer(address: url, client: client).infos();
@@ -30,10 +31,11 @@ class RecoverBullRemoteDatasource {
     List<int> backupId,
     List<int> password,
     List<int> salt,
-    List<int> backupKey,
-  ) async {
+    List<int> backupKey, {
+    TorProxyConfig? externalProxy,
+  }) async {
     try {
-      final client = _torDatasource.httpClient;
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(address: url, client: client).storeBackupKey(
         backupId: backupId,
@@ -50,10 +52,11 @@ class RecoverBullRemoteDatasource {
   Future<List<int>> fetch(
     List<int> backupId,
     List<int> password,
-    List<int> salt,
-  ) async {
+    List<int> salt, {
+    TorProxyConfig? externalProxy,
+  }) async {
     try {
-      final client = _torDatasource.httpClient;
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       return await KeyServer(
         address: url,
@@ -68,10 +71,11 @@ class RecoverBullRemoteDatasource {
   Future<void> trash(
     List<int> backupId,
     List<int> password,
-    List<int> salt,
-  ) async {
+    List<int> salt, {
+    TorProxyConfig? externalProxy,
+  }) async {
     try {
-      final client = _torDatasource.httpClient;
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(
         address: url,
@@ -83,19 +87,31 @@ class RecoverBullRemoteDatasource {
     }
   }
 
-  Future<void> checkConnection() async {
+  Future<void> checkConnection({TorProxyConfig? externalProxy}) async {
     try {
-      while (_torDatasource.status == TorStatus.connecting) {
-        log.config('Waiting for Tor to be ready...');
-        await Future.delayed(const Duration(seconds: 3));
+      if (externalProxy == null) {
+        await _waitForInternalTor();
       }
 
-      final client = _torDatasource.httpClient;
+      final client = _torDatasource.httpClient(externalProxy: externalProxy);
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(address: url, client: client).infos();
     } catch (e) {
       log.severe('checkConnection: $e');
       rethrow;
+    }
+  }
+
+  Future<void> _waitForInternalTor() async {
+    const maxWaitTime = Duration(minutes: 2);
+    final startTime = DateTime.now();
+
+    while (_torDatasource.status == TorStatus.connecting) {
+      if (DateTime.now().difference(startTime) > maxWaitTime) {
+        throw Exception('Timeout waiting for Tor to be ready');
+      }
+      log.info('Waiting for Tor to be ready...');
+      await Future.delayed(const Duration(seconds: 3));
     }
   }
 }

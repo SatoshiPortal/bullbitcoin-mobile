@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/errors/sell_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -39,8 +38,8 @@ class SellWalletSelectionScreen extends StatelessWidget {
             FadingLinearProgress(
               height: 3,
               trigger: isCreatingSellOrder,
-              backgroundColor: context.colour.onPrimary,
-              foregroundColor: context.colour.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
             Expanded(
               child: ScrollableColumn(
@@ -49,7 +48,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
                   Text(
                     context.loc.sellWhichWalletQuestion,
                     style: context.font.labelMedium?.copyWith(
-                      color: Colors.black,
+                      color: context.appColors.text,
                     ),
                   ),
                   const Gap(24.0),
@@ -65,7 +64,7 @@ class SellWalletSelectionScreen extends StatelessWidget {
                   ),
                   const Gap(24.0),
                   ListTile(
-                    tileColor: context.colour.onPrimary,
+                    tileColor: context.appColors.onSecondary,
                     shape: const Border(),
                     title: Text(context.loc.sellExternalWallet),
                     subtitle: Text(context.loc.sellFromAnotherWallet),
@@ -101,45 +100,16 @@ class _SellError extends StatelessWidget {
               : null,
     );
 
+    if (sellError == null) return const SizedBox.shrink();
+
     return Center(
-      child: switch (sellError) {
-        AboveMaxAmountSellError _ => Text(
-          context.loc.sellAboveMaxAmountError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
+      child: Text(
+        sellError.toTranslated(context),
+        style: context.font.bodyMedium?.copyWith(
+          color: context.appColors.error,
         ),
-        BelowMinAmountSellError _ => Text(
-          context.loc.sellBelowMinAmountError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        InsufficientBalanceSellError _ => Text(
-          context.loc.sellInsufficientBalanceError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        UnauthenticatedSellError _ => Text(
-          context.loc.sellUnauthenticatedError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        OrderNotFoundSellError _ => Text(
-          context.loc.sellOrderNotFoundError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        OrderAlreadyConfirmedSellError _ => Text(
-          context.loc.sellOrderAlreadyConfirmedError,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        UnexpectedSellError _ => Text(
-          sellError.message,
-          style: context.font.bodyMedium?.copyWith(color: context.colour.error),
-          textAlign: TextAlign.center,
-        ),
-        _ => const SizedBox.shrink(),
-      },
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }

@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_descriptor_usecase.dart';
@@ -25,15 +27,19 @@ class ImportWatchOnlyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => ImportWatchOnlyCubit(
-            watchOnlyWallet: watchOnlyWallet,
-            importWatchOnlyDescriptorUsecase:
-                locator<ImportWatchOnlyDescriptorUsecase>(),
-            importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
-          )..init(),
+      create: (context) => ImportWatchOnlyCubit(
+        watchOnlyWallet: watchOnlyWallet,
+        importWatchOnlyDescriptorUsecase:
+            locator<ImportWatchOnlyDescriptorUsecase>(),
+        importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
+      )..init(),
       child: Scaffold(
-        appBar: AppBar(title: Text(context.loc.importWatchOnlyTitle)),
+        appBar: AppBar(
+          flexibleSpace: TopBar(
+            onBack: () => context.pop(),
+            title: context.loc.importWatchOnlyTitle,
+          ),
+        ),
         body: BlocConsumer<ImportWatchOnlyCubit, ImportWatchOnlyState>(
           listener: (context, state) {
             if (state.importedWallet != null) {
@@ -55,7 +61,11 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const Gap(32),
-                      if (state.watchOnlyWallet == null) ...[
+                      if (state.watchOnlyWallet != null)
+                        WatchOnlyDetailsWidget(
+                          watchOnlyWallet: state.watchOnlyWallet!,
+                        )
+                      else ...[
                         PasteInput(
                           text: state.input,
                           hint: context.loc.importWatchOnlyPasteHint,
@@ -65,16 +75,12 @@ class ImportWatchOnlyScreen extends StatelessWidget {
                           Center(
                             child: BBText(
                               state.error,
-                              style: const TextStyle(color: Colors.red),
+                              style: TextStyle(color: context.appColors.error),
                             ),
                           ),
                         const Gap(32),
                         const ImportMethodWidget(),
-                      ] else
-                        WatchOnlyDetailsWidget(
-                          watchOnlyWallet: state.watchOnlyWallet!,
-                          cubit: cubit,
-                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -54,7 +54,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
         controller: _scrollController,
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             const Gap(8),
             Stack(
@@ -71,7 +71,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                   child: Text(
                     context.loc.addressViewAddressesTitle,
                     style: context.font.headlineMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.appColors.secondary,
                     ),
                   ),
                 ),
@@ -80,22 +80,22 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
             const Gap(24),
             BlocBuilder<AddressViewBloc, AddressViewState>(
               builder: (context, state) {
-                final addresses =
-                    showChangeAddresses
-                        ? state.changeAddresses
-                        : state.receiveAddresses;
-                final hasReachedEnd =
-                    showChangeAddresses
-                        ? state.hasReachedEndOfChangeAddresses
-                        : state.hasReachedEndOfReceiveAddresses;
+                final addresses = showChangeAddresses
+                    ? state.changeAddresses
+                    : state.receiveAddresses;
+                final hasReachedEnd = showChangeAddresses
+                    ? state.hasReachedEndOfChangeAddresses
+                    : state.hasReachedEndOfReceiveAddresses;
                 if (state.isLoading && addresses.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state.error != null && addresses.isEmpty) {
                   return Center(
                     child: Text(
-                      context.loc.addressViewErrorLoadingAddresses(state.error!.toString()),
+                      context.loc.addressViewErrorLoadingAddresses(
+                        state.error!.toString(),
+                      ),
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.error,
+                        color: context.appColors.error,
                       ),
                     ),
                   );
@@ -104,7 +104,7 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                     child: Text(
                       context.loc.addressViewNoAddressesFound,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.onSurface,
+                        color: context.appColors.onSurface,
                       ),
                     ),
                   );
@@ -125,14 +125,17 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                           address: address.address,
                           index: address.index,
                           balanceSat: address.balanceSat,
+                          labels: address.labels,
                         );
                       } else {
                         if (state.error != null && index == addresses.length) {
                           return Center(
                             child: Text(
-                              context.loc.addressViewErrorLoadingMoreAddresses(state.error!.toString()),
+                              context.loc.addressViewErrorLoadingMoreAddresses(
+                                state.error!.toString(),
+                              ),
                               style: context.font.bodyMedium?.copyWith(
-                                color: context.colour.error,
+                                color: context.appColors.error,
                               ),
                             ),
                           );
@@ -154,10 +157,10 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                 Expanded(
                   child: BBButton.big(
                     label: context.loc.addressViewReceiveType,
-                    bgColor: Colors.transparent,
-                    textColor: context.colour.secondary,
+                    bgColor: context.appColors.transparent,
+                    textColor: context.appColors.secondary,
                     outlined: true,
-                    borderColor: context.colour.secondary,
+                    borderColor: context.appColors.secondary,
                     onPressed: () {
                       setState(() {
                         showChangeAddresses = false;
@@ -171,8 +174,8 @@ class _AddressListBottomSheetState extends State<AddressListBottomSheet> {
                     disabled:
                         true, // TODO: implement change address list functionality
                     label: context.loc.addressViewChangeType,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                     onPressed: () {
                       setState(() {
                         showChangeAddresses = true;

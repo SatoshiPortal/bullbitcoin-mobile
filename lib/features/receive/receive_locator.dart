@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label_wallet_address_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/label_address_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
@@ -18,10 +18,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class ReceiveLocator {
-  static void setup() {
+  static void setup(GetIt locator) {
     locator.registerFactory<CreateReceiveSwapUsecase>(
       () => CreateReceiveSwapUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -30,9 +30,8 @@ class ReceiveLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         labelRepository: locator<LabelRepository>(),
@@ -57,7 +56,7 @@ class ReceiveLocator {
         watchWalletTransactionByAddressUsecase:
             locator<WatchWalletTransactionByAddressUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
-        labelWalletAddressUsecase: locator<LabelWalletAddressUsecase>(),
+        labelAddressUsecase: locator<LabelAddressUsecase>(),
         getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         wallet: wallet,
       ),

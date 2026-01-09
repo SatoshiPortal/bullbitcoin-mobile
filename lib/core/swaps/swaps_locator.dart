@@ -31,10 +31,10 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class SwapsLocator {
-  static Future<void> registerDatasources() async {
+  static Future<void> registerDatasources(GetIt locator) async {
     locator.registerLazySingleton<BoltzStorageDatasource>(
       () => BoltzStorageDatasource(
         secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
@@ -45,7 +45,7 @@ class SwapsLocator {
     );
   }
 
-  static void registerRepositories() {
+  static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BoltzSwapRepository>(
       () => BoltzSwapRepository(
         boltz: BoltzDatasource(
@@ -68,7 +68,7 @@ class SwapsLocator {
     );
   }
 
-  static void registerPorts() {
+  static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<BlockchainPort>(
       () => BlockchainAdapter(
         broadcastLiquidTransactionUsecase:
@@ -77,7 +77,7 @@ class SwapsLocator {
     );
   }
 
-  static void registerServices() {
+  static void registerServices(GetIt locator) {
     locator.registerLazySingleton<SwapWatcherService>(
       () => SwapWatcherService(
         boltzRepo: locator<BoltzSwapRepository>(
@@ -107,7 +107,7 @@ class SwapsLocator {
     );
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<DecodeInvoiceUsecase>(
       () => DecodeInvoiceUsecase(
         mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(

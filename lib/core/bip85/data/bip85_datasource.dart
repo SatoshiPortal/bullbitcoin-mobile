@@ -88,10 +88,9 @@ class Bip85Datasource {
   }
 
   Future<Bip85DerivationModel?> fetch(String path) async {
-    final row =
-        await _sqlite.managers.bip85Derivations
-            .filter((b) => b.path(path))
-            .getSingleOrNull();
+    final row = await _sqlite.managers.bip85Derivations
+        .filter((b) => b.path(path))
+        .getSingleOrNull();
 
     return row != null ? Bip85DerivationModel.fromSqlite(row) : null;
   }
@@ -99,13 +98,13 @@ class Bip85Datasource {
   Future<int> fetchNextIndexForApplication(
     Bip85ApplicationColumn application,
   ) async {
-    final rows =
-        await _sqlite.managers.bip85Derivations
-            .filter((b) => b.application(application))
-            .get();
+    final rows = await _sqlite.managers.bip85Derivations
+        .filter((b) => b.application(application))
+        .get();
 
-    final models =
-        rows.map((row) => Bip85DerivationModel.fromSqlite(row)).toList();
+    final models = rows
+        .map((row) => Bip85DerivationModel.fromSqlite(row))
+        .toList();
 
     int nextIndex = 0;
     for (final model in models) {
@@ -134,11 +133,21 @@ class Bip85Datasource {
     }
   }
 
-  Future<void> reactivate(String path) async {
+  Future<void> activate(String path) async {
     try {
       await _sqlite.managers.bip85Derivations
           .filter((b) => b.path(path))
           .update((b) => b(status: const Value(Bip85StatusColumn.active)));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> alias(String path, String alias) async {
+    try {
+      await _sqlite.managers.bip85Derivations
+          .filter((b) => b.path(path))
+          .update((b) => b(alias: Value(alias)));
     } catch (e) {
       rethrow;
     }

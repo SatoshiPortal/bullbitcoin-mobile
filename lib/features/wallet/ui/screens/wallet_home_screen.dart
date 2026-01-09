@@ -14,34 +14,36 @@ class WalletHomeScreen extends StatelessWidget {
   const WalletHomeScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    // Trigger service status check when the screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<WalletBloc>().add(const CheckServiceStatus());
-    });
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {},
-
       child: Column(
         children: [
           const WalletHomeTopSection(),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const HomeWarnings(),
-                  const AutoSwapFeeWarning(),
-                  WalletCards(
-                    onTap: (w) {
-                      context.pushNamed(
-                        WalletRoute.walletDetail.name,
-                        pathParameters: {'walletId': w.id},
-                      );
-                    },
-                  ),
-                ],
+            child: RefreshIndicator(
+              onRefresh: () async {
+                final bloc = context.read<WalletBloc>();
+                bloc.add(const WalletRefreshed());
+                await bloc.stream.firstWhere((state) => !state.isSyncing);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    const HomeWarnings(),
+                    const AutoSwapFeeWarning(),
+                    WalletCards(
+                      onTap: (w) {
+                        context.pushNamed(
+                          WalletRoute.walletDetail.name,
+                          pathParameters: {'walletId': w.id},
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

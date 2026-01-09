@@ -1,5 +1,7 @@
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
+import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
+import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -28,14 +30,17 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/recipients_scree
 import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/language/language_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
+import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum SettingsRoute {
@@ -50,6 +55,7 @@ enum SettingsRoute {
   walletAddresses(':walletId/addresses'),
   logs('logs'),
   legacySeeds('legacy-seeds'),
+  allSeedView('seed-viewer'),
   experimental('experimental-settings'),
   exchangeAccount('exchange-account'),
   exchangeSettings('exchange-settings'),
@@ -66,6 +72,8 @@ enum SettingsRoute {
   bitcoinSettings('bitcoin-settings'),
   appSettings('app-settings'),
   swapSettings('swap-settings');
+  theme('theme'),
+  autoswapSettings('autoswap-settings');
 
   final String path;
 
@@ -76,7 +84,10 @@ class SettingsRouter {
   static final route = GoRoute(
     name: SettingsRoute.settings.name,
     path: SettingsRoute.settings.path,
-    builder: (context, state) => const AllSettingsScreen(),
+    builder: (context, state) => BlocProvider(
+      create: (_) => locator<ServiceStatusCubit>()..checkStatus(),
+      child: const AllSettingsScreen(),
+    ),
     routes: [
       GoRoute(
         name: SettingsRoute.exchangeAccount.name,
@@ -87,17 +98,15 @@ class SettingsRouter {
         name: SettingsRoute.exchangeSettings.name,
         path: SettingsRoute.exchangeSettings.path,
 
-        builder:
-            (context, state) => BlocListener<ExchangeCubit, ExchangeState>(
-              listenWhen:
-                  (previous, current) =>
-                      !previous.notLoggedIn && current.notLoggedIn,
-              listener: (context, state) {
-                // Redirect to landing page if the user logged out
-                context.goNamed(ExchangeRoute.exchangeLanding.name);
-              },
-              child: const ExchangeSettingsScreen(),
-            ),
+        builder: (context, state) => BlocListener<ExchangeCubit, ExchangeState>(
+          listenWhen: (previous, current) =>
+              !previous.notLoggedIn && current.notLoggedIn,
+          listener: (context, state) {
+            // Redirect to landing page if the user logged out
+            context.goNamed(ExchangeRoute.exchangeLanding.name);
+          },
+          child: const ExchangeSettingsScreen(),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAccountInfo.name,
@@ -158,13 +167,14 @@ class SettingsRouter {
         name: SettingsRoute.appSettings.name,
         path: SettingsRoute.appSettings.path,
         builder: (context, state) => const AppSettingsScreen(),
+        routes: [TorSettingsRouter.route],
+      ),
+      GoRoute(
+        name: SettingsRoute.theme.name,
+        path: SettingsRoute.theme.path,
+        builder: (context, state) => const ThemeSettingsScreen(),
       ),
 
-      GoRoute(
-        name: SettingsRoute.language.name,
-        path: SettingsRoute.language.path,
-        builder: (context, state) => const LanguageSettingsScreen(),
-      ),
       GoRoute(
         path: SettingsRoute.pinCode.path,
         name: SettingsRoute.pinCode.name,
@@ -178,6 +188,11 @@ class SettingsRouter {
           BackupSettingsSettingsRouter.route,
           TestWalletBackupRouter.route,
         ],
+      ),
+      GoRoute(
+        name: SettingsRoute.autoswapSettings.name,
+        path: SettingsRoute.autoswapSettings.path,
+        builder: (context, state) => const AutoSwapSettingsScreen(),
       ),
       GoRoute(
         path: SettingsRoute.walletDetailsWalletList.path,
@@ -216,9 +231,8 @@ class SettingsRouter {
                     listener: (context, state) {
                       showDialog(
                         context: context,
-                        builder:
-                            (dialogContext) =>
-                                const FailedWalletDeletionAlertDialog(),
+                        builder: (dialogContext) =>
+                            const FailedWalletDeletionAlertDialog(),
                       );
                     },
                   ),
@@ -233,9 +247,8 @@ class SettingsRouter {
             builder: (context, state) {
               final walletId = state.pathParameters['walletId']!;
               return BlocProvider(
-                create:
-                    (_) =>
-                        locator<AddressViewBloc>(param1: walletId, param2: 10),
+                create: (_) =>
+                    locator<AddressViewBloc>(param1: walletId, param2: 10),
                 child: AddressesScreen(walletId: walletId),
               );
             },
@@ -250,11 +263,18 @@ class SettingsRouter {
       GoRoute(
         path: SettingsRoute.legacySeeds.path,
         name: SettingsRoute.legacySeeds.name,
-        builder:
-            (context, state) => BlocProvider(
-              create: (_) => locator<LegacySeedViewCubit>(),
-              child: const LegacySeedViewScreen(),
-            ),
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<LegacySeedViewCubit>(),
+          child: const LegacySeedViewScreen(),
+        ),
+      ),
+      GoRoute(
+        path: SettingsRoute.allSeedView.path,
+        name: SettingsRoute.allSeedView.name,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<AllSeedViewCubit>(),
+          child: const AllSeedViewScreen(),
+        ),
       ),
       GoRoute(
         path: SettingsRoute.currency.path,

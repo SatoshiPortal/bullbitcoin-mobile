@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -18,13 +19,13 @@ class RequestIdentifierScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
+      backgroundColor: context.appColors.secondaryFixedDim,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Send',
-          color: context.colour.secondaryFixedDim,
+          title: context.loc.sendTitle,
+          color: context.appColors.secondaryFixedDim,
           onBack: () => context.pop(),
         ),
       ),
@@ -45,7 +46,7 @@ class RequestIdentifierScreen extends StatelessWidget {
           final cubit = context.read<RequestIdentifierCubit>();
 
           return Stack(
-            fit: StackFit.expand,
+            fit: .expand,
             children: [
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
@@ -58,7 +59,7 @@ class RequestIdentifierScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: context.colour.onPrimary,
+                      color: context.appColors.onPrimary,
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(12),
                         topRight: Radius.circular(12),
@@ -66,12 +67,12 @@ class RequestIdentifierScreen extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: .stretch,
+                      mainAxisSize: .min,
                       children: [
                         const Gap(32),
                         BBText(
-                          "Recipient's address or invoice",
+                          context.loc.sendRecipientAddressOrInvoice,
                           style: context.font.bodyMedium,
                         ),
                         const Gap(16),
@@ -109,14 +110,14 @@ class PasteRequestWidget extends StatelessWidget {
       onlyPaste: true,
       onChanged: cubit.updateRawRequest,
       value: address,
-      hint: 'Paste a payment address or invoice',
+      hint: context.loc.sendPasteAddressOrInvoice,
       hintStyle: context.font.bodyLarge?.copyWith(
-        color: context.colour.surfaceContainer,
+        color: context.appColors.surfaceContainer,
       ),
       maxLines: 1,
       rightIcon: Icon(
         Icons.paste_sharp,
-        color: context.colour.secondary,
+        color: context.appColors.secondary,
         size: 20,
       ),
       onRightTap: () {
@@ -143,8 +144,8 @@ class RequestErrorWidget extends StatelessWidget {
       return BBText(
         error,
         style: context.font.bodyMedium,
-        color: context.colour.error,
-        textAlign: TextAlign.center,
+        color: context.appColors.error,
+        textAlign: .center,
         maxLines: 2,
       );
     }
@@ -167,11 +168,11 @@ class ContinueButtonWidget extends StatelessWidget {
     final cubit = context.read<RequestIdentifierCubit>();
 
     return BBButton.big(
-      label: 'Continue',
+      label: context.loc.sendContinue,
       onPressed: cubit.validatePaymentRequest,
       disabled: !hasRequest || hasError,
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onPrimary,
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onPrimary,
     );
   }
 }

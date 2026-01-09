@@ -6,9 +6,9 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart' as logger;
-import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:dio/dio.dart';
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
@@ -187,9 +187,7 @@ class PdkPayjoinDatasource {
               sender: senderJson,
               walletId: walletId,
               originalPsbt: originalPsbt,
-              originalTxId: await TransactionParsing.getTxIdFromPsbt(
-                originalPsbt,
-              ),
+              originalTxId: (await BitcoinTx.fromPsbt(originalPsbt)).txid,
               amountSat: amountSat,
               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
               expireAfterSec: expirySec,
@@ -221,9 +219,8 @@ class PdkPayjoinDatasource {
       isOwned: hasOwnedInputs,
     );
     final inputsNotSeen = await inputsNotOwned.checkNoInputsSeenBefore(
-      isKnown:
-          (_) =>
-              false, // Assume the wallet has not seen the inputs since it is an interactive wallet
+      isKnown: (_) =>
+          false, // Assume the wallet has not seen the inputs since it is an interactive wallet
     );
     final receiverOutputs = await inputsNotSeen.identifyReceiverOutputs(
       isReceiverOutput: hasReceiverOutput,
@@ -246,18 +243,16 @@ class PdkPayjoinDatasource {
               value: input.value!,
               scriptPubkey: input.scriptPubkey,
             ),
-            redeemScript:
-                input.redeemScriptRawOutputScript.isEmpty
-                    ? null
-                    : await Script.newInstance(
-                      rawOutputScript: input.redeemScriptRawOutputScript,
-                    ),
-            witnessScript:
-                input.witnessScriptRawOutputScript.isEmpty
-                    ? null
-                    : await Script.newInstance(
-                      rawOutputScript: input.witnessScriptRawOutputScript,
-                    ),
+            redeemScript: input.redeemScriptRawOutputScript.isEmpty
+                ? null
+                : await Script.newInstance(
+                    rawOutputScript: input.redeemScriptRawOutputScript,
+                  ),
+            witnessScript: input.witnessScriptRawOutputScript.isEmpty
+                ? null
+                : await Script.newInstance(
+                    rawOutputScript: input.witnessScriptRawOutputScript,
+                  ),
           ),
         ),
       ),
@@ -296,7 +291,7 @@ class PdkPayjoinDatasource {
     final updatedModel = receiverModel.copyWith(
       receiver: receiver.toJson(),
       proposalPsbt: proposalPsbt,
-      txId: await TransactionParsing.getTxIdFromPsbt(proposalPsbt),
+      txId: (await BitcoinTx.fromPsbt(proposalPsbt)).txid,
     );
 
     logger.log.info(
@@ -427,18 +422,14 @@ class PdkPayjoinDatasource {
               // The original tx bytes are needed in the main isolate for
               //  further processing so extract them here and pass them through
               //  the model
-              final originalTxBytes =
-                  await request.extractTxToScheduleBroadcast();
-              final originalTxId =
-                  await TransactionParsing.getTxIdFromTransactionBytes(
-                    originalTxBytes,
-                  );
-              final amountSat =
-                  await TransactionParsing.getAmountReceivedFromTransactionBytes(
-                    originalTxBytes,
-                    address: receiverModel.address,
-                    isTestnet: receiverModel.isTestnet,
-                  );
+              final originalTxBytes = await request
+                  .extractTxToScheduleBroadcast();
+              final originalTx = await BitcoinTx.fromBytes(originalTxBytes);
+              final originalTxId = originalTx.txid;
+              final amountSat = await originalTx.getAmountReceived(
+                address: receiverModel.address,
+                isTestnet: receiverModel.isTestnet,
+              );
               log(
                 '[Receivers Isolate] Request original Tx ID: $originalTxId and amount: $amountSat for '
                 '${receiver.id()}',
@@ -522,9 +513,7 @@ class PdkPayjoinDatasource {
 
               if (proposalPsbt != null) {
                 log('[Senders Isolate] Proposal found in senders isolate');
-                final txId = await TransactionParsing.getTxIdFromPsbt(
-                  proposalPsbt,
-                );
+                final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
                 // The proposal psbt is needed in the main isolate for
                 //  further processing so send it through the model as well as
                 //  its txId.

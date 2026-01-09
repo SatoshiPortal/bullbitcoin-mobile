@@ -46,7 +46,7 @@ class PaySuccessScreen extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
                 Gif(
                   image: AssetImage(Assets.animations.successTick.path),
@@ -62,7 +62,7 @@ class PaySuccessScreen extends StatelessWidget {
                   child: Text(
                     context.loc.payCompletedDescription,
                     style: context.font.bodyMedium,
-                    textAlign: TextAlign.center,
+                    textAlign: .center,
                   ),
                 ),
               ],
@@ -73,7 +73,7 @@ class PaySuccessScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (order != null)
                   BBButton.big(
@@ -82,10 +82,11 @@ class PaySuccessScreen extends StatelessWidget {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,
                         pathParameters: {'orderId': order.orderId},
+                        queryParameters: {'returnToExchange': 'true'},
                       );
                     },
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
               ],
             ),

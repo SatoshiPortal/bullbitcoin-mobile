@@ -7,15 +7,15 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/set_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/domain/usecases/start_dca_usecase.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:get_it/get_it.dart';
 
 class DcaLocator {
-  static void setup() {
-    registerUsecases();
-    registerBlocs();
+  static void setup(GetIt locator) {
+    registerUsecases(locator);
+    registerBlocs(locator);
   }
 
-  static void registerUsecases() {
+  static void registerUsecases(GetIt locator) {
     locator.registerFactory<StartDcaUsecase>(
       () => StartDcaUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -48,7 +48,7 @@ class DcaLocator {
     );
   }
 
-  static void registerBlocs() {
+  static void registerBlocs(GetIt locator) {
     locator.registerFactory<DcaBloc>(
       () => DcaBloc(
         startDcaUsecase: locator<StartDcaUsecase>(),

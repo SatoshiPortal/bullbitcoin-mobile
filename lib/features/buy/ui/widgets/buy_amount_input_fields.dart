@@ -56,7 +56,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
         isFiatCurrencyInput ? currency?.decimals ?? 2 : bitcoinUnit.decimals;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(context.loc.buyEnterAmount, style: context.font.bodyMedium),
         const Gap(4.0),
@@ -71,8 +71,8 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
               vertical: 16.0,
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
               children: [
                 if (currency == null)
                   const LoadingLineContent(
@@ -80,10 +80,10 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                   )
                 else
                   Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
-                      Expanded(
+                        Expanded(
                         child: TextFormField(
                           controller: _amountController,
                           keyboardType: const TextInputType.numberWithOptions(
@@ -102,14 +102,14 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                                   ]
                                   : [FilteringTextInputFormatter.digitsOnly],
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: NumberFormat.decimalPatternDigits(
                               decimalDigits: amountInputDecimals,
                             ).format(0),
                             hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.colour.primary,
+                              color: context.appColors.onSurfaceVariant,
                             ),
                             border: InputBorder.none,
                           ),
@@ -119,7 +119,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                       Text(
                         isFiatCurrencyInput ? currency.code : bitcoinUnit.code,
                         style: context.font.displaySmall?.copyWith(
-                          color: context.colour.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ],
@@ -144,14 +144,14 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                         },
                         child: Icon(
                           Icons.swap_vert,
-                          color: context.colour.outline,
+                          color: context.appColors.outline,
                         ),
                       ),
                       const Gap(8.0),
                       Text(
                         isFiatCurrencyInput ? bitcoinUnit.code : currency.code,
                         style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.outline,
+                          color: context.appColors.outline,
                         ),
                       ),
                       // CurrencyText(
@@ -176,7 +176,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            tapTargetSize: .shrinkWrap,
                           ),
                           onPressed: () {
                             if (!isFiatCurrencyInput) {
@@ -189,7 +189,7 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                           child: Text(
                             context.loc.buyMax,
                             style: context.font.bodyMedium?.copyWith(
-                              color: context.colour.primary,
+                              color: context.appColors.primary,
                             ),
                           ),
                         ),
@@ -207,18 +207,20 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
           height: 56,
           child: Material(
             elevation: 4,
-            color: context.colour.onPrimary,
+            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                value: currency?.code,
+                initialValue: currency?.code,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
                 ),
+                dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
+                  color: context.appColors.onSurface,
                 ),
                 items:
                     balances.keys
@@ -227,7 +229,9 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                             value: currencyCode,
                             child: Text(
                               '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
-                              style: context.font.headlineSmall,
+                              style: context.font.headlineSmall?.copyWith(
+                                color: context.appColors.secondary,
+                              ),
                             ),
                           ),
                         )

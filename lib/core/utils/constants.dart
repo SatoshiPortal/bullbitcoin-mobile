@@ -14,10 +14,6 @@ class SettingsConstants {
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
-  // The following are constants that in the future potentially can become
-  //  a configurable setting, in which case they should be added to the Settings
-  //  table in sqlite and not be defined here as constants anymore.
-  static const autoSyncIntervalSeconds = 5;
   static const recoverbullUrl =
       'http://5m7enm5y77tdgmaf3d5xuwa5c7fjma7v5ljtwxu4q5jtq6b5utspmpyd.onion';
 }
@@ -65,16 +61,19 @@ class PayjoinConstants {
 class ApiServiceConstants {
   // Bitcoin mempool
   static const bbMempoolUrlPath = 'mempool.bullbitcoin.com';
-  static const publicMempoolUrlPath = 'mempool.space';
+  static const publicMempoolUrlPath = 'mempool.space'; // note: not used
   static const testnetMempoolUrlPath = 'mempool.space/testnet';
 
   // Liquid mempool
   static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
   static const bbLiquidMempoolTestnetUrlPath = 'liquid.bullbitcoin.com/testnet';
-  static const publicLiquidMempoolUrl = 'https://liquid.network';
-  static const publicLiquidMempoolTestnetUrl = 'https://liquid.network/testnet';
+  static const publicLiquidMempoolUrl =
+      'https://liquid.network'; // note: not used
+  static const publicLiquidMempoolTestnetUrl =
+      'https://liquid.network/testnet'; // note: not used
 
   // Bitcoin Electrum servers
+  static const fulcrumElectrumUrl = 'ssl://fulcrum.bullbitcoin.com:50002';
   static const bbElectrumUrl = 'ssl://wes.bullbitcoin.com:50002';
   static const publicElectrumUrl = 'ssl://blockstream.info:700';
   // BB test currently not operational
@@ -101,6 +100,8 @@ class ApiServiceConstants {
   static String bbAuthTestUrl = 'https://${dotenv.env['BB_AUTH_TEST_URL']}';
   static String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
   static String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
+  static String googleDriveClientId =
+      dotenv.env['GOOGLE_DRIVE_CLIENT_ID'] ?? '';
 }
 
 class LocatorInstanceNameConstants {

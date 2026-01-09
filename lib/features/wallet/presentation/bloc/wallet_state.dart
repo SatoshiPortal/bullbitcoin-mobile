@@ -18,7 +18,6 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool autoSwapExecuting,
     @Default(false) bool isDeletingWallet,
     WalletError? walletDeletionError,
-    @Default(null) AllServicesStatus? serviceStatus,
     @Default(false) bool isCheckingServiceStatus,
     @Default(null) ArkWalletEntity? arkWallet,
     @Default(0) int arkBalanceSat,
@@ -29,14 +28,12 @@ sealed class WalletState with _$WalletState {
 
   bool get isSyncing => syncStatus.values.any((syncing) => syncing);
 
-  Wallet? defaultLiquidWallet() =>
-      wallets.isEmpty
+  Wallet? defaultLiquidWallet() => wallets.isEmpty
           ? null
           : wallets
               .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
               .firstOrNull;
-  Wallet? defaultBitcoinWallet() =>
-      wallets.isEmpty
+  Wallet? defaultBitcoinWallet() => wallets.isEmpty
           ? null
           : wallets
               .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
@@ -58,5 +55,11 @@ sealed class WalletState with _$WalletState {
               !wallet.isPhysicalBackupTested &&
               wallet.balanceSat > BigInt.from(0),
         );
+  }
+
+  bool showAutoSwapDefaultEnabledWarning() {
+    return autoSwapSettings != null &&
+        autoSwapSettings!.enabled &&
+        autoSwapSettings!.showWarning;
   }
 }

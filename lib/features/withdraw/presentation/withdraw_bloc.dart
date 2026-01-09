@@ -1,15 +1,10 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/cad_biller.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/new_recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/create_fiat_recipient_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/list_cad_billers_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/list_recipients_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,24 +17,15 @@ part 'withdraw_state.dart';
 class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   WithdrawBloc({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required ListRecipientsUsecase listRecipientsUsecase,
     required CreateWithdrawOrderUsecase createWithdrawUsecase,
     required ConfirmWithdrawOrderUsecase confirmWithdrawUsecase,
-    required CreateFiatRecipientUsecase createFiatRecipientUsecase,
-    required ListCadBillersUsecase listCadBillersUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _listRecipientsUsecase = listRecipientsUsecase,
        _createWithdrawOrderUsecase = createWithdrawUsecase,
        _confirmWithdrawUsecase = confirmWithdrawUsecase,
-       _createFiatRecipientUsecase = createFiatRecipientUsecase,
-       _listCadBillersUsecase = listCadBillersUsecase,
        super(const WithdrawInitialState()) {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
-    on<WithdrawNewRecipientAdded>(_onNewRecipientAdded);
-    on<WithdrawCreateNewRecipient>(_onCreateNewRecipient);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
-    on<WithdrawGetCadBillers>(_onGetCadBillers);
     /*on<WithdrawDescriptionInputContinuePressed>(
       _onDescriptionInputContinuePressed,
     );*/
@@ -47,11 +33,8 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final ListRecipientsUsecase _listRecipientsUsecase;
   final CreateWithdrawOrderUsecase _createWithdrawOrderUsecase;
   final ConfirmWithdrawOrderUsecase _confirmWithdrawUsecase;
-  final CreateFiatRecipientUsecase _createFiatRecipientUsecase;
-  final ListCadBillersUsecase _listCadBillersUsecase;
 
   Future<void> _onStarted(
     WithdrawStarted event,
@@ -69,28 +52,16 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         initialState.copyWith(
           apiKeyException: null,
           getUserSummaryException: null,
-          listRecipientsException: null,
         ),
       );
 
-      final (userSummary, recipients) =
-          await (
-            _getExchangeUserSummaryUsecase.execute(),
-            _listRecipientsUsecase.execute(fiatOnly: true),
-          ).wait;
+      final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
-      emit(
-        initialState.toAmountInputState(
-          userSummary: userSummary,
-          recipients: recipients,
-        ),
-      );
+      emit(initialState.toAmountInputState(userSummary: userSummary));
     } on ApiKeyException catch (e) {
       emit(WithdrawState.initial(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
       emit(WithdrawState.initial(getUserSummaryException: e));
-    } on ListRecipientsException catch (e) {
-      emit(WithdrawState.initial(listRecipientsException: e));
     }
   }
 
@@ -116,73 +87,6 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     );
   }
 
-  Future<void> _onNewRecipientAdded(
-    WithdrawNewRecipientAdded event,
-    Emitter<WithdrawState> emit,
-  ) async {
-    // TODO
-  }
-
-  Future<void> _onCreateNewRecipient(
-    WithdrawCreateNewRecipient event,
-    Emitter<WithdrawState> emit,
-  ) async {
-    if (state is WithdrawRecipientInputState) {
-      final currentState = state as WithdrawRecipientInputState;
-
-      // Set loading state for new recipient creation
-      emit(currentState.copyWith(isCreatingNewRecipient: true));
-
-      // Use the recipient from the event directly
-      final newRecipient = event.newRecipient;
-      try {
-        final createdRecipient = await _createFiatRecipientUsecase.execute(
-          newRecipient,
-        );
-
-        // Add the new recipient to the list and update state
-        final updatedRecipients = [
-          ...currentState.recipients,
-          createdRecipient,
-        ];
-
-        // Update state with the new recipient list and clear the newRecipient
-        // Keep isCreatingNewRecipient true for the order creation phase
-        final updatedState = currentState.copyWith(
-          recipients: updatedRecipients,
-          newRecipient: null,
-          isCreatingNewRecipient: true,
-        );
-        emit(updatedState);
-
-        // Now create the withdrawal order using the newly created recipient
-        final order = await _createWithdrawOrderUsecase.execute(
-          fiatAmount: currentState.amount.amount,
-          recipientId: createdRecipient.recipientId,
-          recipientType: createdRecipient.recipientType,
-        );
-
-        // Transition to confirmation state
-        emit(
-          updatedState.toConfirmationState(
-            recipient: createdRecipient,
-            order: order,
-          ),
-        );
-      } catch (e) {
-        log.severe('Error creating new recipient: $e');
-        emit(
-          currentState.copyWith(
-            error: WithdrawError.unexpected(
-              message: 'Failed to create recipient: $e',
-            ),
-            isCreatingNewRecipient: false, // Reset loading state on error
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> _onRecipientSelected(
     WithdrawRecipientSelected event,
     Emitter<WithdrawState> emit,
@@ -202,8 +106,8 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
 
       final order = await _createWithdrawOrderUsecase.execute(
         fiatAmount: recipientInputState.amount.amount,
-        recipientId: recipient.recipientId,
-        recipientType: recipient.recipientType,
+        recipientId: recipient.id,
+        recipientType: recipient.type,
       );
       emit(
         recipientInputState.toConfirmationState(
@@ -300,44 +204,6 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         emit(
           (state as WithdrawConfirmationState).copyWith(
             isConfirmingWithdrawal: false,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _onGetCadBillers(
-    WithdrawGetCadBillers event,
-    Emitter<WithdrawState> emit,
-  ) async {
-    if (state is WithdrawRecipientInputState) {
-      final currentState = state as WithdrawRecipientInputState;
-
-      // Only search if search term has at least 3 characters
-      if (event.searchTerm.length < 3) {
-        return;
-      }
-
-      emit(currentState.copyWith(isLoadingCadBillers: true));
-
-      try {
-        final cadBillers = await _listCadBillersUsecase.execute(
-          searchTerm: event.searchTerm,
-        );
-        emit(
-          currentState.copyWith(
-            cadBillers: cadBillers,
-            isLoadingCadBillers: false,
-          ),
-        );
-      } catch (e) {
-        log.severe('Error fetching CAD billers: $e');
-        emit(
-          currentState.copyWith(
-            isLoadingCadBillers: false,
-            error: WithdrawError.unexpected(
-              message: 'Failed to load billers: $e',
-            ),
           ),
         );
       }

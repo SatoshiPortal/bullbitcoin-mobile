@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/update_latest_encrypt
 import 'package:bb_mobile/core/recoverbull/errors.dart' as core;
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -50,6 +51,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final UpdateLatestEncryptedVaultTestUsecase
   _updateLatestEncryptedVaultTestUsecase;
   final TorStatusUsecase _torStatusUsecase;
+  final TorConfigPort _torConfigPort;
 
   RecoverBullBloc({
     required RecoverBullFlow flow,
@@ -71,6 +73,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required UpdateLatestEncryptedVaultTestUsecase
     updateLatestEncryptedVaultTestUsecase,
     required TorStatusUsecase torStatusUsecase,
+    required TorConfigPort torConfigPort,
   }) : _createEncryptedVaultUsecase = createEncryptedVaultUsecase,
        _storeVaultKeyIntoServerUsecase = storeVaultKeyIntoServerUsecase,
        _checkKeyServerConnectionUsecase = checkKeyServerConnectionUsecase,
@@ -87,6 +90,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
        _updateLatestEncryptedVaultTestUsecase =
            updateLatestEncryptedVaultTestUsecase,
        _torStatusUsecase = torStatusUsecase,
+       _torConfigPort = torConfigPort,
        super(RecoverBullState(flow: flow, vault: preSelectedVault)) {
     on<OnVaultProviderSelection>(_onVaultProviderSelection);
     on<OnVaultSelection>(_onVaultSelection);
@@ -98,11 +102,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnServerCheck>(_onServerCheck);
     on<OnTorInitialization>(_onTorInitialization);
     on<OnClearError>(_onClearError);
-
-    if (flow != RecoverBullFlow.settings) {
-      add(const OnTorInitialization());
-      add(const OnServerCheck());
-    }
   }
 
   Future<void> _onTorInitialization(
@@ -110,7 +109,14 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     Emitter<RecoverBullState> emit,
   ) async {
     try {
-      await _initializeTorUsecase.execute();
+      final externalTorConfig = await _torConfigPort.getExternalTorConfig();
+
+      if (externalTorConfig == null) {
+        await _initializeTorUsecase.execute();
+      } else {
+        log.info('Using external Tor proxy on port ${externalTorConfig.port}');
+      }
+
       add(const OnServerCheck());
     } catch (e) {
       log.severe('$OnTorInitialization failed: $e');
@@ -260,7 +266,12 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault selected');
     } catch (e) {
       log.severe('$OnVaultSelection: $e');
-      emit(state.copyWith(error: SelectVaultError()));
+      switch (e) {
+        case core.InvalidVaultFileError():
+          emit(state.copyWith(error: InvalidVaultFileFormatError()));
+        default:
+          emit(state.copyWith(error: SelectVaultError()));
+      }
     } finally {
       emit(state.copyWith(isLoading: false));
     }

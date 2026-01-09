@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +8,7 @@ import 'package:gap/gap.dart';
 class TransactionDetailsWidget extends StatelessWidget {
   static const int _txidCut = 10;
 
-  final RawBitcoinTxEntity tx;
+  final BitcoinTx tx;
 
   const TransactionDetailsWidget({super.key, required this.tx});
 
@@ -17,7 +17,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _buildHeader(context),
           const Gap(16),
@@ -36,17 +36,15 @@ class TransactionDetailsWidget extends StatelessWidget {
       context,
       elevation: 2,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Row(
             children: [
-              Icon(Icons.receipt_long, color: context.colour.primary),
+              Icon(Icons.receipt_long, color: context.appColors.primary),
               const Gap(8),
               BBText(
                 'Transaction ID',
-                style: context.font.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: context.font.titleMedium?.copyWith(fontWeight: .bold),
               ),
             ],
           ),
@@ -56,20 +54,20 @@ class TransactionDetailsWidget extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: context.colour.primary.withValues(alpha: 0.1),
+                color: context.appColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   BBText(
                     '${tx.txid.substring(0, _txidCut)}…${tx.txid.substring(tx.txid.length - _txidCut)}',
                     style: context.font.bodySmall?.copyWith(
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                     ),
                   ),
                   const Gap(4),
-                  Icon(Icons.copy, size: 12, color: context.colour.primary),
+                  Icon(Icons.copy, size: 12, color: context.appColors.primary),
                 ],
               ),
             ),
@@ -83,13 +81,11 @@ class TransactionDetailsWidget extends StatelessWidget {
     return _buildCard(
       context,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           BBText(
             'Info',
-            style: context.font.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: context.font.titleMedium?.copyWith(fontWeight: .bold),
           ),
           const Gap(12),
           _buildInfoRow(context, 'Version', tx.version.toString()),
@@ -105,7 +101,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return _buildCard(
       context,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _buildSectionHeader(
             context,
@@ -117,12 +113,10 @@ class TransactionDetailsWidget extends StatelessWidget {
             final input = entry.value;
             return _buildItemContainer(
               context,
-              index: input.vout ?? 0,
-              color: context.colour.primary,
+              index: input.vout,
+              color: context.appColors.primary,
               child: BBText(
-                input.txid != null
-                    ? '${input.txid!.substring(0, _txidCut)}…${input.txid!.substring(input.txid!.length - _txidCut)}'
-                    : 'Coinbase',
+                '${input.txid.substring(0, _txidCut)}…${input.txid.substring(input.txid.length - _txidCut)}',
                 style: context.font.bodyMedium,
               ),
             );
@@ -136,7 +130,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return _buildCard(
       context,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           _buildSectionHeader(
             context,
@@ -150,14 +144,14 @@ class TransactionDetailsWidget extends StatelessWidget {
             return _buildItemContainer(
               context,
               index: index,
-              color: context.colour.primary,
+              color: context.appColors.primary,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: .start,
                 children: [
                   BBText(
                     '${output.value} sats',
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.primary,
+                      color: context.appColors.primary,
                     ),
                   ),
                   BBText(
@@ -191,13 +185,11 @@ class TransactionDetailsWidget extends StatelessWidget {
   ) {
     return Row(
       children: [
-        Icon(icon, color: context.colour.primary, size: 20),
+        Icon(icon, color: context.appColors.primary, size: 20),
         const Gap(8),
         BBText(
           title,
-          style: context.font.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: context.font.titleMedium?.copyWith(fontWeight: .bold),
         ),
       ],
     );
@@ -213,10 +205,10 @@ class TransactionDetailsWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: context.colour.surface,
+        color: context.appColors.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: context.colour.outline.withValues(alpha: 0.2),
+          color: context.appColors.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -243,7 +235,7 @@ class TransactionDetailsWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           SizedBox(
             width: 100,

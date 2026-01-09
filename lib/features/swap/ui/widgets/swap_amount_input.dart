@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
@@ -26,20 +26,17 @@ class SwapAmountInput extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
-    final fromWallet = context.select(
-      (TransferBloc bloc) => bloc.state.fromWallet,
-    );
     final fromCurrency = context.select(
       (TransferBloc bloc) => bloc.state.displayFromCurrencyCode,
     );
-    final swapLimits = context.select(
-      (TransferBloc bloc) => bloc.state.swapLimits,
+    final amountValidationError = context.select(
+      (TransferBloc bloc) => bloc.state.amountValidationError,
     );
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
-        Text('Amount', style: context.font.bodyLarge),
+        Text(context.loc.swapAmountLabel, style: context.font.bodyLarge),
         const Gap(8),
         Card(
           elevation: 1,
@@ -52,8 +49,8 @@ class SwapAmountInput extends StatelessWidget {
               vertical: 16.0,
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
               children: [
                 if (isLoading)
                   const LoadingLineContent(
@@ -61,8 +58,8 @@ class SwapAmountInput extends StatelessWidget {
                   )
                 else
                   Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: .min,
+                    mainAxisAlignment: .spaceBetween,
                     children: [
                       Expanded(
                         child: TextFormField(
@@ -73,52 +70,13 @@ class SwapAmountInput extends StatelessWidget {
                           inputFormatters: [
                             AmountInputFormatter(bitcoinUnit.code),
                           ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter an amount';
-                            }
-                            final inputAmountSat =
-                                bitcoinUnit == BitcoinUnit.sats
-                                    ? int.tryParse(value) ?? 0
-                                    : ConvertAmount.btcToSats(
-                                      double.tryParse(value) ?? 0,
-                                    );
-                            if (inputAmountSat <= 0) {
-                              return 'Enter a positive amount';
-                            }
-                            final balanceSat =
-                                fromWallet?.balanceSat.toInt() ?? 0;
-                            if (inputAmountSat > balanceSat) {
-                              return 'Insufficient balance';
-                            }
-                            if ((swapLimits?.min ?? 0) > inputAmountSat) {
-                              final minAmount =
-                                  bitcoinUnit == BitcoinUnit.btc
-                                      ? ConvertAmount.satsToBtc(
-                                        swapLimits?.min ?? 0,
-                                      )
-                                      : swapLimits?.min ?? 0;
-                              return 'Minimum amount is $minAmount $fromCurrency';
-                            }
-                            if ((swapLimits?.max ?? double.infinity) <
-                                inputAmountSat) {
-                              final maxAmount =
-                                  bitcoinUnit == BitcoinUnit.btc
-                                      ? ConvertAmount.satsToBtc(
-                                        swapLimits?.max ?? 0,
-                                      )
-                                      : swapLimits?.max ?? 0;
-                              return 'Maximum amount is $maxAmount $fromCurrency';
-                            }
-                            return null;
-                          },
                           style: context.font.displaySmall?.copyWith(
-                            color: context.colour.primary,
+                            color: context.appColors.primary,
                           ),
                           decoration: InputDecoration(
                             hintText: '0',
                             hintStyle: context.font.displaySmall?.copyWith(
-                              color: context.colour.primary,
+                              color: context.appColors.primary,
                             ),
                             border: InputBorder.none,
                           ),
@@ -133,7 +91,7 @@ class SwapAmountInput extends StatelessWidget {
                       Text(
                         fromCurrency,
                         style: context.font.displaySmall?.copyWith(
-                          color: context.colour.primary,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ],
@@ -142,6 +100,15 @@ class SwapAmountInput extends StatelessWidget {
             ),
           ),
         ),
+        if (amountValidationError != null) ...[
+          const Gap(8),
+          Text(
+            amountValidationError,
+            style: context.font.labelLarge?.copyWith(
+              color: context.appColors.error,
+            ),
+          ),
+        ],
       ],
     );
   }

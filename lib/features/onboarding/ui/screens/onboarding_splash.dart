@@ -2,11 +2,15 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/advanced_options.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
+import 'package:bb_mobile/features/tor_settings/presentation/bloc/tor_settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +30,7 @@ class OnboardingSplash extends StatelessWidget {
             const _BG(),
             Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: .spaceEvenly,
                 children: [
                   const Spacer(flex: 2),
                   SuperuserTapUnlocker(
@@ -40,8 +44,8 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingBullBitcoin,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 54,
-                      fontWeight: FontWeight.w500,
-                      color: context.colour.onPrimary,
+                      fontWeight: .w500,
+                      color: context.appColors.onPrimaryFixed,
                       height: 1,
                     ),
                   ),
@@ -49,8 +53,8 @@ class OnboardingSplash extends StatelessWidget {
                     context.loc.onboardingOwnYourMoney,
                     style: AppFonts.textTitleTheme.textStyle.copyWith(
                       fontSize: 40,
-                      fontWeight: FontWeight.w500,
-                      color: context.colour.secondary,
+                      fontWeight: .w500,
+                      color: context.appColors.secondaryFixed,
                       height: 1,
                     ),
                   ),
@@ -60,8 +64,8 @@ class OnboardingSplash extends StatelessWidget {
                     child: BBText(
                       context.loc.onboardingSplashDescription,
                       style: context.font.labelSmall,
-                      color: context.colour.onPrimary,
-                      textAlign: TextAlign.center,
+                      color: context.appColors.onPrimaryFixed,
+                      textAlign: .center,
                       maxLines: 2,
                     ),
                   ),
@@ -98,16 +102,58 @@ class _Actions extends StatelessWidget {
     }
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: .stretch,
       children: [
         if (creating || loading) ...[
           Center(
-            child: CircularProgressIndicator(color: context.colour.onPrimary),
+            child: CircularProgressIndicator(
+              color: context.appColors.onPrimaryFixed,
+            ),
           ),
         ] else ...[
           const CreateWalletButton(),
           const Gap(10),
           const RecoverWalletButton(),
+          const Gap(16),
+          Center(
+            child: TextButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder:
+                        (context) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create:
+                                  (_) =>
+                                      locator<ElectrumSettingsBloc>()..add(
+                                        const ElectrumSettingsLoaded(
+                                          isLiquid: false,
+                                        ),
+                                      ),
+                            ),
+                            BlocProvider(
+                              create: (_) => locator<TorSettingsCubit>(),
+                            ),
+                          ],
+                          child: const AdvancedOptions(),
+                        ),
+                  ),
+                );
+              },
+              child: Text(
+                'Advanced Options',
+                style: context.font.bodyMedium?.copyWith(
+                  color: context.appColors.onPrimaryFixed.withValues(
+                    alpha: 0.9,
+                  ),
+                  decoration: TextDecoration.underline,
+                  decorationColor: context.appColors.onPrimaryFixed
+                      .withValues(alpha: 0.9),
+                ),
+              ),
+            ),
+          ),
         ],
       ],
     );
@@ -122,17 +168,17 @@ class _BG extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          color: context.colour.primary,
+          color: context.appColors.primaryFixed,
           height: double.infinity,
           width: double.infinity,
         ),
         Opacity(
-          opacity: 0.1,
+          opacity: 0.2,
           child: Transform.rotate(
             angle: 3.141,
             child: Image.asset(
               Assets.backgrounds.bgLong.path,
-              fit: BoxFit.cover,
+              fit: .cover,
               height: double.infinity,
               width: double.infinity,
             ),

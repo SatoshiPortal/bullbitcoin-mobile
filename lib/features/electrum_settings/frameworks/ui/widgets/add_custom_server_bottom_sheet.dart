@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_environment.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/electrum_url_parser.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
 class CustomServerInput {
   final String url;
   final bool enableSsl;
@@ -42,18 +44,40 @@ class _AddCustomServerBottomSheetState
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   bool _enableSsl = true;
+  bool _sslAutoDetected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(_onUrlChanged);
+  }
 
   @override
   void dispose() {
+    _controller.removeListener(_onUrlChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onUrlChanged() {
+    final input = _controller.text.trim();
+    if (input.isEmpty) return;
+
+    final result = ElectrumUrlParser.tryParse(input);
+    if (result != null) {
+      setState(() {
+        _enableSsl = result.enableSsl;
+        _sslAutoDetected = true;
+      });
+    }
   }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
       // Unfocus to close keyboard before popping (optional, just looks nicer)
       FocusScope.of(context).unfocus();
+
       Navigator.of(context).pop(
         CustomServerInput(url: _controller.text.trim(), enableSsl: _enableSsl),
       );
@@ -76,7 +100,7 @@ class _AddCustomServerBottomSheetState
 
     return GestureDetector(
       // tap outside input to close keyboard
-      behavior: HitTestBehavior.opaque,
+      behavior: .opaque,
       onTap: () => FocusScope.of(context).unfocus(),
       child: SafeArea(
         child: Padding(
@@ -87,8 +111,8 @@ class _AddCustomServerBottomSheetState
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: .start,
+                mainAxisSize: .min,
                 children: [
                   Row(
                     children: [
@@ -110,7 +134,7 @@ class _AddCustomServerBottomSheetState
                     controller: _controller,
                     focusNode: _focusNode,
                     autofocus: true,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: .done,
                     inputFormatters: [
                       // No whitespace allowed
                       FilteringTextInputFormatter.deny(RegExp(r'\s')),
@@ -119,24 +143,20 @@ class _AddCustomServerBottomSheetState
                     ],
                     style: context.font.bodyLarge,
                     decoration: InputDecoration(
-                      fillColor: context.colour.onPrimary,
+                      fillColor: context.appColors.surface,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
-                        ),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim,
-                        ),
+                        borderSide: BorderSide(color: context.appColors.border),
                       ),
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.colour.secondaryFixedDim.withValues(
+                          color: context.appColors.border.withValues(
                             alpha: 0.5,
                           ),
                         ),
@@ -151,28 +171,25 @@ class _AddCustomServerBottomSheetState
                         environment,
                       ),
                       hintStyle: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     onFieldSubmitted: (_) => _submit(),
                     validator: (v) {
                       final input = v?.trim() ?? '';
-                      if (input.isEmpty) {
-                        return context.loc.electrumEmptyFieldError;
+                      try {
+                        ElectrumUrlParser.parse(input);
+                        return null;
+                      } on ElectrumUrlValidationError catch (error) {
+                        return switch (error) {
+                          ElectrumUrlValidationError.empty =>
+                            context.loc.electrumEmptyFieldError,
+                          ElectrumUrlValidationError.hasProtocol =>
+                            context.loc.electrumProtocolError,
+                          ElectrumUrlValidationError.invalidFormat =>
+                            context.loc.electrumFormatError,
+                        };
                       }
-
-                      // Check if protocol is included
-                      final protocolPattern = RegExp('^([a-zA-Z]+)://');
-                      if (protocolPattern.hasMatch(input)) {
-                        return context.loc.electrumProtocolError;
-                      }
-
-                      // Validate host:port format
-                      final hostPortPattern = RegExp(r'^[a-zA-Z0-9.-]+:\d+$');
-                      if (!hostPortPattern.hasMatch(input)) {
-                        return context.loc.electrumFormatError;
-                      }
-                      return null;
                     },
                   ),
                   const Gap(8),
@@ -180,9 +197,24 @@ class _AddCustomServerBottomSheetState
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            context.loc.electrumEnableSsl,
-                            style: context.font.bodyMedium,
+                          child: Column(
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text(
+                                context.loc.electrumEnableSsl,
+                                style: context.font.bodyMedium,
+                              ),
+                              if (_sslAutoDetected) ...[
+                                const Gap(2),
+                                Text(
+                                  '(Auto-detected)',
+                                  style: context.font.bodySmall?.copyWith(
+                                    color: context.appColors.onSurface
+                                        .withValues(alpha: 0.6),
+                                  ),
+                                ),
+                              ],
+                            ],
                           ),
                         ),
                         Switch(
@@ -190,6 +222,7 @@ class _AddCustomServerBottomSheetState
                           onChanged: (value) {
                             setState(() {
                               _enableSsl = value;
+                              _sslAutoDetected = false; // user override
                             });
                           },
                         ),
@@ -204,17 +237,19 @@ class _AddCustomServerBottomSheetState
                           ? context.loc.electrumLiquidSslInfo
                           : context.loc.electrumBitcoinServerInfo,
                       style: context.font.bodySmall?.copyWith(
-                        color: context.colour.onSurface.withValues(alpha: 0.6),
+                        color: context.appColors.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
                       ),
-                      textAlign: TextAlign.start,
+                      textAlign: .start,
                     ),
                   ),
                   const Gap(24),
                   BBButton.big(
                     label: context.loc.electrumAddServer,
                     onPressed: _submit,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
+                    bgColor: context.appColors.onSurface,
+                    textColor: context.appColors.surface,
                   ),
                 ],
               ),

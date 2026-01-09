@@ -110,8 +110,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       }
 
       // all here future migration calls
-      final doDefaultWalletsExist =
-          await _checkForExistingDefaultWalletsUsecase.execute();
+      final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
+          .execute();
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
@@ -127,8 +127,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       }
 
       // Run Tor initialization in background
-      final isTorRequired = await _isTorRequiredUsecase.execute();
-      if (isTorRequired) unawaited(_initTorUsecase.execute());
+      try {
+        final isTorRequired = await _isTorRequiredUsecase.execute();
+        if (isTorRequired) unawaited(_initTorUsecase.execute());
+      } catch (e) {
+        log.severe('Tor initialization check failed', error: e);
+      }
 
       emit(
         AppStartupState.success(

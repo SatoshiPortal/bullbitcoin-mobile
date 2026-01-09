@@ -14,10 +14,9 @@ class SellSuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (SellBloc bloc) =>
-          bloc.state is SellSuccessState
-              ? (bloc.state as SellSuccessState).sellOrder
-              : null,
+      (SellBloc bloc) => bloc.state is SellSuccessState
+          ? (bloc.state as SellSuccessState).sellOrder
+          : null,
     );
     return PopScope(
       canPop: false,
@@ -40,16 +39,23 @@ class SellSuccessScreen extends StatelessWidget {
         body: SafeArea(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: .center,
               children: [
-                const Icon(Icons.check_circle, size: 100, color: Colors.green),
+                Icon(
+                  Icons.check_circle,
+                  size: 100,
+                  color: context.appColors.success,
+                ),
                 const SizedBox(height: 20),
-                Text(context.loc.sellOrderCompleted, style: context.font.titleLarge),
+                Text(
+                  context.loc.sellOrderCompleted,
+                  style: context.font.titleLarge,
+                ),
                 const SizedBox(height: 10),
                 Text(
                   context.loc.sellBalanceWillBeCredited,
                   style: context.font.bodyMedium,
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 ),
               ],
             ),
@@ -59,7 +65,7 @@ class SellSuccessScreen extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 if (order != null)
                   BBButton.big(
@@ -68,10 +74,11 @@ class SellSuccessScreen extends StatelessWidget {
                       context.pushNamed(
                         TransactionsRoute.orderTransactionDetails.name,
                         pathParameters: {'orderId': order.orderId},
+                        queryParameters: {'returnToExchange': 'true'},
                       );
                     },
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
                   ),
               ],
             ),

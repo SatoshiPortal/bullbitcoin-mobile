@@ -72,20 +72,25 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: .stretch,
                       children: [
                         const Gap(30),
                         Text(
                           context.loc.appUnlockEnterPinMessage,
-                          textAlign: TextAlign.center,
+                          textAlign: .center,
                           style: context.font.headlineMedium?.copyWith(
-                            color: context.colour.outline,
+                            color: context.appColors.outline,
                           ),
                           maxLines: 3,
                         ),
                         const Gap(30),
-                        BlocSelector<AppUnlockBloc, AppUnlockState, (String, bool)>(
-                          selector: (state) => (state.pinCode, state.obscurePinCode),
+                        BlocSelector<
+                          AppUnlockBloc,
+                          AppUnlockState,
+                          (String, bool)
+                        >(
+                          selector:
+                              (state) => (state.pinCode, state.obscurePinCode),
                           builder: (context, data) {
                             final (pinCode, obscurePinCode) = data;
                             return BBInputText(
@@ -95,15 +100,25 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                                   () => context.read<AppUnlockBloc>().add(
                                     AppUnlockPinCodeObscureToggled(),
                                   ),
-                              rightIcon: const Icon(Icons.visibility_off_outlined),
+                              rightIcon: const Icon(
+                                Icons.visibility_off_outlined,
+                              ),
                               onlyNumbers: true,
                               onChanged: (value) {},
                             );
                           },
                         ),
                         const Gap(2),
-                        BlocSelector<AppUnlockBloc, AppUnlockState, (bool, int)>(
-                          selector: (state) => (state.showError, state.failedAttempts),
+                        BlocSelector<
+                          AppUnlockBloc,
+                          AppUnlockState,
+                          (bool, int)
+                        >(
+                          selector:
+                              (state) => (
+                                state.showError,
+                                state.failedAttempts,
+                              ),
                           builder: (context, data) {
                             final (showError, failedAttempts) = data;
                             return showError && failedAttempts > 0
@@ -114,9 +129,9 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                                         ? context.loc.appUnlockAttemptSingular
                                         : context.loc.appUnlockAttemptPlural,
                                   ),
-                                  textAlign: TextAlign.start,
+                                  textAlign: .start,
                                   style: context.font.labelSmall?.copyWith(
-                                    color: context.colour.error,
+                                    color: context.appColors.error,
                                   ),
                                 )
                                 : const SizedBox.shrink();
@@ -164,8 +179,8 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   disabled: !canSubmit,
                   bgColor:
                       canSubmit
-                          ? context.colour.secondary
-                          : context.colour.outline,
+                          ? context.appColors.secondary
+                          : context.appColors.outline,
                   onPressed: () {
                     if (canSubmit) {
                       context.read<AppUnlockBloc>().add(
@@ -173,7 +188,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                       );
                     }
                   },
-                  textColor: context.colour.onSecondary,
+                  textColor: context.appColors.onSecondary,
                 );
               },
             ),

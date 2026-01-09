@@ -1,10 +1,12 @@
-import 'package:bb_mobile/core/exchange/domain/entity/recipient.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -49,8 +51,8 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                     (bloc.state as WithdrawConfirmationState)
                         .isConfirmingWithdrawal,
               ),
-              backgroundColor: context.colour.onPrimary,
-              foregroundColor: context.colour.primary,
+              backgroundColor: context.appColors.onPrimary,
+              foregroundColor: context.appColors.primary,
             ),
             Expanded(
               child: ScrollableColumn(
@@ -58,25 +60,25 @@ class WithdrawConfirmationScreen extends StatelessWidget {
                 children: [
                   const Gap(24.0),
                   Text(
-                    'Confirm withdrawal',
+                    context.loc.withdrawConfirmTitle,
                     style: context.font.headlineMedium?.copyWith(
-                      color: context.colour.secondary,
+                      color: context.appColors.secondary,
                     ),
                   ),
                   const Gap(4.0),
                   const Gap(8.0),
                   _DetailRow(
-                    title: 'Recipient name',
-                    value: recipient?.getRecipientFullName(),
+                    title: context.loc.withdrawConfirmRecipientName,
+                    value: recipient?.displayName,
                   ),
                   const _Divider(),
                   _DetailRow(
-                    title: _getRecipientInfoLabel(recipient),
+                    title: _getRecipientInfoLabel(context, recipient),
                     value: _getRecipientInfoValue(recipient),
                   ),
                   const _Divider(),
                   _DetailRow(
-                    title: 'Amount',
+                    title: context.loc.withdrawConfirmAmount,
                     value:
                         order == null
                             ? null
@@ -103,452 +105,75 @@ class WithdrawConfirmationScreen extends StatelessWidget {
     );
   }
 
-  String _getRecipientInfoLabel(Recipient? recipient) {
-    if (recipient == null) return 'Bank account';
+  String _getRecipientInfoLabel(
+    BuildContext context,
+    RecipientViewModel? recipient,
+  ) {
+    if (recipient == null) return context.loc.withdrawConfirmBankAccount;
 
-    return recipient.when(
-      interacEmailCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            name,
-            email,
-            securityQuestion,
-            securityAnswer,
-            isDefault,
-            defaultComment,
-            firstname,
-            lastname,
-            isCorporate,
-            corporateName,
-          ) => 'Email',
-      billPaymentCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Payee',
-      bankTransferCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            institutionNumber,
-            transitNumber,
-            accountNumber,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Account',
-      sepaEur:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            iban,
-            address,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'IBAN',
-      speiClabeMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            clabe,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'CLABE',
-      speiSmsMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            phone,
-            phoneNumber,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Phone',
-      speiCardMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            debitCard,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => 'Card',
-      sinpeIbanUsd:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => 'IBAN',
-      sinpeIbanCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => 'IBAN',
-      sinpeMovilCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            phoneNumber,
-            ownerName,
-            currency,
-            defaultComment,
-            isCorporate,
-            corporateName,
-          ) => 'Phone',
-    );
+    switch (recipient.type) {
+      case RecipientType.interacEmailCad:
+        return context.loc.withdrawConfirmEmail;
+      case RecipientType.billPaymentCad:
+        return context.loc.withdrawConfirmPayee;
+      case RecipientType.bankTransferCad:
+        return context.loc.withdrawConfirmAccount;
+      case RecipientType.sepaEur:
+        return context.loc.withdrawConfirmIban;
+      case RecipientType.speiClabeMxn:
+        return context.loc.withdrawConfirmClabe;
+      case RecipientType.speiSmsMxn:
+        return context.loc.withdrawConfirmPhone;
+      case RecipientType.speiCardMxn:
+        return context.loc.withdrawConfirmCard;
+      case RecipientType.sinpeIbanUsd:
+        return context.loc.withdrawConfirmIban;
+      case RecipientType.sinpeIbanCrc:
+        return context.loc.withdrawConfirmIban;
+      case RecipientType.sinpeMovilCrc:
+        return context.loc.withdrawConfirmPhone;
+      case RecipientType.cbuCvuArgentina:
+        return context.loc.withdrawConfirmAccount;
+      case RecipientType.pseColombia:
+        return context.loc.withdrawConfirmBankAccount;
+      case RecipientType.nequiColombia:
+        return context.loc.withdrawConfirmPhone;
+    }
   }
 
-  String? _getRecipientInfoValue(Recipient? recipient) {
+  String? _getRecipientInfoValue(RecipientViewModel? recipient) {
     if (recipient == null) return null;
 
-    return recipient.when(
-      interacEmailCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            name,
-            email,
-            securityQuestion,
-            securityAnswer,
-            isDefault,
-            defaultComment,
-            firstname,
-            lastname,
-            isCorporate,
-            corporateName,
-          ) => email,
-      billPaymentCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => payeeName ?? payeeCode ?? payeeAccountNumber,
-      bankTransferCad:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            institutionNumber,
-            transitNumber,
-            accountNumber,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => '$institutionNumber-$transitNumber-$accountNumber',
-      sepaEur:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            iban,
-            address,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => iban,
-      speiClabeMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            clabe,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => clabe,
-      speiSmsMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            phone,
-            phoneNumber,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => phoneNumber,
-      speiCardMxn:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            firstname,
-            lastname,
-            name,
-            debitCard,
-            institutionCode,
-            isDefault,
-            ownerName,
-            currency,
-            defaultComment,
-            payeeName,
-            payeeCode,
-            payeeAccountNumber,
-            isCorporate,
-            corporateName,
-          ) => debitCard,
-      sinpeIbanUsd:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => iban,
-      sinpeIbanCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            iban,
-            ownerName,
-            currency,
-            isCorporate,
-            corporateName,
-          ) => iban,
-      sinpeMovilCrc:
-          (
-            recipientId,
-            userId,
-            userNbr,
-            isOwner,
-            isArchived,
-            createdAt,
-            updatedAt,
-            label,
-            isDefault,
-            phoneNumber,
-            ownerName,
-            currency,
-            defaultComment,
-            isCorporate,
-            corporateName,
-          ) => phoneNumber,
-    );
+    switch (recipient.type) {
+      case RecipientType.interacEmailCad:
+        return recipient.email;
+      case RecipientType.billPaymentCad:
+        return recipient.payeeName ??
+            recipient.payeeCode ??
+            recipient.payeeAccountNumber;
+      case RecipientType.bankTransferCad:
+        return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
+      case RecipientType.sepaEur:
+        return recipient.iban;
+      case RecipientType.speiClabeMxn:
+        return recipient.clabe;
+      case RecipientType.speiSmsMxn:
+        return recipient.phoneNumber;
+      case RecipientType.speiCardMxn:
+        return recipient.debitcard;
+      case RecipientType.sinpeIbanUsd:
+        return recipient.iban;
+      case RecipientType.sinpeIbanCrc:
+        return recipient.iban;
+      case RecipientType.sinpeMovilCrc:
+        return recipient.phoneNumber;
+      case RecipientType.cbuCvuArgentina:
+        return null; // TODO: Implement
+      case RecipientType.pseColombia:
+        return recipient.bankAccount;
+      case RecipientType.nequiColombia:
+        return recipient.phoneNumber;
+    }
   }
 }
 
@@ -566,21 +191,21 @@ class _DetailRow extends StatelessWidget {
           value == null
               ? const LoadingLineContent()
               : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Text(
                     title,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.surfaceContainer,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   Expanded(
                     child: Text(
                       value!,
-                      textAlign: TextAlign.end,
+                      textAlign: .end,
                       maxLines: 2,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outlineVariant,
+                        color: context.appColors.secondary,
                       ),
                     ),
                   ),
@@ -595,7 +220,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Divider(color: context.colour.secondaryFixedDim, height: 1);
+    return Divider(color: context.appColors.secondaryFixedDim, height: 1);
   }
 }
 
@@ -622,20 +247,20 @@ class _ConfirmButton extends StatelessWidget {
       children: [
         if (withdrawError != null) ...[
           Text(
-            'Error: $withdrawError',
+            context.loc.withdrawConfirmError(withdrawError.toString()),
             style: context.font.bodyMedium?.copyWith(
-              color: context.colour.error,
+              color: context.appColors.error,
             ),
           ),
           const Gap(16),
         ],
         const Gap(16),
         BBButton.big(
-          label: 'Confirm withdrawal',
+          label: context.loc.withdrawConfirmButton,
           disabled: isConfirmingWithdrawal,
           onPressed: onConfirmPressed,
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onSecondary,
+          bgColor: context.appColors.onSurface,
+          textColor: context.appColors.surface,
         ),
       ],
     );

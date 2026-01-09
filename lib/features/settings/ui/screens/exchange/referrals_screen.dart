@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -10,12 +11,12 @@ class ExchangeReferralsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: context.colour.secondaryFixed,
+      backgroundColor: context.appColors.background,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Referral Codes',
+          title: context.loc.exchangeReferralsTitle,
           onBack: () => context.pop(),
         ),
       ),
@@ -23,17 +24,17 @@ class ExchangeReferralsScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: context.colour.onPrimary,
+                  color: context.appColors.surface,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: context.colour.surface.withValues(alpha: 0.1),
+                      color: context.appColors.overlay.withValues(alpha: 0.05),
                       spreadRadius: 1,
                       blurRadius: 4,
                       offset: const Offset(0, 2),
@@ -41,27 +42,27 @@ class ExchangeReferralsScreen extends StatelessWidget {
                   ],
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: .start,
+                  mainAxisSize: .min,
                   children: [
                     Text(
-                      'Join the mission',
+                      context.loc.exchangeReferralsJoinMissionTitle,
                       style: context.font.bodyLarge?.copyWith(
-                        color: context.colour.secondary,
+                        color: context.appColors.onSurface,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Contact support to learn about our referral program',
+                      context.loc.exchangeReferralsContactSupportMessage,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Apply to join the program here',
+                      context.loc.exchangeReferralsApplyToJoinMessage,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -75,9 +76,9 @@ class ExchangeReferralsScreen extends StatelessWidget {
                         }
                       },
                       child: Text(
-                        'bullbitcoin.com/mission',
+                        context.loc.exchangeReferralsMissionLink,
                         style: context.font.bodyLarge?.copyWith(
-                          color: context.colour.primary,
+                          color: context.appColors.primary,
                           decoration: TextDecoration.underline,
                         ),
                       ),
