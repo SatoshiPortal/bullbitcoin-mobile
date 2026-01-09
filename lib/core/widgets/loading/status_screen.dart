@@ -36,18 +36,16 @@ class StatusScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.appColors.onSecondary,
       body: StackedPage(
-        bottomChild:
-            (!isLoading && onTap != null)
-                ? BBButton.big(
-                  label:
-                      hasError
-                          ? (buttonText ?? 'Try Again')
-                          : (buttonText ?? 'Continue'),
-                  onPressed: onTap ?? () {},
-                  textColor: context.appColors.onPrimary,
-                  bgColor: context.appColors.secondary,
-                )
-                : const SizedBox.shrink(),
+        bottomChild: (!isLoading && onTap != null)
+            ? BBButton.big(
+                label: hasError
+                    ? (buttonText ?? 'Try Again')
+                    : (buttonText ?? 'Continue'),
+                onPressed: onTap ?? () {},
+                textColor: context.appColors.onSecondary,
+                bgColor: context.appColors.secondary,
+              )
+            : const SizedBox.shrink(),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(

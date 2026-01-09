@@ -1515,6 +1515,8 @@
   },
   "sellInstantPayments": "经常付款",
   "priceChartFetchingHistory": "Fetching Price History...",
+  "priceChartFailedToLoad": "无法加载价格历史",
+  "priceFailedToLoad": "无法加载价格",
   "sellDone": "Done",
   "payFromWallet": "From Wallet",
   "dcaConfirmRecurringBuyTitle": "同意 1. 采购",

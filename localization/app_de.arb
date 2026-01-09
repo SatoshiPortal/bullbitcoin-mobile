@@ -1486,6 +1486,8 @@
   },
   "sellInstantPayments": "Sofortzahlungen",
   "priceChartFetchingHistory": "Fetching Price History...",
+  "priceChartFailedToLoad": "Fehler beim Laden der Preishistorie",
+  "priceFailedToLoad": "Fehler beim Laden des Preises",
   "sellDone": "KAPITEL",
   "payFromWallet": "Von Wallet",
   "dcaConfirmRecurringBuyTitle": "Bestätigen Sie erneut Kaufen",

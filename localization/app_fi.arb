@@ -3796,6 +3796,8 @@
   "exchangeFeatureCustomerSupport": "• Keskustele asiakastuen kanssa",
   "exchangeFeatureUnifiedHistory": "• Yhdistetty tapahtumahistoria",
   "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
+  "priceChartFailedToLoad": "Kurssihistorian lataus epäonnistui",
+  "priceFailedToLoad": "Kurssin lataus epäonnistui",
   "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "exchangeLandingDisclaimerNotAvailable": "Kryptovaluuttapörssin palvelut eivät ole käytettävissä Bull Bitcoin -mobiilisovelluksessa.",
   "exchangeLoginButton": "Kirjaudu tai rekisteröidy",
