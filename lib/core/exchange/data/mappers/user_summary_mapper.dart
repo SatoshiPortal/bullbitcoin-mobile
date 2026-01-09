@@ -14,6 +14,7 @@ class UserSummaryMapper {
       currency: model.currency,
       dca: model.dca.toEntity(),
       autoBuy: _mapUserAutoBuy(model.autoBuy),
+      emailNotificationsEnabled: model.emailNotificationsEnabled,
     );
   }
 

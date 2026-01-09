@@ -5,6 +5,44 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'user_summary.freezed.dart';
 part 'user_summary.g.dart';
 
+/// Status of KYC document uploads
+enum KycDocumentStatus {
+  notUploaded,
+  underReview,
+  accepted,
+  rejected;
+
+  bool get isNotUploaded => this == KycDocumentStatus.notUploaded;
+  bool get isUnderReview => this == KycDocumentStatus.underReview;
+  bool get isAccepted => this == KycDocumentStatus.accepted;
+  bool get isRejected => this == KycDocumentStatus.rejected;
+}
+
+/// KYC documents status for ID, proof of residence, and selfie
+@freezed
+sealed class UserKycDocuments with _$UserKycDocuments {
+  const factory UserKycDocuments({
+    required KycDocumentStatus id,
+    required KycDocumentStatus proofOfResidence,
+    required KycDocumentStatus selfie,
+  }) = _UserKycDocuments;
+
+  factory UserKycDocuments.fromJson(Map<String, dynamic> json) =>
+      _$UserKycDocumentsFromJson(json);
+}
+
+/// Overall KYC document status including secure file upload
+@freezed
+sealed class UserKycDocumentStatus with _$UserKycDocumentStatus {
+  const factory UserKycDocumentStatus({
+    required KycDocumentStatus secureFileUpload,
+    required UserKycDocuments documents,
+  }) = _UserKycDocumentStatus;
+
+  factory UserKycDocumentStatus.fromJson(Map<String, dynamic> json) =>
+      _$UserKycDocumentStatusFromJson(json);
+}
+
 enum ExchangeLanguage {
   en('EN'),
   fr('FR'),
@@ -103,6 +141,8 @@ sealed class UserSummary with _$UserSummary {
     String? currency,
     required UserDca dca,
     required UserAutoBuy autoBuy,
+    @Default(true) bool emailNotificationsEnabled,
+    UserKycDocumentStatus? kycDocumentStatus,
   }) = _UserSummary;
 
   factory UserSummary.fromJson(Map<String, dynamic> json) =>

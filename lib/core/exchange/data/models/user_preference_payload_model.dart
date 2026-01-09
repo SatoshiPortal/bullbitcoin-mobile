@@ -3,12 +3,14 @@ class UserPreferencePayloadModel {
   final String? currencyCode;
   final String? dcaEnabled;
   final String? autoBuyEnabled;
+  final String? emailNotificationsEnabled;
 
   UserPreferencePayloadModel({
     this.language,
     this.currencyCode,
     this.dcaEnabled,
     this.autoBuyEnabled,
+    this.emailNotificationsEnabled,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,6 +23,9 @@ class UserPreferencePayloadModel {
     }
     if (autoBuyEnabled != null) {
       data['AUTO_BUY_ENABLED'] = autoBuyEnabled;
+    }
+    if (emailNotificationsEnabled != null) {
+      data['EMAIL_NOTIFICATIONS'] = emailNotificationsEnabled;
     }
 
     data.removeWhere((key, value) => value == null);

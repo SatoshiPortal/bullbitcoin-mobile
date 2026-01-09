@@ -33,7 +33,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
   final GetAnnouncementsUsecase _getAnnouncementsUsecase;
 
-  Future<void> fetchUserSummary() async {
+  Future<void> fetchUserSummary({bool force = false}) async {
     try {
       emit(
         state.copyWith(apiKeyException: null, getUserSummaryException: null),
@@ -42,8 +42,16 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
       emit(state.copyWith(userSummary: userSummary));
-      emit(state.copyWith(selectedLanguage: userSummary.language));
-      emit(state.copyWith(selectedCurrency: userSummary.currency));
+
+      if (force) {
+        emit(
+          state.copyWith(
+            selectedLanguage: userSummary.language,
+            selectedCurrency: userSummary.currency,
+            selectedEmailNotifications: userSummary.emailNotificationsEnabled,
+          ),
+        );
+      }
 
       loadAnnouncements();
       startPolling();
@@ -96,6 +104,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     emit(state.copyWith(selectedCurrency: currency));
   }
 
+  void updateSelectedEmailNotifications(bool enabled) {
+    emit(state.copyWith(selectedEmailNotifications: enabled));
+  }
+
   Future<void> savePreferences() async {
     if (state.selectedLanguage == null && state.selectedCurrency == null) {
       return;
@@ -107,9 +119,14 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       await _saveUserPreferencesUsecase.execute(
         language: state.selectedLanguage,
         currency: state.selectedCurrency,
+        emailNotificationsEnabled: state.selectedEmailNotifications,
+        dcaEnabled: state.userSummary?.dca.isActive,
+        autoBuyEnabled: state.userSummary?.autoBuy.isActive.toString(),
       );
 
       emit(state.copyWith(isSaving: false));
+
+      await fetchUserSummary(force: true);
     } catch (e) {
       log.severe('Error in savePreferences: $e');
       emit(state.copyWith(isSaving: false));
@@ -146,6 +163,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
           userSummary: null,
           selectedLanguage: null,
           selectedCurrency: null,
+          selectedEmailNotifications: null,
         ),
       );
     } catch (e) {
