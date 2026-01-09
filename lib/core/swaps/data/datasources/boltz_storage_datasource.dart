@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
+import 'package:bb_mobile/core/swaps/data/models/swap_master_key_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/boltz_network.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:boltz/boltz.dart';
@@ -202,5 +206,36 @@ class BoltzStorageDatasource {
     final jsonSwap = await _secureSwapStorage.getValue(key) as String;
 
     return ChainSwap.fromJson(jsonStr: jsonSwap);
+  }
+
+  Future<void> storeSwapMasterKey(SwapMasterKeyModel swapMasterKey) async {
+    final boltzNetwork = swapMasterKey.network;
+    final key = '${SecureStorageKeyPrefixConstants.swapMasterKey}$boltzNetwork';
+    final jsonString = jsonEncode(swapMasterKey.toJson());
+    await _secureSwapStorage.saveValue(key: key, value: jsonString);
+  }
+
+  Future<bool> swapMasterKeyExists(BoltzNetwork network) async {
+    try {
+      final key =
+          '${SecureStorageKeyPrefixConstants.swapMasterKey}${network.value}';
+      final value = await _secureSwapStorage.getValue(key);
+      return value != null;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<SwapMasterKeyModel> fetchSwapMasterKey(BoltzNetwork network) async {
+    try {
+      final key =
+          '${SecureStorageKeyPrefixConstants.swapMasterKey}${network.value}';
+      final jsonString = await _secureSwapStorage.getValue(key) as String;
+      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      return SwapMasterKeyModel.fromJson(jsonMap);
+    } catch (e) {
+      log.severe('Error getting SwapMasterKey: $e');
+      throw 'Error parsing SwapMasterKey: $e';
+    }
   }
 }

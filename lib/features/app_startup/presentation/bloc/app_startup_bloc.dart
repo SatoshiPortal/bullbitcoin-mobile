@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/create_swap_master_key_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -30,6 +31,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required CheckBackupUsecase checkBackupUsecase,
     required IsTorRequiredUsecase isTorRequiredUsecase,
     required InitTorUsecase initTorUsecase,
+    required CreateSwapMasterKeyUsecase createSwapMasterKeyUsecase,
   }) : _resetAppDataUsecase = resetAppDataUsecase,
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
@@ -40,6 +42,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
        _checkBackupUsecase = checkBackupUsecase,
        _isTorRequiredUsecase = isTorRequiredUsecase,
        _initTorUsecase = initTorUsecase,
+       _createSwapMasterKeyUsecase = createSwapMasterKeyUsecase,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
@@ -54,6 +57,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final CheckBackupUsecase _checkBackupUsecase;
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
+  final CreateSwapMasterKeyUsecase _createSwapMasterKeyUsecase;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -113,6 +117,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       if (doDefaultWalletsExist) {
         isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
         // Other startup logic can be added here, e.g. payjoin sessions resume
+        // Create SwapMasterKey if it doesn't exist (runs in background)
+        unawaited(_createSwapMasterKeyUsecase.execute());
       } else {
         // This is a fresh install, so reset the app data that might still be
         //  there from a previous install.
