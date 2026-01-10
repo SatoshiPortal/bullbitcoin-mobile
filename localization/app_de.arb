@@ -489,6 +489,7 @@
   "paySelectRecipient": "Wählen Sie Empfänger",
   "payNoActiveWallet": "Keine aktive Brieftasche",
   "importQrDeviceKruxStep4": "Klicken Sie auf die Schaltfläche \"Kamera öffnen\"",
+  "appStartupErrorMessage": "App konnte nicht gestartet werden. Versuchen Sie, die App vollständig zu stoppen und neu zu starten. Wenn der Fehler weiterhin besteht, melden Sie das Problem an den Support und teilen Sie Ihre Protokolle.",
   "appStartupErrorMessageWithBackup": "Konnte nicht initialisiert werden. Löschen und neu installieren, um zu beheben.",
   "payPasteInvoice": "Paste Invoice",
   "labelErrorUnexpected": "Unerwartete Fehler: {message}",

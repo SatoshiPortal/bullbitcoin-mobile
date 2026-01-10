@@ -496,6 +496,7 @@
   "paySelectRecipient": "Selecione o destinatário",
   "payNoActiveWallet": "Sem carteira ativa",
   "importQrDeviceKruxStep4": "Clique no botão \"Câmera aberta\"",
+  "appStartupErrorMessage": "Falha ao iniciar o aplicativo. Tente parar completamente o aplicativo e reiniciar. Se o erro persistir, relate o problema ao suporte e compartilhe seus registros.",
   "appStartupErrorMessageWithBackup": "Não foi possível inicializar. Exclua e reinstale para corrigir.",
   "payPasteInvoice": "Fatura de pasta",
   "labelErrorUnexpected": "Erro inesperado: {message}",

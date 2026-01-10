@@ -3763,6 +3763,7 @@
   "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
   "addressViewChangeAddressesDescription": "Mostrar direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
+  "appStartupErrorMessage": "La aplicación no pudo iniciarse. Intente detener completamente la aplicación y reiniciar. Si el error persiste, informe el problema al soporte y comparta sus registros.",
   "appStartupErrorMessageWithBackup": "No se pudo inicializar. Elimine y reinstale para solucionar.",
   "appStartupErrorMessageNoBackup": "No se pudo inicializar. Elimine y reinstale para solucionar. Si su frase de recuperación no está respaldada, puede verla en Configuración->Configuración de Bitcoin->Ver frases después de reinstalar.",
   "appStartupContactSupportButton": "Contactar Soporte",

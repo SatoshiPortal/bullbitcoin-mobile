@@ -11212,6 +11212,10 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
+  "appStartupErrorMessage": "App failed to startup. Try completely stop the app and restart. If the error persists, report the issue to support and share your logs.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
   "appStartupErrorMessageWithBackup": "Could not initialize. Delete and reinstall to fix.",
   "@appStartupErrorMessageWithBackup": {
     "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
