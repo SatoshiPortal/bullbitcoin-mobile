@@ -3709,6 +3709,7 @@
   "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
   "appStartupErrorTitle": "Käynnistysvirhe",
+  "appStartupErrorMessage": "Sovelluksen käynnistys epäonnistui. Yritä pysäyttää sovellus kokonaan ja käynnistä uudelleen. Jos virhe jatkuu, ilmoita ongelma tukeen ja jaa lokisi.",
   "appStartupErrorMessageWithBackup": "Alustus epäonnistui. Poista ja asenna uudelleen korjataksesi.",
   "appStartupErrorMessageNoBackup": "Alustus epäonnistui. Poista ja asenna uudelleen korjataksesi. Jos siemeniäsi ei ole varmuuskopioitu, voit tarkastella sitä kohdassa Asetukset->Bitcoin-asetukset->Näytä siemenet uudelleenasennuksen jälkeen.",
   "appStartupContactSupportButton": "Ota yhteyttä tukeen",

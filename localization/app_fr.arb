@@ -3763,6 +3763,7 @@
   "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "appStartupErrorTitle": "Erreur de démarrage",
+  "appStartupErrorMessage": "Le démarrage de l'application a échoué. Essayez d'arrêter complètement l'application et de redémarrer. Si l'erreur persiste, signalez le problème au support et partagez vos journaux.",
   "appStartupErrorMessageWithBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger.",
   "appStartupErrorMessageNoBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger. Si votre phrase de récupération n'est pas sauvegardée, vous pouvez la consulter dans Paramètres->Paramètres Bitcoin->Voir les phrases après la réinstallation.",
   "appStartupContactSupportButton": "Contacter le support",

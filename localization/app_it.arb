@@ -498,6 +498,7 @@
   "paySelectRecipient": "Seleziona il destinatario",
   "payNoActiveWallet": "Nessun portafoglio attivo",
   "importQrDeviceKruxStep4": "Fare clic sul pulsante \"open camera\"",
+  "appStartupErrorMessage": "Impossibile avviare l'app. Prova a fermare completamente l'app e riavviare. Se l'errore persiste, segnala il problema al supporto e condividi i tuoi log.",
   "appStartupErrorMessageWithBackup": "Impossibile inizializzare. Elimina e reinstalla per risolvere.",
   "payPasteInvoice": "Fatturato",
   "labelErrorUnexpected": "Errore inaspettato: {message}",
