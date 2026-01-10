@@ -28,9 +28,10 @@ class PriceChartCubit extends Cubit<PriceChartState> {
   }) async {
     emit(state.copyWith(isLoading: true, error: null));
 
+    String? selectedCurrency;
     try {
       final settings = await _getSettingsUsecase.execute();
-      final selectedCurrency = currency ?? settings.currencyCode;
+      selectedCurrency = currency ?? settings.currencyCode;
 
       final localDayPrices = await _getPriceHistoryUsecase.execute(
         fromCurrency: 'BTC',
@@ -87,7 +88,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
 
       refreshedAllPrices.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-      if (refreshedAllPrices.isNotEmpty || localAllPrices.isEmpty) {
+      if (refreshedAllPrices.isNotEmpty) {
         emit(
           state.copyWith(
             isLoading: false,
@@ -96,9 +97,24 @@ class PriceChartCubit extends Cubit<PriceChartState> {
             error: null,
           ),
         );
+      } else if (localAllPrices.isEmpty) {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            prices: [],
+            currency: selectedCurrency,
+            error: Exception('Failed to load price history'),
+          ),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: e,
+          currency: selectedCurrency ?? state.currency,
+        ),
+      );
     }
   }
 
