@@ -65,8 +65,10 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                     child: BBButton.small(
                       label: context.loc.logoutConfirmationCancel,
                       onPressed: () => Navigator.of(context).pop(),
-                      bgColor: context.appColors.secondaryFixed,
+                      outlined: true,
+                      bgColor: Colors.transparent,
                       textColor: context.appColors.secondary,
+                      borderColor: context.appColors.outline,
                     ),
                   ),
                   const SizedBox(width: 12),
