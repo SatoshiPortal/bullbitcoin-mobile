@@ -497,7 +497,8 @@
   "passportStep12": "推土墙将请你扫描有关护照的QR代码。 缩略语.",
   "paySelectRecipient": "选定受援国",
   "payNoActiveWallet": "1. 没有现成的围墙",
-  "importQrDeviceKruxStep4": "Click the “ open UK” button",
+  "importQrDeviceKruxStep4": "Click the \" open UK\" button",
+  "appStartupErrorMessage": "应用程序启动失败。尝试完全停止应用程序并重新启动。如果错误仍然存在，请向支持部门报告问题并分享您的日志。",
   "appStartupErrorMessageWithBackup": "第5.4.0号案发现,在我们的一个附属公司中发现了一条重要的 b子,影响到私人钥匙的储存。 你们的心灵受到了影响。 你们必须删除这一说法,并以你支持的种子重新加入.",
   "payPasteInvoice": "Paste Invoice",
   "labelErrorUnexpected": "意外错误:{message}",
@@ -4128,5 +4129,9 @@
   "importWatchOnlyCancel": "Cancel",
   "arkAboutTitle": "关于",
   "exchangeSettingsSecuritySettingsTitle": "安全设置",
-  "transactionNoteUpdateButton": "更新"
+  "transactionNoteUpdateButton": "更新",
+  "logoutConfirmationTitle": "确认退出",
+  "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
+  "logoutConfirmationCancel": "取消",
+  "logoutConfirmationLogout": "退出"
 }
