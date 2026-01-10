@@ -212,6 +212,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
+          isCorporate: d.isCorporate,
           accountType: d.accountType,
           bankAccount: d.bankAccount,
           bankCode: d.bankCode,
@@ -219,6 +220,9 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           documentId: d.documentId,
           documentType: d.documentType,
           name: d.name,
+          lastname: d.lastname,
+          corporateName: d.corporateName,
+          email: d.email,
         );
       }(),
       RecipientType.nequiColombia => () {
@@ -228,11 +232,15 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
+          isCorporate: d.isCorporate,
           // Nequi uses phone number as bank account and API field is bankAccount
           bankAccount: d.phoneNumber,
           documentId: d.documentId,
           documentType: d.documentType,
           name: d.name,
+          lastname: d.lastname,
+          corporateName: d.corporateName,
+          email: d.email,
         );
       }(),
     };

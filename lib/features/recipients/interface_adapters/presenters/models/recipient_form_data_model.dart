@@ -316,7 +316,11 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
   final String bankAccount;
   final String documentType;
   final String documentId;
-  final String name;
+  final bool isCorporate;
+  final String? name;
+  final String? lastname;
+  final String? corporateName;
+  final String email;
 
   const PseColombiaFormDataModel({
     required this.bankCode,
@@ -324,7 +328,11 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
     required this.bankAccount,
     required this.documentType,
     required this.documentId,
-    required this.name,
+    required this.isCorporate,
+    this.name,
+    this.lastname,
+    this.corporateName,
+    required this.email,
     super.label,
   }) : super(type: RecipientType.pseColombia);
 
@@ -337,7 +345,11 @@ class PseColombiaFormDataModel extends RecipientFormDataModel {
       bankAccount: bankAccount,
       documentType: documentType,
       documentId: documentId,
+      isCorporate: isCorporate,
       name: name,
+      lastname: lastname,
+      corporateName: corporateName,
+      email: email,
       label: label,
     );
   }
@@ -347,13 +359,21 @@ class NequiColombiaFormDataModel extends RecipientFormDataModel {
   final String phoneNumber;
   final String documentType;
   final String documentId;
-  final String name;
+  final bool isCorporate;
+  final String? name;
+  final String? lastname;
+  final String? corporateName;
+  final String email;
 
   const NequiColombiaFormDataModel({
     required this.phoneNumber,
     required this.documentType,
     required this.documentId,
-    required this.name,
+    required this.isCorporate,
+    this.name,
+    this.lastname,
+    this.corporateName,
+    required this.email,
     super.label,
   }) : super(type: RecipientType.nequiColombia);
 
@@ -364,7 +384,11 @@ class NequiColombiaFormDataModel extends RecipientFormDataModel {
       phoneNumber: phoneNumber,
       documentType: documentType,
       documentId: documentId,
+      isCorporate: isCorporate,
       name: name,
+      lastname: lastname,
+      corporateName: corporateName,
+      email: email,
       label: label,
     );
   }

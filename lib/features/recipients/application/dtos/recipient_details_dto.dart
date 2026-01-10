@@ -231,7 +231,11 @@ class RecipientDetailsDto {
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
+          isCorporate: d.isCorporate,
           name: d.name,
+          lastname: d.lastname,
+          corporateName: d.corporateName,
+          email: d.email,
           accountType: d.accountType,
           bankAccount: d.bankAccount,
           bankCode: d.bankCode,
@@ -247,10 +251,14 @@ class RecipientDetailsDto {
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
+          isCorporate: d.isCorporate,
           phoneNumber: d.phoneNumber,
           documentId: d.documentId,
           documentType: d.documentType,
           name: d.name,
+          lastname: d.lastname,
+          corporateName: d.corporateName,
+          email: d.email,
         );
       }(),
     };
@@ -459,9 +467,6 @@ class RecipientDetailsDto {
           name: name!,
         );
       case RecipientType.pseColombia:
-        if (name == null) {
-          throw StateError('name is required for PSE_COLOMBIA.');
-        }
         if (accountType == null) {
           throw StateError('accountType is required for PSE_COLOMBIA.');
         }
@@ -481,7 +486,11 @@ class RecipientDetailsDto {
           label: label,
           isDefault: def,
           isOwner: isOwner,
-          name: name!,
+          isCorporate: isCorporate ?? false,
+          name: name,
+          lastname: lastname,
+          corporateName: corporateName,
+          email: email ?? '',
           accountType: accountType!,
           bankAccount: bankAccount!,
           bankCode: bankCode!,
@@ -494,12 +503,16 @@ class RecipientDetailsDto {
           label: label,
           isDefault: def,
           isOwner: isOwner,
+          isCorporate: isCorporate ?? false,
+          name: name,
+          lastname: lastname,
+          corporateName: corporateName,
+          email: email ?? '',
           // Nequi uses phone number as bank account and API field is bankAccount
           // Phone number has a value when entered by user, bank account has a value when retrieved from API
           phoneNumber: phoneNumber ?? bankAccount!,
           documentId: documentId!,
           documentType: documentType!,
-          name: name!,
         );
     }
   }

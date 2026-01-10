@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -17,12 +18,19 @@ class NequiCopForm extends StatefulWidget {
 
 class NequiCopFormState extends State<NequiCopForm> {
   final _formKey = GlobalKey<FormState>();
-  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _firstNameFocusNode = FocusNode();
+  final FocusNode _lastNameFocusNode = FocusNode();
+  final FocusNode _corporateNameFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
   String _phoneNumber = '';
   CopDocumentTypeViewModel _documentType = CopDocumentTypeViewModel.cc;
   String _documentId = '';
-  String _name = '';
+  bool _isCorporate = false;
+  String _firstName = '';
+  String _lastName = '';
+  String _corporateName = '';
+  String _email = '';
   String _label = '';
 
   @override
@@ -32,7 +40,10 @@ class NequiCopFormState extends State<NequiCopForm> {
 
   @override
   void dispose() {
-    _nameFocusNode.dispose();
+    _firstNameFocusNode.dispose();
+    _lastNameFocusNode.dispose();
+    _corporateNameFocusNode.dispose();
+    _emailFocusNode.dispose();
     _labelFocusNode.dispose();
     super.dispose();
   }
@@ -43,7 +54,11 @@ class NequiCopFormState extends State<NequiCopForm> {
         phoneNumber: _phoneNumber,
         documentType: _documentType.value,
         documentId: _documentId,
-        name: _name,
+        isCorporate: _isCorporate,
+        name: _isCorporate ? null : _firstName,
+        lastname: _isCorporate ? null : _lastName,
+        corporateName: _isCorporate ? _corporateName : null,
+        email: _email,
         label: _label.isEmpty ? null : _label,
       );
 
@@ -62,13 +77,13 @@ class NequiCopFormState extends State<NequiCopForm> {
         children: [
           // Phone Number
           BBTextFormField(
-            labelText: 'Phone Number',
-            hintText: 'Enter phone number',
+            labelText: context.loc.recipientPhoneNumber,
+            hintText: context.loc.recipientPhoneNumberHint,
             autofocus: true,
             prefixText: '+57',
-            textInputAction: .next,
+            textInputAction: TextInputAction.next,
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -76,15 +91,16 @@ class NequiCopFormState extends State<NequiCopForm> {
               });
             },
           ),
-          const Gap(12.0), // Account Type Dropdown
+          const Gap(12.0),
+          // Document Type Dropdown
           Text(
-            'ID Document Type',
+            context.loc.recipientIdDocumentType,
             style: TextStyle(
               fontSize: 14,
-              fontWeight: .w500,
+              fontWeight: FontWeight.w500,
               color: context.appColors.onSurface,
             ),
-            textAlign: .left,
+            textAlign: TextAlign.left,
           ),
           const Gap(8.0),
           Material(
@@ -141,10 +157,10 @@ class NequiCopFormState extends State<NequiCopForm> {
               CopDocumentTypeViewModel.registroCivil => 'Registro Civil',
             },
             hintText: 'Enter document number',
-            textInputAction: .next,
-            onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
+            textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) => _firstNameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -153,27 +169,101 @@ class NequiCopFormState extends State<NequiCopForm> {
             },
           ),
           const Gap(12.0),
+          // Corporate account toggle
+          Row(
+            children: [
+              Checkbox(
+                value: _isCorporate,
+                onChanged: (value) {
+                  setState(() {
+                    _isCorporate = value ?? false;
+                  });
+                },
+              ),
+              Text(
+                context.loc.recipientIsCorporateAccount,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: context.appColors.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const Gap(12.0),
+          if (_isCorporate)
+            BBTextFormField(
+              labelText: context.loc.recipientCorporateName,
+              hintText: context.loc.recipientCorporateNameHint,
+              focusNode: _corporateNameFocusNode,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) => _emailFocusNode.requestFocus(),
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? context.loc.recipientFieldRequired
+                  : null,
+              onChanged: (value) {
+                setState(() {
+                  _corporateName = value;
+                });
+              },
+            )
+          else ...[
+            BBTextFormField(
+              labelText: context.loc.recipientFirstName,
+              hintText: context.loc.recipientFirstNameHint,
+              focusNode: _firstNameFocusNode,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) => _lastNameFocusNode.requestFocus(),
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? context.loc.recipientFieldRequired
+                  : null,
+              onChanged: (value) {
+                setState(() {
+                  _firstName = value;
+                });
+              },
+            ),
+            const Gap(12.0),
+            BBTextFormField(
+              labelText: context.loc.recipientLastName,
+              hintText: context.loc.recipientLastNameHint,
+              focusNode: _lastNameFocusNode,
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) => _emailFocusNode.requestFocus(),
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? context.loc.recipientFieldRequired
+                  : null,
+              onChanged: (value) {
+                setState(() {
+                  _lastName = value;
+                });
+              },
+            ),
+          ],
+          const Gap(12.0),
           BBTextFormField(
-            labelText: 'Name of the recipient',
-            hintText: "Enter recipient name",
-            focusNode: _nameFocusNode,
-            textInputAction: .next,
+            labelText: context.loc.recipientEmail,
+            hintText: context.loc.recipientEmailHint,
+            focusNode: _emailFocusNode,
+            textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
-            validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
-                : null,
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) return context.loc.recipientFieldRequired;
+              if (!v.contains('@')) return context.loc.recipientInvalidEmail;
+              return null;
+            },
             onChanged: (value) {
               setState(() {
-                _name = value;
+                _email = value;
               });
             },
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientLabelOptional,
+            hintText: context.loc.recipientLabelHint,
             focusNode: _labelFocusNode,
-            textInputAction: .done,
+            textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => _submitForm(),
             validator: null,
             onChanged: (value) {

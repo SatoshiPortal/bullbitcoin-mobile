@@ -546,7 +546,14 @@ class CbuCvuArgentinaDetails extends RecipientDetails {
 // ── PSE (Colombia)
 @immutable
 class PseColombiaDetails extends RecipientDetails {
-  final String name;
+  @override
+  final bool isCorporate;
+  final String? name;
+  final String? lastname;
+  @override
+  final String? corporateName;
+  @override
+  final String email;
   final String accountType;
   final String bankAccount;
   final String bankCode;
@@ -558,7 +565,11 @@ class PseColombiaDetails extends RecipientDetails {
     super.label,
     super.isDefault = false,
     super.isOwner,
-    required this.name,
+    required this.isCorporate,
+    this.name,
+    this.lastname,
+    this.corporateName,
+    required this.email,
     required this.accountType,
     required this.bankAccount,
     required this.bankCode,
@@ -571,7 +582,11 @@ class PseColombiaDetails extends RecipientDetails {
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    required bool isCorporate,
+    String? name,
+    String? lastname,
+    String? corporateName,
+    required String email,
     required String accountType,
     required String bankAccount,
     required String bankCode,
@@ -579,8 +594,16 @@ class PseColombiaDetails extends RecipientDetails {
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
-      throw ArgumentError('Name cannot be empty');
+    if (isCorporate) {
+      if (corporateName == null || corporateName.trim().isEmpty) {
+        throw ArgumentError(
+          'Corporate name is required for corporate accounts',
+        );
+      }
+    } else {
+      if ((name == null || name.trim().isEmpty)) {
+        throw ArgumentError('Name is required for individual accounts');
+      }
     }
     if (accountType.trim().isEmpty) {
       throw ArgumentError('Account type cannot be empty');
@@ -591,7 +614,6 @@ class PseColombiaDetails extends RecipientDetails {
     if (bankCode.trim().isEmpty) {
       throw ArgumentError('Bank code cannot be empty');
     }
-
     if (documentId.trim().isEmpty) {
       throw ArgumentError('Document ID cannot be empty');
     }
@@ -603,7 +625,11 @@ class PseColombiaDetails extends RecipientDetails {
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      isCorporate: isCorporate,
+      name: name?.trim(),
+      lastname: lastname?.trim(),
+      corporateName: corporateName?.trim(),
+      email: email.trim(),
       accountType: accountType.trim(),
       bankAccount: bankAccount.trim(),
       bankCode: bankCode.trim(),
@@ -623,7 +649,14 @@ class NequiColombiaDetails extends RecipientDetails {
   final String phoneNumber;
   final String documentId;
   final String documentType;
-  final String name;
+  @override
+  final bool isCorporate;
+  final String? name;
+  final String? lastname;
+  @override
+  final String? corporateName;
+  @override
+  final String email;
 
   const NequiColombiaDetails._({
     super.label,
@@ -632,20 +665,36 @@ class NequiColombiaDetails extends RecipientDetails {
     required this.phoneNumber,
     required this.documentId,
     required this.documentType,
-    required this.name,
+    required this.isCorporate,
+    this.name,
+    this.lastname,
+    this.corporateName,
+    required this.email,
   });
 
   factory NequiColombiaDetails.create({
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String name,
+    required bool isCorporate,
+    String? name,
+    String? lastname,
+    String? corporateName,
+    required String email,
     required String phoneNumber,
     required String documentId,
     required String documentType,
   }) {
-    if (name.trim().isEmpty) {
-      throw ArgumentError('Name cannot be empty');
+    if (isCorporate) {
+      if (corporateName == null || corporateName.trim().isEmpty) {
+        throw ArgumentError(
+          'Corporate name is required for corporate accounts',
+        );
+      }
+    } else {
+      if ((name == null || name.trim().isEmpty)) {
+        throw ArgumentError('Name is required for individual accounts');
+      }
     }
     if (phoneNumber.trim().isEmpty) {
       throw ArgumentError('Phone number cannot be empty');
@@ -661,7 +710,11 @@ class NequiColombiaDetails extends RecipientDetails {
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      name: name.trim(),
+      isCorporate: isCorporate,
+      name: name?.trim(),
+      lastname: lastname?.trim(),
+      corporateName: corporateName?.trim(),
+      email: email.trim(),
       phoneNumber: phoneNumber.trim(),
       documentId: documentId.trim(),
       documentType: documentType.trim(),

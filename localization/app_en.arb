@@ -12238,5 +12238,101 @@
         "type": "String"
       }
     }
+  },
+  "recipientBankInstitution": "Bank Institution",
+  "@recipientBankInstitution": {
+    "description": "Label for bank institution dropdown"
+  },
+  "recipientSelectBankInstitution": "Select Bank Institution",
+  "@recipientSelectBankInstitution": {
+    "description": "Placeholder for bank institution dropdown"
+  },
+  "recipientPleaseSelectBankInstitution": "Please select a bank institution",
+  "@recipientPleaseSelectBankInstitution": {
+    "description": "Validation error when no bank institution selected"
+  },
+  "recipientAccountType": "Account Type",
+  "@recipientAccountType": {
+    "description": "Label for account type dropdown"
+  },
+  "recipientSavings": "Savings",
+  "@recipientSavings": {
+    "description": "Savings account type option"
+  },
+  "recipientChecking": "Checking",
+  "@recipientChecking": {
+    "description": "Checking account type option"
+  },
+  "recipientBankAccountNumber": "Bank Account Number",
+  "@recipientBankAccountNumber": {
+    "description": "Label for bank account number field"
+  },
+  "recipientBankAccountNumberHint": "Enter bank account number",
+  "@recipientBankAccountNumberHint": {
+    "description": "Hint for bank account number input"
+  },
+  "recipientIdDocumentType": "ID Document Type",
+  "@recipientIdDocumentType": {
+    "description": "Label for ID document type dropdown"
+  },
+  "recipientIsCorporateAccount": "This is a corporate account",
+  "@recipientIsCorporateAccount": {
+    "description": "Label for corporate account checkbox"
+  },
+  "recipientCorporateName": "Corporate Name",
+  "@recipientCorporateName": {
+    "description": "Label for corporate name field"
+  },
+  "recipientCorporateNameHint": "Enter business/corporate name",
+  "@recipientCorporateNameHint": {
+    "description": "Hint for corporate name input"
+  },
+  "recipientFirstName": "First Name",
+  "@recipientFirstName": {
+    "description": "Label for first name field"
+  },
+  "recipientFirstNameHint": "Enter recipient's first name",
+  "@recipientFirstNameHint": {
+    "description": "Hint for first name input"
+  },
+  "recipientLastName": "Last Name",
+  "@recipientLastName": {
+    "description": "Label for last name field"
+  },
+  "recipientLastNameHint": "Enter recipient's last name",
+  "@recipientLastNameHint": {
+    "description": "Hint for last name input"
+  },
+  "recipientEmail": "Email",
+  "@recipientEmail": {
+    "description": "Label for email field"
+  },
+  "recipientEmailHint": "Enter email address",
+  "@recipientEmailHint": {
+    "description": "Hint for email input"
+  },
+  "recipientLabelOptional": "Label (optional)",
+  "@recipientLabelOptional": {
+    "description": "Label for optional label field"
+  },
+  "recipientLabelHint": "Enter a label for this recipient",
+  "@recipientLabelHint": {
+    "description": "Hint for label input"
+  },
+  "recipientPhoneNumber": "Phone Number",
+  "@recipientPhoneNumber": {
+    "description": "Label for phone number field"
+  },
+  "recipientPhoneNumberHint": "Enter phone number",
+  "@recipientPhoneNumberHint": {
+    "description": "Hint for phone number input"
+  },
+  "recipientFieldRequired": "This field can't be empty",
+  "@recipientFieldRequired": {
+    "description": "Validation error for empty required field"
+  },
+  "recipientInvalidEmail": "Invalid email address",
+  "@recipientInvalidEmail": {
+    "description": "Validation error for invalid email"
   }
 }
