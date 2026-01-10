@@ -4130,5 +4130,9 @@
   "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
   "autoswapRecipientWalletRequired": "Ім'я *",
   "ledgerSignTitle": "Реєстрація",
-  "importWatchOnlyCancel": "Зареєструватися"
+  "importWatchOnlyCancel": "Зареєструватися",
+  "logoutConfirmationTitle": "Підтвердити вихід",
+  "logoutConfirmationDescription": "Ви впевнені, що хочете вийти зі свого облікового запису Bull Bitcoin? Вам потрібно буде знову увійти, щоб отримати доступ до функцій обміну.",
+  "logoutConfirmationCancel": "Скасувати",
+  "logoutConfirmationLogout": "Вийти"
 }

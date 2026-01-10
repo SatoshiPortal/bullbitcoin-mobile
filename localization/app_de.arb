@@ -4130,5 +4130,9 @@
   "payAdvancedSettings": "Erweiterte Einstellungen",
   "transactionNoteUpdateButton": "Aktualisieren",
   "sellAdvancedSettings": "Erweiterte Einstellungen",
-  "importWatchOnlyCancel": "Abbrechen"
+  "importWatchOnlyCancel": "Abbrechen",
+  "logoutConfirmationTitle": "Abmeldung bestätigen",
+  "logoutConfirmationDescription": "Sind Sie sicher, dass Sie sich von Ihrem Bull Bitcoin-Konto abmelden möchten? Sie müssen sich erneut anmelden, um auf Exchange-Funktionen zuzugreifen.",
+  "logoutConfirmationCancel": "Abbrechen",
+  "logoutConfirmationLogout": "Abmelden"
 }

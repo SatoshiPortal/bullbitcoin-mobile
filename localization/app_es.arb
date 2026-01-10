@@ -4131,5 +4131,9 @@
     }
   },
   "bitcoinSettingsMempoolServerTitle": "Configuración del servidor Mempool",
-  "save": "Guardar"
+  "save": "Guardar",
+  "logoutConfirmationTitle": "Confirmar cierre de sesión",
+  "logoutConfirmationDescription": "¿Está seguro de que desea cerrar sesión en su cuenta de Bull Bitcoin? Necesitará iniciar sesión nuevamente para acceder a las funciones de intercambio.",
+  "logoutConfirmationCancel": "Cancelar",
+  "logoutConfirmationLogout": "Cerrar sesión"
 }

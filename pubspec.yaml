@@ -3,7 +3,6 @@ description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
 version: 6.5.2+137
 
-
 environment:
   sdk: ">=3.10.0 <4.0.0"
 dependencies:
@@ -124,7 +123,7 @@ dependencies:
   tor:
     git:
       url: https://github.com/Foundation-Devices/tor
-      ref: b92e2bc  
+      ref: b92e2bc
   meta: ^1.17.0
   workmanager: ^0.9.0
   path: ^1.9.1
@@ -142,7 +141,7 @@ dev_dependencies:
   json_serializable: ^6.11.2
   mocktail: ^1.0.4
   flutter_launcher_icons: ^0.14.4
-  test: ^1.26.3 
+  test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
 
