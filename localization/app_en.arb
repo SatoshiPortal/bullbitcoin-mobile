@@ -12246,5 +12246,21 @@
         "type": "String"
       }
     }
+  },
+  "logoutConfirmationTitle": "Confirm Logout",
+  "@logoutConfirmationTitle": {
+    "description": "Title for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationDescription": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.",
+  "@logoutConfirmationDescription": {
+    "description": "Description text for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationCancel": "Cancel",
+  "@logoutConfirmationCancel": {
+    "description": "Cancel button label for logout confirmation"
+  },
+  "logoutConfirmationLogout": "Logout",
+  "@logoutConfirmationLogout": {
+    "description": "Logout button label for logout confirmation"
   }
 }

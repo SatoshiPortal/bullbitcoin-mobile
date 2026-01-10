@@ -4129,5 +4129,9 @@
   "ledgerSignTitle": "Transazione dei segni",
   "importWatchOnlyCancel": "Annulla",
   "arkAboutTitle": "Informazioni",
-  "exchangeSettingsSecuritySettingsTitle": "Impostazioni di sicurezza"
+  "exchangeSettingsSecuritySettingsTitle": "Impostazioni di sicurezza",
+  "logoutConfirmationTitle": "Conferma disconnessione",
+  "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
+  "logoutConfirmationCancel": "Annulla",
+  "logoutConfirmationLogout": "Disconnetti"
 }

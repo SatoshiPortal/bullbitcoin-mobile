@@ -4129,5 +4129,9 @@
   "importWatchOnlyCancel": "Cancel",
   "arkAboutTitle": "关于",
   "exchangeSettingsSecuritySettingsTitle": "安全设置",
-  "transactionNoteUpdateButton": "更新"
+  "transactionNoteUpdateButton": "更新",
+  "logoutConfirmationTitle": "确认退出",
+  "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
+  "logoutConfirmationCancel": "取消",
+  "logoutConfirmationLogout": "退出"
 }

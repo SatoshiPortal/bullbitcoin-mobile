@@ -4126,5 +4126,9 @@
   "fundExchangeCrIbanUsdLabelRecipientName": "Имя получателя",
   "ledgerSignTitle": "Подписание",
   "importWatchOnlyCancel": "Отмена",
-  "arkAboutTitle": "О проекте"
+  "arkAboutTitle": "О проекте",
+  "logoutConfirmationTitle": "Подтвердить выход",
+  "logoutConfirmationDescription": "Вы уверены, что хотите выйти из своей учетной записи Bull Bitcoin? Вам нужно будет снова войти в систему, чтобы получить доступ к функциям обмена.",
+  "logoutConfirmationCancel": "Отмена",
+  "logoutConfirmationLogout": "Выйти"
 }

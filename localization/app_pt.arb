@@ -4097,5 +4097,9 @@
   "pinCodeLoading": "A carregar",
   "fundExchangeCrIbanUsdLabelRecipientName": "Nome do destinatário",
   "ledgerSignTitle": "Transação de Sinais",
-  "importWatchOnlyCancel": "Cancelar"
+  "importWatchOnlyCancel": "Cancelar",
+  "logoutConfirmationTitle": "Confirmar saída",
+  "logoutConfirmationDescription": "Tem certeza de que deseja sair da sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar os recursos de câmbio.",
+  "logoutConfirmationCancel": "Cancelar",
+  "logoutConfirmationLogout": "Sair"
 }

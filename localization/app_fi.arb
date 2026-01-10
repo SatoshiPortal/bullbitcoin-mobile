@@ -4131,5 +4131,9 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-palvelimen asetukset",
   "autoswapTriggerAtBalanceInfoText": "Autoswap käynnistyy, kun saldo ylittää tämän summan.",
   "autoswapWarningCardTitle": "Autoswap on käytössä.",
-  "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC."
+  "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC.",
+  "logoutConfirmationTitle": "Vahvista uloskirjautuminen",
+  "logoutConfirmationDescription": "Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.",
+  "logoutConfirmationCancel": "Peruuta",
+  "logoutConfirmationLogout": "Kirjaudu ulos"
 }

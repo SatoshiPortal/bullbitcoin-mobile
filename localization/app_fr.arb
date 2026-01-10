@@ -4132,5 +4132,9 @@
   },
   "bitcoinSettingsMempoolServerTitle": "Configurations serveur Mempool",
   "save": "Sauvegarder",
-  "recipientsSearchHint": "Rechercher des destinataires par nom ou étiquette"
+  "recipientsSearchHint": "Rechercher des destinataires par nom ou étiquette",
+  "logoutConfirmationTitle": "Confirmer la déconnexion",
+  "logoutConfirmationDescription": "Êtes-vous sûr de vouloir vous déconnecter de votre compte Bull Bitcoin? Vous devrez vous reconnecter pour accéder aux fonctionnalités d'échange.",
+  "logoutConfirmationCancel": "Annuler",
+  "logoutConfirmationLogout": "Déconnexion"
 }
