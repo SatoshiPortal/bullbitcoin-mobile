@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/seeds/application/ports/seed_usage_repository
 import 'package:bb_mobile/features/seeds/application/usecases/create_new_seed_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/delete_seed_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/deregister_seed_usage_usecase.dart';
+import 'package:bb_mobile/features/seeds/application/usecases/deregister_seed_usage_with_fingerprint_check_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/get_seed_secret_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/get_seed_usage_by_consumer_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/import_seed_bytes_usecase.dart';
@@ -31,9 +32,7 @@ class SeedsDiModule implements FeatureDiModule {
   Future<void> registerFrameworksAndDrivers() async {
     // Seed secret datasource (Flutter Secure Storage)
     sl.registerLazySingleton<FssSeedSecretDatasource>(
-      () => FssSeedSecretDatasource(
-        flutterSecureStorage: sl(),
-      ),
+      () => FssSeedSecretDatasource(flutterSecureStorage: sl()),
     );
   }
 
@@ -51,7 +50,7 @@ class SeedsDiModule implements FeatureDiModule {
 
     // Legacy seed secret store (read-only for old format)
     sl.registerLazySingleton<LegacySeedSecretStorePort>(
-      () => LegacySeedSecretStore(),
+      () => LegacySeedSecretStore(flutterSecureStorage: sl()),
     );
 
     // Seed usage repository (Drift/SQLite)
@@ -60,9 +59,7 @@ class SeedsDiModule implements FeatureDiModule {
     );
 
     // Seed crypto operations (BIP32/BIP39)
-    sl.registerLazySingleton<SeedCryptoPort>(
-      () => Bip32And39SeedCrypto(),
-    );
+    sl.registerLazySingleton<SeedCryptoPort>(() => Bip32And39SeedCrypto());
 
     // Mnemonic generator (BDK)
     sl.registerLazySingleton<MnemonicGeneratorPort>(
@@ -107,14 +104,15 @@ class SeedsDiModule implements FeatureDiModule {
     );
 
     sl.registerFactory<LoadAllStoredSeedSecretsUseCase>(
-      () => LoadAllStoredSeedSecretsUseCase(seedSecretStore: sl()),
+      () => LoadAllStoredSeedSecretsUseCase(
+        seedSecretStore: sl(),
+        seedCrypto: sl(),
+      ),
     );
 
     sl.registerFactory<LoadLegacySeedsUseCase>(
-      () => LoadLegacySeedsUseCase(
-        legacySeedSecretStore: sl(),
-        seedCrypto: sl(),
-      ),
+      () =>
+          LoadLegacySeedsUseCase(legacySeedSecretStore: sl(), seedCrypto: sl()),
     );
 
     // Usage tracking
@@ -134,12 +132,17 @@ class SeedsDiModule implements FeatureDiModule {
       () => ListUsedSeedsUseCase(seedUsageRepository: sl()),
     );
 
+    // Composed use cases
+    sl.registerFactory<DeregisterSeedUsageWithFingerprintCheckUseCase>(
+      () => DeregisterSeedUsageWithFingerprintCheckUseCase(
+        getSeedUsageByConsumer: sl(),
+        deregisterSeedUsage: sl(),
+      ),
+    );
+
     // Delete
     sl.registerFactory<DeleteSeedUseCase>(
-      () => DeleteSeedUseCase(
-        seedSecretStore: sl(),
-        seedUsageRepository: sl(),
-      ),
+      () => DeleteSeedUseCase(seedSecretStore: sl(), seedUsageRepository: sl()),
     );
   }
 
@@ -152,8 +155,7 @@ class SeedsDiModule implements FeatureDiModule {
         importSeedMnemonicUseCase: sl(),
         getSeedSecretUseCase: sl(),
         registerSeedUsageUseCase: sl(),
-        getSeedUsageByConsumerUseCase: sl(),
-        deregisterSeedUsageUseCase: sl(),
+        deregisterSeedUsageWithFingerprintCheck: sl(),
       ),
     );
 

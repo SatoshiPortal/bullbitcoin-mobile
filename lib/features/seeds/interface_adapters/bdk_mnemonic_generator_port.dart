@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/seeds/application/ports/mnemonic_generator_port.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-class BdkMnemonicGeneratorPort implements MnemonicGeneratorPort {
-  const BdkMnemonicGeneratorPort();
+class BdkMnemonicGenerator implements MnemonicGeneratorPort {
+  const BdkMnemonicGenerator();
 
   @override
   Future<List<String>> generateMnemonic() async {

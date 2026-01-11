@@ -2,9 +2,8 @@ import 'package:bb_mobile/core/primitives/seeds/seed_secret.dart';
 import 'package:bb_mobile/core/primitives/seeds/seed_usage_purpose.dart';
 import 'package:bb_mobile/features/seeds/application/seeds_application_errors.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/create_new_seed_mnemonic_usecase.dart';
-import 'package:bb_mobile/features/seeds/application/usecases/deregister_seed_usage_usecase.dart';
+import 'package:bb_mobile/features/seeds/application/usecases/deregister_seed_usage_with_fingerprint_check_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/get_seed_secret_usecase.dart';
-import 'package:bb_mobile/features/seeds/application/usecases/get_seed_usage_by_consumer_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/import_seed_mnemonic_usecase.dart';
 import 'package:bb_mobile/features/seeds/application/usecases/register_seed_usage_usecase.dart';
 import 'package:bb_mobile/features/seeds/public/seeds_facade_errors.dart';
@@ -14,22 +13,19 @@ class SeedsFacade {
   final ImportSeedMnemonicUseCase _importSeedMnemonicUseCase;
   final GetSeedSecretUseCase _getSeedSecretUseCase;
   final RegisterSeedUsageUseCase _registerSeedUsageUseCase;
-  final GetSeedUsageByConsumerUseCase _getSeedUsageByConsumerUseCase;
-  final DeregisterSeedUsageUseCase _deregisterSeedUsageUseCase;
+  final DeregisterSeedUsageWithFingerprintCheckUseCase _deregisterSeedUsageWithFingerprintCheck;
 
   SeedsFacade({
     required CreateNewSeedMnemonicUseCase createNewSeedMnemonicUseCase,
     required ImportSeedMnemonicUseCase importSeedMnemonicUseCase,
     required GetSeedSecretUseCase getSeedSecretUseCase,
     required RegisterSeedUsageUseCase registerSeedUsageUseCase,
-    required GetSeedUsageByConsumerUseCase getSeedUsageByConsumerUseCase,
-    required DeregisterSeedUsageUseCase deregisterSeedUsageUseCase,
+    required DeregisterSeedUsageWithFingerprintCheckUseCase deregisterSeedUsageWithFingerprintCheck,
   }) : _createNewSeedMnemonicUseCase = createNewSeedMnemonicUseCase,
        _importSeedMnemonicUseCase = importSeedMnemonicUseCase,
        _getSeedSecretUseCase = getSeedSecretUseCase,
        _registerSeedUsageUseCase = registerSeedUsageUseCase,
-       _getSeedUsageByConsumerUseCase = getSeedUsageByConsumerUseCase,
-       _deregisterSeedUsageUseCase = deregisterSeedUsageUseCase;
+       _deregisterSeedUsageWithFingerprintCheck = deregisterSeedUsageWithFingerprintCheck;
 
   Future<({String fingerprint, SeedSecret secret})> createNewMnemonic({
     String? passphrase,
@@ -110,21 +106,12 @@ class SeedsFacade {
     required SeedUsagePurpose purpose,
   }) async {
     try {
-      // Ensure the usage exists
-      final result = await _getSeedUsageByConsumerUseCase.execute(
-        GetSeedUsageByConsumerQuery(purpose: purpose, consumerRef: consumerRef),
+      final command = DeregisterSeedUsageWithFingerprintCheckCommand(
+        fingerprint: fingerprint,
+        purpose: purpose,
+        consumerRef: consumerRef,
       );
-      final usage = result.usage;
-
-      if (usage.fingerprint != fingerprint) {
-        // The usage found does not match the provided fingerprint
-        throw FailedToDeregisterSeedUsageError(
-          usage.id,
-          'Fingerprint mismatch.',
-        );
-      }
-      final command = DeregisterSeedUsageCommand(seedUsageId: usage.id);
-      await _deregisterSeedUsageUseCase.execute(command);
+      await _deregisterSeedUsageWithFingerprintCheck.execute(command);
     } on SeedUsageNotFoundError {
       // If no usage found, nothing to deregister
       return;

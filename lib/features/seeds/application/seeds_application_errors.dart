@@ -110,3 +110,17 @@ class FailedToLoadLegacySeedsError extends SeedsApplicationError {
   const FailedToLoadLegacySeedsError(Object? cause)
     : super('Failed to load legacy seeds.', cause: cause);
 }
+
+class FingerprintMismatchError extends SeedsApplicationError {
+  final int seedUsageId;
+  final SeedUsagePurpose purpose;
+  final String consumerRef;
+
+  const FingerprintMismatchError({
+    required this.seedUsageId,
+    required this.purpose,
+    required this.consumerRef,
+  }) : super(
+         'Fingerprint mismatch for usage with purpose $purpose and consumerRef $consumerRef.',
+       );
+}

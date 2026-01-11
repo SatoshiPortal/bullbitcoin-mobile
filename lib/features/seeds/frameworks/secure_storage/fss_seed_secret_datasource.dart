@@ -1,10 +1,11 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/seeds/interface_adapters/seed_secrets/seed_secret_datasource.dart';
 import 'package:bb_mobile/features/seeds/interface_adapters/seed_secrets/seed_secret_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class FssSeedSecretDatasource {
+class FssSeedSecretDatasource implements SeedSecretDatasource {
   final FlutterSecureStorage _flutterSecureStorage;
   static const String _prefix = 'seed_';
 
