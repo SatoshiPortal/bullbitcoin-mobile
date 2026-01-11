@@ -12,7 +12,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:boltz/boltz.dart';
 
 Future<void> doMigration0_2to0_3() async {
-  final secureStorageDatasource = MigrationSecureStorageDatasource();
+  final secureStorageDatasource = locator<MigrationSecureStorageDatasource>();
   final hiveDatasource = locator<OldHiveDatasource>();
   final oldWalletRepository = OldWalletRepository(hiveDatasource);
 

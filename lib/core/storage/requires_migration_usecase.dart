@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_storage_keys.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
-// create an enum called Migration with two values v4 and v5
 enum MigrationRequired { v4, v5 }
 
 class RequiresMigrationUsecase {
@@ -20,11 +20,13 @@ class RequiresMigrationUsecase {
       key: OldStorageKeys.version.name,
     );
     if (fromVersion == null) {
+      log.fine('FINE: Migration not required');
       return null;
     }
     if (fromVersion.startsWith('0.1') ||
         fromVersion.startsWith('0.2') ||
         fromVersion.startsWith('0.3')) {
+      log.fine('FINE: Migration Required: v4');
       return MigrationRequired.v4;
     }
 
@@ -33,8 +35,10 @@ class RequiresMigrationUsecase {
       environment: Environment.mainnet,
     );
     if (newMainnetDefaultWallets.length < 2 && fromVersion.startsWith('0.4')) {
+      log.fine('FINE: Migration Required: v5');
       return MigrationRequired.v5;
     }
+    log.fine('FINE: Migration Not Required');
     return null;
   }
 }

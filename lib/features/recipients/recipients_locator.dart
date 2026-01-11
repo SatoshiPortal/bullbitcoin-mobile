@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
@@ -12,12 +14,10 @@ import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
 class RecipientsLocator {
   static void setup(GetIt locator) {
-    // Register recipients feature dependencies here
     registerFrameworks(locator);
     registerDrivenInterfaceAdapters(locator);
     registerApplicationServicesAndUseCases(locator);
@@ -25,21 +25,11 @@ class RecipientsLocator {
   }
 
   static void registerFrameworks(GetIt locator) {
-    // TODO: These instances should be moved to the core/shared locator so they can
-    //  be used by other features that need to call the Bull Bitcoin API, without
-    //  needing to have one big datasource with all API calls in it. Every feature
-    //  could then just reuse the clients and implement only the api calls they need
-    //  in their own gateways.
-    // The secure_storage and secure_storage_datasource were so much overkill,
-    // we should just share one instance with the settings like this.
-    locator.registerLazySingleton<FlutterSecureStorage>(
-      () => const FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true),
-      ),
-    );
     locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
       () => BullbitcoinApiKeyProvider(
-        secureStorage: locator<FlutterSecureStorage>(),
+        secureStorage: locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
       ),
     );
 
