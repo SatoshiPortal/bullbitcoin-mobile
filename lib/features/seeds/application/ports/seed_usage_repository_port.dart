@@ -8,5 +8,10 @@ abstract interface class SeedUsageRepositoryPort {
     required String consumerRef,
   });
   Future<bool> isUsed(String fingerprint);
+  Future<SeedUsage?> getByConsumer({
+    required SeedUsagePurpose purpose,
+    required String consumerRef,
+  });
+  Future<List<SeedUsage>> getAll();
   Future<void> deleteById(int id);
 }

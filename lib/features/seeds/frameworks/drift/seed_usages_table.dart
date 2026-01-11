@@ -8,4 +8,12 @@ class SeedUsages extends Table {
   TextColumn get purpose => textEnum<SeedUsagePurpose>()();
   TextColumn get consumerRef => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+    {
+      purpose,
+      consumerRef,
+    }, // Ensures (purpose, consumerRef) combination is unique
+  ];
 }

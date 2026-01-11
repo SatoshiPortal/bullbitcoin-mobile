@@ -5,6 +5,8 @@ import 'package:bb_mobile/features/seeds/application/ports/seed_crypto_port.dart
 import 'package:bb_mobile/features/seeds/application/ports/seed_secret_store_port.dart';
 import 'package:bb_mobile/features/seeds/application/ports/seed_usage_repository_port.dart';
 import 'package:bb_mobile/core/primitives/seeds/seed_secret.dart';
+import 'package:bb_mobile/features/seeds/application/seeds_application_errors.dart';
+import 'package:bb_mobile/features/seeds/domain/seeds_domain_errors.dart';
 
 class ImportSeedBytesCommand {
   Uint8List seedBytes;
@@ -39,23 +41,33 @@ class ImportSeedBytesUseCase {
 
   /// Returns the seed fingerprint identity.
   Future<ImportSeedBytesResult> execute(ImportSeedBytesCommand command) async {
-    // First create the secret to store
-    final seedSecret = SeedBytesSecret(command.seedBytes);
+    try {
+      // First create the secret to store
+      final seedSecret = SeedBytesSecret(command.seedBytes);
 
-    final fingerprint = await _seedCrypto.getFingerprintFromSeedSecret(
-      seedSecret,
-    );
+      final fingerprint = await _seedCrypto.getFingerprintFromSeedSecret(
+        seedSecret,
+      );
 
-    // Make sure the seed is successfully stored first before marking usage
-    await _seedSecretStore.save(fingerprint: fingerprint, secret: seedSecret);
+      // Make sure the seed is successfully stored first before marking usage
+      await _seedSecretStore.save(fingerprint: fingerprint, secret: seedSecret);
 
-    // Track usage
-    await _seedUsageRepository.add(
-      fingerprint: fingerprint,
-      purpose: command.purpose,
-      consumerRef: command.consumerRef,
-    );
+      // Track usage
+      await _seedUsageRepository.add(
+        fingerprint: fingerprint,
+        purpose: command.purpose,
+        consumerRef: command.consumerRef,
+      );
 
-    return ImportSeedBytesResult(fingerprint: fingerprint);
+      return ImportSeedBytesResult(fingerprint: fingerprint);
+    } on SeedsDomainError catch (e) {
+      // Map domain errors to application errors
+      // For now just wrap all in a generic business rule failed
+      throw BusinessRuleFailed(e);
+    } on SeedsApplicationError {
+      rethrow;
+    } catch (e) {
+      throw FailedToImportSeedBytesError(e);
+    }
   }
 }

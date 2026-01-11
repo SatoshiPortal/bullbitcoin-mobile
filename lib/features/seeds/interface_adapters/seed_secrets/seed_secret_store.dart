@@ -1,14 +1,13 @@
 import 'package:bb_mobile/core/primitives/seeds/seed_secret.dart';
 import 'package:bb_mobile/features/seeds/application/ports/seed_secret_store_port.dart';
-import 'package:bb_mobile/features/seeds/frameworks/secure_storage/fss_seed_secret_datasource.dart';
-import 'package:bb_mobile/features/seeds/frameworks/secure_storage/seed_secret_model.dart';
+import 'package:bb_mobile/features/seeds/interface_adapters/seed_secrets/seed_secret_mappers.dart';
+import 'package:bb_mobile/features/seeds/interface_adapters/seed_secrets/seed_secret_datasource.dart';
 
-class FssSeedSecretStore implements SeedSecretStorePort {
-  final FssSeedSecretDatasource _seedSecretDatasource;
+class SeedSecretStore implements SeedSecretStorePort {
+  final SeedSecretDatasource _seedSecretDatasource;
 
-  const FssSeedSecretStore({
-    required FssSeedSecretDatasource seedSecretDatasource,
-  }) : _seedSecretDatasource = seedSecretDatasource;
+  const SeedSecretStore({required SeedSecretDatasource seedSecretDatasource})
+    : _seedSecretDatasource = seedSecretDatasource;
 
   @override
   Future<void> save({
@@ -17,7 +16,7 @@ class FssSeedSecretStore implements SeedSecretStorePort {
   }) async {
     return _seedSecretDatasource.store(
       fingerprint: fingerprint,
-      seed: SeedSecretModel.fromSeedSecret(secret),
+      seed: secret.toModel(),
     );
   }
 
@@ -25,7 +24,7 @@ class FssSeedSecretStore implements SeedSecretStorePort {
   Future<SeedSecret> load(String fingerprint) async {
     return _seedSecretDatasource
         .get(fingerprint)
-        .then((model) => model!.toSeedSecret());
+        .then((model) => model!.toDomain());
   }
 
   @override
@@ -34,9 +33,9 @@ class FssSeedSecretStore implements SeedSecretStorePort {
   }
 
   @override
-  Future<List<SeedSecret>> listAll() async {
+  Future<List<SeedSecret>> loadAll() async {
     final models = await _seedSecretDatasource.getAll();
-    return models.map((model) => model.toSeedSecret()).toList();
+    return models.map((model) => model.toDomain()).toList();
   }
 
   @override

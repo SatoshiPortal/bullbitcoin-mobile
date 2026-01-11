@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/features/seeds/frameworks/secure_storage/seed_secret_model.dart';
+import 'package:bb_mobile/features/seeds/interface_adapters/seed_secrets/seed_secret_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -39,11 +39,6 @@ class FssSeedSecretDatasource {
     return _flutterSecureStorage.containsKey(key: key);
   }
 
-  Future<void> delete(String fingerprint) {
-    final key = composeSeedStorageKey(fingerprint);
-    return _flutterSecureStorage.delete(key: key);
-  }
-
   Future<List<SeedSecretModel>> getAll() async {
     final allEntries = await _flutterSecureStorage.readAll();
     // Top-level function for isolate processing
@@ -77,6 +72,11 @@ class FssSeedSecretDatasource {
 
     // Parse entries in isolate to avoid blocking UI
     return await compute(parseSeedsInIsolate, allEntries);
+  }
+
+  Future<void> delete(String fingerprint) {
+    final key = composeSeedStorageKey(fingerprint);
+    return _flutterSecureStorage.delete(key: key);
   }
 
   static String composeSeedStorageKey(String fingerprint) =>

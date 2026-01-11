@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 @immutable
 class SeedUsage {
-  final String id;
+  final int id;
   final String fingerprint;
   final SeedUsagePurpose purpose;
   final String consumerRef; // e.g. wallet id, bip85 id, nostr public key, etc.
