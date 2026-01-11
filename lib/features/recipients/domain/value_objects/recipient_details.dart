@@ -601,8 +601,11 @@ class PseColombiaDetails extends RecipientDetails {
         );
       }
     } else {
-      if ((name == null || name.trim().isEmpty)) {
-        throw ArgumentError('Name is required for individual accounts');
+      if (name == null || name.trim().isEmpty) {
+        throw ArgumentError('First name is required for individual accounts');
+      }
+      if (lastname == null || lastname.trim().isEmpty) {
+        throw ArgumentError('Last name is required for individual accounts');
       }
     }
     if (accountType.trim().isEmpty) {
@@ -692,8 +695,11 @@ class NequiColombiaDetails extends RecipientDetails {
         );
       }
     } else {
-      if ((name == null || name.trim().isEmpty)) {
-        throw ArgumentError('Name is required for individual accounts');
+      if (name == null || name.trim().isEmpty) {
+        throw ArgumentError('First name is required for individual accounts');
+      }
+      if (lastname == null || lastname.trim().isEmpty) {
+        throw ArgumentError('Last name is required for individual accounts');
       }
     }
     if (phoneNumber.trim().isEmpty) {

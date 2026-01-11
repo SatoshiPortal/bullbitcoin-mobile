@@ -363,7 +363,8 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) {
               if (v == null || v.trim().isEmpty) return context.loc.recipientFieldRequired;
-              if (!v.contains('@')) return context.loc.recipientInvalidEmail;
+              final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+              if (!emailRegex.hasMatch(v.trim())) return context.loc.recipientInvalidEmail;
               return null;
             },
             onChanged: (value) {
