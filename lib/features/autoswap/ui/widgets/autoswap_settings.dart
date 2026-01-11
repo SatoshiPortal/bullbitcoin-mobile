@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +53,6 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
           previous.successfullySaved != current.successfullySaved &&
           current.successfullySaved,
       listener: (context, state) {
-        context.read<WalletBloc>().add(const WalletRefreshed());
         Navigator.of(context).pop();
       },
       child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(

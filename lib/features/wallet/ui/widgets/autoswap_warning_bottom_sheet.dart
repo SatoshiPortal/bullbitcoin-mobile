@@ -1,12 +1,8 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -26,26 +22,6 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final autoSwapSettings = context.select(
-      (WalletBloc bloc) => bloc.state.autoSwapSettings,
-    );
-
-    final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state.bitcoinUnit ?? BitcoinUnit.btc,
-    );
-
-    final targetBalance = autoSwapSettings != null
-        ? (bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(autoSwapSettings.balanceThresholdSats))
-            : FormatAmount.sats(autoSwapSettings.balanceThresholdSats))
-        : (bitcoinUnit == BitcoinUnit.btc ? '0.01 BTC' : '1,000,000 sats');
-
-    final maxBalance = autoSwapSettings != null
-        ? (bitcoinUnit == BitcoinUnit.btc
-            ? FormatAmount.btc(ConvertAmount.satsToBtc(autoSwapSettings.triggerBalanceSats))
-            : FormatAmount.sats(autoSwapSettings.triggerBalanceSats))
-        : (bitcoinUnit == BitcoinUnit.btc ? '0.02 BTC' : '2,000,000 sats');
-
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -75,13 +51,13 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
           ),
           const Gap(8),
           BBText(
-            'Target Balance $targetBalance',
+            context.loc.autoswapWarningBaseBalance,
             style: context.font.bodyMedium,
             color: context.appColors.onSurface,
           ),
           const Gap(4),
           BBText(
-            'Maximum Balance of $maxBalance',
+            context.loc.autoswapWarningTriggerAmount,
             style: context.font.bodyMedium,
             color: context.appColors.onSurface,
           ),
