@@ -18,6 +18,8 @@ class NequiCopForm extends StatefulWidget {
 
 class NequiCopFormState extends State<NequiCopForm> {
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _phoneNumberFocusNode = FocusNode();
+  final FocusNode _documentIdFocusNode = FocusNode();
   final FocusNode _firstNameFocusNode = FocusNode();
   final FocusNode _lastNameFocusNode = FocusNode();
   final FocusNode _corporateNameFocusNode = FocusNode();
@@ -40,6 +42,8 @@ class NequiCopFormState extends State<NequiCopForm> {
 
   @override
   void dispose() {
+    _phoneNumberFocusNode.dispose();
+    _documentIdFocusNode.dispose();
     _firstNameFocusNode.dispose();
     _lastNameFocusNode.dispose();
     _corporateNameFocusNode.dispose();
@@ -79,9 +83,11 @@ class NequiCopFormState extends State<NequiCopForm> {
           BBTextFormField(
             labelText: context.loc.recipientPhoneNumber,
             hintText: context.loc.recipientPhoneNumberHint,
+            focusNode: _phoneNumberFocusNode,
             autofocus: true,
             prefixText: '+57',
             textInputAction: TextInputAction.next,
+            onFieldSubmitted: (_) => _documentIdFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? context.loc.recipientFieldRequired
                 : null,
@@ -157,6 +163,7 @@ class NequiCopFormState extends State<NequiCopForm> {
               CopDocumentTypeViewModel.registroCivil => 'Registro Civil',
             },
             hintText: 'Enter document number',
+            focusNode: _documentIdFocusNode,
             textInputAction: TextInputAction.next,
             onFieldSubmitted: (_) => _firstNameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)

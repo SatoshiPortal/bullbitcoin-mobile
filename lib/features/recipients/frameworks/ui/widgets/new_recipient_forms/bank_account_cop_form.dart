@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_bank_acount_type_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_bank_account_type_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_bank_institutions_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_document_type_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
@@ -29,7 +29,7 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
   CopBankInstitutionsViewModel? _institutionNumber;
-  CopBankAcountTypeViewModel _accountType = CopBankAcountTypeViewModel.savings;
+  CopBankAccountTypeViewModel _accountType = CopBankAccountTypeViewModel.savings;
   String _accountNumber = '';
   CopDocumentTypeViewModel _documentType = CopDocumentTypeViewModel.cc;
   String _documentId = '';
@@ -156,7 +156,7 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<CopBankAcountTypeViewModel>(
+              child: DropdownButton<CopBankAccountTypeViewModel>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
@@ -172,12 +172,12 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
                     _accountType = value;
                   });
                 },
-                items: CopBankAcountTypeViewModel.values.map((type) {
-                  return DropdownMenuItem<CopBankAcountTypeViewModel>(
+                items: CopBankAccountTypeViewModel.values.map((type) {
+                  return DropdownMenuItem<CopBankAccountTypeViewModel>(
                     value: type,
                     child: Text(switch (type) {
-                      CopBankAcountTypeViewModel.savings => context.loc.recipientSavings,
-                      CopBankAcountTypeViewModel.checking => context.loc.recipientChecking,
+                      CopBankAccountTypeViewModel.savings => context.loc.recipientSavings,
+                      CopBankAccountTypeViewModel.checking => context.loc.recipientChecking,
                     }),
                   );
                 }).toList(),
