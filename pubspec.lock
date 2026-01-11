@@ -1293,7 +1293,7 @@ packages:
     source: hosted
     version: "2.0.0"
   mockito:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: mockito
       sha256: dac24d461418d363778d53198d9ac0510b9d073869f078450f195766ec48d05e
