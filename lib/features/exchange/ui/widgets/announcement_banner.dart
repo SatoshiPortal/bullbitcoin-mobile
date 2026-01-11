@@ -77,6 +77,8 @@ class _AnnouncementItem extends StatelessWidget {
                     color: isDarkMode
                         ? context.appColors.onSurface
                         : context.appColors.onSecondary,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const Gap(4),
                   BBText(
