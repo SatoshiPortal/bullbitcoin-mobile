@@ -894,6 +894,10 @@
   "@exchangeFileUploadStatusAccepted": {
     "description": "Status badge when files have been accepted"
   },
+  "exchangeFileUploadStatusRejected": "Rejected - Tap to re-upload",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
   "exchangeFileUploadInReviewMessage": "Your documents are currently under review. You cannot upload more files until the review is complete.",
   "@exchangeFileUploadInReviewMessage": {
     "description": "Message shown when documents are under review"

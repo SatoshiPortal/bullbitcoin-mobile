@@ -131,10 +131,14 @@ class _UploadOptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<FileUploadCubit>().state;
+    final status = state.secureUploadStatus;
 
-    // Ignore interaction when uploading or when file is already uploaded (like BB-Exchange IgnoreField)
-    final shouldIgnore = state.isUploading ||
-        state.secureUploadStatus != SecureUploadStatus.upload;
+    // Allow interaction for upload and rejected statuses
+    final canInteract = status == SecureUploadStatus.upload ||
+        status == SecureUploadStatus.rejected;
+
+    // Ignore interaction when uploading or when status doesn't allow uploads
+    final shouldIgnore = state.isUploading || !canInteract;
 
     return IgnorePointer(
       ignoring: shouldIgnore,
@@ -150,49 +154,67 @@ class _UploadOptionCard extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    BBText(
-                      context.loc.exchangeFileUploadDocumentTitle,
-                      style: context.font.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: context.appColors.onSurface,
-                      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        BBText(
+                          context.loc.exchangeFileUploadDocumentTitle,
+                          style: context.font.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: context.appColors.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        BBText(
+                          context.loc.exchangeFileUploadInstructions,
+                          style: context.font.bodySmall?.copyWith(
+                            color: context.appColors.textMuted,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    BBText(
-                      context.loc.exchangeFileUploadInstructions,
-                      style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.textMuted,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              if (state.isLoadingUser)
-                SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: context.appColors.primary,
                   ),
-                )
-              else
-                _UploadStatusButton(
-                  status: state.secureUploadStatus,
+                  // Show button on right for non-rejected statuses
+                  if (status != SecureUploadStatus.rejected) ...[
+                    const SizedBox(width: 16),
+                    if (state.isLoadingUser)
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: context.appColors.primary,
+                        ),
+                      )
+                    else
+                      _UploadStatusButton(
+                        status: status,
+                        isUploading: state.isUploading,
+                        onPressed: () {
+                          context.read<FileUploadCubit>().pickAndUploadFile();
+                        },
+                      ),
+                  ],
+                ],
+              ),
+              // Show rejected status and re-upload button below the text
+              if (status == SecureUploadStatus.rejected) ...[
+                const SizedBox(height: 12),
+                _RejectedStatusWithReupload(
                   isUploading: state.isUploading,
                   onPressed: () {
                     context.read<FileUploadCubit>().pickAndUploadFile();
                   },
                 ),
+              ],
             ],
           ),
         ),
@@ -300,7 +322,97 @@ class _UploadStatusButton extends StatelessWidget {
             ),
           ),
         );
+
+      case SecureUploadStatus.rejected:
+        // Handled separately in _RejectedStatusWithReupload
+        return const SizedBox.shrink();
     }
+  }
+}
+
+/// Widget showing rejected status with re-upload button below the text
+class _RejectedStatusWithReupload extends StatelessWidget {
+  const _RejectedStatusWithReupload({
+    required this.isUploading,
+    required this.onPressed,
+  });
+
+  final bool isUploading;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Rejected status indicator
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: context.appColors.error.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 14,
+                color: context.appColors.error,
+              ),
+              const SizedBox(width: 4),
+              BBText(
+                'Rejected',
+                style: context.font.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: context.appColors.error,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Re-upload button
+        InkWell(
+          onTap: isUploading ? null : onPressed,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: context.appColors.surfaceContainerHighest,
+            ),
+            child: isUploading
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: context.appColors.primary,
+                    ),
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.upload_file,
+                        size: 20,
+                        color: context.appColors.onSurface,
+                      ),
+                      const SizedBox(width: 8),
+                      BBText(
+                        'Tap to re-upload',
+                        style: context.font.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: context.appColors.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ],
+    );
   }
 }
 

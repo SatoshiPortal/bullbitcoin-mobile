@@ -26,22 +26,13 @@ class FileUploadCubit extends Cubit<FileUploadState> {
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
-      // Determine server submitted count based on status
-      // If secureFileUpload is underReview, assume max files are submitted
-      // This is a simplification - ideally we'd query the actual KYC list
-      final status = userSummary.kycDocumentStatus?.secureFileUpload;
-      final serverCount =
-          status?.isUnderReview == true || status?.isAccepted == true
-              ? FileToUpload.maxFileCount
-              : 0;
-
       emit(
         state.copyWith(
           isLoadingUser: false,
+          isUserDataLoaded: true,
           userId: userSummary.userId,
           secureFileUploadStatus:
               userSummary.kycDocumentStatus?.secureFileUpload,
-          serverSubmittedCount: serverCount,
         ),
       );
     } catch (e) {
@@ -49,6 +40,7 @@ class FileUploadCubit extends Cubit<FileUploadState> {
       emit(
         state.copyWith(
           isLoadingUser: false,
+          isUserDataLoaded: false,
           error: 'Failed to load user data',
         ),
       );
@@ -97,18 +89,14 @@ class FileUploadCubit extends Cubit<FileUploadState> {
       }
 
       if (file.bytes == null) {
-        emit(
-          state.copyWith(
-            isUploading: false,
-            error: 'Failed to read file',
-          ),
-        );
+        emit(state.copyWith(isUploading: false, error: 'Failed to read file'));
         return;
       }
 
       // Generate standardized filename like BB-Exchange
-      final standardizedFileName =
-          state.userId != null ? 'doc-${state.userId}-ID' : file.name;
+      final standardizedFileName = state.userId != null
+          ? 'doc-${state.userId}-ID'
+          : file.name;
 
       final uploadResult = await _uploadKycDocumentUsecase.execute(
         fileBytes: file.bytes!,
@@ -116,12 +104,7 @@ class FileUploadCubit extends Cubit<FileUploadState> {
       );
 
       if (uploadResult.isSuccess) {
-        emit(
-          state.copyWith(
-            isUploading: false,
-            uploadComplete: true,
-          ),
-        );
+        emit(state.copyWith(isUploading: false, uploadComplete: true));
         // Refresh user data to update the secure file upload status
         await refreshUserData();
       } else {
@@ -159,4 +142,3 @@ class FileUploadCubit extends Cubit<FileUploadState> {
     emit(state.copyWith(error: null));
   }
 }
-

@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/entity/file_upload.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -14,6 +13,9 @@ enum SecureUploadStatus {
 
   /// Files have been accepted
   accepted,
+
+  /// Files were rejected - can re-upload
+  rejected,
 }
 
 @freezed
@@ -24,37 +26,49 @@ abstract class FileUploadState with _$FileUploadState {
     String? error,
     @Default(false) bool uploadComplete,
 
+    /// Whether user data was successfully loaded from the API
+    @Default(false) bool isUserDataLoaded,
+
     /// User ID for generating standardized filenames
     String? userId,
 
-    /// Secure file upload status from the API
+    /// Secure file upload status from the API (from UserSummary)
     KycDocumentStatus? secureFileUploadStatus,
-
-    /// Number of files already submitted on the server
-    @Default(0) int serverSubmittedCount,
   }) = _FileUploadState;
 
   const FileUploadState._();
 
-  /// Whether user can add more files (only 1 file allowed now)
+  /// Whether user can upload files
+  /// Only allowed when data is loaded and status permits uploading
   bool get canAddMoreFiles =>
-      serverSubmittedCount < FileToUpload.maxFileCount &&
-      secureUploadStatus == SecureUploadStatus.upload;
+      isUserDataLoaded &&
+      (secureUploadStatus == SecureUploadStatus.upload ||
+          secureUploadStatus == SecureUploadStatus.rejected);
 
   /// Get the UI status for the secure upload feature
+  /// Uses only the secureFileUploadStatus from UserSummary API response
   SecureUploadStatus get secureUploadStatus {
-    // If status from API indicates accepted, show accepted
-    if (secureFileUploadStatus == KycDocumentStatus.accepted) {
-      return SecureUploadStatus.accepted;
-    }
+    // Handle each status explicitly based on API response
+    switch (secureFileUploadStatus) {
+      case KycDocumentStatus.accepted:
+        // File was accepted - show accepted status
+        return SecureUploadStatus.accepted;
 
-    // If status from API indicates under review OR max files submitted, show in review
-    if (secureFileUploadStatus == KycDocumentStatus.underReview ||
-        serverSubmittedCount >= FileToUpload.maxFileCount) {
-      return SecureUploadStatus.inReview;
-    }
+      case KycDocumentStatus.underReview:
+        // File is under review - cannot upload new files
+        return SecureUploadStatus.inReview;
 
-    // Otherwise, can upload
-    return SecureUploadStatus.upload;
+      case KycDocumentStatus.notUploaded:
+        // No file uploaded yet - can upload
+        return SecureUploadStatus.upload;
+
+      case KycDocumentStatus.rejected:
+        // File was rejected - show rejected status with re-upload option
+        return SecureUploadStatus.rejected;
+
+      case null:
+        // Status is null - show upload button (loading state handled separately in UI)
+        return SecureUploadStatus.upload;
+    }
   }
 }
