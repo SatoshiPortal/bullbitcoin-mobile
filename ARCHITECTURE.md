@@ -137,7 +137,7 @@ In this project, BLoCs/Cubits are used for state management, but other solutions
 ### Rules for AI:
 - Always follow the architecture of the project when developing features.
 - Always use colors from the theme; never use raw colors. When the user explains something using raw color language; find the closest color in the theme and based on the application use a color from the theme that would make sense in dark mode too but do not try to change the color theme file by yourself ever.
-- 
+- Never remove comments unless explicitly asked to
 
 ### Further reading
 

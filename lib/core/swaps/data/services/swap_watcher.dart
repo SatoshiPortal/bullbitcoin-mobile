@@ -810,19 +810,6 @@ class SwapWatcherService {
           return;
         case SwapType.liquidToBitcoin:
         case SwapType.bitcoinToLiquid:
-          if (swap is ChainSwap &&
-              swap.receiveTxid == null &&
-              swap.refundTxid == null) {
-            if (swap.status == SwapStatus.claimable) {
-              final updatedSwap = swap.copyWith(status: SwapStatus.claimable);
-              await _boltzRepo.updateSwap(swap: updatedSwap);
-            } else if (swap.status == SwapStatus.refundable) {
-              final updatedSwap = swap.copyWith(status: SwapStatus.refundable);
-              await _boltzRepo.updateSwap(swap: updatedSwap);
-            }
-          } else {
-            return;
-          }
       }
     } catch (e, st) {
       log.severe(
