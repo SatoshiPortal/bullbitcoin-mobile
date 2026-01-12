@@ -21,7 +21,7 @@ class StorageLocator {
     const secureStorage = FlutterSecureStorage(
       aOptions: AndroidOptions(),
       iOptions: IOSOptions(
-        accessibility: KeychainAccessibility.first_unlock_this_device,
+        accessibility: KeychainAccessibility.first_unlock,
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
       ),
     );
