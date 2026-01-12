@@ -20,7 +20,7 @@ dependencies:
   gap: ^3.0.1
   go_router: ^17.0.0
   google_fonts: ^6.3.3
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^10.0.0
   path_provider: ^2.1.5
   payjoin_flutter:
     git:
@@ -50,7 +50,7 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart
-      ref: new-swap-secrets
+      ref: 15b88d4052d6185883977e7fb144336396499764
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
@@ -101,9 +101,9 @@ dependencies:
   logging_colorful: ^1.3.2
   satoshifier:
     git:
-      url: https://github.com/SatoshiPortal/dart-satoshifier
-      ref: update-boltz-dependency
-  flutter_nfc_kit: ^3.6.0
+      url: https://github.com/SatoshiPortal/satoshifier-dart
+      ref: 2b8a4d272fd41ae854e7c89ebf5ccd59f4cf4fb2
+  flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
       url: https://github.com/SatoshiPortal/ledger-flutter-plus-plugins

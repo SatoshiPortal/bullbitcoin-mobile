@@ -71,7 +71,7 @@ enum SettingsRoute {
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
   appSettings('app-settings'),
-  swapSettings('swap-settings');
+  swapSettings('swap-settings'),
   theme('theme'),
   autoswapSettings('autoswap-settings');
 
