@@ -29,7 +29,12 @@ class ExchangeCubit extends Cubit<ExchangeState> {
        _exchangeNotificationUsecase = exchangeNotificationUsecase,
        super(const ExchangeState()) {
     _notificationSubscription = _exchangeNotificationUsecase.messageStream
-        .where((message) => message.type == 'user')
+        .where(
+          (message) =>
+              message.type == 'balance' ||
+              message.type == 'group' ||
+              message.type == 'kyc',
+        )
         .listen((_) => fetchUserSummary());
   }
 
