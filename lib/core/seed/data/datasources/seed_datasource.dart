@@ -22,7 +22,7 @@ class SeedDatasource {
 
   Future<SeedModel> get(String fingerprint) async {
     const maxRetries = 5;
-    const initialDelay = Duration(milliseconds: 200);
+    const initialDelay = Duration(milliseconds: 100);
     final key = composeSeedStorageKey(fingerprint);
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
