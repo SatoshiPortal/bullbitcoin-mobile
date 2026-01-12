@@ -26,7 +26,7 @@ import 'package:bb_mobile/features/secrets/interface_adapters/secrets/secret_sto
 import 'package:bb_mobile/features/secrets/presentation/blocs/secrets_view_bloc.dart';
 import 'package:bb_mobile/features/secrets/public/secrets_facade.dart';
 
-class SeedsDiModule implements FeatureDiModule {
+class SecretsDiModule implements FeatureDiModule {
   @override
   Future<void> registerFrameworksAndDrivers() async {
     // Seed secret datasource (Flutter Secure Storage)

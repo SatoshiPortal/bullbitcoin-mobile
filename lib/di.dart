@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/infra/di/feature_di_module.dart';
 import 'package:bb_mobile/features/address_view/address_view_di_module.dart';
-import 'package:bb_mobile/features/all_seed_view/all_seed_view_di_module.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_di_module.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_di_module.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_di_module.dart';
@@ -25,6 +24,7 @@ import 'package:bb_mobile/features/pin_code/pin_code_di_module.dart';
 import 'package:bb_mobile/features/receive/receive_di_module.dart';
 import 'package:bb_mobile/features/recipients/recipients_di_module.dart';
 import 'package:bb_mobile/features/replace_by_fee/replace_by_fee_di_module.dart';
+import 'package:bb_mobile/features/secrets/secrets_di_module.dart';
 import 'package:bb_mobile/features/sell/sell_di_module.dart';
 import 'package:bb_mobile/features/send/send_di_module.dart';
 import 'package:bb_mobile/features/settings/settings_di_module.dart';
@@ -50,6 +50,7 @@ Future<void> initializeDependencies() async {
   // Ideally features should be as independent as possible,
   // communicating only via well-defined, strict interfaces (facades) if necessary.
   final featureModules = <FeatureDiModule>[
+    SecretsDiModule(), // ✅ Refactored
     // TODO: Remove Ark dependency from Settings feature and merge with core settings and define a clear api/facade for it
     SettingsDiModule(), // Depends on core settings, core storage, core ark
     // TODO: Manage all Tor settings in this feature itself so core settings can be removed as a dependency and merge with core tor in features/tor and define a clear api/facade for it
@@ -61,7 +62,6 @@ Future<void> initializeDependencies() async {
     // TODO: Move core labels to features and define a clear api/facade for it
     // TODO: Merge core seed and seed view features into one feature and define a clear api/facade for it
     LegacySeedViewDiModule(), // Depends on core storage
-    AllSeedViewDiModule(), // Depends on core seed, core wallet
     // TODO: Merge core bitbox in features/bitbox and define a clear api/facade for it
     BitBoxDiModule(), // Depends on core bitbox
     // TODO: Merge core ledger in features/ledger and define a clear api/facade for it
