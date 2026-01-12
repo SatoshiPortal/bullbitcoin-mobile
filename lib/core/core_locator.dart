@@ -33,8 +33,8 @@ class CoreLocator {
     await MempoolLocator.registerDatasources(locator);
     PayjoinLocator.registerDatasources(locator);
     await RecoverbullLocator.registerDatasources(locator);
-    SeedLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
+    SeedLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
     await SettingsLocator.registerDatasources(locator);
