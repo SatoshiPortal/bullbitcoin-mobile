@@ -22,7 +22,7 @@ class SeedDatasource {
 
   Future<SeedModel> get(String fingerprint) async {
     const maxRetries = 5;
-    const initialDelay = Duration(milliseconds: 100);
+    const initialDelay = Duration(milliseconds: 300);
     final key = composeSeedStorageKey(fingerprint);
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
@@ -43,6 +43,9 @@ class SeedDatasource {
           final delay = Duration(
             milliseconds: initialDelay.inMilliseconds * (1 << attempt),
           );
+          log.fine(
+            'Seed read returned null for fingerprint $fingerprint on attempt ${attempt + 1}, retrying in ${delay.inMilliseconds}ms',
+          );
           await Future.delayed(delay);
           continue;
         }
@@ -59,10 +62,16 @@ class SeedDatasource {
           final delay = Duration(
             milliseconds: initialDelay.inMilliseconds * (1 << attempt),
           );
+          log.fine(
+            'Exception reading seed for fingerprint $fingerprint on attempt ${attempt + 1}: $e, retrying in ${delay.inMilliseconds}ms',
+          );
           await Future.delayed(delay);
           continue;
         }
 
+        log.severe(
+          'Failed to read seed for fingerprint $fingerprint after $maxRetries attempts: $e',
+        );
         throw SeedNotFoundException(
           'Seed not found for fingerprint: $fingerprint',
         );
