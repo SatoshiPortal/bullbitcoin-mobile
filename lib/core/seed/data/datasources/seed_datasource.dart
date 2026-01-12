@@ -39,15 +39,6 @@ class SeedDatasource {
           return seed;
         }
 
-        if (attempt == maxRetries - 1) {
-          final exists = await _secureStorage.hasValue(key);
-          if (!exists) {
-            throw SeedNotFoundException(
-              'Seed not found for fingerprint: $fingerprint',
-            );
-          }
-        }
-
         if (attempt < maxRetries - 1) {
           final delay = Duration(
             milliseconds: initialDelay.inMilliseconds * (1 << attempt),
@@ -62,17 +53,6 @@ class SeedDatasource {
       } catch (e) {
         if (e is SeedNotFoundException) {
           rethrow;
-        }
-
-        if (attempt == maxRetries - 1) {
-          try {
-            final exists = await _secureStorage.hasValue(key);
-            if (!exists) {
-              throw SeedNotFoundException(
-                'Seed not found for fingerprint: $fingerprint',
-              );
-            }
-          } catch (_) {}
         }
 
         if (attempt < maxRetries - 1) {
