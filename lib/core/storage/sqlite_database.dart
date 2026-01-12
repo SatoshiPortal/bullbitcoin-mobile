@@ -28,7 +28,7 @@ import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-import 'package:bb_mobile/features/seeds/frameworks/drift/seed_usages_table.dart';
+import 'package:bb_mobile/features/secrets/frameworks/drift/secret_usages_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
@@ -56,7 +56,7 @@ part 'sqlite_database.g.dart';
     Bip85Derivations,
     Recoverbull,
     Prices,
-    SeedUsages,
+    SecretUsages,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {

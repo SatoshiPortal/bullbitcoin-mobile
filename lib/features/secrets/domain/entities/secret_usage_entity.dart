@@ -1,0 +1,19 @@
+import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
+import 'package:meta/meta.dart';
+
+@immutable
+class SecretUsage {
+  final int id;
+  final String fingerprint;
+  final SecretUsagePurpose purpose;
+  final String consumerRef; // e.g. wallet id, bip85 id, nostr public key, etc.
+  final DateTime createdAt;
+
+  const SecretUsage({
+    required this.id,
+    required this.fingerprint,
+    required this.purpose,
+    required this.consumerRef,
+    required this.createdAt,
+  });
+}
