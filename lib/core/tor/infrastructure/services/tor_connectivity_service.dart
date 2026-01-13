@@ -1,14 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/tor/domain/ports/socket_port.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/tor_settings/domain/ports/socket_port.dart';
 
-class CheckTorProxyConnectionUsecase {
+class TorConnectivityService {
   final SocketPort _socketPort;
 
-  const CheckTorProxyConnectionUsecase({required SocketPort socketPort})
+  // cache to avoid repeated connection checks
+  TorStatus? _cachedStatus;
+  int? _cachedPort;
+  DateTime? _cacheTime;
+  static const _cacheDuration = Duration(seconds: 30);
+
+  TorConnectivityService({required SocketPort socketPort})
     : _socketPort = socketPort;
 
   /// Checks if a Tor SOCKS5 proxy is running and accessible on the given port
@@ -19,7 +25,25 @@ class CheckTorProxyConnectionUsecase {
   /// 3. The app has permission to connect
   ///
   /// Returns the appropriate [TorStatus] based on the connection check
-  Future<TorStatus> execute(int port) async {
+  Future<TorStatus> checkConnection(int port) async {
+    if (_cachedStatus != null &&
+        _cachedPort == port &&
+        _cacheTime != null &&
+        DateTime.now().difference(_cacheTime!) < _cacheDuration) {
+      log.config('Using cached Tor proxy status for port $port');
+      return _cachedStatus!;
+    }
+
+    final status = await _performCheck(port);
+
+    _cachedStatus = status;
+    _cachedPort = port;
+    _cacheTime = DateTime.now();
+
+    return status;
+  }
+
+  Future<TorStatus> _performCheck(int port) async {
     try {
       // Test SOCKS5 proxy functionality by attempting SOCKS5 handshake
       // This verifies both that the port is open AND that our app can use it
