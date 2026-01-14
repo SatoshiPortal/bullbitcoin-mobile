@@ -1,47 +1,24 @@
-import 'package:bb_mobile/features/labels/data/label_repository.dart';
-import 'package:bb_mobile/features/labels/domain/label.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
-import 'package:bb_mobile/core/storage/tables/labels_table.dart';
-import 'package:bb_mobile/core/utils/generic_extensions.dart';
-import 'package:bip329_labels/bip329_labels.dart' as bip329;
+import 'package:bb_mobile/features/labels/application/labels_converter_port.dart';
+import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
+import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
+import 'package:bb_mobile/features/labels/domain/label_format.dart';
 
 class ExportLabelsUsecase {
-  final LabelsRepository _labelRepository;
-  final _fileSystemRepository = FileSystemRepository();
+  final LabelsRepositoryPort _labelRepository;
+  final LabelsConverterPort _labelConverter;
 
-  ExportLabelsUsecase({required LabelsRepository labelRepository})
-    : _labelRepository = labelRepository;
+  ExportLabelsUsecase({
+    required LabelsRepositoryPort labelRepository,
+    required LabelsConverterPort labelConverter,
+  }) : _labelRepository = labelRepository,
+       _labelConverter = labelConverter;
 
-  Future<int> call() async {
+  Future<String> call(LabelFormat format) async {
     final labels = await _labelRepository.fetchAll();
-
-    final bip329Labels = labels.map((label) {
-      switch (label.type) {
-        case LabelType.tx:
-          return bip329.TxLabel(ref: label.ref, label: label.label);
-        case LabelType.address:
-          return bip329.AddressLabel(ref: label.ref, label: label.label);
-        case LabelType.pubkey:
-          return bip329.PubkeyLabel(ref: label.ref, label: label.label);
-        case LabelType.input:
-          return bip329.InputLabel(ref: label.ref, label: label.label);
-        case LabelType.output:
-          final spendable = label is OutputLabel ? label.spendable : null;
-          return bip329.OutputLabel(
-            ref: label.ref,
-            label: label.label,
-            spendable: spendable ?? false,
-          );
-        case LabelType.xpub:
-          return bip329.XpubLabel(ref: label.ref, label: label.label);
-      }
-    }).toList();
-
-    final filename =
-        'bull_labels_${DateTime.now().toIso8601WithoutMilliseconds()}.jsonl';
-    final jsonLines = bip329.Bip329Label.toJsonLines(bip329Labels);
-    await _fileSystemRepository.saveFile(jsonLines, filename);
-
-    return bip329Labels.length;
+    final formattedLabels = _labelConverter.convertTo(
+      format: format,
+      labels: labels,
+    );
+    return (formattedLabels as FormattedLabelsBIP329).jsonl;
   }
 }
