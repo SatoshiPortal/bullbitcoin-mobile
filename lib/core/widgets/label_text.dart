@@ -5,16 +5,14 @@ import 'package:flutter/material.dart';
 class LabelText extends StatelessWidget {
   const LabelText(this.label, {super.key, this.style});
 
-  final Label label;
+  final String label;
   final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
-    String displayLabel = label.label;
-    if (LabelSystem.isSystemLabel(label.label)) {
-      displayLabel = LabelSystem.fromLabel(
-        label.label,
-      ).toTranslatedLabel(context);
+    String displayLabel = label;
+    if (LabelSystem.isSystemLabel(label)) {
+      displayLabel = LabelSystem.fromLabel(label).toTranslatedLabel(context);
     }
     return LayoutBuilder(
       builder: (context, constraints) {

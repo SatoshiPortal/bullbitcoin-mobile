@@ -70,9 +70,7 @@ class LabelExchangeOrdersUsecase {
     try {
       final allLabels = await _fetchAllLabelsUsecase.execute();
       return allLabels.any(
-        (label) =>
-            label.label == LabelSystem.exchangeBuy.label ||
-            label.label == LabelSystem.exchangeSell.label,
+        (label) => SystemLabel.is
       );
     } catch (e) {
       log.warning('$LabelExchangeOrdersUsecase: $e');

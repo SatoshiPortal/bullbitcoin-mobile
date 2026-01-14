@@ -1,16 +1,18 @@
-import 'package:bb_mobile/features/labels/data/label_repository.dart';
+import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class FetchDistinctLabelsUsecase {
-  final LabelsRepository _labelRepository;
+  final LabelsRepositoryPort _labelRepository;
 
-  FetchDistinctLabelsUsecase({required LabelsRepository labelRepository})
+  FetchDistinctLabelsUsecase({required LabelsRepositoryPort labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<List<String>> execute() async {
+  Future<Set<String>> execute() async {
     try {
-      return await _labelRepository.fetchDistinct();
+      final labels = await _labelRepository.fetchAll();
+      final strings = labels.map((label) => label.label).toList();
+      return strings.toSet();
     } on LabelError {
       rethrow;
     } catch (e) {
