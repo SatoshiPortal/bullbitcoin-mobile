@@ -100,6 +100,8 @@ class RecipientsLocator {
 
   static void registerDrivingInterfaceAdapters(GetIt locator) {
     // Register presenters, controllers, etc. here
+    // Note: VirtualIbanBloc is a singleton accessed via locator<VirtualIbanBloc>()
+    // directly in RecipientsBloc, following BB-Exchange's EuVibanCubit pattern
     locator.registerFactoryParam<
       RecipientsBloc,
       AllowedRecipientFiltersViewModel?,

@@ -18,9 +18,15 @@ class RecipientsRouteExtra {
   final Future<void>? Function(RecipientViewModel recipient)
   onRecipientSelected;
 
+  /// When true, skips Step 1 (type selection) and goes directly to Step 2
+  /// (tabbed form/list view). Used when a recipient is pre-selected from
+  /// settings or when the caller wants to show the list directly.
+  final bool skipTypeSelection;
+
   RecipientsRouteExtra({
     this.allowedRecipientsFilters,
     required this.onRecipientSelected,
+    this.skipTypeSelection = false,
   });
 }
 
@@ -38,7 +44,9 @@ class RecipientsRouter {
             (context) => locator<RecipientsBloc>(
               param1: extra.allowedRecipientsFilters,
               param2: extra.onRecipientSelected,
-            )..add(const RecipientsEvent.started()),
+            )..add(RecipientsEvent.started(
+                skipTypeSelection: extra.skipTypeSelection,
+              )),
         child: const RecipientsScreen(),
       );
     },

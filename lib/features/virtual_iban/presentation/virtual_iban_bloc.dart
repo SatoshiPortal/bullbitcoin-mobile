@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/create_virtual_iban_usec
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_virtual_iban_details_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/virtual_iban/domain/virtual_iban_location.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -15,17 +14,21 @@ part 'virtual_iban_event.dart';
 part 'virtual_iban_state.dart';
 part 'virtual_iban_bloc.freezed.dart';
 
+/// Singleton bloc for managing Virtual IBAN (Confidential SEPA) state.
+///
+/// This bloc is registered as a lazy singleton and auto-loads VIBAN details
+/// on first access. Any widget or bloc can access its state via locator.
+///
+/// Following BB-Exchange's EuVibanCubit pattern.
 class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
   VirtualIbanBloc({
     required GetVirtualIbanDetailsUsecase getVirtualIbanDetailsUsecase,
     required CreateVirtualIbanUsecase createVirtualIbanUsecase,
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required VirtualIbanLocation location,
-  }) : _getVirtualIbanDetailsUsecase = getVirtualIbanDetailsUsecase,
-       _createVirtualIbanUsecase = createVirtualIbanUsecase,
-       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _location = location,
-       super(const VirtualIbanState.initial()) {
+  })  : _getVirtualIbanDetailsUsecase = getVirtualIbanDetailsUsecase,
+        _createVirtualIbanUsecase = createVirtualIbanUsecase,
+        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+        super(const VirtualIbanState.initial()) {
     on<VirtualIbanStarted>(_onStarted);
     on<VirtualIbanNameConfirmationToggled>(_onNameConfirmationToggled);
     on<VirtualIbanCreateRequested>(_onCreateRequested);
@@ -36,12 +39,9 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
   final GetVirtualIbanDetailsUsecase _getVirtualIbanDetailsUsecase;
   final CreateVirtualIbanUsecase _createVirtualIbanUsecase;
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
-  final VirtualIbanLocation _location;
 
   Timer? _pollingTimer;
   static const _pollingInterval = Duration(seconds: 5);
-
-  VirtualIbanLocation get location => _location;
 
   @override
   Future<void> close() {
@@ -77,10 +77,7 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
       if (viban == null) {
         // No VIBAN created yet
         emit(
-          VirtualIbanState.notSubmitted(
-            userSummary: userSummary,
-            location: _location,
-          ),
+          VirtualIbanState.notSubmitted(userSummary: userSummary),
         );
       } else if (viban.isActive) {
         // VIBAN is fully activated
@@ -88,7 +85,6 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
           VirtualIbanState.active(
             recipient: viban,
             userSummary: userSummary,
-            location: _location,
           ),
         );
       } else {
@@ -97,7 +93,6 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
           VirtualIbanState.pending(
             recipient: viban,
             userSummary: userSummary,
-            location: _location,
           ),
         );
         _startPolling();
@@ -142,7 +137,6 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
           VirtualIbanState.active(
             recipient: viban,
             userSummary: currentState.userSummary,
-            location: _location,
           ),
         );
       } else {
@@ -151,7 +145,6 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
           VirtualIbanState.pending(
             recipient: viban,
             userSummary: currentState.userSummary,
-            location: _location,
           ),
         );
         _startPolling();
@@ -192,7 +185,6 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
           VirtualIbanState.active(
             recipient: viban,
             userSummary: currentState.userSummary,
-            location: _location,
           ),
         );
       }
@@ -203,5 +195,3 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
     }
   }
 }
-
-

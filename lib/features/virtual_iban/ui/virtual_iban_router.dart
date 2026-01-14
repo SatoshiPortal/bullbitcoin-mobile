@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/virtual_iban/domain/virtual_iban_location.dart';
 import 'package:bb_mobile/features/virtual_iban/presentation/virtual_iban_bloc.dart';
 import 'package:bb_mobile/features/virtual_iban/ui/screens/virtual_iban_active_screen.dart';
 import 'package:bb_mobile/features/virtual_iban/ui/screens/virtual_iban_details_screen.dart';
@@ -20,13 +19,14 @@ enum VirtualIbanRoute {
 }
 
 class VirtualIbanRouter {
-  static ShellRoute createRoute(VirtualIbanLocation location) {
+  /// Creates a shell route that provides the singleton VirtualIbanBloc.
+  /// No location parameter needed - the bloc is a singleton that's already loaded.
+  static ShellRoute createRoute() {
     return ShellRoute(
       builder: (context, state, child) {
-        return BlocProvider(
-          create: (_) =>
-              locator<VirtualIbanBloc>(param1: location)
-                ..add(const VirtualIbanEvent.started()),
+        // Use the singleton bloc - it's already loaded on app start
+        return BlocProvider.value(
+          value: locator<VirtualIbanBloc>(),
           child: child,
         );
       },
@@ -91,30 +91,35 @@ class _VirtualIbanStateRouter extends StatelessWidget {
         return previous.runtimeType != current.runtimeType;
       },
       listener: (context, state) {
-        state.maybeWhen(
-          pending: (_, _, _, _) {
-            // Navigate to pending screen when VIBAN is created but not active
-            context.goNamed(VirtualIbanRoute.pending.name);
-          },
-          active: (_, _, _) {
-            // Navigate to active screen when VIBAN is activated
-            context.goNamed(VirtualIbanRoute.active.name);
-          },
-          orElse: () {},
-        );
+        if (state.isPending) {
+          // Navigate to pending screen when VIBAN is created but not active
+          context.goNamed(VirtualIbanRoute.pending.name);
+        } else if (state.isActive) {
+          // Navigate to active screen when VIBAN is activated
+          context.goNamed(VirtualIbanRoute.active.name);
+        }
       },
       builder: (context, state) {
-        return state.maybeWhen(
-          notSubmitted: (_, _, _, _, _) => const VirtualIbanIntroScreen(),
-          pending: (_, _, _, _) => const VirtualIbanPendingScreen(),
-          active: (_, _, _) => const VirtualIbanActiveScreen(),
-          error: (exception) => Scaffold(
+        if (state.isNotSubmitted) {
+          return const VirtualIbanIntroScreen();
+        } else if (state.isPending) {
+          return const VirtualIbanPendingScreen();
+        } else if (state.isActive) {
+          return const VirtualIbanActiveScreen();
+        } else if (state.hasError) {
+          return Scaffold(
             appBar: AppBar(title: const Text('Error')),
-            body: Center(child: Text('Error: $exception')),
-          ),
-          orElse: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-        );
+            body: Center(
+              child: Text(
+                'Error: ${(state as VirtualIbanErrorState).exception}',
+              ),
+            ),
+          );
+        } else {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/virtual_iban/presentation/virtual_iban_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Screen showing the activated Virtual IBAN details.
 /// Displays IBAN, BIC, bank address, recipient name, etc.
@@ -25,7 +27,7 @@ class VirtualIbanDetailsScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: state.maybeWhen(
-          active: (recipient, userSummary, location) => SingleChildScrollView(
+          active: (recipient, userSummary) => SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,18 +68,47 @@ class VirtualIbanDetailsScreen extends StatelessWidget {
                   color: context.appColors.warningContainer,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: context.appColors.warning,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              color: context.appColors.warning,
+                            ),
+                            const Gap(8),
+                            Expanded(
+                              child: BBText(
+                                context.loc.virtualIbanNameWarning,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: context.appColors.secondary,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const Gap(8),
-                        Expanded(
-                          child: BBText(
-                            context.loc.virtualIbanNameWarning,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.secondary,
+                        Padding(
+                          padding: const EdgeInsets.only(left: 32),
+                          child: GestureDetector(
+                            onTap: () async {
+                              final url = Uri.parse(
+                                SettingsConstants.telegramSupportLink,
+                              );
+                              await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            },
+                            child: BBText(
+                              context.loc.contactSupportNow,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: context.appColors.primary,
+                                decoration: TextDecoration.underline,
+                                decorationColor: context.appColors.primary,
+                              ),
                             ),
                           ),
                         ),
@@ -102,6 +133,15 @@ class VirtualIbanDetailsScreen extends StatelessWidget {
                           .trim(),
                 ),
                 const Gap(24.0),
+
+                // Recipient Address (only shown if available)
+                if (userSummary.address != null) ...[
+                  _VirtualIbanDetailField(
+                    label: context.loc.recipientAddress,
+                    value: userSummary.address!.addressStringified,
+                  ),
+                  const Gap(24.0),
+                ],
 
                 // Bank Account Country
                 _VirtualIbanDetailField(

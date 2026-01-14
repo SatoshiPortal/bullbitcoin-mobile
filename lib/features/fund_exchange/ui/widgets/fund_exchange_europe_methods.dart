@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_method_list_tile.dart';
-import 'package:bb_mobile/features/virtual_iban/domain/virtual_iban_location.dart';
 import 'package:bb_mobile/features/virtual_iban/presentation/virtual_iban_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -90,10 +89,9 @@ class _ConfidentialSepaMethodTile extends StatelessWidget {
   void _navigateToConfidentialSepa(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (navContext) => BlocProvider(
-          create: (_) =>
-              locator<VirtualIbanBloc>(param1: VirtualIbanLocation.funding)
-                ..add(const VirtualIbanEvent.started()),
+        builder: (navContext) => BlocProvider.value(
+          // Use the singleton bloc - it's already loaded on app start
+          value: locator<VirtualIbanBloc>(),
           child: const _VirtualIbanFlowScreen(),
         ),
       ),
@@ -109,25 +107,28 @@ class _VirtualIbanFlowScreen extends StatelessWidget {
     return BlocConsumer<VirtualIbanBloc, VirtualIbanState>(
       listener: (context, state) {},
       builder: (context, state) {
-        return state.when(
-          initial: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-          loading: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
-          notSubmitted: (_, _, _, _, _) {
-            return const _VirtualIbanIntroScreenWrapper();
-          },
-          pending: (_, _, _, _) {
-            return const _VirtualIbanPendingScreenWrapper();
-          },
-          active: (_, _, _) {
-            return const _VirtualIbanActiveScreenWrapper();
-          },
-          error: (exception) => Scaffold(
+        if (state.isLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else if (state.isNotSubmitted) {
+          return const _VirtualIbanIntroScreenWrapper();
+        } else if (state.isPending) {
+          return const _VirtualIbanPendingScreenWrapper();
+        } else if (state.isActive) {
+          return const _VirtualIbanActiveScreenWrapper();
+        } else if (state.hasError) {
+          return Scaffold(
             appBar: AppBar(title: Text(context.loc.error)),
-            body: Center(child: Text('$exception')),
-          ),
-        );
+            body: Center(
+              child: Text('${(state as VirtualIbanErrorState).exception}'),
+            ),
+          );
+        } else {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
       },
     );
   }
@@ -167,27 +168,28 @@ class _VirtualIbanIntroContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<VirtualIbanBloc, VirtualIbanState>(
       builder: (context, state) {
-        return state.maybeWhen(
-          notSubmitted: (userSummary, location, nameConfirmed, isCreating, error) {
-            final theme = Theme.of(context);
-            final userFullName =
-                '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
-                    .trim();
+        if (state is! VirtualIbanNotSubmittedState) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-            return Scaffold(
-              appBar: AppBar(title: Text(context.loc.confidentialSepaTitle)),
-              body: _buildIntroBody(
-                context,
-                theme,
-                nameConfirmed: nameConfirmed,
-                isCreating: isCreating,
-                userFullName: userFullName,
-                error: error,
-              ),
-            );
-          },
-          orElse: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
+        final theme = Theme.of(context);
+        final userSummary = state.userSummary;
+        final userFullName =
+            '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
+                .trim();
+
+        return Scaffold(
+          appBar: AppBar(title: Text(context.loc.confidentialSepaTitle)),
+          body: _buildIntroBody(
+            context,
+            theme,
+            nameConfirmed: state.nameConfirmed,
+            isCreating: state.isCreating,
+            userFullName: userFullName,
+            error: state.error,
+          ),
         );
       },
     );
@@ -459,109 +461,111 @@ class _VirtualIbanActiveContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<VirtualIbanBloc, VirtualIbanState>(
       builder: (context, state) {
-        return state.maybeWhen(
-          active: (recipient, userSummary, location) {
-            final theme = Theme.of(context);
+        if (state is! VirtualIbanActiveState) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-            return Scaffold(
-              appBar: AppBar(title: Text(context.loc.privacyBankingTitle)),
-              body: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        final theme = Theme.of(context);
+        final recipient = state.recipient;
+        final userSummary = state.userSummary;
+
+        return Scaffold(
+          appBar: AppBar(title: Text(context.loc.privacyBankingTitle)),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Gap(8.0),
+                  Row(
                     children: [
-                      const Gap(8.0),
-                      Row(
+                      BBText(
+                        context.loc.privacyBankingTitle,
+                        style: theme.textTheme.displaySmall,
+                      ),
+                      const Gap(8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: context.appColors.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: BBText(
+                          context.loc.newBadge,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: context.appColors.secondary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Gap(24.0),
+                  Card(
+                    color: context.appColors.tertiaryContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
                         children: [
-                          BBText(
-                            context.loc.privacyBankingTitle,
-                            style: theme.textTheme.displaySmall,
+                          Icon(
+                            Icons.info_outline,
+                            color: context.appColors.secondary,
                           ),
                           const Gap(8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: context.appColors.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                          Expanded(
                             child: BBText(
-                              context.loc.newBadge,
-                              style: theme.textTheme.labelSmall?.copyWith(
+                              context.loc.virtualIbanNameWarning,
+                              style: theme.textTheme.bodyMedium?.copyWith(
                                 color: context.appColors.secondary,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const Gap(24.0),
-                      Card(
-                        color: context.appColors.tertiaryContainer,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: context.appColors.secondary,
-                              ),
-                              const Gap(8),
-                              Expanded(
-                                child: BBText(
-                                  context.loc.virtualIbanNameWarning,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: context.appColors.secondary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Gap(24.0),
-                      _DetailField(
-                        label: context.loc.virtualIbanAccountNumber,
-                        value: recipient.iban ?? '',
-                        context: context,
-                      ),
-                      const Gap(24.0),
-                      _DetailField(
-                        label: context.loc.recipientName,
-                        value:
-                            '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
-                                .trim(),
-                        context: context,
-                      ),
-                      const Gap(24.0),
-                      _DetailField(
-                        label: context.loc.bankAccountCountry,
-                        value: recipient.ibanCountry ?? 'France',
-                        context: context,
-                      ),
-                      const Gap(24.0),
-                      _DetailField(
-                        label: context.loc.bankAddress,
-                        value: recipient.bankAddress ?? '',
-                        context: context,
-                      ),
-                      const Gap(24.0),
-                      _DetailField(
-                        label: context.loc.bicCode,
-                        value: recipient.bicCode ?? '',
-                        context: context,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const Gap(24.0),
+                  _DetailField(
+                    label: context.loc.virtualIbanAccountNumber,
+                    value: recipient.iban ?? '',
+                    context: context,
+                  ),
+                  const Gap(24.0),
+                  _DetailField(
+                    label: context.loc.recipientName,
+                    value:
+                        '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
+                            .trim(),
+                    context: context,
+                  ),
+                  const Gap(24.0),
+                  _DetailField(
+                    label: context.loc.bankAccountCountry,
+                    value: recipient.ibanCountry ?? 'France',
+                    context: context,
+                  ),
+                  const Gap(24.0),
+                  _DetailField(
+                    label: context.loc.bankAddress,
+                    value: recipient.bankAddress ?? '',
+                    context: context,
+                  ),
+                  const Gap(24.0),
+                  _DetailField(
+                    label: context.loc.bicCode,
+                    value: recipient.bicCode ?? '',
+                    context: context,
+                  ),
+                ],
               ),
-            );
-          },
-          orElse: () =>
-              const Scaffold(body: Center(child: CircularProgressIndicator())),
+            ),
+          ),
         );
       },
     );

@@ -10119,6 +10119,14 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
+  "useVirtualIban": "Use Confidential SEPA",
+  "@useVirtualIban": {
+    "description": "Checkbox label for using Virtual IBAN for EUR withdrawals"
+  },
+  "useVirtualIbanSubtitle": "Withdraw through your personal virtual IBAN for enhanced privacy",
+  "@useVirtualIbanSubtitle": {
+    "description": "Subtitle explaining Virtual IBAN for EUR withdrawals"
+  },
   "withdrawRecipientsTitle": "Select recipient",
   "@withdrawRecipientsTitle": {
     "description": "AppBar title for recipients screen"
@@ -12276,6 +12284,10 @@
   "@confidentialSepaWarningDesc": {
     "description": "Warning description for Confidential SEPA"
   },
+  "contactSupportNow": "Contact support now",
+  "@contactSupportNow": {
+    "description": "Clickable link text to contact support"
+  },
   "accountOwnerName": "Account Owner Name",
   "@accountOwnerName": {
     "description": "Label for account owner name field"
@@ -12336,6 +12348,10 @@
   "@recipientName": {
     "description": "Label for recipient name"
   },
+  "recipientAddress": "Recipient Address",
+  "@recipientAddress": {
+    "description": "Label for recipient address on Virtual IBAN details"
+  },
   "bankAccountCountry": "Bank Account Country",
   "@bankAccountCountry": {
     "description": "Label for bank account country"
@@ -12367,5 +12383,37 @@
   "error": "Error",
   "@error": {
     "description": "Generic error title"
+  },
+  "selectRecipient": "Select Recipient",
+  "@selectRecipient": {
+    "description": "Title for recipient selection screen"
+  },
+  "selectCountry": "Select Country",
+  "@selectCountry": {
+    "description": "Label for country selection dropdown"
+  },
+  "payoutMethod": "Payout Method",
+  "@payoutMethod": {
+    "description": "Label for payout method selection"
+  },
+  "confidentialSepaShortDesc": "Private SEPA transfers using your personal virtual IBAN",
+  "@confidentialSepaShortDesc": {
+    "description": "Short description for Confidential SEPA option"
+  },
+  "regularSepa": "Regular SEPA",
+  "@regularSepa": {
+    "description": "Label for regular SEPA transfer option"
+  },
+  "whoAreYouPaying": "Who are you paying?",
+  "@whoAreYouPaying": {
+    "description": "Question prompt for recipient selection"
+  },
+  "newRecipientTab": "New Recipient",
+  "@newRecipientTab": {
+    "description": "Tab label for creating a new recipient"
+  },
+  "myRecipientsTab": "My Recipients",
+  "@myRecipientsTab": {
+    "description": "Tab label for existing recipients list"
   }
 }

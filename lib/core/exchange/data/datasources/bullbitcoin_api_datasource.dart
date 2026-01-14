@@ -641,10 +641,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'id': '0',
         'method': 'createMyRecipient',
         'params': {
-          'element': {
-            'recipientTypeFiat': 'FR_VIRTUAL_ACCOUNT',
-            'isOwner': true,
-          },
+          'element': {'recipientType': 'FR_VIRTUAL_ACCOUNT', 'isOwner': true},
         },
       },
       options: Options(headers: {'X-API-Key': apiKey}),

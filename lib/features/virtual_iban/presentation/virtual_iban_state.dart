@@ -12,7 +12,6 @@ sealed class VirtualIbanState with _$VirtualIbanState {
   /// Shows the activation intro form.
   const factory VirtualIbanState.notSubmitted({
     required UserSummary userSummary,
-    required VirtualIbanLocation location,
     @Default(false) bool nameConfirmed,
     @Default(false) bool isCreating,
     Exception? error,
@@ -23,7 +22,6 @@ sealed class VirtualIbanState with _$VirtualIbanState {
   const factory VirtualIbanState.pending({
     required VirtualIbanRecipient recipient,
     required UserSummary userSummary,
-    required VirtualIbanLocation location,
     @Default(false) bool isPolling,
   }) = VirtualIbanPendingState;
 
@@ -32,7 +30,6 @@ sealed class VirtualIbanState with _$VirtualIbanState {
   const factory VirtualIbanState.active({
     required VirtualIbanRecipient recipient,
     required UserSummary userSummary,
-    required VirtualIbanLocation location,
   }) = VirtualIbanActiveState;
 
   /// Error state when something goes wrong.
@@ -41,39 +38,46 @@ sealed class VirtualIbanState with _$VirtualIbanState {
 
   const VirtualIbanState._();
 
+  // ============ Convenience Getters (like BB-Exchange's EuVibanState) ============
+
+  /// Whether VIBAN is fully activated and ready to use.
+  bool get isActive => this is VirtualIbanActiveState;
+
+  /// Whether VIBAN has been submitted but not yet activated.
+  bool get isPending => this is VirtualIbanPendingState;
+
+  /// Whether no VIBAN has been created yet.
+  bool get isNotSubmitted => this is VirtualIbanNotSubmittedState;
+
+  /// Whether we're currently loading VIBAN status.
+  bool get isLoading => this is VirtualIbanLoadingState;
+
+  /// Whether there's an error state.
+  bool get hasError => this is VirtualIbanErrorState;
+
+  /// Returns the VIBAN recipient if available (active or pending state).
+  VirtualIbanRecipient? get recipient {
+    return maybeWhen(
+      active: (recipient, _) => recipient,
+      pending: (recipient, _, _) => recipient,
+      orElse: () => null,
+    );
+  }
+
+  /// Returns the user summary if available.
+  UserSummary? get userSummary {
+    return maybeWhen(
+      notSubmitted: (userSummary, _, _, _) => userSummary,
+      pending: (_, userSummary, _) => userSummary,
+      active: (_, userSummary) => userSummary,
+      orElse: () => null,
+    );
+  }
+
   /// Returns the user's full name from the user summary, if available.
   String? get userFullName {
-    return when(
-      initial: () => null,
-      loading: () => null,
-      notSubmitted:
-          (userSummary, location, nameConfirmed, isCreating, error) =>
-              '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
-                  .trim(),
-      pending:
-          (recipient, userSummary, location, isPolling) =>
-              '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
-                  .trim(),
-      active:
-          (recipient, userSummary, location) =>
-              '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
-                  .trim(),
-      error: (exception) => null,
-    );
-  }
-
-  /// Returns the location context, if available.
-  VirtualIbanLocation? get location {
-    return when(
-      initial: () => null,
-      loading: () => null,
-      notSubmitted:
-          (userSummary, location, nameConfirmed, isCreating, error) => location,
-      pending: (recipient, userSummary, location, isPolling) => location,
-      active: (recipient, userSummary, location) => location,
-      error: (exception) => null,
-    );
+    final summary = userSummary;
+    if (summary == null) return null;
+    return '${summary.profile.firstName} ${summary.profile.lastName}'.trim();
   }
 }
-
-

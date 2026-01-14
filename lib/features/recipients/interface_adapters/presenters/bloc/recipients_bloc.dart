@@ -3,13 +3,18 @@ import 'dart:async';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
+import 'package:bb_mobile/features/recipients/application/usecases/filter_recipients_by_virtual_iban_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_flow_step.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipients_location.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/features/virtual_iban/presentation/virtual_iban_bloc.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -44,6 +49,13 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     on<RecipientsSinpeChecked>(_onSinpeChecked);
     on<RecipientsCadBillersSearched>(_onCadBillersSearched);
     on<RecipientsSelected>(_onSelected);
+    // Virtual IBAN step flow navigation handlers
+    on<RecipientsNextStepPressed>(_onNextStepPressed);
+    on<RecipientsPreviousStepPressed>(_onPreviousStepPressed);
+    on<RecipientsVirtualIbanActivated>(_onVirtualIbanActivated);
+    on<RecipientsFallbackToRegularSepa>(_onFallbackToRegularSepa);
+    // Virtual IBAN default type selection handler
+    on<RecipientsDefaultTypeSelected>(_onDefaultTypeSelected);
   }
 
   static const pageSize = 50;
@@ -65,6 +77,23 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         failedToLoadRecipients: null,
       ),
     );
+
+    // Check VIBAN status for EUR sell/withdraw flows
+    // Read directly from the singleton VirtualIbanBloc (like BB-Exchange pattern)
+    final isVibanEligible =
+        state.allowedRecipientFilters.location.isVirtualIbanEligible;
+    if (isVibanEligible) {
+      _checkAndSetVirtualIbanDefaults(emit);
+    }
+
+    // If skipTypeSelection is true and we're in a step-based flow,
+    // skip directly to the enterDetails step (shows tabs/list)
+    if (event.skipTypeSelection &&
+        state.allowedRecipientFilters.location.usesStepBasedFlow) {
+      log.info('Skipping type selection step, going directly to enterDetails');
+      emit(state.copyWith(currentStep: RecipientFlowStep.enterDetails));
+    }
+
     try {
       log.info('Loading first recipients');
       final result = await _getRecipientsUsecase.execute(
@@ -104,6 +133,46 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       );
     } finally {
       emit(state.copyWith(isLoadingRecipients: false));
+    }
+  }
+
+  /// Checks VIBAN status and sets default recipient type to frPayee if active.
+  /// Reads directly from the singleton VirtualIbanBloc (like BB-Exchange pattern).
+  void _checkAndSetVirtualIbanDefaults(
+    Emitter<RecipientsState> emit,
+  ) {
+    try {
+      // Read directly from the singleton VirtualIbanBloc
+      final vibanBloc = locator<VirtualIbanBloc>();
+      final isVibanActive = vibanBloc.state.isActive;
+
+      if (isVibanActive) {
+        log.info('Virtual IBAN is active, setting hasActiveVirtualIban=true');
+        emit(state.copyWith(hasActiveVirtualIban: true));
+
+        // Auto-select frPayee as the default type for EUR flows
+        final availableTypes = state.selectableRecipientTypes;
+
+        RecipientType? preferredType;
+        if (availableTypes.contains(RecipientType.frVirtualAccount)) {
+          preferredType = RecipientType.frVirtualAccount;
+        } else if (availableTypes.contains(RecipientType.frPayee)) {
+          preferredType = RecipientType.frPayee;
+        }
+
+        if (preferredType != null) {
+          log.info(
+            'Auto-selecting $preferredType as default recipient type for VIBAN',
+          );
+          final updatedFilters = state.allowedRecipientFilters.copyWith(
+            defaultSelectedType: preferredType,
+          );
+          emit(state.copyWith(allowedRecipientFilters: updatedFilters));
+        }
+      }
+    } catch (e) {
+      // Don't fail the entire flow if VIBAN check fails
+      log.warning('Failed to check Virtual IBAN status: $e');
     }
   }
 
@@ -312,5 +381,92 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     } finally {
       emit(state.copyWith(isHandlingSelectedRecipient: false));
     }
+  }
+
+  // Virtual IBAN step flow navigation handlers
+
+  void _onNextStepPressed(
+    RecipientsNextStepPressed event,
+    Emitter<RecipientsState> emit,
+  ) {
+    final location = state.allowedRecipientFilters.location;
+    final selectedType = event.selectedType;
+    final selectedJurisdiction = selectedType.jurisdictionCode;
+
+    // Store the selected type and jurisdiction for use in Step 2
+    emit(
+      state.copyWith(
+        selectedRecipientType: selectedType,
+        selectedJurisdiction: selectedJurisdiction,
+      ),
+    );
+
+    // VIBAN only for sell/withdraw, NOT pay or accounts view
+    if (!location.isVirtualIbanEligible) {
+      emit(state.copyWith(currentStep: RecipientFlowStep.enterDetails));
+      return;
+    }
+
+    // Read current VIBAN status directly from the singleton
+    final isVibanActive = locator<VirtualIbanBloc>().state.isActive;
+
+    // If frPayee selected and no active VIBAN, show activation screen
+    if (selectedType == RecipientType.frPayee && !isVibanActive) {
+      emit(state.copyWith(currentStep: RecipientFlowStep.activateVirtualIban));
+      return;
+    }
+
+    emit(state.copyWith(currentStep: RecipientFlowStep.enterDetails));
+  }
+
+  void _onPreviousStepPressed(
+    RecipientsPreviousStepPressed event,
+    Emitter<RecipientsState> emit,
+  ) {
+    // Go back to type selection and clear the selected type
+    emit(
+      state.copyWith(
+        currentStep: RecipientFlowStep.selectType,
+        selectedRecipientType: null,
+        selectedJurisdiction: null,
+      ),
+    );
+  }
+
+  void _onVirtualIbanActivated(
+    RecipientsVirtualIbanActivated event,
+    Emitter<RecipientsState> emit,
+  ) {
+    // VIBAN activation complete, advance to enter details step
+    emit(
+      state.copyWith(
+        currentStep: RecipientFlowStep.enterDetails,
+        hasActiveVirtualIban: true,
+      ),
+    );
+  }
+
+  void _onFallbackToRegularSepa(
+    RecipientsFallbackToRegularSepa event,
+    Emitter<RecipientsState> emit,
+  ) {
+    // User chose to use regular SEPA (cjPayee) instead of VIBAN
+    emit(
+      state.copyWith(
+        currentStep: RecipientFlowStep.enterDetails,
+        selectedRecipientType: RecipientType.cjPayee,
+        selectedJurisdiction: 'EU',
+      ),
+    );
+  }
+
+  void _onDefaultTypeSelected(
+    RecipientsDefaultTypeSelected event,
+    Emitter<RecipientsState> emit,
+  ) {
+    final updatedFilters = state.allowedRecipientFilters.copyWith(
+      defaultSelectedType: event.type,
+    );
+    emit(state.copyWith(allowedRecipientFilters: updatedFilters));
   }
 }

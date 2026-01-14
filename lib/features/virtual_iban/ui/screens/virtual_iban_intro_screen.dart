@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/features/virtual_iban/presentation/virtual_iban_bloc.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// The intro/activation screen for Virtual IBAN (Confidential SEPA).
 /// Shows when user has not yet created a Virtual IBAN.
@@ -27,7 +29,6 @@ class VirtualIbanIntroScreen extends StatelessWidget {
         child: state.maybeWhen(
           notSubmitted: (
             userSummary,
-            location,
             nameConfirmed,
             isCreating,
             error,
@@ -180,6 +181,26 @@ class VirtualIbanIntroScreen extends StatelessWidget {
                             color: context.appColors.secondary,
                           ),
                         ),
+                        const Gap(8),
+                        GestureDetector(
+                          onTap: () async {
+                            final url = Uri.parse(
+                              SettingsConstants.telegramSupportLink,
+                            );
+                            await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            );
+                          },
+                          child: BBText(
+                            context.loc.contactSupportNow,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: context.appColors.primary,
+                              decoration: TextDecoration.underline,
+                              decorationColor: context.appColors.primary,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -318,4 +339,3 @@ class VirtualIbanIntroScreen extends StatelessWidget {
     );
   }
 }
-

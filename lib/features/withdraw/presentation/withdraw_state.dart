@@ -6,12 +6,21 @@ sealed class WithdrawState with _$WithdrawState {
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = WithdrawInitialState;
-  const factory WithdrawState.amountInput({required UserSummary userSummary}) =
-      WithdrawAmountInputState;
+  const factory WithdrawState.amountInput({
+    required UserSummary userSummary,
+    /// Whether the user has an active Virtual IBAN (Confidential SEPA).
+    @Default(false) bool hasActiveVirtualIban,
+    /// Whether to use Virtual IBAN for EUR withdrawals (defaults to true when VIBAN is active).
+    @Default(true) bool useVirtualIban,
+  }) = WithdrawAmountInputState;
   const factory WithdrawState.recipientInput({
     required UserSummary userSummary,
     required FiatAmount amount,
     required FiatCurrency currency,
+    /// Whether the user has an active Virtual IBAN (Confidential SEPA).
+    @Default(false) bool hasActiveVirtualIban,
+    /// Whether to use Virtual IBAN for EUR withdrawals.
+    @Default(false) bool useVirtualIban,
     @Default(false) bool isCreatingWithdrawOrder,
     WithdrawError? error,
   }) = WithdrawRecipientInputState;
@@ -41,11 +50,11 @@ sealed class WithdrawState with _$WithdrawState {
     return when(
       initial: (_, _) => FiatCurrency.cad,
       amountInput:
-          (userSummary) =>
+          (userSummary, _, _) =>
               userSummary.currency != null
                   ? FiatCurrency.fromCode(userSummary.currency!)
                   : FiatCurrency.cad,
-      recipientInput: (_, _, currency, _, _) => currency,
+      recipientInput: (_, _, currency, _, _, _, _) => currency,
       confirmation: (_, _, currency, _, _, _, _) => currency,
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
     );
@@ -54,10 +63,26 @@ sealed class WithdrawState with _$WithdrawState {
   WithdrawAmountInputState? get cleanAmountInputState {
     return whenOrNull(
       amountInput:
-          (userSummary) => WithdrawAmountInputState(userSummary: userSummary),
+          (userSummary, hasActiveVirtualIban, useVirtualIban) =>
+              WithdrawAmountInputState(
+                userSummary: userSummary,
+                hasActiveVirtualIban: hasActiveVirtualIban,
+                useVirtualIban: useVirtualIban,
+              ),
       recipientInput:
-          (userSummary, amount, currency, isCreatingWithdrawOrder, error) =>
-              WithdrawAmountInputState(userSummary: userSummary),
+          (
+            userSummary,
+            amount,
+            currency,
+            hasActiveVirtualIban,
+            useVirtualIban,
+            isCreatingWithdrawOrder,
+            error,
+          ) => WithdrawAmountInputState(
+                userSummary: userSummary,
+                hasActiveVirtualIban: hasActiveVirtualIban,
+                useVirtualIban: useVirtualIban,
+              ),
       confirmation:
           (
             userSummary,
@@ -74,14 +99,23 @@ sealed class WithdrawState with _$WithdrawState {
   WithdrawRecipientInputState? get cleanRecipientInputState {
     return whenOrNull(
       recipientInput:
-          (userSummary, amount, currency, isCreatingWithdrawOrder, error) =>
-              WithdrawRecipientInputState(
-                userSummary: userSummary,
-                amount: amount,
-                currency: currency,
-                isCreatingWithdrawOrder: false,
-                error: null,
-              ),
+          (
+            userSummary,
+            amount,
+            currency,
+            hasActiveVirtualIban,
+            useVirtualIban,
+            isCreatingWithdrawOrder,
+            error,
+          ) => WithdrawRecipientInputState(
+            userSummary: userSummary,
+            amount: amount,
+            currency: currency,
+            hasActiveVirtualIban: hasActiveVirtualIban,
+            useVirtualIban: useVirtualIban,
+            isCreatingWithdrawOrder: false,
+            error: null,
+          ),
       confirmation:
           (
             userSummary,
@@ -139,6 +173,8 @@ extension WithdrawAmountInputStateX on WithdrawAmountInputState {
       userSummary: userSummary,
       amount: amount,
       currency: currency,
+      hasActiveVirtualIban: hasActiveVirtualIban,
+      useVirtualIban: useVirtualIban,
     );
   }
 }

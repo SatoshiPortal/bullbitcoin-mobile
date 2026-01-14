@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipients_location.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
@@ -75,6 +76,8 @@ class WithdrawRouter {
                             context.read<WithdrawBloc>().state.currency.code,
                           ).toList(),
                       isOwner: true,
+                      // Withdraw flow has VIBAN activation available
+                      location: RecipientsLocation.withdrawView,
                     ),
                   ),
                 );

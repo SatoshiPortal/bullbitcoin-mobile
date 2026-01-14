@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_address.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -19,6 +20,7 @@ sealed class UserSummaryModel with _$UserSummaryModel {
     String? currency,
     required UserDcaModel dca,
     required UserAutoBuyModel autoBuy,
+    UserAddressModel? address,
   }) = _UserSummaryModel;
 
   factory UserSummaryModel.fromJson(Map<String, dynamic> json) =>
@@ -38,6 +40,35 @@ sealed class UserSummaryModel with _$UserSummaryModel {
       currency: currency,
       dca: dca.toEntity(),
       autoBuy: autoBuy.toEntity(),
+      address: address?.toEntity(),
+    );
+  }
+}
+
+@freezed
+sealed class UserAddressModel with _$UserAddressModel {
+  const factory UserAddressModel({
+    required String street1,
+    String? street2,
+    required String city,
+    String? province,
+    required String postalCode,
+    required String countryCode,
+  }) = _UserAddressModel;
+
+  factory UserAddressModel.fromJson(Map<String, dynamic> json) =>
+      _$UserAddressModelFromJson(json);
+
+  const UserAddressModel._();
+
+  UserAddress toEntity() {
+    return UserAddress(
+      street1: street1,
+      street2: street2,
+      city: city,
+      province: province,
+      postalCode: postalCode,
+      countryCode: countryCode,
     );
   }
 }

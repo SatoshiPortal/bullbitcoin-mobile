@@ -1,5 +1,8 @@
 part of 'recipients_bloc.dart';
 
+// Usecase instance for filtering recipients in Virtual IBAN mode
+const _filterByVirtualIbanUsecase = FilterRecipientsByVirtualIbanUsecase();
+
 @freezed
 sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
@@ -19,6 +22,12 @@ sealed class RecipientsState with _$RecipientsState {
     RecipientViewModel? selectedRecipient,
     @Default(false) bool isHandlingSelectedRecipient,
     Exception? failedToHandleSelectedRecipient,
+    // Virtual IBAN step flow fields
+    @Default(RecipientFlowStep.selectType) RecipientFlowStep currentStep,
+    @Default(false) bool hasActiveVirtualIban,
+    // Selected type and jurisdiction from Step 1 (used in Step 2 to show the correct form)
+    RecipientType? selectedRecipientType,
+    String? selectedJurisdiction,
   }) = _RecipientsState;
   const RecipientsState._();
 
@@ -59,7 +68,7 @@ sealed class RecipientsState with _$RecipientsState {
     // and ownership criteria.
     // Note: FR_VIRTUAL_ACCOUNT is excluded as it's a special system-created recipient
     // for Confidential SEPA and should not appear in normal recipient lists.
-    final filtered =
+    var filtered =
         recipients
             ?.where(
               (recipient) =>
@@ -72,8 +81,16 @@ sealed class RecipientsState with _$RecipientsState {
             )
             .toList();
 
-    // Remove duplicates based on recipient ID
     if (filtered == null) return null;
+
+    // Apply Virtual IBAN filtering when in VIBAN-eligible location with active VIBAN
+    // This groups recipients by IBAN and prefers frPayee over cjPayee for same IBAN
+    final isVibanEligible = allowedRecipientFilters.location.isVirtualIbanEligible;
+    if (isVibanEligible && hasActiveVirtualIban) {
+      filtered = _filterByVirtualIbanUsecase.execute(filtered);
+    }
+
+    // Remove duplicates based on recipient ID
     final seen = <String>{};
     return filtered.where((recipient) => seen.add(recipient.id)).toList();
   }

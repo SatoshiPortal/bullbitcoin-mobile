@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_address.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -103,6 +104,8 @@ sealed class UserSummary with _$UserSummary {
     String? currency,
     required UserDca dca,
     required UserAutoBuy autoBuy,
+    /// User's physical address (for KYC-verified users).
+    UserAddress? address,
   }) = _UserSummary;
 
   factory UserSummary.fromJson(Map<String, dynamic> json) =>
