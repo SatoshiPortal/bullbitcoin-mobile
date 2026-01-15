@@ -44,5 +44,9 @@ class Schema11To12 {
             }),
           );
     }
+
+    // MempoolServers table: add enableSsl column
+    final mempoolServers = schema12.mempoolServers;
+    await m.addColumn(mempoolServers, mempoolServers.enableSsl);
   }
 }

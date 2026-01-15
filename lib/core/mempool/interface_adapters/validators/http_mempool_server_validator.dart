@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/mempool/domain/errors/mempool_server_exception.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
+import 'package:bb_mobile/core/mempool/domain/value_objects/normalized_mempool_url.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:dio/dio.dart';
 
@@ -11,10 +12,11 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
   Future<bool> validateServer({
     required String url,
     required MempoolServerNetwork network,
+    bool enableSsl = true,
   }) async {
     try {
-      final cleanUrl = url.replaceFirst(RegExp(r'^https?://'), '');
-      final fullUrl = 'https://$cleanUrl';
+      final normalizedUrl = NormalizedMempoolUrl(url, enableSsl: enableSsl);
+      final fullUrl = normalizedUrl.fullUrl;
 
       final dio = Dio(
         BaseOptions(
@@ -47,7 +49,7 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
         return false;
       }
 
-      // verfy it's a valid number (block height should be > 0)
+      // verify it's a valid number (block height should be > 0)
       final blockHeight = response.data is int
           ? response.data as int
           : int.tryParse(response.data.toString());
@@ -61,10 +63,8 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
       return true;
     } on DioException catch (e) {
       log.warning('Validation failed with DioException: ${e.message}');
-      throw MempoolServerValidationException(
-        'Failed to connect to mempool server',
-        e,
-      );
+      final errorMessage = _getUserFriendlyErrorMessage(e, url);
+      throw MempoolServerValidationException(errorMessage, e);
     } catch (e) {
       log.warning('Validation failed with exception: $e');
       throw MempoolServerValidationException(
@@ -72,5 +72,41 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
         e,
       );
     }
+  }
+
+  String _getUserFriendlyErrorMessage(DioException e, String url) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
+      return 'Connection timed out. The server may be slow or unreachable.';
+    }
+
+    if (e.type == DioExceptionType.connectionError) {
+      if (e.message?.contains('Failed host lookup') ?? false) {
+        if (url.contains('.onion')) {
+          return 'Cannot reach .onion address. Make sure Tor/Orbot is running and try again.';
+        }
+        return 'Cannot find this server. Please check the URL and try again.';
+      }
+      return 'Unable to connect to server. Check your network connection and try again.';
+    }
+
+    if (e.response != null) {
+      final statusCode = e.response!.statusCode;
+      if (statusCode == 404) {
+        return 'This URL does not appear to be a mempool server. Please verify the address.';
+      }
+      if (statusCode == 502 || statusCode == 503) {
+        return 'Server is unavailable.';
+      }
+      if (statusCode == 500) {
+        return 'Server encountered an error.';
+      }
+      if (statusCode != null && statusCode >= 400 && statusCode < 500) {
+        return 'Server rejected the request. Please verify the URL is correct.';
+      }
+    }
+
+    return 'Failed to connect to mempool server. Please check the URL and try again.';
   }
 }

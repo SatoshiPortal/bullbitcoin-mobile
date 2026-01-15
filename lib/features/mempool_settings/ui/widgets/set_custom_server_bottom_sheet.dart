@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/mempool_url_parser.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
@@ -11,12 +12,18 @@ import 'package:gap/gap.dart';
 
 class SetCustomServerBottomSheet extends StatefulWidget {
   final String? initialUrl;
+  final bool? initialEnableSsl;
 
-  const SetCustomServerBottomSheet({super.key, this.initialUrl});
+  const SetCustomServerBottomSheet({
+    super.key,
+    this.initialUrl,
+    this.initialEnableSsl,
+  });
 
   static Future<bool?> show(
     BuildContext context, {
     String? initialUrl,
+    bool? initialEnableSsl,
   }) {
     final cubit = context.read<MempoolSettingsCubit>();
 
@@ -24,7 +31,10 @@ class SetCustomServerBottomSheet extends StatefulWidget {
       context: context,
       child: BlocProvider.value(
         value: cubit,
-        child: SetCustomServerBottomSheet(initialUrl: initialUrl),
+        child: SetCustomServerBottomSheet(
+          initialUrl: initialUrl,
+          initialEnableSsl: initialEnableSsl,
+        ),
       ),
     );
   }
@@ -41,15 +51,42 @@ class _SetCustomServerBottomSheetState
   final _focusNode = FocusNode();
   bool _isValidating = false;
   String? _errorMessage;
+  bool _enableSsl = true;
+  bool _sslAutoDetected = false;
 
   @override
   void initState() {
     super.initState();
     _urlController = TextEditingController(text: widget.initialUrl ?? '');
+    if (widget.initialEnableSsl != null) {
+      _enableSsl = widget.initialEnableSsl!;
+      _sslAutoDetected = false;
+    } else if (widget.initialUrl != null && widget.initialUrl!.isNotEmpty) {
+      final result = MempoolUrlParser.tryParse(widget.initialUrl!);
+      if (result != null) {
+        _enableSsl = result.enableSsl;
+        _sslAutoDetected = true;
+      }
+    }
+    _urlController.addListener(_onUrlChanged);
+  }
+
+  void _onUrlChanged() {
+    final input = _urlController.text.trim();
+    if (input.isEmpty) return;
+
+    final result = MempoolUrlParser.tryParse(input);
+    if (result != null) {
+      setState(() {
+        _enableSsl = result.enableSsl;
+        _sslAutoDetected = true;
+      });
+    }
   }
 
   @override
   void dispose() {
+    _urlController.removeListener(_onUrlChanged);
     _urlController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -66,8 +103,10 @@ class _SetCustomServerBottomSheetState
 
     setState(() => _isValidating = true);
 
-    final success =
-        await context.read<MempoolSettingsCubit>().setCustomServer(url);
+    final success = await context.read<MempoolSettingsCubit>().setCustomServer(
+      url,
+      enableSsl: _enableSsl,
+    );
 
     if (!mounted) return;
 
@@ -114,8 +153,9 @@ class _SetCustomServerBottomSheetState
                       ),
                       IconButton(
                         tooltip: context.loc.cancel,
-                        onPressed:
-                            _isValidating ? null : () => Navigator.of(context).pop(),
+                        onPressed: _isValidating
+                            ? null
+                            : () => Navigator.of(context).pop(),
                         icon: const Icon(Icons.close),
                       ),
                     ],
@@ -127,7 +167,37 @@ class _SetCustomServerBottomSheetState
                       color: context.appColors.textMuted,
                     ),
                   ),
-                  const Gap(24),
+                  const Gap(12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: context.appColors.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: context.appColors.border),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: context.appColors.secondary,
+                          size: 20,
+                        ),
+                        const Gap(8),
+                        Expanded(
+                          child: Text(
+                            'Mempool servers are used for fee estimation and opening the block explorer when viewing transaction details.',
+                            style: context.font.bodySmall?.copyWith(
+                              color: context.appColors.onSurface.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(16),
                   TextFormField(
                     controller: _urlController,
                     focusNode: _focusNode,
@@ -152,15 +222,19 @@ class _SetCustomServerBottomSheetState
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.appColors.border.withValues(alpha: 0.5),
+                          color: context.appColors.border.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      hintText: 'mempool.space',
-                      prefixText: 'https://',
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                      ),
+                      hintText: 'https://mempool.space',
                       hintStyle: context.font.bodyMedium?.copyWith(
                         color: context.appColors.textMuted,
                       ),
+                      errorMaxLines: 3,
                     ),
                     onFieldSubmitted: (_) => _saveServer(),
                     validator: (v) {
@@ -170,6 +244,52 @@ class _SetCustomServerBottomSheetState
                       }
                       return null;
                     },
+                  ),
+                  const Gap(8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Use SSL', style: context.font.bodyMedium),
+                            if (_sslAutoDetected) ...[
+                              const Gap(2),
+                              Text(
+                                '(Auto-detected)',
+                                style: context.font.bodySmall?.copyWith(
+                                  color: context.appColors.onSurface.withValues(
+                                    alpha: 0.6,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Switch(
+                        value: _enableSsl,
+                        onChanged: (value) {
+                          setState(() {
+                            _enableSsl = value;
+                            _sslAutoDetected = false; // user override
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const Gap(8),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 4.0),
+                    child: Text(
+                      'For local (.local, private IPs) and Tor (.onion) servers, SSL is typically disabled. Public IPs and domains should use SSL.',
+                      style: context.font.bodySmall?.copyWith(
+                        color: context.appColors.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
                   ),
                   if (_errorMessage != null) ...[
                     const Gap(16),

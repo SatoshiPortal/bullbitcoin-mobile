@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/mempool/application/dtos/requests/set_custom_mempool_server_request.dart';
 import 'package:bb_mobile/core/mempool/domain/entities/mempool_server.dart';
+import 'package:bb_mobile/core/mempool/domain/errors/mempool_server_exception.dart';
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/repositories/mempool_server_repository.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
@@ -51,11 +52,11 @@ class SetCustomMempoolServerUsecase {
       isLiquid: request.isLiquid,
     );
 
-    final customUrl = NormalizedMempoolUrl(request.url);
+    final customUrl = NormalizedMempoolUrl(request.url, enableSsl: request.enableSsl);
 
     final defaultServerResult = await _fetchDefaultServerSafely(network);
     if (defaultServerResult != null) {
-      final defaultUrl = NormalizedMempoolUrl(defaultServerResult.url);
+      final defaultUrl = NormalizedMempoolUrl(defaultServerResult.url, enableSsl: defaultServerResult.enableSsl);
       if (customUrl == defaultUrl) {
         return SetCustomMempoolServerResult.failure(
           'This URL is the same as the default server. Please use a different URL.',
@@ -68,6 +69,7 @@ class SetCustomMempoolServerUsecase {
         final isValid = await _validator.validateServer(
           url: request.url,
           network: network,
+          enableSsl: request.enableSsl,
         );
 
         if (!isValid) {
@@ -75,10 +77,10 @@ class SetCustomMempoolServerUsecase {
             'Server validation failed: Unable to connect or invalid response',
           );
         }
+      } on MempoolServerValidationException catch (e) {
+        return SetCustomMempoolServerResult.failure(e.message);
       } catch (e) {
-        return SetCustomMempoolServerResult.failure(
-          'Validation error: ${e.toString()}',
-        );
+        return SetCustomMempoolServerResult.failure('Unexpected error: ${e.toString()}');
       }
     }
 
@@ -86,6 +88,7 @@ class SetCustomMempoolServerUsecase {
       final server = MempoolServer.createCustom(
         url: request.url,
         network: network,
+        enableSsl: request.enableSsl,
       );
 
       await _serverRepository.save(server);
