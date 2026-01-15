@@ -47,7 +47,7 @@ class Bip329LabelsPage extends StatelessWidget {
                 exportSuccess: () {
                   SnackBarUtils.showSnackBar(
                     context,
-                    context.loc.bip329LabelsExportSuccessSingular,
+                    context.loc.bip329LabelsExportSuccess,
                   );
                 },
                 importSuccess: (labelsCount) {
