@@ -1,19 +1,16 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class LabelExchangeOrdersUsecase {
-  final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
-  final StoreLabelsUsecase _storeLabelsUsecase;
+  final LabelsFacade _labelsFacade;
   final ListAllOrdersUsecase _listAllOrdersUsecase;
 
   LabelExchangeOrdersUsecase({
-    required FetchAllLabelsUsecase fetchAllLabelsUsecase,
-    required StoreLabelsUsecase storeLabelsUsecase,
+    required LabelsFacade labelsFacade,
     required ListAllOrdersUsecase listAllOrdersUsecase,
-  }) : _fetchAllLabelsUsecase = fetchAllLabelsUsecase,
-       _storeLabelsUsecase = storeLabelsUsecase,
+  }) : _labelsFacade = labelsFacade,
        _listAllOrdersUsecase = listAllOrdersUsecase;
 
   Future<void> execute() async {
@@ -26,7 +23,7 @@ class LabelExchangeOrdersUsecase {
 
       log.config('$LabelExchangeOrdersUsecase is labeling exchange orders');
 
-      final labels = <Label>[];
+      final labels = <StoreLabelEnvelope>[];
       for (final order in orders) {
         try {
           final isBuyOrder = order is BuyOrder;
@@ -35,7 +32,7 @@ class LabelExchangeOrdersUsecase {
               : LabelSystem.exchangeSell.label;
 
           if (isBuyOrder && order.toAddress != null) {
-            final label = Label.addr(
+            final label = StoreLabelEnvelope.addr(
               address: order.toAddress!,
               label: systemLabel,
               origin: null,
@@ -44,7 +41,7 @@ class LabelExchangeOrdersUsecase {
           }
 
           if (order.transactionId != null) {
-            final label = Label.tx(
+            final label = StoreLabelEnvelope.tx(
               transactionId: order.transactionId!,
               label: systemLabel,
               origin: null,
@@ -56,7 +53,7 @@ class LabelExchangeOrdersUsecase {
         }
       }
 
-      await _storeLabelsUsecase.execute(labels);
+      await _labelsFacade.store(labels);
 
       log.fine(
         '$LabelExchangeOrdersUsecase labeled ${orders.length} exchange orders',
@@ -68,9 +65,11 @@ class LabelExchangeOrdersUsecase {
 
   Future<bool> _hasExistingExchangeSystemLabels() async {
     try {
-      final allLabels = await _fetchAllLabelsUsecase.execute();
+      final allLabels = await _labelsFacade.fetch();
       return allLabels.any(
-        (label) => SystemLabel.is
+        (label) =>
+            LabelSystem.isSystemLabel(label) &&
+            LabelSystem.fromLabel(label).isExchangeRelated(),
       );
     } catch (e) {
       log.warning('$LabelExchangeOrdersUsecase: $e');

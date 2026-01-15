@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
@@ -82,7 +82,7 @@ class SellLocator {
         getAddressAtIndexUsecase: locator<GetAddressAtIndexUsecase>(),
         getWalletUtxosUsecase: locator<GetWalletUtxosUsecase>(),
         getOrderUsecase: locator<GetOrderUsecase>(),
-        storeLabelsUsecase: locator<StoreLabelsUsecase>(),
+        labelsFacade: locator<LabelsFacade>(),
       ),
     );
   }

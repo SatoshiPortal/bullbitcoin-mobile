@@ -19,7 +19,7 @@ extension LabelRowMapper on LabelRow {
       ref: label.reference,
       type: type,
       origin: label.origin,
-      spendable: label.spendable != null ? label.spendable == 'true' : null,
+      spendable: label.spendable ?? true,
     );
   }
 

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -14,17 +14,17 @@ class WalletAddressRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
-  final FetchLabelByRefUsecase _fetchLabelByRefUsecase;
+  final LabelsFacade _labelsFacade;
 
   WalletAddressRepository({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-    required FetchLabelByRefUsecase fetchLabelByRefUsecase,
+    required LabelsFacade labelsFacade,
   }) : _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
-       _fetchLabelByRefUsecase = fetchLabelByRefUsecase;
+       _labelsFacade = labelsFacade;
 
   Future<WalletAddress> getLastUnusedReceiveAddress({
     required String walletId,
@@ -53,9 +53,9 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
-    var labels = await _fetchLabelByRefUsecase.execute(address);
+    var labels = await _labelsFacade.fetchByReference(address);
 
-    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+    while (labels.any((label) => LabelSystem.isSystemLabel(label))) {
       index++;
       if (walletModel is PublicBdkWalletModel) {
         address = await _bdkWallet.getAddressByIndex(
@@ -69,7 +69,7 @@ class WalletAddressRepository {
         );
         address = addressInfo.confidential;
       }
-      labels = await _fetchLabelByRefUsecase.execute(address);
+      labels = await _labelsFacade.fetchByReference(address);
     }
 
     final walletAddressModel = WalletAddressModel(
@@ -122,9 +122,9 @@ class WalletAddressRepository {
       address = addressInfo.confidential;
     }
 
-    var labels = await _fetchLabelByRefUsecase.execute(address);
+    var labels = await _labelsFacade.fetchByReference(address);
 
-    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
+    while (labels.any((label) => LabelSystem.isSystemLabel(label))) {
       index++;
       if (walletModel is PublicBdkWalletModel) {
         address = await _bdkWallet.getAddressByIndex(
@@ -138,7 +138,7 @@ class WalletAddressRepository {
         );
         address = addressInfo.confidential;
       }
-      labels = await _fetchLabelByRefUsecase.execute(address);
+      labels = await _labelsFacade.fetchByReference(address);
     }
 
     final walletAddressModel = WalletAddressModel(
@@ -260,7 +260,7 @@ class WalletAddressRepository {
 
     final result = <WalletAddress>[];
     for (var model in enrichedAddresses) {
-      final labels = await _fetchLabelByRefUsecase.execute(model.address);
+      final labels = await _labelsFacade.fetchByReference(model.address);
       final entity = WalletAddressMapper.toEntity(model, labels: labels);
       result.add(entity);
     }
@@ -308,7 +308,7 @@ class WalletAddressRepository {
       updatedAt: DateTime.now(),
     );
 
-    final labels = await _fetchLabelByRefUsecase.execute(address);
+    final labels = await _labelsFacade.fetchByReference(address);
     return WalletAddressMapper.toEntity(walletAddressModel, labels: labels);
   }
 }

@@ -14,6 +14,10 @@ import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
+  static void registerDatasources(GetIt locator) {
+    // No datasources to register for labels feature
+  }
+
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<LabelsRepositoryPort>(
       () => DriftLabelsRepositoryAdapter(database: locator<SqliteDatabase>()),
@@ -68,6 +72,7 @@ class LabelsLocator {
         fetchLabelByReferenceUsecase: locator<FetchLabelByReferenceUsecase>(),
         fetchDistinctLabelsUsecase: locator<FetchDistinctLabelsUsecase>(),
         storeLabelsUsecase: locator<StoreLabelsUsecase>(),
+        deleteLabelUsecase: locator<DeleteLabelUsecase>(),
       ),
     );
   }

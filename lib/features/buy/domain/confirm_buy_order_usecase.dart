@@ -3,23 +3,23 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class ConfirmBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
-  final StoreLabelsUsecase _storeLabelsUsecase;
+  final LabelsFacade _labelsFacade;
 
   ConfirmBuyOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
-    required StoreLabelsUsecase storeLabelsUsecase,
+    required LabelsFacade labelsFacade,
   }) : _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository,
-       _storeLabelsUsecase = storeLabelsUsecase;
+       _labelsFacade = labelsFacade;
 
   Future<BuyOrder> execute({required String orderId}) async {
     try {
@@ -31,8 +31,8 @@ class ConfirmBuyOrderUsecase {
       final order = await repo.confirmBuyOrder(orderId);
 
       if (order.toAddress != null) {
-        await _storeLabelsUsecase.execute([
-          Label.addr(
+        await _labelsFacade.store([
+          StoreLabelEnvelope.addr(
             address: order.toAddress!,
             label: LabelSystem.exchangeBuy.label,
             origin: null,

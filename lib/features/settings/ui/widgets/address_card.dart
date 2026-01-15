@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
@@ -22,7 +21,7 @@ class AddressCard extends StatelessWidget {
   final String address;
   final int index;
   final int balanceSat;
-  final List<Label> labels;
+  final List<String> labels;
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +106,7 @@ class AddressCard extends StatelessWidget {
             ),
             if (labels.isNotEmpty) ...[
               const Gap(8),
-              LabelsWidget(labels: labels),
+              LabelsWidget(labels: labels, reference: address),
             ],
           ],
         ),

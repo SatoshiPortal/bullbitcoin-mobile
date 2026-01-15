@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
@@ -13,7 +13,7 @@ class CreateReceiveSwapUsecase {
   final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
-  final StoreLabelsUsecase _storeLabelsUsecase;
+  final LabelsFacade _labelsFacade;
 
   CreateReceiveSwapUsecase({
     required WalletRepository walletRepository,
@@ -21,13 +21,13 @@ class CreateReceiveSwapUsecase {
     required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    required StoreLabelsUsecase storeLabelsUsecase,
+    required LabelsFacade labelsFacade,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
        _swapRepositoryTestnet = swapRepositoryTestnet,
        _seedRepository = seedRepository,
        _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _storeLabelsUsecase = storeLabelsUsecase;
+       _labelsFacade = labelsFacade;
 
   Future<LnReceiveSwap> execute({
     required String walletId,
@@ -81,12 +81,12 @@ class CreateReceiveSwapUsecase {
       );
 
       if (description != null && description.isNotEmpty) {
-        final addressLabel = Label.addr(
+        final addressLabel = StoreLabelEnvelope.addr(
           address: claimAddress.address,
           label: description,
           origin: wallet.id,
         );
-        await _storeLabelsUsecase.execute([addressLabel]);
+        await _labelsFacade.store([addressLabel]);
       }
 
       switch (type) {

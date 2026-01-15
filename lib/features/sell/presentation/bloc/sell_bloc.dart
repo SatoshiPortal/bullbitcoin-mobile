@@ -22,7 +22,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/sell/domain/create_sell_order_usecase.dart';
 import 'package:bb_mobile/features/sell/domain/refresh_sell_order_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -64,7 +64,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     required GetAddressAtIndexUsecase getAddressAtIndexUsecase,
     required GetWalletUtxosUsecase getWalletUtxosUsecase,
     required GetOrderUsecase getOrderUsecase,
-    required StoreLabelsUsecase storeLabelsUsecase,
+    required LabelsFacade labelsFacade,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _getSettingsUsecase = getSettingsUsecase,
        _createSellOrderUsecase = createSellOrderUsecase,
@@ -83,8 +83,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
        _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _getOrderUsecase = getOrderUsecase,
-
-       _storeLabelsUsecase = storeLabelsUsecase,
+       _labelsFacade = labelsFacade,
        super(const SellState.initial()) {
     on<SellStarted>(_onStarted);
     on<SellAmountInputContinuePressed>(_onAmountInputContinuePressed);
@@ -119,7 +118,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
   final GetAddressAtIndexUsecase _getAddressAtIndexUsecase;
   final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetOrderUsecase _getOrderUsecase;
-  final StoreLabelsUsecase _storeLabelsUsecase;
+  final LabelsFacade _labelsFacade;
   Timer? _pollingTimer;
 
   Future<void> _onStarted(SellStarted event, Emitter<SellState> emit) async {
@@ -416,8 +415,8 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         await _broadcastLiquidTransactionUsecase.execute(signedPset);
         final tx = await LiquidTx.fromPset(signedPset);
         final txid = tx.txid;
-        await _storeLabelsUsecase.execute([
-          Label.tx(
+        await _labelsFacade.store([
+          StoreLabelEnvelope.tx(
             transactionId: txid,
             label: LabelSystem.exchangeSell.label,
             origin: wallet.id,
@@ -454,8 +453,8 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
         final txid = tx.txid;
-        await _storeLabelsUsecase.execute([
-          Label.tx(
+        await _labelsFacade.store([
+          StoreLabelEnvelope.tx(
             transactionId: txid,
             label: LabelSystem.exchangeSell.label,
             origin: wallet.id,

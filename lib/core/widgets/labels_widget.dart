@@ -1,7 +1,5 @@
-import 'package:bb_mobile/features/labels/domain/usecases/delete_label_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
-import 'package:bb_mobile/features/labels/domain/label_system.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/label_text.dart';
@@ -10,46 +8,52 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
 class LabelsWidget extends StatefulWidget {
-  const LabelsWidget({super.key, required this.labels, this.onDelete});
+  const LabelsWidget({
+    super.key,
+    required this.labels,
+    required this.reference,
+    this.onDelete,
+  });
 
-  final List<Label> labels;
-  final Future<void> Function(Label)? onDelete;
+  final List<String> labels;
+  final String reference;
+  final Future<void> Function(String)? onDelete;
 
   @override
   State<LabelsWidget> createState() => _LabelsWidgetState();
 }
 
 class _LabelsWidgetState extends State<LabelsWidget> {
-  final _deleteLabelUsecase = locator<DeleteLabelUsecase>();
+  final _labelsFacade = locator<LabelsFacade>();
   final Set<String> _deletingLabels = {};
 
-  Future<void> _deleteLabel(Label label) async {
-    if (_deletingLabels.contains(label.label)) return;
+  Future<void> _deleteLabel(String label) async {
+    if (_deletingLabels.contains(label)) return;
 
     setState(() {
-      _deletingLabels.add(label.label);
+      _deletingLabels.add(label);
     });
 
     try {
       if (widget.onDelete != null) {
         await widget.onDelete!(label);
       } else {
-        await _deleteLabelUsecase.execute(label);
+        await _labelsFacade.delete(label: label, reference: widget.reference);
       }
       if (mounted) {
-        setState(() => _deletingLabels.remove(label.label));
+        setState(() => _deletingLabels.remove(label));
       }
     } on LabelError catch (e) {
       if (mounted) {
-        setState(() => _deletingLabels.remove(label.label));
+        setState(() => _deletingLabels.remove(label));
         SnackBarUtils.showSnackBar(context, e.toTranslated(context));
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _deletingLabels.remove(label.label));
+        setState(() => _deletingLabels.remove(label));
         SnackBarUtils.showSnackBar(
           context,
-          context.loc.labelDeleteFailed(label.label),
+          context.loc.labelDeleteFailed(label),
         );
       }
     }
@@ -59,17 +63,13 @@ class _LabelsWidgetState extends State<LabelsWidget> {
   Widget build(BuildContext context) {
     if (widget.labels.isEmpty) return const SizedBox.shrink();
 
-    final uniqueLabels = <String, Label>{};
-    for (final label in widget.labels) {
-      uniqueLabels[label.label] = label;
-    }
-    final distinctLabels = uniqueLabels.values.toList();
+    final distinctLabels = widget.labels.toSet().toList();
 
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: distinctLabels.map((label) {
-        final isDeleting = _deletingLabels.contains(label.label);
+        final isDeleting = _deletingLabels.contains(label);
         return LabelChip(
           label: label,
           isDeleting: isDeleting,
@@ -88,7 +88,7 @@ class LabelChip extends StatelessWidget {
     this.isDeleting = false,
   });
 
-  final Label label;
+  final String label;
   final VoidCallback? onDelete;
   final bool isDeleting;
 
@@ -96,7 +96,7 @@ class LabelChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth = screenWidth * 0.8;
-    final isSystemLabel = LabelSystem.isSystemLabel(label.label);
+    final isSystemLabel = LabelSystem.isSystemLabel(label);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),

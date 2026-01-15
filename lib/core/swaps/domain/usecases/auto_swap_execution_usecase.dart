@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/foundation.dart';
 
 class AutoSwapExecutionUsecase {
@@ -21,7 +21,7 @@ class AutoSwapExecutionUsecase {
   final BlockchainPort _blockchainPort;
   final SeedRepository _seedRepository;
   final WalletTransactionRepository _walletTxRepository;
-  final StoreLabelsUsecase _storeLabelsUsecase;
+  final LabelsFacade _labelsFacade;
 
   AutoSwapExecutionUsecase({
     required BoltzSwapRepository mainnetRepository,
@@ -31,7 +31,7 @@ class AutoSwapExecutionUsecase {
     required BlockchainPort blockchainPort,
     required SeedRepository seedRepository,
     required WalletTransactionRepository walletTxRepository,
-    required StoreLabelsUsecase storeLabelsUsecase,
+    required LabelsFacade labelsFacade,
   }) : _mainnetRepository = mainnetRepository,
        _testnetRepository = testnetRepository,
        _walletRepository = walletRepository,
@@ -39,7 +39,7 @@ class AutoSwapExecutionUsecase {
        _blockchainPort = blockchainPort,
        _seedRepository = seedRepository,
        _walletTxRepository = walletTxRepository,
-       _storeLabelsUsecase = storeLabelsUsecase;
+       _labelsFacade = labelsFacade;
 
   Future<Swap> execute({
     required bool isTestnet,
@@ -186,12 +186,12 @@ class AutoSwapExecutionUsecase {
     );
     debugPrint('Swap executed successfully!');
     // sometimes sync fails and label is not set
-    final txLabel = Label.tx(
+    final txLabel = StoreLabelEnvelope.tx(
       transactionId: txid,
       origin: defaultLiquidWallet.id,
       label: 'Auto-Swap',
     );
-    await _storeLabelsUsecase.execute([txLabel]);
+    await _labelsFacade.store([txLabel]);
 
     // sync at the end to ensure label is set
     await _walletTxRepository.getWalletTransaction(
