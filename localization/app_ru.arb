@@ -1780,15 +1780,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Не удалось экспортировать хранилище из Google Drive",
   "exchangeKycLevelLight": "Свет",
   "transactionLabelCreatedAt": "Создано",
-  "bip329LabelsExportSuccessSingular": "1 метка экспортирована",
-  "bip329LabelsExportSuccessPlural": "{count} меток экспортировано",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Метки успешно экспортированы",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Самый простой вариант, но его можно сделать с помощью онлайн-банкинга (3-4 рабочих дня)",
   "walletDeletionErrorWalletNotFound": "Кошелек, который вы пытаетесь удалить, не существует.",
   "payEnableRBF": "Включить RBF",

@@ -1783,15 +1783,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "未能从谷歌猛进出口",
   "exchangeKycLevelLight": "灯光",
   "transactionLabelCreatedAt": "创立",
-  "bip329LabelsExportSuccessSingular": "1 个标签已导出",
-  "bip329LabelsExportSuccessPlural": "{count} 个标签已导出",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "标签导出成功",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "最低选择,但可以通过在线银行进行(3-4个工作日)",
   "walletDeletionErrorWalletNotFound": "你试图删除的隔离墙不存在.",
   "payEnableRBF": "Enable RBF",

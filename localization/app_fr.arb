@@ -3120,15 +3120,7 @@
   "bip329LabelsDescription": "Importez ou exportez les étiquettes de portefeuille en utilisant le format standard BIP329.",
   "bip329LabelsImportButton": "Importer les étiquettes",
   "bip329LabelsExportButton": "Exporter les étiquettes",
-  "bip329LabelsExportSuccessSingular": "1 étiquette exportée",
-  "bip329LabelsExportSuccessPlural": "{count} étiquettes exportées",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Étiquettes exportées avec succès",
   "bip329LabelsImportSuccessSingular": "1 étiquette importée",
   "bip329LabelsImportSuccessPlural": "{count} étiquettes importées",
   "@bip329LabelsImportSuccessPlural": {

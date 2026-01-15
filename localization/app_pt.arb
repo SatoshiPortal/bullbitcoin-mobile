@@ -1780,15 +1780,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Falhado para exportar o vault do Google Drive",
   "exchangeKycLevelLight": "Luz",
   "transactionLabelCreatedAt": "Criado em",
-  "bip329LabelsExportSuccessSingular": "1 rótulo exportado",
-  "bip329LabelsExportSuccessPlural": "{count} rótulos exportados",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Rótulos exportados com sucesso",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Opção mais lenta, mas pode ser feito via banco on-line (3-4 dias úteis)",
   "walletDeletionErrorWalletNotFound": "A carteira que você está tentando excluir não existe.",
   "payEnableRBF": "Habilitar RBF",

@@ -1751,15 +1751,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Fehler beim Export von Google Drive",
   "exchangeKycLevelLight": "Licht",
   "transactionLabelCreatedAt": "Erstellt bei",
-  "bip329LabelsExportSuccessSingular": "1 Label exportiert",
-  "bip329LabelsExportSuccessPlural": "{count} Labels exportiert",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Labels erfolgreich exportiert",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Slowest Option, kann aber über Online-Banking (3-4 Werktage)",
   "walletDeletionErrorWalletNotFound": "Die Brieftasche, die Sie löschen möchten, existiert nicht.",
   "payEnableRBF": "RBF aktivieren",

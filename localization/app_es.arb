@@ -3120,15 +3120,7 @@
   "bip329LabelsDescription": "Importa o exporta etiquetas de billetera usando el formato estándar BIP329.",
   "bip329LabelsImportButton": "Importar etiquetas",
   "bip329LabelsExportButton": "Exportar etiquetas",
-  "bip329LabelsExportSuccessSingular": "1 etiqueta exportada",
-  "bip329LabelsExportSuccessPlural": "{count} etiquetas exportadas",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Etiquetas exportadas correctamente",
   "bip329LabelsImportSuccessSingular": "1 etiqueta importada",
   "bip329LabelsImportSuccessPlural": "{count} etiquetas importadas",
   "@bip329LabelsImportSuccessPlural": {
