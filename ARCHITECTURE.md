@@ -50,9 +50,8 @@ Each feature folder (e.g. `/secrets`, `/labels`, `/settings`, `/wallets`) repres
 - `domain/` contains domain models & business rules (Entities, Value Objects).
 - `application/` contains use cases, ports and optionally services for code repeated in different use cases (orchestration, workflows).
 
-> [!INFO]
-> Together, `domain/ + application/` form what many texts call the "inside" of Clean/Hex
-> (i.e., the business logic isolated from frameworks).
+> [!NOTE]
+> Together, `domain/ + application/` form what many texts call the "inside" of Clean/Hex (i.e., the business logic isolated from frameworks).
 
 - `interface_adapters/` contains secondary/driven adapters (e.g., repository implementations).
 - `frameworks/` contains external dependencies and infrastructure code (e.g., datasources, API clients, drivers) generally used by the secondary adapters if it makes sense to keep them separate for better organization, reusability or further abstraction if needed.
@@ -150,7 +149,7 @@ While the architecture described above represents our current standards, the cod
 - **Impact**: Makes state management unpredictable and harder to test
 - **Solution**: Use local widget state (StatefulWidget) for UI-only concerns; use BLoC only for business state
 
-### 🤖 Rules for AI:
+## 🤖 Rules for AI:
 
 - Always follow the architecture of the project when developing features.
 - Always use colors from the theme; never use raw colors. When the user explains something using raw color language; find the closest color in the theme and based on the application use a color from the theme that would make sense in dark mode too but do not try to change the color theme file by yourself ever.
