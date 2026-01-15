@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/labels/primitive/label_type.dart';
 
 class LabelEntity {
+  final int? id;
   final LabelType type;
   final String label;
   final String reference;
@@ -8,6 +9,7 @@ class LabelEntity {
   final bool? spendable;
 
   LabelEntity({
+    this.id,
     required this.type,
     required this.label,
     required this.reference,
