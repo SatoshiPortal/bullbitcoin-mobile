@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/adapters/label_row_mapper.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
-import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 
 class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   final SqliteDatabase _database;
@@ -10,7 +10,7 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
     : _database = database;
 
   @override
-  Future<void> store(List<Label> labels) async {
+  Future<void> store(List<LabelEntity> labels) async {
     final rows = labels
         .map((label) => LabelRowMapper.fromEntity(label))
         .toList();
@@ -24,7 +24,7 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   }
 
   @override
-  Future<List<Label>> fetchByLabel(String label) async {
+  Future<List<LabelEntity>> fetchByLabel(String label) async {
     final rows = await _database.managers.labels
         .filter((l) => l.label(label))
         .get();
@@ -32,7 +32,7 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   }
 
   @override
-  Future<List<Label>> fetchByReference(String reference) async {
+  Future<List<LabelEntity>> fetchByReference(String reference) async {
     final rows = await _database.managers.labels
         .filter((l) => l.ref(reference))
         .get();
@@ -50,7 +50,7 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   }
 
   @override
-  Future<List<Label>> fetchAll() async {
+  Future<List<LabelEntity>> fetchAll() async {
     final rows = await _database.managers.labels.get();
     return rows.map((row) => row.toEntity()).toList();
   }

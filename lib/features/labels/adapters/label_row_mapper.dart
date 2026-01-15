@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart' as db;
-import 'package:bb_mobile/features/labels/domain/label.dart';
+import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/primitive/label_type.dart';
 
 extension LabelRowMapper on LabelRow {
-  static LabelRow fromEntity(Label label) {
+  static LabelRow fromEntity(LabelEntity label) {
     final type = switch (label.type) {
       LabelType.extendedPublicKey => db.LabelType.xpub,
       LabelType.transaction => db.LabelType.tx,
@@ -23,7 +23,7 @@ extension LabelRowMapper on LabelRow {
     );
   }
 
-  Label toEntity() {
+  LabelEntity toEntity() {
     final type = switch (this.type) {
       db.LabelType.xpub => LabelType.extendedPublicKey,
       db.LabelType.tx => LabelType.transaction,
@@ -33,7 +33,7 @@ extension LabelRowMapper on LabelRow {
       db.LabelType.pubkey => LabelType.publicKey,
     };
 
-    return Label(
+    return LabelEntity(
       type: type,
       label: label,
       reference: ref,
