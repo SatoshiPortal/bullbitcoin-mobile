@@ -1,13 +1,13 @@
 import 'package:bb_mobile/features/labels/primitive/label_type.dart';
 
-class Label {
+class LabelEntity {
   final LabelType type;
   final String label;
   final String reference;
   final String? origin;
   final bool? spendable;
 
-  Label({
+  LabelEntity({
     required this.type,
     required this.label,
     required this.reference,
