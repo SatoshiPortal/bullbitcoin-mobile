@@ -146,10 +146,10 @@ graph TB
    - Router setup and interfaces (Navigation)
    - PIN encrypted storage
 
-2. **Domain Primitives** (also called Value Objects or Shared Kernel):
+2. **Core Primitives**:
    - Located in `/lib/core/primitives/`
    - Examples: `Secret`, `SecretUsagePurpose`, `Fingerprint`, `Address`, `Amount`, etc.
-   - Shared domain types used across multiple features
+   - Shared types used across multiple features, avoiding redundant definitions
    - Immutable, validated value objects that ensure domain integrity
 
 ## Key Dependency Patterns
