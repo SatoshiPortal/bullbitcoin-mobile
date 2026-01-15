@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -52,7 +51,7 @@ class TxListItem extends StatelessWidget {
         : context.loc.transactionNetworkLiquid;
     final labels = tx.walletTransaction != null
         ? tx.walletTransaction!.labels
-        : <Label>[];
+        : <String>[];
     final date = tx.isSwap
         ? (!tx.isOngoingSwap
               ? (tx.swap?.completionTime != null
@@ -157,7 +156,11 @@ class TxListItem extends StatelessWidget {
                         : null,
                   ),
 
-                  if (labels.isNotEmpty) LabelsWidget(labels: labels),
+                  if (labels.isNotEmpty && tx.walletTransaction != null)
+                    LabelsWidget(
+                      labels: labels,
+                      reference: tx.walletTransaction!.txId,
+                    ),
                 ],
               ),
             ),

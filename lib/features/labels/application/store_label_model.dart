@@ -6,19 +6,17 @@ import 'package:bb_mobile/features/labels/primitive/label_type.dart';
 /// This DTO is used as input to the [StoreLabelsUsecase] to avoid exposing
 /// domain entities to outer layers. The use case is responsible for converting
 /// this DTO into the domain [Label] entity.
-class StoreLabelDto {
+class StoreLabelModel {
   final LabelType type;
   final String label;
   final String reference;
   final String? origin;
-  final bool? spendable;
 
-  const StoreLabelDto({
+  const StoreLabelModel({
     required this.type,
     required this.label,
     required this.reference,
     this.origin,
-    this.spendable,
   });
 
   /// Converts this DTO to a domain [Label] entity.
@@ -30,7 +28,6 @@ class StoreLabelDto {
       label: label,
       reference: reference,
       origin: origin,
-      spendable: spendable,
     );
   }
 }

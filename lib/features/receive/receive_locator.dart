@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_address_at_index_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
-import 'package:bb_mobile/features/labels/labels.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -35,7 +35,7 @@ class ReceiveLocator {
         ),
         seedRepository: locator<SeedRepository>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
-        storeLabelsUsecase: locator<StoreLabelsUsecase>(),
+        labelsFacade: locator<LabelsFacade>(),
       ),
     );
 
@@ -57,7 +57,7 @@ class ReceiveLocator {
         watchWalletTransactionByAddressUsecase:
             locator<WatchWalletTransactionByAddressUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
-        storeLabelsUsecase: locator<StoreLabelsUsecase>(),
+        labelsFacade: locator<LabelsFacade>(),
         getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         wallet: wallet,
       ),
