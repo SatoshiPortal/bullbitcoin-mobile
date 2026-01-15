@@ -1,147 +1,158 @@
 # 🏗 Architecture
 
-## 📁 Project structure
+This project follows a **feature-based** and **layered architecture** to ensure **separation of concerns**, **scalability** and **maintainability**.
 
-This project follows a **feature-based** and **layered architecture** to ensure **scalability**, **maintainability**, and **separation of concerns**.
+## 📦 Feature-Based Architecture
 
-The lib/ directory is organized into the following main sections:
+Features are self-contained modules that encapsulate all code related to a specific functionality, domain, or resource of the application.
 
-- [Core](lib/_core/): Contains fundamental **UI-independent** components that are **used across multiple features**. It has its own set of layers and a dependency locator:
-  - [Data](lib/_core/data/): Contains **data sources**, **models**, and concrete **repository and service implementations** that are shared across multiple features.
-  - [Domain](lib/_core/domain/): Contains **entities**, abstract **repository and service contracts**, and **use cases** that are shared across multiple features.
-  - [Presentation](lib/_core/presentation/): Contains **BLoCs** that are used in multiple features.
-  - [Core Locator](lib/_core/): Manages **dependency injection setup** for the core layer.
-- [UI](lib/_ui/): Contains **shared UI components**, like widgets, fonts, colors and themes that are used across multiple features.
-- [Features](lib/): Each **feature** is self-contained and consists of its own set of **layers**, **locator**, and **routes**:
-  - Data (lib/`<feature>`/data/): Contains **feature-specific** data sources, models, and repository and service implementations.
-  - Domain (lib/`<feature>`/domain/): Contains **feature-specific** entities, repository and service contracts, and use cases.
-  - Presentation (lib/`<feature>`/presentation/): Contains **feature-specific** BLoCs.
-  - UI (lib/`<feature>`/ui/): Contains **feature-specific** UI components, screens, widgets, themes and routes.
-  - Locator (lib/`<feature>`/): Defines **dependency injection** setup for the feature.
-- [Localization](lib/_l10n/): Contains **localization files** with translations for different languages, re-generate the files using `flutter gen-l10n`.
-- [Utils](lib/_utils/): Contains **small utility functions, extensions and constants** used throughout the app.
-- App-Level Configuration in the root directory [lib/](lib/): Contains the main app entry point, configuration, and global utilities.
-  - [App Bloc Observer](bloc_observer.dart) – Observes **global BLoC events** for debugging and logging.
-  - [App Locator](locator.dart) – Configures **dependency injection** registration by calling the **core and feature locators**.
-  - [App Router](router.dart) – Defines the **global app router and top-level navigation setup**.
-  - [Main](main.dart) – Initializes and **launches the app** and sets up **global providers and lifecycle event handlers**.
+A feature is the single owner of its domain, meaning it is solely responsible for enforcing all business rules and domain logic related to that domain. No other feature may directly access or modify a feature’s internal domain models, state, or persistence details.
 
-## ✨ Clean Architecture
+When other features need to interact with a domain, the feature should expose a well-defined public API (facade) that serves as the only entry point for cross-feature interaction. This facade defines the feature’s stable contract and ensures that business rules cannot be bypassed. And as long as the facade remains unchanged, the feature’s internal implementation can evolve freely without impacting dependent features.
 
-Clean Architecture is a software design philosophy that separates software into three layers: data, domain, and presentation.
+This approach enables clear ownership, strong encapsulation, and independent development and testing of features. It also helps in maintaining a well-defined, acyclic dependency graph between features, preventing circular dependencies as visualized in the [Features Dependency Diagram](FEATURES.md).
 
-Each layer has a specific responsibility and is built around the business domain. The separation of concerns and predictable data flow between the layers ensures that the data and presentation layers can be changed or replaced without affecting the core business logic.
+## 🎯 Layered Architecture
 
-This also enhances testability, maintainability, and scalability. While it may seem intimidating at first and introduce some boilerplate code, it pays off in the long run—especially in larger projects, more complex systems, and bigger teams.
+The layers that can be encountered in the architecture are highly inspired by [**Clean Architecture**](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) and [**Hexagonal Architecture (Ports and Adapters)**](https://alistair.cockburn.us/hexagonal-architecture) principles.
+They overlap and complement each other well, as Clean Architecture focuses on separation of concerns and dependency rules between layers, while Hexagonal Architecture emphasizes isolating the application’s business logic from external systems through well-defined ports and adapters.
 
-### Domain Layer
+We use the `Entities` and `Use Cases` concepts from Clean Architecture which together form the `Application` boundary in Hexagonal Architecture. They represent the pure business logic of the application and include domain models, business rules, and the orchestration of operations to achieve specific business goals.
 
-The domain layer is the heart of the application. It consists of entities, repository and service interfaces/contracts and use cases that define the pure business logic of the application, making it independent of the data and presentation layers. This allows the business logic to be tested and reused without being tied to a specific data source or UI framework.
+From Hexagonal Architecture we use the concept of `Ports` (interfaces defined by the Application) and `Adapters` (concrete implementations) to isolate the Application from external systems such as databases, APIs, or UI frameworks.
 
-> [!TIP]
-> You can think of the domain layer as the 'what' of the application. It defines what the application should permit the user to do, but not how it should be done or how it should be displayed. That's why repositories and services are not implemented here, but only defined as abstract classes.
+More specifically, we consider `BLoC/Cubits`, feature `Facades`, and event watchers to be **Primary (Driving) Adapters**, as they drive the application by invoking `Use Cases` through inbound `Ports`.
 
-#### Entities
+Persistence implementations (e.g. repository or store implementations), external API clients, or other concrete infrastructure concerns are considered **Secondary (Driven) Adapters**, as they are invoked by the `Application` through outbound ports to perform operations on external systems (e.g. databases or APIs) or with concrete implementations (either with or without external dependencies). `Ports` define the needs of the `Application`, while Adapters fulfill those needs. What and how are thus clearly separated and the how is easily replaceable without affecting the business logic.
 
-Entities represent business data and rules, independent of any specific data source or UI. Entities should be unaware of how they are stored or retrieved.
+A simple example with one persistence outbound port looks like this:
 
-_(If the domain data consists of native Dart types or simple value objects, you might not need an entity for it.)_
+               UI Adapter (Controller / BLoC)
+                     |
+             Inbound Port (Use Case)
+                     |
+               the Application
+                     |
+            Outbound Port (Repository)
+                     |
+         DB Adapter (Drift / SQL implementation)
+                     |
+                  Database
 
-E.g. [`Wallet`](lib/_core/domain/entities/wallet.dart), [`UnlockAttempt`](lib/pin_code/domain/entities/unlock_attempt.dart).
+The adapters in Hexagonal Architecture map to the `Interface Adapters` and `Frameworks & Drivers` layers in Clean Architecture.
 
-#### Repository contracts
+## 🗂️ Concrete Structure
 
-The interfaces (abstract classes) that define what is needed from the data layer to fulfill the business logic needs. Repositories in the [data layer](#data-layer) must implement these interfaces. They effectively decouple the domain layer from the data layer, making it possible to switch the data source or concrete repository implementation without changing the domain layer.
+Now how does all of the above concepts map to the actual structure and terminology used in this codebase?
 
-E.g. [`PinCodeRepository`](lib/pin_code/domain/repositories/pin_code_repository.dart), [`WalletManagerService`](lib/_core/domain/repositories/wallet_manager_repository.dart).
+Each feature folder (e.g. `/secrets`, `/labels`, `/settings`, `/wallets`) represents a self-contained feature module with the following structure:
 
-#### Service contracts
+- `domain/` contains domain models & business rules (Entities, Value Objects).
+- `application/` contains use cases, ports and optionally services for code repeated in different use cases (orchestration, workflows).
 
-Services are helper classes that:
+> [!INFO]
+> Together, `domain/ + application/` form what many texts call the "inside" of Clean/Hex
+> (i.e., the business logic isolated from frameworks).
 
-- Make logic that combines multiple repositories reusable.
-- Separate and perform calculations, transformations, derivations or business rules not directly related to retrieving or storing data.
-- Typically include `Manager`, `Factory` or `Calculator` or other -er/-or suffixes in their names.
+- `interface_adapters/` contains secondary/driven adapters (e.g., repository implementations).
+- `frameworks/` contains external dependencies and infrastructure code (e.g., datasources, API clients, drivers) generally used by the secondary adapters if it makes sense to keep them separate for better organization, reusability or further abstraction if needed.
+- `presentation/` contains the primary (driving) UI adapters namely BLoCs/Cubits and View Models if any.
+- `ui/` contains UI widgets and screens that compose the visual parts of the feature. They depend on the BLoCs/Cubits from the `presentation/` layer to get their state and invoke actions.
+- `public/` contains the Facade/API of the feature for cross-feature interaction.
+- `watchers/` optionally contains event watchers or listeners that listen to events or data streams from external systems and invoke use cases accordingly.
 
-Just as for the repositories, the domain layer defines service contracts as abstract classes that are implemented in the data layer.
+Something to note is that all secondary adapters are grouped together in the `interface_adapters/` folder, while the primary adapters have their own dedicated folder, like `presentation/`, `public/` and `watchers/`. This is mostly just for clarity, organization and ease of navigation.
 
-E.g. [`WalletManagerService`](lib/_core/domain/services/wallet_manager_service.dart), [`MnemonicSeedFactory`](lib/_core/domain/services/mnemonic_seed_factory.dart), [`TimeoutCalculator`](lib/app_unlock/domain/services/timeout_calculator.dart).
+In the end, these folders can be mapped to the layers of Clean/Hexagonal Architecture and their interactions can be visualized like this:
 
-#### Use cases
+```mermaid
+graph TD
+    UI[UI] --> PL[Presentation]
+    OF[Other Features] --> PF[Public]
+    PL --> AL
+    PF --> AL
+    W[Watchers] --> AL
 
-Use cases define **business operations** by orchestrating data flow from and to the entities by using the repository contracts and services. They essentially represent the actions that can be performed within the application.
+    subgraph AL[Application]
+        UC[Use Cases]
+        P[Ports]
+        UC --> P
+    end
 
-E.g. [`CreateDefaultWalletsUsecase`](lib/app_startup/domain/usecases/create_default_wallets_usecase.dart), [`AttemptUnlockWithPinCodeUsecase`](lib/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart).
+    AL --> D[Domain]
+    IA[Interface Adapters] -.implements.-> P
+    IA --> FD[Frameworks]
+```
 
-### Data Layer
+As can be seen, the `Dependency Rule` and `Ports and Adapters` concepts are followed strictly.
 
-The data layer is responsible for retrieving and storing data from and to different sources, like APIs, databases, or local storage. It consists of data sources, models, and concrete repository implementations.
+### Special Note on Core Module
 
-> [!TIP]
-> You can think of the data layer as the 'how' to achieve the 'what' defined in the domain layer.
+`/lib/core` is a shared technical module of low level primitives/drivers/helpers, not the “core” business logic. Core should be completely independent of any business/feature specific logic.
 
-#### Data sources
+### Error handling
 
-Classes responsible for the actual retrieving or storing of the data that directly interact with APIs, databases, or local storage sources.
-They generally take in [models](#models) as parameters and return models as well.
+Each layer and feature should handle errors appropriately according to its responsibility. It should define its own error types and only propagate its own errors to other layers or features that depend on it. This also means every layer should make sure it catches and maps all errors from other layers it depends on to its own error types before propagating them further.
 
-E.g. [`ExchangeDatasource`](lib/_core/data/datasources/exchange_datasource.dart), [`Bip39WordListDatasource`](lib/_core/data/datasources/bip39_word_list_datasource.dart).
+A simple convention to follow is to just create an error file per layer:
 
-#### Models
+- `domain/` → `<feature_name>_domain_error.dart`
+- `application/` → `<feature_name>_application_errors.dart`
+- `presentation/` → `<feature_name>_presentation_errors.dart`
 
-Data structures as provided or expected by the data sources. They can be different from the entities in the domain layer, as they might have less or more fields or be structured differently. It is also possible that a repository has to use data from multiple models to compose an entity. If an entity can be derived directly from one model or vice versa, the model class can have `toEntity` and `fromEntity` methods to convert to and from entities.
+You can add a sealed class with different error types or exceptions as needed. As well as mappers from errors from the used layers to the layer's error types. This way each layer has its own clearly defined error types and can handle errors appropriately without leaking implementation details or error types from other layers.
 
-E.g. [`SeedModel`](lib/_core/data/models/seed_model.dart) [`WalletMetadataModel`](lib/_core/data/models/wallet_metadata_model.dart).
+## 🔺 Common Architectural Pitfalls
 
-#### Repository and service implementations
+While the architecture described above represents our current standards, the codebase contains legacy code that predates these principles. We're actively refactoring to align with these standards. When working in the codebase, watch out for—and avoid replicating—these common anti-patterns:
 
-The concrete implementations of the repository and service contracts to retrieve data from the data sources and map the models to entities defined in the domain.
-Repositories convert models to entities and vice versa, while services use entities only, as they are not directly related to data retrieval or storage.
+**Breaking Feature Boundaries**
 
-E.g. [`WalletManagerServiceImpl`](lib/_core/data/repositories/wallet_manager_repository_impl.dart), [`SettingsRepositoryImpl`](lib/_core/data/repositories/settings_repository_impl.dart).
+- **Problem**: Features directly import usecases, domain models, repositories, or services from other features
+- **Impact**: Creates tight coupling, bypasses business rules, and leads to circular dependencies
+- **Solution**: Always define and use a public facade for cross-feature communication
 
-### Presentation Layer
+**Business Logic in Presentation Layer**
 
-The presentation layer is responsible for managing the state for the user interface to listen to and be rendered correctly. It does this by storing the current state and updating it by invoking use cases based on user interactions or other events.
+- **Problem**: BLoCs/Cubits contain orchestration logic, decision-making, or complex transformations that belong in use cases
+- **Impact**: Makes business logic untestable in isolation, duplicates logic across features, and indicates poorly defined or too coarse-grained use cases
+- **Root Cause**: Often happens when directly using other features' use cases instead of creating feature-specific orchestration
+- **Solution**: Keep BLoCs thin—they should only transform between UI state and use case calls
 
-In this project, BLoCs/Cubits are used for state management, but other solutions like ViewModels, Providers, or Riverpod could also be used.
+**Bypassing the Application Layer**
 
-> [!TIP]
-> You can think of the data layer as the 'how' to present the 'what' defined in the domain layer.
+- **Problem**: Watchers or other primary adapters directly invoke repositories, creating flows like `watcher ↔ repository ↔ datasource`
+- **Impact**: Mixes primary and secondary adapter responsibilities, bypassing business rules
+- **Example**: Payjoin and swap datasources managing event streams with watchers listening directly
+- **Solution**: Watchers should invoke use cases, which then use repositories: `watcher → use case → repository`
 
-### Rules of Thumb
+**Core Module Bloat**
 
-> [!TIP]
-> Use these rules of thumb to validate your code and ensure Clean Architecture principles are followed.
+- **Problem**: Feature-specific business logic placed in `/core`
+- **Impact**: Creates implicit coupling and makes core non-reusable across projects
+- **Solution**: Keep core limited to generic primitives, low level drivers, and infrastructure helpers with no business logic
 
-✅ Layer dependencies:
+**Anemic Domain Models**
 
-- The **domain layer** should be **completely independent** of the **data or presentation layer**. It should not import any classes from the data or presentation layer.
-- The **data layer** should **only depend on the domain layer**, never on the presentation layer. From the domain layer it should only import the repository and service contract abstract classes and entity classes, it should never import anything from the presentation layer.
-- The **presentation layer** should **only depend on the domain layer**, never on the data layer. From the domain layer it should only import the use cases and entities, it should never import anything from the data layer directly.
+- **Problem**: Entities defined as simple data containers (DTOs) that mirror database schemas without encapsulating business rules
+- **Impact**: Business logic scatters into services/use cases instead of living in the domain where it belongs
+- **Solution**: Entities should encapsulate business rules and be independent of persistence concerns
 
-✅ Dependency Injection flow:
+**Over-Abstraction in Adapters**
 
-**Dependency injection** flow should be **unidirectional** from the **data layer to the domain layer to the presentation layer** as follows:
+- **Problem**: Unnecessary layers (e.g., both repository AND datasource for simple CRUD operations)
+- **Impact**: Adds complexity and indirection without meaningful benefit
+- **Solution**: Use a single repository if there's no meaningful transformation or clear logic to separate
 
-1. **Data Sources** → Injected into **Repository Implementations** only, not used directly in use cases or anywhere else.
-2. **Repositories** → Injected into **Use Cases or Services** only, not used directly in the presentation layer or anywhere else.
-   _(Services themselves may also be injected into use cases just like repositories.)_
-3. **Use Cases** → Injected into **Blocs/Cubits** or used in the presentation layer only, not in other layers.
+**State Management Confusion**
 
-✅ Entity vs Model:
+- **Problem**: Mixing ephemeral widget state with BLoC state
+- **Impact**: Makes state management unpredictable and harder to test
+- **Solution**: Use local widget state (StatefulWidget) for UI-only concerns; use BLoC only for business state
 
-- The **domain and presentation layer should use entities**, not models.
-- Only the **data layer should use models**, and transform them to entities.
+### 🤖 Rules for AI:
 
-### Rules for AI:
 - Always follow the architecture of the project when developing features.
 - Always use colors from the theme; never use raw colors. When the user explains something using raw color language; find the closest color in the theme and based on the application use a color from the theme that would make sense in dark mode too but do not try to change the color theme file by yourself ever.
-- 
-
-### Further reading
-
-You can read more about Clean Architecture principles applied to Flutter in the following articles:
-
-- https://medium.com/@yamen.abd98/clean-architecture-in-flutter-mvvm-bloc-dio-79b1615530e1
-- https://medium.com/@semihaltin99/flutter-clean-architecture-8759ad0213dd
+- When the user asks for code that breaks the architecture rules, explain why it is not a good idea and suggest an alternative that follows the architecture.
+- Always write unit tests for at least the use cases and entities if they contain business rules.
