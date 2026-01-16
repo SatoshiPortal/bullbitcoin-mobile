@@ -16,10 +16,8 @@ enum RecipientsLocation {
 
 extension RecipientsLocationX on RecipientsLocation {
   /// Whether Virtual IBAN activation is available for this location.
-  /// Only sell and withdraw can activate VIBAN (these are "to your account" flows).
-  bool get isVirtualIbanEligible =>
-      this == RecipientsLocation.sellView ||
-      this == RecipientsLocation.withdrawView;
+  /// Only withdraw can activate VIBAN (deposit uses fund_exchange flow).
+  bool get isVirtualIbanEligible => this == RecipientsLocation.withdrawView;
 
   /// Whether only owner recipients should be shown
   bool get requiresOwnerRecipients =>

@@ -132,9 +132,6 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 RecipientType.bankTransferCad => 'Bank Transfer',
                 // EUROPE types
                 RecipientType.sepaEur => 'SEPA Transfer',
-                RecipientType.frVirtualAccount => 'Confidential SEPA',
-                RecipientType.frPayee => 'SEPA Payee',
-                RecipientType.cjPayee => 'CJ Payee',
                 // MEXICO types
                 RecipientType.speiClabeMxn => 'SPEI CLABE',
                 RecipientType.speiSmsMxn => 'SPEI SMS',
@@ -147,6 +144,13 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
                 RecipientType.pseColombia => 'Bank Account COP',
                 RecipientType.nequiColombia => 'Nequi',
+                // Virtual IBAN types not supported in pay flow
+                RecipientType.frVirtualAccount ||
+                RecipientType.frPayee ||
+                RecipientType.cjPayee =>
+                  throw UnimplementedError(
+                    'Virtual IBAN types not supported in pay flow',
+                  ),
               },
             ),
             const Gap(8),
@@ -319,10 +323,6 @@ class PayReceivePaymentScreen extends StatelessWidget {
         return 'Account';
       case RecipientType.sepaEur:
         return 'IBAN';
-      case RecipientType.frVirtualAccount:
-      case RecipientType.frPayee:
-      case RecipientType.cjPayee:
-        return 'IBAN';
       case RecipientType.speiClabeMxn:
         return 'CLABE';
       case RecipientType.speiSmsMxn:
@@ -342,6 +342,13 @@ class PayReceivePaymentScreen extends StatelessWidget {
         return 'Bank Account';
       case RecipientType.nequiColombia:
         return 'Phone Number';
+      // Virtual IBAN types not supported in pay flow
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+      case RecipientType.cjPayee:
+        throw UnimplementedError(
+          'Virtual IBAN types not supported in pay flow',
+        );
     }
   }
 
@@ -361,9 +368,6 @@ class PayReceivePaymentScreen extends StatelessWidget {
       case RecipientType.bankTransferCad:
         return '${recipient.institutionNumber}-${recipient.transitNumber}-${recipient.accountNumber}';
       case RecipientType.sepaEur:
-      case RecipientType.frVirtualAccount:
-      case RecipientType.frPayee:
-      case RecipientType.cjPayee:
         return recipient.iban;
       case RecipientType.speiClabeMxn:
         return recipient.clabe;
@@ -377,6 +381,13 @@ class PayReceivePaymentScreen extends StatelessWidget {
         return recipient.iban;
       case RecipientType.sinpeMovilCrc:
         return _formatSinpePhoneNumber(recipient.phoneNumber);
+      // Virtual IBAN types not supported in pay flow
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+      case RecipientType.cjPayee:
+        throw UnimplementedError(
+          'Virtual IBAN types not supported in pay flow',
+        );
     }
   }
 }

@@ -57,9 +57,8 @@ class _RecipientTypeSelectionStepState
       (RecipientsBloc bloc) => bloc.state.allowedRecipientFilters.location,
     );
 
-    // Lock jurisdiction for sell/withdraw flows
-    final isJurisdictionLocked = location == RecipientsLocation.sellView ||
-        location == RecipientsLocation.withdrawView;
+    // Lock jurisdiction for withdraw flow
+    final isJurisdictionLocked = location == RecipientsLocation.withdrawView;
 
     return Scaffold(
       appBar: AppBar(

@@ -6,9 +6,7 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipients_location.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -110,6 +108,8 @@ class _ActionRow extends StatelessWidget {
                     if (isSuperuser) {
                       // Reuse the recipients screen to select a recipient before
                       // navigating to the Pay screen.
+                      // Reuse the recipients screen to select a recipient before
+                      // navigating to the Pay screen.
                       context.pushNamed(
                         RecipientsRoute.recipients.name,
                         extra: RecipientsRouteExtra(
@@ -121,11 +121,6 @@ class _ActionRow extends StatelessWidget {
                               extra: recipient,
                             );
                           },
-                          // Pay flow does NOT have VIBAN activation
-                          allowedRecipientsFilters:
-                              const AllowedRecipientFiltersViewModel(
-                            location: RecipientsLocation.payView,
-                          ),
                         ),
                       );
                     } else {
@@ -145,11 +140,6 @@ class _ActionRow extends StatelessWidget {
                             extra: recipient,
                           );
                         },
-                        // Pay flow does NOT have VIBAN activation
-                        allowedRecipientsFilters:
-                            const AllowedRecipientFiltersViewModel(
-                          location: RecipientsLocation.payView,
-                        ),
                       ),
                     );
                   }

@@ -518,11 +518,9 @@ class _ActivatedView extends StatelessWidget {
 
     // Get appropriate description based on location
     final activatedDesc = switch (recipientsLocation) {
-      RecipientsLocation.sellView =>
-        context.loc.confidentialSepaActivatedSellDesc,
       RecipientsLocation.withdrawView =>
         context.loc.confidentialSepaActivatedWithdrawDesc,
-      _ => context.loc.confidentialSepaActivatedSellDesc,
+      _ => context.loc.confidentialSepaActivatedWithdrawDesc,
     };
 
     return Scaffold(
