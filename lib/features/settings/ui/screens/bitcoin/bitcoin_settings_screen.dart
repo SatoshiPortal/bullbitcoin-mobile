@@ -28,6 +28,8 @@ class BitcoinSettingsScreen extends StatefulWidget {
 
 class _BitcoinSettingsScreenState extends State<BitcoinSettingsScreen> {
   StreamSubscription? _meshSubscription;
+  bool _isDashboardOpen = false;
+
 
   @override
   void initState() {
@@ -36,9 +38,28 @@ class _BitcoinSettingsScreenState extends State<BitcoinSettingsScreen> {
   }
 
   void _setupMeshListener() {
-    _meshSubscription = locator<MeshService>().incomingTransactions.listen((txHex) {
-      if (!mounted) return;
-      
+    final mesh = locator<MeshService>();
+    
+    // 1. Completion Listener
+    _meshSubscription = mesh.incomingTransactions.listen((txHex) {
+      if (!mounted || _isDashboardOpen) return;
+      _openDashboard(txHex);
+    });
+    
+    // 2. Progress Listener (Fragmentation)
+    mesh.downloadProgressNotifier.addListener(_onProgressChanged);
+  }
+
+  void _onProgressChanged() {
+      final progress = locator<MeshService>().downloadProgressNotifier.value;
+      // Start showing dashboard as soon as we detect chunks (> 0)
+      if (progress > 0 && !_isDashboardOpen && mounted) {
+          _openDashboard(null);
+      }
+  }
+
+  void _openDashboard(String? txHex) {
+      _isDashboardOpen = true;
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -47,15 +68,19 @@ class _BitcoinSettingsScreenState extends State<BitcoinSettingsScreen> {
           txHex: txHex,
           onDismiss: () => Navigator.pop(context),
         ),
-      );
-    });
+      ).then((_) {
+          _isDashboardOpen = false;
+      });
   }
+
 
   @override
   void dispose() {
     _meshSubscription?.cancel();
+    locator<MeshService>().downloadProgressNotifier.removeListener(_onProgressChanged);
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {

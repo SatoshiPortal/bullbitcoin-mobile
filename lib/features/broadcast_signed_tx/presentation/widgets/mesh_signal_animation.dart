@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/mesh/mesh_service.dart';
 
 class MeshSignalAnimation extends StatefulWidget {
   final bool isLockedOn;
@@ -48,6 +50,7 @@ class _MeshSignalAnimationState extends State<MeshSignalAnimation>
   Widget build(BuildContext context) {
     // Colors: Orange for searching, Green for Locked-on
     final color = widget.isLockedOn ? Colors.greenAccent : Colors.orangeAccent;
+    final meshService = locator<MeshService>();
     
     return Center(
       child: Stack(
@@ -70,6 +73,24 @@ class _MeshSignalAnimationState extends State<MeshSignalAnimation>
             },
           ),
           
+          // Progress Ring (Visible when sending chunks)
+          ValueListenableBuilder<double>(
+            valueListenable: meshService.uploadProgressNotifier,
+            builder: (context, progress, child) {
+              if (progress <= 0.0 || progress >= 1.0) return const SizedBox.shrink();
+              return SizedBox(
+                width: 140,
+                height: 140,
+                child: CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 4,
+                  color: Colors.blueAccent, // Blue for "Data Transfer"
+                  backgroundColor: Colors.transparent,
+                ),
+              );
+            },
+          ),
+          
           // Core Icon
           Icon(
             widget.isLockedOn ? Icons.check_circle : Icons.wifi_tethering,
@@ -80,13 +101,23 @@ class _MeshSignalAnimationState extends State<MeshSignalAnimation>
           // Text Status
           Positioned(
              bottom: 20,
-             child: Text(
-                widget.isLockedOn ? "RELAY FOUND!" : "SEARCHING...",
-                style: TextStyle(
-                   color: color, 
-                   fontWeight: FontWeight.bold,
-                   letterSpacing: 1.5
-                ),
+             child: ValueListenableBuilder<double>(
+               valueListenable: meshService.uploadProgressNotifier,
+               builder: (context, progress, child) {
+                 String text = widget.isLockedOn ? "RELAY FOUND!" : "SEARCHING...";
+                 if (progress > 0 && progress < 1.0) {
+                    text = "SENDING ${(progress * 100).toInt()}%...";
+                 }
+                 
+                 return Text(
+                    text,
+                    style: TextStyle(
+                       color: color, 
+                       fontWeight: FontWeight.bold,
+                       letterSpacing: 1.5
+                    ),
+                 );
+               }
              )
           )
         ],

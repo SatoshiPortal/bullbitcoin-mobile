@@ -1,19 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:convert/convert.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/mesh/mesh_service.dart';
+import 'dart:async';
 
-class MeshRelayDashboard extends StatelessWidget {
-  final String txHex;
+class MeshRelayDashboard extends StatefulWidget {
+  final String? txHex;
   final VoidCallback onDismiss;
 
   const MeshRelayDashboard({
     super.key, 
-    required this.txHex,
+    this.txHex,
     required this.onDismiss,
   });
 
   @override
+  State<MeshRelayDashboard> createState() => _MeshRelayDashboardState();
+}
+
+class _MeshRelayDashboardState extends State<MeshRelayDashboard> {
+  String? _txHex;
+  StreamSubscription? _txSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _txHex = widget.txHex;
+    
+    // Listen for completion if we started with null (Receiving mode)
+    if (_txHex == null) {
+      _txSubscription = locator<MeshService>().incomingTransactions.listen((hex) {
+        if (mounted) {
+          setState(() {
+            _txHex = hex;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _txSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_txHex == null) {
+      return _buildReceivingState();
+    }
+    
+    return _buildSuccessState(_txHex!);
+  }
+
+  Widget _buildReceivingState() {
+     final meshService = locator<MeshService>();
+     
+     return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(color: Colors.blueAccent.withOpacity(0.2), blurRadius: 20, spreadRadius: 5)
+            ]
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40, height: 4, 
+                decoration: BoxDecoration(color: Colors.grey[700], borderRadius: BorderRadius.circular(2))
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.downloading, color: Colors.blueAccent, size: 28),
+                  SizedBox(width: 12),
+                  Text(
+                    "RECEIVING SIGNAL...",
+                    style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              
+              ValueListenableBuilder<double>(
+                valueListenable: meshService.downloadProgressNotifier,
+                builder: (context, progress, _) {
+                  final percent = (progress * 100).toInt();
+                  return Column(
+                    children: [
+                       LinearProgressIndicator(
+                         value: progress,
+                         backgroundColor: Colors.white10,
+                         color: Colors.blueAccent,
+                         minHeight: 8,
+                         borderRadius: BorderRadius.circular(4),
+                       ),
+                       const SizedBox(height: 12),
+                       Text(
+                         "Reassembling Packet: \$percent%",
+                         style: const TextStyle(color: Colors.white70),
+                       )
+                    ],
+                  );
+                }
+              ),
+              const SizedBox(height: 32),
+            ]
+          )
+     );
+  }
+
+  Widget _buildSuccessState(String txHex) {
     return FutureBuilder<BitcoinTx>(
       future: BitcoinTx.fromBytes(hex.decode(txHex)),
       builder: (context, snapshot) {
@@ -99,7 +207,7 @@ class MeshRelayDashboard extends StatelessWidget {
               const SizedBox(height: 32),
               
               ElevatedButton(
-                onPressed: onDismiss,
+                onPressed: widget.onDismiss,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.greenAccent,
                   foregroundColor: Colors.black,
