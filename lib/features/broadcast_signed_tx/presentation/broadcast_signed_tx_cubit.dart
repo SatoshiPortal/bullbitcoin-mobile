@@ -178,33 +178,49 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   Future<void> broadcastViaMesh() async {
     if (state.transaction == null) return;
     try {
-      emit(state.copyWith(isBroadcastingMesh: true, error: null));
-      await _meshService.startAdvertising(state.transaction!.data);
+      final txHex = state.transaction!.data;
+      final meshService = locator<MeshService>();
+      await meshService.startAdvertising(txHex);
+      
+      // Listen for "Lock-on" (Connection) events
+      meshService.isConnectedNotifier.addListener(_onMeshConnectionChanged);
+
+      emit(state.copyWith(
+        isBroadcastingMesh: true,
+        isMeshConnected: meshService.isConnectedNotifier.value,
+        error: null, // Clear previous errors
+      ));
     } catch (e) {
-      final String errorMessage;
-      if (e.toString().contains('permissions')) {
-        errorMessage = 'Bluetooth permissions required.';
-      } else if (e.toString().contains('Bluetooth is not enabled')) {
-        errorMessage = 'Enable Bluetooth to broadcast.';
-      } else {
-        errorMessage = 'Mesh Broadcast failed: \$e';
-      }
-      emit(state.copyWith(isBroadcastingMesh: false, error: UnexpectedError(errorMessage)));
+      emit(state.copyWith(isBroadcastingMesh: false, error: UnexpectedError(e.toString())));
+    }
+  }
+
+  void _onMeshConnectionChanged() {
+    final isConnected = locator<MeshService>().isConnectedNotifier.value;
+    if (!isClosed) {
+       emit(state.copyWith(isMeshConnected: isConnected));
     }
   }
 
   Future<void> stopMeshBroadcast() async {
     try {
-      await _meshService.stopAdvertising();
-      emit(state.copyWith(isBroadcastingMesh: false));
+      final meshService = locator<MeshService>();
+      meshService.isConnectedNotifier.removeListener(_onMeshConnectionChanged);
+      await meshService.stopAdvertising();
+      emit(state.copyWith(isBroadcastingMesh: false, isMeshConnected: false));
     } catch (e) {
-      // ignore
+      // Ignore errors on stop
     }
   }
 
   @override
   Future<void> close() {
-    _meshService.stopAdvertising();
+    try {
+      final meshService = locator<MeshService>();
+      meshService.isConnectedNotifier.removeListener(_onMeshConnectionChanged);
+      meshService.stopAdvertising(); 
+    } catch (_) {}
     return super.close();
   }
 }
+```
