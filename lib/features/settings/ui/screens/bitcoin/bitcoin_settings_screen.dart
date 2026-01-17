@@ -11,14 +11,51 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/widgets/mesh_relay_dashboard.dart';
 import 'package:bb_mobile/core/mesh/mesh_service.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'dart:async'; // For StreamSubscription
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class BitcoinSettingsScreen extends StatelessWidget {
+class BitcoinSettingsScreen extends StatefulWidget {
   const BitcoinSettingsScreen({super.key});
+
+  @override
+  State<BitcoinSettingsScreen> createState() => _BitcoinSettingsScreenState();
+}
+
+class _BitcoinSettingsScreenState extends State<BitcoinSettingsScreen> {
+  StreamSubscription? _meshSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupMeshListener();
+  }
+
+  void _setupMeshListener() {
+    _meshSubscription = locator<MeshService>().incomingTransactions.listen((txHex) {
+      if (!mounted) return;
+      
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => MeshRelayDashboard(
+          txHex: txHex,
+          onDismiss: () => Navigator.pop(context),
+        ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _meshSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
