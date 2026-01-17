@@ -10,6 +10,9 @@ import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/core/mesh/mesh_service.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -45,6 +48,36 @@ class BitcoinSettingsScreen extends StatelessWidget {
                       SettingsRoute.walletDetailsWalletList.name,
                     );
                   },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.bluetooth_audio,
+                  title: 'Bull Mesh Network',
+                  trailing: ValueListenableBuilder<bool>(
+                    valueListenable: locator<MeshService>().isScanningNotifier,
+                    builder: (context, isScanning, _) {
+                      return Switch(
+                        value: isScanning,
+                        onChanged: (value) async {
+                          if (value) {
+                            try {
+                              await locator<MeshService>().startScanningForRelay();
+                              SnackBarUtils.showSnackBar(
+                                context,
+                                'Bull Mesh Relay Active. Listening...',
+                              );
+                            } catch (e) {
+                              SnackBarUtils.showSnackBar(
+                                context,
+                                'Failed to start Mesh Relay: \$e',
+                              );
+                            }
+                          } else {
+                            await locator<MeshService>().stopScanning();
+                          }
+                        },
+                      );
+                    },
+                  ),
                 ),
                 SettingsEntryItem(
                   icon: Icons.sim_card_download,
