@@ -146,21 +146,11 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayRecipientSelected event,
     Emitter<PayState> emit,
   ) async {
-    log.info(
-      '🔍 _onRecipientSelected: current state type: ${state.runtimeType}',
-    );
-    log.info(
-      '🔍 _onRecipientSelected: selected recipient: ${event.recipient.id} (${event.recipient.name})',
-    );
-
     final recipientSelectionState = state.cleanRecipientSelectionState;
     if (recipientSelectionState == null) {
       log.severe('Expected to be on PayRecipientSelectionState but on: $state');
       return;
     }
-    log.info(
-      '🔍 _onRecipientSelected: cleanRecipientSelectionState userSummary: ${recipientSelectionState.userSummary?.currency}',
-    );
 
     // First emit the recipient selection state again since we went back to it,
     // So that the change to amount input state can be listened to properly.
@@ -169,9 +159,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     final amountInputState = recipientSelectionState.toAmountInputState(
       selectedRecipient: event.recipient,
     );
-    log.info(
-      '🔍 _onRecipientSelected: emitting PayAmountInputState with recipient: ${amountInputState.selectedRecipient.id} (${amountInputState.selectedRecipient.name})',
-    );
     emit(amountInputState);
   }
 
@@ -179,10 +166,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayAmountInputContinuePressed event,
     Emitter<PayState> emit,
   ) async {
-    log.info(
-      '🔍 _onAmountInputContinuePressed: current state type: ${state.runtimeType}',
-    );
-
     // We should be on a PayAmountInputState here
     final amountInputState = state.cleanAmountInputState;
     if (amountInputState == null) {
@@ -190,9 +173,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       log.severe('Expected to be on PayAmountInputState but on: $state');
       return;
     }
-    log.info(
-      '🔍 _onAmountInputContinuePressed: cleanAmountInputState recipient: ${amountInputState.selectedRecipient.id} (${amountInputState.selectedRecipient.name})',
-    );
     emit(amountInputState);
 
     final amount = double.tryParse(event.amountInput);
@@ -206,9 +186,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     final walletSelectionState = amountInputState.toWalletSelectionState(
       amount: fiatAmount,
     );
-    log.info(
-      '🔍 _onAmountInputContinuePressed: emitting PayWalletSelectionState with recipient: ${walletSelectionState.selectedRecipient.id} (${walletSelectionState.selectedRecipient.name})',
-    );
     emit(walletSelectionState);
   }
 
@@ -217,29 +194,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayWalletSelected event,
     Emitter<PayState> emit,
   ) async {
-    log.info('🔍 _onWalletSelected: current state type: ${state.runtimeType}');
-
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe('Expected to be on PayWalletSelectionState but on: $state');
-      return;
-    }
-    log.info(
-      '🔍 _onWalletSelected: cleanWalletSelectionState recipient: ${walletSelectionState.selectedRecipient?.id} (${walletSelectionState.selectedRecipient?.name})',
-    );
-
-    if (walletSelectionState.selectedRecipient == null) {
-      log.severe(
-        '❌ _onWalletSelected: selectedRecipient is NULL! This should not happen.',
-      );
-      emit(
-        walletSelectionState.copyWith(
-          error: PayError.unexpected(
-            message:
-                'Recipient is missing. Please go back and select a recipient again.',
-          ),
-        ),
-      );
       return;
     }
 
@@ -371,32 +328,10 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     PayExternalWalletNetworkSelected event,
     Emitter<PayState> emit,
   ) async {
-    log.info(
-      '🔍 _onExternalWalletNetworkSelected: current state type: ${state.runtimeType}',
-    );
-
     // We should be on a PayWalletSelection state here
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
       log.severe('Expected to be on PayWalletSelectionState but on: $state');
-      return;
-    }
-    log.info(
-      '🔍 _onExternalWalletNetworkSelected: cleanWalletSelectionState recipient: ${walletSelectionState.selectedRecipient?.id} (${walletSelectionState.selectedRecipient?.name})',
-    );
-
-    if (walletSelectionState.selectedRecipient == null) {
-      log.severe(
-        '❌ _onExternalWalletNetworkSelected: selectedRecipient is NULL! This should not happen.',
-      );
-      emit(
-        walletSelectionState.copyWith(
-          error: PayError.unexpected(
-            message:
-                'Recipient is missing. Please go back and select a recipient again.',
-          ),
-        ),
-      );
       return;
     }
 
