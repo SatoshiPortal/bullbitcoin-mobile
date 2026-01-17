@@ -4,6 +4,8 @@ import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:convert/convert.dart'; // For hex.decode
 import 'dart:typed_data'; // For Uint8List
+import 'dart:async'; // For Timer
+import 'mesh_protocol.dart';
 
 class MeshService {
   // UUIDs for Bull Mesh Service
@@ -12,14 +14,28 @@ class MeshService {
   static const String _txCharacteristicUuid = "TX00-DATA-0000-0000-0000-000000000000";
 
   bool _isAdvertising = false;
+  Timer? _advertisingLoopTimer;
+
   
   // State Notifiers
   final ValueNotifier<bool> isScanningNotifier = ValueNotifier(false);
   final ValueNotifier<bool> isConnectedNotifier = ValueNotifier(false); // For UI Lock-on animation
+  final ValueNotifier<double> uploadProgressNotifier = ValueNotifier(0.0); // 0.0 to 1.0
+  final ValueNotifier<double> downloadProgressNotifier = ValueNotifier(0.0); // 0.0 to 1.0
 
   // Stream to expose found transactions to the app
   final _transactionController = StreamController<String>.broadcast();
   Stream<String> get incomingTransactions => _transactionController.stream;
+
+  // Methods to inject events from Background Service (Isolate Bridge)
+  void injectIncomingTx(String txHex) {
+     _transactionController.add(txHex);
+  }
+  
+  void injectDownloadProgress(double progress) {
+     downloadProgressNotifier.value = progress;
+  }
+
 
   Future<void> startAdvertising(String txHex) async {
     if (_isAdvertising) return;
@@ -70,22 +86,57 @@ class MeshService {
       // Start advertising
       await FlutterBlePeripheral().start(advertiseData: advertiseData);
       
-      // Update the Characteristic Value with the Tx Hex
-      // This allows the connected central to read the transaction
-      final txBytes = hex.decode(txHex);
+      debugPrint('Started BLE advertising (Chunked Mode). Size: \${txBytes.length} bytes.');
       
-      // Implementation Note: We set the characteristic value at initialization (in the constructor above).
-      // This "Immutable Service" approach is more stable for v2 than dynamic updates via writeCharacteristic.
-       
-      debugPrint('Started BLE advertising and Server for Tx: \${txHex.substring(0, 10)}... (Length: \${txBytes.length} bytes)');
+      // Start broadcasting chunks in a loop
+      // This allows the receiver to jump in at any point and collect all fragments
+      _startChunkLoop(MeshProtocol.fragment(Uint8List.fromList(txBytes)));
+      
     } catch (e) {
       _isAdvertising = false;
       rethrow;
     }
   }
 
+  void _startChunkLoop(List<Uint8List> chunks) {
+    if (chunks.isEmpty) return;
+    
+    int index = 0;
+    _advertisingLoopTimer?.cancel();
+    
+    // 200ms is a conservative balance between speed and reliability for BLE notifications
+    _advertisingLoopTimer = Timer.periodic(const Duration(milliseconds: 200), (timer) async {
+       if (!_isAdvertising) {
+         timer.cancel();
+         uploadProgressNotifier.value = 0.0;
+         return;
+       }
+
+       
+       try {
+         // Update the characteristic value with the current chunk
+         // Note: We use the same UUID. The value changes dynamically.
+         await FlutterBlePeripheral().write(
+           characteristicUuid: _txCharacteristicUuid,
+           data: chunks[index],
+         );
+         
+         // Update UI Progress
+         // We essentially loop forever, so progress is cyclic: 0..1..0..1
+         uploadProgressNotifier.value = (index + 1) / chunks.length;
+         
+         // Move to next chunk (Looping)
+         index = (index + 1) % chunks.length;
+       } catch (e) {
+         debugPrint('Mesh: Error writing chunk: \$e');
+       }
+    });
+  }
+
   Future<void> stopAdvertising() async {
     _isAdvertising = false;
+    _advertisingLoopTimer?.cancel();
+    _advertisingLoopTimer = null;
     isConnectedNotifier.value = false;
     await FlutterBlePeripheral().stop();
   }
@@ -137,19 +188,66 @@ class MeshService {
                   }
 
                   if (txChar != null) {
-                     // 4. Read the Value (The Transaction)
-                     List<int> value = await txChar.read();
-                     String txHex = hex.encode(value);
+                     // Subscribe to Notifications (Accumulator Model)
+                     await txChar.setNotifyValue(true);
                      
-                     debugPrint('Mesh: Read Payload (${value.length} bytes): ${txHex.substring(0, 10)}...');
-
-                     // 5. Validate & Relay
-                     if (isValidTxHex(txHex)) {
-                       _transactionController.add(txHex);
-                       debugPrint('Mesh: Valid Tx received. Queued for Relay.');
-                     } else {
-                        debugPrint('Mesh: Dropped invalid packet.');
+                     // Buffer to store chunks: <Index, Data>
+                     Map<int, Uint8List> receivedChunks = {};
+                     
+                     // Stream processed locally to handle async breaks
+                     bool isReassemblyComplete = false;
+                     
+                     // Listen to the stream
+                     // We use a completer or just loop within the stream? 
+                     // Since we need to disconnect after success, we might need a complex flow.
+                     // For simplicity, we listen and trigger the disconnect logic inside.
+                     
+                     final subscription = txChar.lastValueStream.listen((value) async {
+                        if (value.isEmpty) return;
+                        
+                        try {
+                          final chunk = Uint8List.fromList(value);
+                          final header = MeshProtocol.parseHeader(chunk);
+                          
+                          // Store chunk
+                          receivedChunks[header.index] = chunk; // Store full chunk (MeshProtocol handles stripping)
+                          
+                          // Update UI Progress
+                          downloadProgressNotifier.value = receivedChunks.length / header.totalChunks;
+                          
+                          debugPrint('Mesh: Rx Chunk \${header.index + 1}/\${header.totalChunks} (Progress: \${(downloadProgressNotifier.value * 100).toStringAsFixed(1)}%)');
+                          
+                          // Attempt Reassembly
+                          final fullPayload = MeshProtocol.reassemble(receivedChunks);
+                          
+                          if (fullPayload != null) {
+                             String txHex = hex.encode(fullPayload);
+                             debugPrint('Mesh: Full Payload Reassembled! (\${fullPayload.length} bytes)');
+                             
+                             if (isValidTxHex(txHex)) {
+                               _transactionController.add(txHex);
+                               debugPrint('Mesh: Valid Tx Relayed. Closing connection.');
+                               isReassemblyComplete = true;
+                               // Reset progress
+                               downloadProgressNotifier.value = 1.0; // Ensure 100% shown
+                             } else {
+                               debugPrint('Mesh: Reassembled packet invalid.');
+                             }
+                          }
+                        } catch (e) {
+                           debugPrint('Mesh: error parsing chunk: \$e');
+                        }
+                     });
+                     
+                     // Wait for completion or timeout
+                     // We give it reasonable time to loop through chunks (e.g. 5KB @ 200ms/chunk ~ 50 chunks ~ 10s)
+                     int waitMs = 0;
+                     while (!isReassemblyComplete && waitMs < 30000) {
+                        await Future.delayed(const Duration(milliseconds: 500));
+                        waitMs += 500;
                      }
+                     
+                     await subscription.cancel();
                   }
                 }
                 
@@ -164,10 +262,9 @@ class MeshService {
           }
         }
       }
-      
-      await device.disconnect();
+      }); // Close listen
     } catch (e) {
-      print("Error connecting to mesh peer: \$e");
+      debugPrint("Error connecting to mesh peer: \$e");
     }
   }
 
