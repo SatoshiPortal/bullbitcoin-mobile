@@ -2,14 +2,16 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_document_type_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_document_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class NequiCopForm extends StatefulWidget {
-  const NequiCopForm({super.key});
+  const NequiCopForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   NequiCopFormState createState() => NequiCopFormState();
@@ -20,7 +22,7 @@ class NequiCopFormState extends State<NequiCopForm> {
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
   String _phoneNumber = '';
-  CopDocumentTypeViewModel _documentType = CopDocumentTypeViewModel.cc;
+  CopDocumentType _documentType = CopDocumentType.cc;
   String _documentId = '';
   String _name = '';
   String _label = '';
@@ -93,7 +95,7 @@ class NequiCopFormState extends State<NequiCopForm> {
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<CopDocumentTypeViewModel>(
+              child: DropdownButton<CopDocumentType>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
@@ -110,17 +112,17 @@ class NequiCopFormState extends State<NequiCopForm> {
                   });
                 },
                 items: [
-                  ...CopDocumentTypeViewModel.values.map((type) {
-                    return DropdownMenuItem<CopDocumentTypeViewModel>(
+                  ...CopDocumentType.values.map((type) {
+                    return DropdownMenuItem<CopDocumentType>(
                       value: type,
                       child: Text(switch (type) {
-                        CopDocumentTypeViewModel.cc => 'Cédula de Ciudadanía',
-                        CopDocumentTypeViewModel.ce => 'Cédula de Extranjería',
-                        CopDocumentTypeViewModel.nit =>
+                        CopDocumentType.cc => 'Cédula de Ciudadanía',
+                        CopDocumentType.ce => 'Cédula de Extranjería',
+                        CopDocumentType.nit =>
                           'Número de Identificación Tributaria',
-                        CopDocumentTypeViewModel.passport => 'Passport',
-                        CopDocumentTypeViewModel.ti => 'Tarjeta de Identidad',
-                        CopDocumentTypeViewModel.registroCivil =>
+                        CopDocumentType.passport => 'Passport',
+                        CopDocumentType.ti => 'Tarjeta de Identidad',
+                        CopDocumentType.registroCivil =>
                           'Registro Civil',
                       }),
                     );
@@ -132,13 +134,13 @@ class NequiCopFormState extends State<NequiCopForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: switch (_documentType) {
-              CopDocumentTypeViewModel.cc => 'Cédula de Ciudadanía',
-              CopDocumentTypeViewModel.ce => 'Cédula de Extranjería',
-              CopDocumentTypeViewModel.nit =>
+              CopDocumentType.cc => 'Cédula de Ciudadanía',
+              CopDocumentType.ce => 'Cédula de Extranjería',
+              CopDocumentType.nit =>
                 'Número de Identificación Tributaria',
-              CopDocumentTypeViewModel.passport => 'Passport',
-              CopDocumentTypeViewModel.ti => 'Tarjeta de Identidad',
-              CopDocumentTypeViewModel.registroCivil => 'Registro Civil',
+              CopDocumentType.passport => 'Passport',
+              CopDocumentType.ti => 'Tarjeta de Identidad',
+              CopDocumentType.registroCivil => 'Registro Civil',
             },
             hintText: 'Enter document number',
             textInputAction: .next,
@@ -183,7 +185,10 @@ class NequiCopFormState extends State<NequiCopForm> {
             },
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

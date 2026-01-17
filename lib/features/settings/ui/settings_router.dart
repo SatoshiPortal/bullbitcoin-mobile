@@ -30,7 +30,6 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_setting
 import 'package:bb_mobile/features/settings/ui/screens/exchange/file_upload_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/recipients_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
@@ -71,7 +70,6 @@ enum SettingsRoute {
   exchangeStatistics('exchange-statistics'),
   exchangeTransactions('exchange-transactions'),
   exchangeLegacyTransactions('exchange-legacy-transactions'),
-  exchangeRecipients('exchange-recipients'),
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
@@ -160,11 +158,6 @@ class SettingsRouter {
         name: SettingsRoute.exchangeLegacyTransactions.name,
         path: SettingsRoute.exchangeLegacyTransactions.path,
         builder: (context, state) => const ExchangeLegacyTransactionsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeRecipients.name,
-        path: SettingsRoute.exchangeRecipients.path,
-        builder: (context, state) => const ExchangeRecipientsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeReferrals.name,
