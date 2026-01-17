@@ -1,4 +1,4 @@
-enum CopDocumentTypeViewModel {
+enum CopDocumentType {
   cc('CC'),
   ce('CE'),
   nit('NIT'),
@@ -8,5 +8,5 @@ enum CopDocumentTypeViewModel {
 
   final String value;
 
-  const CopDocumentTypeViewModel(this.value);
+  const CopDocumentType(this.value);
 }

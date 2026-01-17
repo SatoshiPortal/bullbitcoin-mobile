@@ -405,23 +405,29 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
     if (error != null) {
       final reason = error['data']['reason'];
-      final limitReason = reason['limit'];
-      if (limitReason != null) {
-        final isBelowLimit =
-            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
-        final limitAmount = limitReason['amount'] as String;
-        final limitCurrency = limitReason['currencyCode'] as String;
-        if (isBelowLimit) {
-          throw BullBitcoinApiMinAmountException(
-            minAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
-        } else {
-          throw BullBitcoinApiMaxAmountException(
-            maxAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
+      if (reason != null) {
+        final limitReason = reason['limit'];
+        if (limitReason != null) {
+          final isBelowLimit =
+              limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+          final limitAmount = limitReason['amount'] as String;
+          final limitCurrency = limitReason['currencyCode'] as String;
+          if (isBelowLimit) {
+            throw BullBitcoinApiMinAmountException(
+              minAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          } else {
+            throw BullBitcoinApiMaxAmountException(
+              maxAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          }
         }
+      } else {
+        throw Exception(
+          'Failed to create sell to recipient order: ${error['message']}',
+        );
       }
     }
 
@@ -776,10 +782,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'id': 1,
         'method': 'createMyKYCIDDocument',
         'params': {
-          'element': {
-            'idTypeCode': docType,
-            'sourceDetail': sourceDetail,
-          },
+          'element': {'idTypeCode': docType, 'sourceDetail': sourceDetail},
         },
       }),
     });
