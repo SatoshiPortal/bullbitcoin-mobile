@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/widgets/mesh_signal_animation.dart';
 import 'package:go_router/go_router.dart';
 
 class BroadcastSignedTxPage extends StatelessWidget {
@@ -123,6 +124,34 @@ class BroadcastSignedTxPage extends StatelessWidget {
                         ),
                     ],
                   ),
+                
+                if (state.transaction != null && state.isBroadcasted == false) ...[
+                   if (state.isBroadcastingMesh) ...[
+                      const Gap(24),
+                      const MeshSignalAnimation(),
+                      const Gap(24),
+                      BBText.body(
+                        'Broadcasting via Bull Mesh\nKeep app open to relay signal...',
+                        textAlign: TextAlign.center,
+                      ),
+                      const Gap(16),
+                      BBButton.text(
+                        label: 'Stop Broadcasting',
+                        onPressed: cubit.stopMeshBroadcast,
+                      ),
+                   ] else ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: BBButton.big(
+                          label: '📡 Broadcast Offline (Mesh)',
+                          bgColor: context.appColors.surface,
+                          textColor: context.appColors.text,
+                          outlined: true,
+                          onPressed: cubit.broadcastViaMesh,
+                        ),
+                      ),
+                   ],
+                ],
 
                 if (state.isBroadcasted == true) ...[
                   Gif(

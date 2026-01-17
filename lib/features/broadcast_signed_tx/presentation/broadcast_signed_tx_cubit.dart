@@ -13,14 +13,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:bb_mobile/core/mesh/mesh_service.dart';
+
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final MeshService _meshService;
 
   BroadcastSignedTxCubit({
     required BroadcastBitcoinTransactionUsecase
     broadcastBitcoinTransactionUsecase,
+    required MeshService meshService,
     String? unsignedPsbt,
   }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
+       _meshService = meshService,
        super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
   Future<void> onQrScanned(String payload) async {
@@ -168,5 +173,38 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
     } catch (e) {
       emit(state.copyWith(error: UnexpectedError(e)));
     }
+  }
+
+  Future<void> broadcastViaMesh() async {
+    if (state.transaction == null) return;
+    try {
+      emit(state.copyWith(isBroadcastingMesh: true, error: null));
+      await _meshService.startAdvertising(state.transaction!.data);
+    } catch (e) {
+      final String errorMessage;
+      if (e.toString().contains('permissions')) {
+        errorMessage = 'Bluetooth permissions required.';
+      } else if (e.toString().contains('Bluetooth is not enabled')) {
+        errorMessage = 'Enable Bluetooth to broadcast.';
+      } else {
+        errorMessage = 'Mesh Broadcast failed: \$e';
+      }
+      emit(state.copyWith(isBroadcastingMesh: false, error: UnexpectedError(errorMessage)));
+    }
+  }
+
+  Future<void> stopMeshBroadcast() async {
+    try {
+      await _meshService.stopAdvertising();
+      emit(state.copyWith(isBroadcastingMesh: false));
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _meshService.stopAdvertising();
+    return super.close();
   }
 }
