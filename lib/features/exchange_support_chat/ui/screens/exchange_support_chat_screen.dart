@@ -1,7 +1,7 @@
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/exchange_notification_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
@@ -32,7 +32,7 @@ class ExchangeSupportChatScreen extends StatelessWidget {
         getAttachmentUsecase: locator<GetSupportChatMessageAttachmentUsecase>(),
         getUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         createLogAttachmentUsecase: locator<CreateLogAttachmentUsecase>(),
-        exchangeNotificationUsecase: locator<ExchangeNotificationUsecase>(),
+        exchangeNotificationService: locator<ExchangeNotificationService>(),
       )..loadMessages(),
       child: Scaffold(
         appBar: AppBar(

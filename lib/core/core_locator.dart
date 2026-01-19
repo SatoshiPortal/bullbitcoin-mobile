@@ -72,6 +72,7 @@ class CoreLocator {
   }
 
   static void registerServices(GetIt locator) {
+    ExchangeLocator.registerServices(locator);
     MempoolLocator.registerServices(locator);
     SeedLocator.registerServices(locator);
     SwapsLocator.registerServices(locator);

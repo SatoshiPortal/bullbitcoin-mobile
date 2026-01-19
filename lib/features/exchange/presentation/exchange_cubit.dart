@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/exchange_notification_usecase.dart';
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
@@ -20,15 +20,15 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
     required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
     required GetAnnouncementsUsecase getAnnouncementsUsecase,
-    required ExchangeNotificationUsecase exchangeNotificationUsecase,
+    required ExchangeNotificationService exchangeNotificationService,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
        _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
        _getAnnouncementsUsecase = getAnnouncementsUsecase,
-       _exchangeNotificationUsecase = exchangeNotificationUsecase,
+       _exchangeNotificationService = exchangeNotificationService,
        super(const ExchangeState()) {
-    _notificationSubscription = _exchangeNotificationUsecase.messageStream
+    _notificationSubscription = _exchangeNotificationService.messageStream
         .where(
           (message) =>
               message.type == 'balance' ||
@@ -43,25 +43,25 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
   final GetAnnouncementsUsecase _getAnnouncementsUsecase;
-  final ExchangeNotificationUsecase _exchangeNotificationUsecase;
+  final ExchangeNotificationService _exchangeNotificationService;
   StreamSubscription<NotificationMessage>? _notificationSubscription;
 
   Future<void> connectWebSocket() async {
     try {
-      await _exchangeNotificationUsecase.connect();
+      await _exchangeNotificationService.connect();
     } catch (e) {
       log.warning('WebSocket connection failed: $e');
     }
   }
 
   void disconnectWebSocket() {
-    _exchangeNotificationUsecase.disconnect();
+    _exchangeNotificationService.disconnect();
   }
 
   /// Call this when the network environment changes to reconnect to the correct WebSocket
   Future<void> reconnectWebSocket() async {
     try {
-      await _exchangeNotificationUsecase.reconnect();
+      await _exchangeNotificationService.reconnect();
     } catch (e) {
       log.warning('WebSocket reconnection failed: $e');
     }
