@@ -10,7 +10,7 @@ class Label {
     required this.type,
     required this.label,
     required this.reference,
-    required this.origin,
+    this.origin,
   });
 
   factory Label.tx({
