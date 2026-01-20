@@ -1,7 +1,7 @@
-import 'package:bb_mobile/features/labels/domain/usecases/delete_label_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/fetch_distinct_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/fetch_label_by_reference_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/delete_label_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_distinct_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'label.dart';
 
 export 'label.dart';
