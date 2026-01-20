@@ -14,7 +14,6 @@ class Label {
     required this.origin,
   });
 
-  /// Creates a transaction label DTO.
   factory Label.tx({
     required String transactionId,
     required String label,
@@ -28,7 +27,6 @@ class Label {
     );
   }
 
-  /// Creates an address label DTO.
   factory Label.addr({
     required String address,
     required String label,
