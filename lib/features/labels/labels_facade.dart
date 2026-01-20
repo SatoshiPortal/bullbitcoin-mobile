@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/labels/application/store_label_model.dart';
 import 'package:bb_mobile/features/labels/application/usecases/delete_label_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_distinct_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
@@ -34,7 +35,16 @@ class LabelsFacade {
       await _fetchDistinctLabelsUsecase.execute();
 
   Future<void> store(List<Label> labels) async {
-    final models = labels.map((label) => label.toModel()).toList();
+    final models = labels
+        .map(
+          (label) => StoreLabelModel(
+            type: label.type,
+            label: label.label,
+            reference: label.reference,
+            origin: label.origin,
+          ),
+        )
+        .toList();
     await _storeLabelsUsecase.execute(models);
   }
 

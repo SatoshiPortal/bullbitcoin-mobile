@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/labels/application/store_label_model.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 
 class Label {
@@ -36,15 +35,6 @@ class Label {
       type: LabelType.address,
       label: label,
       reference: address,
-      origin: origin,
-    );
-  }
-
-  StoreLabelModel toModel() {
-    return StoreLabelModel(
-      type: type,
-      label: label,
-      reference: reference,
       origin: origin,
     );
   }
