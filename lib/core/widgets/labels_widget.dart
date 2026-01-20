@@ -7,6 +7,17 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
+extension LabelErrorTranslation on LabelError {
+  String toTranslated(BuildContext context) => when(
+    notFound: (label) => context.loc.labelErrorNotFound(label),
+    unsupportedType: (type) =>
+        context.loc.labelErrorUnsupportedType(type.toString()),
+    unexpected: (message) =>
+        message != null ? context.loc.labelErrorUnexpected(message) : '',
+    systemLabelCannotBeDeleted: () => context.loc.labelErrorSystemCannotDelete,
+  );
+}
+
 class LabelsWidget extends StatefulWidget {
   const LabelsWidget({
     super.key,
