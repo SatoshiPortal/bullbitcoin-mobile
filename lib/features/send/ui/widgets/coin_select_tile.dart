@@ -144,6 +144,7 @@ class CoinSelectTile extends StatelessWidget {
                       ...utxo.addressLabels,
                       ...utxo.txLabels,
                     ],
+                    reference: utxo.txId,
                   ),
                 ],
               ),

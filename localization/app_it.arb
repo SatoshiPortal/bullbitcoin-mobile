@@ -1783,15 +1783,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Non ha esportato il caveau da Google Drive",
   "exchangeKycLevelLight": "Luce",
   "transactionLabelCreatedAt": "Creato a",
-  "bip329LabelsExportSuccessSingular": "1 etichetta esportata",
-  "bip329LabelsExportSuccessPlural": "{count} etichette esportate",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Etichette esportate con successo",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "L'opzione più lenta, ma può essere fatto tramite online banking (3-4 giorni lavorativi)",
   "walletDeletionErrorWalletNotFound": "Il portafoglio che stai cercando di eliminare non esiste.",
   "payEnableRBF": "Abilitare RBF",

@@ -1,10 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
-import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/fetch_distinct_labels_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/domain/label_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
@@ -18,6 +14,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
@@ -38,12 +35,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required GetOrderUsecase getOrderUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
-    required LabelTransactionUsecase labelTransactionUsecase,
-    required DeleteLabelUsecase deleteLabelUsecase,
+    required LabelsFacade labelsFacade,
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
     required ProcessSwapUsecase processSwapUsecase,
-    required FetchDistinctLabelsUsecase fetchDistinctLabelsUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
        _getTransactionsByTxIdUsecase = getTransactionsByTxIdUsecase,
        _watchWalletTransactionByTxIdUsecase =
@@ -53,12 +48,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        _getOrderUsecase = getOrderUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _watchPayjoinUsecase = watchPayjoinUsecase,
-       _labelTransactionUsecase = labelTransactionUsecase,
-       _deleteLabelUsecase = deleteLabelUsecase,
+       _labelsFacade = labelsFacade,
        _broadcastOriginalTransactionUsecase =
            broadcastOriginalTransactionUsecase,
        _processSwapUsecase = processSwapUsecase,
-       _fetchDistinctLabelsUsecase = fetchDistinctLabelsUsecase,
        super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
@@ -70,12 +63,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final GetOrderUsecase _getOrderUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
-  final LabelTransactionUsecase _labelTransactionUsecase;
-  final DeleteLabelUsecase _deleteLabelUsecase;
+  final LabelsFacade _labelsFacade;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
   final ProcessSwapUsecase _processSwapUsecase;
-  final FetchDistinctLabelsUsecase _fetchDistinctLabelsUsecase;
 
   StreamSubscription? _walletTransactionSubscription;
   StreamSubscription? _swapSubscription;
@@ -315,15 +306,16 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       return;
     }
 
-    final txLabel = await _labelTransactionUsecase.execute(
-      txid: state.walletTransaction!.txId,
-      origin: state.walletTransaction!.walletId,
+    final txLabel = Label.tx(
+      transactionId: state.walletTransaction!.txId,
       label: label,
+      origin: state.walletTransaction!.walletId,
     );
+    await _labelsFacade.store([txLabel]);
 
     final updatedWalletransaction = state.transaction?.walletTransaction
         ?.copyWith(
-          labels: [...?state.transaction?.walletTransaction?.labels, txLabel],
+          labels: [...?state.transaction?.walletTransaction?.labels, label],
         );
     emit(
       state.copyWith(
@@ -359,15 +351,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     if (walletTransaction == null) return;
 
     try {
-      final transactionLabel = Label.tx(
-        transactionId: walletTransaction.txId,
+      await _labelsFacade.delete(
         label: note,
-        origin: walletTransaction.walletId,
+        reference: walletTransaction.txId,
       );
-      await _deleteLabelUsecase.execute(transactionLabel);
 
       final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
-      updatedLabels.remove(transactionLabel);
+      updatedLabels.remove(note);
 
       final updatedWalletTransaction = state.transaction?.walletTransaction
           ?.copyWith(labels: updatedLabels);
@@ -389,13 +379,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     emit(state.copyWith(retryingSwap: false));
   }
 
-  Future<List<String>> fetchDistinctLabels() async {
+  Future<Set<String>> fetchDistinctLabels() async {
     try {
-      return await _fetchDistinctLabelsUsecase.execute();
+      return await _labelsFacade.fetch();
     } catch (e) {
       log.warning('Failed to fetch distinct labels: $e');
       emit(state.copyWith(err: e));
-      return [];
+      return {};
     }
   }
 }

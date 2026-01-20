@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_address.freezed.dart';
@@ -17,7 +16,7 @@ sealed class WalletAddress with _$WalletAddress {
     @Default(0) int nrOfTransactions,
     required DateTime createdAt,
     required DateTime updatedAt,
-    @Default([]) List<Label> labels,
+    @Default([]) List<String> labels,
   }) = _WalletAddress;
 
   const WalletAddress._();

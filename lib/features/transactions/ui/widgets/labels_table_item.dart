@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -7,10 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LabelsTableItem extends StatelessWidget {
-  const LabelsTableItem({super.key, required this.title, required this.labels});
+  const LabelsTableItem({
+    super.key,
+    required this.title,
+    required this.labels,
+    required this.reference,
+  });
 
   final String title;
-  final List<Label> labels;
+  final List<String> labels;
+  final String reference;
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +39,11 @@ class LabelsTableItem extends StatelessWidget {
               alignment: .centerRight,
               child: LabelsWidget(
                 labels: labels,
+                reference: reference,
                 onDelete: (label) async {
                   await context
                       .read<TransactionDetailsCubit>()
-                      .deleteTransactionNote(label.label);
+                      .deleteTransactionNote(label);
                 },
               ),
             ),
