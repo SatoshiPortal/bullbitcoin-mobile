@@ -27,8 +27,7 @@ class LabelsFacade {
        _deleteLabelUsecase = deleteLabelUsecase;
 
   Future<List<String>> fetchByReference(String reference) async {
-    final labels = await _fetchLabelByReferenceUsecase.execute(reference);
-    return labels.map((label) => label.label).toList();
+    return await _fetchLabelByReferenceUsecase.execute(reference);
   }
 
   Future<Set<String>> fetch() async =>

@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
-import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
 
 class FetchLabelByReferenceUsecase {
@@ -8,9 +7,10 @@ class FetchLabelByReferenceUsecase {
   FetchLabelByReferenceUsecase({required LabelsRepositoryPort labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<List<LabelEntity>> execute(String reference) async {
+  Future<List<String>> execute(String reference) async {
     try {
-      return await _labelRepository.fetchByReference(reference);
+      final labels = await _labelRepository.fetchByReference(reference);
+      return labels.map((label) => label.label).toList();
     } on LabelError {
       rethrow;
     } catch (e) {
