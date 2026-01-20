@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
-import 'package:bb_mobile/features/labels/primitive/label_type.dart';
+import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 
 /// DTO for storing labels.
 ///

@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/labels/domain/usecases/store_labels_usecase.d
 import 'label.dart';
 
 export 'label.dart';
-export 'primitive/label_system.dart';
-export 'primitive/label_type.dart';
+export 'domain/primitive/label_system.dart';
+export 'domain/primitive/label_type.dart';
 export 'router.dart';
 export 'locator.dart';
 

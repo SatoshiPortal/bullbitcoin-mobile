@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
-import 'package:bb_mobile/features/labels/primitive/label_type.dart';
+import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 
 class LabelMapper {
   static LabelsCompanion fromEntity(LabelEntity label) {
