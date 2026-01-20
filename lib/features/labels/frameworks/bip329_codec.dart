@@ -18,7 +18,7 @@ class Bip329LabelsCodec {
           return bip329.OutputLabel(
             ref: label.reference,
             label: label.label,
-            spendable: label.spendable ?? true,
+            spendable: true,
           );
         case LabelType.extendedPublicKey:
           return bip329.XpubLabel(ref: label.reference, label: label.label);
@@ -78,7 +78,6 @@ LabelEntity _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
       reference: bip329Label.ref,
       label: bip329Label.label,
       origin: bip329Label.origin,
-      spendable: bip329Label.spendable,
     ),
     bip329.XpubLabel() => LabelEntity(
       type: LabelType.extendedPublicKey,

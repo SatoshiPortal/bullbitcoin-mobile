@@ -8,7 +8,6 @@ class LabelEntity {
   final String label;
   final String reference;
   final String? origin;
-  final bool? spendable;
 
   LabelEntity({
     this.id,
@@ -16,7 +15,6 @@ class LabelEntity {
     required this.label,
     required this.reference,
     this.origin,
-    this.spendable,
   }) {
     _validateReference();
   }
