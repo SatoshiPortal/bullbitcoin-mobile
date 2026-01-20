@@ -81,7 +81,7 @@ class CreateReceiveSwapUsecase {
       );
 
       if (description != null && description.isNotEmpty) {
-        final addressLabel = StoreLabelEnvelope.addr(
+        final addressLabel = Label.addr(
           address: claimAddress.address,
           label: description,
           origin: wallet.id,

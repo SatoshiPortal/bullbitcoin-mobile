@@ -416,7 +416,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         final tx = await LiquidTx.fromPset(signedPset);
         final txid = tx.txid;
         await _labelsFacade.store([
-          StoreLabelEnvelope.tx(
+          Label.tx(
             transactionId: txid,
             label: LabelSystem.exchangeSell.label,
             origin: wallet.id,
@@ -454,7 +454,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
         final txid = tx.txid;
         await _labelsFacade.store([
-          StoreLabelEnvelope.tx(
+          Label.tx(
             transactionId: txid,
             label: LabelSystem.exchangeSell.label,
             origin: wallet.id,

@@ -32,7 +32,7 @@ class ConfirmBuyOrderUsecase {
 
       if (order.toAddress != null) {
         await _labelsFacade.store([
-          StoreLabelEnvelope.addr(
+          Label.addr(
             address: order.toAddress!,
             label: LabelSystem.exchangeBuy.label,
             origin: null,

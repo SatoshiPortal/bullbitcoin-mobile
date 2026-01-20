@@ -2,9 +2,9 @@ import 'package:bb_mobile/features/labels/domain/usecases/delete_label_usecase.d
 import 'package:bb_mobile/features/labels/domain/usecases/fetch_distinct_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/domain/usecases/store_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/store_label_envelope.dart';
+import 'label.dart';
 
-export 'store_label_envelope.dart';
+export 'label.dart';
 export 'primitive/label_system.dart';
 export 'primitive/label_type.dart';
 export 'router.dart';
@@ -34,7 +34,7 @@ class LabelsFacade {
   Future<Set<String>> fetch() async =>
       await _fetchDistinctLabelsUsecase.execute();
 
-  Future<void> store(List<StoreLabelEnvelope> labels) async {
+  Future<void> store(List<Label> labels) async {
     final models = labels.map((label) => label.toModel()).toList();
     await _storeLabelsUsecase.execute(models);
   }

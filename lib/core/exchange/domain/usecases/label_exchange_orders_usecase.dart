@@ -23,7 +23,7 @@ class LabelExchangeOrdersUsecase {
 
       log.config('$LabelExchangeOrdersUsecase is labeling exchange orders');
 
-      final labels = <StoreLabelEnvelope>[];
+      final labels = <Label>[];
       for (final order in orders) {
         try {
           final isBuyOrder = order is BuyOrder;
@@ -32,7 +32,7 @@ class LabelExchangeOrdersUsecase {
               : LabelSystem.exchangeSell.label;
 
           if (isBuyOrder && order.toAddress != null) {
-            final label = StoreLabelEnvelope.addr(
+            final label = Label.addr(
               address: order.toAddress!,
               label: systemLabel,
               origin: null,
@@ -41,7 +41,7 @@ class LabelExchangeOrdersUsecase {
           }
 
           if (order.transactionId != null) {
-            final label = StoreLabelEnvelope.tx(
+            final label = Label.tx(
               transactionId: order.transactionId!,
               label: systemLabel,
               origin: null,

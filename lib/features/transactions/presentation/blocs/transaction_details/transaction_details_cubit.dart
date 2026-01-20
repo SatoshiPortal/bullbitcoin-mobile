@@ -306,7 +306,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       return;
     }
 
-    final txLabel = StoreLabelEnvelope.tx(
+    final txLabel = Label.tx(
       transactionId: state.walletTransaction!.txId,
       label: label,
       origin: state.walletTransaction!.walletId,

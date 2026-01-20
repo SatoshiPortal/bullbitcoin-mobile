@@ -1,13 +1,13 @@
 import 'package:bb_mobile/features/labels/application/store_label_model.dart';
 import 'package:bb_mobile/features/labels/primitive/label_type.dart';
 
-class StoreLabelEnvelope {
+class Label {
   final LabelType type;
   final String label;
   final String reference;
   final String? origin;
 
-  StoreLabelEnvelope({
+  Label({
     required this.type,
     required this.label,
     required this.reference,
@@ -15,12 +15,12 @@ class StoreLabelEnvelope {
   });
 
   /// Creates a transaction label DTO.
-  factory StoreLabelEnvelope.tx({
+  factory Label.tx({
     required String transactionId,
     required String label,
     String? origin,
   }) {
-    return StoreLabelEnvelope(
+    return Label(
       type: LabelType.transaction,
       label: label,
       reference: transactionId,
@@ -29,12 +29,12 @@ class StoreLabelEnvelope {
   }
 
   /// Creates an address label DTO.
-  factory StoreLabelEnvelope.addr({
+  factory Label.addr({
     required String address,
     required String label,
     String? origin,
   }) {
-    return StoreLabelEnvelope(
+    return Label(
       type: LabelType.address,
       label: label,
       reference: address,

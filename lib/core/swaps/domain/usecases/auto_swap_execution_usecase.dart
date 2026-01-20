@@ -186,7 +186,7 @@ class AutoSwapExecutionUsecase {
     );
     debugPrint('Swap executed successfully!');
     // sometimes sync fails and label is not set
-    final txLabel = StoreLabelEnvelope.tx(
+    final txLabel = Label.tx(
       transactionId: txid,
       origin: defaultLiquidWallet.id,
       label: 'Auto-Swap',

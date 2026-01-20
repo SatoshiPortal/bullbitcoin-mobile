@@ -633,7 +633,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         case ReceiveType.bitcoin:
           if (state.bitcoinAddress == null) return;
           await _labelsFacade.store([
-            StoreLabelEnvelope.addr(
+            Label.addr(
               address: state.bitcoinAddress!.address,
               origin: state.bitcoinAddress!.walletId,
               label: note,
@@ -642,7 +642,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         case ReceiveType.liquid:
           if (state.liquidAddress == null) return;
           await _labelsFacade.store([
-            StoreLabelEnvelope.addr(
+            Label.addr(
               address: state.liquidAddress!.address,
               origin: state.liquidAddress!.walletId,
               label: note,
