@@ -5,6 +5,7 @@ import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
+import 'package:bb_mobile/core/mesh/mesh_background_service.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
@@ -75,6 +76,11 @@ Future main() async {
       // Initialize the background tasks before anything else
       await Workmanager().initialize(backgroundTasksHandler);
       await Workmanager().cancelAll();
+      
+      // Initialize Bull Mesh Sentinel (Persistent Background Service)
+      await MeshBackgroundService.initialize();
+      // Note: Service is autoStart: false by default in our config, 
+      // but we init the configuration here so it's ready when toggle is flipped.
 
       await Bull.init();
 

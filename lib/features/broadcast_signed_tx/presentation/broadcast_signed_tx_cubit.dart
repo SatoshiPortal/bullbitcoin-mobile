@@ -13,14 +13,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:bb_mobile/core/mesh/mesh_service.dart';
+
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final MeshService _meshService;
 
   BroadcastSignedTxCubit({
     required BroadcastBitcoinTransactionUsecase
     broadcastBitcoinTransactionUsecase,
+    required MeshService meshService,
     String? unsignedPsbt,
   }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
+       _meshService = meshService,
        super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
 
   Future<void> onQrScanned(String payload) async {
@@ -169,4 +174,53 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
       emit(state.copyWith(error: UnexpectedError(e)));
     }
   }
+
+  Future<void> broadcastViaMesh() async {
+    if (state.transaction == null) return;
+    try {
+      final txHex = state.transaction!.data;
+      final meshService = locator<MeshService>();
+      await meshService.startAdvertising(txHex);
+      
+      // Listen for "Lock-on" (Connection) events
+      meshService.isConnectedNotifier.addListener(_onMeshConnectionChanged);
+
+      emit(state.copyWith(
+        isBroadcastingMesh: true,
+        isMeshConnected: meshService.isConnectedNotifier.value,
+        error: null, // Clear previous errors
+      ));
+    } catch (e) {
+      emit(state.copyWith(isBroadcastingMesh: false, error: UnexpectedError(e.toString())));
+    }
+  }
+
+  void _onMeshConnectionChanged() {
+    final isConnected = locator<MeshService>().isConnectedNotifier.value;
+    if (!isClosed) {
+       emit(state.copyWith(isMeshConnected: isConnected));
+    }
+  }
+
+  Future<void> stopMeshBroadcast() async {
+    try {
+      final meshService = locator<MeshService>();
+      meshService.isConnectedNotifier.removeListener(_onMeshConnectionChanged);
+      await meshService.stopAdvertising();
+      emit(state.copyWith(isBroadcastingMesh: false, isMeshConnected: false));
+    } catch (e) {
+      // Ignore errors on stop
+    }
+  }
+
+  @override
+  Future<void> close() {
+    try {
+      final meshService = locator<MeshService>();
+      meshService.isConnectedNotifier.removeListener(_onMeshConnectionChanged);
+      meshService.stopAdvertising(); 
+    } catch (_) {}
+    return super.close();
+  }
 }
+```

@@ -48,9 +48,9 @@
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>This app needs access to your photos and files to export and import wallet files like psbts, xpubs and recovery files, and to attach files in support chat</string>
 		<key>NSBluetoothPeripheralUsageDescription</key>
-		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
+		<string>We need access to Bluetooth to connect to hardware wallets and broadcast offline transactions via Bull Mesh</string>
 		<key>NSBluetoothAlwaysUsageDescription</key>
-		<string>We need access to Bluetooth in order to connect to your hardware wallet when needed</string>
+		<string>We need access to Bluetooth to connect to hardware wallets and broadcast offline transactions via Bull Mesh</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>
@@ -72,6 +72,8 @@
 		<array>
 		    <string>fetch</string>
 			<string>processing</string>
+			<string>bluetooth-central</string>
+			<string>bluetooth-peripheral</string>
 		</array>
 		<key>BGTaskSchedulerPermittedIdentifiers</key>
 		<array>

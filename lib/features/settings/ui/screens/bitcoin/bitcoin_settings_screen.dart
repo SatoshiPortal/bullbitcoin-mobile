@@ -10,12 +10,77 @@ import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/widgets/mesh_relay_dashboard.dart';
+import 'package:bb_mobile/core/mesh/mesh_service.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'dart:async'; // For StreamSubscription
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class BitcoinSettingsScreen extends StatelessWidget {
+class BitcoinSettingsScreen extends StatefulWidget {
   const BitcoinSettingsScreen({super.key});
+
+  @override
+  State<BitcoinSettingsScreen> createState() => _BitcoinSettingsScreenState();
+}
+
+class _BitcoinSettingsScreenState extends State<BitcoinSettingsScreen> {
+  StreamSubscription? _meshSubscription;
+  bool _isDashboardOpen = false;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _setupMeshListener();
+  }
+
+  void _setupMeshListener() {
+    final mesh = locator<MeshService>();
+    
+    // 1. Completion Listener
+    _meshSubscription = mesh.incomingTransactions.listen((txHex) {
+      if (!mounted || _isDashboardOpen) return;
+      _openDashboard(txHex);
+    });
+    
+    // 2. Progress Listener (Fragmentation)
+    mesh.downloadProgressNotifier.addListener(_onProgressChanged);
+  }
+
+  void _onProgressChanged() {
+      final progress = locator<MeshService>().downloadProgressNotifier.value;
+      // Start showing dashboard as soon as we detect chunks (> 0)
+      if (progress > 0 && !_isDashboardOpen && mounted) {
+          _openDashboard(null);
+      }
+  }
+
+  void _openDashboard(String? txHex) {
+      _isDashboardOpen = true;
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => MeshRelayDashboard(
+          txHex: txHex,
+          onDismiss: () => Navigator.pop(context),
+        ),
+      ).then((_) {
+          _isDashboardOpen = false;
+      });
+  }
+
+
+  @override
+  void dispose() {
+    _meshSubscription?.cancel();
+    locator<MeshService>().downloadProgressNotifier.removeListener(_onProgressChanged);
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +110,36 @@ class BitcoinSettingsScreen extends StatelessWidget {
                       SettingsRoute.walletDetailsWalletList.name,
                     );
                   },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.bluetooth_audio,
+                  title: 'Bull Mesh Network',
+                  trailing: ValueListenableBuilder<bool>(
+                    valueListenable: locator<MeshService>().isScanningNotifier,
+                    builder: (context, isScanning, _) {
+                      return Switch(
+                        value: isScanning,
+                        onChanged: (value) async {
+                          if (value) {
+                            try {
+                              await locator<MeshService>().startScanningForRelay();
+                              SnackBarUtils.showSnackBar(
+                                context,
+                                'Bull Mesh Relay Active. Listening...',
+                              );
+                            } catch (e) {
+                              SnackBarUtils.showSnackBar(
+                                context,
+                                'Failed to start Mesh Relay: \$e',
+                              );
+                            }
+                          } else {
+                            await locator<MeshService>().stopScanning();
+                          }
+                        },
+                      );
+                    },
+                  ),
                 ),
                 SettingsEntryItem(
                   icon: Icons.sim_card_download,

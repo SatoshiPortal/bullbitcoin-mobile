@@ -11,6 +11,8 @@ abstract class BroadcastSignedTxState with _$BroadcastSignedTxState {
     @Default(null) ParsedTx? transaction,
     @Default(null) String? unsignedPsbt,
     @Default(false) bool isBroadcasted,
+    @Default(false) bool isBroadcastingMesh,
+    @Default(false) bool isMeshConnected, // New field for "Lock-on" UI
     @Default(null) Uri? pushTxUri,
     @Default(null) Exception? error,
   }) = _BroadcastSignedTxState;
