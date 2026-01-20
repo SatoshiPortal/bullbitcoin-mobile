@@ -39,9 +39,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_messag
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_virtual_iban_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_virtual_iban_details_usecase.dart';
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -366,7 +364,7 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
-        labelsRepository: locator<LabelRepository>(),
+        labelsFacade: locator<LabelsFacade>(),
       ),
     );
 
@@ -508,8 +506,7 @@ class ExchangeLocator {
 
     locator.registerFactory<LabelExchangeOrdersUsecase>(
       () => LabelExchangeOrdersUsecase(
-        labelDatasource: locator<LabelDatasource>(),
-        batchLabelsUsecase: locator<BatchLabelsUsecase>(),
+        labelsFacade: locator<LabelsFacade>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
       ),
     );

@@ -56,10 +56,9 @@ class _SelectableCustomFeeListItemState
   void _onValueChanged(String text) {
     final parsed = num.tryParse(text);
     if (parsed != null) {
-      final fee =
-          _isAbsolute
-              ? NetworkFee.absolute(parsed.toInt())
-              : NetworkFee.relative(parsed.toDouble());
+      final fee = _isAbsolute
+          ? NetworkFee.absolute(parsed.toInt())
+          : NetworkFee.relative(parsed.toDouble());
       setState(() {
         _customFee = fee;
       });
@@ -82,32 +81,29 @@ class _SelectableCustomFeeListItemState
     final fastestAbsValue = (feeOptions?.fastest.value ?? 0) * txSize;
     final economicAbsValue = (feeOptions?.economic.value ?? 0) * txSize;
     final slowAbsValue = (feeOptions?.slow.value ?? 0) * txSize;
-    final customAbsValue =
-        _customFee == null
-            ? 0
-            : _customFee is AbsoluteFee
-            ? _customFee!.value
-            : (_customFee?.value ?? 0) * txSize;
+    final customAbsValue = _customFee == null
+        ? 0
+        : _customFee is AbsoluteFee
+        ? _customFee!.value
+        : (_customFee?.value ?? 0) * txSize;
     final fiatEq = ConvertAmount.satsToFiat(
       customAbsValue.toInt(),
       exchangeRate,
     );
 
-    final subtitle1 =
-        _customFee == null || feeOptions == null
-            ? ''
-            : 'Estimated delivery ~ ${customAbsValue >= fastestAbsValue
-                ? context.loc.sendEstimatedDelivery10Minutes
-                : customAbsValue >= economicAbsValue
-                ? context.loc.sendEstimatedDelivery10to30Minutes
-                : customAbsValue >= slowAbsValue
-                ? context.loc.sendEstimatedDeliveryFewHours
-                : context.loc.sendEstimatedDeliveryHoursToDays}';
+    final subtitle1 = _customFee == null || feeOptions == null
+        ? ''
+        : 'Estimated delivery ~ ${customAbsValue >= fastestAbsValue
+              ? context.loc.sendEstimatedDelivery10Minutes
+              : customAbsValue >= economicAbsValue
+              ? context.loc.sendEstimatedDelivery10to30Minutes
+              : customAbsValue >= slowAbsValue
+              ? context.loc.sendEstimatedDeliveryFewHours
+              : context.loc.sendEstimatedDeliveryHoursToDays}';
 
-    final subtitle2 =
-        _customFee == null
-            ? ''
-            : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = $customAbsValue ${context.loc.sendSats} (~ $fiatEq $fiatCurrencyCode)';
+    final subtitle2 = _customFee == null
+        ? ''
+        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = $customAbsValue ${context.loc.sendSats} (~ $fiatEq $fiatCurrencyCode)';
 
     Future<void> submitCustomFee() async {
       await context.read<SendCubit>().customFeesChanged(_customFee!);
@@ -139,7 +135,10 @@ class _SelectableCustomFeeListItemState
                     child: Column(
                       crossAxisAlignment: .stretch,
                       children: [
-                        BBText(context.loc.sendCustomFee, style: context.font.headlineLarge),
+                        BBText(
+                          context.loc.sendCustomFee,
+                          style: context.font.headlineLarge,
+                        ),
                         if (subtitle1.isNotEmpty) ...[
                           const Gap(4),
                           BBText(subtitle1, style: context.font.labelMedium),
@@ -154,10 +153,9 @@ class _SelectableCustomFeeListItemState
                   const Gap(8),
                   Icon(
                     Icons.radio_button_checked_outlined,
-                    color:
-                        isCustomFeeSelected
-                            ? context.appColors.primary
-                            : context.appColors.surface,
+                    color: isCustomFeeSelected
+                        ? context.appColors.primary
+                        : context.appColors.surface,
                   ),
                 ],
               ),
@@ -165,7 +163,9 @@ class _SelectableCustomFeeListItemState
               Row(
                 children: [
                   BBText(
-                    _isAbsolute ? context.loc.sendAbsoluteFees : context.loc.sendRelativeFees,
+                    _isAbsolute
+                        ? context.loc.sendAbsoluteFees
+                        : context.loc.sendRelativeFees,
                     style: context.font.bodySmall,
                   ),
                   const Spacer(),
@@ -185,9 +185,9 @@ class _SelectableCustomFeeListItemState
                   else
                     AmountInputFormatter(BitcoinUnit.btc.code),
                 ],
-                style: context.font.bodyLarge,
+                style: TextStyle(color: context.appColors.onSecondary),
                 decoration: InputDecoration(
-                  fillColor: context.appColors.onPrimary,
+                  fillColor: context.appColors.secondary,
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
@@ -210,14 +210,15 @@ class _SelectableCustomFeeListItemState
                     ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  hintText:
-                      _isAbsolute
-                          ? context.loc.sendEnterAbsoluteFee
-                          : context.loc.sendEnterRelativeFee,
+                  hintText: _isAbsolute
+                      ? context.loc.sendEnterAbsoluteFee
+                      : context.loc.sendEnterRelativeFee,
                   hintStyle: context.font.bodyMedium?.copyWith(
                     color: context.appColors.outline,
                   ),
-                  suffixText: _isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB,
+                  suffixText: _isAbsolute
+                      ? context.loc.sendSats
+                      : context.loc.sendSatsPerVB,
                 ),
                 onFieldSubmitted: (_) => submitCustomFee(),
                 onChanged: _onValueChanged,
@@ -228,7 +229,7 @@ class _SelectableCustomFeeListItemState
                 label: context.loc.sendConfirmCustomFee,
                 onPressed: submitCustomFee,
                 bgColor: context.appColors.secondary,
-                textColor: context.appColors.onPrimary,
+                textColor: context.appColors.onSecondary,
               ),
             ],
           ),

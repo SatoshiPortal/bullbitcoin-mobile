@@ -3120,15 +3120,7 @@
   "bip329LabelsDescription": "Importa o exporta etiquetas de billetera usando el formato estándar BIP329.",
   "bip329LabelsImportButton": "Importar etiquetas",
   "bip329LabelsExportButton": "Exportar etiquetas",
-  "bip329LabelsExportSuccessSingular": "1 etiqueta exportada",
-  "bip329LabelsExportSuccessPlural": "{count} etiquetas exportadas",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Etiquetas exportadas correctamente",
   "bip329LabelsImportSuccessSingular": "1 etiqueta importada",
   "bip329LabelsImportSuccessPlural": "{count} etiquetas importadas",
   "@bip329LabelsImportSuccessPlural": {
@@ -3763,6 +3755,7 @@
   "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
   "addressViewChangeAddressesDescription": "Mostrar direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
+  "appStartupErrorMessage": "La aplicación no pudo iniciarse. Intente detener completamente la aplicación y reiniciar. Si el error persiste, informe el problema al soporte y comparta sus registros.",
   "appStartupErrorMessageWithBackup": "No se pudo inicializar. Elimine y reinstale para solucionar.",
   "appStartupErrorMessageNoBackup": "No se pudo inicializar. Elimine y reinstale para solucionar. Si su frase de recuperación no está respaldada, puede verla en Configuración->Configuración de Bitcoin->Ver frases después de reinstalar.",
   "appStartupContactSupportButton": "Contactar Soporte",
@@ -4130,5 +4123,9 @@
     }
   },
   "bitcoinSettingsMempoolServerTitle": "Configuración del servidor Mempool",
-  "save": "Guardar"
+  "save": "Guardar",
+  "logoutConfirmationTitle": "Confirmar cierre de sesión",
+  "logoutConfirmationDescription": "¿Está seguro de que desea cerrar sesión en su cuenta de Bull Bitcoin? Necesitará iniciar sesión nuevamente para acceder a las funciones de intercambio.",
+  "logoutConfirmationCancel": "Cancelar",
+  "logoutConfirmationLogout": "Cerrar sesión"
 }
