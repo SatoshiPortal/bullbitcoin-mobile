@@ -24,7 +24,6 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources(GetIt locator) async {
-    LabelsLocator.registerDatasources(locator);
     await TorLocator.registerDatasources(locator);
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
@@ -49,10 +48,10 @@ class CoreLocator {
     MempoolLocator.registerPorts(locator);
     SwapsLocator.registerPorts(locator);
     WalletLocator.registerPorts(locator);
+    LabelsLocator.registerPorts(locator);
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
-    LabelsLocator.registerRepositories(locator);
     await TorLocator.registerRepositories(locator);
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
@@ -95,5 +94,13 @@ class CoreLocator {
     Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases(locator);
     BitBoxCoreLocator.registerUsecases(locator);
+  }
+
+  static void registerFacades(GetIt locator) {
+    LabelsLocator.registerFacade(locator);
+  }
+
+  static void registerFrameworks(GetIt locator) {
+    LabelsLocator.registerFrameworks(locator);
   }
 }

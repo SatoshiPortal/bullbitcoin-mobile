@@ -14,20 +14,17 @@ import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 import 'package:get_it/get_it.dart';
 
 class LabelsLocator {
-  static void registerDatasources(GetIt locator) {
-    // No datasources to register for labels feature
-  }
-
-  static void registerRepositories(GetIt locator) {
+  static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<LabelsRepositoryPort>(
       () => DriftLabelsRepositoryAdapter(database: locator<SqliteDatabase>()),
     );
-
-    locator.registerLazySingleton<Bip329LabelsCodec>(() => Bip329LabelsCodec());
-
     locator.registerLazySingleton<LabelsConverterPort>(
       () => LabelsConverterAdapter(locator<Bip329LabelsCodec>()),
     );
+  }
+
+  static void registerFrameworks(GetIt locator) {
+    locator.registerLazySingleton<Bip329LabelsCodec>(() => Bip329LabelsCodec());
   }
 
   static void registerUseCases(GetIt locator) {
@@ -66,7 +63,9 @@ class LabelsLocator {
         labelRepository: locator<LabelsRepositoryPort>(),
       ),
     );
+  }
 
+  static void registerFacade(GetIt locator) {
     locator.registerLazySingleton<LabelsFacade>(
       () => LabelsFacade(
         fetchLabelByReferenceUsecase: locator<FetchLabelByReferenceUsecase>(),

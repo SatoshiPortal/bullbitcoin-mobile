@@ -58,6 +58,8 @@ class AppLocator {
     await CoreLocator.registerRepositories(locator);
     CoreLocator.registerServices(locator);
     CoreLocator.registerUsecases(locator);
+    CoreLocator.registerFrameworks(locator);
+    CoreLocator.registerFacades(locator);
 
     // Register feature-specific dependencies
     ElectrumSettingsLocator.setup(locator);
