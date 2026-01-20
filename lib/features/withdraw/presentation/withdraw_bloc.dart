@@ -102,7 +102,10 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     Emitter<WithdrawState> emit,
   ) {
     final currentState = state;
+    // Handle both states (user might navigate back from recipient selection)
     if (currentState is WithdrawAmountInputState) {
+      emit(currentState.copyWith(useVirtualIban: event.useVirtualIban));
+    } else if (currentState is WithdrawRecipientInputState) {
       emit(currentState.copyWith(useVirtualIban: event.useVirtualIban));
     }
   }

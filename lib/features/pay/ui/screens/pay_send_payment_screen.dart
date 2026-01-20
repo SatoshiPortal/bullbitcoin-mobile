@@ -152,13 +152,11 @@ class PaySendPaymentScreen extends StatelessWidget {
                         RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
                         RecipientType.pseColombia => 'Bank Account COP',
                         RecipientType.nequiColombia => 'Nequi',
-                        // Virtual IBAN types not supported in pay flow
+                        // Virtual IBAN types - treat as SEPA
                         RecipientType.frVirtualAccount ||
                         RecipientType.frPayee ||
                         RecipientType.cjPayee =>
-                          throw UnimplementedError(
-                            'Virtual IBAN types not supported in pay flow',
-                          ),
+                          'SEPA Transfer',
                       }
                       : null,
             ),
@@ -275,13 +273,11 @@ class PaySendPaymentScreen extends StatelessWidget {
         return recipient.iban;
       case RecipientType.sinpeMovilCrc:
         return _formatSinpePhoneNumber(recipient.phoneNumber);
-      // Virtual IBAN types not supported in pay flow
+      // Virtual IBAN types - treat as SEPA
       case RecipientType.frVirtualAccount:
       case RecipientType.frPayee:
       case RecipientType.cjPayee:
-        throw UnimplementedError(
-          'Virtual IBAN types not supported in pay flow',
-        );
+        return recipient.iban;
     }
   }
 }

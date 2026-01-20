@@ -26,7 +26,12 @@ class WithdrawVirtualIbanCheckbox extends StatelessWidget {
 
     return BlocSelector<WithdrawBloc, WithdrawState, (bool, bool)>(
       selector: (state) {
+        // Handle both amount input and recipient input states
+        // (user might navigate back from recipient selection)
         if (state is WithdrawAmountInputState) {
+          return (state.hasActiveVirtualIban, state.useVirtualIban);
+        }
+        if (state is WithdrawRecipientInputState) {
           return (state.hasActiveVirtualIban, state.useVirtualIban);
         }
         return (false, false);

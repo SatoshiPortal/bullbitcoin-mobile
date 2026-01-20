@@ -180,55 +180,72 @@ class _RecipientTypeRadioList extends StatelessWidget {
     );
     final isVibanEligible = location.isVirtualIbanEligible;
 
-    // Check VIBAN status
-    final isVibanActive = locator<VirtualIbanBloc>().state.isActive;
+    // Use BlocBuilder to properly listen to VirtualIbanBloc state changes
+    // This ensures we rebuild when the VIBAN status is loaded/updated
+    return BlocBuilder<VirtualIbanBloc, VirtualIbanState>(
+      bloc: locator<VirtualIbanBloc>(),
+      builder: (context, vibanState) {
+        final isVibanActive = vibanState.isActive;
+        final isVibanLoaded = !vibanState.isLoading &&
+            vibanState is! VirtualIbanInitialState;
 
-    // Filter out system types that shouldn't be shown to users
-    // frVirtualAccount is system-created, users select frPayee for Confidential SEPA
-    var selectableTypes = availableTypes
-        .where((type) => type != RecipientType.frVirtualAccount)
-        .toList();
+        // Filter out system types that shouldn't be shown to users
+        // frVirtualAccount is system-created, users select frPayee for Confidential SEPA
+        var selectableTypes = availableTypes
+            .where((type) => type != RecipientType.frVirtualAccount)
+            .toList();
 
-    // frPayee (Confidential SEPA) is only available for "to your account" flows
-    // (sell/withdraw), NOT for pay flow (third-party payments)
-    if (!isVibanEligible) {
-      selectableTypes = selectableTypes
-          .where((type) => type != RecipientType.frPayee)
-          .toList();
-    }
+        // frPayee (Confidential SEPA) is only available for "to your account" flows
+        // (sell/withdraw), NOT for pay flow (third-party payments)
+        // Also hide while VIBAN status is still loading
+        if (!isVibanEligible || !isVibanLoaded) {
+          selectableTypes = selectableTypes
+              .where((type) => type != RecipientType.frPayee)
+              .toList();
+        }
 
-    // For EUR, show frPayee as "Confidential SEPA" option
-    // and cjPayee as "Regular SEPA" option
-    // Hide sepaEur if frPayee or cjPayee are available
-    final showConfidentialSepa =
-        selectableTypes.contains(RecipientType.frPayee);
-    final filteredTypes = selectableTypes.where((type) {
-      // Hide sepaEur if we have frPayee/cjPayee options
-      if (type == RecipientType.sepaEur && showConfidentialSepa) {
-        return false;
-      }
-      // Always show frPayee (Confidential SEPA) and cjPayee (Regular SEPA)
-      return true;
-    }).toList();
+        // For EUR, show frPayee as "Confidential SEPA" option
+        // and cjPayee as "Regular SEPA" option
+        // Hide sepaEur if cjPayee (Regular SEPA) is available
+        final hasRegularSepa = selectableTypes.contains(RecipientType.cjPayee);
+        var filteredTypes = selectableTypes.where((type) {
+          // Hide sepaEur if we have cjPayee (Regular SEPA) option
+          if (type == RecipientType.sepaEur && hasRegularSepa) {
+            return false;
+          }
+          return true;
+        }).toList();
 
-    return SingleChildScrollView(
-      child: Column(
-        children: filteredTypes.map((type) {
-          final isSelected = selectedType == type;
-          final isConfidentialSepa = type == RecipientType.frPayee;
+        // Reorder: put Confidential SEPA (frPayee) after Regular SEPA (cjPayee)
+        if (filteredTypes.contains(RecipientType.frPayee) &&
+            filteredTypes.contains(RecipientType.cjPayee)) {
+          filteredTypes = filteredTypes
+              .where((t) => t != RecipientType.frPayee)
+              .toList();
+          final cjIndex = filteredTypes.indexOf(RecipientType.cjPayee);
+          filteredTypes.insert(cjIndex + 1, RecipientType.frPayee);
+        }
 
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _RecipientTypeRadioTile(
-              type: type,
-              isSelected: isSelected,
-              isConfidentialSepa: isConfidentialSepa,
-              isVibanActive: isVibanActive,
-              onTap: () => onTypeSelected(type),
-            ),
-          );
-        }).toList(),
-      ),
+        return SingleChildScrollView(
+          child: Column(
+            children: filteredTypes.map((type) {
+              final isSelected = selectedType == type;
+              final isConfidentialSepa = type == RecipientType.frPayee;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _RecipientTypeRadioTile(
+                  type: type,
+                  isSelected: isSelected,
+                  isConfidentialSepa: isConfidentialSepa,
+                  isVibanActive: isVibanActive,
+                  onTap: () => onTypeSelected(type),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 }

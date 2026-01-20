@@ -25,6 +25,6 @@ extension RecipientsLocationX on RecipientsLocation {
       this == RecipientsLocation.withdrawView;
 
   /// Whether this location uses the step-based flow (type selection → form/list).
-  /// All flows except accountsView use step-based navigation.
-  bool get usesStepBasedFlow => this != RecipientsLocation.accountsView;
+  /// Only withdraw flow uses step-based navigation for VIBAN activation.
+  bool get usesStepBasedFlow => this == RecipientsLocation.withdrawView;
 }
