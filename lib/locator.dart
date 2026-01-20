@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
-import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
+import 'package:bb_mobile/features/authentication/authentication_facade.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
@@ -24,7 +24,7 @@ import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
-import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
+
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recipients/recipients_locator.dart';
 import 'package:bb_mobile/features/replace_by_fee/locator.dart';
@@ -63,9 +63,8 @@ class AppLocator {
     ElectrumSettingsLocator.setup(locator);
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
-    PinCodeLocator.setup(locator);
+    AuthenticationLocator.setup(locator);
     AppStartupLocator.setup(locator);
-    AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);
     LegacySeedViewLocator.setup(locator);
     AllSeedViewLocator.setup(locator);

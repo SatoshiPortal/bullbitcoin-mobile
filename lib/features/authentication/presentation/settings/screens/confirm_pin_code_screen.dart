@@ -1,0 +1,171 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dialpad/dial_pad.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
+import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/features/authentication/presentation/settings/pin_code_setting_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+
+class ConfirmPinCodeScreen extends StatelessWidget {
+  const ConfirmPinCodeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    void backHandler() {
+      context.read<PinCodeSettingBloc>().add(const PinCodeSettingStarted());
+    }
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        backHandler();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
+            onBack: backHandler,
+            title: context.loc.pinCodeAuthentication,
+          ),
+        ),
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      crossAxisAlignment: .stretch,
+                      children: [
+                        const Gap(30),
+                        Text(
+                          context.loc.pinCodeConfirmTitle,
+                          textAlign: .center,
+                          style: context.font.headlineMedium?.copyWith(
+                            color: context.appColors.outline,
+                          ),
+                          maxLines: 3,
+                        ),
+                        const Gap(30),
+                        BlocSelector<
+                          PinCodeSettingBloc,
+                          PinCodeSettingState,
+                          (String, bool)
+                        >(
+                          selector: (state) =>
+                              (state.pinCodeConfirmation, state.obscurePinCode),
+                          builder: (context, data) {
+                            final (pinCode, obscurePinCode) = data;
+                            return BBInputText(
+                              value: pinCode,
+                              obscure: obscurePinCode,
+                              onRightTap: () =>
+                                  context.read<PinCodeSettingBloc>().add(
+                                    const PinCodeSettingPinCodeObscureToggled(),
+                                  ),
+                              rightIcon: obscurePinCode
+                                  ? const Icon(Icons.visibility_off_outlined)
+                                  : const Icon(Icons.visibility_outlined),
+                              onlyNumbers: true,
+                              onChanged: (value) {},
+                            );
+                          },
+                        ),
+                        const Gap(2),
+                        BlocSelector<
+                          PinCodeSettingBloc,
+                          PinCodeSettingState,
+                          bool
+                        >(
+                          selector: (state) => state.showConfirmationError,
+                          builder: (context, showError) {
+                            return showError
+                                ? Text(
+                                    context.loc.pinCodeMismatchError,
+                                    textAlign: .start,
+                                    style: context.font.labelSmall?.copyWith(
+                                      color: context.appColors.error,
+                                    ),
+                                  )
+                                : const SizedBox.shrink();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: DialPad(
+                  disableFeedback: true,
+                  onlyDigits: true,
+                  onNumberPressed: (value) =>
+                      context.read<PinCodeSettingBloc>().add(
+                        PinCodeSettingPinCodeConfirmationNumberAdded(
+                          int.parse(value),
+                        ),
+                      ),
+                  onBackspacePressed: () =>
+                      context.read<PinCodeSettingBloc>().add(
+                        const PinCodeSettingPinCodeConfirmationNumberRemoved(),
+                      ),
+                ),
+              ),
+              const Gap(16),
+            ],
+          ),
+        ),
+        bottomNavigationBar: SafeArea(
+          child: AnimatedPadding(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+            ),
+            child: const _ConfirmButton(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ConfirmButton extends StatelessWidget {
+  const _ConfirmButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
+        selector: (state) => state.canConfirm,
+        builder: (context, canConfirm) {
+          return BBButton.big(
+            label: context.loc.pinCodeConfirm,
+            textStyle: context.font.headlineLarge,
+            disabled: !canConfirm,
+            bgColor: canConfirm
+                ? context.appColors.secondary
+                : context.appColors.outline,
+            onPressed: () {
+              context.read<PinCodeSettingBloc>().add(
+                const PinCodeSettingPinCodeConfirmed(),
+              );
+            },
+            textColor: context.appColors.onSecondary,
+          );
+        },
+      ),
+    );
+  }
+}

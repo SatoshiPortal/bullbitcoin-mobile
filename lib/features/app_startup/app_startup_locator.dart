@@ -7,10 +7,10 @@ import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
+import 'package:bb_mobile/features/authentication/authentication_facade.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:get_it/get_it.dart';
 
@@ -18,9 +18,17 @@ class AppStartupLocator {
   static void setup(GetIt locator) {
     // Use cases
     locator.registerFactory<ResetAppDataUsecase>(
-      () =>
-          ResetAppDataUsecase(pinCodeRepository: locator<PinCodeRepository>()),
+      () => ResetAppDataUsecase(
+        authenticationFacade: locator<AuthenticationFacade>(),
+      ),
     );
+
+    locator.registerFactory<CheckPinCodeExistsUsecase>(
+      () => CheckPinCodeExistsUsecase(
+        authenticationFacade: locator<AuthenticationFacade>(),
+      ),
+    );
+
     locator.registerFactory<CheckForExistingDefaultWalletsUsecase>(
       () => CheckForExistingDefaultWalletsUsecase(
         walletRepository: locator<WalletRepository>(),

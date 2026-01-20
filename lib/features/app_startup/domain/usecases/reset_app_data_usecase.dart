@@ -1,14 +1,12 @@
-import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
+import 'package:bb_mobile/features/authentication/authentication_facade.dart';
 
 // On iOS especially, some secure storage data might still be there after the app is uninstalled.
 // This use case is used to reset the app data when the app is installed again.
 class ResetAppDataUsecase {
-  final PinCodeRepository _pinCodeRepository;
+  final AuthenticationFacade _authenticationFacade;
 
-  ResetAppDataUsecase({required PinCodeRepository pinCodeRepository})
-    : _pinCodeRepository = pinCodeRepository;
+  ResetAppDataUsecase({required AuthenticationFacade authenticationFacade})
+    : _authenticationFacade = authenticationFacade;
 
-  Future<void> execute() async {
-    await _pinCodeRepository.deletePinCode();
-  }
+  Future<void> execute() async => await _authenticationFacade.disable();
 }
