@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -57,22 +57,19 @@ class PaySendPaymentScreen extends StatelessWidget {
           (bloc.state as PayPaymentState).isConfirmingPayment,
     );
     final wallet = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).selectedWallet
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).selectedWallet
+          : null,
     );
     final order = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).payOrder
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).payOrder
+          : null,
     );
     final recipient = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).selectedRecipient
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).selectedRecipient
+          : null,
     );
 
     return Scaffold(
@@ -130,35 +127,36 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             _DetailRow(
               title: context.loc.payRecipientType,
-              value:
-                  recipient != null
-                      ? switch (recipient.type) {
-                        // TODO: Use localization labels instead of hardcoded strings.
-                        // CANADA types
-                        RecipientType.interacEmailCad => 'Interac e-Transfer',
-                        RecipientType.billPaymentCad => 'Bill Payment',
-                        RecipientType.bankTransferCad => 'Bank Transfer',
-                        // EUROPE types
-                        RecipientType.sepaEur => 'SEPA Transfer',
-                        // MEXICO types
-                        RecipientType.speiClabeMxn => 'SPEI CLABE',
-                        RecipientType.speiSmsMxn => 'SPEI SMS',
-                        RecipientType.speiCardMxn => 'SPEI Card',
-                        // COSTA RICA types
-                        RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
-                        RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
-                        RecipientType.sinpeMovilCrc => 'SINPE Móvil',
-                        // ARGENTINA types
-                        RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
-                        RecipientType.pseColombia => 'Bank Account COP',
-                        RecipientType.nequiColombia => 'Nequi',
-                        // Virtual IBAN types - treat as SEPA
-                        RecipientType.frVirtualAccount ||
-                        RecipientType.frPayee ||
-                        RecipientType.cjPayee =>
-                          'SEPA Transfer',
-                      }
-                      : null,
+              value: recipient != null
+                  ? switch (recipient.type) {
+                      // TODO: Use localization labels instead of hardcoded strings.
+                      // CANADA types
+                      RecipientType.interacEmailCad => 'Interac e-Transfer',
+                      RecipientType.billPaymentCad => 'Bill Payment',
+                      RecipientType.bankTransferCad => 'Bank Transfer',
+                      // EUROPE types
+                      RecipientType.sepaEur => 'SEPA Transfer',
+                      // MEXICO types
+                      RecipientType.speiClabeMxn => 'SPEI CLABE',
+                      RecipientType.speiSmsMxn => 'SPEI SMS',
+                      RecipientType.speiCardMxn => 'SPEI Card',
+                      // COSTA RICA types
+                      RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
+                      RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
+                      RecipientType.sinpeMovilCrc => 'SINPE Móvil',
+                      // ARGENTINA types
+                      RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
+                      RecipientType.pseColombia => 'Bank Account COP',
+                      RecipientType.nequiColombia => 'Nequi',
+                      // cjPayee is regular SEPA
+                      RecipientType.cjPayee => 'SEPA Transfer',
+                      // Virtual IBAN types - not supported in pay flow
+                      RecipientType.frVirtualAccount ||
+                      RecipientType.frPayee => throw UnimplementedError(
+                        'Virtual IBAN types not supported in pay flow',
+                      ),
+                    }
+                  : null,
             ),
             _DetailRow(
               title: context.loc.payRecipientName,
@@ -166,8 +164,9 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             _DetailRow(
               title: context.loc.payRecipientDetails,
-              value:
-                  recipient != null ? _getRecipientInfoValue(recipient) : null,
+              value: recipient != null
+                  ? _getRecipientInfoValue(recipient)
+                  : null,
             ),
             const _Divider(),
             _DetailRow(
@@ -176,24 +175,19 @@ class PaySendPaymentScreen extends StatelessWidget {
             ),
             _DetailRow(
               title: context.loc.payPayoutAmount,
-              value:
-                  order == null
-                      ? null
-                      : FormatAmount.fiat(
-                        order.payoutAmount,
-                        order.payoutCurrency,
-                      ),
+              value: order == null
+                  ? null
+                  : FormatAmount.fiat(order.payoutAmount, order.payoutCurrency),
             ),
             _DetailRow(
               title: context.loc.payExchangeRate,
-              value:
-                  order == null
-                      ? null
-                      : FormatAmount.fiat(
-                        order.exchangeRateAmount ??
-                            order.payoutAmount / order.payinAmount,
-                        order.exchangeRateCurrency ?? order.payoutCurrency,
-                      ),
+              value: order == null
+                  ? null
+                  : FormatAmount.fiat(
+                      order.exchangeRateAmount ??
+                          order.payoutAmount / order.payinAmount,
+                      order.exchangeRateCurrency ?? order.payoutCurrency,
+                    ),
             ),
             const _Divider(),
             _DetailRow(
@@ -202,8 +196,8 @@ class PaySendPaymentScreen extends StatelessWidget {
                   wallet?.label ??
                   (wallet?.isDefault == true
                       ? wallet?.isLiquid == true
-                          ? context.loc.payInstantPayments
-                          : context.loc.paySecureBitcoinWallet
+                            ? context.loc.payInstantPayments
+                            : context.loc.paySecureBitcoinWallet
                       : ''),
             ),
             if (wallet != null && !wallet.isLiquid) ...[
@@ -273,11 +267,15 @@ class PaySendPaymentScreen extends StatelessWidget {
         return recipient.iban;
       case RecipientType.sinpeMovilCrc:
         return _formatSinpePhoneNumber(recipient.phoneNumber);
-      // Virtual IBAN types - treat as SEPA
-      case RecipientType.frVirtualAccount:
-      case RecipientType.frPayee:
+      // cjPayee is regular SEPA
       case RecipientType.cjPayee:
         return recipient.iban;
+      // Virtual IBAN types - not supported in pay flow
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+        throw UnimplementedError(
+          'Virtual IBAN types not supported in pay flow',
+        );
     }
   }
 }
@@ -297,86 +295,83 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueColor =
-        onTap == null
-            ? context.appColors.secondary
-            : context.appColors.primary;
+    final valueColor = onTap == null
+        ? context.appColors.secondary
+        : context.appColors.primary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child:
-          value == null
-              ? const LoadingLineContent()
-              : Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.onSurfaceVariant,
-                    ),
+      child: value == null
+          ? const LoadingLineContent()
+          : Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurfaceVariant,
                   ),
-                  Expanded(
-                    child:
-                        onTap == null
-                            ? Row(
-                              mainAxisAlignment: .end,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    value!,
-                                    textAlign: .end,
-                                    maxLines: 2,
-                                    style: context.font.bodyMedium?.copyWith(
-                                      color: valueColor,
-                                    ),
-                                  ),
+                ),
+                Expanded(
+                  child: onTap == null
+                      ? Row(
+                          mainAxisAlignment: .end,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                value!,
+                                textAlign: .end,
+                                maxLines: 2,
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: valueColor,
                                 ),
-                                if (copyValue != null) ...[
-                                  const Gap(8),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Clipboard.setData(
-                                        ClipboardData(text: copyValue!),
-                                      );
-                                      SnackBarUtils.showCopiedSnackBar(context);
-                                    },
-                                    child: Icon(
-                                      Icons.copy,
-                                      color: context.appColors.primary,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            )
-                            : GestureDetector(
-                              onTap: onTap,
-                              behavior: .opaque,
-                              child: Row(
-                                mainAxisAlignment: .end,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      value!,
-                                      textAlign: .end,
-                                      maxLines: 2,
-                                      style: context.font.bodyMedium?.copyWith(
-                                        color: valueColor,
-                                      ),
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    color: valueColor,
-                                    size: 20,
-                                  ),
-                                ],
                               ),
                             ),
-                  ),
-                ],
-              ),
+                            if (copyValue != null) ...[
+                              const Gap(8),
+                              GestureDetector(
+                                onTap: () {
+                                  Clipboard.setData(
+                                    ClipboardData(text: copyValue!),
+                                  );
+                                  SnackBarUtils.showCopiedSnackBar(context);
+                                },
+                                child: Icon(
+                                  Icons.copy,
+                                  color: context.appColors.primary,
+                                  size: 16,
+                                ),
+                              ),
+                            ],
+                          ],
+                        )
+                      : GestureDetector(
+                          onTap: onTap,
+                          behavior: .opaque,
+                          child: Row(
+                            mainAxisAlignment: .end,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  value!,
+                                  textAlign: .end,
+                                  maxLines: 2,
+                                  style: context.font.bodyMedium?.copyWith(
+                                    color: valueColor,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: valueColor,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+              ],
+            ),
     );
   }
 }
@@ -403,10 +398,9 @@ class _BottomButtons extends StatelessWidget {
           (bloc.state as PayPaymentState).isConfirmingPayment,
     );
     final wallet = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).selectedWallet
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).selectedWallet
+          : null,
     );
     return Column(
       children: [
@@ -448,10 +442,9 @@ class _PayError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final payError = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PayPaymentState
-              ? (bloc.state as PayPaymentState).error
-              : null,
+      (PayBloc bloc) => bloc.state is PayPaymentState
+          ? (bloc.state as PayPaymentState).error
+          : null,
     );
 
     if (payError == null) return const SizedBox.shrink();
