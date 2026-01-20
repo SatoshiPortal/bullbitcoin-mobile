@@ -338,7 +338,7 @@ class _RecipientTypeRadioTile extends StatelessWidget {
                     Text(
                       context.loc.confidentialSepaShortDesc,
                       style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                   ],

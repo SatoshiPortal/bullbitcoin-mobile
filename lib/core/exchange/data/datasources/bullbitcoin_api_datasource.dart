@@ -470,9 +470,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     final error = resp.data['error'];
     if (statusCode != 200) throw Exception('Failed to create withdrawal order');
     if (error != null) {
-      final reason = error['data']['reason'];
-      final limitReason = reason['limit'];
-      if (limitReason != null) {
+      final data = error['data'];
+      final apiError = data is Map<String, dynamic> ? data['apiError'] : null;
+      final reason = data is Map<String, dynamic> ? data['reason'] : null;
+      final limitReason = reason is Map<String, dynamic>
+          ? reason['limit']
+          : null;
+      if (limitReason is Map<String, dynamic>) {
         final isBelowLimit =
             limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
         final limitAmount = limitReason['amount'] as String;
@@ -489,7 +493,10 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
           );
         }
       }
-      throw Exception('Failed to create withdrawal order: $reason');
+      final message = apiError is Map<String, dynamic>
+          ? apiError['message']
+          : error['message'];
+      throw Exception('Failed to create withdrawal order: $message');
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
@@ -678,7 +685,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createMyRecipient',
-        'params': {'recipientType': 'FR_PAYEE', 'isOwner': true, 'iban': iban},
+        'params': {
+          'element': {
+            'recipientType': 'FR_PAYEE',
+            'isOwner': true,
+            'iban': iban,
+          },
+        },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
@@ -693,9 +706,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       throw Exception('Failed to create FR_PAYEE recipient: $message');
     }
 
-    return VirtualIbanRecipientModel.fromJson(
-      resp.data['result'] as Map<String, dynamic>,
-    );
+    final result = resp.data['result'] as Map<String, dynamic>?;
+    final element = result?['element'] as Map<String, dynamic>?;
+    if (element == null) {
+      throw Exception('Failed to create FR_PAYEE recipient: Invalid response');
+    }
+
+    return VirtualIbanRecipientModel.fromJson(element);
   }
 
   Future<List<Map<String, dynamic>>> listAnnouncements({

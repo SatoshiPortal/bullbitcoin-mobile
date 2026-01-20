@@ -44,29 +44,29 @@ class WithdrawVirtualIbanCheckbox extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.appColors.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: context.appColors.outline.withValues(alpha: 0.3),
+                color: context.appColors.outline.withValues(alpha: 0.4),
               ),
             ),
             child: CheckboxListTile(
               value: useVirtualIban,
               onChanged: (value) {
                 context.read<WithdrawBloc>().add(
-                      WithdrawEvent.useVirtualIbanToggled(value ?? false),
-                    );
+                  WithdrawEvent.useVirtualIbanToggled(value ?? false),
+                );
               },
               title: Text(
                 context.loc.useVirtualIban,
                 style: context.font.bodyLarge?.copyWith(
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                 ),
               ),
               subtitle: Text(
                 context.loc.useVirtualIbanSubtitle,
                 style: context.font.bodySmall?.copyWith(
-                  color: context.appColors.outline,
+                  color: context.appColors.onSurfaceVariant,
                 ),
               ),
               controlAffinity: ListTileControlAffinity.leading,

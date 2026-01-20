@@ -66,29 +66,25 @@ class _VirtualIbanActivationContent extends StatelessWidget {
       listener: (context, state) {
         // VIBAN is now active - notify RecipientsBloc to advance
         context.read<RecipientsBloc>().add(
-              const RecipientsEvent.virtualIbanActivated(),
-            );
+          const RecipientsEvent.virtualIbanActivated(),
+        );
       },
       child: BlocBuilder<VirtualIbanBloc, VirtualIbanState>(
         builder: (context, state) {
           return state.when(
             initial: () => const _LoadingView(),
             loading: () => const _LoadingView(),
-            notSubmitted: (
-              userSummary,
-              nameConfirmed,
-              isCreating,
-              error,
-            ) =>
+            notSubmitted: (userSummary, nameConfirmed, isCreating, error) =>
                 _IntroView(
-              userFullName:
-                  '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
-                      .trim(),
-              nameConfirmed: nameConfirmed,
-              isCreating: isCreating,
-              error: error,
-            ),
-            pending: (recipient, userSummary, isPolling) => const _PendingView(),
+                  userFullName:
+                      '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
+                          .trim(),
+                  nameConfirmed: nameConfirmed,
+                  isCreating: isCreating,
+                  error: error,
+                ),
+            pending: (recipient, userSummary, isPolling) =>
+                const _PendingView(),
             active: (recipient, userSummary) => const _ActivatedView(),
             error: (exception) => _ErrorView(exception: exception),
           );
@@ -254,10 +250,11 @@ class _IntroView extends StatelessWidget {
                                 Expanded(
                                   child: BBText(
                                     context.loc.confidentialSepaWarningTitle,
-                                    style: theme.textTheme.titleMedium?.copyWith(
-                                      color: context.appColors.secondary,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                          color: context.appColors.secondary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                 ),
                               ],
@@ -328,10 +325,10 @@ class _IntroView extends StatelessWidget {
                           ? null
                           : (value) {
                               context.read<VirtualIbanBloc>().add(
-                                    VirtualIbanEvent.nameConfirmationToggled(
-                                      confirmed: value ?? false,
-                                    ),
-                                  );
+                                VirtualIbanEvent.nameConfirmationToggled(
+                                  confirmed: value ?? false,
+                                ),
+                              );
                             },
                       title: BBText(
                         context.loc.confirmLegalName,
@@ -376,8 +373,8 @@ class _IntroView extends StatelessWidget {
                         disabled: !nameConfirmed || isCreating,
                         onPressed: () {
                           context.read<VirtualIbanBloc>().add(
-                                const VirtualIbanEvent.createRequested(),
-                              );
+                            const VirtualIbanEvent.createRequested(),
+                          );
                         },
                         bgColor: context.appColors.primary,
                         textColor: context.appColors.onPrimary,
@@ -387,8 +384,8 @@ class _IntroView extends StatelessWidget {
                         label: context.loc.useRegularSepaInstead,
                         onPressed: () {
                           context.read<RecipientsBloc>().add(
-                                const RecipientsEvent.fallbackToRegularSepa(),
-                              );
+                            const RecipientsEvent.fallbackToRegularSepa(),
+                          );
                         },
                         bgColor: context.appColors.transparent,
                         textColor: context.appColors.secondary,
@@ -418,17 +415,28 @@ class _IntroView extends StatelessWidget {
             color: context.appColors.primary,
           ),
           const Gap(8),
-          Expanded(
-            child: Text(text, style: const TextStyle(fontSize: 14)),
-          ),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
         ],
       ),
     );
   }
 }
 
-class _PendingView extends StatelessWidget {
+class _PendingView extends StatefulWidget {
   const _PendingView();
+
+  @override
+  State<_PendingView> createState() => _PendingViewState();
+}
+
+class _PendingViewState extends State<_PendingView> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<VirtualIbanBloc>().add(
+      const VirtualIbanEvent.createRequested(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -489,8 +497,8 @@ class _PendingView extends StatelessWidget {
                   label: context.loc.useRegularSepaInstead,
                   onPressed: () {
                     context.read<RecipientsBloc>().add(
-                          const RecipientsEvent.fallbackToRegularSepa(),
-                        );
+                      const RecipientsEvent.fallbackToRegularSepa(),
+                    );
                   },
                   bgColor: context.appColors.transparent,
                   textColor: context.appColors.secondary,
@@ -527,10 +535,7 @@ class _ActivatedView extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: const TopBar(
-          title: '',
-          bullLogo: true,
-        ),
+        flexibleSpace: const TopBar(title: '', bullLogo: true),
       ),
       body: SafeArea(
         child: Center(
@@ -605,8 +610,8 @@ class _ErrorView extends StatelessWidget {
                 BBText(
                   exception.toString(),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: context.appColors.error,
-                      ),
+                    color: context.appColors.error,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const Gap(32),
@@ -614,8 +619,8 @@ class _ErrorView extends StatelessWidget {
                   label: context.loc.recoverbullRetry,
                   onPressed: () {
                     context.read<VirtualIbanBloc>().add(
-                          const VirtualIbanEvent.started(),
-                        );
+                      const VirtualIbanEvent.started(),
+                    );
                   },
                   bgColor: context.appColors.primary,
                   textColor: context.appColors.onPrimary,
@@ -636,6 +641,6 @@ void _handleBack(BuildContext context) {
   }
   // Also go back to the recipient type selection step
   context.read<RecipientsBloc>().add(
-        const RecipientsEvent.previousStepPressed(),
-      );
+    const RecipientsEvent.previousStepPressed(),
+  );
 }

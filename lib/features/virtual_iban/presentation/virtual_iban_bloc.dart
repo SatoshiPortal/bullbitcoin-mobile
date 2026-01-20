@@ -10,9 +10,9 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'virtual_iban_bloc.freezed.dart';
 part 'virtual_iban_event.dart';
 part 'virtual_iban_state.dart';
-part 'virtual_iban_bloc.freezed.dart';
 
 /// Singleton bloc for managing Virtual IBAN (Confidential SEPA) state.
 ///
@@ -25,10 +25,10 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
     required GetVirtualIbanDetailsUsecase getVirtualIbanDetailsUsecase,
     required CreateVirtualIbanUsecase createVirtualIbanUsecase,
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-  })  : _getVirtualIbanDetailsUsecase = getVirtualIbanDetailsUsecase,
-        _createVirtualIbanUsecase = createVirtualIbanUsecase,
-        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-        super(const VirtualIbanState.initial()) {
+  }) : _getVirtualIbanDetailsUsecase = getVirtualIbanDetailsUsecase,
+       _createVirtualIbanUsecase = createVirtualIbanUsecase,
+       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+       super(const VirtualIbanState.initial()) {
     on<VirtualIbanStarted>(_onStarted);
     on<VirtualIbanNameConfirmationToggled>(_onNameConfirmationToggled);
     on<VirtualIbanCreateRequested>(_onCreateRequested);
@@ -76,24 +76,16 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
 
       if (viban == null) {
         // No VIBAN created yet
-        emit(
-          VirtualIbanState.notSubmitted(userSummary: userSummary),
-        );
+        emit(VirtualIbanState.notSubmitted(userSummary: userSummary));
       } else if (viban.isActive) {
         // VIBAN is fully activated
         emit(
-          VirtualIbanState.active(
-            recipient: viban,
-            userSummary: userSummary,
-          ),
+          VirtualIbanState.active(recipient: viban, userSummary: userSummary),
         );
       } else {
         // VIBAN exists but not yet activated - start polling
         emit(
-          VirtualIbanState.pending(
-            recipient: viban,
-            userSummary: userSummary,
-          ),
+          VirtualIbanState.pending(recipient: viban, userSummary: userSummary),
         );
         _startPolling();
       }
@@ -124,9 +116,20 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
     Emitter<VirtualIbanState> emit,
   ) async {
     final currentState = state;
-    if (currentState is! VirtualIbanNotSubmittedState) return;
+    if (currentState is! VirtualIbanNotSubmittedState &&
+        currentState is! VirtualIbanPendingState) {
+      return;
+    }
 
-    emit(currentState.copyWith(isCreating: true, error: null));
+    UserSummary? userSummary;
+    if (currentState is VirtualIbanNotSubmittedState) {
+      emit(currentState.copyWith(isCreating: true, error: null));
+      userSummary = currentState.userSummary;
+    } else if (currentState is VirtualIbanPendingState) {
+      userSummary = currentState.userSummary;
+    }
+
+    if (userSummary == null) return;
 
     try {
       final viban = await _createVirtualIbanUsecase.execute();
@@ -134,26 +137,24 @@ class VirtualIbanBloc extends Bloc<VirtualIbanEvent, VirtualIbanState> {
       if (viban.isActive) {
         // Immediately activated (rare but possible)
         emit(
-          VirtualIbanState.active(
-            recipient: viban,
-            userSummary: currentState.userSummary,
-          ),
+          VirtualIbanState.active(recipient: viban, userSummary: userSummary),
         );
       } else {
         // VIBAN created but pending activation - start polling
         emit(
-          VirtualIbanState.pending(
-            recipient: viban,
-            userSummary: currentState.userSummary,
-          ),
+          VirtualIbanState.pending(recipient: viban, userSummary: userSummary),
         );
         _startPolling();
       }
     } on CreateVirtualIbanException catch (e) {
-      emit(currentState.copyWith(isCreating: false, error: e));
+      if (currentState is VirtualIbanNotSubmittedState) {
+        emit(currentState.copyWith(isCreating: false, error: e));
+      }
     } catch (e) {
       log.severe('Error creating Virtual IBAN: $e');
-      emit(currentState.copyWith(isCreating: false, error: Exception('$e')));
+      if (currentState is VirtualIbanNotSubmittedState) {
+        emit(currentState.copyWith(isCreating: false, error: Exception('$e')));
+      }
     }
   }
 
