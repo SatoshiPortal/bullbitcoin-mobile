@@ -19,16 +19,10 @@ extension LabelErrorTranslation on LabelError {
 }
 
 class LabelsWidget extends StatefulWidget {
-  const LabelsWidget({
-    super.key,
-    required this.labels,
-    required this.reference,
-    this.onDelete,
-  });
+  const LabelsWidget({super.key, required this.labels, this.onDelete});
 
-  final List<String> labels;
-  final String reference;
-  final Future<void> Function(String)? onDelete;
+  final List<Label> labels;
+  final Future<void> Function(Label)? onDelete;
 
   @override
   State<LabelsWidget> createState() => _LabelsWidgetState();
@@ -36,9 +30,9 @@ class LabelsWidget extends StatefulWidget {
 
 class _LabelsWidgetState extends State<LabelsWidget> {
   final _labelsFacade = locator<LabelsFacade>();
-  final Set<String> _deletingLabels = {};
+  final Set<Label> _deletingLabels = {};
 
-  Future<void> _deleteLabel(String label) async {
+  Future<void> _deleteLabel(Label label) async {
     if (_deletingLabels.contains(label)) return;
 
     setState(() {
@@ -49,7 +43,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       if (widget.onDelete != null) {
         await widget.onDelete!(label);
       } else {
-        await _labelsFacade.delete(label: label, reference: widget.reference);
+        await _labelsFacade.delete(label);
       }
       if (mounted) {
         setState(() => _deletingLabels.remove(label));
@@ -64,7 +58,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
         setState(() => _deletingLabels.remove(label));
         SnackBarUtils.showSnackBar(
           context,
-          context.loc.labelDeleteFailed(label),
+          context.loc.labelDeleteFailed(label.label),
         );
       }
     }
@@ -82,7 +76,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       children: distinctLabels.map((label) {
         final isDeleting = _deletingLabels.contains(label);
         return LabelChip(
-          label: label,
+          label: label.label,
           isDeleting: isDeleting,
           onDelete: widget.onDelete != null ? () => _deleteLabel(label) : null,
         );

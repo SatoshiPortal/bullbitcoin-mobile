@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bip329_labels/bip329_labels.dart' as bip329;
 
@@ -29,7 +30,7 @@ class Bip329LabelsCodec {
     return jsonLines;
   }
 
-  List<LabelEntity> decode(String input) {
+  List<NewLabelEntity> decode(String input) {
     var bip329Labels = <bip329.Bip329Label>[];
     try {
       bip329Labels = bip329.Bip329Label.fromJsonLines(input);
@@ -38,7 +39,7 @@ class Bip329LabelsCodec {
     }
     if (bip329Labels.isEmpty) throw 'No labels found';
 
-    final labels = <LabelEntity>[];
+    final labels = <NewLabelEntity>[];
     for (final bip329Label in bip329Labels) {
       final label = _convertBip329ToLabel(bip329Label);
       labels.add(label);
@@ -47,39 +48,39 @@ class Bip329LabelsCodec {
   }
 }
 
-LabelEntity _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
+NewLabelEntity _convertBip329ToLabel(bip329.Bip329Label bip329Label) {
   return switch (bip329Label) {
-    bip329.TxLabel() => LabelEntity(
+    bip329.TxLabel() => NewLabelEntity(
       type: LabelType.transaction,
       reference: bip329Label.ref,
       label: bip329Label.label,
       origin: bip329Label.origin,
     ),
-    bip329.AddressLabel() => LabelEntity(
+    bip329.AddressLabel() => NewLabelEntity(
       type: LabelType.address,
       reference: bip329Label.ref,
       label: bip329Label.label,
       origin: bip329Label.origin,
     ),
-    bip329.PubkeyLabel() => LabelEntity(
+    bip329.PubkeyLabel() => NewLabelEntity(
       type: LabelType.publicKey,
       reference: bip329Label.ref,
       label: bip329Label.label,
       origin: bip329Label.origin,
     ),
-    bip329.InputLabel() => LabelEntity(
+    bip329.InputLabel() => NewLabelEntity(
       type: LabelType.input,
       reference: bip329Label.ref,
       label: bip329Label.label,
       origin: bip329Label.origin,
     ),
-    bip329.OutputLabel() => LabelEntity(
+    bip329.OutputLabel() => NewLabelEntity(
       type: LabelType.output,
       reference: bip329Label.ref,
       label: bip329Label.label,
       origin: bip329Label.origin,
     ),
-    bip329.XpubLabel() => LabelEntity(
+    bip329.XpubLabel() => NewLabelEntity(
       type: LabelType.extendedPublicKey,
       reference: bip329Label.ref,
       label: bip329Label.label,

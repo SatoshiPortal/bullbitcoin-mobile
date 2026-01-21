@@ -1,17 +1,26 @@
+import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
+import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
-import 'package:bb_mobile/features/labels/application/store_label_model.dart';
+import 'package:bb_mobile/features/labels/application/store_label_application.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
+import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
 
-class StoreLabelsUsecase {
+class StoreLabelUsecase {
   final LabelsRepositoryPort _labelRepository;
 
-  StoreLabelsUsecase({required LabelsRepositoryPort labelRepository})
+  StoreLabelUsecase({required LabelsRepositoryPort labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<void> execute(List<StoreLabelModel> labelDtos) async {
+  Future<ApplicationLabel> execute(NewApplicationLabel label) async {
     try {
-      final labels = labelDtos.map((dto) => dto.toDomain()).toList();
-      await _labelRepository.store(labels);
+      final newLabel = NewLabelEntity(
+        type: label.type,
+        label: label.label,
+        reference: label.reference,
+        origin: label.origin,
+      );
+      final storedLabel = await _labelRepository.store(newLabel);
+      return LabelMapper.labelEntityToApplicationLabel(storedLabel);
     } on LabelError {
       rethrow;
     } catch (e) {

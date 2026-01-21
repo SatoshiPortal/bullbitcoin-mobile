@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class TxListItem extends StatelessWidget {
         : context.loc.transactionNetworkLiquid;
     final labels = tx.walletTransaction != null
         ? tx.walletTransaction!.labels
-        : <String>[];
+        : <Label>[];
     final date = tx.isSwap
         ? (!tx.isOngoingSwap
               ? (tx.swap?.completionTime != null
@@ -157,10 +158,7 @@ class TxListItem extends StatelessWidget {
                   ),
 
                   if (labels.isNotEmpty && tx.walletTransaction != null)
-                    LabelsWidget(
-                      labels: labels,
-                      reference: tx.walletTransaction!.txId,
-                    ),
+                    LabelsWidget(labels: labels),
                 ],
               ),
             ),

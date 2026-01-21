@@ -5,7 +5,7 @@ import 'package:bb_mobile/features/labels/application/labels_repository_port.dar
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/delete_label_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/application/usecases/fetch_distinct_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -47,15 +47,14 @@ class LabelsLocator {
       ),
     );
 
-    locator.registerFactory<FetchDistinctLabelsUsecase>(
-      () => FetchDistinctLabelsUsecase(
+    locator.registerFactory<FetchAllLabelsUsecase>(
+      () => FetchAllLabelsUsecase(
         labelRepository: locator<LabelsRepositoryPort>(),
       ),
     );
 
-    locator.registerFactory<StoreLabelsUsecase>(
-      () =>
-          StoreLabelsUsecase(labelRepository: locator<LabelsRepositoryPort>()),
+    locator.registerFactory<StoreLabelUsecase>(
+      () => StoreLabelUsecase(labelRepository: locator<LabelsRepositoryPort>()),
     );
 
     locator.registerFactory<FetchLabelByReferenceUsecase>(
@@ -69,8 +68,8 @@ class LabelsLocator {
     locator.registerLazySingleton<LabelsFacade>(
       () => LabelsFacade(
         fetchLabelByReferenceUsecase: locator<FetchLabelByReferenceUsecase>(),
-        fetchDistinctLabelsUsecase: locator<FetchDistinctLabelsUsecase>(),
-        storeLabelsUsecase: locator<StoreLabelsUsecase>(),
+        fetchAllLabelsUsecase: locator<FetchAllLabelsUsecase>(),
+        storeLabelsUsecase: locator<StoreLabelUsecase>(),
         deleteLabelUsecase: locator<DeleteLabelUsecase>(),
       ),
     );

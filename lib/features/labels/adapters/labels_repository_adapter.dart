@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
 
 class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   final SqliteDatabase _database;
@@ -10,15 +11,22 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
     : _database = database;
 
   @override
-  Future<void> store(List<LabelEntity> labels) async {
-    final rows = labels.map((label) => LabelMapper.fromEntity(label)).toList();
-    await _database.batch(
-      (batch) => batch.insertAll(
-        _database.labels,
-        rows,
-        mode: InsertMode.insertOrReplace,
-      ),
+  Future<LabelEntity> store(NewLabelEntity newLabel) async {
+    final companion = LabelMapper.newLabelEntityToCompanion(newLabel);
+    final id = await _database.into(_database.labels).insert(companion);
+    return LabelEntity(
+      id: id,
+      type: newLabel.type,
+      label: newLabel.label,
+      reference: newLabel.reference,
+      origin: newLabel.origin,
     );
+  }
+
+  @override
+  Future<void> patch(LabelEntity label) async {
+    final companion = LabelMapper.labelEntityToCompanion(label);
+    await _database.update(_database.labels).write(companion);
   }
 
   @override
@@ -26,7 +34,7 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
     final rows = await _database.managers.labels
         .filter((l) => l.label(label))
         .get();
-    return rows.map((row) => LabelMapper.toEntity(row)).toList();
+    return rows.map((row) => LabelMapper.toLabelEntity(row)).toList();
   }
 
   @override
@@ -34,22 +42,25 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
     final rows = await _database.managers.labels
         .filter((l) => l.reference(reference))
         .get();
-    return rows.map((row) => LabelMapper.toEntity(row)).toList();
+    return rows.map((row) => LabelMapper.toLabelEntity(row)).toList();
   }
 
   @override
-  Future<void> trashLabel({
-    required String label,
-    required String reference,
-  }) async {
-    await _database.managers.labels
-        .filter((l) => l.reference(reference) & l.label(label))
-        .delete();
+  Future<LabelEntity?> fetchById(int id) async {
+    final row = await _database.managers.labels
+        .filter((l) => l.id(id))
+        .getSingleOrNull();
+    return row != null ? LabelMapper.toLabelEntity(row) : null;
+  }
+
+  @override
+  Future<void> trashLabel(LabelEntity label) async {
+    await _database.managers.labels.filter((l) => l.id(label.id)).delete();
   }
 
   @override
   Future<List<LabelEntity>> fetchAll() async {
     final rows = await _database.managers.labels.get();
-    return rows.map((row) => LabelMapper.toEntity(row)).toList();
+    return rows.map((row) => LabelMapper.toLabelEntity(row)).toList();
   }
 }

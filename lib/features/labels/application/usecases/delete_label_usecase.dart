@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
+import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
 
@@ -7,12 +9,11 @@ class DeleteLabelUsecase {
   DeleteLabelUsecase({required LabelsRepositoryPort labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<void> execute({
-    required String label,
-    required String reference,
-  }) async {
+  Future<void> execute(ApplicationLabel label) async {
     try {
-      await _labelRepository.trashLabel(label: label, reference: reference);
+      await _labelRepository.trashLabel(
+        LabelMapper.applicationLabelToLabelEntity(label),
+      );
     } on LabelError {
       rethrow;
     } catch (e) {
