@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/frameworks/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_local_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_remote_datasource.dart';
@@ -58,6 +59,16 @@ class ExchangeLocator {
     // BB Exchange API Key Storage
     locator.registerLazySingleton<BullbitcoinApiKeyDatasource>(
       () => BullbitcoinApiKeyDatasource(
+        secureStorage: locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
+      ),
+    );
+
+    // API Key Provider - reusable across all exchange features
+    // (recipients, virtual_iban, etc.)
+    locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
+      () => BullbitcoinApiKeyProvider(
         secureStorage: locator<KeyValueStorageDatasource<String>>(
           instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
         ),
@@ -235,13 +246,13 @@ class ExchangeLocator {
       instanceName: 'testnetExchangeSupportChatRepository',
     );
 
-    // Virtual IBAN Repositories
+    // Virtual IBAN Repositories - uses BullbitcoinApiKeyProvider for API key management
     locator.registerLazySingleton<VirtualIbanRepository>(
       () => VirtualIbanRepositoryImpl(
         apiDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'mainnetExchangeApiDatasource',
         ),
-        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyProvider: locator<BullbitcoinApiKeyProvider>(),
         isTestnet: false,
       ),
       instanceName: 'mainnetVirtualIbanRepository',
@@ -251,7 +262,7 @@ class ExchangeLocator {
         apiDatasource: locator<BullbitcoinApiDatasource>(
           instanceName: 'testnetExchangeApiDatasource',
         ),
-        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        apiKeyProvider: locator<BullbitcoinApiKeyProvider>(),
         isTestnet: true,
       ),
       instanceName: 'testnetVirtualIbanRepository',

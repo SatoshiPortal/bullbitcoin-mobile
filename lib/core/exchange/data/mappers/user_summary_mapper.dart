@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_address.dart';
+import 'package:bb_mobile/core/exchange/domain/value_objects/user_address.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 
 class UserSummaryMapper {

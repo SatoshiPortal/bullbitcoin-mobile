@@ -1,5 +1,8 @@
 /// Defines the current step in the recipient selection flow.
 /// Used for multi-step flows like sell/withdraw where VIBAN activation may be required.
+///
+/// This is a presentation/navigation concern, not a domain concept,
+/// so it lives in the presentation layer.
 enum RecipientFlowStep {
   /// Step 1: Select jurisdiction and recipient type
   selectType,

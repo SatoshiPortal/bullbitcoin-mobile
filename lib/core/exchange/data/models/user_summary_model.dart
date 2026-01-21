@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/exchange/domain/entity/user_address.dart';
+import 'package:bb_mobile/core/exchange/domain/value_objects/user_address.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

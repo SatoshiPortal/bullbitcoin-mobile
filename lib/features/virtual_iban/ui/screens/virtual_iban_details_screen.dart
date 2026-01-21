@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/value_objects/user_address.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -9,6 +10,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+/// Formats a UserAddress as a single comma-separated string for display.
+/// This is a presentation concern, so it lives in the UI layer.
+String _formatAddressForDisplay(UserAddress address) {
+  final parts = <String>[
+    address.street1,
+    if (address.street2 != null && address.street2!.isNotEmpty) address.street2!,
+    address.city,
+    if (address.province != null && address.province!.isNotEmpty)
+      address.province!,
+    address.postalCode,
+    address.countryCode,
+  ];
+  return parts.join(', ');
+}
 
 /// Screen showing the activated Virtual IBAN details.
 /// Displays IBAN, BIC, bank address, recipient name, etc.
@@ -138,7 +154,7 @@ class VirtualIbanDetailsScreen extends StatelessWidget {
                 if (userSummary.address != null) ...[
                   _VirtualIbanDetailField(
                     label: context.loc.recipientAddress,
-                    value: userSummary.address!.addressStringified,
+                    value: _formatAddressForDisplay(userSummary.address!),
                   ),
                   const Gap(24.0),
                 ],

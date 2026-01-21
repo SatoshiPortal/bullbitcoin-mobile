@@ -1,39 +1,36 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/mappers/virtual_iban_recipient_mapper.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/virtual_iban_recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/virtual_iban_repository.dart';
+import 'package:bb_mobile/core/exchange/frameworks/http/bullbitcoin_api_key_provider.dart';
 
 /// Implementation of [VirtualIbanRepository] that uses the Bull Bitcoin API.
+/// Uses [BullbitcoinApiKeyProvider] from core for API key management,
+/// following the same pattern as the recipients feature.
 class VirtualIbanRepositoryImpl implements VirtualIbanRepository {
   final BullbitcoinApiDatasource _apiDatasource;
-  final BullbitcoinApiKeyDatasource _apiKeyDatasource;
+  final BullbitcoinApiKeyProvider _apiKeyProvider;
   final bool _isTestnet;
 
   VirtualIbanRepositoryImpl({
     required BullbitcoinApiDatasource apiDatasource,
-    required BullbitcoinApiKeyDatasource apiKeyDatasource,
+    required BullbitcoinApiKeyProvider apiKeyProvider,
     required bool isTestnet,
   }) : _apiDatasource = apiDatasource,
-       _apiKeyDatasource = apiKeyDatasource,
+       _apiKeyProvider = apiKeyProvider,
        _isTestnet = isTestnet;
 
   Future<String> _getApiKey() async {
-    final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
+    final apiKey = await _apiKeyProvider.getApiKey(isTestnet: _isTestnet);
 
     if (apiKey == null) {
       throw ApiKeyException(
         'API key not found. Please login to your Bull Bitcoin account.',
       );
     }
-    if (!apiKey.isActive) {
-      throw ApiKeyException(
-        'API key is inactive. Please login again to your Bull Bitcoin account.',
-      );
-    }
 
-    return apiKey.key;
+    return apiKey;
   }
 
   @override

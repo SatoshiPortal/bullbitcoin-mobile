@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_flow_step.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_flow_step.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipients_location.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/steps/recipient_type_selection_step.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/steps/virtual_iban_activation_step.dart';

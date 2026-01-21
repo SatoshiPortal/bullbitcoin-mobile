@@ -1,8 +1,5 @@
 part of 'recipients_bloc.dart';
 
-// Usecase instance for filtering recipients in Virtual IBAN mode
-const _filterByVirtualIbanUsecase = FilterRecipientsByVirtualIbanUsecase();
-
 @freezed
 sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
@@ -85,14 +82,64 @@ sealed class RecipientsState with _$RecipientsState {
 
     // Apply Virtual IBAN filtering when in VIBAN-eligible location with active VIBAN
     // This groups recipients by IBAN and prefers frPayee over cjPayee for same IBAN
-    final isVibanEligible = allowedRecipientFilters.location.isVirtualIbanEligible;
+    final isVibanEligible =
+        allowedRecipientFilters.location.isVirtualIbanEligible;
     if (isVibanEligible && hasActiveVirtualIban) {
-      filtered = _filterByVirtualIbanUsecase.execute(filtered);
+      filtered = _filterForVirtualIban(filtered);
     }
 
     // Remove duplicates based on recipient ID
     final seen = <String>{};
     return filtered.where((recipient) => seen.add(recipient.id)).toList();
+  }
+
+  /// Filters and deduplicates recipients for Virtual IBAN mode.
+  /// For recipients with the same IBAN, frPayee is preferred over cjPayee.
+  /// This is a presentation concern, so the logic lives here rather than
+  /// in a usecase.
+  List<RecipientViewModel> _filterForVirtualIban(
+    List<RecipientViewModel> recipients,
+  ) {
+    // Filter to only show recipients with isOwner=true
+    final ownerRecipients =
+        recipients.where((r) => r.isOwner == true).toList();
+
+    // Group recipients by IBAN
+    final ibanGroups = <String, List<RecipientViewModel>>{};
+    final recipientsWithoutIban = <RecipientViewModel>[];
+
+    for (final recipient in ownerRecipients) {
+      final iban = recipient.iban;
+      if (iban != null && iban.isNotEmpty) {
+        ibanGroups.putIfAbsent(iban, () => []).add(recipient);
+      } else {
+        // Keep track of recipients without IBAN separately
+        recipientsWithoutIban.add(recipient);
+      }
+    }
+
+    // For each IBAN group, if there are both cjPayee and frPayee,
+    // keep only the frPayee recipient
+    final result = <RecipientViewModel>[];
+    for (final group in ibanGroups.values) {
+      final frPayees =
+          group.where((r) => r.type == RecipientType.frPayee).toList();
+      final cjPayees =
+          group.where((r) => r.type == RecipientType.cjPayee).toList();
+
+      if (frPayees.isNotEmpty && cjPayees.isNotEmpty) {
+        // If both exist, only add frPayee recipients (prefer VIBAN)
+        result.addAll(frPayees);
+      } else {
+        // Otherwise, add all recipients in the group
+        result.addAll(group);
+      }
+    }
+
+    // Add recipients without IBAN (shouldn't happen for cjPayee/frPayee, but just in case)
+    result.addAll(recipientsWithoutIban);
+
+    return result;
   }
 
   List<RecipientViewModel>? filteredRecipientsByJurisdiction(
