@@ -4112,10 +4112,9 @@
   "coreSwapsChainFailedRefunding": "Siirto palautetaan pian.",
   "autoswapBaseBalanceInfoText": "Pikalompakon saldo palaa tähän saldoon autoswapin jälkeen.",
   "autoswapWarningDescription": "Autoswap varmistaa, että välittömien maksujen ja turvallisen Bitcoin-lompakon välillä on hyvä tasapaino.",
-  "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla:",
-  "autoswapWarningBaseBalance": "Tasapaino 0,01 BTC",
-  "autoswapWarningTriggerAmount": "0,02 BTC",
-  "autoswapWarningExplanation": "Kun saldo ylittää laukaisumäärän, vaihdetaan. Perussumma säilytetään Instant Payments -lompakossasi ja jäljellä oleva summa vaihdetaan Bitcoin-lompakkoosi.",
+  "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla",
+  "autoswapWarningExplanation": "Kun saldosi ylittää enimmäissaldon, vaihto käynnistyy automaattisesti. Tavoitesaldo säilytetään Instant Payments -lompakossasi ja jäljellä oleva summa vaihdetaan Secure Bitcoin -lompakkoosi.",
+  "autoswapWarningExplanationBold": "automaattisesti",
   "autoswapWarningDontShowAgain": "Älä näytä tätä varoitusta uudelleen.",
   "autoswapWarningSettingsLink": "Vie minut autoswap-asetuksiin",
   "importQrDeviceKeystoneStep7": "Skannaa Keystonessa näkyvä QR-koodi",
@@ -4127,5 +4126,9 @@
   "logoutConfirmationTitle": "Vahvista uloskirjautuminen",
   "logoutConfirmationDescription": "Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.",
   "logoutConfirmationCancel": "Peruuta",
-  "logoutConfirmationLogout": "Kirjaudu ulos"
+  "logoutConfirmationLogout": "Kirjaudu ulos",
+  "autoswapInfoTitle": "Autoswap on aktiivinen",
+  "autoswapInfoDismissButton": "KYLLÄ, KIITOS",
+  "autoswapInfoSettingsButton": "EI, YMMÄRRÄN RISKIT",
+  "autoswapInfoRemindLater": "Määritä Autoswap-asetukset"
 }
