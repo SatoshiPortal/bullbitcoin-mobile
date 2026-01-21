@@ -5,7 +5,7 @@ sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
     @Default(false) bool isLoadingRecipients,
     Exception? failedToLoadRecipients,
-    required AllowedRecipientFiltersViewModel allowedRecipientFilters,
+    required RecipientFilterCriteria allowedRecipientFilters,
     List<RecipientViewModel>? recipients,
     int? totalRecipients,
     @Default(false) bool isSearchingCadBillers,
@@ -16,9 +16,7 @@ sealed class RecipientsState with _$RecipientsState {
     @Default('') String sinpeOwnerName,
     @Default(false) bool isAddingRecipient,
     Exception? failedToAddRecipient,
-    RecipientViewModel? selectedRecipient,
-    @Default(false) bool isHandlingSelectedRecipient,
-    Exception? failedToHandleSelectedRecipient,
+    Exception? failedToSelectRecipient,
   }) = _RecipientsState;
   const RecipientsState._();
 
@@ -26,8 +24,7 @@ sealed class RecipientsState with _$RecipientsState {
       isLoadingRecipients ||
       isAddingRecipient ||
       isCheckingSinpe ||
-      isSearchingCadBillers ||
-      isHandlingSelectedRecipient;
+      isSearchingCadBillers;
 
   bool get hasMoreRecipientsToLoad {
     if (recipients == null || totalRecipients == null) {
@@ -35,8 +32,6 @@ sealed class RecipientsState with _$RecipientsState {
     }
     return recipients!.length < totalRecipients!;
   }
-
-  bool get hasSelectedRecipient => selectedRecipient != null;
 
   Set<RecipientType> get selectableRecipientTypes =>
       allowedRecipientFilters.types.toSet();
@@ -57,17 +52,14 @@ sealed class RecipientsState with _$RecipientsState {
   List<RecipientViewModel>? get selectableRecipients {
     // Apply filters to the full recipient list based on the allowed recipient types
     // and ownership criteria.
-    final filtered =
-        recipients
-            ?.where(
-              (recipient) =>
-                  selectableRecipientTypes.any(
-                    (type) => type == recipient.type,
-                  ) &&
-                  !(onlyOwnerRecipients && !(recipient.isOwner == true) ||
-                      onlyNonOwnerRecipients && !(recipient.isOwner == false)),
-            )
-            .toList();
+    final filtered = recipients
+        ?.where(
+          (recipient) =>
+              selectableRecipientTypes.any((type) => type == recipient.type) &&
+              !(onlyOwnerRecipients && !(recipient.isOwner == true) ||
+                  onlyNonOwnerRecipients && !(recipient.isOwner == false)),
+        )
+        .toList();
 
     // Remove duplicates based on recipient ID
     if (filtered == null) return null;
