@@ -161,7 +161,6 @@ class AppRouter {
       ...ImportQrDeviceRouter.routes,
       RecoverBullRouter.route,
       RecoverBullGoogleDriveRouter.route,
-      RecipientsRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,
     ],
