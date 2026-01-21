@@ -4129,5 +4129,6 @@
   "autoswapInfoTitle": "Autoswap wird empfohlen",
   "autoswapInfoDismissButton": "JA, DANKE",
   "autoswapInfoSettingsButton": "NEIN, ICH VERSTEHE DIE RISIKEN",
-  "autoswapInfoRemindLater": "Autoswap-Einstellungen konfigurieren"
+  "autoswapInfoRemindLater": "Autoswap-Einstellungen konfigurieren",
+  "autoswapInfoConsentMessage": "Autoswap ist derzeit aktiviert, wird aber erst ausgelöst, wenn Sie zustimmen. Möchten Sie es aktiviert lassen?"
 }

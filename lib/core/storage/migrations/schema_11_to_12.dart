@@ -47,7 +47,7 @@ class Schema11To12 {
             }),
           );
     }
-    // Reset showWarning to true for all autoSwap entries
+    // Reset showWarning to true for all users so they see the warning
     await m.database
         .update(schema12.autoSwap)
         .write(RawValuesInsertable({'show_warning': const Constant<int>(1)}));

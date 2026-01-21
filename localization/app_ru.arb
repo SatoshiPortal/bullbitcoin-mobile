@@ -4125,5 +4125,6 @@
   "autoswapInfoTitle": "Autoswap рекомендуется",
   "autoswapInfoDismissButton": "ДА, СПАСИБО",
   "autoswapInfoSettingsButton": "НЕТ, Я ПОНИМАЮ РИСКИ",
-  "autoswapInfoRemindLater": "Настроить Autoswap"
+  "autoswapInfoRemindLater": "Настроить Autoswap",
+  "autoswapInfoConsentMessage": "Autoswap в настоящее время включен, но не сработает, пока вы не дадите согласие. Хотите оставить его включенным?"
 }

@@ -4130,5 +4130,6 @@
   "autoswapInfoTitle": "Autoswap on suositeltava",
   "autoswapInfoDismissButton": "KYLLÄ, KIITOS",
   "autoswapInfoSettingsButton": "EI, YMMÄRRÄN RISKIT",
-  "autoswapInfoRemindLater": "Määritä Autoswap-asetukset"
+  "autoswapInfoRemindLater": "Määritä Autoswap-asetukset",
+  "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?"
 }

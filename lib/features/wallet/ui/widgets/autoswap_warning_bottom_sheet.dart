@@ -78,6 +78,14 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
           ),
           const Gap(16),
           _buildExplanationText(context),
+          const Gap(16),
+          BBText(
+            context.loc.autoswapInfoConsentMessage,
+            style: context.font.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            color: context.appColors.onSurface,
+          ),
           const Gap(24),
           BBButton.big(
             label: context.loc.autoswapInfoDismissButton,

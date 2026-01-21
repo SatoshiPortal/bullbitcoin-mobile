@@ -4129,5 +4129,6 @@
   "autoswapInfoTitle": "Autoswap рекомендовано",
   "autoswapInfoDismissButton": "ТАК, ДЯКУЮ",
   "autoswapInfoSettingsButton": "НІ, Я РОЗУМІЮ РИЗИКИ",
-  "autoswapInfoRemindLater": "Налаштувати Autoswap"
+  "autoswapInfoRemindLater": "Налаштувати Autoswap",
+  "autoswapInfoConsentMessage": "Autoswap наразі увімкнено, але він не спрацює, поки ви не дасте згоду. Бажаєте залишити його увімкненим?"
 }

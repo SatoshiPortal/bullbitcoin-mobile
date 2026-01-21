@@ -4904,6 +4904,10 @@
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to navigate to autoswap settings"
   },
+  "autoswapInfoConsentMessage": "Autoswap is currently enabled but will not trigger until you consent. Would you like to keep it on?",
+  "@autoswapInfoConsentMessage": {
+    "description": "Consent message explaining autoswap status"
+  },
   "autoswapLoadSettingsError": "Failed to load auto swap settings",
   "@autoswapLoadSettingsError": {
     "description": "Error message when loading settings fails"

@@ -4128,5 +4128,6 @@
   "autoswapInfoTitle": "推荐使用自动交换",
   "autoswapInfoDismissButton": "是的，谢谢",
   "autoswapInfoSettingsButton": "不，我了解风险",
-  "autoswapInfoRemindLater": "配置自动交换设置"
+  "autoswapInfoRemindLater": "配置自动交换设置",
+  "autoswapInfoConsentMessage": "自动交换目前已启用，但在您同意之前不会触发。您想保持启用吗？"
 }
