@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/labels/adapters/labels_converter_apadater.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_repository_adapter.dart';
 import 'package:bb_mobile/features/labels/application/labels_converter_port.dart';
+import 'package:bb_mobile/features/labels/application/labels_converter_port_registry.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/delete_label_usecase.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/features/labels/application/usecases/export_labels_use
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
@@ -20,6 +22,11 @@ class LabelsLocator {
     );
     locator.registerLazySingleton<LabelsConverterPort>(
       () => LabelsConverterAdapter(locator<Bip329LabelsCodec>()),
+    );
+    locator.registerLazySingleton<LabelsConverterPortRegistry>(
+      () => LabelsConverterPortRegistry({
+        LabelFormat.bip329: locator<LabelsConverterPort>(),
+      }),
     );
   }
 
@@ -36,7 +43,7 @@ class LabelsLocator {
     locator.registerFactory<ExportLabelsUsecase>(
       () => ExportLabelsUsecase(
         labelRepository: locator<LabelsRepositoryPort>(),
-        labelConverter: locator<LabelsConverterPort>(),
+        converterRegistry: locator<LabelsConverterPortRegistry>(),
       ),
     );
 

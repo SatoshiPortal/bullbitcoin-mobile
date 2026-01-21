@@ -1,24 +1,32 @@
-import 'package:bb_mobile/features/labels/application/labels_converter_port.dart';
+import 'package:bb_mobile/features/labels/application/labels_converter_port_registry.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
 
 class ExportLabelsUsecase {
   final LabelsRepositoryPort _labelRepository;
-  final LabelsConverterPort _labelConverter;
+  final LabelsConverterPortRegistry _converterRegistry;
 
   ExportLabelsUsecase({
     required LabelsRepositoryPort labelRepository,
-    required LabelsConverterPort labelConverter,
+    required LabelsConverterPortRegistry converterRegistry,
   }) : _labelRepository = labelRepository,
-       _labelConverter = labelConverter;
+       _converterRegistry = converterRegistry;
 
   Future<String> call(LabelFormat format) async {
     final labels = await _labelRepository.fetchAll();
-    final formattedLabels = _labelConverter.convertTo(
+    final converter = _converterRegistry.getConverter(format);
+    final formattedLabels = converter.convertTo(
       format: format,
       labels: labels,
     );
-    return (formattedLabels as FormattedLabelsBIP329).jsonl;
+    return _getExportString(formattedLabels);
+  }
+
+  String _getExportString(FormattedLabels formattedLabels) {
+    switch (formattedLabels) {
+      case FormattedLabelsBIP329():
+        return formattedLabels.jsonl;
+    }
   }
 }
