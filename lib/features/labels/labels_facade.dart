@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
-import 'package:bb_mobile/features/labels/application/usecases/delete_label_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
@@ -22,17 +22,17 @@ class LabelsFacade {
   final FetchLabelByReferenceUsecase _fetchLabelByReferenceUsecase;
   final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
   final StoreLabelUsecase _storeLabelsUsecase;
-  final DeleteLabelUsecase _deleteLabelUsecase;
+  final TrashLabelUsecase _trashLabelUsecase;
 
   LabelsFacade({
     required FetchLabelByReferenceUsecase fetchLabelByReferenceUsecase,
     required FetchAllLabelsUsecase fetchAllLabelsUsecase,
     required StoreLabelUsecase storeLabelsUsecase,
-    required DeleteLabelUsecase deleteLabelUsecase,
+    required TrashLabelUsecase trashLabelUsecase,
   }) : _fetchLabelByReferenceUsecase = fetchLabelByReferenceUsecase,
        _fetchAllLabelsUsecase = fetchAllLabelsUsecase,
        _storeLabelsUsecase = storeLabelsUsecase,
-       _deleteLabelUsecase = deleteLabelUsecase;
+       _trashLabelUsecase = trashLabelUsecase;
 
   Future<List<Label>> fetchByReference(String reference) async {
     final labels = await _fetchLabelByReferenceUsecase.execute(reference);
@@ -60,7 +60,5 @@ class LabelsFacade {
     return LabelMapper.applicationLabelToLabel(storedLabel);
   }
 
-  Future<void> delete(Label label) async => await _deleteLabelUsecase.execute(
-    LabelMapper.labelToApplicationLabel(label),
-  );
+  Future<void> trash(int id) async => await _trashLabelUsecase.execute(id);
 }

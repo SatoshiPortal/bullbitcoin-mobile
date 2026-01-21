@@ -12,7 +12,7 @@ abstract class LabelsRepositoryPort {
 
   Future<LabelEntity?> fetchById(int id);
 
-  Future<void> trashLabel(LabelEntity label);
+  Future<void> trash(int id);
 
   Future<List<LabelEntity>> fetchAll();
 }

@@ -42,7 +42,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       if (widget.onDelete != null) {
         await widget.onDelete!(label);
       } else {
-        await _labelsFacade.delete(label);
+        await _labelsFacade.trash(label.id);
       }
       if (mounted) {
         setState(() => _deletingLabels.remove(label));

@@ -54,8 +54,8 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   }
 
   @override
-  Future<void> trashLabel(LabelEntity label) async {
-    await _database.managers.labels.filter((l) => l.id(label.id)).delete();
+  Future<void> trash(int id) async {
+    await _database.managers.labels.filter((l) => l.id(id)).delete();
   }
 
   @override

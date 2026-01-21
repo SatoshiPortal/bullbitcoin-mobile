@@ -354,7 +354,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     if (walletTransaction == null) return;
 
     try {
-      await _labelsFacade.delete(note);
+      await _labelsFacade.trash(note.id);
 
       final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
       updatedLabels.remove(note);

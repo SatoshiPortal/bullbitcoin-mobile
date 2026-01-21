@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/labels/application/labels_converter_port.dart
 import 'package:bb_mobile/features/labels/application/labels_converter_port_registry.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/application/usecases/delete_label_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
@@ -35,9 +35,8 @@ class LabelsLocator {
   }
 
   static void registerUseCases(GetIt locator) {
-    locator.registerFactory<DeleteLabelUsecase>(
-      () =>
-          DeleteLabelUsecase(labelRepository: locator<LabelsRepositoryPort>()),
+    locator.registerFactory<TrashLabelUsecase>(
+      () => TrashLabelUsecase(labelRepository: locator<LabelsRepositoryPort>()),
     );
 
     locator.registerFactory<ExportLabelsUsecase>(
@@ -77,7 +76,7 @@ class LabelsLocator {
         fetchLabelByReferenceUsecase: locator<FetchLabelByReferenceUsecase>(),
         fetchAllLabelsUsecase: locator<FetchAllLabelsUsecase>(),
         storeLabelsUsecase: locator<StoreLabelUsecase>(),
-        deleteLabelUsecase: locator<DeleteLabelUsecase>(),
+        trashLabelUsecase: locator<TrashLabelUsecase>(),
       ),
     );
   }
