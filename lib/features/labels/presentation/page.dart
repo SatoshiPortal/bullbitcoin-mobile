@@ -1,5 +1,8 @@
-import 'package:bb_mobile/core/labels/domain/export_labels_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/import_labels_usecase.dart';
+import 'dart:io';
+
+import 'package:bb_mobile/features/labels/domain/label_format.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/export_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -7,9 +10,10 @@ import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/bip329_labels/cubit.dart';
-import 'package:bb_mobile/features/bip329_labels/state.dart';
+import 'package:bb_mobile/features/labels/presentation/cubit.dart';
+import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -40,14 +44,10 @@ class Bip329LabelsPage extends StatelessWidget {
               state.when(
                 initial: () {},
                 loading: () {},
-                exportSuccess: (labelsCount) {
+                exportSuccess: () {
                   SnackBarUtils.showSnackBar(
                     context,
-                    labelsCount == 1
-                        ? context.loc.bip329LabelsExportSuccessSingular
-                        : context.loc.bip329LabelsExportSuccessPlural(
-                            labelsCount,
-                          ),
+                    context.loc.bip329LabelsExportSuccess,
                   );
                 },
                 importSuccess: (labelsCount) {
@@ -93,7 +93,22 @@ class Bip329LabelsPage extends StatelessWidget {
                     const Spacer(),
                     BBButton.big(
                       label: context.loc.bip329LabelsImportButton,
-                      onPressed: isLoading ? () {} : () => cubit.importLabels(),
+                      onPressed: () async {
+                        if (isLoading) return;
+
+                        final result = await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                        );
+
+                        if (result != null && result.files.isNotEmpty) {
+                          final file = File(result.files.first.path!);
+                          final data = await file.readAsString();
+                          await cubit.importLabels(
+                            format: LabelFormat.bip329,
+                            data: data,
+                          );
+                        }
+                      },
                       bgColor: context.appColors.secondary,
                       textColor: context.appColors.onSecondary,
                       iconData: Icons.file_upload,
@@ -103,7 +118,10 @@ class Bip329LabelsPage extends StatelessWidget {
                     const Gap(12),
                     BBButton.big(
                       label: context.loc.bip329LabelsExportButton,
-                      onPressed: isLoading ? () {} : () => cubit.exportLabels(),
+                      onPressed: () async {
+                        if (isLoading) return;
+                        await cubit.exportLabels(LabelFormat.bip329);
+                      },
                       bgColor: context.appColors.onSurface,
                       textColor: context.appColors.surface,
                       iconData: Icons.file_download,

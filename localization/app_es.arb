@@ -3120,15 +3120,7 @@
   "bip329LabelsDescription": "Importa o exporta etiquetas de billetera usando el formato estándar BIP329.",
   "bip329LabelsImportButton": "Importar etiquetas",
   "bip329LabelsExportButton": "Exportar etiquetas",
-  "bip329LabelsExportSuccessSingular": "1 etiqueta exportada",
-  "bip329LabelsExportSuccessPlural": "{count} etiquetas exportadas",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Etiquetas exportadas correctamente",
   "bip329LabelsImportSuccessSingular": "1 etiqueta importada",
   "bip329LabelsImportSuccessPlural": "{count} etiquetas importadas",
   "@bip329LabelsImportSuccessPlural": {
@@ -3207,15 +3199,16 @@
   "importQrDeviceKruxStep6": "¡Eso es todo!",
   "importQrDeviceKeystoneName": "Keystone",
   "importQrDeviceKeystoneInstructionsTitle": "Instrucciones de Keystone",
-  "importQrDeviceKeystoneStep1": "Encienda su dispositivo Keystone",
-  "importQrDeviceKeystoneStep2": "Ingrese su PIN",
-  "importQrDeviceKeystoneStep3": "Haga clic en los tres puntos en la parte superior derecha",
-  "importQrDeviceKeystoneStep4": "Seleccione Conectar Billetera de Software",
-  "importQrDeviceKeystoneStep5": "Elija la opción de billetera BULL",
-  "importQrDeviceKeystoneStep6": "En su dispositivo móvil, toque Abrir Cámara",
+  "importQrDeviceKeystoneStep1": "Encienda su Keystone",
+  "importQrDeviceKeystoneStep2": "Desbloquéelo ingresando su PIN",
+  "importQrDeviceKeystoneStep3": "Toque los *** (tres puntos) en la esquina superior derecha",
+  "importQrDeviceKeystoneStep4": "Toque \"Connect Software Wallet\"",
+  "importQrDeviceKeystoneStep5": "Seleccione \"BULL\" de la lista de billeteras",
+  "importQrDeviceKeystoneStep6": "En su móvil, haga clic en \"abrir cámara\"",
   "importQrDeviceKeystoneStep7": "Escanee el código QR mostrado en su Keystone",
-  "importQrDeviceKeystoneStep8": "Ingrese una etiqueta para su billetera Keystone y toque Importar",
-  "importQrDeviceKeystoneStep9": "La configuración está completa",
+  "importQrDeviceKeystoneStep8": "En la billetera BULL, elija su tipo de derivación preferido. Si no está seguro, seleccione \"Segwit (BIP84)\"",
+  "importQrDeviceKeystoneStep9": "Ingrese una etiqueta para su billetera Keystone y toque \"Importar\"",
+  "importQrDeviceKeystoneStep10": "Su Keystone ahora está conectado y listo para usar con BULL Wallet.",
   "importQrDevicePassportName": "Foundation Passport",
   "importQrDevicePassportInstructionsTitle": "Instrucciones de Foundation Passport",
   "importQrDevicePassportStep1": "Encienda su dispositivo Passport",
@@ -3762,6 +3755,7 @@
   "addressViewChangeAddressesComingSoon": "Direcciones de cambio próximamente",
   "addressViewChangeAddressesDescription": "Mostrar direcciones de cambio de la billetera",
   "appStartupErrorTitle": "Error de inicio",
+  "appStartupErrorMessage": "La aplicación no pudo iniciarse. Intente detener completamente la aplicación y reiniciar. Si el error persiste, informe el problema al soporte y comparta sus registros.",
   "appStartupErrorMessageWithBackup": "No se pudo inicializar. Elimine y reinstale para solucionar.",
   "appStartupErrorMessageNoBackup": "No se pudo inicializar. Elimine y reinstale para solucionar. Si su frase de recuperación no está respaldada, puede verla en Configuración->Configuración de Bitcoin->Ver frases después de reinstalar.",
   "appStartupContactSupportButton": "Contactar Soporte",
@@ -4129,5 +4123,9 @@
     }
   },
   "bitcoinSettingsMempoolServerTitle": "Configuración del servidor Mempool",
-  "save": "Guardar"
+  "save": "Guardar",
+  "logoutConfirmationTitle": "Confirmar cierre de sesión",
+  "logoutConfirmationDescription": "¿Está seguro de que desea cerrar sesión en su cuenta de Bull Bitcoin? Necesitará iniciar sesión nuevamente para acceder a las funciones de intercambio.",
+  "logoutConfirmationCancel": "Cancelar",
+  "logoutConfirmationLogout": "Cerrar sesión"
 }

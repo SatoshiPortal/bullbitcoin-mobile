@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,9 +16,9 @@ sealed class WalletUtxo with _$WalletUtxo {
     required String address,
     @Default(WalletAddressKeyChain.external)
     WalletAddressKeyChain addressKeyChain,
-    @Default([]) List<Label> labels,
-    @Default([]) List<Label> txLabels,
-    @Default([]) List<Label> addressLabels,
+    @Default([]) List<String> labels,
+    @Default([]) List<String> txLabels,
+    @Default([]) List<String> addressLabels,
     @Default(false) bool isFrozen,
   }) = BitcoinWalletUtxo;
 
@@ -33,9 +32,9 @@ sealed class WalletUtxo with _$WalletUtxo {
     required String confidentialAddress,
     @Default(WalletAddressKeyChain.external)
     WalletAddressKeyChain addressKeyChain,
-    @Default([]) List<Label> labels,
-    @Default([]) List<Label> txLabels,
-    @Default([]) List<Label> addressLabels,
+    @Default([]) List<String> labels,
+    @Default([]) List<String> txLabels,
+    @Default([]) List<String> addressLabels,
     @Default(false) bool isFrozen,
   }) = LiquidWalletUtxo;
 

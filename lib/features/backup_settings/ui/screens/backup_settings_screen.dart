@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/bip329_labels/router.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -245,7 +245,7 @@ class _Bip329LabelsButton extends StatelessWidget {
     return SettingsEntryItem(
       icon: Icons.sell,
       title: context.loc.backupSettingsLabelsButton,
-      onTap: () => context.push(Bip329LabelsRouter.route.path),
+      onTap: () => context.push(LabelsRouter.route.path),
     );
   }
 }

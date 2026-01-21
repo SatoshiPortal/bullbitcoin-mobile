@@ -498,6 +498,7 @@
   "paySelectRecipient": "Seleziona il destinatario",
   "payNoActiveWallet": "Nessun portafoglio attivo",
   "importQrDeviceKruxStep4": "Fare clic sul pulsante \"open camera\"",
+  "appStartupErrorMessage": "Impossibile avviare l'app. Prova a fermare completamente l'app e riavviare. Se l'errore persiste, segnala il problema al supporto e condividi i tuoi log.",
   "appStartupErrorMessageWithBackup": "Impossibile inizializzare. Elimina e reinstalla per risolvere.",
   "payPasteInvoice": "Fatturato",
   "labelErrorUnexpected": "Errore inaspettato: {message}",
@@ -534,7 +535,7 @@
   "exchangeAuthLoginFailedMessage": "Si è verificato un errore, si prega di provare a accedere di nuovo.",
   "okButton": "OK",
   "passportStep13": "La transazione verrà importata nel portafoglio Bull Bitcoin.",
-  "importQrDeviceKeystoneStep3": "Fare clic sui tre punti in alto a destra",
+  "importQrDeviceKeystoneStep3": "Tocca *** (tre punti) nell'angolo in alto a destra",
   "exchangeAmountInputValidationInvalid": "Importo non valido",
   "exchangeAccountInfoLoadErrorMessage": "Non è possibile caricare le informazioni dell'account",
   "dcaWalletSelectionContinueButton": "Continua",
@@ -1200,7 +1201,7 @@
   },
   "broadcastSignedTxReviewTransaction": "Revisione delle transazioni",
   "walletArkExperimental": "Sperimentale",
-  "importQrDeviceKeystoneStep5": "Scegli l'opzione portafoglio BULL",
+  "importQrDeviceKeystoneStep5": "Seleziona \"BULL\" dall'elenco dei portafogli",
   "electrumLoadFailedError": "Non caricare server{reason}",
   "@electrumLoadFailedError": {
     "placeholders": {
@@ -1320,7 +1321,7 @@
   "recoverbullErrorInvalidVaultFile": "File della cassaforte non valida.",
   "sellProcessingOrder": "Ordine di elaborazione...",
   "sellUpdatingRate": "Aggiornamento del tasso di cambio...",
-  "importQrDeviceKeystoneStep6": "Sul tuo dispositivo mobile, tocca Telecamera aperta",
+  "importQrDeviceKeystoneStep6": "Sul tuo cellulare, clicca \"apri fotocamera\"",
   "bip85Hex": "H",
   "testYourWalletTitle": "Metti alla prova il portafoglio",
   "storeItSafelyMessage": "Conservalo in un posto sicuro.",
@@ -1782,15 +1783,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Non ha esportato il caveau da Google Drive",
   "exchangeKycLevelLight": "Luce",
   "transactionLabelCreatedAt": "Creato a",
-  "bip329LabelsExportSuccessSingular": "1 etichetta esportata",
-  "bip329LabelsExportSuccessPlural": "{count} etichette esportate",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Etichette esportate con successo",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "L'opzione più lenta, ma può essere fatto tramite online banking (3-4 giorni lavorativi)",
   "walletDeletionErrorWalletNotFound": "Il portafoglio che stai cercando di eliminare non esiste.",
   "payEnableRBF": "Abilitare RBF",
@@ -1927,7 +1920,7 @@
   "psbtFlowJadeTitle": "Blockstream Jade PSBT Istruzioni",
   "torSettingsDescUnknown": "Incapace di determinare Lo status di Tor. Assicurare che Orbot sia installato e funzionante.",
   "transactionFilterPayjoin": "Pagamento",
-  "importQrDeviceKeystoneStep8": "Inserisci un'etichetta per il tuo portafoglio Keystone e tocca Import",
+  "importQrDeviceKeystoneStep8": "Nel portafoglio BULL, scegli il tipo di derivazione preferito. Se non sei sicuro, seleziona \"Segwit (BIP84)\"",
   "dcaContinueButton": "Continua",
   "fundExchangeCrIbanUsdTitle": "Trasferimento bancario (USD)",
   "buyStandardWithdrawalDesc": "Ricevi Bitcoin dopo il pagamento cancella (1-3 giorni)",
@@ -4128,5 +4121,9 @@
   "ledgerSignTitle": "Transazione dei segni",
   "importWatchOnlyCancel": "Annulla",
   "arkAboutTitle": "Informazioni",
-  "exchangeSettingsSecuritySettingsTitle": "Impostazioni di sicurezza"
+  "exchangeSettingsSecuritySettingsTitle": "Impostazioni di sicurezza",
+  "logoutConfirmationTitle": "Conferma disconnessione",
+  "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
+  "logoutConfirmationCancel": "Annulla",
+  "logoutConfirmationLogout": "Disconnetti"
 }

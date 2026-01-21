@@ -1484,6 +1484,7 @@
   "passportStep12": "Біткойн-гаманець Bull попросить вас сканування QR-коду на Паспорті. Сканування.",
   "payNoActiveWallet": "Немає активного гаманця",
   "importQrDeviceKruxStep4": "Натисніть кнопку \"відкрита камера\"",
+  "appStartupErrorMessage": "Не вдалося запустити додаток. Спробуйте повністю зупинити програму та перезапустити. Якщо помилка зберігається, повідомте про проблему в підтримку та поділіться своїми журналами.",
   "appStartupErrorMessageWithBackup": "Не вдалося ініціалізувати. Видаліть і перевстановіть, щоб виправити.",
   "payPasteInvoice": "Паста Invoice",
   "labelErrorUnexpected": "Несподівана помилка: {message}",
@@ -1515,7 +1516,7 @@
   "exchangeAuthLoginFailedMessage": "Помилкові помилки, будь ласка, спробуйте увійти знову.",
   "okButton": "ЗАРЕЄСТРУВАТИСЯ",
   "passportStep13": "Операція буде імпортована в гаманці Bull Bitcoin.",
-  "importQrDeviceKeystoneStep3": "Натисніть три крапки вгорі праворуч",
+  "importQrDeviceKeystoneStep3": "Натисніть на *** (три крапки) у верхньому правому куті",
   "exchangeAmountInputValidationInvalid": "Сума недійсна",
   "dcaWalletSelectionContinueButton": "Продовжити",
   "pinButtonChange": "Зміна PIN",
@@ -1973,7 +1974,7 @@
   "payLiquidFee": "Рідкий корм",
   "autoswapLoadSettingsError": "Переміщення для завантаження параметрів автоматичного затискання",
   "broadcastSignedTxReviewTransaction": "Огляд транзакцій",
-  "importQrDeviceKeystoneStep5": "Виберіть опцію BULL гаманця",
+  "importQrDeviceKeystoneStep5": "Виберіть \"BULL\" зі списку гаманців",
   "electrumLoadFailedError": "Переміщені на серверах навантаження{reason}",
   "@electrumLoadFailedError": {
     "placeholders": {
@@ -2046,7 +2047,7 @@
   "recoverbullErrorInvalidVaultFile": "Недійсний файл схову.",
   "sellProcessingOrder": "Порядок обробки.",
   "sellUpdatingRate": "Оновлення курсу обміну...",
-  "importQrDeviceKeystoneStep6": "На мобільному пристрої натисніть Open Camera",
+  "importQrDeviceKeystoneStep6": "На вашому мобільному натисніть \"відкрити камеру\"",
   "bip85Hex": "ХЕКС",
   "receiveLightningNetwork": "Освітлення",
   "arkForfeitAddress": "Реєстрація",
@@ -2372,15 +2373,7 @@
   "sendSignatureReceived": "Отримали підпис",
   "recoverbullGoogleDriveErrorExportFailed": "Заборонено експортувати сховище з Google Drive",
   "exchangeKycLevelLight": "Світло",
-  "bip329LabelsExportSuccessSingular": "1 мітка експортована",
-  "bip329LabelsExportSuccessPlural": "{count} міток експортовано",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Мітки успішно експортовано",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Найменший варіант, але можна зробити через онлайн-банкінг (3-4 робочих днів)",
   "payEnableRBF": "Увімкнути RBF",
   "importQrDeviceInvalidQR": "Неточний QR-код",
@@ -2488,7 +2481,7 @@
   "sendErrorInsufficientBalanceForSwap": "Чи не достатньо балансу для оплати за допомогою Рідини і не в межах обмежених обмежень для оплати через Біткойн.",
   "psbtFlowJadeTitle": "Блокстрім Jade PSBT Інструкції",
   "torSettingsDescUnknown": "Неможливо визначити Статус на сервери Забезпечити Orbot встановлюється і працює.",
-  "importQrDeviceKeystoneStep8": "Введіть етикетку для вашого гаманця Keystone та натисніть Імпорт",
+  "importQrDeviceKeystoneStep8": "У гаманці BULL виберіть бажаний тип деривації. Якщо ви не впевнені, виберіть \"Segwit (BIP84)\"",
   "dcaContinueButton": "Продовжити",
   "buyStandardWithdrawalDesc": "Отримуйте Біткойн після сплати очистки (1-3 днів)",
   "psbtFlowColdcardTitle": "Coldcard Q Інструкції",
@@ -2611,7 +2604,7 @@
   "importQrDevicePassportStep1": "Потужність на пристрої Паспорту",
   "fundExchangeMethodArsBankTransferSubtitle": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації",
   "fundExchangeBankTransferWireDescription": "Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації. Введіть номер мобільного, який Ви вказали при укладаннi договору.",
-  "importQrDeviceKeystoneStep7": "Сканування QR-коду, що відображається на вашому пристрої",
+  "importQrDeviceKeystoneStep7": "Скануйте QR-код, що відображається на вашому Keystone",
   "coldcardStep3": "Виберіть параметр \"Зберегти будь-який QR-код\"",
   "coldcardStep14": "Операція буде імпортована в гаманці Bull Bitcoin.",
   "passwordTooCommonError": "Це {pinOrPassword} занадто поширений. Будь ласка, оберіть інший.",
@@ -2847,7 +2840,8 @@
   },
   "backupWalletVaultProviderQuickEasy": "Швидкий і простий",
   "dcaConfirmFrequencyDaily": "Щодня",
-  "importQrDeviceKeystoneStep9": "Комплектація",
+  "importQrDeviceKeystoneStep9": "Введіть назву для вашого гаманця Keystone та натисніть \"Імпорт\"",
+  "importQrDeviceKeystoneStep10": "Ваш Keystone тепер підключений і готовий до використання з BULL Wallet.",
   "payEnterAmountTitle": "Вхід",
   "payInvalidAddress": "Неоплатна адреса",
   "appUnlockAttemptPlural": "невдалих спроб",
@@ -3449,7 +3443,7 @@
   "oopsSomethingWentWrong": "Опери Хтось пішов неправильно",
   "pinStatusSettingUpDescription": "Налаштування коду PIN",
   "swapFromLabel": "З",
-  "importQrDeviceKeystoneStep4": "Виберіть роз'єм програмного забезпечення Wallet",
+  "importQrDeviceKeystoneStep4": "Натисніть \"Connect Software Wallet\"",
   "rbfOriginalTransaction": "Оригінальна угода",
   "bip329LabelsExportButton": "Експорт етикеток",
   "jadeStep4": "Сканування QR-коду, показаного в булл-гаманці",
@@ -3684,7 +3678,7 @@
   "recoverbullConnected": "Зв'язатися",
   "dcaConfirmLightningAddress": "Адреса блискавки",
   "backupWalletErrorGoogleDriveSave": "Не вдалося зберегти Google диск",
-  "importQrDeviceKeystoneStep2": "Введіть Ваш кошик",
+  "importQrDeviceKeystoneStep2": "Розблокуйте його, ввівши PIN-код",
   "sellErrorPrepareTransaction": "Не вдалося підготувати операцію: {error}",
   "@sellErrorPrepareTransaction": {
     "placeholders": {
@@ -3885,7 +3879,7 @@
   "arkServerUrl": "Статус на сервери",
   "importMnemonicSelectType": "Виберіть тип гаманця для імпорту",
   "fundExchangeMethodArsBankTransfer": "Банківський переказ",
-  "importQrDeviceKeystoneStep1": "Потужність на пристрої Keystone",
+  "importQrDeviceKeystoneStep1": "Увімкніть ваш Keystone",
   "arkDurationDays": "{days} дні",
   "@arkDurationDays": {
     "placeholders": {
@@ -4128,5 +4122,9 @@
   "recoverbullGoogleDriveErrorSelectFailed": "Вимкнено для вибору за замовчуванням з Google Диску",
   "autoswapRecipientWalletRequired": "Ім'я *",
   "ledgerSignTitle": "Реєстрація",
-  "importWatchOnlyCancel": "Зареєструватися"
+  "importWatchOnlyCancel": "Зареєструватися",
+  "logoutConfirmationTitle": "Підтвердити вихід",
+  "logoutConfirmationDescription": "Ви впевнені, що хочете вийти зі свого облікового запису Bull Bitcoin? Вам потрібно буде знову увійти, щоб отримати доступ до функцій обміну.",
+  "logoutConfirmationCancel": "Скасувати",
+  "logoutConfirmationLogout": "Вийти"
 }

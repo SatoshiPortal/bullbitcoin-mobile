@@ -9592,18 +9592,9 @@
   "@bip329LabelsExportButton": {
     "description": "Button text to export labels"
   },
-  "bip329LabelsExportSuccessSingular": "1 label exported",
-  "@bip329LabelsExportSuccessSingular": {
-    "description": "Success message after exporting exactly 1 label"
-  },
-  "bip329LabelsExportSuccessPlural": "{count} labels exported",
-  "@bip329LabelsExportSuccessPlural": {
-    "description": "Success message after exporting multiple labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
+  "bip329LabelsExportSuccess": "Labels exported successfully",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
   },
   "bip329LabelsImportSuccessSingular": "1 label imported",
   "@bip329LabelsImportSuccessSingular": {
@@ -9848,27 +9839,27 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "importQrDeviceKeystoneStep1": "Power on your Keystone device",
+  "importQrDeviceKeystoneStep1": "Power on your Keystone",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Enter your PIN",
+  "importQrDeviceKeystoneStep2": "Unlock it by entering your PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Click the three dots at the top right",
+  "importQrDeviceKeystoneStep3": "Tap the *** (three dots) in the top-right corner",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Select Connect Software Wallet",
+  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Choose BULL wallet option",
+  "importQrDeviceKeystoneStep5": "Select \"BULL\" from the list of wallets",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "On your mobile device, tap Open Camera",
+  "importQrDeviceKeystoneStep6": "On your mobile, click \"open camera\"",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
   },
@@ -9876,13 +9867,17 @@
   "@importQrDeviceKeystoneStep7": {
     "description": "Keystone instruction step 7"
   },
-  "importQrDeviceKeystoneStep8": "Enter a label for your Keystone wallet and tap Import",
+  "importQrDeviceKeystoneStep8": "In the BULL wallet, choose your preferred derivation type. If you are not sure, select \"Segwit (BIP84)\"",
   "@importQrDeviceKeystoneStep8": {
     "description": "Keystone instruction step 8"
   },
-  "importQrDeviceKeystoneStep9": "Setup is complete",
+  "importQrDeviceKeystoneStep9": "Enter a label for your Keystone wallet and tap \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
+  },
+  "importQrDeviceKeystoneStep10": "Your Keystone is now connected and ready to use with BULL Wallet.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {
@@ -11392,6 +11387,10 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
+  "appStartupErrorMessage": "App failed to startup. Try completely stop the app and restart. If the error persists, report the issue to support and share your logs.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
   "appStartupErrorMessageWithBackup": "Could not initialize. Delete and reinstall to fix.",
   "@appStartupErrorMessageWithBackup": {
     "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
@@ -12422,5 +12421,21 @@
         "type": "String"
       }
     }
+  },
+  "logoutConfirmationTitle": "Confirm Logout",
+  "@logoutConfirmationTitle": {
+    "description": "Title for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationDescription": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.",
+  "@logoutConfirmationDescription": {
+    "description": "Description text for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationCancel": "Cancel",
+  "@logoutConfirmationCancel": {
+    "description": "Cancel button label for logout confirmation"
+  },
+  "logoutConfirmationLogout": "Logout",
+  "@logoutConfirmationLogout": {
+    "description": "Logout button label for logout confirmation"
   }
 }

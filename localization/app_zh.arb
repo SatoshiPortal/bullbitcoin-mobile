@@ -497,7 +497,8 @@
   "passportStep12": "推土墙将请你扫描有关护照的QR代码。 缩略语.",
   "paySelectRecipient": "选定受援国",
   "payNoActiveWallet": "1. 没有现成的围墙",
-  "importQrDeviceKruxStep4": "Click the “ open UK” button",
+  "importQrDeviceKruxStep4": "Click the \" open UK\" button",
+  "appStartupErrorMessage": "应用程序启动失败。尝试完全停止应用程序并重新启动。如果错误仍然存在，请向支持部门报告问题并分享您的日志。",
   "appStartupErrorMessageWithBackup": "第5.4.0号案发现,在我们的一个附属公司中发现了一条重要的 b子,影响到私人钥匙的储存。 你们的心灵受到了影响。 你们必须删除这一说法,并以你支持的种子重新加入.",
   "payPasteInvoice": "Paste Invoice",
   "labelErrorUnexpected": "意外错误:{message}",
@@ -534,7 +535,7 @@
   "exchangeAuthLoginFailedMessage": "发生了错误,请再次尝试伐木.",
   "okButton": "OK",
   "passportStep13": "交易将进口到Bulet.",
-  "importQrDeviceKeystoneStep3": "Click the three dots at the first right",
+  "importQrDeviceKeystoneStep3": "点击右上角的 ***（三个点）",
   "exchangeAmountInputValidationInvalid": "无效数额",
   "exchangeAccountInfoLoadErrorMessage": "无法装载账户信息",
   "dcaWalletSelectionContinueButton": "继续",
@@ -1200,7 +1201,7 @@
   },
   "broadcastSignedTxReviewTransaction": "审查交易",
   "walletArkExperimental": "试验",
-  "importQrDeviceKeystoneStep5": "Choose BUL Wallet",
+  "importQrDeviceKeystoneStep5": "从钱包列表中选择 \"BULL\"",
   "electrumLoadFailedError": "未能装载服务器{reason}",
   "@electrumLoadFailedError": {
     "placeholders": {
@@ -1320,7 +1321,7 @@
   "recoverbullErrorInvalidVaultFile": "Invalid vault file.",
   "sellProcessingOrder": "处理令......",
   "sellUpdatingRate": "更新汇率......",
-  "importQrDeviceKeystoneStep6": "在你的移动装置上,利用开放式照相机",
+  "importQrDeviceKeystoneStep6": "在您的手机上，点击「打开相机」",
   "bip85Hex": "HEX",
   "testYourWalletTitle": "检查你的围墙",
   "storeItSafelyMessage": "存放在安全的地方.",
@@ -1782,15 +1783,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "未能从谷歌猛进出口",
   "exchangeKycLevelLight": "灯光",
   "transactionLabelCreatedAt": "创立",
-  "bip329LabelsExportSuccessSingular": "1 个标签已导出",
-  "bip329LabelsExportSuccessPlural": "{count} 个标签已导出",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "标签导出成功",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "最低选择,但可以通过在线银行进行(3-4个工作日)",
   "walletDeletionErrorWalletNotFound": "你试图删除的隔离墙不存在.",
   "payEnableRBF": "Enable RBF",
@@ -1927,7 +1920,7 @@
   "psbtFlowJadeTitle": "段 次 页 次 指示",
   "torSettingsDescUnknown": "无法确定 身份。 确保Orbot安装和运行.",
   "transactionFilterPayjoin": "Payjoin",
-  "importQrDeviceKeystoneStep8": "贴上贵重石墙标签,开发进口",
+  "importQrDeviceKeystoneStep8": "在 BULL 钱包中，选择您偏好的派生类型。如果不确定，请选择「Segwit (BIP84)」",
   "dcaContinueButton": "继续",
   "fundExchangeCrIbanUsdTitle": "银行转账(美元)",
   "buyStandardWithdrawalDesc": "收到付款后(1-3天)",
@@ -2101,8 +2094,8 @@
   "fundExchangeMethodArsBankTransferSubtitle": "修改从贵国银行账户转账的银行转账",
   "transactionOrderLabelExchangeRate": "汇率",
   "backupSettingsScreenTitle": "备用安排",
-  "fundExchangeBankTransferWireDescription": "采用“t”银行详细情况,将电线从你的银行账户转移。 贵银行可能只需要这些细节的某些部分.",
-  "importQrDeviceKeystoneStep7": "页: 1",
+  "fundExchangeBankTransferWireDescription": "采用Bull Bitcoin银行详细情况,将电线从你的银行账户转移。 贵银行可能只需要这些细节的某些部分。",
+  "importQrDeviceKeystoneStep7": "扫描 Keystone 上显示的二维码",
   "coldcardStep3": "选择“扫描任何QR代码”",
   "coldcardStep14": "交易将进口到Bulet.",
   "pinCodeSettingsLabel": "PIN 代码",
@@ -2408,7 +2401,8 @@
   "dcaConfirmFrequencyDaily": "每天",
   "buyConfirmPurchase": "共同采购",
   "transactionLabelNetworkFee": "Fee",
-  "importQrDeviceKeystoneStep9": "组建工作已经完成",
+  "importQrDeviceKeystoneStep9": "为您的 Keystone 钱包输入标签，然后点击「导入」",
+  "importQrDeviceKeystoneStep10": "您的 Keystone 现已连接，可以与 BULL Wallet 一起使用。",
   "tapWordsInOrderTitle": "恢复语\n权利保护令",
   "payEnterAmountTitle": "实际数额",
   "transactionOrderLabelPayinMethod": "薪酬办法",
@@ -3218,7 +3212,7 @@
   "swapFromLabel": "摘自",
   "fundExchangeCrIbanCrcDescription": "采用以下详细情况,从贵国银行账户转账 ",
   "settingsDevModeWarningTitle": "D. 德 国",
-  "importQrDeviceKeystoneStep4": "选择互联软件",
+  "importQrDeviceKeystoneStep4": "点击 \"Connect Software Wallet\"",
   "bitcoinSettingsAutoTransferTitle": "自动转让环境",
   "rbfOriginalTransaction": "原始交易",
   "payViewRecipient": "观点接受者",
@@ -3544,7 +3538,7 @@
   "coreSwapsLnReceiveCompleted": "蒸汽完成.",
   "backupWalletErrorGoogleDriveSave": "未能拯救 go角",
   "settingsTorSettingsTitle": "三、背景",
-  "importQrDeviceKeystoneStep2": "进入日本",
+  "importQrDeviceKeystoneStep2": "输入您的 PIN 码解锁",
   "receiveBitcoinTransactionWillTakeTime": "交易将同时确认.",
   "sellOrderNotFoundError": "没有发现销售订单。 请再次审判.",
   "sellErrorPrepareTransaction": "未准备交易:{error}",
@@ -3822,7 +3816,7 @@
   "arkServerUrl": "服务器 URL",
   "importMnemonicSelectType": "选择进口的围墙类型",
   "fundExchangeMethodArsBankTransfer": "银行转账",
-  "importQrDeviceKeystoneStep1": "您的钥匙装置的权力",
+  "importQrDeviceKeystoneStep1": "打开您的 Keystone",
   "arkDurationDays": "{days}天",
   "@arkDurationDays": {
     "placeholders": {
@@ -4127,5 +4121,9 @@
   "importWatchOnlyCancel": "Cancel",
   "arkAboutTitle": "关于",
   "exchangeSettingsSecuritySettingsTitle": "安全设置",
-  "transactionNoteUpdateButton": "更新"
+  "transactionNoteUpdateButton": "更新",
+  "logoutConfirmationTitle": "确认退出",
+  "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
+  "logoutConfirmationCancel": "取消",
+  "logoutConfirmationLogout": "退出"
 }

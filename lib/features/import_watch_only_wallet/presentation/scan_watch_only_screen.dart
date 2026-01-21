@@ -36,10 +36,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
         fit: .expand,
         children: [
           QrScannerWidget(
-            scanDelay:
-                widget.signerDevice?.supportedQrType == QrType.urqr
-                    ? Duration.zero
-                    : const Duration(milliseconds: 100),
+            scanDelay: widget.signerDevice?.supportedQrType == QrType.urqr
+                ? const Duration(milliseconds: 10)
+                : const Duration(milliseconds: 50),
             resolution: ResolutionPreset.high,
             onScanned: (data) async {
               if (_handled) return;
@@ -49,8 +48,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 String signerData = data;
                 if (widget.signerDevice == SignerDeviceEntity.krux) {
                   signerData = Descriptor.parse(data).external;
-                } else if (widget.signerDevice == SignerDeviceEntity.passport) {
-                  final selectedDescriptor = await _choosePassportDerivation(
+                } else if (widget.signerDevice == SignerDeviceEntity.passport ||
+                    widget.signerDevice == SignerDeviceEntity.keystone) {
+                  final selectedDescriptor = await _chooseDerivation(
                     context,
                     data,
                   );
@@ -85,6 +85,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                 }
               } catch (e) {
                 log.warning(e.toString());
+                _handled = false;
               }
             },
           ),
@@ -101,10 +102,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                   Clipboard.setData(ClipboardData(text: _scanned));
                   showCopiedSnackBar(context);
                 },
-                label:
-                    _scanned.length > 30
-                        ? '${_scanned.substring(0, 10)}…${_scanned.substring(_scanned.length - 10)}'
-                        : _scanned,
+                label: _scanned.length > 30
+                    ? '${_scanned.substring(0, 10)}…${_scanned.substring(_scanned.length - 10)}'
+                    : _scanned,
                 bgColor: context.appColors.transparent,
               ),
             ),
@@ -148,11 +148,7 @@ void showCopiedSnackBar(BuildContext context) {
   );
 }
 
-// Passport exports multiple derivations so we need to let the user choose which one to use
-Future<String?> _choosePassportDerivation(
-  BuildContext context,
-  String data,
-) async {
+Future<String?> _chooseDerivation(BuildContext context, String data) async {
   try {
     final parsed = json.decode(data);
     if (parsed is! Map<String, dynamic>) return null;
