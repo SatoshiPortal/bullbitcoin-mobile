@@ -1563,7 +1563,7 @@
   },
   "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
   "arkNoBalanceData": "Nessun dato di bilancio disponibile",
-  "autoswapWarningCardTitle": "Autoswap è abilitato.",
+  "autoswapWarningCardTitle": "Autoswap è consigliato",
   "coreSwapsChainCompletedSuccess": "Il trasferimento è completato con successo.",
   "physicalBackupRecommendation": "Backup fisico: ",
   "autoswapMaxBalance": "Bilanciamento Max Instant Wallet",
@@ -4125,7 +4125,7 @@
   "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
   "logoutConfirmationCancel": "Annulla",
   "logoutConfirmationLogout": "Disconnetti",
-  "autoswapInfoTitle": "Autoswap è attivo",
+  "autoswapInfoTitle": "Autoswap è consigliato",
   "autoswapInfoDismissButton": "SÌ, GRAZIE",
   "autoswapInfoSettingsButton": "NO, CAPISCO I RISCHI",
   "autoswapInfoRemindLater": "Configura Autoswap"

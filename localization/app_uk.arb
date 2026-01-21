@@ -2212,7 +2212,7 @@
   "keystoneStep2": "Натисніть сканування",
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
   "arkNoBalanceData": "Немає даних балансу",
-  "autoswapWarningCardTitle": "Увімкнення Autoswap.",
+  "autoswapWarningCardTitle": "Autoswap рекомендовано",
   "autoswapMaxBalance": "Max Миттєвий баланс гаманця",
   "importQrDeviceImport": "Імпорт",
   "importQrDeviceScanPrompt": "Скануйте QR-код {deviceName}",
@@ -4126,7 +4126,7 @@
   "logoutConfirmationDescription": "Ви впевнені, що хочете вийти зі свого облікового запису Bull Bitcoin? Вам потрібно буде знову увійти, щоб отримати доступ до функцій обміну.",
   "logoutConfirmationCancel": "Скасувати",
   "logoutConfirmationLogout": "Вийти",
-  "autoswapInfoTitle": "Autoswap активний",
+  "autoswapInfoTitle": "Autoswap рекомендовано",
   "autoswapInfoDismissButton": "ТАК, ДЯКУЮ",
   "autoswapInfoSettingsButton": "НІ, Я РОЗУМІЮ РИЗИКИ",
   "autoswapInfoRemindLater": "Налаштувати Autoswap"

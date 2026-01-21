@@ -1560,7 +1560,7 @@
   },
   "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
   "arkNoBalanceData": "Данные о балансе отсутствуют",
-  "autoswapWarningCardTitle": "Autoswap включен.",
+  "autoswapWarningCardTitle": "Autoswap рекомендуется",
   "coreSwapsChainCompletedSuccess": "Передача завершена успешно.",
   "physicalBackupRecommendation": "Физическая поддержка: ",
   "autoswapMaxBalance": "Макс Мгновенный баланс",
@@ -4122,7 +4122,7 @@
   "logoutConfirmationDescription": "Вы уверены, что хотите выйти из своей учетной записи Bull Bitcoin? Вам нужно будет снова войти в систему, чтобы получить доступ к функциям обмена.",
   "logoutConfirmationCancel": "Отмена",
   "logoutConfirmationLogout": "Выйти",
-  "autoswapInfoTitle": "Autoswap активен",
+  "autoswapInfoTitle": "Autoswap рекомендуется",
   "autoswapInfoDismissButton": "ДА, СПАСИБО",
   "autoswapInfoSettingsButton": "НЕТ, Я ПОНИМАЮ РИСКИ",
   "autoswapInfoRemindLater": "Настроить Autoswap"

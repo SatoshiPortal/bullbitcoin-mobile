@@ -1455,7 +1455,7 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Le transfert automatique est activé.",
+  "autoswapWarningCardTitle": "Autoswap est recommandé",
   "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
   "autoswapWarningDescription": "Le transfert automatique garantit qu'un bon équilibre est maintenu entre votre portefeuille de paiements instantanés et votre portefeuille Bitcoin sécurisé.",
   "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants",
@@ -4128,7 +4128,7 @@
   "logoutConfirmationDescription": "Êtes-vous sûr de vouloir vous déconnecter de votre compte Bull Bitcoin? Vous devrez vous reconnecter pour accéder aux fonctionnalités d'échange.",
   "logoutConfirmationCancel": "Annuler",
   "logoutConfirmationLogout": "Déconnexion",
-  "autoswapInfoTitle": "Autoswap est actif",
+  "autoswapInfoTitle": "Autoswap est recommandé",
   "autoswapInfoDismissButton": "OUI, MERCI",
   "autoswapInfoSettingsButton": "NON, JE COMPRENDS LES RISQUES",
   "autoswapInfoRemindLater": "Configurer Autoswap"

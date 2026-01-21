@@ -1533,7 +1533,7 @@
   },
   "sendErrorSwapCreationFailed": "Versäumt, Swap zu erstellen.",
   "arkNoBalanceData": "Keine Bilanzdaten verfügbar",
-  "autoswapWarningCardTitle": "Autoswap ist aktiviert.",
+  "autoswapWarningCardTitle": "Autoswap wird empfohlen",
   "coreSwapsChainCompletedSuccess": "Transfer ist erfolgreich abgeschlossen.",
   "physicalBackupRecommendation": "Physikalische Sicherung: ",
   "autoswapMaxBalance": "Max Instant Wallet Balance",
@@ -4126,7 +4126,7 @@
   "logoutConfirmationDescription": "Sind Sie sicher, dass Sie sich von Ihrem Bull Bitcoin-Konto abmelden möchten? Sie müssen sich erneut anmelden, um auf Exchange-Funktionen zuzugreifen.",
   "logoutConfirmationCancel": "Abbrechen",
   "logoutConfirmationLogout": "Abmelden",
-  "autoswapInfoTitle": "Autoswap ist aktiv",
+  "autoswapInfoTitle": "Autoswap wird empfohlen",
   "autoswapInfoDismissButton": "JA, DANKE",
   "autoswapInfoSettingsButton": "NEIN, ICH VERSTEHE DIE RISIKEN",
   "autoswapInfoRemindLater": "Autoswap-Einstellungen konfigurieren"

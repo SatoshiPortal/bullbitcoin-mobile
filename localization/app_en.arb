@@ -4852,7 +4852,7 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap is enabled",
+  "autoswapWarningCardTitle": "Autoswap is recommended",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -4888,7 +4888,7 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "autoswapInfoTitle": "Autoswap is active",
+  "autoswapInfoTitle": "Autoswap is recommended",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },

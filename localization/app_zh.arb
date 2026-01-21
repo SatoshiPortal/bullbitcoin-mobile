@@ -1563,7 +1563,7 @@
   },
   "sendErrorSwapCreationFailed": "未能制造 s.",
   "arkNoBalanceData": "无结余数据",
-  "autoswapWarningCardTitle": "能够进行自动交换.",
+  "autoswapWarningCardTitle": "推荐使用自动交换",
   "coreSwapsChainCompletedSuccess": "移交工作顺利完成.",
   "physicalBackupRecommendation": "身体支持: ",
   "autoswapMaxBalance": "Max Instant Wallet Balance",
@@ -4125,7 +4125,7 @@
   "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
   "logoutConfirmationCancel": "取消",
   "logoutConfirmationLogout": "退出",
-  "autoswapInfoTitle": "自动交换已激活",
+  "autoswapInfoTitle": "推荐使用自动交换",
   "autoswapInfoDismissButton": "是的，谢谢",
   "autoswapInfoSettingsButton": "不，我了解风险",
   "autoswapInfoRemindLater": "配置自动交换设置"
