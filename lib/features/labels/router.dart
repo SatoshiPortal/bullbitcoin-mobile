@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/labels/presentation/page.dart';
+import 'package:bb_mobile/features/labels/ui/page.dart';
 import 'package:go_router/go_router.dart';
 
 enum LabelsRoute {

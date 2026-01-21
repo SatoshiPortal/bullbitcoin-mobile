@@ -5,14 +5,18 @@ import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/new_label.dart';
-import 'label.dart';
+import 'package:bb_mobile/features/labels/label.dart';
 
-export 'label.dart';
-export 'new_label.dart';
-export 'domain/primitive/label_system.dart';
-export 'domain/primitive/label_type.dart';
-export 'router.dart';
-export 'locator.dart';
+export 'package:bb_mobile/features/labels/label.dart';
+export 'package:bb_mobile/features/labels/new_label.dart';
+export 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
+export 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
+export 'package:bb_mobile/features/labels/router.dart';
+export 'package:bb_mobile/features/labels/locator.dart';
+export 'package:bb_mobile/features/labels/ui/page.dart';
+export 'package:bb_mobile/features/labels/ui/label_text.dart';
+export 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
+export 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 
 class LabelsFacade {
   final FetchLabelByReferenceUsecase _fetchLabelByReferenceUsecase;
