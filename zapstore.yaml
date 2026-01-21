@@ -1,0 +1,9 @@
+repository: https://github.com/SatoshiPortal/bullbitcoin-mobile
+homepage: https://wallet.bullbitcoin.com
+summary: Bitcoin-only mobile wallet with built-in exchange
+description: The best mobile Bitcoin wallet of all time - focused on privacy, security and usability for day-to-day Bitcoin transactions.
+tags: bitcoin
+assets:
+  - build/app/outputs/flutter-apk/.*.apk
+remote_metadata:
+  - github
