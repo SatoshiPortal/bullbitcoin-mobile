@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/frameworks/di/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
-import 'package:bb_mobile/core/labels/labels_locator.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/ledger/ledger_locator.dart';
 import 'package:bb_mobile/core/mempool/mempool_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
@@ -24,7 +24,6 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources(GetIt locator) async {
-    LabelsLocator.registerDatasources(locator);
     await TorLocator.registerDatasources(locator);
     BlockchainLocator.registerDatasources(locator);
     await ElectrumLocator.registerDatasources(locator);
@@ -33,8 +32,8 @@ class CoreLocator {
     await MempoolLocator.registerDatasources(locator);
     PayjoinLocator.registerDatasources(locator);
     await RecoverbullLocator.registerDatasources(locator);
-    SeedLocator.registerDatasources(locator);
     await StorageLocator.registerDatasources(locator);
+    SeedLocator.registerDatasources(locator);
     await SwapsLocator.registerDatasources(locator);
     await WalletLocator.registerDatasources(locator);
     await SettingsLocator.registerDatasources(locator);
@@ -49,10 +48,10 @@ class CoreLocator {
     MempoolLocator.registerPorts(locator);
     SwapsLocator.registerPorts(locator);
     WalletLocator.registerPorts(locator);
+    LabelsLocator.registerPorts(locator);
   }
 
   static Future<void> registerRepositories(GetIt locator) async {
-    LabelsLocator.registerRepositories(locator);
     await TorLocator.registerRepositories(locator);
     BlockchainLocator.registerRepositories(locator);
     ElectrumLocator.registerRepositories(locator);
@@ -96,5 +95,13 @@ class CoreLocator {
     Bip85DerivationsLocator.registerUsecases(locator);
     LedgerLocator.registerUsecases(locator);
     BitBoxCoreLocator.registerUsecases(locator);
+  }
+
+  static void registerFacades(GetIt locator) {
+    LabelsLocator.registerFacade(locator);
+  }
+
+  static void registerFrameworks(GetIt locator) {
+    LabelsLocator.registerFrameworks(locator);
   }
 }

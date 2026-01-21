@@ -3120,15 +3120,7 @@
   "bip329LabelsDescription": "Importez ou exportez les étiquettes de portefeuille en utilisant le format standard BIP329.",
   "bip329LabelsImportButton": "Importer les étiquettes",
   "bip329LabelsExportButton": "Exporter les étiquettes",
-  "bip329LabelsExportSuccessSingular": "1 étiquette exportée",
-  "bip329LabelsExportSuccessPlural": "{count} étiquettes exportées",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Étiquettes exportées avec succès",
   "bip329LabelsImportSuccessSingular": "1 étiquette importée",
   "bip329LabelsImportSuccessPlural": "{count} étiquettes importées",
   "@bip329LabelsImportSuccessPlural": {
@@ -3763,6 +3755,7 @@
   "addressViewChangeAddressesComingSoon": "Adresses de change à venir",
   "addressViewChangeAddressesDescription": "Afficher les adresses de change du portefeuille",
   "appStartupErrorTitle": "Erreur de démarrage",
+  "appStartupErrorMessage": "Le démarrage de l'application a échoué. Essayez d'arrêter complètement l'application et de redémarrer. Si l'erreur persiste, signalez le problème au support et partagez vos journaux.",
   "appStartupErrorMessageWithBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger.",
   "appStartupErrorMessageNoBackup": "Impossible d'initialiser. Supprimez et réinstallez pour corriger. Si votre phrase de récupération n'est pas sauvegardée, vous pouvez la consulter dans Paramètres->Paramètres Bitcoin->Voir les phrases après la réinstallation.",
   "appStartupContactSupportButton": "Contacter le support",
@@ -4131,5 +4124,9 @@
   },
   "bitcoinSettingsMempoolServerTitle": "Configurations serveur Mempool",
   "save": "Sauvegarder",
-  "recipientsSearchHint": "Rechercher des destinataires par nom ou étiquette"
+  "recipientsSearchHint": "Rechercher des destinataires par nom ou étiquette",
+  "logoutConfirmationTitle": "Confirmer la déconnexion",
+  "logoutConfirmationDescription": "Êtes-vous sûr de vouloir vous déconnecter de votre compte Bull Bitcoin? Vous devrez vous reconnecter pour accéder aux fonctionnalités d'échange.",
+  "logoutConfirmationCancel": "Annuler",
+  "logoutConfirmationLogout": "Déconnexion"
 }

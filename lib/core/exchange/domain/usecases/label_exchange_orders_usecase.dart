@@ -1,22 +1,16 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class LabelExchangeOrdersUsecase {
-  final LabelDatasource _labelDatasource;
-  final BatchLabelsUsecase _batchLabelsUsecase;
+  final LabelsFacade _labelsFacade;
   final ListAllOrdersUsecase _listAllOrdersUsecase;
 
   LabelExchangeOrdersUsecase({
-    required LabelDatasource labelDatasource,
-    required BatchLabelsUsecase batchLabelsUsecase,
+    required LabelsFacade labelsFacade,
     required ListAllOrdersUsecase listAllOrdersUsecase,
-  }) : _labelDatasource = labelDatasource,
-       _batchLabelsUsecase = batchLabelsUsecase,
+  }) : _labelsFacade = labelsFacade,
        _listAllOrdersUsecase = listAllOrdersUsecase;
 
   Future<void> execute() async {
@@ -59,7 +53,7 @@ class LabelExchangeOrdersUsecase {
         }
       }
 
-      await _batchLabelsUsecase.execute(labels);
+      await _labelsFacade.store(labels);
 
       log.fine(
         '$LabelExchangeOrdersUsecase labeled ${orders.length} exchange orders',
@@ -71,11 +65,11 @@ class LabelExchangeOrdersUsecase {
 
   Future<bool> _hasExistingExchangeSystemLabels() async {
     try {
-      final allLabels = await _labelDatasource.fetchAll();
+      final allLabels = await _labelsFacade.fetch();
       return allLabels.any(
         (label) =>
-            label.label == LabelSystem.exchangeBuy.label ||
-            label.label == LabelSystem.exchangeSell.label,
+            LabelSystem.isSystemLabel(label) &&
+            LabelSystem.fromLabel(label).isExchangeRelated(),
       );
     } catch (e) {
       log.warning('$LabelExchangeOrdersUsecase: $e');

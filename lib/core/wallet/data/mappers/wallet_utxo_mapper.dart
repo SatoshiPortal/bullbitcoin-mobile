@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -7,9 +6,9 @@ class WalletUtxoMapper {
   static WalletUtxo toEntity(
     WalletUtxoModel model, {
     required String walletId,
-    List<Label> labels = const [],
-    List<Label> txLabels = const [],
-    List<Label> addressLabels = const [],
+    List<String> labels = const [],
+    List<String> txLabels = const [],
+    List<String> addressLabels = const [],
     bool isFrozen = false,
   }) {
     switch (model) {

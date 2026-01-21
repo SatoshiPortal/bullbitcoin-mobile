@@ -3070,15 +3070,7 @@
   "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",
   "bip329LabelsImportButton": "Tuo tunnisteet",
   "bip329LabelsExportButton": "Vie tunnisteet",
-  "bip329LabelsExportSuccessSingular": "1 tunniste viety",
-  "bip329LabelsExportSuccessPlural": "{count} tunnistetta viety",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Tunnisteet viety onnistuneesti",
   "bip329LabelsImportSuccessSingular": "1 tunniste tuotu",
   "bip329LabelsImportSuccessPlural": "{count} tunnistetta tuotu",
   "@bip329LabelsImportSuccessPlural": {
@@ -3709,6 +3701,7 @@
   "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
   "appStartupErrorTitle": "Käynnistysvirhe",
+  "appStartupErrorMessage": "Sovelluksen käynnistys epäonnistui. Yritä pysäyttää sovellus kokonaan ja käynnistä uudelleen. Jos virhe jatkuu, ilmoita ongelma tukeen ja jaa lokisi.",
   "appStartupErrorMessageWithBackup": "Alustus epäonnistui. Poista ja asenna uudelleen korjataksesi.",
   "appStartupErrorMessageNoBackup": "Alustus epäonnistui. Poista ja asenna uudelleen korjataksesi. Jos siemeniäsi ei ole varmuuskopioitu, voit tarkastella sitä kohdassa Asetukset->Bitcoin-asetukset->Näytä siemenet uudelleenasennuksen jälkeen.",
   "appStartupContactSupportButton": "Ota yhteyttä tukeen",
@@ -4130,5 +4123,9 @@
   "bitcoinSettingsMempoolServerTitle": "Mempool-palvelimen asetukset",
   "autoswapTriggerAtBalanceInfoText": "Autoswap käynnistyy, kun saldo ylittää tämän summan.",
   "autoswapWarningCardTitle": "Autoswap on käytössä.",
-  "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC."
+  "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC.",
+  "logoutConfirmationTitle": "Vahvista uloskirjautuminen",
+  "logoutConfirmationDescription": "Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.",
+  "logoutConfirmationCancel": "Peruuta",
+  "logoutConfirmationLogout": "Kirjaudu ulos"
 }

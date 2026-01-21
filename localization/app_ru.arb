@@ -496,6 +496,7 @@
   "paySelectRecipient": "Выберите получателя",
   "payNoActiveWallet": "Нет активного кошелька",
   "importQrDeviceKruxStep4": "Нажмите кнопку «открытая камера»",
+  "appStartupErrorMessage": "Приложение не удалось запустить. Попробуйте полностью остановить приложение и перезапустить. Если ошибка сохраняется, сообщите о проблеме в службу поддержки и поделитесь своими журналами.",
   "appStartupErrorMessageWithBackup": "Не удалось инициализировать. Удалите и переустановите, чтобы исправить.",
   "payPasteInvoice": "Счет-фактура",
   "labelErrorUnexpected": "Неожиданная ошибка: {message}",
@@ -1779,15 +1780,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Не удалось экспортировать хранилище из Google Drive",
   "exchangeKycLevelLight": "Свет",
   "transactionLabelCreatedAt": "Создано",
-  "bip329LabelsExportSuccessSingular": "1 метка экспортирована",
-  "bip329LabelsExportSuccessPlural": "{count} меток экспортировано",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Метки успешно экспортированы",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Самый простой вариант, но его можно сделать с помощью онлайн-банкинга (3-4 рабочих дня)",
   "walletDeletionErrorWalletNotFound": "Кошелек, который вы пытаетесь удалить, не существует.",
   "payEnableRBF": "Включить RBF",
@@ -4125,5 +4118,9 @@
   "fundExchangeCrIbanUsdLabelRecipientName": "Имя получателя",
   "ledgerSignTitle": "Подписание",
   "importWatchOnlyCancel": "Отмена",
-  "arkAboutTitle": "О проекте"
+  "arkAboutTitle": "О проекте",
+  "logoutConfirmationTitle": "Подтвердить выход",
+  "logoutConfirmationDescription": "Вы уверены, что хотите выйти из своей учетной записи Bull Bitcoin? Вам нужно будет снова войти в систему, чтобы получить доступ к функциям обмена.",
+  "logoutConfirmationCancel": "Отмена",
+  "logoutConfirmationLogout": "Выйти"
 }

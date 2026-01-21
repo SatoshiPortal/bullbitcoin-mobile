@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 
 class SeedDatasource {
@@ -20,18 +21,64 @@ class SeedDatasource {
   }
 
   Future<SeedModel> get(String fingerprint) async {
+    const maxRetries = 5;
+    const initialDelay = Duration(milliseconds: 300);
     final key = composeSeedStorageKey(fingerprint);
-    final value = await _secureStorage.getValue(key);
-    if (value == null) {
-      throw SeedNotFoundException(
-        'Seed not found for fingerprint: $fingerprint',
-      );
+
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        final value = await _secureStorage.getValue(key);
+        if (value != null) {
+          final json = jsonDecode(value) as Map<String, dynamic>;
+          final seed = SeedModel.fromJson(json);
+          if (attempt > 0) {
+            log.fine(
+              'Seed found for fingerprint $fingerprint on attempt ${attempt + 1}',
+            );
+          }
+          return seed;
+        }
+
+        if (attempt < maxRetries - 1) {
+          final delay = Duration(
+            milliseconds: initialDelay.inMilliseconds * (1 << attempt),
+          );
+          log.fine(
+            'Seed read returned null for fingerprint $fingerprint on attempt ${attempt + 1}, retrying in ${delay.inMilliseconds}ms',
+          );
+          await Future.delayed(delay);
+          continue;
+        }
+
+        throw SeedNotFoundException(
+          'Seed not found for fingerprint: $fingerprint',
+        );
+      } catch (e) {
+        if (e is SeedNotFoundException) {
+          rethrow;
+        }
+
+        if (attempt < maxRetries - 1) {
+          final delay = Duration(
+            milliseconds: initialDelay.inMilliseconds * (1 << attempt),
+          );
+          log.fine(
+            'Exception reading seed for fingerprint $fingerprint on attempt ${attempt + 1}: $e, retrying in ${delay.inMilliseconds}ms',
+          );
+          await Future.delayed(delay);
+          continue;
+        }
+
+        log.severe(
+          'Failed to read seed for fingerprint $fingerprint after $maxRetries attempts: $e',
+        );
+        throw SeedNotFoundException(
+          'Seed not found for fingerprint: $fingerprint',
+        );
+      }
     }
 
-    final json = jsonDecode(value) as Map<String, dynamic>;
-    final seed = SeedModel.fromJson(json);
-
-    return seed;
+    throw SeedNotFoundException('Seed not found for fingerprint: $fingerprint');
   }
 
   Future<bool> exists(String fingerprint) {

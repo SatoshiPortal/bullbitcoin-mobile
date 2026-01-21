@@ -9,7 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class BillPaymentCadForm extends StatefulWidget {
-  const BillPaymentCadForm({super.key});
+  const BillPaymentCadForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   BillPaymentCadFormState createState() => BillPaymentCadFormState();
@@ -147,7 +149,10 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
             },
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );
