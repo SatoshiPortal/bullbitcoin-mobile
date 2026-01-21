@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
-import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/new_label.dart';
 
 abstract class LabelsRepositoryPort {
-  Future<LabelEntity> store(NewLabelEntity newLabel);
+  Future<LabelEntity> store(NewLabel newLabel);
 
   Future<void> patch(LabelEntity label);
 

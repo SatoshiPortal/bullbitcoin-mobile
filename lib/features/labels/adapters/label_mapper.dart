@@ -2,12 +2,12 @@ import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
-import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/new_label.dart';
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/label.dart';
 
 class LabelMapper {
-  static LabelsCompanion newLabelEntityToCompanion(NewLabelEntity newLabel) {
+  static LabelsCompanion newLabelEntityToCompanion(NewLabel newLabel) {
     final type = _labelTypeToColumnType(newLabel.type);
 
     return LabelsCompanion(

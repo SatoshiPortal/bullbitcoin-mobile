@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
-import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/new_label.dart';
 
 class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
   final SqliteDatabase _database;
@@ -11,7 +11,7 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
     : _database = database;
 
   @override
-  Future<LabelEntity> store(NewLabelEntity newLabel) async {
+  Future<LabelEntity> store(NewLabel newLabel) async {
     final companion = LabelMapper.newLabelEntityToCompanion(newLabel);
     final id = await _database.into(_database.labels).insert(companion);
     return LabelEntity(

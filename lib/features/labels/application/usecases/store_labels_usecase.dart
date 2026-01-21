@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/application/store_label_application.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
-import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/new_label.dart';
 
 class StoreLabelUsecase {
   final LabelsRepositoryPort _labelRepository;
@@ -13,7 +13,7 @@ class StoreLabelUsecase {
 
   Future<ApplicationLabel> execute(NewApplicationLabel label) async {
     try {
-      final newLabel = NewLabelEntity(
+      final newLabel = NewLabel(
         type: label.type,
         label: label.label,
         reference: label.reference,

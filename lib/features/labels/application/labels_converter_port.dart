@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
-import 'package:bb_mobile/features/labels/domain/new_label_entity.dart';
+import 'package:bb_mobile/features/labels/domain/new_label.dart';
 
 abstract class LabelsConverterPort {
   FormattedLabels convertTo({
@@ -9,5 +9,5 @@ abstract class LabelsConverterPort {
     required List<LabelEntity> labels,
   });
 
-  List<NewLabelEntity> convertFrom(FormattedLabels formattedLabels);
+  List<NewLabel> convertFrom(FormattedLabels formattedLabels);
 }
