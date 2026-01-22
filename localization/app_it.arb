@@ -1120,7 +1120,7 @@
     "doNotShareWarning": "NON CONDIVIDI CON NESSUNO",
     "torSettingsPortNumber": "Numero della porta",
     "payNameHint": "Inserisci il nome del destinatario",
-    "autoswapWarningTriggerAmount": "Trigger Quantità di 0.02 BTC",
+    "autoswapWarningTriggerAmount": "Saldo massimo di 0,02 BTC",
     "legacySeedViewScreenTitle": "Legacy Seeds",
     "recoverbullErrorCheckStatusFailed": "Non è riuscito a controllare lo stato della volta",
     "pleaseWaitFetching": "Per favore, aspettate mentre prendiamo il vostro file di backup.",
@@ -1185,7 +1185,7 @@
     },
     "routeErrorMessage": "Pagina non trovata",
     "connectHardwareWalletPassport": "Passaporto della Fondazione",
-    "autoswapTriggerBalanceError": "L'equilibrio del trigger deve essere almeno 2x il saldo di base",
+    "autoswapTriggerBalanceError": "Il saldo massimo deve essere almeno il doppio del saldo obiettivo",
     "receiveEnterHere": "Entra qui...",
     "receiveNetworkFee": "Costo di rete",
     "payLiquidFee": "Costo liquido",
@@ -1529,7 +1529,7 @@
     "coreSwapsStatusPending": "Finanziamenti",
     "electrumDragToReorder": "(Premitura lunga per trascinare e cambiare la priorità)",
     "keystoneStep4": "Se hai problemi di scansione:",
-    "autoswapTriggerAtBalanceInfoText": "Autoswap si attiva quando il saldo supera questa quantità.",
+    "autoswapTriggerAtBalanceInfoText": "Autoswap si attiva quando il tuo saldo supera questo saldo massimo.",
     "exchangeLandingDisclaimerNotAvailable": "I servizi di cambio criptovaluta non sono disponibili nell'applicazione mobile Bull Bitcoin.",
     "sendCustomFeeRate": "Tariffa doganale",
     "ledgerHelpTitle": "Risoluzione dei problemi Ledger",
@@ -1564,7 +1564,7 @@
     },
     "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
     "arkNoBalanceData": "Nessun dato di bilancio disponibile",
-    "autoswapWarningCardTitle": "Autoswap è abilitato.",
+    "autoswapWarningCardTitle": "Autoswap è attivo",
     "coreSwapsChainCompletedSuccess": "Il trasferimento è completato con successo.",
     "physicalBackupRecommendation": "Backup fisico: ",
     "autoswapMaxBalance": "Bilanciamento Max Instant Wallet",
@@ -1654,7 +1654,7 @@
     "arkReceiveUnifiedAddress": "Indirizzo unificato (BIP21)",
     "sellHowToPayInvoice": "Come vuoi pagare questa fattura?",
     "payUseCoinjoin": "Utilizzare CoinJoinin",
-    "autoswapWarningExplanation": "Quando il saldo supera l'importo del trigger, verrà attivato uno swap. L'importo di base verrà mantenuto nel portafoglio pagamenti istantanei e l'importo rimanente verrà scambiato nel vostro portafoglio Bitcoin sicuro.",
+    "autoswapWarningExplanation": "Quando il tuo saldo supera il saldo massimo, verrà eseguito uno swap. Il saldo obiettivo sarà mantenuto nel tuo Portafoglio Pagamenti Istantanei e la parte rimanente verrà scambiata nel tuo Portafoglio Bitcoin Sicuro.",
     "recoverbullVaultRecoveryTitle": "Ripristino del caveau",
     "passportStep14": "Ora è pronto a trasmettere! Non appena si fa clic sulla trasmissione, la transazione verrà pubblicata sulla rete Bitcoin e i fondi saranno inviati.",
     "settingsCurrencyTitle": "Valuta",
@@ -2401,7 +2401,7 @@
     "dcaConfirmFrequencyDaily": "Ogni giorno",
     "buyConfirmPurchase": "Conferma l'acquisto",
     "transactionLabelNetworkFee": "Costo di rete",
-    "importQrDeviceKeystoneStep9": "Setup è completo",
+    "importQrDeviceKeystoneStep9": "Inserisci un'etichetta per il tuo portafoglio Keystone e tocca \"Importa\"",
     "tapWordsInOrderTitle": "Toccare le parole di recupero in\nordine giusto",
     "payEnterAmountTitle": "Inserire l'importo",
     "transactionOrderLabelPayinMethod": "Metodo di pagamento",
@@ -2556,7 +2556,7 @@
     "sendNetworkFeesLabel": "Inviare quote di rete",
     "electrumUnknownError": "Si è verificato un errore",
     "payWhichWallet": "Da quale portafogli vuoi pagare?",
-    "autoswapBaseBalanceInfoText": "Il saldo del portafoglio di pagamento istantaneo tornerà a questo saldo dopo un'autoswap.",
+    "autoswapBaseBalanceInfoText": "Il saldo del tuo Portafoglio Pagamenti Istantanei tornerà a questo saldo obiettivo dopo un autoswap.",
     "recoverbullSelectDecryptVault": "Decrypt vault",
     "buyUpgradeKYC": "Aggiornamento KYC Livello",
     "transactionOrderLabelOrderType": "Tipo d'ordine",
@@ -2846,7 +2846,7 @@
     "keystoneStep12": "Il portafoglio Bull Bitcoin ti chiederà di scansionare il codice QR sulla Keystone. Scansione.",
     "ledgerErrorRejectedByUser": "La transazione è stata respinta dall'utente sul dispositivo Ledger.",
     "payFeeRate": "Tasso di tariffa",
-    "autoswapWarningDescription": "Autoswap assicura che un buon equilibrio sia mantenuto tra i pagamenti istantanei e Secure Bitcoin Wallet.",
+    "autoswapWarningDescription": "Autoswap garantisce che tu non tenga accidentalmente troppo denaro nel Portafoglio Pagamenti Istantanei, che non è sicuro per l'uso a lungo termine.",
     "fundExchangeSinpeAddedToBalance": "Una volta che il pagamento viene inviato, verrà aggiunto al saldo del tuo account.",
     "durationMinute": "{minutes} minuto",
     "@durationMinute": {
@@ -3182,7 +3182,7 @@
     "bitboxActionImportWalletButton": "Inizio Importazione",
     "fundExchangeLabelSwiftCode": "Codice SWIFT",
     "buyEnterBitcoinAddress": "Inserisci l'indirizzo bitcoin",
-    "autoswapWarningBaseBalance": "Bilancio di base 0.01",
+    "autoswapWarningBaseBalance": "Saldo obiettivo 0,01 BTC",
     "transactionDetailLabelPayoutAmount": "Importo di pagamento",
     "importQrDeviceSpecterStep6": "Scegliere \"Single key\"",
     "importQrDeviceJadeStep10": "Basta!",
@@ -3211,7 +3211,7 @@
     "swapFromLabel": "Da",
     "fundExchangeCrIbanCrcDescription": "Invia un bonifico bancario dal tuo conto bancario utilizzando i dettagli qui sotto ",
     "settingsDevModeWarningTitle": "Modalità Dev",
-    "importQrDeviceKeystoneStep4": "Selezionare Connetti il software Wallet",
+    "importQrDeviceKeystoneStep4": "Tocca \"Connetti Portafoglio Software\"",
     "bitcoinSettingsAutoTransferTitle": "Impostazioni di trasferimento automatico",
     "rbfOriginalTransaction": "Transazione originale",
     "payViewRecipient": "Visualizza il destinatario",
@@ -3538,7 +3538,7 @@
     "coreSwapsLnReceiveCompleted": "Swap è completato.",
     "backupWalletErrorGoogleDriveSave": "Non riuscito a salvare Google Drive",
     "settingsTorSettingsTitle": "Impostazioni Tor",
-    "importQrDeviceKeystoneStep2": "Inserisci il tuo PIN",
+    "importQrDeviceKeystoneStep2": "Sbloccalo inserendo il PIN",
     "receiveBitcoinTransactionWillTakeTime": "La transazione Bitcoin richiederà un po 'per confermare.",
     "sellOrderNotFoundError": "L'ordine di vendita non è stato trovato. Per favore riprovate.",
     "sellErrorPrepareTransaction": "Non è riuscito a preparare la transazione: {error}",
@@ -3816,7 +3816,7 @@
     "arkServerUrl": "URL del server",
     "importMnemonicSelectType": "Selezionare un tipo di portafoglio da importare",
     "fundExchangeMethodArsBankTransfer": "Trasferimento bancario",
-    "importQrDeviceKeystoneStep1": "Potenza sul dispositivo Keystone",
+    "importQrDeviceKeystoneStep1": "Accendi il tuo Keystone",
     "arkDurationDays": "{days} giorni",
     "@arkDurationDays": {
         "placeholders": {
@@ -4125,5 +4125,29 @@
     "logoutConfirmationTitle": "Conferma disconnessione",
     "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
     "logoutConfirmationCancel": "Annulla",
-    "logoutConfirmationLogout": "Disconnetti"
+    "logoutConfirmationLogout": "Disconnetti",
+    "recipientsSearchHint": "Cerca destinatari per nome o etichetta",
+    "@recipientsSearchHint": {
+        "description": "Hint text for recipients search field"
+    },
+    "autoswapInfoSettingsButton": "Configura le impostazioni",
+    "@autoswapInfoSettingsButton": {
+        "description": "Secondary button to navigate to autoswap settings"
+    },
+    "importQrDeviceKeystoneStep10": "Il tuo Keystone è ora collegato e pronto all'uso con BULL Wallet.",
+    "@importQrDeviceKeystoneStep10": {
+        "description": "Keystone instruction step 10"
+    },
+    "autoswapInfoRemindLater": "Ricordamelo più tardi",
+    "@autoswapInfoRemindLater": {
+        "description": "Tertiary action to close sheet without dismissing"
+    },
+    "autoswapInfoTitle": "Autoswap è attivo",
+    "@autoswapInfoTitle": {
+        "description": "Title for autoswap information bottom sheet"
+    },
+    "autoswapInfoDismissButton": "Capito, non mostrare più",
+    "@autoswapInfoDismissButton": {
+        "description": "Primary button to dismiss autoswap info permanently"
+    }
 }
