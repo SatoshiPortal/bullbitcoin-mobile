@@ -1433,8 +1433,8 @@
     "autoswapEnableToggleLabel": "Habilitar Transferencia Automática",
     "autoswapMaxBalanceLabel": "Saldo Máximo de Billetera Instantánea",
     "autoswapMaxBalanceInfoText": "Cuando el saldo de la billetera exceda el doble de esta cantidad, se activará la transferencia automática para reducir el saldo a este nivel",
-    "autoswapBaseBalanceInfoText": "El saldo de su billetera de pagos instantáneos volverá a este saldo después de un intercambio automático.",
-    "autoswapTriggerAtBalanceInfoText": "El intercambio automático se activará cuando su saldo supere este monto.",
+    "autoswapBaseBalanceInfoText": "El saldo de tu billetera de pagos instantáneos volverá a este saldo objetivo tras un autoswap.",
+    "autoswapTriggerAtBalanceInfoText": "Autoswap se activará cuando tu saldo supere este saldo máximo.",
     "autoswapMaxFeeLabel": "Comisión Máxima de Transferencia",
     "autoswapMaxFeeInfoText": "Si la comisión total de transferencia supera el porcentaje establecido, la transferencia automática será bloqueada",
     "autoswapRecipientWalletLabel": "Billetera Bitcoin Receptora",
@@ -1455,13 +1455,13 @@
             }
         }
     },
-    "autoswapWarningCardTitle": "La transferencia automática está habilitada.",
+    "autoswapWarningCardTitle": "Autoswap está activado",
     "autoswapWarningCardSubtitle": "Se activará un intercambio si el saldo de su billetera de pagos instantáneos supera 0,02 BTC.",
-    "autoswapWarningDescription": "La transferencia automática garantiza que se mantenga un buen equilibrio entre su billetera de pagos instantáneos y su billetera Bitcoin segura.",
+    "autoswapWarningDescription": "Autoswap garantiza que no mantengas accidentalmente demasiado dinero en la billetera de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
     "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración:",
-    "autoswapWarningBaseBalance": "Saldo base 0,01 BTC",
-    "autoswapWarningTriggerAmount": "Monto de activación de 0,02 BTC",
-    "autoswapWarningExplanation": "Cuando su saldo supere el monto de activación, se activará un intercambio. El monto base se mantendrá en su billetera de pagos instantáneos y el monto restante se intercambiará en su billetera Bitcoin segura.",
+    "autoswapWarningBaseBalance": "Saldo objetivo 0.01 BTC",
+    "autoswapWarningTriggerAmount": "Saldo máximo de 0.02 BTC",
+    "autoswapWarningExplanation": "Cuando tu saldo supere el saldo máximo, se activará un intercambio. El saldo objetivo se mantendrá en tu billetera de pagos instantáneos y el monto restante se intercambiará en tu billetera de Bitcoin segura.",
     "autoswapWarningDontShowAgain": "No volver a mostrar esta advertencia.",
     "autoswapWarningSettingsLink": "Llévame a la configuración de transferencia automática",
     "autoswapWarningOkButton": "OK",
@@ -1493,7 +1493,7 @@
             }
         }
     },
-    "autoswapTriggerBalanceError": "El saldo de activación debe ser al menos 2x el saldo base",
+    "autoswapTriggerBalanceError": "El saldo máximo debe ser al menos 2 veces el saldo objetivo",
     "arkNoTransactionsYet": "Aún no hay transacciones.",
     "arkToday": "Hoy",
     "arkYesterday": "Ayer",
@@ -4127,5 +4127,25 @@
     "logoutConfirmationTitle": "Confirmar cierre de sesión",
     "logoutConfirmationDescription": "¿Está seguro de que desea cerrar sesión en su cuenta de Bull Bitcoin? Necesitará iniciar sesión nuevamente para acceder a las funciones de intercambio.",
     "logoutConfirmationCancel": "Cancelar",
-    "logoutConfirmationLogout": "Cerrar sesión"
+    "logoutConfirmationLogout": "Cerrar sesión",
+    "recipientsSearchHint": "Busca destinatarios por nombre o etiqueta",
+    "@recipientsSearchHint": {
+        "description": "Hint text for recipients search field"
+    },
+    "autoswapInfoSettingsButton": "Configurar ajustes",
+    "@autoswapInfoSettingsButton": {
+        "description": "Secondary button to navigate to autoswap settings"
+    },
+    "autoswapInfoRemindLater": "Recuérdame más tarde",
+    "@autoswapInfoRemindLater": {
+        "description": "Tertiary action to close sheet without dismissing"
+    },
+    "autoswapInfoTitle": "Autoswap está activo",
+    "@autoswapInfoTitle": {
+        "description": "Title for autoswap information bottom sheet"
+    },
+    "autoswapInfoDismissButton": "Entendido, no volver a mostrar",
+    "@autoswapInfoDismissButton": {
+        "description": "Primary button to dismiss autoswap info permanently"
+    }
 }
