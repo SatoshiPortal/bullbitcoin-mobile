@@ -1443,7 +1443,7 @@
             }
         }
     },
-    "autoswapTriggerBalanceError": "Aloitussaldon on oltava vähintään saldo x2",
+    "autoswapTriggerBalanceError": "Maksimi-saldo on oltava vähintään kaksi kertaa tavoitesaldo.",
     "arkNoTransactionsYet": "Ei vielä transaktioita.",
     "arkToday": "Tänään",
     "arkYesterday": "Eilen",
@@ -4110,22 +4110,42 @@
     "coreSwapsChainCompletedRefunded": "Siirto on palautettu.",
     "coreSwapsChainCompletedSuccess": "Siirto on suoritettu onnistuneesti.",
     "coreSwapsChainFailedRefunding": "Siirto palautetaan pian.",
-    "autoswapBaseBalanceInfoText": "Pikalompakon saldo palaa tähän saldoon autoswapin jälkeen.",
-    "autoswapWarningDescription": "Autoswap varmistaa, että välittömien maksujen ja turvallisen Bitcoin-lompakon välillä on hyvä tasapaino.",
+    "autoswapBaseBalanceInfoText": "Pikaisen maksulompakon saldo palaa tähän tavoitesaldoon automaattisen swapin jälkeen.",
+    "autoswapWarningDescription": "Autoswap varmistaa, ettei vahingossa pidä liikaa rahaa Pikaisen maksulompakon sisällä, mikä ei ole turvallista pitkäaikaiseen säilytykseen.",
     "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla:",
-    "autoswapWarningBaseBalance": "Tasapaino 0,01 BTC",
-    "autoswapWarningTriggerAmount": "0,02 BTC",
-    "autoswapWarningExplanation": "Kun saldo ylittää laukaisumäärän, vaihdetaan. Perussumma säilytetään Instant Payments -lompakossasi ja jäljellä oleva summa vaihdetaan Bitcoin-lompakkoosi.",
+    "autoswapWarningBaseBalance": "Tavoitesaldo 0,01 BTC",
+    "autoswapWarningTriggerAmount": "Maksimi-saldo 0,02 BTC",
+    "autoswapWarningExplanation": "Kun saldosi ylittää maksimin saldon, käynnistyy swap. Tavoitesaldo pidetään Pikaisen maksulompakon sisällä ja jäljelle jäävä summa vaihdetaan Turvalliseen Bitcoin-lompakkoosi.",
     "autoswapWarningDontShowAgain": "Älä näytä tätä varoitusta uudelleen.",
     "autoswapWarningSettingsLink": "Vie minut autoswap-asetuksiin",
     "importQrDeviceKeystoneStep7": "Skannaa Keystonessa näkyvä QR-koodi",
     "importQrDeviceKeystoneStep8": "Valitse BULL-lompakossa haluamasi johdannaistyyppi. Jos et ole varma, valitse \"Segwit (BIP84)\"",
     "bitcoinSettingsMempoolServerTitle": "Mempool-palvelimen asetukset",
-    "autoswapTriggerAtBalanceInfoText": "Autoswap käynnistyy, kun saldo ylittää tämän summan.",
+    "autoswapTriggerAtBalanceInfoText": "Autoswap aktivoituu, kun saldosi ylittää tämän suurimman saldon.",
     "autoswapWarningCardTitle": "Autoswap on käytössä.",
     "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC.",
     "logoutConfirmationTitle": "Vahvista uloskirjautuminen",
     "logoutConfirmationDescription": "Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.",
     "logoutConfirmationCancel": "Peruuta",
-    "logoutConfirmationLogout": "Kirjaudu ulos"
+    "logoutConfirmationLogout": "Kirjaudu ulos",
+    "recipientsSearchHint": "Etsi vastaanottajia nimen tai tunnisteen perusteella.",
+    "@recipientsSearchHint": {
+        "description": "Hint text for recipients search field"
+    },
+    "autoswapInfoSettingsButton": "Muokkaa asetuksia.",
+    "@autoswapInfoSettingsButton": {
+        "description": "Secondary button to navigate to autoswap settings"
+    },
+    "autoswapInfoRemindLater": "Muistuta minua myöhemmin.",
+    "@autoswapInfoRemindLater": {
+        "description": "Tertiary action to close sheet without dismissing"
+    },
+    "autoswapInfoTitle": "Autoswap on aktiivinen.",
+    "@autoswapInfoTitle": {
+        "description": "Title for autoswap information bottom sheet"
+    },
+    "autoswapInfoDismissButton": "Selvä, älä näytä uudelleen.",
+    "@autoswapInfoDismissButton": {
+        "description": "Primary button to dismiss autoswap info permanently"
+    }
 }
