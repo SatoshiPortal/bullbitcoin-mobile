@@ -4,8 +4,6 @@ import 'package:bb_mobile/features/labels/domain/new_label.dart';
 abstract class LabelsRepositoryPort {
   Future<LabelEntity> store(NewLabel newLabel);
 
-  Future<void> patch(LabelEntity label);
-
   Future<List<LabelEntity>> fetchByLabel(String label);
 
   Future<List<LabelEntity>> fetchByReference(String reference);

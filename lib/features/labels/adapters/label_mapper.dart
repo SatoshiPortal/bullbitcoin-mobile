@@ -11,6 +11,7 @@ class LabelMapper {
     final type = _labelTypeToColumnType(newLabel.type);
 
     return LabelsCompanion(
+      id: newLabel.id != null ? Value(newLabel.id!) : const Value.absent(),
       label: Value(newLabel.label),
       reference: Value(newLabel.reference),
       type: Value(type),
