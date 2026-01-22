@@ -4093,5 +4093,53 @@
     "logoutConfirmationTitle": "Confirmar saída",
     "logoutConfirmationDescription": "Tem certeza de que deseja sair da sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar os recursos de câmbio.",
     "logoutConfirmationCancel": "Cancelar",
-    "logoutConfirmationLogout": "Sair"
+    "logoutConfirmationLogout": "Sair",
+    "withdrawOwnershipQuestion": "",
+    "@withdrawOwnershipQuestion": {
+        "description": "Question asking about account ownership"
+    },
+    "torSettingsInfoDescription": "",
+    "@torSettingsInfoDescription": {
+        "description": "Information about Tor proxy usage"
+    },
+    "torSettingsDescUnknown": "",
+    "@torSettingsDescUnknown": {
+        "description": "Description when Tor status is unknown"
+    },
+    "torSettingsDescConnecting": "",
+    "@torSettingsDescConnecting": {
+        "description": "Description when Tor is connecting"
+    },
+    "withdrawOwnershipMyAccount": "",
+    "@withdrawOwnershipMyAccount": {
+        "description": "Option indicating the account belongs to the user"
+    },
+    "torSettingsStatusUnknown": "",
+    "@torSettingsStatusUnknown": {
+        "description": "Status title when Tor status is unknown"
+    },
+    "withdrawSuccessOrderDetails": "",
+    "@withdrawSuccessOrderDetails": {
+        "description": "Button label to view order details after withdrawal"
+    },
+    "withdrawSuccessTitle": "",
+    "@withdrawSuccessTitle": {
+        "description": "Title shown when withdrawal is successfully initiated"
+    },
+    "torSettingsInfoTitle": "",
+    "@torSettingsInfoTitle": {
+        "description": "Title for the Tor information card"
+    },
+    "withdrawConfirmBankAccount": "",
+    "@withdrawConfirmBankAccount": {
+        "description": "Default label for bank account in confirmation screen"
+    },
+    "torSettingsDescConnected": "",
+    "@torSettingsDescConnected": {
+        "description": "Description when Tor is connected"
+    },
+    "torSettingsDescDisconnected": "",
+    "@torSettingsDescDisconnected": {
+        "description": "Description when Tor is disconnected"
+    }
 }
