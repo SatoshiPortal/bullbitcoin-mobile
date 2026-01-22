@@ -11509,7 +11509,7 @@
   "@ledgerInstructionsAndroidUsb": {
     "description": "Connection instructions for Android devices (USB only)"
   },
-  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.",
+  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.",
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
