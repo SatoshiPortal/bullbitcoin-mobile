@@ -4141,5 +4141,68 @@
     "torSettingsDescDisconnected": "",
     "@torSettingsDescDisconnected": {
         "description": "Description when Tor is disconnected"
+    },
+    "withdrawOwnershipOtherAccount": "Esta é a conta de outra pessoa.",
+    "@withdrawOwnershipOtherAccount": {
+        "description": "Option indicating the account belongs to someone else"
+    },
+    "recipientsSearchHint": "Pesquise os destinatários pelo nome ou rótulo.",
+    "@recipientsSearchHint": {
+        "description": "Hint text for recipients search field"
+    },
+    "autoswapInfoSettingsButton": "Configurar configurações.",
+    "@autoswapInfoSettingsButton": {
+        "description": "Secondary button to navigate to autoswap settings"
+    },
+    "autoswapInfoRemindLater": "Lembre-me mais tarde.",
+    "@autoswapInfoRemindLater": {
+        "description": "Tertiary action to close sheet without dismissing"
+    },
+    "walletAutoTransferBlockedMessage": "Tentando transferir {amount} BTC. A taxa atual é {currentFee}% do valor da transferência e o limite de taxa está definido para {thresholdFee}%.",
+    "@walletAutoTransferBlockedMessage": {
+        "description": "Message explaining why auto-transfer was blocked",
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            },
+            "currentFee": {
+                "type": "String"
+            },
+            "thresholdFee": {
+                "type": "String"
+            }
+        }
+    },
+    "autoswapInfoTitle": "Autoswap está ativo.",
+    "@autoswapInfoTitle": {
+        "description": "Title for autoswap information bottom sheet"
+    },
+    "walletAutoTransferAllowButton": "Permitir",
+    "@walletAutoTransferAllowButton": {
+        "description": "Button to allow auto-transfer despite high fees"
+    },
+    "navigationTabExchange": "Troca",
+    "@navigationTabExchange": {
+        "description": "Label for the Exchange tab in bottom navigation"
+    },
+    "navigationTabWallet": "Carteira",
+    "@navigationTabWallet": {
+        "description": "Label for the Wallet tab in bottom navigation"
+    },
+    "autoswapInfoDismissButton": "Entendi, não mostrar novamente.",
+    "@autoswapInfoDismissButton": {
+        "description": "Primary button to dismiss autoswap info permanently"
+    },
+    "buyUnauthenticatedError": "Você não está autenticado. Por favor, faça login para continuar.",
+    "@buyUnauthenticatedError": {
+        "description": "Error message for unauthenticated user during buy"
+    },
+    "walletAutoTransferBlockedTitle": "Transferência automática bloqueada.",
+    "@walletAutoTransferBlockedTitle": {
+        "description": "Title for auto-swap fee warning when fees exceed threshold"
+    },
+    "walletAutoTransferBlockButton": "Bloquear",
+    "@walletAutoTransferBlockButton": {
+        "description": "Button to block auto-transfer until next execution"
     }
 }
