@@ -1117,7 +1117,7 @@
     "doNotShareWarning": "НЕ С КЕМ БЫ ТО НИ БЫЛО",
     "torSettingsPortNumber": "Номер порта",
     "payNameHint": "Имя получателя",
-    "autoswapWarningTriggerAmount": "Сумма 0,02 BTC",
+    "autoswapWarningTriggerAmount": "Максимальный баланс 0,02 BTC",
     "legacySeedViewScreenTitle": "Наследные семена",
     "recoverbullErrorCheckStatusFailed": "Не удалось проверить состояние хранилища",
     "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
@@ -1182,7 +1182,7 @@
     },
     "routeErrorMessage": "Страница не найдена",
     "connectHardwareWalletPassport": "Паспорт",
-    "autoswapTriggerBalanceError": "Треггерный баланс должен быть не менее 2x базового баланса",
+    "autoswapTriggerBalanceError": "Максимальный баланс должен быть не менее чем в два раза больше целевого баланса.",
     "receiveEnterHere": "Входите сюда...",
     "receiveNetworkFee": "Network Fee",
     "payLiquidFee": "Жидкий корм",
@@ -1526,7 +1526,7 @@
     "coreSwapsStatusPending": "Завершение",
     "electrumDragToReorder": "(Долгая пресса, чтобы перетащить и изменить приоритет)",
     "keystoneStep4": "Если у вас есть проблемы с сканированием:",
-    "autoswapTriggerAtBalanceInfoText": "Autoswap запускает, когда ваш баланс будет выше этой суммы.",
+    "autoswapTriggerAtBalanceInfoText": "Автообмен сработает, когда ваш баланс превысит этот максимальный баланс.",
     "exchangeLandingDisclaimerNotAvailable": "Услуги по обмену криптовалютами недоступны в мобильном приложении Bull Bitcoin.",
     "sendCustomFeeRate": "Пользовательские ставки",
     "ledgerHelpTitle": "Устранение неполадок",
@@ -1561,7 +1561,7 @@
     },
     "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
     "arkNoBalanceData": "Данные о балансе отсутствуют",
-    "autoswapWarningCardTitle": "Autoswap включен.",
+    "autoswapWarningCardTitle": "Автообмен включен",
     "coreSwapsChainCompletedSuccess": "Передача завершена успешно.",
     "physicalBackupRecommendation": "Физическая поддержка: ",
     "autoswapMaxBalance": "Макс Мгновенный баланс",
@@ -1651,7 +1651,7 @@
     "arkReceiveUnifiedAddress": "Единый адрес (BIP21)",
     "sellHowToPayInvoice": "Как вы хотите заплатить этот счет?",
     "payUseCoinjoin": "Использовать CoinJoin",
-    "autoswapWarningExplanation": "Когда ваш баланс превышает количество триггера, своп будет срабатывать. Базовая сумма будет храниться в вашем кошельке Instant Payments, а оставшаяся сумма будет заменена на ваш безопасный Bitcoin Wallet.",
+    "autoswapWarningExplanation": "Когда ваш баланс превысит максимальный баланс, будет выполнен обмен. Целевой баланс будет сохранён в вашем кошельке мгновенных платежей, а оставшаяся сумма будет обменена в ваш безопасный кошелек Bitcoin.",
     "recoverbullVaultRecoveryTitle": "Восстановление хранилища",
     "passportStep14": "Теперь он готов к трансляции! Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin и средства будут отправлены.",
     "settingsCurrencyTitle": "Валюта",
@@ -2554,7 +2554,7 @@
     "sendNetworkFeesLabel": "Отправить сетевые сборы",
     "electrumUnknownError": "Произошла ошибка",
     "payWhichWallet": "От какого кошелька вы хотите заплатить?",
-    "autoswapBaseBalanceInfoText": "Ваш баланс платежного кошелька вернется к этому балансу после автосвапа.",
+    "autoswapBaseBalanceInfoText": "Баланс вашего мгновенного платежного кошелька вернется к этому целевому балансу после автоматического обмена.",
     "recoverbullSelectDecryptVault": "Зашифрованное хранилище",
     "buyUpgradeKYC": "Улучшенный KYC Уровень",
     "transactionOrderLabelOrderType": "Тип заказа",
@@ -2845,7 +2845,7 @@
     "keystoneStep12": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на Keystone. Сканируйте.",
     "ledgerErrorRejectedByUser": "Сделка была отклонена пользователем на устройстве Ledger.",
     "payFeeRate": "Fee Rate",
-    "autoswapWarningDescription": "Autoswap гарантирует, что хороший баланс поддерживается между вашими Instant Payments и Secure Bitcoin Wallet.",
+    "autoswapWarningDescription": "Автообмен предотвращает случайное хранение слишком большой суммы в мгновенном платежном кошельке, что небезопасно для долгосрочного хранения.",
     "fundExchangeSinpeAddedToBalance": "Как только платеж будет отправлен, он будет добавлен к балансу вашего счета.",
     "durationMinute": "{minutes}",
     "@durationMinute": {
@@ -3180,7 +3180,7 @@
     "bitboxActionImportWalletButton": "Начало",
     "fundExchangeLabelSwiftCode": "Код SWIFT",
     "buyEnterBitcoinAddress": "Введите адрес биткойна",
-    "autoswapWarningBaseBalance": "Базовый баланс 0,01 BTC",
+    "autoswapWarningBaseBalance": "Целевой баланс 0,01 BTC",
     "transactionDetailLabelPayoutAmount": "Сумма выплат",
     "importQrDeviceSpecterStep6": "Выберите \"Сингл ключ\"",
     "importQrDeviceJadeStep10": "Вот так!",
@@ -4142,5 +4142,21 @@
     "autoswapInfoDismissButton": "Понял, не показывай",
     "@autoswapInfoDismissButton": {
         "description": "Primary button to dismiss autoswap info permanently"
+    },
+    "transactionNoteHint": "Заметка",
+    "@transactionNoteHint": {
+        "description": "Hint text for note input field"
+    },
+    "receiveNotePlaceholder": "Заметка",
+    "@receiveNotePlaceholder": {
+        "description": "Placeholder text for note input field"
+    },
+    "receiveNote": "Заметка",
+    "@receiveNote": {
+        "description": "Label for adding a note to a receive transaction"
+    },
+    "receiveNoteLabel": "Заметка",
+    "@receiveNoteLabel": {
+        "description": "Label for the note field in receive"
     }
 }
