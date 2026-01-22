@@ -499,7 +499,7 @@
     "payNoActiveWallet": "1. 没有现成的围墙",
     "importQrDeviceKruxStep4": "Click the “ open UK” button",
     "appStartupErrorMessage": "应用程序启动失败。尝试完全停止应用程序并重新启动。如果错误仍然存在，请向支持部门报告问题并分享您的日志。",
-    "appStartupErrorMessageWithBackup": "第5.4.0号案发现,在我们的一个附属公司中发现了一条重要的 b子,影响到私人钥匙的储存。 你们的心灵受到了影响。 你们必须删除这一说法,并以你支持的种子重新加入.",
+    "appStartupErrorMessageWithBackup": "无法初始化。请删除并重新安装以修复。",
     "payPasteInvoice": "Paste Invoice",
     "labelErrorUnexpected": "意外错误:{message}",
     "@labelErrorUnexpected": {
@@ -1120,7 +1120,7 @@
     "doNotShareWarning": "纽约总部",
     "torSettingsPortNumber": "港口数量",
     "payNameHint": "1. 输入者姓名",
-    "autoswapWarningTriggerAmount": "Tgger amount of 0.02 BTC",
+    "autoswapWarningTriggerAmount": "最大余额为 0.02 BTC",
     "legacySeedViewScreenTitle": "遗产种子",
     "recoverbullErrorCheckStatusFailed": "未能检查违约情况",
     "pleaseWaitFetching": "等到我们找回文件的时候.",
@@ -1185,7 +1185,7 @@
     },
     "routeErrorMessage": "页 次",
     "connectHardwareWalletPassport": "护照",
-    "autoswapTriggerBalanceError": "三方平衡至少必须是基数平衡2x",
+    "autoswapTriggerBalanceError": "最大余额必须至少为目标余额的两倍。",
     "receiveEnterHere": "......",
     "receiveNetworkFee": "Fee",
     "payLiquidFee": "流动资金",
@@ -1529,7 +1529,7 @@
     "coreSwapsStatusPending": "待决",
     "electrumDragToReorder": "(大声疾呼,改变优先事项)",
     "keystoneStep4": "如果你遇到麻烦,就会:",
-    "autoswapTriggerAtBalanceInfoText": "当您的余额超过这一数额时,自动交换机将启动.",
+    "autoswapTriggerAtBalanceInfoText": "当您的余额超过此最大余额时，自动换币将触发。",
     "exchangeLandingDisclaimerNotAvailable": "自动交换服务没有在“自动交换”申请中提供.",
     "sendCustomFeeRate": "习俗收费率",
     "ledgerHelpTitle": "Ledger Troublefire",
@@ -1564,7 +1564,7 @@
     },
     "sendErrorSwapCreationFailed": "未能制造 s.",
     "arkNoBalanceData": "无结余数据",
-    "autoswapWarningCardTitle": "能够进行自动交换.",
+    "autoswapWarningCardTitle": "自动换币已启用",
     "coreSwapsChainCompletedSuccess": "移交工作顺利完成.",
     "physicalBackupRecommendation": "身体支持: ",
     "autoswapMaxBalance": "Max Instant Wallet Balance",
@@ -1654,7 +1654,7 @@
     "arkReceiveUnifiedAddress": "统一地址(BIP21)",
     "sellHowToPayInvoice": "你想支付这一发票如何?",
     "payUseCoinjoin": "十五、使用",
-    "autoswapWarningExplanation": "当您的余额超过触发金额时,将启动交换。 基数将保留在你经常付款的墙上,其余数额将冲入你的安全墙.",
+    "autoswapWarningExplanation": "当余额超过最大余额时，将触发自动换币。目标余额将保留在您的即时支付钱包中，剩余金额将被换到您的安全比特币钱包。",
     "recoverbullVaultRecoveryTitle": "2. 追回被盗资产",
     "passportStep14": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
     "settingsCurrencyTitle": "货币",
@@ -1754,7 +1754,7 @@
     "fundExchangeRegularSepaInfo": "仅用于20 000欧元以上的交易。 在较小的交易中,采用中观SEPA方案.",
     "fundExchangeDoneButton": "Done",
     "buyKYCLevel3": "3级 - 全面",
-    "appStartupErrorMessageNoBackup": "第5.4.0号案发现,在我们的一个附属公司中发现了一条重要的 b子,影响到私人钥匙的储存。 你们的心灵受到了影响。 联系我们的支助小组.",
+    "appStartupErrorMessageNoBackup": "无法初始化。请删除并重新安装以修复。如果未备份您的种子，重装后您可以在设置->比特币设置->查看种子中查看。",
     "sellGoHome": "Go home",
     "keystoneStep8": "一旦交易在贵金石进口,审查目的地地址和数额.",
     "psbtFlowSpecterTitle": "专栏",
@@ -2557,7 +2557,7 @@
     "sendNetworkFeesLabel": "Send Network Fees",
     "electrumUnknownError": "发生错误",
     "payWhichWallet": "你们想要从哪条墙上花钱?",
-    "autoswapBaseBalanceInfoText": "你的即时付款墙平衡将在汽车后恢复这一平衡.",
+    "autoswapBaseBalanceInfoText": "在自动换币后，您的即时支付钱包余额将恢复到该目标余额。",
     "recoverbullSelectDecryptVault": "加密",
     "buyUpgradeKYC": "升级 职等",
     "transactionOrderLabelOrderType": "命令类型",
@@ -2847,7 +2847,7 @@
     "keystoneStep12": "土木板将请你扫描基岩上的QR代码。 缩略语.",
     "ledgerErrorRejectedByUser": "用户在Ledger装置上拒绝交易.",
     "payFeeRate": "收费率",
-    "autoswapWarningDescription": "Autoswap确保你经常付款与Callet之间保持良好的平衡.",
+    "autoswapWarningDescription": "自动换币可确保您不会无意中在即时支付钱包中持有过多资金，这对长期存储不安全。",
     "fundExchangeSinpeAddedToBalance": "一旦收到付款,将列入你的账户结余.",
     "durationMinute": "{minutes}分钟",
     "@durationMinute": {
@@ -3183,7 +3183,7 @@
     "bitboxActionImportWalletButton": "进口",
     "fundExchangeLabelSwiftCode": "缩略语",
     "buyEnterBitcoinAddress": "轨道硬币地址",
-    "autoswapWarningBaseBalance": "基地结余0.01",
+    "autoswapWarningBaseBalance": "目标余额 0.01 BTC",
     "transactionDetailLabelPayoutAmount": "薪酬数额",
     "importQrDeviceSpecterStep6": "选择“关键”",
     "importQrDeviceJadeStep10": "这!",
@@ -4125,5 +4125,29 @@
     "logoutConfirmationTitle": "确认退出",
     "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
     "logoutConfirmationCancel": "取消",
-    "logoutConfirmationLogout": "退出"
+    "logoutConfirmationLogout": "退出",
+    "exchangeLandingLoginToUseSupport": "请登录或注册以使用支持聊天来处理兑换相关问题。",
+    "@exchangeLandingLoginToUseSupport": {
+        "description": "Message prompting user to login to access support chat"
+    },
+    "recipientsSearchHint": "按名称或标签搜索收件人",
+    "@recipientsSearchHint": {
+        "description": "Hint text for recipients search field"
+    },
+    "autoswapInfoSettingsButton": "配置设置",
+    "@autoswapInfoSettingsButton": {
+        "description": "Secondary button to navigate to autoswap settings"
+    },
+    "autoswapInfoRemindLater": "稍后提醒我",
+    "@autoswapInfoRemindLater": {
+        "description": "Tertiary action to close sheet without dismissing"
+    },
+    "autoswapInfoTitle": "自动换币处于启用状态",
+    "@autoswapInfoTitle": {
+        "description": "Title for autoswap information bottom sheet"
+    },
+    "autoswapInfoDismissButton": "知道了，以后不再显示",
+    "@autoswapInfoDismissButton": {
+        "description": "Primary button to dismiss autoswap info permanently"
+    }
 }
