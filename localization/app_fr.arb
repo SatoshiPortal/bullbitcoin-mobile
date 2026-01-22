@@ -1433,8 +1433,8 @@
     "autoswapEnableToggleLabel": "Activer le Transfert Automatique",
     "autoswapMaxBalanceLabel": "Solde Maximum du Portefeuille Instantané",
     "autoswapMaxBalanceInfoText": "Lorsque le solde du portefeuille dépasse le double de ce montant, le transfert automatique se déclenchera pour réduire le solde à ce niveau",
-    "autoswapBaseBalanceInfoText": "Le solde de votre portefeuille de paiements instantanés reviendra à ce solde après un échange automatique.",
-    "autoswapTriggerAtBalanceInfoText": "L'échange automatique se déclenchera lorsque votre solde dépasse ce montant.",
+    "autoswapBaseBalanceInfoText": "Le solde de votre portefeuille de paiement instantané reviendra à ce solde cible après un échange automatique.",
+    "autoswapTriggerAtBalanceInfoText": "L'échange automatique se déclenchera lorsque votre solde dépassera ce solde maximal.",
     "autoswapMaxFeeLabel": "Frais de Transfert Maximum",
     "autoswapMaxFeeInfoText": "Si les frais de transfert totaux dépassent le pourcentage défini, le transfert automatique sera bloqué",
     "autoswapRecipientWalletLabel": "Portefeuille Bitcoin Destinataire",
@@ -1455,13 +1455,13 @@
             }
         }
     },
-    "autoswapWarningCardTitle": "Le transfert automatique est activé.",
+    "autoswapWarningCardTitle": "L'échange automatique est activé.",
     "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
-    "autoswapWarningDescription": "Le transfert automatique garantit qu'un bon équilibre est maintenu entre votre portefeuille de paiements instantanés et votre portefeuille Bitcoin sécurisé.",
+    "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
     "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
-    "autoswapWarningBaseBalance": "Solde de base 0,01 BTC",
-    "autoswapWarningTriggerAmount": "Montant de déclenchement de 0,02 BTC",
-    "autoswapWarningExplanation": "Lorsque votre solde dépasse le montant de déclenchement, un échange sera déclenché. Le montant de base sera conservé dans votre portefeuille de paiements instantanés et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
+    "autoswapWarningBaseBalance": "Solde cible 0,01 BTC",
+    "autoswapWarningTriggerAmount": "Solde maximal de 0,02 BTC",
+    "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximal, un échange sera déclenché. Le solde cible sera conservé dans votre portefeuille de paiement instantané et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
     "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
     "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
     "autoswapWarningOkButton": "OK",
@@ -1493,7 +1493,7 @@
             }
         }
     },
-    "autoswapTriggerBalanceError": "Le solde de déclenchement doit être au moins 2x le solde de base",
+    "autoswapTriggerBalanceError": "Le solde maximal doit être au moins égal à 2 fois le solde cible",
     "arkNoTransactionsYet": "Aucune transaction pour le moment.",
     "arkToday": "Aujourd'hui",
     "arkYesterday": "Hier",
@@ -4128,5 +4128,21 @@
     "logoutConfirmationTitle": "Confirmer la déconnexion",
     "logoutConfirmationDescription": "Êtes-vous sûr de vouloir vous déconnecter de votre compte Bull Bitcoin? Vous devrez vous reconnecter pour accéder aux fonctionnalités d'échange.",
     "logoutConfirmationCancel": "Annuler",
-    "logoutConfirmationLogout": "Déconnexion"
+    "logoutConfirmationLogout": "Déconnexion",
+    "autoswapInfoSettingsButton": "Configurer les paramètres",
+    "@autoswapInfoSettingsButton": {
+        "description": "Secondary button to navigate to autoswap settings"
+    },
+    "autoswapInfoRemindLater": "Rappelez-moi plus tard",
+    "@autoswapInfoRemindLater": {
+        "description": "Tertiary action to close sheet without dismissing"
+    },
+    "autoswapInfoTitle": "L'échange automatique est actif.",
+    "@autoswapInfoTitle": {
+        "description": "Title for autoswap information bottom sheet"
+    },
+    "autoswapInfoDismissButton": "Compris, ne plus afficher.",
+    "@autoswapInfoDismissButton": {
+        "description": "Primary button to dismiss autoswap info permanently"
+    }
 }
