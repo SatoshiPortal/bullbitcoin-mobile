@@ -3465,7 +3465,7 @@
     "payViewTransaction": "Transaction anzeigen",
     "transactionLabelToWallet": "Zur Wallet",
     "exchangeFileUploadInstructions": "Wenn Sie weitere Dokumente senden müssen, laden Sie diese bitte hier hoch.",
-    "ledgerInstructionsAndroidDual": "Stellen Sie sicher, dass Sie Ledger wird mit der Bitcoin App geöffnet und Bluetooth aktiviert, oder das Gerät über USB verbinden.",
+    "ledgerInstructionsAndroidDual": "Stellen Sie sicher, dass Ihr Ledger entsperrt ist, die Bitcoin-App geöffnet ist und Bluetooth aktiviert ist.",
     "arkSendRecipientLabel": "Adresse des Empfängers",
     "defaultWalletsLabel": "Standard Wallis",
     "jadeStep9": "Sobald die Transaktion in Ihrem Jade importiert wird, überprüfen Sie die Zieladresse und den Betrag.",
@@ -4146,5 +4146,189 @@
     "autoswapInfoDismissButton": "Primäre Schaltfläche zum dauerhaften Ausblenden der Autoswap-Informationen",
     "@autoswapInfoDismissButton": {
         "description": "Primary button to dismiss autoswap info permanently"
+    },
+    "exchangeSettingsRecipientsTitle": "Empfänger",
+    "@exchangeSettingsRecipientsTitle": {
+        "description": "Title for the recipients button in exchange settings"
+    },
+    "exchangeSettingsTransactionsTitle": "Transaktionen",
+    "@exchangeSettingsTransactionsTitle": {
+        "description": "Title for the transactions button in exchange settings"
+    },
+    "exchangeFileUploadSuccess": "Datei erfolgreich hochgeladen",
+    "@exchangeFileUploadSuccess": {
+        "description": "Success message when file is uploaded successfully"
+    },
+    "exchangeAppSettingsEmailNotificationsLabel": "E-Mail-Benachrichtigungen",
+    "@exchangeAppSettingsEmailNotificationsLabel": {
+        "description": "Label for email notifications toggle in exchange app settings"
+    },
+    "exchangeAppSettingsEmailNotificationsDescription": "Erhalten Sie E-Mail-Benachrichtigungen zu Bestellungen und Kontoaktualisierungen.",
+    "@exchangeAppSettingsEmailNotificationsDescription": {
+        "description": "Description for email notifications toggle in exchange app settings"
+    },
+    "exchangeBitcoinWalletsSaveSuccess": "Wallet-Adresse erfolgreich gespeichert",
+    "@exchangeBitcoinWalletsSaveSuccess": {
+        "description": "Success message when wallet address is saved"
+    },
+    "exchangeBitcoinWalletsDescription": "Legen Sie Standard-Wallet-Adressen für automatische Bitcoin-Abhebungen fest.",
+    "@exchangeBitcoinWalletsDescription": {
+        "description": "Description text on the default bitcoin wallets screen"
+    },
+    "exchangeFileUploadDocumentsTitle": "Dokumente hochladen",
+    "@exchangeFileUploadDocumentsTitle": {
+        "description": "Title for the upload documents section"
+    },
+    "exchangeFileUploadInstructionsWithParams": "Laden Sie bis zu {maxFiles} Dateien hoch. Zulässige Formate: PDF, JPG, PNG, GIF, HEIC. Maximale Dateigröße: 10 MB pro Datei.",
+    "@exchangeFileUploadInstructionsWithParams": {
+        "description": "Instructions for file upload with parameters",
+        "placeholders": {
+            "maxFiles": {
+                "type": "int"
+            }
+        }
+    },
+    "exchangeFileUploadNoFilesSelected": "Keine Dateien ausgewählt",
+    "@exchangeFileUploadNoFilesSelected": {
+        "description": "Message when no files are selected for upload"
+    },
+    "exchangeFileUploadSelectFilesHint": "Tippen Sie auf „Dateien auswählen“, um Dokumente auszuwählen.",
+    "@exchangeFileUploadSelectFilesHint": {
+        "description": "Hint text for selecting files"
+    },
+    "exchangeFileUploadSelectFiles": "Dateien auswählen",
+    "@exchangeFileUploadSelectFiles": {
+        "description": "Button label to select files"
+    },
+    "exchangeFileUploadAddMoreFiles": "Weitere Dateien hinzufügen",
+    "@exchangeFileUploadAddMoreFiles": {
+        "description": "Button label to add more files"
+    },
+    "exchangeFileUploadUploading": "Hochladen...",
+    "@exchangeFileUploadUploading": {
+        "description": "Loading text while uploading files"
+    },
+    "exchangeFileUploadUploadCount": "Hochladen {count} {count, Plural, =1{Datei} andere{Dateien}}",
+    "@exchangeFileUploadUploadCount": {
+        "description": "Button label showing number of files to upload",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "exchangeFileUploadClearAll": "Alle löschen",
+    "@exchangeFileUploadClearAll": {
+        "description": "Button label to clear all files"
+    },
+    "exchangeFileUploadAllSuccess": "Alle Dateien wurden erfolgreich hochgeladen.",
+    "@exchangeFileUploadAllSuccess": {
+        "description": "Success message when all files are uploaded"
+    },
+    "exchangeFileUploadPartialSuccess": "{hochgeladen} von {insgesamt} hochgeladenen Dateien",
+    "@exchangeFileUploadPartialSuccess": {
+        "description": "Message when some files failed to upload",
+        "placeholders": {
+            "uploaded": {
+                "type": "int"
+            },
+            "total": {
+                "type": "int"
+            }
+        }
+    },
+    "exchangeFileUploadStatusReady": "Bereit",
+    "@exchangeFileUploadStatusReady": {
+        "description": "Status badge when files can be uploaded"
+    },
+    "exchangeFileUploadStatusInReview": "Im Rückblick",
+    "@exchangeFileUploadStatusInReview": {
+        "description": "Status badge when files are under review"
+    },
+    "exchangeFileUploadStatusAccepted": "Akzeptiert",
+    "@exchangeFileUploadStatusAccepted": {
+        "description": "Status badge when files have been accepted"
+    },
+    "exchangeFileUploadStatusRejected": "Abgelehnt – Zum erneuten Hochladen antippen",
+    "@exchangeFileUploadStatusRejected": {
+        "description": "Status badge when files have been rejected, with re-upload option"
+    },
+    "exchangeFileUploadInReviewMessage": "Ihre Dokumente werden derzeit geprüft. Sie können keine weiteren Dateien hochladen, bis die Prüfung abgeschlossen ist.",
+    "@exchangeFileUploadInReviewMessage": {
+        "description": "Message shown when documents are under review"
+    },
+    "exchangeFileUploadAcceptedMessage": "Ihre Dokumente wurden akzeptiert. Es sind keine weiteren Uploads erforderlich.",
+    "@exchangeFileUploadAcceptedMessage": {
+        "description": "Message shown when documents have been accepted"
+    },
+    "exchangeStatisticsTitle": "Statistiken",
+    "@exchangeStatisticsTitle": {
+        "description": "Title for the statistics screen"
+    },
+    "exchangeStatisticsNoData": "Keine Statistiken verfügbar",
+    "@exchangeStatisticsNoData": {
+        "description": "Message when no statistics are available"
+    },
+    "exchangeStatisticsAsOf": "Stand: {Datum}",
+    "@exchangeStatisticsAsOf": {
+        "description": "Label showing when statistics were last updated",
+        "placeholders": {
+            "date": {
+                "type": "String"
+            }
+        }
+    },
+    "exchangeStatisticsOrderStats": "Ordnungsstatistik",
+    "@exchangeStatisticsOrderStats": {
+        "description": "Title for order statistics section"
+    },
+    "exchangeStatisticsBuySellRatio": "Kauf-/Verkaufsverhältnis",
+    "@exchangeStatisticsBuySellRatio": {
+        "description": "Label for buy/sell ratio statistic"
+    },
+    "exchangeStatisticsBuyStats": "Statistiken kaufen",
+    "@exchangeStatisticsBuyStats": {
+        "description": "Title for buy statistics section"
+    },
+    "exchangeStatisticsSellStats": "Verkaufsstatistik",
+    "@exchangeStatisticsSellStats": {
+        "description": "Title for sell statistics section"
+    },
+    "exchangeStatisticsVolume": "Volumen",
+    "@exchangeStatisticsVolume": {
+        "description": "Label for volume statistic"
+    },
+    "exchangeStatisticsTradeCount": "Handelsvolumen",
+    "@exchangeStatisticsTradeCount": {
+        "description": "Label for trade count statistic"
+    },
+    "exchangeStatisticsAveragePrice": "Durchschnittspreis",
+    "@exchangeStatisticsAveragePrice": {
+        "description": "Label for average price statistic"
+    },
+    "exchangeStatisticsTotalVolume": "Gesamtes Handelsvolumen",
+    "@exchangeStatisticsTotalVolume": {
+        "description": "Label for total trading volume statistic"
+    },
+    "exchangeStatisticsBillerStats": "Käuferstatistik",
+    "@exchangeStatisticsBillerStats": {
+        "description": "Title for biller statistics section"
+    },
+    "exchangeStatisticsCurrency": "Währung: {Währung}",
+    "@exchangeStatisticsCurrency": {
+        "description": "Label showing currency for biller stats",
+        "placeholders": {
+            "currency": {
+                "type": "String"
+            }
+        }
+    },
+    "exchangeStatisticsTotalAmount": "Gesamtbetrag",
+    "@exchangeStatisticsTotalAmount": {
+        "description": "Label for total amount statistic"
+    },
+    "retry": "Wiederholen",
+    "@retry": {
+        "description": "Generic retry button label"
     }
 }
