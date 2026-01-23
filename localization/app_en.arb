@@ -2490,6 +2490,30 @@
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
   },
+  "transactionFilterWithdraw": "Withdraw",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "Pay",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "Funding",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "Reward",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "Refund",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionFilterBalanceAdjustment": "Adjustment",
+  "@transactionFilterBalanceAdjustment": {
+    "description": "Filter option to show only balance adjustment orders"
+  },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
