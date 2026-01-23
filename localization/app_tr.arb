@@ -12420,5 +12420,13 @@
     "buyProofOfAddress": "Adresin Kanıtı",
     "@buyProofOfAddress": {
         "description": "Type of document required"
+    },
+    "arkAboutTitle": "Hakkında",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "Güvenlik Düzeyi Ayarı",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
     }
 }
