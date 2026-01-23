@@ -5,9 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class AutoSwapWarningCard extends StatelessWidget {
-  const AutoSwapWarningCard({super.key, required this.onTap});
+  const AutoSwapWarningCard({
+    super.key,
+    required this.onTap,
+    this.isActiveMode = false,
+  });
 
   final Function onTap;
+  final bool isActiveMode;
 
   @override
   Widget build(BuildContext context) {
@@ -34,29 +39,35 @@ class AutoSwapWarningCard extends StatelessWidget {
             ),
             const Gap(14),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BBText(
-                    context.loc.autoswapWarningCardTitle,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.onSurface,
-                  ),
-                  const Gap(2),
-                  GestureDetector(
-                    onTap: () {
-                      onTap();
-                    },
-                    child: Text(
-                      'Click to learn more, disable or configure',
-                      style: context.font.bodySmall?.copyWith(
-                        decoration: TextDecoration.underline,
-                        color: context.appColors.onSurfaceVariant,
-                      ),
+              child: isActiveMode
+                  ? BBText(
+                      context.loc.autoswapActiveCardTitle,
+                      style: context.font.bodyMedium,
+                      color: context.appColors.onSurface,
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BBText(
+                          context.loc.autoswapWarningCardTitle,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.onSurface,
+                        ),
+                        const Gap(2),
+                        GestureDetector(
+                          onTap: () {
+                            onTap();
+                          },
+                          child: Text(
+                            context.loc.autoswapWarningCardSubtitle,
+                            style: context.font.bodySmall?.copyWith(
+                              decoration: TextDecoration.underline,
+                              color: context.appColors.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
           ],
         ),

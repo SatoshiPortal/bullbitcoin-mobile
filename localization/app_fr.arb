@@ -1456,7 +1456,8 @@
     }
   },
   "autoswapWarningCardTitle": "Autoswap est recommandé",
-  "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
+  "autoswapWarningCardSubtitle": "Cliquez pour en savoir plus, désactiver ou configurer",
+  "autoswapActiveCardTitle": "Autoswap est actif",
   "autoswapWarningDescription": "Le transfert automatique garantit qu'un bon équilibre est maintenu entre votre portefeuille de paiements instantanés et votre portefeuille Bitcoin sécurisé.",
   "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants",
   "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximum, un échange sera déclenché automatiquement. Le solde cible sera conservé dans votre portefeuille de paiements instantanés et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",

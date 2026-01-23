@@ -1456,7 +1456,8 @@
     }
   },
   "autoswapWarningCardTitle": "Autoswap es recomendado",
-  "autoswapWarningCardSubtitle": "Se activará un intercambio si el saldo de su billetera de pagos instantáneos supera 0,02 BTC.",
+  "autoswapWarningCardSubtitle": "Haga clic para obtener más información, desactivar o configurar",
+  "autoswapActiveCardTitle": "Autoswap está activo",
   "autoswapWarningDescription": "La transferencia automática garantiza que se mantenga un buen equilibrio entre su billetera de pagos instantáneos y su billetera Bitcoin segura.",
   "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración",
   "autoswapWarningExplanation": "Cuando su saldo supere el saldo máximo, se activará automáticamente un intercambio. El saldo objetivo se mantendrá en su billetera de pagos instantáneos y el monto restante se intercambiará en su billetera Bitcoin segura.",

@@ -4856,9 +4856,13 @@
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
-  "autoswapWarningCardSubtitle": "A swap will be triggered if your Instant Payments balance exceeds 0.02 BTC.",
+  "autoswapWarningCardSubtitle": "Click to learn more, disable or configure",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
+  },
+  "autoswapActiveCardTitle": "Autoswap is active",
+  "@autoswapActiveCardTitle": {
+    "description": "Title text shown when autoswap is enabled and active"
   },
   "autoswapWarningDescription": "Autoswap ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
   "@autoswapWarningDescription": {
