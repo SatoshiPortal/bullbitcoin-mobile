@@ -12428,5 +12428,13 @@
     "importWatchOnlyCancel": "ยกเลิก",
     "@importWatchOnlyCancel": {
         "description": "Button to cancel watch-only import"
+    },
+    "arkAboutTitle": "เกี่ยวกับ",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "การตั้งค่าความปลอดภัย",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
     }
 }
