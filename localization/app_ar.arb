@@ -1,1 +1,14 @@
-{}
+{
+    "ledgerHelpTitle": "المُساعَفة",
+    "@ledgerHelpTitle": {
+        "description": "Title for Ledger troubleshooting help modal"
+    },
+    "arkAboutTitle": "من نحن",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "إعدادات الأمان",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
+    }
+}
