@@ -4329,5 +4329,9 @@
     "retry": "学历",
     "@retry": {
         "description": "Generic retry button label"
+    },
+    "exchangeSettingsTransactionsTitle": "交易",
+    "@exchangeSettingsTransactionsTitle": {
+        "description": "Title for the transactions button in exchange settings"
     }
 }
