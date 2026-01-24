@@ -1,1 +1,14 @@
-{}
+{
+    "settingsTelegramLabel": "## Telegram",
+    "@settingsTelegramLabel": {
+        "description": "Label for the Telegram link in settings"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "تنظیمات امنیتی",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
+    },
+    "arkAboutTitle": "دربارهٔ ما",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    }
+}
