@@ -1,1 +1,319 @@
-{}
+{
+    "translationWarningTitle": "Преводи, генерирани от ИИ",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "Повечето преводи в това приложение са генерирани с помощта на изкуствен интелект и могат да съдържат неточности. Ако забележите грешки или желаете да помогнете за подобряване на преводите, можете да допринесете чрез нашата платформа за превод от общността.",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "Помогнете да се подобрят преводите",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "Разбрах",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
+    "durationSeconds": "{seconds} секунди",
+    "@durationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "String"
+            }
+        }
+    },
+    "durationMinute": "{minutes} минута",
+    "@durationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "durationMinutes": "{minutes} минути",
+    "@durationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "coreSwapsStatusPending": "В очакване",
+    "@coreSwapsStatusPending": {
+        "description": "Display name for pending swap status"
+    },
+    "coreSwapsStatusInProgress": "В процес",
+    "@coreSwapsStatusInProgress": {
+        "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    },
+    "coreSwapsStatusCompleted": "Завършено",
+    "@coreSwapsStatusCompleted": {
+        "description": "Display name for completed swap status"
+    },
+    "coreSwapsStatusExpired": "Изтекъл",
+    "@coreSwapsStatusExpired": {
+        "description": "Display name for expired swap status"
+    },
+    "coreSwapsStatusFailed": "Неуспешно",
+    "@coreSwapsStatusFailed": {
+        "description": "Display name for failed swap status"
+    },
+    "coreSwapsActionClaim": "Вземи",
+    "@coreSwapsActionClaim": {
+        "description": "Action label for claiming a swap"
+    },
+    "coreSwapsActionClose": "Затвори",
+    "@coreSwapsActionClose": {
+        "description": "Action label for closing a swap cooperatively"
+    },
+    "coreSwapsActionRefund": "Възстановяване",
+    "@coreSwapsActionRefund": {
+        "description": "Action label for refunding a swap"
+    },
+    "coreSwapsLnReceivePending": "Обмена все още не е инициализиран.",
+    "@coreSwapsLnReceivePending": {
+        "description": "Status message for pending Lightning receive swap"
+    },
+    "coreSwapsLnReceivePaid": "Изпращачът е платил фактурата.",
+    "@coreSwapsLnReceivePaid": {
+        "description": "Status message for paid Lightning receive swap"
+    },
+    "coreSwapsLnReceiveClaimable": "Обменът е готов за получаване.",
+    "@coreSwapsLnReceiveClaimable": {
+        "description": "Status message for claimable Lightning receive swap"
+    },
+    "coreSwapsLnReceiveRefundable": "Обмена е готов за възстановяване.",
+    "@coreSwapsLnReceiveRefundable": {
+        "description": "Status message for refundable Lightning receive swap"
+    },
+    "coreSwapsLnReceiveCanCoop": "Обмена ще завърши всеки момент.",
+    "@coreSwapsLnReceiveCanCoop": {
+        "description": "Status message for Lightning receive swap that can complete cooperatively"
+    },
+    "coreSwapsLnReceiveFailed": "Обмена се провали.",
+    "@coreSwapsLnReceiveFailed": {
+        "description": "Status message for failed Lightning receive swap"
+    },
+    "coreSwapsLnSendPending": "Обмена все още не е инициализиран.",
+    "@coreSwapsLnSendPending": {
+        "description": "Status message for pending Lightning send swap"
+    },
+    "coreSwapsLnSendPaid": "Фактурата ще бъде платена, след като вашето плащане получи потвърждение.",
+    "@coreSwapsLnSendPaid": {
+        "description": "Status message for paid Lightning send swap"
+    },
+    "coreSwapsLnSendClaimable": "Обменът е готов за получаване.",
+    "@coreSwapsLnSendClaimable": {
+        "description": "Status message for claimable Lightning send swap"
+    },
+    "coreSwapsLnSendRefundable": "Обмена е готов за възстановяване.",
+    "@coreSwapsLnSendRefundable": {
+        "description": "Status message for refundable Lightning send swap"
+    },
+    "coreSwapsLnSendCanCoop": "Обмена ще завърши всеки момент.",
+    "@coreSwapsLnSendCanCoop": {
+        "description": "Status message for Lightning send swap that can complete cooperatively"
+    },
+    "coreSwapsLnSendCompletedRefunded": "Обмена е възстановен.",
+    "@coreSwapsLnSendCompletedRefunded": {
+        "description": "Status message for Lightning send swap completed via refund"
+    },
+    "coreSwapsLnSendFailed": "Обмена се провали.",
+    "@coreSwapsLnSendFailed": {
+        "description": "Status message for failed Lightning send swap"
+    },
+    "coreSwapsChainPending": "Трансферът все още не е инициализиран.",
+    "@coreSwapsChainPending": {
+        "description": "Status message for pending chain swap"
+    },
+    "coreSwapsChainPaid": "Изчакване на плащането от доставчика на трансфера за получаване на потвърждение. Това може да отнеме известно време.",
+    "@coreSwapsChainPaid": {
+        "description": "Status message for paid chain swap"
+    },
+    "coreSwapsChainClaimable": "Прехвърлянето е готово за получаване.",
+    "@coreSwapsChainClaimable": {
+        "description": "Status message for claimable chain swap"
+    },
+    "coreSwapsChainRefundable": "Прехвърлянето е готово за възстановяване.",
+    "@coreSwapsChainRefundable": {
+        "description": "Status message for refundable chain swap"
+    },
+    "coreSwapsChainCanCoop": "Транзакцията ще завърши всеки момент.",
+    "@coreSwapsChainCanCoop": {
+        "description": "Status message for chain swap that can complete cooperatively"
+    },
+    "coreSwapsChainCompletedRefunded": "Преводът е възстановен.",
+    "@coreSwapsChainCompletedRefunded": {
+        "description": "Status message for chain swap completed via refund"
+    },
+    "coreWalletTransactionStatusPending": "В очакване",
+    "@coreWalletTransactionStatusPending": {
+        "description": "Display name for pending wallet transaction status"
+    },
+    "settingsTelegramLabel": "## Telegram",
+    "@settingsTelegramLabel": {
+        "description": "Label for the Telegram link in settings"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "Настройки за сигурност",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
+    },
+    "transactionStatusInProgress": "В процес",
+    "@transactionStatusInProgress": {
+        "description": "Status label for transactions in progress"
+    },
+    "transactionStatusPending": "В очакване",
+    "@transactionStatusPending": {
+        "description": "Status label for pending transactions"
+    },
+    "transactionStatusSwapFailed": "Обмена се провали.",
+    "@transactionStatusSwapFailed": {
+        "description": "Status label for failed swaps"
+    },
+    "transactionLabelCompletedAt": "Завършено",
+    "@transactionLabelCompletedAt": {
+        "description": "Label for completion timestamp"
+    },
+    "transactionPayjoinStatusCompleted": "Завършено",
+    "@transactionPayjoinStatusCompleted": {
+        "description": "Payjoin status: completed"
+    },
+    "transactionPayjoinStatusExpired": "Изтекъл",
+    "@transactionPayjoinStatusExpired": {
+        "description": "Payjoin status: expired"
+    },
+    "transactionSwapProgressClaim": "Вземи",
+    "@transactionSwapProgressClaim": {
+        "description": "Swap progress step: claim"
+    },
+    "transactionSwapProgressCompleted": "Завършено",
+    "@transactionSwapProgressCompleted": {
+        "description": "Swap progress step: completed"
+    },
+    "transactionSwapProgressInProgress": "В процес",
+    "@transactionSwapProgressInProgress": {
+        "description": "Generic swap progress step: in progress"
+    },
+    "transactionDetailLabelCompletedAt": "Завършено",
+    "@transactionDetailLabelCompletedAt": {
+        "description": "Label for completion time"
+    },
+    "transactionDetailLabelPayjoinCompleted": "Завършено",
+    "@transactionDetailLabelPayjoinCompleted": {
+        "description": "Payjoin completed status"
+    },
+    "transactionDetailLabelPayjoinExpired": "Изтекъл",
+    "@transactionDetailLabelPayjoinExpired": {
+        "description": "Payjoin expired status"
+    },
+    "walletBalanceUnconfirmedIncoming": "В процес",
+    "@walletBalanceUnconfirmedIncoming": {
+        "description": "Label for unconfirmed incoming balance"
+    },
+    "arkStatusPending": "В очакване",
+    "@arkStatusPending": {
+        "description": "Status label for pending transactions"
+    },
+    "arkPending": "В очакване",
+    "@arkPending": {
+        "description": "Label for pending balance in breakdown"
+    },
+    "arkAboutTitle": "Относно",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "arkDurationSeconds": "{seconds} секунди",
+    "@arkDurationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "String"
+            }
+        }
+    },
+    "arkDurationMinute": "{minutes} минута",
+    "@arkDurationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "arkDurationMinutes": "{minutes} минути",
+    "@arkDurationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "arkTxPending": "В очакване",
+    "@arkTxPending": {
+        "description": "Status label for pending Ark transactions"
+    },
+    "closeDialogButton": "Затвори",
+    "@closeDialogButton": {
+        "description": "Button to close the value display modal dialog"
+    },
+    "payExpired": "Изтекъл",
+    "@payExpired": {
+        "description": "Status label for expired invoice"
+    },
+    "paySwapFailed": "Обмена се провали.",
+    "@paySwapFailed": {
+        "description": "Error message when swap fails"
+    },
+    "payFailedPayments": "Неуспешно",
+    "@payFailedPayments": {
+        "description": "Filter for failed payments"
+    },
+    "payPendingPayments": "В очакване",
+    "@payPendingPayments": {
+        "description": "Filter for pending payments"
+    },
+    "recoverbullFailed": "Неуспешно",
+    "@recoverbullFailed": {
+        "description": "Status label indicating operation failure"
+    },
+    "electrumCloseTooltip": "Затвори",
+    "@electrumCloseTooltip": {
+        "description": "Close button tooltip"
+    },
+    "arkAboutDurationSeconds": "{seconds} секунди",
+    "@arkAboutDurationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "arkAboutDurationMinute": "{minutes} минута",
+    "@arkAboutDurationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "arkAboutDurationMinutes": "{minutes} минути",
+    "@arkAboutDurationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "ledgerHelpTitle": "Отстраняване на неизправности",
+    "@ledgerHelpTitle": {
+        "description": "Title for Ledger troubleshooting help modal"
+    }
+}
