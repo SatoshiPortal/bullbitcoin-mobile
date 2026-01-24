@@ -4147,5 +4147,25 @@
     "autoswapInfoDismissButton": "Selvä, älä näytä uudelleen.",
     "@autoswapInfoDismissButton": {
         "description": "Primary button to dismiss autoswap info permanently"
+    },
+    "exchangeSettingsRecipientsTitle": "Vastaanottajat",
+    "@exchangeSettingsRecipientsTitle": {
+        "description": "Title for the recipients button in exchange settings"
+    },
+    "exchangeSettingsTransactionsTitle": "Transaktiot",
+    "@exchangeSettingsTransactionsTitle": {
+        "description": "Title for the transactions button in exchange settings"
+    },
+    "exchangeFileUploadDocumentsTitle": "Lataa asiakirjat",
+    "@exchangeFileUploadDocumentsTitle": {
+        "description": "Title for the upload documents section"
+    },
+    "exchangeStatisticsTotalAmount": "Kokonaismäärä",
+    "@exchangeStatisticsTotalAmount": {
+        "description": "Label for total amount statistic"
+    },
+    "retry": "Yritä uudelleen",
+    "@retry": {
+        "description": "Generic retry button label"
     }
 }
