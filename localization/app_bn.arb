@@ -1,1 +1,18 @@
-{}
+{
+    "settingsTelegramLabel": "## টেলিগ্রাম",
+    "@settingsTelegramLabel": {
+        "description": "Label for the Telegram link in settings"
+    },
+    "exchangeSettingsSecuritySettingsTitle": "নিরাপত্তা বিষয়ক সেটিংস",
+    "@exchangeSettingsSecuritySettingsTitle": {
+        "description": "Title for the security settings section in exchange settings"
+    },
+    "arkAboutTitle": "সম্পর্কে",
+    "@arkAboutTitle": {
+        "description": "AppBar title for Ark about screen"
+    },
+    "ledgerHelpTitle": "ট্রাবলশুটিং",
+    "@ledgerHelpTitle": {
+        "description": "Title for Ledger troubleshooting help modal"
+    }
+}
