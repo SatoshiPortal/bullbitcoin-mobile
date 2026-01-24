@@ -4144,5 +4144,25 @@
     "autoswapInfoDismissButton": "Compris, ne plus afficher.",
     "@autoswapInfoDismissButton": {
         "description": "Primary button to dismiss autoswap info permanently"
+    },
+    "exchangeSettingsRecipientsTitle": "Destinataires",
+    "@exchangeSettingsRecipientsTitle": {
+        "description": "Title for the recipients button in exchange settings"
+    },
+    "exchangeSettingsTransactionsTitle": "Transactions",
+    "@exchangeSettingsTransactionsTitle": {
+        "description": "Title for the transactions button in exchange settings"
+    },
+    "exchangeFileUploadDocumentsTitle": "Téléverser les documents",
+    "@exchangeFileUploadDocumentsTitle": {
+        "description": "Title for the upload documents section"
+    },
+    "exchangeStatisticsTotalAmount": "Montant Total",
+    "@exchangeStatisticsTotalAmount": {
+        "description": "Label for total amount statistic"
+    },
+    "retry": "Réessayer",
+    "@retry": {
+        "description": "Generic retry button label"
     }
 }
