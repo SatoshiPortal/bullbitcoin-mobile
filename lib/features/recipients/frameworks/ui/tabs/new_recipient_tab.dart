@@ -24,7 +24,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class NewRecipientTab extends StatefulWidget {
-  const NewRecipientTab({super.key});
+  const NewRecipientTab({this.hookError, super.key});
+
+  final String? hookError;
 
   @override
   NewRecipientTabState createState() => NewRecipientTabState();
@@ -125,7 +127,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           ),
         ),
         const Gap(16.0),
-        _buildFormForType(selectedType),
+        _buildFormForType(selectedType, hookError: widget.hookError),
       ],
     );
   }
@@ -183,7 +185,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
           ),
           const Gap(16.0),
           if (_selectedRecipientType != null)
-            _buildFormForType(_selectedRecipientType!),
+            _buildFormForType(_selectedRecipientType!, hookError: widget.hookError),
         ],
       ),
     );
@@ -210,35 +212,37 @@ class NewRecipientTabState extends State<NewRecipientTab> {
     };
   }
 
-  Widget _buildFormForType(RecipientType type) {
+  Widget _buildFormForType(RecipientType type, {String? hookError}) {
     return switch (type) {
       // CANADA types
-      RecipientType.interacEmailCad => const InteracEmailCadForm(),
-      RecipientType.billPaymentCad => const BillPaymentCadForm(),
-      RecipientType.bankTransferCad => const BankTransferCadForm(),
+      RecipientType.interacEmailCad => InteracEmailCadForm(hookError: hookError),
+      RecipientType.billPaymentCad => BillPaymentCadForm(hookError: hookError),
+      RecipientType.bankTransferCad => BankTransferCadForm(hookError: hookError),
       // EUROPE types
-      RecipientType.sepaEur => const SepaEurForm(),
+      RecipientType.sepaEur => SepaEurForm(hookError: hookError),
       // Virtual IBAN payee types - use SEPA form for entering recipient details
-      RecipientType.frPayee || RecipientType.cjPayee => const SepaEurForm(),
+      RecipientType.frPayee || RecipientType.cjPayee => SepaEurForm(hookError: hookError),
       // frVirtualAccount is system-managed, not user-created
       RecipientType.frVirtualAccount => const SizedBox.shrink(),
       // MEXICO types
-      RecipientType.speiClabeMxn => const SpeiClabeMxnForm(),
-      RecipientType.speiSmsMxn => const SpeiSmsMxnForm(),
-      RecipientType.speiCardMxn => const SpeiCardMxnForm(),
+      RecipientType.speiClabeMxn => SpeiClabeMxnForm(hookError: hookError),
+      RecipientType.speiSmsMxn => SpeiSmsMxnForm(hookError: hookError),
+      RecipientType.speiCardMxn => SpeiCardMxnForm(hookError: hookError),
       // COSTA RICA types
-      RecipientType.sinpeIbanUsd => const SinpeIbanForm(
+      RecipientType.sinpeIbanUsd => SinpeIbanForm(
         recipientType: RecipientType.sinpeIbanUsd,
+        hookError: hookError,
       ),
-      RecipientType.sinpeIbanCrc => const SinpeIbanForm(
+      RecipientType.sinpeIbanCrc => SinpeIbanForm(
         recipientType: RecipientType.sinpeIbanCrc,
+        hookError: hookError,
       ),
-      RecipientType.sinpeMovilCrc => const SinpeMovilCrcForm(),
+      RecipientType.sinpeMovilCrc => SinpeMovilCrcForm(hookError: hookError),
       // ARGENTINA types
-      RecipientType.cbuCvuArgentina => const CbuCvuArgentinaForm(),
+      RecipientType.cbuCvuArgentina => CbuCvuArgentinaForm(hookError: hookError),
       // Colombia types
-      RecipientType.pseColombia => const BankAccountCopForm(),
-      RecipientType.nequiColombia => const NequiCopForm(),
+      RecipientType.pseColombia => BankAccountCopForm(hookError: hookError),
+      RecipientType.nequiColombia => NequiCopForm(hookError: hookError),
     };
   }
 }

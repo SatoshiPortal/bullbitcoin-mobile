@@ -178,13 +178,18 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         ),
       );
     } on WithdrawError catch (e) {
-      emit(recipientInputState.copyWith(error: e));
+      emit(
+        event.isNew
+            ? recipientInputState.copyWith(newRecipientError: e)
+            : recipientInputState.copyWith(selectedRecipientError: e),
+      );
     } catch (e) {
       log.severe('Error in WithdrawBloc: $e');
+      final error = WithdrawError.unexpected(message: '$e');
       emit(
-        recipientInputState.copyWith(
-          error: WithdrawError.unexpected(message: '$e'),
-        ),
+        event.isNew
+            ? recipientInputState.copyWith(newRecipientError: error)
+            : recipientInputState.copyWith(selectedRecipientError: error),
       );
     } finally {
       // Reset the isCreatingWithdrawOrder flag if any error occured

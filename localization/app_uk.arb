@@ -3657,7 +3657,7 @@
   "fundExchangeLabelBeneficiaryName": "Ім'я одержувача",
   "exchangeSupportChatMessageEmptyError": "Повідомлення не може бути порожнім",
   "payViewTransaction": "Перегляд транзакцій",
-  "ledgerInstructionsAndroidDual": "Зареєструватися Ledger розблоковано за допомогою програми Bitcoin, відкритого та Bluetooth ввімкнено, або підключіть пристрій через USB.",
+  "ledgerInstructionsAndroidDual": "Зареєструватися Ledger розблоковано за допомогою програми Bitcoin, відкритого та Bluetooth ввімкнено.",
   "arkSendRecipientLabel": "Адреса одержувача",
   "jadeStep9": "Після того, як угода імпортується в Jade, перевірте адресу призначення і суму.",
   "ledgerWalletTypeNestedSegwitDescription": "П2ВПХ-нестед-в-П2Ш",

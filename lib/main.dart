@@ -15,6 +15,7 @@ import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_blo
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
@@ -185,31 +186,37 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         // can use it to check if the user is authenticated
         BlocProvider(create: (_) => locator<ExchangeCubit>()),
       ],
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<AppStartupBloc, AppStartupState>(
-            listenWhen: (previous, current) =>
-                previous != current &&
-                current is AppStartupSuccess &&
-                current.hasDefaultWallets,
-            listener: (context, settings) {
-              // If wallets exist and the app has started successfully,
-              // we can start the wallet bloc to fetch the wallets.
-              context.read<WalletBloc>().add(const WalletStarted());
-            },
-          ),
-          BlocListener<SettingsCubit, SettingsState>(
-            listenWhen: (previous, current) =>
-                previous.environment != current.environment,
-            listener: (context, settings) async {
-              // Re-fetch user summary (re-init exchange bloc) and wallets
-              //  when environment changes
-              context.read<WalletBloc>().add(const WalletStarted());
-              await context.read<ExchangeCubit>().fetchUserSummary();
-            },
-          ),
-        ],
-        child:
+      child: ExchangeListener(
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<AppStartupBloc, AppStartupState>(
+              listenWhen: (previous, current) =>
+                  previous != current &&
+                  current is AppStartupSuccess &&
+                  current.hasDefaultWallets,
+              listener: (context, settings) {
+                // If wallets exist and the app has started successfully,
+                // we can start the wallet bloc to fetch the wallets.
+                context.read<WalletBloc>().add(const WalletStarted());
+                // Also fetch user summary to check if user is logged in
+                // and connect WebSocket if so (handled by ExchangeListener)
+                context.read<ExchangeCubit>().fetchUserSummary();
+              },
+            ),
+            BlocListener<SettingsCubit, SettingsState>(
+              listenWhen: (previous, current) =>
+                  previous.environment != current.environment,
+              listener: (context, settings) async {
+                // Re-fetch user summary (re-init exchange bloc) and wallets
+                //  when environment changes
+                context.read<WalletBloc>().add(const WalletStarted());
+                await context.read<ExchangeCubit>().fetchUserSummary();
+                // Reconnect WebSocket for the new environment
+                await context.read<ExchangeCubit>().reconnectWebSocket();
+              },
+            ),
+          ],
+          child:
             BlocSelector<
               SettingsCubit,
               SettingsState,
@@ -251,6 +258,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                 );
               },
             ),
+        ),
       ),
     );
   }

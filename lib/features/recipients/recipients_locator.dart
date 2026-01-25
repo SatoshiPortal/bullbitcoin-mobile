@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/exchange/frameworks/http/bullbitcoin_api_key_prov
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -97,8 +97,11 @@ class RecipientsLocator {
     // directly in RecipientsBloc, following BB-Exchange's EuVibanCubit pattern
     locator.registerFactoryParam<
       RecipientsBloc,
-      AllowedRecipientFiltersViewModel?,
-      Future<void>? Function(RecipientViewModel recipient)?
+      RecipientFilterCriteria?,
+      Future<void>? Function(
+        RecipientViewModel recipient, {
+        required bool isNew,
+      })?
     >(
       (allowedRecipientFilters, onRecipientSelected) => RecipientsBloc(
         allowedRecipientFilters: allowedRecipientFilters,

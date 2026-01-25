@@ -1,28 +1,73 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_flow_step.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipients_location.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_flow_step.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/steps/recipient_type_selection_step.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/steps/virtual_iban_activation_step.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/new_recipient_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/recipients_list_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_segmented_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 enum RecipientsTab { newRecipient, recipientsList }
 
-class RecipientsScreen extends StatefulWidget {
-  const RecipientsScreen({super.key});
+/// RecipientsScreen with callback-based architecture from develop,
+/// combined with step-based VIBAN flow from HEAD.
+class RecipientsScreen extends StatelessWidget {
+  const RecipientsScreen({
+    required this.filter,
+    required this.onRecipientSelected,
+    this.isHookRunning,
+    this.onRecipientAddedHookError,
+    this.onRecipientSelectedHookError,
+    super.key,
+  });
+
+  final RecipientFilterCriteria filter;
+  final Future<void>? Function(RecipientViewModel, {required bool isNew})
+      onRecipientSelected;
+  final bool? isHookRunning;
+  final String? onRecipientAddedHookError;
+  final String? onRecipientSelectedHookError;
 
   @override
-  State<RecipientsScreen> createState() => _RecipientsScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<RecipientsBloc>(
+      create: (context) =>
+          locator<RecipientsBloc>(param1: filter, param2: onRecipientSelected)
+            ..add(const RecipientsEvent.started()),
+      child: _RecipientsScreenContent(
+        isHookRunning: isHookRunning,
+        onRecipientAddedHookError: onRecipientAddedHookError,
+        onRecipientSelectedHookError: onRecipientSelectedHookError,
+      ),
+    );
+  }
 }
 
-class _RecipientsScreenState extends State<RecipientsScreen> {
+class _RecipientsScreenContent extends StatefulWidget {
+  const _RecipientsScreenContent({
+    this.isHookRunning,
+    this.onRecipientAddedHookError,
+    this.onRecipientSelectedHookError,
+  });
+  final bool? isHookRunning;
+  final String? onRecipientAddedHookError;
+  final String? onRecipientSelectedHookError;
+
+  @override
+  State<_RecipientsScreenContent> createState() =>
+      _RecipientsScreenContentState();
+}
+
+class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
   RecipientsTab _currentTab = RecipientsTab.newRecipient;
 
   @override
@@ -61,16 +106,16 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: BlocSelector<RecipientsBloc, RecipientsState, bool>(
-            selector: (state) => state.isLoading,
-            builder: (context, isLoading) =>
-                isLoading
-                    ? FadingLinearProgress(
-                        height: 3,
-                        trigger: isLoading,
-                        backgroundColor: context.appColors.surface,
-                        foregroundColor: context.appColors.primary,
-                      )
-                    : const SizedBox(height: 3),
+            selector: (state) =>
+                state.isLoading || (widget.isHookRunning ?? false),
+            builder: (context, isLoading) => isLoading
+                ? FadingLinearProgress(
+                    height: 3,
+                    trigger: isLoading,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
+                  )
+                : const SizedBox(height: 3),
           ),
         ),
       ),
@@ -107,8 +152,12 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
               // Tab content
               Expanded(
                 child: switch (_currentTab) {
-                  RecipientsTab.newRecipient => const NewRecipientTab(),
-                  RecipientsTab.recipientsList => const RecipientsListTab(),
+                  RecipientsTab.newRecipient => NewRecipientTab(
+                      hookError: widget.onRecipientAddedHookError,
+                    ),
+                  RecipientsTab.recipientsList => RecipientsListTab(
+                      hookError: widget.onRecipientSelectedHookError,
+                    ),
                 },
               ),
             ],
@@ -137,16 +186,16 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
           child: BlocSelector<RecipientsBloc, RecipientsState, bool>(
-            selector: (state) => state.isLoading,
-            builder: (context, isLoading) =>
-                isLoading
-                    ? FadingLinearProgress(
-                        height: 3,
-                        trigger: isLoading,
-                        backgroundColor: context.appColors.surface,
-                        foregroundColor: context.appColors.primary,
-                      )
-                    : const SizedBox(height: 3),
+            selector: (state) =>
+                state.isLoading || (widget.isHookRunning ?? false),
+            builder: (context, isLoading) => isLoading
+                ? FadingLinearProgress(
+                    height: 3,
+                    trigger: isLoading,
+                    backgroundColor: context.appColors.surface,
+                    foregroundColor: context.appColors.primary,
+                  )
+                : const SizedBox(height: 3),
           ),
         ),
       ),
@@ -178,8 +227,12 @@ class _RecipientsScreenState extends State<RecipientsScreen> {
                 child: switch (_currentTab) {
                   // In Step 2, NewRecipientTab reads selectedRecipientType from bloc
                   // and shows only the form (no type selector)
-                  RecipientsTab.newRecipient => const NewRecipientTab(),
-                  RecipientsTab.recipientsList => const RecipientsListTab(),
+                  RecipientsTab.newRecipient => NewRecipientTab(
+                      hookError: widget.onRecipientAddedHookError,
+                    ),
+                  RecipientsTab.recipientsList => RecipientsListTab(
+                      hookError: widget.onRecipientSelectedHookError,
+                    ),
                 },
               ),
             ],

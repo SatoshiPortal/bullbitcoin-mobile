@@ -21,6 +21,8 @@ sealed class UserSummaryModel with _$UserSummaryModel {
     required UserDcaModel dca,
     required UserAutoBuyModel autoBuy,
     UserAddressModel? address,
+    @Default(true) bool emailNotificationsEnabled,
+    UserKycDocumentStatusModel? kycDocumentStatus,
   }) = _UserSummaryModel;
 
   factory UserSummaryModel.fromJson(Map<String, dynamic> json) =>
@@ -41,6 +43,8 @@ sealed class UserSummaryModel with _$UserSummaryModel {
       dca: dca.toEntity(),
       autoBuy: autoBuy.toEntity(),
       address: address?.toEntity(),
+      emailNotificationsEnabled: emailNotificationsEnabled,
+      kycDocumentStatus: kycDocumentStatus?.toEntity(),
     );
   }
 }
@@ -183,5 +187,64 @@ sealed class UserAutoBuyModel with _$UserAutoBuyModel {
 
   UserAutoBuy toEntity() {
     return UserAutoBuy(isActive: isActive, addresses: addresses.toEntity());
+  }
+}
+
+/// Model for parsing KYC documents status from API
+@freezed
+sealed class UserKycDocumentsModel with _$UserKycDocumentsModel {
+  const factory UserKycDocumentsModel({
+    @Default('NOT_UPLOADED') String id,
+    @Default('NOT_UPLOADED') String proofOfResidence,
+    @Default('NOT_UPLOADED') String selfie,
+  }) = _UserKycDocumentsModel;
+
+  factory UserKycDocumentsModel.fromJson(Map<String, dynamic> json) =>
+      _$UserKycDocumentsModelFromJson(json);
+
+  const UserKycDocumentsModel._();
+
+  UserKycDocuments toEntity() {
+    return UserKycDocuments(
+      id: _parseKycDocumentStatus(id),
+      proofOfResidence: _parseKycDocumentStatus(proofOfResidence),
+      selfie: _parseKycDocumentStatus(selfie),
+    );
+  }
+}
+
+/// Model for parsing overall KYC document status from API
+@freezed
+sealed class UserKycDocumentStatusModel with _$UserKycDocumentStatusModel {
+  const factory UserKycDocumentStatusModel({
+    @Default('NOT_UPLOADED') String secureFileUpload,
+    required UserKycDocumentsModel documents,
+  }) = _UserKycDocumentStatusModel;
+
+  factory UserKycDocumentStatusModel.fromJson(Map<String, dynamic> json) =>
+      _$UserKycDocumentStatusModelFromJson(json);
+
+  const UserKycDocumentStatusModel._();
+
+  UserKycDocumentStatus toEntity() {
+    return UserKycDocumentStatus(
+      secureFileUpload: _parseKycDocumentStatus(secureFileUpload),
+      documents: documents.toEntity(),
+    );
+  }
+}
+
+/// Helper function to parse KYC document status string to enum
+KycDocumentStatus _parseKycDocumentStatus(String status) {
+  switch (status.toUpperCase()) {
+    case 'ACCEPTED':
+      return KycDocumentStatus.accepted;
+    case 'UNDER_REVIEW':
+      return KycDocumentStatus.underReview;
+    case 'REJECTED':
+      return KycDocumentStatus.rejected;
+    case 'NOT_UPLOADED':
+    default:
+      return KycDocumentStatus.notUploaded;
   }
 }

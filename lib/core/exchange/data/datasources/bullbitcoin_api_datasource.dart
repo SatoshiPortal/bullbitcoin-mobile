@@ -1,3 +1,4 @@
+import 'dart:convert' show jsonEncode;
 import 'dart:math' show pow;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
@@ -25,6 +26,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   final _ordersPath = '/ak/api-orders';
   final _orderTriggerPath = '/ak/api-ordertrigger';
   final _recipientsPath = '/ak/api-recipients';
+  final _kycPath = '/ak/api-kyc';
   final _messagesPath = '/ak/api-commcenter';
 
   BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
@@ -409,23 +411,29 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
     if (error != null) {
       final reason = error['data']['reason'];
-      final limitReason = reason['limit'];
-      if (limitReason != null) {
-        final isBelowLimit =
-            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
-        final limitAmount = limitReason['amount'] as String;
-        final limitCurrency = limitReason['currencyCode'] as String;
-        if (isBelowLimit) {
-          throw BullBitcoinApiMinAmountException(
-            minAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
-        } else {
-          throw BullBitcoinApiMaxAmountException(
-            maxAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
+      if (reason != null) {
+        final limitReason = reason['limit'];
+        if (limitReason != null) {
+          final isBelowLimit =
+              limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+          final limitAmount = limitReason['amount'] as String;
+          final limitCurrency = limitReason['currencyCode'] as String;
+          if (isBelowLimit) {
+            throw BullBitcoinApiMinAmountException(
+              minAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          } else {
+            throw BullBitcoinApiMaxAmountException(
+              maxAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          }
         }
+      } else {
+        throw Exception(
+          'Failed to create sell to recipient order: ${error['message']}',
+        );
       }
     }
 
@@ -598,6 +606,8 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return resp.data['result'] as Map<String, dynamic>;
   }
 
+  // ==================== Virtual IBAN API (from HEAD) ====================
+
   /// Gets the user's Virtual IBAN details by listing recipients filtered by FR_VIRTUAL_ACCOUNT type.
   /// Returns null if no Virtual IBAN has been created yet.
   Future<VirtualIbanRecipientModel?> getVirtualIbanDetails({
@@ -714,6 +724,230 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
     return VirtualIbanRecipientModel.fromJson(element);
   }
+
+  // ==================== Recipients API (from develop) ====================
+
+  /// List recipients with optional filters for default wallets
+  Future<List<Map<String, dynamic>>> listMyRecipients({
+    required String apiKey,
+    List<String>? recipientTypes,
+    bool? isDefault,
+  }) async {
+    final filters = <String, dynamic>{};
+    if (recipientTypes != null) {
+      filters['recipientTypes'] = recipientTypes;
+    }
+    if (isDefault != null) {
+      filters['isDefault'] = isDefault;
+    }
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listMyRecipients',
+        'params': {'filters': filters},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list recipients');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to list recipients: $error');
+    }
+
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements.cast<Map<String, dynamic>>();
+  }
+
+  /// Create a new recipient (default wallet)
+  Future<Map<String, dynamic>> createMyRecipient({
+    required String apiKey,
+    required String recipientType,
+    required String address,
+    required bool isOwner,
+    required bool isDefault,
+  }) async {
+    final recipientDetails = _buildRecipientDetails(recipientType, address);
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createMyRecipient',
+        'params': {
+          'element': {
+            'recipientType': recipientType,
+            'isOwner': isOwner,
+            'isDefault': isDefault,
+            ...recipientDetails,
+          },
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      final message = error['message'] ?? 'Unknown error';
+      throw Exception('Failed to create recipient: $message');
+    }
+
+    return resp.data['result']['element'] as Map<String, dynamic>;
+  }
+
+  /// Update an existing recipient
+  Future<Map<String, dynamic>> updateMyRecipient({
+    required String apiKey,
+    required String recipientId,
+    required String recipientType,
+    String? address,
+    bool? isDefault,
+    bool isOwner = true,
+  }) async {
+    final element = <String, dynamic>{
+      'recipientId': recipientId,
+      'recipientType': recipientType,
+      'isOwner': isOwner,
+    };
+
+    if (address != null) {
+      // For updates, use the generic 'address' field (not type-specific fields)
+      element['address'] = address;
+    }
+    if (isDefault != null) {
+      element['isDefault'] = isDefault;
+    }
+
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'updateMyRecipient',
+        'params': {'element': element},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to update recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      final message = error['message'] ?? 'Unknown error';
+      throw Exception('Failed to update recipient: $message');
+    }
+
+    return resp.data['result']['element'] as Map<String, dynamic>;
+  }
+
+  Map<String, dynamic> _buildRecipientDetails(
+    String recipientType,
+    String address,
+  ) {
+    // For OUT_BITCOIN_ADDRESS, OUT_LIGHTNING_ADDRESS, OUT_LIQUID_ADDRESS,
+    // the API expects the generic 'address' field, not type-specific fields
+    switch (recipientType) {
+      case 'OUT_BITCOIN_ADDRESS':
+      case 'OUT_LIGHTNING_ADDRESS':
+      case 'OUT_LIQUID_ADDRESS':
+        return {'address': address};
+      default:
+        return {'address': address};
+    }
+  }
+
+  // ==================== Order Stats API (from develop) ====================
+
+  /// Get order statistics for the user
+  Future<Map<String, dynamic>> getOrderStats({required String apiKey}) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'getOrderStats',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get order stats');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get order stats: $error');
+    }
+
+    return resp.data['result']['element'] as Map<String, dynamic>;
+  }
+
+  // ==================== KYC Upload API (from develop) ====================
+
+  /// Upload a KYC document file using multipart form (same as BB-Exchange)
+  Future<void> uploadKycDocument({
+    required String apiKey,
+    required List<int> fileBytes,
+    required String fileName,
+    required String docType,
+    required String sourceDetail,
+  }) async {
+    final formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(fileBytes, filename: fileName),
+      'kycIDDocument': jsonEncode({
+        'jsonrpc': '2.0',
+        'id': 1,
+        'method': 'createMyKYCIDDocument',
+        'params': {
+          'element': {'idTypeCode': docType, 'sourceDetail': sourceDetail},
+        },
+      }),
+    });
+
+    final resp = await _http.post(
+      '$_kycPath/upload',
+      data: formData,
+      options: Options(
+        headers: {'X-API-Key': apiKey},
+        contentType: 'multipart/form-data',
+      ),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('File upload failed with status: ${resp.statusCode}');
+    }
+
+    // Check if response data indicates an error condition
+    final responseData = resp.data as Map<String, dynamic>?;
+    if (responseData != null) {
+      // Check for various error indicators in the response
+      if (responseData.containsKey('error') ||
+          responseData.containsKey('errors') ||
+          (responseData.containsKey('result') &&
+              responseData['result'] is Map<String, dynamic> &&
+              (responseData['result']['error'] != null ||
+                  responseData['result']['errors'] != null))) {
+        throw Exception('File upload failed: API returned error in response');
+      }
+    }
+  }
+
+  // ==================== Announcements API ====================
 
   Future<List<Map<String, dynamic>>> listAnnouncements({
     required String apiKey,

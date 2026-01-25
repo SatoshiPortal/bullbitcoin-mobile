@@ -1,13 +1,13 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipients_location.dart';
 
-class AllowedRecipientFiltersViewModel {
+class RecipientFilterCriteria {
   final bool? isOwner;
   final List<RecipientType> types;
   final RecipientsLocation location;
   final RecipientType? defaultSelectedType;
 
-  const AllowedRecipientFiltersViewModel({
+  const RecipientFilterCriteria({
     this.isOwner,
     this.types = RecipientType.values,
     this.location = RecipientsLocation.accountsView,
@@ -15,13 +15,13 @@ class AllowedRecipientFiltersViewModel {
   });
 
   /// Creates a copy with the given fields replaced
-  AllowedRecipientFiltersViewModel copyWith({
+  RecipientFilterCriteria copyWith({
     bool? isOwner,
     List<RecipientType>? types,
     RecipientsLocation? location,
     RecipientType? defaultSelectedType,
   }) {
-    return AllowedRecipientFiltersViewModel(
+    return RecipientFilterCriteria(
       isOwner: isOwner ?? this.isOwner,
       types: types ?? this.types,
       location: location ?? this.location,

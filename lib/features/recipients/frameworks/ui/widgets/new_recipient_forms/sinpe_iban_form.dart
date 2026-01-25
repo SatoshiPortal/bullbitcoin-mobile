@@ -8,8 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class SinpeIbanForm extends StatefulWidget {
+  const SinpeIbanForm({super.key, this.recipientType, this.hookError});
+
   final RecipientType? recipientType;
-  const SinpeIbanForm({super.key, this.recipientType});
+  final String? hookError;
 
   @override
   SinpeIbanFormState createState() => SinpeIbanFormState();
@@ -112,7 +114,10 @@ class SinpeIbanFormState extends State<SinpeIbanForm> {
             },
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );
