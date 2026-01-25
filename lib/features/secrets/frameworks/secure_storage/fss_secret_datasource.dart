@@ -45,12 +45,14 @@ class FssSecretDatasource implements SecretDatasource {
   }
 
   @override
-  Future<List<SecretModel>> getAll() async {
+  Future<Map<String, SecretModel>> getAll() async {
     final allEntries = await _flutterSecureStorage.readAll();
     // Top-level function for isolate processing
     @pragma('vm:entry-point')
-    List<SecretModel> parseSeedsInIsolate(Map<String, String> allEntries) {
-      final secrets = <SecretModel>[];
+    Map<String, SecretModel> parseSeedsInIsolate(
+      Map<String, String> allEntries,
+    ) {
+      final secretsByFingerprint = <String, SecretModel>{};
 
       for (final entry in allEntries.entries) {
         try {
@@ -66,14 +68,15 @@ class FssSecretDatasource implements SecretDatasource {
           // Try to parse as SeedSecretModel JSON
           final json = jsonDecode(value) as Map<String, dynamic>;
           final secretModel = SecretModel.fromJson(json);
-          secrets.add(secretModel);
+          final fingerprint = extractFingerprintFromStorageKey(key);
+          secretsByFingerprint[fingerprint] = secretModel;
         } catch (e) {
           // Skip keys that are not seed objects
           continue;
         }
       }
 
-      return secrets;
+      return secretsByFingerprint;
     }
 
     // Parse entries in isolate to avoid blocking UI
@@ -88,4 +91,8 @@ class FssSecretDatasource implements SecretDatasource {
 
   static String composeSeedStorageKey(String fingerprint) =>
       '$_prefix$fingerprint';
+
+  static String extractFingerprintFromStorageKey(String storageKey) {
+    return storageKey.replaceFirst(_prefix, '');
+  }
 }

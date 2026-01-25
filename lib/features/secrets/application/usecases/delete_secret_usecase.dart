@@ -1,5 +1,6 @@
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 
 import '../ports/secret_store_port.dart';
 import '../ports/secret_usage_repository_port.dart';
@@ -20,17 +21,19 @@ class DeleteSecretUseCase {
   }) : _secretStore = secretStore,
        _secretUsageRepository = secretUsageRepository;
 
-  Future<void> execute(DeleteSecretCommand command) async {
+  Future<void> execute(DeleteSecretCommand cmd) async {
     try {
-      final isSecretUsed = await _secretUsageRepository.isUsed(
-        command.fingerprint,
-      );
+      // Check the cmd inputs
+      final fingerprint = Fingerprint(cmd.fingerprint);
+
+      // Check if the secret is in use
+      final isSecretUsed = await _secretUsageRepository.isUsed(fingerprint);
 
       if (isSecretUsed) {
-        throw SecretInUseError(command.fingerprint);
+        throw SecretInUseError(cmd.fingerprint);
       }
 
-      await _secretStore.delete(command.fingerprint);
+      await _secretStore.delete(fingerprint);
     } on SecretsDomainError catch (e) {
       // Map domain errors to application errors
       // For now just wrap all in a generic business rule failed
@@ -38,7 +41,7 @@ class DeleteSecretUseCase {
     } on SecretsApplicationError {
       rethrow;
     } catch (e) {
-      throw FailedToDeleteSecretError(command.fingerprint, e);
+      throw FailedToDeleteSecretError(cmd.fingerprint, e);
     }
   }
 }

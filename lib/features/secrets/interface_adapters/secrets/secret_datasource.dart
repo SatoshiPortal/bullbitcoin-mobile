@@ -10,7 +10,7 @@ abstract interface class SecretDatasource {
 
   Future<bool> exists(String fingerprint);
 
-  Future<List<SecretModel>> getAll();
+  Future<Map<String, SecretModel>> getAll();
 
   Future<void> delete(String fingerprint);
 }

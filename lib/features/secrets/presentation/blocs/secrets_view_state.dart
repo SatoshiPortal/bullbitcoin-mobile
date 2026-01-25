@@ -8,11 +8,11 @@ abstract class SecretsViewState with _$SecretsViewState {
     required SecretsPresentationError error,
   }) = SecretsViewFailedToLoad;
   const factory SecretsViewState.loaded({
-    @Default({}) Map<String, Secret> secrets,
-    @Default([]) List<String> inUseFingerprints,
+    @Default([]) List<Secret> secrets,
+    @Default([]) List<Fingerprint> inUseFingerprints,
     @Default(false) bool isSecretBeingDeleted,
     SecretsPresentationError? deletionError,
-    @Default({}) Map<String, Secret> legacySecrets,
+    @Default([]) List<Secret> legacySecrets,
   }) = SecretsViewLoaded;
   const SecretsViewState._();
 
@@ -44,21 +44,21 @@ abstract class SecretsViewState with _$SecretsViewState {
             deletionError,
             legacySecrets,
           ) {
-            final secretModels = secrets.entries
+            final secretModels = secrets
                 .map(
-                  (e) => SecretViewModel(
-                    fingerprint: e.key,
-                    secret: e.value,
+                  (secret) => SecretViewModel(
+                    fingerprint: secret.fingerprint,
+                    secret: secret,
                     isLegacy: false,
-                    isInUse: inUseFingerprints.contains(e.key),
+                    isInUse: inUseFingerprints.contains(secret.fingerprint),
                   ),
                 )
                 .toList();
-            final legacySecretModels = legacySecrets.entries
+            final legacySecretModels = legacySecrets
                 .map(
-                  (e) => SecretViewModel(
-                    fingerprint: e.key,
-                    secret: e.value,
+                  (secret) => SecretViewModel(
+                    fingerprint: secret.fingerprint,
+                    secret: secret,
                     isLegacy: true,
                     isInUse: false,
                   ),

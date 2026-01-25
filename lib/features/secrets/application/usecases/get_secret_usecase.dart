@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 
 class GetSecretQuery {
   final String fingerprint;
@@ -22,8 +23,13 @@ class GetSecretUseCase {
     : _secretStore = secretStore;
 
   Future<GetSecretResult> execute(GetSecretQuery query) async {
+    Fingerprint? fingerprint;
     try {
-      final secret = await _secretStore.load(query.fingerprint);
+      // Check the query inputs
+      final fingerprint = Fingerprint(query.fingerprint);
+
+      // Load the secret from the store
+      final secret = await _secretStore.load(fingerprint);
 
       return GetSecretResult(secret: secret);
     } on SecretsDomainError catch (e) {
@@ -33,7 +39,7 @@ class GetSecretUseCase {
     } on SecretsApplicationError {
       rethrow;
     } catch (e) {
-      throw FailedToGetSecretError(query.fingerprint, e);
+      throw FailedToGetSecretError(fingerprint, e);
     }
   }
 }

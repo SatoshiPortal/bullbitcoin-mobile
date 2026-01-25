@@ -1,43 +1,29 @@
 import 'package:bb_mobile/features/secrets/application/ports/legacy_seed_secret_store_port.dart';
-import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
 
 class LoadLegacySecretsQuery {
   const LoadLegacySecretsQuery();
 }
 
 class LoadLegacySecretsResult {
-  final Map<String, Secret> secretsByFingerprint;
+  final List<Secret> secrets;
 
-  const LoadLegacySecretsResult({required this.secretsByFingerprint});
+  const LoadLegacySecretsResult({required this.secrets});
 }
 
 class LoadLegacySecretsUseCase {
   final LegacySecretStorePort _legacySecretStore;
-  final SecretCryptoPort _secretCrypto;
 
-  LoadLegacySecretsUseCase({
-    required LegacySecretStorePort legacySecretStore,
-    required SecretCryptoPort secretCrypto,
-  }) : _legacySecretStore = legacySecretStore,
-       _secretCrypto = secretCrypto;
+  LoadLegacySecretsUseCase({required LegacySecretStorePort legacySecretStore})
+    : _legacySecretStore = legacySecretStore;
 
   Future<LoadLegacySecretsResult> execute(LoadLegacySecretsQuery query) async {
     try {
       final secrets = await _legacySecretStore.loadAll();
-      Map<String, Secret> secretsByFingerprint = {};
-      for (final secret in secrets) {
-        final fingerprint = await _secretCrypto.getFingerprintFromSecret(
-          secret,
-        );
-        secretsByFingerprint[fingerprint] = secret;
-      }
 
-      return LoadLegacySecretsResult(
-        secretsByFingerprint: secretsByFingerprint,
-      );
+      return LoadLegacySecretsResult(secrets: secrets);
     } on SecretsDomainError catch (e) {
       // Map domain errors to application errors
       // For now just wrap all in a generic business rule failed

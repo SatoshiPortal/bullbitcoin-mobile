@@ -1,6 +1,9 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
+import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
 import 'package:bb_mobile/features/secrets/application/ports/legacy_seed_secret_store_port.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -10,9 +13,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// This allows users to access seeds even if migration failed or legacy code is removed.
 class LegacySecretStore implements LegacySecretStorePort {
   final FlutterSecureStorage _flutterSecureStorage;
+  final SecretCryptoPort _secretCrypto;
 
-  LegacySecretStore({required FlutterSecureStorage flutterSecureStorage})
-    : _flutterSecureStorage = flutterSecureStorage;
+  LegacySecretStore({
+    required FlutterSecureStorage flutterSecureStorage,
+    required SecretCryptoPort secretCrypto,
+  }) : _flutterSecureStorage = flutterSecureStorage,
+       _secretCrypto = secretCrypto;
 
   @override
   Future<List<Secret>> loadAll() async {
@@ -58,10 +65,19 @@ class LegacySecretStore implements LegacySecretStorePort {
                   }
                   processedPassphrases.add(passphrase);
 
+                  final passphraseObj = passphrase.isEmpty
+                      ? null
+                      : Passphrase(passphrase);
+                  final fingerprint = _secretCrypto.getFingerprintFromMnemonic(
+                    mnemonicWords: MnemonicWords(mnemonicWords),
+                    passphrase: passphraseObj,
+                  );
+
                   secrets.add(
                     MnemonicSecret(
-                      words: mnemonicWords,
-                      passphrase: passphrase.isEmpty ? null : passphrase,
+                      words: MnemonicWords(mnemonicWords),
+                      passphrase: passphraseObj,
+                      fingerprint: fingerprint,
                     ),
                   );
                 }
@@ -69,14 +85,27 @@ class LegacySecretStore implements LegacySecretStorePort {
 
               // If no passphrases were processed, add the base mnemonic
               if (processedPassphrases.isEmpty) {
+                final fingerprint = _secretCrypto.getFingerprintFromMnemonic(
+                  mnemonicWords: MnemonicWords(mnemonicWords),
+                );
                 secrets.add(
-                  MnemonicSecret(words: mnemonicWords, passphrase: null),
+                  MnemonicSecret(
+                    fingerprint: fingerprint,
+                    words: MnemonicWords(mnemonicWords),
+                  ),
                 );
               }
             } else {
               // No passphrases array, just add the base mnemonic
+              final fingerprint = _secretCrypto.getFingerprintFromMnemonic(
+                mnemonicWords: MnemonicWords(mnemonicWords),
+              );
               secrets.add(
-                MnemonicSecret(words: mnemonicWords, passphrase: null),
+                MnemonicSecret(
+                  fingerprint: fingerprint,
+                  words: MnemonicWords(mnemonicWords),
+                  passphrase: null,
+                ),
               );
             }
           } catch (e) {

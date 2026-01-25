@@ -1,5 +1,8 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
+import 'package:bb_mobile/features/secrets/domain/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
+import 'package:bb_mobile/features/secrets/domain/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/ports/mnemonic_generator_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';

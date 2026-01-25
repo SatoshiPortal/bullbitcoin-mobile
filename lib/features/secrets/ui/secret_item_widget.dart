@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/secret.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -232,12 +232,12 @@ class _SecretItemWidgetState extends State<SecretItemWidget> {
         crossAxisAlignment: .start,
         children: [
           BBText(
-            words.join(' '),
+            words.value.join(' '),
             style: context.font.bodyMedium,
             color: context.appColors.onSurface,
             maxLines: 5,
           ),
-          if (passphrase != null && passphrase.isNotEmpty) ...[
+          if (passphrase != null && passphrase.value.isNotEmpty) ...[
             const SizedBox(height: 8),
             BBText(
               context.loc.allSeedViewPassphraseLabel,
@@ -246,7 +246,7 @@ class _SecretItemWidgetState extends State<SecretItemWidget> {
               ),
             ),
             BBText(
-              passphrase,
+              passphrase.value,
               style: context.font.bodyMedium,
               color: context.appColors.onSurface,
             ),
@@ -254,7 +254,7 @@ class _SecretItemWidgetState extends State<SecretItemWidget> {
         ],
       ),
       SeedSecret(:final bytes) => BBText(
-        bytes.join(' '),
+        bytes.value.join(' '),
         style: context.font.bodyMedium,
         color: context.appColors.onSurface,
         maxLines: 5,

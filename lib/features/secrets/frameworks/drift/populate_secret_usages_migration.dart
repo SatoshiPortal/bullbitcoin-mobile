@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/secrets/interface_adapters/secret_usage/secret_usage_mappers.dart';
 import 'package:drift/drift.dart';
 
 /// Migration function to populate secret_usages table from existing wallet_metadata
@@ -28,8 +28,8 @@ class PopulateSecretUsagesMigration {
           .insert(
             SecretUsagesCompanion(
               fingerprint: Value(fingerprint),
-              purpose: const Value(SecretUsagePurpose.wallet),
-              consumerRef: Value(walletId),
+              consumerType: const Value(SecretConsumerType.wallet),
+              walletId: Value(walletId),
             ),
             mode: InsertMode
                 .insertOrIgnore, // Ignore if (purpose, consumerRef) exists
@@ -49,8 +49,8 @@ class PopulateSecretUsagesMigration {
           .insert(
             SecretUsagesCompanion(
               fingerprint: Value(fingerprint),
-              purpose: const Value(SecretUsagePurpose.bip85),
-              consumerRef: Value(path),
+              consumerType: const Value(SecretConsumerType.bip85),
+              bip85Path: Value(path),
             ),
             mode: InsertMode
                 .insertOrIgnore, // Ignore if (purpose, consumerRef) exists

@@ -1,44 +1,51 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
+import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usage_usecase.dart';
+import 'package:bb_mobile/features/secrets/application/usecases/get_secret_usages_by_consumer_usecase.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/create_new_mnemonic_secret_usecase.dart';
-import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usage_with_fingerprint_check_usecase.dart';
+import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usages_of_consumer_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/get_secret_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/import_mnemonic_secret_usecase.dart';
-import 'package:bb_mobile/features/secrets/public/secrets_facade_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_usage_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
+import 'package:bb_mobile/features/secrets/public/secrets_facade_error.dart';
 
 class SecretsFacade {
   final CreateNewMnemonicSecretUseCase _createNewMnemonicSecretUseCase;
   final ImportMnemonicSecretUseCase _importMnemonicSecretUseCase;
   final GetSecretUseCase _getSecretUseCase;
-  final DeregisterSecretUsageWithFingerprintCheckUseCase
-  _deregisterSecretUsageWithFingerprintCheck;
+  final GetSecretUsagesByConsumerUseCase _getSecretUsagesByConsumerUseCase;
+  final DeregisterSecretUsageUseCase _deregisterSecretUsageUseCase;
+  final DeregisterSecretUsagesOfConsumerUseCase
+  _deregisterSecretUsagesOfConsumerUseCase;
 
   SecretsFacade({
     required CreateNewMnemonicSecretUseCase createNewSecretMnemonicUseCase,
     required ImportMnemonicSecretUseCase importSecretMnemonicUseCase,
     required GetSecretUseCase getSecretUseCase,
-    required DeregisterSecretUsageWithFingerprintCheckUseCase
-    deregisterSecretUsageWithFingerprintCheck,
+    required GetSecretUsagesByConsumerUseCase getSecretUsagesByConsumerUseCase,
+    required DeregisterSecretUsageUseCase deregisterSecretUsageUseCase,
+    required DeregisterSecretUsagesOfConsumerUseCase
+    deregisterSecretUsagesOfConsumerUseCase,
   }) : _createNewMnemonicSecretUseCase = createNewSecretMnemonicUseCase,
        _importMnemonicSecretUseCase = importSecretMnemonicUseCase,
        _getSecretUseCase = getSecretUseCase,
-       _deregisterSecretUsageWithFingerprintCheck =
-           deregisterSecretUsageWithFingerprintCheck;
+       _getSecretUsagesByConsumerUseCase = getSecretUsagesByConsumerUseCase,
+       _deregisterSecretUsageUseCase = deregisterSecretUsageUseCase,
+       _deregisterSecretUsagesOfConsumerUseCase =
+           deregisterSecretUsagesOfConsumerUseCase;
 
-  Future<({String fingerprint, MnemonicSecret secret})> createNewMnemonic({
+  Future<MnemonicSecret> createNewMnemonicForWallet({
     String? passphrase,
-    required SecretUsagePurpose purpose,
-    required String consumerRef,
+    required String walletId,
   }) async {
     try {
-      final command = CreateNewMnemonicSecretCommand(
+      final command = CreateNewMnemonicSecretCommand.forWallet(
         passphrase: passphrase,
-        purpose: purpose,
-        consumerRef: consumerRef,
+        walletId: walletId,
       );
       final result = await _createNewMnemonicSecretUseCase.execute(command);
-      return (fingerprint: result.fingerprint, secret: result.secret);
+      return result.secret;
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {
@@ -46,18 +53,16 @@ class SecretsFacade {
     }
   }
 
-  Future<String> importMnemonic({
+  Future<Fingerprint> importMnemonicForWallet({
     required List<String> mnemonicWords,
     String? passphrase,
-    required SecretUsagePurpose purpose,
-    required String consumerRef,
+    required String walletId,
   }) async {
     try {
-      final command = ImportMnemonicSecretCommand(
+      final command = ImportMnemonicSecretCommand.forWallet(
         mnemonicWords: mnemonicWords,
         passphrase: passphrase,
-        purpose: purpose,
-        consumerRef: consumerRef,
+        walletId: walletId,
       );
       final result = await _importMnemonicSecretUseCase.execute(command);
       return result.fingerprint;
@@ -80,21 +85,39 @@ class SecretsFacade {
     }
   }
 
-  Future<void> deregisterUsage({
-    required String fingerprint,
-    required String consumerRef,
-    required SecretUsagePurpose purpose,
+  Future<List<SecretUsage>> getSecretUsagesByWalletConsumer({
+    required String walletId,
   }) async {
     try {
-      final command = DeregisterSecretUsageWithFingerprintCheckCommand(
-        fingerprint: fingerprint,
-        purpose: purpose,
-        consumerRef: consumerRef,
+      final query = GetSecretUsagesByConsumerQuery.byWallet(walletId: walletId);
+      final result = await _getSecretUsagesByConsumerUseCase.execute(query);
+      return result.usages;
+    } on SecretsApplicationError catch (e) {
+      throw SecretsFacadeError.fromApplicationError(e);
+    } catch (e) {
+      throw UnknownSecretsFacadeError(e);
+    }
+  }
+
+  Future<void> deregisterUsage({required int usageId}) async {
+    try {
+      final command = DeregisterSecretUsageCommand(secretUsageId: usageId);
+      await _deregisterSecretUsageUseCase.execute(command);
+    } on SecretsApplicationError catch (e) {
+      throw SecretsFacadeError.fromApplicationError(e);
+    } catch (e) {
+      throw UnknownSecretsFacadeError(e);
+    }
+  }
+
+  Future<void> deregisterUsagesOfWalletConsumer({
+    required String walletId,
+  }) async {
+    try {
+      final command = DeregisterSecretUsagesOfConsumerCommand.ofWallet(
+        walletId: walletId,
       );
-      await _deregisterSecretUsageWithFingerprintCheck.execute(command);
-    } on SecretUsageNotFoundError {
-      // If no usage found, nothing to deregister
-      return;
+      await _deregisterSecretUsagesOfConsumerUseCase.execute(command);
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {

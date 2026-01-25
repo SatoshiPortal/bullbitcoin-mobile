@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
 import 'package:bb_mobile/features/secrets/application/ports/legacy_seed_secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
@@ -64,8 +67,8 @@ void main() {
         // Arrange
         final query = LoadLegacySecretsQuery();
 
-        final secret1 = MnemonicSecret(words: testMnemonicWords1);
-        final secret2 = MnemonicSecret(words: testMnemonicWords2);
+        final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+        final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
         final secrets = [secret1, secret2];
 
         const fingerprint1 = 'legacy-fingerprint-1';
@@ -115,7 +118,7 @@ void main() {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret = MnemonicSecret(words: testMnemonicWords1);
+      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
       const fingerprint = 'single-legacy-fingerprint';
 
       when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
@@ -139,8 +142,8 @@ void main() {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final mnemonicSecret = MnemonicSecret(words: testMnemonicWords1);
-      final bytesSecret = SeedSecret(List<int>.generate(32, (i) => i));
+      final mnemonicSecret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final bytesSecret = SeedSecret(SeedBytes(List<int>.generate(32, (i) => i)));
       final secrets = [mnemonicSecret, bytesSecret];
 
       const fingerprint1 = 'legacy-mnemonic-fp';
@@ -236,7 +239,7 @@ void main() {
         // Arrange
         final query = LoadLegacySecretsQuery();
 
-        final secret = MnemonicSecret(words: testMnemonicWords1);
+        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
         final domainError = TestSecretsDomainError(
           'Invalid legacy seed format',
         );
@@ -294,7 +297,7 @@ void main() {
         // Arrange
         final query = LoadLegacySecretsQuery();
 
-        final secret = MnemonicSecret(words: testMnemonicWords1);
+        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
         final cryptoError = Exception('Crypto library error');
 
         when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
@@ -346,8 +349,8 @@ void main() {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret1 = MnemonicSecret(words: testMnemonicWords1);
-      final secret2 = MnemonicSecret(words: testMnemonicWords2);
+      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
       final secrets = [secret1, secret2];
 
       final callOrder = <String>[];
@@ -382,7 +385,7 @@ void main() {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret = MnemonicSecret(words: testMnemonicWords1);
+      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
 
       when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
       when(
@@ -405,9 +408,9 @@ void main() {
         // Arrange
         final query = LoadLegacySecretsQuery();
 
-        final secret1 = MnemonicSecret(words: testMnemonicWords1);
-        final secret2 = MnemonicSecret(words: testMnemonicWords2);
-        final secret3 = SeedSecret(List<int>.generate(32, (i) => i));
+        final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+        final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
+        final secret3 = SeedSecret(SeedBytes(List<int>.generate(32, (i) => i)));
 
         when(
           mockLegacySecretStore.loadAll(),
@@ -436,8 +439,8 @@ void main() {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret1 = MnemonicSecret(words: testMnemonicWords1);
-      final secret2 = SeedSecret([1, 2, 3, 4]);
+      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret2 = SeedSecret(SeedBytes([1, 2, 3, 4]));
       const fp1 = 'legacy-fp-abc';
       const fp2 = 'legacy-fp-xyz';
 
@@ -466,7 +469,7 @@ void main() {
 
       final secrets = List.generate(
         10,
-        (i) => SeedSecret(List<int>.generate(32, (j) => i + j)),
+        (i) => SeedSecret(SeedBytes(List<int>.generate(32, (j) => i + j))),
       );
 
       when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => secrets);
@@ -498,7 +501,7 @@ void main() {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret = MnemonicSecret(words: testMnemonicWords1);
+      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
 
       when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
       when(

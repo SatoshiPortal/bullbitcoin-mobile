@@ -1,9 +1,9 @@
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
+import 'package:bb_mobile/features/secrets/domain/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/get_secret_usage_by_consumer_usecase.dart';
 import 'package:bb_mobile/features/secrets/domain/entities/secret_usage_entity.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

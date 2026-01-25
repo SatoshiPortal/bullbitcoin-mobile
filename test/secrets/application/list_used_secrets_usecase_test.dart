@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
+import 'package:bb_mobile/features/secrets/domain/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
 import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/list_used_secrets_usecase.dart';

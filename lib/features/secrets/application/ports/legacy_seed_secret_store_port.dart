@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/secret.dart';
 
 // Named store instead of repository since it only handles the secrets themselves,
 // and doesn't have any complex querying capabilities.

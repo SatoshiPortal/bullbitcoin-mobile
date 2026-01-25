@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 
 class SecretViewModel {
-  final String fingerprint;
+  final Fingerprint fingerprint;
   final Secret secret;
   final bool isLegacy;
   final bool isInUse;

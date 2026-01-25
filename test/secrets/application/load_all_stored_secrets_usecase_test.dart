@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
@@ -64,8 +67,8 @@ void main() {
         // Arrange
         final query = LoadAllStoredSecretsQuery();
 
-        final secret1 = MnemonicSecret(words: testMnemonicWords1);
-        final secret2 = MnemonicSecret(words: testMnemonicWords2);
+        final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+        final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
         final secrets = [secret1, secret2];
 
         const fingerprint1 = 'fingerprint-1';
@@ -115,7 +118,7 @@ void main() {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret = MnemonicSecret(words: testMnemonicWords1);
+      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
       const fingerprint = 'single-fingerprint';
 
       when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
@@ -139,8 +142,8 @@ void main() {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final mnemonicSecret = MnemonicSecret(words: testMnemonicWords1);
-      final bytesSecret = SeedSecret(List<int>.generate(32, (i) => i));
+      final mnemonicSecret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final bytesSecret = SeedSecret(SeedBytes(List<int>.generate(32, (i) => i)));
       final secrets = [mnemonicSecret, bytesSecret];
 
       const fingerprint1 = 'mnemonic-fp';
@@ -174,10 +177,10 @@ void main() {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      const passphrase = 'my-passphrase';
+      const passphraseStr = 'my-passphrase';
       final secret = MnemonicSecret(
-        words: testMnemonicWords1,
-        passphrase: passphrase,
+        words: MnemonicWords(testMnemonicWords1),
+        passphrase: Passphrase(passphraseStr),
       );
       const fingerprint = 'passphrase-fp';
 
@@ -194,7 +197,7 @@ void main() {
       expect(result.secretsByFingerprint[fingerprint], secret);
       final retrievedSecret =
           result.secretsByFingerprint[fingerprint] as MnemonicSecret;
-      expect(retrievedSecret.passphrase, passphrase);
+      expect(retrievedSecret.passphrase?.value, passphraseStr);
 
       // Verify port interactions
       verify(mockSecretStore.loadAll()).called(1);
@@ -236,7 +239,7 @@ void main() {
         // Arrange
         final query = LoadAllStoredSecretsQuery();
 
-        final secret = MnemonicSecret(words: testMnemonicWords1);
+        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
         final domainError = TestSecretsDomainError('Invalid seed format');
 
         when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
@@ -292,7 +295,7 @@ void main() {
         // Arrange
         final query = LoadAllStoredSecretsQuery();
 
-        final secret = MnemonicSecret(words: testMnemonicWords1);
+        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
         final cryptoError = Exception('Crypto library error');
 
         when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
@@ -344,8 +347,8 @@ void main() {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret1 = MnemonicSecret(words: testMnemonicWords1);
-      final secret2 = MnemonicSecret(words: testMnemonicWords2);
+      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
       final secrets = [secret1, secret2];
 
       final callOrder = <String>[];
@@ -380,7 +383,7 @@ void main() {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret = MnemonicSecret(words: testMnemonicWords1);
+      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
 
       when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
       when(
@@ -401,9 +404,9 @@ void main() {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret1 = MnemonicSecret(words: testMnemonicWords1);
-      final secret2 = MnemonicSecret(words: testMnemonicWords2);
-      final secret3 = SeedSecret(List<int>.generate(32, (i) => i));
+      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
+      final secret3 = SeedSecret(SeedBytes(List<int>.generate(32, (i) => i)));
 
       when(
         mockSecretStore.loadAll(),
@@ -431,8 +434,8 @@ void main() {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret1 = MnemonicSecret(words: testMnemonicWords1);
-      final secret2 = SeedSecret([1, 2, 3, 4]);
+      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret2 = SeedSecret(SeedBytes([1, 2, 3, 4]));
       const fp1 = 'custom-fp-abc';
       const fp2 = 'custom-fp-xyz';
 
@@ -461,7 +464,7 @@ void main() {
 
       final secrets = List.generate(
         10,
-        (i) => SeedSecret(List<int>.generate(32, (j) => i + j)),
+        (i) => SeedSecret(SeedBytes(List<int>.generate(32, (j) => i + j))),
       );
 
       when(mockSecretStore.loadAll()).thenAnswer((_) async => secrets);

@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/secret_consumer.dart';
 
 sealed class SecretsApplicationError implements Exception {
   final String message;
@@ -31,6 +32,19 @@ class FailedToDeleteSecretError extends SecretsApplicationError {
     : super('Failed to delete secret $fingerprint.', cause: cause);
 }
 
+class FailedToDeregisterSecretUsagesOfConsumerError
+    extends SecretsApplicationError {
+  final SecretConsumer? consumer;
+
+  const FailedToDeregisterSecretUsagesOfConsumerError(
+    this.consumer,
+    Object? cause,
+  ) : super(
+        'Failed to deregister secret usages for consumer $consumer.',
+        cause: cause,
+      );
+}
+
 class FailedToRegisterSecretUsageError extends SecretsApplicationError {
   final String fingerprint;
 
@@ -59,7 +73,7 @@ class FailedToImportMnemonicSecretError extends SecretsApplicationError {
 }
 
 class FailedToGetSecretError extends SecretsApplicationError {
-  final String fingerprint;
+  final Fingerprint? fingerprint;
 
   const FailedToGetSecretError(this.fingerprint, Object? cause)
     : super('Failed to get secret for $fingerprint.', cause: cause);
@@ -80,47 +94,17 @@ class FailedToCreateNewMnemonicSecretError extends SecretsApplicationError {
     : super('Failed to create mnemonic secret.', cause: cause);
 }
 
-class SecretUsageNotFoundError extends SecretsApplicationError {
-  final SecretUsagePurpose purpose;
-  final String consumerRef;
+class FailedToGetSecretUsagesByConsumerError extends SecretsApplicationError {
+  final SecretConsumer? consumer;
 
-  const SecretUsageNotFoundError({
-    required this.purpose,
-    required this.consumerRef,
-  }) : super(
-         'Secret usage not found for purpose $purpose and consumerRef $consumerRef.',
-       );
-}
-
-class FailedToGetSecretUsageByConsumerError extends SecretsApplicationError {
-  final SecretUsagePurpose purpose;
-  final String consumerRef;
-
-  const FailedToGetSecretUsageByConsumerError({
-    required this.purpose,
-    required this.consumerRef,
-    Object? cause,
-  }) : super(
-         'Failed to get secret usage for purpose $purpose and consumerRef $consumerRef.',
-         cause: cause,
-       );
+  const FailedToGetSecretUsagesByConsumerError({this.consumer, Object? cause})
+    : super(
+        'Failed to get secret usages for consumer $consumer.',
+        cause: cause,
+      );
 }
 
 class FailedToLoadLegacySecretsError extends SecretsApplicationError {
   const FailedToLoadLegacySecretsError(Object? cause)
     : super('Failed to load legacy secrets.', cause: cause);
-}
-
-class FingerprintMismatchError extends SecretsApplicationError {
-  final int secretUsageId;
-  final SecretUsagePurpose purpose;
-  final String consumerRef;
-
-  const FingerprintMismatchError({
-    required this.secretUsageId,
-    required this.purpose,
-    required this.consumerRef,
-  }) : super(
-         'Fingerprint mismatch for usage with purpose $purpose and consumerRef $consumerRef.',
-       );
 }

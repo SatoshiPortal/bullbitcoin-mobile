@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
+import 'package:bb_mobile/features/secrets/domain/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usage_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usage_with_fingerprint_check_usecase.dart';

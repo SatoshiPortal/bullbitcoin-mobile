@@ -1,29 +1,60 @@
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/secret_consumer.dart';
 
-class ImportMnemonicSecretCommand {
-  List<String> mnemonicWords;
-  String? passphrase;
-  SecretUsagePurpose purpose;
-  String consumerRef;
+sealed class ImportMnemonicSecretCommand {
+  final List<String> mnemonicWords;
+  final String? passphrase;
 
-  ImportMnemonicSecretCommand({
+  const ImportMnemonicSecretCommand({
     required this.mnemonicWords,
     this.passphrase,
-    required this.purpose,
-    required this.consumerRef,
+  });
+
+  const factory ImportMnemonicSecretCommand.forWallet({
+    required String walletId,
+    required List<String> mnemonicWords,
+    String? passphrase,
+  }) = ImportMnemonicSecretForWalletCommand;
+
+  const factory ImportMnemonicSecretCommand.forBip85({
+    required String bip85Path,
+    required List<String> mnemonicWords,
+    String? passphrase,
+  }) = ImportMnemonicSecretForBip85Command;
+}
+
+class ImportMnemonicSecretForWalletCommand extends ImportMnemonicSecretCommand {
+  final String walletId;
+
+  const ImportMnemonicSecretForWalletCommand({
+    required this.walletId,
+    required super.mnemonicWords,
+    super.passphrase,
+  });
+}
+
+class ImportMnemonicSecretForBip85Command extends ImportMnemonicSecretCommand {
+  final String bip85Path;
+
+  const ImportMnemonicSecretForBip85Command({
+    required this.bip85Path,
+    required super.mnemonicWords,
+    super.passphrase,
   });
 }
 
 class ImportMnemonicSecretResult {
-  final String fingerprint;
+  final Fingerprint fingerprint;
 
-  ImportMnemonicSecretResult({required this.fingerprint});
+  const ImportMnemonicSecretResult({required this.fingerprint});
 }
 
 class ImportMnemonicSecretUseCase {
@@ -44,22 +75,37 @@ class ImportMnemonicSecretUseCase {
     ImportMnemonicSecretCommand command,
   ) async {
     try {
-      // First create the secret to store
-      final secret = MnemonicSecret(
-        words: command.mnemonicWords,
-        passphrase: command.passphrase,
+      // Check the command inputs
+      final consumer = switch (command) {
+        ImportMnemonicSecretForWalletCommand c => WalletConsumer(c.walletId),
+        ImportMnemonicSecretForBip85Command c => Bip85Consumer(c.bip85Path),
+      };
+
+      final mnemonicWords = MnemonicWords(command.mnemonicWords);
+      final passphrase = command.passphrase != null
+          ? Passphrase(command.passphrase!)
+          : null;
+
+      // Calculate the fingerprint to identify the seed
+      final fingerprint = await _secretCrypto.getFingerprintFromMnemonic(
+        mnemonicWords: mnemonicWords,
+        passphrase: passphrase,
       );
 
-      final fingerprint = await _secretCrypto.getFingerprintFromSecret(secret);
+      // Create the seed secret from the mnemonic (and optional passphrase) with validated value objects
+      final secret = MnemonicSecret(
+        fingerprint: fingerprint,
+        words: mnemonicWords,
+        passphrase: passphrase,
+      );
 
       // Make sure the secret is successfully stored first before marking usage
-      await _secretStore.save(fingerprint: fingerprint, secret: secret);
+      await _secretStore.save(secret);
 
       // Track usage
       await _secretUsageRepository.add(
         fingerprint: fingerprint,
-        purpose: command.purpose,
-        consumerRef: command.consumerRef,
+        consumer: consumer,
       );
 
       return ImportMnemonicSecretResult(fingerprint: fingerprint);

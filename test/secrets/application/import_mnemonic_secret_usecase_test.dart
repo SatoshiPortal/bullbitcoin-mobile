@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
-import 'package:bb_mobile/core/primitives/secrets/secret_usage_purpose.dart';
+import 'package:bb_mobile/features/secrets/domain/secret.dart';
+import 'package:bb_mobile/features/secrets/domain/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
@@ -89,7 +89,7 @@ void main() {
               ).captured.single
               as MnemonicSecret;
 
-      expect(capturedSecret.words, testMnemonicWords);
+      expect(capturedSecret.words.value, testMnemonicWords);
       expect(capturedSecret.passphrase, isNull);
 
       verify(
@@ -97,7 +97,7 @@ void main() {
           fingerprint: testFingerprint,
           secret: argThat(
             isA<MnemonicSecret>()
-                .having((s) => s.words, 'words', testMnemonicWords)
+                .having((s) => s.words.value, 'words', testMnemonicWords)
                 .having((s) => s.passphrase, 'passphrase', isNull),
             named: 'secret',
           ),
@@ -153,8 +153,8 @@ void main() {
           fingerprint: testFingerprint,
           secret: argThat(
             isA<MnemonicSecret>()
-                .having((s) => s.words, 'words', testMnemonicWords)
-                .having((s) => s.passphrase, 'passphrase', testPassphrase),
+                .having((s) => s.words.value, 'words', testMnemonicWords)
+                .having((s) => s.passphrase?.value, 'passphrase', testPassphrase),
             named: 'secret',
           ),
         ),

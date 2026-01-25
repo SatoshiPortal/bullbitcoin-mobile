@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
+
 abstract class SecretsViewEvent {
   const SecretsViewEvent();
 }
@@ -7,7 +9,7 @@ class SecretsViewLoadRequested extends SecretsViewEvent {
 }
 
 class SecretsViewDeleteRequested extends SecretsViewEvent {
-  final String fingerprint;
+  final Fingerprint fingerprint;
 
   const SecretsViewDeleteRequested({required this.fingerprint});
 }

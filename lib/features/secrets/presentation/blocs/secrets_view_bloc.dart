@@ -1,11 +1,12 @@
-import 'package:bb_mobile/core/primitives/secrets/secret.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/list_used_secrets_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/load_all_stored_secrets_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/load_legacy_secrets_usecase.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 import 'package:bb_mobile/features/secrets/presentation/blocs/secrets_view_event.dart';
-import 'package:bb_mobile/features/secrets/presentation/secrets_presentation_errors.dart';
+import 'package:bb_mobile/features/secrets/presentation/secrets_presentation_error.dart';
 import 'package:bb_mobile/features/secrets/presentation/view_models/secret_view_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -67,9 +68,9 @@ class SecretsViewBloc extends Bloc<SecretsViewEvent, SecretsViewState> {
 
       emit(
         SecretsViewState.loaded(
-          secrets: loadAllStoredSecretsResult.secretsByFingerprint,
+          secrets: loadAllStoredSecretsResult.secrets,
           inUseFingerprints: listUsedSecretsResult.fingerprints,
-          legacySecrets: loadLegacySecretsResult?.secretsByFingerprint ?? {},
+          legacySecrets: loadLegacySecretsResult?.secrets ?? [],
         ),
       );
     } on SecretsApplicationError catch (e) {
@@ -99,14 +100,16 @@ class SecretsViewBloc extends Bloc<SecretsViewEvent, SecretsViewState> {
 
       try {
         await _deleteSecretUsecase.execute(
-          DeleteSecretCommand(fingerprint: event.fingerprint),
+          DeleteSecretCommand(fingerprint: event.fingerprint.value),
         );
 
         // After successful deletion, remove the secret from the state too
-        final remainingSecrets = Map<String, Secret>.from(
+        final remainingSecrets = List<Secret>.from(
           (state as SecretsViewLoaded).secrets,
         );
-        remainingSecrets.remove(event.fingerprint);
+        remainingSecrets.removeWhere(
+          (secret) => secret.fingerprint == event.fingerprint,
+        );
         final remainingInUseFingerprints = (state as SecretsViewLoaded)
             .inUseFingerprints
             .where((fp) => fp != event.fingerprint)

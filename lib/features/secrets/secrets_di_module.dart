@@ -8,8 +8,8 @@ import 'package:bb_mobile/features/secrets/application/ports/secret_usage_reposi
 import 'package:bb_mobile/features/secrets/application/usecases/create_new_mnemonic_secret_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/delete_secret_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usage_usecase.dart';
-import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usage_with_fingerprint_check_usecase.dart';
-import 'package:bb_mobile/features/secrets/application/usecases/get_secret_usage_by_consumer_usecase.dart';
+import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usages_of_consumer_usecase.dart';
+import 'package:bb_mobile/features/secrets/application/usecases/get_secret_usages_by_consumer_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/get_secret_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/import_mnemonic_secret_usecase.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/import_seed_secret_usecase.dart';
@@ -40,6 +40,9 @@ class SecretsDiModule implements FeatureDiModule {
     // Seed secret datasource interface
     sl.registerLazySingleton<SecretDatasource>(() => sl<FssSecretDatasource>());
 
+    // Seed crypto operations (BIP32/BIP39)
+    sl.registerLazySingleton<SecretCryptoPort>(() => Bip32And39SecretCrypto());
+
     // Seed secret store (repository pattern)
     sl.registerLazySingleton<SecretStorePort>(
       () => SecretStore(secretDatasource: sl()),
@@ -47,16 +50,13 @@ class SecretsDiModule implements FeatureDiModule {
 
     // Legacy seed secret store (read-only for old format)
     sl.registerLazySingleton<LegacySecretStorePort>(
-      () => LegacySecretStore(flutterSecureStorage: sl()),
+      () => LegacySecretStore(flutterSecureStorage: sl(), secretCrypto: sl()),
     );
 
     // Seed usage repository (Drift/SQLite)
     sl.registerLazySingleton<SecretUsageRepositoryPort>(
       () => DriftSecretUsageRepository(database: sl()),
     );
-
-    // Seed crypto operations (BIP32/BIP39)
-    sl.registerLazySingleton<SecretCryptoPort>(() => Bip32And39SecretCrypto());
 
     // Mnemonic generator (BDK)
     sl.registerLazySingleton<MnemonicGeneratorPort>(
@@ -69,7 +69,6 @@ class SecretsDiModule implements FeatureDiModule {
 
   @override
   Future<void> registerUseCases() async {
-    // Create and import
     sl.registerFactory<CreateNewMnemonicSecretUseCase>(
       () => CreateNewMnemonicSecretUseCase(
         mnemonicGenerator: sl(),
@@ -77,6 +76,27 @@ class SecretsDiModule implements FeatureDiModule {
         secretStore: sl(),
         secretUsageRepository: sl(),
       ),
+    );
+
+    sl.registerFactory<DeleteSecretUseCase>(
+      () => DeleteSecretUseCase(secretStore: sl(), secretUsageRepository: sl()),
+    );
+
+    sl.registerFactory<DeregisterSecretUsageUseCase>(
+      () => DeregisterSecretUsageUseCase(secretUsageRepository: sl()),
+    );
+
+    sl.registerFactory<DeregisterSecretUsagesOfConsumerUseCase>(
+      () =>
+          DeregisterSecretUsagesOfConsumerUseCase(secretUsageRepository: sl()),
+    );
+
+    sl.registerFactory<GetSecretUsagesByConsumerUseCase>(
+      () => GetSecretUsagesByConsumerUseCase(secretUsageRepository: sl()),
+    );
+
+    sl.registerFactory<GetSecretUseCase>(
+      () => GetSecretUseCase(secretStore: sl()),
     );
 
     sl.registerFactory<ImportMnemonicSecretUseCase>(
@@ -95,44 +115,16 @@ class SecretsDiModule implements FeatureDiModule {
       ),
     );
 
-    // Read
-    sl.registerFactory<GetSecretUseCase>(
-      () => GetSecretUseCase(secretStore: sl()),
-    );
-
-    sl.registerFactory<LoadAllStoredSecretsUseCase>(
-      () => LoadAllStoredSecretsUseCase(secretStore: sl(), secretCrypto: sl()),
-    );
-
-    sl.registerFactory<LoadLegacySecretsUseCase>(
-      () =>
-          LoadLegacySecretsUseCase(legacySecretStore: sl(), secretCrypto: sl()),
-    );
-
-    // Usage tracking
-    sl.registerFactory<DeregisterSecretUsageUseCase>(
-      () => DeregisterSecretUsageUseCase(secretUsageRepository: sl()),
-    );
-
-    sl.registerFactory<GetSecretUsageByConsumerUseCase>(
-      () => GetSecretUsageByConsumerUseCase(secretUsageRepository: sl()),
-    );
-
     sl.registerFactory<ListUsedSecretsUseCase>(
       () => ListUsedSecretsUseCase(secretUsageRepository: sl()),
     );
 
-    // Composed use cases
-    sl.registerFactory<DeregisterSecretUsageWithFingerprintCheckUseCase>(
-      () => DeregisterSecretUsageWithFingerprintCheckUseCase(
-        getSecretUsageByConsumer: sl(),
-        deregisterSecretUsage: sl(),
-      ),
+    sl.registerFactory<LoadAllStoredSecretsUseCase>(
+      () => LoadAllStoredSecretsUseCase(secretStore: sl()),
     );
 
-    // Delete
-    sl.registerFactory<DeleteSecretUseCase>(
-      () => DeleteSecretUseCase(secretStore: sl(), secretUsageRepository: sl()),
+    sl.registerFactory<LoadLegacySecretsUseCase>(
+      () => LoadLegacySecretsUseCase(legacySecretStore: sl()),
     );
   }
 
@@ -144,7 +136,9 @@ class SecretsDiModule implements FeatureDiModule {
         createNewSecretMnemonicUseCase: sl(),
         importSecretMnemonicUseCase: sl(),
         getSecretUseCase: sl(),
-        deregisterSecretUsageWithFingerprintCheck: sl(),
+        getSecretUsagesByConsumerUseCase: sl(),
+        deregisterSecretUsageUseCase: sl(),
+        deregisterSecretUsagesOfConsumerUseCase: sl(),
       ),
     );
 
