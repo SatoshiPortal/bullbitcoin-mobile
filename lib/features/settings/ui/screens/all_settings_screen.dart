@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/features/bitaxe/ui/bitaxe_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -104,6 +105,13 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   title: context.loc.settingsBitcoinSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.bitcoinSettings.name);
+                  },
+                ),
+                SettingsEntryItem(
+                  icon: Icons.model_training,
+                  title: 'Connect Bitaxe',
+                  onTap: () {
+                    context.pushNamed(BitaxeRoute.entry.name);
                   },
                 ),
                 SettingsEntryItem(
