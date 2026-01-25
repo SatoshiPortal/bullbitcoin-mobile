@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -44,8 +45,23 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
   Widget _buildBody(BuildContext context) {
     final state = context.watch<StatisticsCubit>().state;
 
-    if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    return Column(
+      children: [
+        if (state.isLoading)
+          LinearProgressIndicator(
+            backgroundColor: context.appColors.surface,
+            color: context.appColors.primary,
+          ),
+        Expanded(
+          child: _buildContent(context, state),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(BuildContext context, StatisticsState state) {
+    if (state.isLoading && !state.hasStats) {
+      return const SizedBox.shrink();
     }
 
     if (state.error != null) {
@@ -100,7 +116,10 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
                 ),
                 const SizedBox(height: 16),
               ],
-              _OrderStatsSection(orderStats: state.orderStats!),
+              _OrderStatsSection(
+                orderStats: state.orderStats!,
+                userCurrency: state.userCurrency,
+              ),
               const SizedBox(height: 24),
               if (state.billerStats != null && state.billerStats!.hasStats)
                 _BillerStatsSection(billerStats: state.billerStats!),
@@ -113,9 +132,13 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 }
 
 class _OrderStatsSection extends StatelessWidget {
-  const _OrderStatsSection({required this.orderStats});
+  const _OrderStatsSection({
+    required this.orderStats,
+    required this.userCurrency,
+  });
 
   final OrderStats orderStats;
+  final String userCurrency;
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +155,7 @@ class _OrderStatsSection extends StatelessWidget {
         const SizedBox(height: 16),
         _StatCard(
           title: context.loc.exchangeStatisticsBuySellRatio,
+          description: context.loc.exchangeStatisticsBuySellRatioDesc,
           value: orderStats.buySellRatio,
           icon: Icons.compare_arrows,
           context: context,
@@ -142,20 +166,23 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_downward,
           iconColor: Colors.green,
           stats: [
-            _buildAmountStatRow(
+            _buildStatRow(
               context,
               context.loc.exchangeStatisticsVolume,
-              orderStats.bitcoinBuyVolume,
+              _formatVolumeAmount(orderStats.bitcoinBuyVolume),
+              description: context.loc.exchangeStatisticsBuyVolumeDesc,
             ),
-            _buildAmountStatRow(
+            _buildStatRow(
               context,
               context.loc.exchangeStatisticsTradeCount,
-              orderStats.bitcoinBuyTradeCount,
+              _formatTradeCount(orderStats.bitcoinBuyTradeCount),
+              description: context.loc.exchangeStatisticsBuyTradeCountDesc,
             ),
-            _buildAmountStatRow(
+            _buildStatRow(
               context,
               context.loc.exchangeStatisticsAveragePrice,
-              orderStats.averageBitcoinBuyPrice,
+              _formatFiatAmount(orderStats.averageBitcoinBuyPrice),
+              description: context.loc.exchangeStatisticsBuyAvgPriceDesc,
             ),
           ],
           context: context,
@@ -166,20 +193,23 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_upward,
           iconColor: Colors.red,
           stats: [
-            _buildAmountStatRow(
+            _buildStatRow(
               context,
               context.loc.exchangeStatisticsVolume,
-              orderStats.bitcoinSellVolume,
+              _formatVolumeAmount(orderStats.bitcoinSellVolume),
+              description: context.loc.exchangeStatisticsSellVolumeDesc,
             ),
-            _buildAmountStatRow(
+            _buildStatRow(
               context,
               context.loc.exchangeStatisticsTradeCount,
-              orderStats.bitcoinSellTradeCount,
+              _formatTradeCount(orderStats.bitcoinSellTradeCount),
+              description: context.loc.exchangeStatisticsSellTradeCountDesc,
             ),
-            _buildAmountStatRow(
+            _buildStatRow(
               context,
               context.loc.exchangeStatisticsAveragePrice,
-              orderStats.averageBitcoinSellPrice,
+              _formatFiatAmount(orderStats.averageBitcoinSellPrice),
+              description: context.loc.exchangeStatisticsSellAvgPriceDesc,
             ),
           ],
           context: context,
@@ -187,7 +217,8 @@ class _OrderStatsSection extends StatelessWidget {
         const SizedBox(height: 12),
         _StatCard(
           title: context.loc.exchangeStatisticsTotalVolume,
-          value: _formatAmountList(orderStats.totalBitcoinTradingVolume),
+          description: context.loc.exchangeStatisticsTotalVolumeDesc,
+          value: _formatVolumeAmount(orderStats.totalBitcoinTradingVolume),
           icon: Icons.trending_up,
           context: context,
         ),
@@ -195,27 +226,47 @@ class _OrderStatsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildAmountStatRow(
+  Widget _buildStatRow(
     BuildContext context,
     String label,
-    List<AmountByCurrencyCode> amounts,
-  ) {
+    String value, {
+    String? description,
+  }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
-            label,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.textMuted,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BBText(
+                  label,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (description != null) ...[
+                  const SizedBox(height: 2),
+                  BBText(
+                    description,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
+          const SizedBox(width: 16),
           BBText(
-            _formatAmountList(amounts),
+            value,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurface,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -223,28 +274,95 @@ class _OrderStatsSection extends StatelessWidget {
     );
   }
 
-  String _formatAmountList(List<AmountByCurrencyCode> amounts) {
+  /// Format volume amounts - prefer fiat in user currency, fallback to BTC
+  /// Shows currency code for clarity (e.g., "$279.57 CAD")
+  String _formatVolumeAmount(List<AmountByCurrencyCode> amounts) {
     if (amounts.isEmpty) return '0';
 
-    // Show the first currency value or BTC if available
+    // First, look for user's selected currency (already converted from CAD)
+    final userAmount =
+        amounts.where((a) => a.currency == userCurrency).firstOrNull;
+    if (userAmount != null) {
+      return _formatWithCurrencyCode(userAmount.value, userCurrency);
+    }
+
+    // Look for any fiat amount (non-BTC)
+    final fiatAmount = amounts.where((a) => a.currency != 'BTC').firstOrNull;
+    if (fiatAmount != null) {
+      return _formatWithCurrencyCode(fiatAmount.value, fiatAmount.currency);
+    }
+
+    // Fallback to BTC if no fiat available
     final btcAmount = amounts.where((a) => a.currency == 'BTC').firstOrNull;
     if (btcAmount != null) {
       return '${_formatNumber(btcAmount.value)} BTC';
     }
 
+    // Final fallback
     final first = amounts.first;
     return '${_formatNumber(first.value)} ${first.currency}';
   }
 
+  /// Format trade count (plain integer, no currency)
+  String _formatTradeCount(List<AmountByCurrencyCode> counts) {
+    if (counts.isEmpty) return '0';
+
+    // Sum all trade counts across currencies
+    final total = counts.fold(0.0, (sum, c) => sum + c.value);
+    return total.toInt().toString();
+  }
+
+  /// Format fiat amounts (for average price) using user's selected currency
+  /// Shows currency code for clarity (e.g., "$167.84K CAD")
+  String _formatFiatAmount(List<AmountByCurrencyCode> amounts) {
+    if (amounts.isEmpty) return '0';
+
+    // Find amount in user's selected currency
+    final userAmount =
+        amounts.where((a) => a.currency == userCurrency).firstOrNull;
+    if (userAmount != null) {
+      return _formatWithCurrencyCode(userAmount.value, userCurrency);
+    }
+
+    // Fallback to first available amount
+    final first = amounts.first;
+    return _formatWithCurrencyCode(first.value, first.currency);
+  }
+
+  /// Format a value with currency code only (e.g., "279.57 CAD")
+  String _formatWithCurrencyCode(double value, String currencyCode) {
+    return '${_formatNumber(value)} $currencyCode';
+  }
+
+  /// Format number with thousands separator, no abbreviations
   String _formatNumber(double value) {
-    if (value >= 1000000) {
-      return '${(value / 1000000).toStringAsFixed(2)}M';
-    } else if (value >= 1000) {
-      return '${(value / 1000).toStringAsFixed(2)}K';
-    } else if (value < 1) {
+    if (value < 1 && value > 0) {
       return value.toStringAsFixed(8);
     }
-    return value.toStringAsFixed(2);
+    // Format with 2 decimal places and thousands separator
+    return _formatWithThousandsSeparator(value);
+  }
+
+  /// Format number with thousands separator (e.g., 1234567.89 -> "1,234,567.89")
+  String _formatWithThousandsSeparator(double value) {
+    final parts = value.toStringAsFixed(2).split('.');
+    final intPart = parts[0];
+    final decPart = parts.length > 1 ? parts[1] : '00';
+
+    // Add thousands separators
+    final buffer = StringBuffer();
+    final digits = intPart.replaceFirst('-', '');
+    final isNegative = intPart.startsWith('-');
+
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) {
+        buffer.write(',');
+      }
+      buffer.write(digits[i]);
+    }
+
+    final formatted = '${isNegative ? '-' : ''}${buffer.toString()}.$decPart';
+    return formatted;
   }
 }
 
@@ -254,12 +372,14 @@ class _StatCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.context,
+    this.description,
   });
 
   final String title;
   final String value;
   final IconData icon;
   final BuildContext context;
+  final String? description;
 
   @override
   Widget build(BuildContext context) {
@@ -279,6 +399,7 @@ class _StatCard extends StatelessWidget {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(10),
@@ -311,6 +432,16 @@ class _StatCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                if (description != null) ...[
+                  const SizedBox(height: 6),
+                  BBText(
+                    description!,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -404,7 +535,10 @@ class _BillerStatsSection extends StatelessWidget {
           ),
         const SizedBox(height: 16),
         ...billerStats.stats.map(
-          (stat) => _BillerStatCard(stat: stat),
+          (stat) => _BillerStatCard(
+            stat: stat,
+            currencyCode: billerStats.currency,
+          ),
         ),
       ],
     );
@@ -412,9 +546,13 @@ class _BillerStatsSection extends StatelessWidget {
 }
 
 class _BillerStatCard extends StatelessWidget {
-  const _BillerStatCard({required this.stat});
+  const _BillerStatCard({
+    required this.stat,
+    required this.currencyCode,
+  });
 
   final BillerStat stat;
+  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -491,12 +629,30 @@ class _BillerStatCard extends StatelessWidget {
   }
 
   String _formatAmount(double value) {
-    if (value >= 1000000) {
-      return '\$${(value / 1000000).toStringAsFixed(2)}M';
-    } else if (value >= 1000) {
-      return '\$${(value / 1000).toStringAsFixed(2)}K';
+    final code = currencyCode.isNotEmpty ? currencyCode : 'CAD';
+    return '${_formatWithThousandsSeparator(value)} $code';
+  }
+
+  /// Format number with thousands separator (e.g., 1234567.89 -> "1,234,567.89")
+  String _formatWithThousandsSeparator(double value) {
+    final parts = value.toStringAsFixed(2).split('.');
+    final intPart = parts[0];
+    final decPart = parts.length > 1 ? parts[1] : '00';
+
+    // Add thousands separators
+    final buffer = StringBuffer();
+    final digits = intPart.replaceFirst('-', '');
+    final isNegative = intPart.startsWith('-');
+
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) {
+        buffer.write(',');
+      }
+      buffer.write(digits[i]);
     }
-    return '\$${value.toStringAsFixed(2)}';
+
+    final formatted = '${isNegative ? '-' : ''}${buffer.toString()}.$decPart';
+    return formatted;
   }
 }
 
