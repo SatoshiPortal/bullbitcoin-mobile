@@ -12,28 +12,25 @@ class TransactionDirectionBadge extends StatelessWidget {
   final bool isSwap;
   @override
   Widget build(BuildContext context) {
+    final iconColor = isIncoming
+        ? context.appColors.primary
+        : context.appColors.textMuted;
+
     return Container(
-      width: 72,
-      height: 72,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
-        border: Border.all(color: context.appColors.surface),
-        color: context.appColors.onSecondary,
-        borderRadius: BorderRadius.circular(60),
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.scrim,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: iconColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(28),
       ),
       child: Icon(
         isSwap
-            ? Icons.swap_vert
+            ? Icons.swap_vert_rounded
             : isIncoming
-            ? Icons.south_east
-            : Icons.north_east,
-        color: context.appColors.secondary,
+            ? Icons.south_west_rounded
+            : Icons.north_east_rounded,
+        color: iconColor,
+        size: 24,
       ),
     );
   }

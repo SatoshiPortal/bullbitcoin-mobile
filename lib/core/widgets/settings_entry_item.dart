@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class SettingsEntryItem extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback? onTap;
   final Color? iconColor;
   final Color? textColor;
@@ -15,6 +16,7 @@ class SettingsEntryItem extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.subtitle,
     this.onTap,
     this.iconColor,
     this.textColor,
@@ -25,12 +27,11 @@ class SettingsEntryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final effectiveIcon = isSuperUser ? Icons.admin_panel_settings : icon;
     final effectiveIconColor =
         isSuperUser
             ? context.appColors.primary
-            : (iconColor ?? context.appColors.onSurface);
+            : (iconColor ?? context.appColors.text);
 
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
@@ -39,11 +40,23 @@ class SettingsEntryItem extends StatelessWidget {
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          color: textColor ?? context.appColors.onSurface,
+        style: context.font.bodyLarge?.copyWith(
+          color: textColor ?? context.appColors.text,
         ),
       ),
-      trailing: trailing ?? const Icon(Icons.chevron_right),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: context.font.labelSmall?.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            )
+          : null,
+      trailing: trailing ??
+          Icon(
+            Icons.chevron_right,
+            color: context.appColors.textMuted,
+          ),
       onTap: onTap,
     );
   }

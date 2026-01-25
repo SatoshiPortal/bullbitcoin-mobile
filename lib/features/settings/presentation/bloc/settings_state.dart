@@ -6,6 +6,7 @@ sealed class SettingsState with _$SettingsState {
     SettingsEntity? storedSettings,
     String? appVersion,
     bool? hasLegacySeeds,
+    @Default(false) bool isPinCodeSet,
   }) = _SettingsState;
   const SettingsState._();
 

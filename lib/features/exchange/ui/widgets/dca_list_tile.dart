@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -24,115 +25,154 @@ class DcaListTile extends StatefulWidget {
 class _DcaListTileState extends State<DcaListTile> {
   bool _showSettings = false;
 
-  Widget? _buildDcaContent(UserDca dca, BuildContext context) {
-    if (dca.amount == null ||
-        dca.currency == null ||
-        dca.frequency == null ||
-        dca.network == null ||
-        dca.address == null) {
-      return Text(
-        context.loc.exchangeDcaUnableToGetConfig,
-        style: TextStyle(
-          color: context.appColors.onSurface.withValues(alpha: 0.6),
-        ),
+  void _toggleDca(bool value) {
+    if (value) {
+      context.pushNamed(DcaRoute.dca.name);
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            backgroundColor: context.appColors.background,
+            title: Text(context.loc.exchangeDcaCancelDialogTitle),
+            content: Text(context.loc.exchangeDcaCancelDialogMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(context.loc.exchangeDcaCancelDialogCancelButton),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  context.read<ExchangeCubit>().stopDca();
+                },
+                child: Text(context.loc.exchangeDcaCancelDialogConfirmButton),
+              ),
+            ],
+          );
+        },
       );
     }
-
-    return DcaSettingsContent(
-      amount: dca.amount!,
-      currency: dca.currency!,
-      frequency: dca.frequency!,
-      network: dca.network!,
-      address: dca.address!,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Row(
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: context.appColors.border.withValues(alpha: 0.2),
+          width: 0.5,
+        ),
+      ),
+      child: Column(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              mainAxisSize: .min,
-              children: [
-                Text(
-                  widget.hasDcaActive
-                      ? context.loc.exchangeDcaDeactivateTitle
-                      : context.loc.exchangeDcaActivateTitle,
-                ),
-                if (widget.hasDcaActive) ...[
-                  const Gap(4),
-                  GestureDetector(
-                    onTap: () => setState(() => _showSettings = !_showSettings),
-                    child: Text(
+          InkWell(
+            onTap: () => _toggleDca(!widget.hasDcaActive),
+            borderRadius: BorderRadius.circular(4),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.repeat,
+                    size: 18,
+                    color: widget.hasDcaActive
+                        ? context.appColors.primary
+                        : context.appColors.textMuted,
+                  ),
+                  const Gap(12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BBText(
+                          widget.hasDcaActive
+                              ? context.loc.exchangeDcaDeactivateTitle
+                              : context.loc.exchangeDcaActivateTitle,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.text,
+                        ),
+                        if (widget.hasDcaActive && widget.dca != null)
+                          BBText(
+                            _getDcaSummary(widget.dca!, context),
+                            style: context.font.labelSmall,
+                            color: context.appColors.textMuted,
+                          ),
+                      ],
+                    ),
+                  ),
+                  const Gap(8),
+                  Switch(
+                    value: widget.hasDcaActive,
+                    onChanged: _toggleDca,
+                    activeTrackColor: context.appColors.primary.withValues(alpha: 0.5),
+                    activeThumbColor: context.appColors.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (widget.hasDcaActive && widget.dca != null) ...[
+            Divider(
+              height: 1,
+              thickness: 0.5,
+              color: context.appColors.border.withValues(alpha: 0.2),
+            ),
+            InkWell(
+              onTap: () => setState(() => _showSettings = !_showSettings),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    BBText(
                       _showSettings
                           ? context.loc.exchangeDcaHideSettings
                           : context.loc.exchangeDcaViewSettings,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: context.appColors.primary,
-                        decoration: TextDecoration.underline,
-                        decorationColor: context.appColors.primary,
-                      ),
+                      style: context.font.labelSmall,
+                      color: context.appColors.primary,
                     ),
-                  ),
-                  const Gap(4),
-                ],
-              ],
+                    const Gap(4),
+                    Icon(
+                      _showSettings
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      size: 14,
+                      color: context.appColors.primary,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          Switch(
-            value: widget.hasDcaActive,
-            onChanged: (value) {
-              if (value) {
-                // Activate DCA
-                context.pushNamed(DcaRoute.dca.name);
-              } else {
-                // Deactivate DCA - show confirmation dialog
-                showDialog(
-                  context: context,
-                  builder: (BuildContext dialogContext) {
-                    return AlertDialog(
-                      backgroundColor: context.appColors.surfaceFixed,
-                      title: Text(context.loc.exchangeDcaCancelDialogTitle),
-                      content: Text(context.loc.exchangeDcaCancelDialogMessage),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop();
-                          },
-                          child: Text(
-                            context.loc.exchangeDcaCancelDialogCancelButton,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop();
-                            context.read<ExchangeCubit>().stopDca();
-                          },
-                          child: Text(
-                            context.loc.exchangeDcaCancelDialogConfirmButton,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              }
-            },
-          ),
+            if (_showSettings)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                child: DcaSettingsContent(
+                  amount: widget.dca!.amount!,
+                  currency: widget.dca!.currency!,
+                  frequency: widget.dca!.frequency!,
+                  network: widget.dca!.network!,
+                  address: widget.dca!.address!,
+                ),
+              ),
+          ],
         ],
       ),
-      subtitle:
-          widget.hasDcaActive && _showSettings
-              ? Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: _buildDcaContent(widget.dca!, context),
-              )
-              : null,
     );
+  }
+
+  String _getDcaSummary(UserDca dca, BuildContext context) {
+    if (dca.amount == null || dca.currency == null || dca.frequency == null) {
+      return '';
+    }
+    final frequency = switch (dca.frequency!) {
+      DcaBuyFrequency.hourly => 'hourly',
+      DcaBuyFrequency.daily => 'daily',
+      DcaBuyFrequency.weekly => 'weekly',
+      DcaBuyFrequency.monthly => 'monthly',
+    };
+    return '${FormatAmount.fiat(dca.amount!, dca.currency!.code)} $frequency';
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/widgets/hidden_amount_icon.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +62,11 @@ class CurrencyText extends StatelessWidget {
     );
 
     if (hideAmt && !overrideHideAmounts) {
-      text = '** ${text.split(' ').last}';
+      final fontSize = style?.fontSize ?? 14;
+      return HiddenAmountIcon(
+        size: fontSize * 1.2,
+        color: color ?? style?.color,
+      );
     }
 
     return Text(

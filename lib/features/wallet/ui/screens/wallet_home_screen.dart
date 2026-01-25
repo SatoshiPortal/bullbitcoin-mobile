@@ -1,10 +1,9 @@
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_send_receive_row.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_hero_section.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/home_transaction_preview.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
-import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -19,7 +18,6 @@ class WalletHomeScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {},
       child: Column(
         children: [
-          const WalletHomeTopSection(),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -30,10 +28,11 @@ class WalletHomeScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
-                  crossAxisAlignment: .stretch,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const HomeWarnings(),
-                    const AutoSwapFeeWarning(),
+                    const HomeHeroSection(),
+                    const HomeTransactionPreview(),
+                    const Gap(16),
                     WalletCards(
                       onTap: (w) {
                         context.pushNamed(
@@ -47,11 +46,7 @@ class WalletHomeScreen extends StatelessWidget {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13.0),
-            child: WalletBottomButtons(),
-          ),
-          const Gap(16),
+          const HomeSendReceiveRow(),
         ],
       ),
     );

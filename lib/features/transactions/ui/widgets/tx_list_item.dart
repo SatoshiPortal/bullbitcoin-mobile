@@ -17,298 +17,277 @@ class TxListItem extends StatelessWidget {
 
   final Transaction tx;
 
+  String _getLabel(BuildContext context) {
+    if (tx.isOrder && tx.order != null) {
+      return tx.order!.orderType.value;
+    }
+    if (tx.isChainSwap) {
+      return tx.swap!.type == SwapType.liquidToBitcoin
+          ? context.loc.transactionSwapLiquidToBitcoin
+          : context.loc.transactionSwapBitcoinToLiquid;
+    }
+    if (tx.isLnSwap) {
+      return tx.isOutgoing
+          ? context.loc.transactionFilterSend
+          : context.loc.transactionFilterReceive;
+    }
+    return tx.isOutgoing
+        ? context.loc.transactionFilterSend
+        : context.loc.transactionFilterReceive;
+  }
+
+  String _getNetworkTag(BuildContext context) {
+    if (tx.isOrder && tx.order != null) {
+      return 'Exchange';
+    }
+    if (tx.isLnSwap) {
+      return context.loc.transactionNetworkLightning;
+    }
+    if (tx.isChainSwap) {
+      return tx.swap!.type == SwapType.liquidToBitcoin
+          ? context.loc.transactionSwapLiquidToBitcoin
+          : context.loc.transactionSwapBitcoinToLiquid;
+    }
+    if (tx.isBitcoin) {
+      return context.loc.transactionNetworkBitcoin;
+    }
+    return context.loc.transactionNetworkLiquid;
+  }
+
+  Color _getNetworkTagColor(BuildContext context) {
+    if (tx.isOrder || tx.isOngoingSwap) {
+      return context.appColors.border;
+    }
+    if (tx.isBitcoin) {
+      return context.appColors.onTertiary;
+    }
+    return context.appColors.tertiary;
+  }
+
+  Color _getNetworkTagTextColor(BuildContext context) {
+    if (tx.isOrder) {
+      return context.appColors.secondary;
+    }
+    if (tx.isBitcoin) {
+      return context.appColors.onTertiary;
+    }
+    return context.appColors.tertiary;
+  }
+
+  String? _getDate() {
+    if (tx.isSwap) {
+      if (!tx.isOngoingSwap && tx.swap?.completionTime != null) {
+        return timeago.format(tx.swap!.completionTime!);
+      }
+      return null;
+    }
+    if (tx.isOrder && tx.order != null) {
+      if (tx.order!.completedAt != null) {
+        return timeago.format(tx.order!.completedAt!);
+      }
+      return null;
+    }
+    if (tx.timestamp != null) {
+      return timeago.format(tx.timestamp!);
+    }
+    return null;
+  }
+
+  bool _isPending() {
+    if (tx.isOngoingSwap) return true;
+    if (tx.isOrder && tx.order != null && !tx.order!.isCompleted()) return true;
+    if (tx.walletTransaction != null && !tx.walletTransaction!.isConfirmed) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isLnSwap = tx.isLnSwap;
-    final isChainSwap = tx.isChainSwap;
+    final isReceive = tx.isIncoming;
+    final isPending = _isPending();
+    final date = _getDate();
+    final label = _getLabel(context);
+    final txLabels =
+        tx.walletTransaction != null ? tx.walletTransaction!.labels : <String>[];
+
     final isOrderType = tx.isOrder && tx.order != null;
-    final icon = isOrderType
-        ? Icons.payments
-        : isChainSwap
-        ? Icons.swap_vert_rounded
-        : isLnSwap
-        ? (tx.isOutgoing ? Icons.arrow_upward : Icons.arrow_downward)
-        : tx.isOutgoing
-        ? Icons.arrow_upward
-        : Icons.arrow_downward;
-    final walletColor = isOrderType
-        ? context.appColors.border
-        : tx.isOngoingSwap
-        ? context.appColors.border.withValues(alpha: 0.3)
-        : tx.isBitcoin
-        ? context.appColors.onTertiary
-        : context.appColors.tertiary;
-    final networkLabel = isOrderType
-        ? tx.order!.orderType.value
-        : isLnSwap
-        ? context.loc.transactionNetworkLightning
-        : isChainSwap
-        ? tx.swap!.type == SwapType.liquidToBitcoin
-              ? context.loc.transactionSwapLiquidToBitcoin
-              : context.loc.transactionSwapBitcoinToLiquid
-        : tx.isBitcoin
-        ? context.loc.transactionNetworkBitcoin
-        : context.loc.transactionNetworkLiquid;
-    final labels = tx.walletTransaction != null
-        ? tx.walletTransaction!.labels
-        : <String>[];
-    final date = tx.isSwap
-        ? (!tx.isOngoingSwap
-              ? (tx.swap?.completionTime != null
-                    ? timeago.format(tx.swap!.completionTime!)
-                    : null)
-              : null)
-        : isOrderType
-        ? (tx.order?.completedAt != null
-              ? timeago.format(tx.order!.completedAt!)
-              : null)
-        : (tx.isBitcoin || tx.isLiquid)
-        ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
-        : null;
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
-    final showOrderInFiat =
-        isOrderType &&
+    final showOrderInFiat = isOrderType &&
         (tx.order is FiatPaymentOrder ||
             tx.order is BalanceAdjustmentOrder ||
             tx.order is WithdrawOrder ||
             tx.order is FundingOrder);
+
+    final amountSat = isOrderType &&
+            !showOrderInFiat &&
+            orderAmountAndCurrency != null
+        ? orderAmountAndCurrency.$1.toInt()
+        : tx.isSwap && tx.swap != null
+            ? tx.swap!.amountSat
+            : tx.amountSat;
+
+    final iconColor =
+        isReceive ? context.appColors.secondary : context.appColors.textMuted;
+
     return InkWell(
-      onTap: () {
-        if (tx.walletTransaction != null) {
-          context.pushNamed(
-            TransactionsRoute.transactionDetails.name,
-            pathParameters: {'txId': tx.walletTransaction!.txId},
-            queryParameters: {'walletId': tx.walletTransaction!.walletId},
-          );
-          return;
-        } else if (tx.swap != null) {
-          context.pushNamed(
-            TransactionsRoute.swapTransactionDetails.name,
-            pathParameters: {'swapId': tx.swap!.id},
-            queryParameters: {'walletId': tx.swap!.walletId},
-          );
-          return;
-        } else if (tx.payjoin != null) {
-          context.pushNamed(
-            TransactionsRoute.payjoinTransactionDetails.name,
-            pathParameters: {'payjoinId': tx.payjoin!.id},
-          );
-          return;
-        } else if (tx.order != null) {
-          context.pushNamed(
-            TransactionsRoute.orderTransactionDetails.name,
-            pathParameters: {'orderId': tx.order!.orderId},
-          );
-          return;
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8.0),
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: context.appColors.surface,
-          borderRadius: BorderRadius.circular(2.0),
-          boxShadow: const [],
-        ),
+      onTap: () => _navigateToDetails(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color: tx.isOngoingSwap
-                    ? context.appColors.border.withValues(alpha: 0.3)
-                    : context.appColors.surface,
-                border: Border.all(
-                  color: tx.isOngoingSwap
-                      ? context.appColors.border.withValues(alpha: 0.5)
-                      : context.appColors.border,
-                ),
-                borderRadius: BorderRadius.circular(2.0),
-              ),
-              child: Icon(icon, color: context.appColors.onSurface),
+            Icon(
+              isReceive ? Icons.south_west_rounded : Icons.north_east_rounded,
+              size: 18,
+              color: iconColor,
             ),
-            const Gap(16.0),
+            const Gap(12),
             Expanded(
               child: Column(
-                crossAxisAlignment: .start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CurrencyText(
-                    isOrderType &&
-                            !showOrderInFiat &&
-                            orderAmountAndCurrency != null
-                        ? orderAmountAndCurrency.$1.toInt()
-                        : tx.isSwap && tx.swap != null
-                        ? (tx.swap!.amountSat)
-                        : tx.amountSat,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    fiatAmount:
-                        isOrderType &&
-                            showOrderInFiat &&
-                            orderAmountAndCurrency != null
-                        ? orderAmountAndCurrency.$1.toDouble()
-                        : null,
-                    fiatCurrency:
-                        isOrderType &&
-                            showOrderInFiat &&
-                            orderAmountAndCurrency != null
-                        ? orderAmountAndCurrency.$2
-                        : null,
+                  Row(
+                    children: [
+                      BBText(
+                        label,
+                        style: context.font.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                        color: context.appColors.text,
+                      ),
+                      if (isPending) ...[
+                        const Gap(6),
+                        Text(
+                          '•',
+                          style: TextStyle(
+                            color:
+                                context.appColors.textMuted.withValues(alpha: 0.5),
+                            fontSize: 8,
+                          ),
+                        ),
+                        const Gap(6),
+                        BBText(
+                          tx.isOngoingSwap
+                              ? context.loc.transactionStatusInProgress
+                              : context.loc.transactionStatusPending,
+                          style: context.font.labelSmall?.copyWith(fontSize: 10),
+                          color: context.appColors.warning,
+                        ),
+                      ],
+                    ],
                   ),
-
-                  if (labels.isNotEmpty && tx.walletTransaction != null)
-                    LabelsWidget(
-                      labels: labels,
-                      reference: tx.walletTransaction!.txId,
+                  if (date != null)
+                    BBText(
+                      date,
+                      style: context.font.labelSmall?.copyWith(fontSize: 10),
+                      color: context.appColors.textMuted.withValues(alpha: 0.6),
+                    )
+                  else if (isPending)
+                    BBText(
+                      context.loc.transactionStatusPending,
+                      style: context.font.labelSmall?.copyWith(fontSize: 10),
+                      color: context.appColors.textMuted.withValues(alpha: 0.6),
+                    ),
+                  if (txLabels.isNotEmpty && tx.walletTransaction != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
+                        children: txLabels.map((lbl) => LabelChip(
+                          label: lbl,
+                          onDelete: null,
+                          compact: true,
+                        )).toList(),
+                      ),
                     ),
                 ],
               ),
             ),
             Column(
-              crossAxisAlignment: .end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4.0,
-                    vertical: 2.0,
+                    horizontal: 4,
+                    vertical: 1,
                   ),
                   decoration: BoxDecoration(
-                    color: walletColor,
-                    borderRadius: BorderRadius.circular(2.0),
+                    color: _getNetworkTagColor(context).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                  child: BBText(
-                    networkLabel,
+                  child: Text(
+                    _getNetworkTag(context),
                     style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.onSurface,
+                      fontSize: 9,
+                      color: _getNetworkTagTextColor(context),
                     ),
                   ),
                 ),
-                const Gap(4.0),
-                if (isOrderType && tx.order!.isCompleted() && date != null)
-                  Row(
-                    children: [
-                      BBText(
-                        date,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
+                const Gap(2),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      isReceive ? '+' : '-',
+                      style: context.font.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: iconColor,
                       ),
-                      const Gap(4.0),
-                      Icon(
-                        Icons.check_circle,
-                        size: 12.0,
-                        color: context.appColors.success,
+                    ),
+                    CurrencyText(
+                      amountSat,
+                      showFiat: false,
+                      style: context.font.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  )
-                else if (isOrderType)
-                  Row(
-                    children: [
-                      BBText(
-                        tx.order!.orderStatus.value,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                    ],
-                  )
-                else if (tx.isSwap &&
-                    (tx.swap?.completionTime != null ||
-                        tx.swap?.status == SwapStatus.completed))
-                  Row(
-                    children: [
-                      BBText(
-                        date ?? '',
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                      const Gap(4.0),
-                      Icon(
-                        Icons.check_circle,
-                        size: 12.0,
-                        color: context.appColors.success,
-                      ),
-                    ],
-                  )
-                else if (!tx.isSwap &&
-                    (tx.walletTransaction?.isConfirmed ?? false))
-                  Row(
-                    children: [
-                      BBText(
-                        date ?? '',
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                      const Gap(4.0),
-                      Icon(
-                        Icons.check_circle,
-                        size: 12.0,
-                        color: context.appColors.success,
-                      ),
-                    ],
-                  )
-                else if (date != null && isOrderType)
-                  Row(
-                    children: [
-                      BBText(
-                        date,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                      const Gap(4.0),
-                      Icon(
-                        Icons.check_circle,
-                        size: 12.0,
-                        color: context.appColors.success,
-                      ),
-                    ],
-                  )
-                else if (date != null && tx.isOngoingSwap)
-                  Row(
-                    children: [
-                      BBText(
-                        date,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                      const Gap(4.0),
-                      Icon(
-                        Icons.sync,
-                        size: 12.0,
-                        color: context.appColors.textMuted,
-                      ),
-                    ],
-                  )
-                else ...[
-                  Row(
-                    children: [
-                      BBText(
-                        tx.isOngoingSwap
-                            ? context.loc.transactionStatusInProgress
-                            : context.loc.transactionStatusPending,
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                      const Gap(4.0),
-                      if (tx.isOngoingSwap)
-                        Icon(
-                          Icons.sync,
-                          size: 12.0,
-                          color: context.appColors.textMuted,
-                        ),
-                    ],
-                  ),
-                ],
+                      color: iconColor,
+                      fiatAmount: isOrderType &&
+                              showOrderInFiat &&
+                              orderAmountAndCurrency != null
+                          ? orderAmountAndCurrency.$1.toDouble()
+                          : null,
+                      fiatCurrency: isOrderType &&
+                              showOrderInFiat &&
+                              orderAmountAndCurrency != null
+                          ? orderAmountAndCurrency.$2
+                          : null,
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _navigateToDetails(BuildContext context) {
+    if (tx.walletTransaction != null) {
+      context.pushNamed(
+        TransactionsRoute.transactionDetails.name,
+        pathParameters: {'txId': tx.walletTransaction!.txId},
+        queryParameters: {'walletId': tx.walletTransaction!.walletId},
+      );
+    } else if (tx.swap != null) {
+      context.pushNamed(
+        TransactionsRoute.swapTransactionDetails.name,
+        pathParameters: {'swapId': tx.swap!.id},
+        queryParameters: {'walletId': tx.swap!.walletId},
+      );
+    } else if (tx.payjoin != null) {
+      context.pushNamed(
+        TransactionsRoute.payjoinTransactionDetails.name,
+        pathParameters: {'payjoinId': tx.payjoin!.id},
+      );
+    } else if (tx.order != null) {
+      context.pushNamed(
+        TransactionsRoute.orderTransactionDetails.name,
+        pathParameters: {'orderId': tx.order!.orderId},
+      );
+    }
   }
 }

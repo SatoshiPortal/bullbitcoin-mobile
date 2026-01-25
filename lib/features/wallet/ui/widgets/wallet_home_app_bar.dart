@@ -1,20 +1,24 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletHomeAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const WalletHomeAppBar({super.key});
+  const WalletHomeAppBar({super.key, this.isExchange = false});
+
+  final bool isExchange;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -25,6 +29,24 @@ class WalletHomeAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
   bool _hasTriggeredFetch = false;
+
+  void _goToExchange() {
+    if (Platform.isIOS) {
+      final isSuperuser =
+          context.read<SettingsCubit>().state.isSuperuser ?? false;
+      if (isSuperuser) {
+        context.goNamed(ExchangeRoute.exchangeHome.name);
+      } else {
+        context.goNamed(ExchangeRoute.exchangeLanding.name);
+      }
+    } else {
+      context.goNamed(ExchangeRoute.exchangeHome.name);
+    }
+  }
+
+  void _goToWallet() {
+    context.goNamed(WalletRoute.walletHome.name);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,25 +64,22 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
       (PriceChartCubit cubit) => cubit.state.showChart,
     );
 
+    final iconColor = context.appColors.textMuted;
+    final isExchange = widget.isExchange;
+
     return AppBar(
-      backgroundColor: context.appColors.transparent,
+      backgroundColor: context.appColors.background,
       elevation: 0,
       scrolledUnderElevation: 0,
       systemOverlayStyle: SystemUiOverlayStyle.light,
       automaticallyImplyLeading: false,
       centerTitle: true,
-      title: showChart
-          ? null
-          : const TopBarBullLogo(enableSuperuserTapUnlocker: true),
+      title: const TopBarBullLogo(enableSuperuserTapUnlocker: true),
       leading: Padding(
         padding: const EdgeInsets.only(left: 16.0),
         child: showChart
             ? IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: context.appColors.onPrimary,
-                  size: 24,
-                ),
+                icon: Icon(Icons.arrow_back, color: iconColor, size: 24),
                 onPressed: () {
                   context.read<PriceChartCubit>().hideChart();
                 },
@@ -74,11 +93,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       visualDensity: VisualDensity.compact,
-                      icon: Icon(
-                        Icons.show_chart,
-                        color: context.appColors.onPrimary,
-                        size: 24,
-                      ),
+                      icon: Icon(Icons.show_chart, color: iconColor, size: 24),
                       onPressed: () {
                         context.read<PriceChartCubit>().showChart();
                       },
@@ -89,7 +104,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                       visualDensity: VisualDensity.compact,
                       icon: Icon(
                         Icons.chat_bubble_outline,
-                        color: context.appColors.onPrimary,
+                        color: iconColor,
                         size: 24,
                       ),
                       onPressed: () {
@@ -113,31 +128,32 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
               ),
       ),
       leadingWidth: showChart ? 56 : 112,
-      actionsIconTheme: IconThemeData(
-        color: context.appColors.onPrimary,
-        size: 24,
-      ),
+      actionsIconTheme: IconThemeData(color: iconColor, size: 24),
       actionsPadding: const EdgeInsets.only(right: 16),
       actions: showChart
           ? null
           : [
               IconButton(
-                onPressed: () {
-                  context.pushNamed(TransactionsRoute.transactions.name);
-                },
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
                 visualDensity: VisualDensity.compact,
-                color: context.appColors.onPrimary,
-                iconSize: 32,
-                icon: const Icon(Icons.history),
+                icon: Icon(
+                  isExchange
+                      ? Icons.account_balance_wallet_outlined
+                      : Icons.attach_money,
+                  color: iconColor,
+                  size: 24,
+                ),
+                onPressed: isExchange ? _goToWallet : _goToExchange,
               ),
-              const Gap(16),
+              const SizedBox(width: 16),
               InkWell(
                 onTap: () => context.pushNamed(SettingsRoute.settings.name),
                 child: Image.asset(
                   Assets.icons.settingsLine.path,
-                  width: 32,
-                  height: 32,
-                  color: context.appColors.onPrimary,
+                  width: 24,
+                  height: 24,
+                  color: iconColor,
                 ),
               ),
             ],

@@ -1,8 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/hidden_amount_icon.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class WalletCard extends StatelessWidget {
@@ -27,21 +30,25 @@ class WalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hideAmounts = context.select(
+      (SettingsCubit cubit) => cubit.state.hideAmounts ?? false,
+    );
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(2),
         child: Material(
-          elevation: 2,
-          shadowColor: context.appColors.onSurface.withValues(alpha: 0.5),
+          elevation: 1,
+          shadowColor: context.appColors.onSurface.withValues(alpha: 0.3),
           color: context.appColors.background,
           borderRadius: BorderRadius.circular(2),
           child: Container(
-            height: 90,
+            height: 68,
             decoration: BoxDecoration(
               color: context.appColors.background,
-              border: Border(left: BorderSide(color: tagColor, width: 4)),
+              border: Border(left: BorderSide(color: tagColor, width: 3)),
               borderRadius: BorderRadius.circular(2),
             ),
             child: Stack(
@@ -49,60 +56,62 @@ class WalletCard extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 8,
+                    vertical: 6,
                   ),
                   child: Row(
-                    mainAxisAlignment: .spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         child: Column(
-                          crossAxisAlignment: .start,
-                          mainAxisAlignment: .center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Row(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                BBText(
-                                  title,
-                                  style: context.font.bodyLarge,
-                                  color: context.appColors.secondary,
-                                ),
-                                const Gap(4),
-                                CurrencyText(
-                                  balanceSat,
-                                  showFiat: false,
-                                  style: context.font.bodyLarge,
-                                  color: context.appColors.secondary,
-                                ),
-                              ],
+                            BBText(
+                              title,
+                              style: context.font.bodyMedium,
+                              color: context.appColors.text,
                             ),
-                            const Gap(4),
-                            Row(
-                              mainAxisAlignment: .spaceBetween,
-                              children: [
-                                BBText(
-                                  description,
-                                  style: context.font.labelMedium,
-                                  color: context.appColors.onSurfaceVariant,
-                                ),
-                                const Gap(4),
-                                CurrencyText(
-                                  balanceSat,
-                                  showFiat: true,
-                                  fiatCurrency: fiatCurrency,
-                                  style: context.font.labelMedium,
-                                  color: context.appColors.onSurfaceVariant,
-                                ),
-                              ],
+                            const Gap(2),
+                            BBText(
+                              description,
+                              style: context.font.labelSmall,
+                              color: context.appColors.textMuted,
                             ),
                           ],
                         ),
                       ),
-                      const Gap(8),
+                      const Gap(4),
+                      if (hideAmounts)
+                        HiddenAmountIcon(
+                          size: 18,
+                          color: context.appColors.textMuted,
+                        )
+                      else
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CurrencyText(
+                              balanceSat,
+                              showFiat: false,
+                              style: context.font.bodyMedium,
+                              color: context.appColors.text,
+                            ),
+                            const Gap(2),
+                            CurrencyText(
+                              balanceSat,
+                              showFiat: true,
+                              fiatCurrency: fiatCurrency,
+                              style: context.font.labelSmall,
+                              color: context.appColors.textMuted,
+                            ),
+                          ],
+                        ),
+                      const Gap(4),
                       Icon(
                         Icons.chevron_right,
-                        color: context.appColors.onSurfaceVariant,
-                        size: 24,
+                        color: context.appColors.textMuted,
+                        size: 20,
                       ),
                     ],
                   ),

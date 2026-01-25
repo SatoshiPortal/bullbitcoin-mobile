@@ -32,31 +32,27 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Column(
-      crossAxisAlignment: .stretch,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Label
               Expanded(
                 flex: 2,
                 child: Text(
                   widget.label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface,
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.textMuted,
                   ),
                 ),
               ),
-
-              // Value + copy icon + expand icon
               Expanded(
                 flex: 3,
                 child: Row(
-                  mainAxisAlignment: .end,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Flexible(
                       child:
@@ -64,10 +60,10 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                           (widget.displayValue != null
                               ? Text(
                                   widget.displayValue!,
-                                  textAlign: .end,
-                                  overflow: .clip,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    color: context.appColors.onSurface,
+                                  textAlign: TextAlign.end,
+                                  overflow: TextOverflow.clip,
+                                  style: context.font.bodyMedium?.copyWith(
+                                    color: context.appColors.text,
                                     decoration: widget.isUnderline
                                         ? TextDecoration.underline
                                         : TextDecoration.none,
@@ -75,41 +71,35 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                                 )
                               : const LoadingLineContent()),
                     ),
-                    const Gap(8),
                     if (widget.copyValue != null &&
-                        widget.copyValue!.isNotEmpty)
-                      Material(
-                        color: context.appColors.transparent,
-                        child: InkWell(
-                          splashColor: context.appColors.primary.withAlpha(30),
-                          onTap: () {
-                            Clipboard.setData(
-                              ClipboardData(text: widget.copyValue!),
-                            );
-                            SnackBarUtils.showCopiedSnackBar(context);
-                          },
-                          child: Icon(
-                            Icons.copy_outlined,
-                            size: 18,
-                            color: context.appColors.primary,
-                          ),
+                        widget.copyValue!.isNotEmpty) ...[
+                      const Gap(6),
+                      GestureDetector(
+                        onTap: () {
+                          Clipboard.setData(
+                            ClipboardData(text: widget.copyValue!),
+                          );
+                          SnackBarUtils.showCopiedSnackBar(context);
+                        },
+                        child: Icon(
+                          Icons.copy_outlined,
+                          size: 14,
+                          color: context.appColors.primary,
                         ),
                       ),
+                    ],
                     if (widget.expandableChild != null) ...[
-                      const Gap(8),
-                      Material(
-                        color: context.appColors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _expanded = !_expanded;
-                            });
-                          },
-                          child: Icon(
-                            _expanded ? Icons.expand_less : Icons.expand_more,
-                            size: 18,
-                            color: context.appColors.primary,
-                          ),
+                      const Gap(6),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _expanded = !_expanded;
+                          });
+                        },
+                        child: Icon(
+                          _expanded ? Icons.expand_less : Icons.expand_more,
+                          size: 16,
+                          color: context.appColors.primary,
                         ),
                       ),
                     ],

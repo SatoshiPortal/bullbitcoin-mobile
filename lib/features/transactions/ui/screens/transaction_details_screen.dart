@@ -104,13 +104,13 @@ class TransactionDetailsScreen extends StatelessWidget {
             child: Column(
               children: [
                 if (isLoading)
-                  const LoadingBoxContent(height: 72, width: 72)
+                  const LoadingBoxContent(height: 56, width: 56)
                 else
                   TransactionDirectionBadge(
                     isIncoming: isIncoming ?? false,
                     isSwap: isChainSwap,
                   ),
-                const Gap(24),
+                const Gap(16),
                 if (isLoading)
                   const LoadingLineContent(width: 150)
                 else

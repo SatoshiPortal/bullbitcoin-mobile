@@ -46,7 +46,7 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
           : transaction?.isIncoming == true
           ? context.loc.transactionFilterReceive
           : context.loc.transactionFilterSend,
-      style: context.font.headlineLarge?.copyWith(
+      style: context.font.titleMedium?.copyWith(
         color:
             swap != null &&
                     (swap.status == SwapStatus.failed ||
@@ -54,7 +54,7 @@ class TransactionDetailsStatusLabel extends StatelessWidget {
                 ? swap.status == SwapStatus.failed
                     ? context.appColors.error
                     : context.appColors.error.withValues(alpha: 0.7)
-                : null,
+                : context.appColors.textMuted,
       ),
     );
   }

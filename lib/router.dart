@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
@@ -31,7 +27,6 @@ import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_router.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
@@ -75,54 +70,10 @@ class AppRouter {
                 context.goNamed(WalletRoute.walletHome.name);
               },
               child: Scaffold(
-                // The app bar of the exchange tab is done with a sliver app bar
-                // on the ExchangeHomeScreen itself.
-                appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
-                extendBodyBehindAppBar: true,
-                body: child,
-                bottomNavigationBar: isExchangeLanding || isSupportChat
+                appBar: (isExchangeLanding || isSupportChat)
                     ? null
-                    : BottomNavigationBar(
-                        currentIndex: tabIndex,
-                        onTap: (index) {
-                          if (index == 0) {
-                            context.goNamed(WalletRoute.walletHome.name);
-                          } else {
-                            // Exchange tab
-                            if (Platform.isIOS) {
-                              final isSuperuser =
-                                  context
-                                      .read<SettingsCubit>()
-                                      .state
-                                      .isSuperuser ??
-                                  false;
-                              if (isSuperuser) {
-                                context.goNamed(
-                                  ExchangeRoute.exchangeHome.name,
-                                );
-                              } else {
-                                context.goNamed(
-                                  ExchangeRoute.exchangeLanding.name,
-                                );
-                              }
-                            } else {
-                              context.goNamed(ExchangeRoute.exchangeHome.name);
-                            }
-                          }
-                        },
-                        items: [
-                          BottomNavigationBarItem(
-                            icon: const Icon(Icons.currency_bitcoin),
-                            label: context.loc.navigationTabWallet,
-                            backgroundColor: context.appColors.background,
-                          ),
-                          BottomNavigationBarItem(
-                            icon: const Icon(Icons.attach_money),
-                            label: context.loc.navigationTabExchange,
-                            backgroundColor: context.appColors.background,
-                          ),
-                        ],
-                      ),
+                    : WalletHomeAppBar(isExchange: tabIndex == 1),
+                body: child,
               ),
             ),
           );

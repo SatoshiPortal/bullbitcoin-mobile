@@ -9,25 +9,26 @@ class DetailsTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: context.appColors.surface,
-        border: Border.all(color: context.appColors.outline),
-        boxShadow: [
-          BoxShadow(
-            color: context.appColors.onSurface.withValues(alpha: 0.3),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: context.appColors.background,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: context.appColors.border.withValues(alpha: 0.2),
+          width: 0.5,
+        ),
       ),
       child: Column(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           for (int i = 0; i < items.length; i++) ...[
             items[i],
             if (i != items.length - 1)
-              Divider(color: context.appColors.outline),
+              Divider(
+                color: context.appColors.border.withValues(alpha: 0.15),
+                height: 1,
+                thickness: 0.5,
+              ),
           ],
         ],
       ),

@@ -34,16 +34,16 @@ class TransactionDetailsAmount extends StatelessWidget {
             tx.order is FundingOrder);
 
     return Row(
-      mainAxisAlignment: .center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         CurrencyText(
           isOrder && !showOrderInFiat && orderAmountAndCurrency != null
               ? orderAmountAndCurrency.$1.toInt()
               : amountSat ?? 0,
           showFiat: false,
-          style: context.font.displaySmall?.copyWith(
-            color: context.appColors.secondary,
-            fontWeight: .w500,
+          style: context.font.headlineLarge?.copyWith(
+            color: context.appColors.text,
+            fontWeight: FontWeight.w600,
           ),
           fiatAmount:
               isOrder && showOrderInFiat && orderAmountAndCurrency != null

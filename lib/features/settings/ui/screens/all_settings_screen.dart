@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -34,8 +35,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
@@ -49,7 +48,18 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
+      appBar: AppBar(
+        title: BBText(
+          context.loc.settingsScreenTitle,
+          style: context.font.headlineMedium,
+          color: context.appColors.text,
+        ),
+        backgroundColor: context.appColors.transparent,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: context.appColors.text),
+          onPressed: () => context.pop(),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -59,6 +69,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 SettingsEntryItem(
                   icon: Icons.currency_exchange,
                   title: context.loc.settingsExchangeSettingsTitle,
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.appColors.primary,
+                    size: 20,
+                  ),
                   onTap: () {
                     if (Platform.isIOS) {
                       final isSuperuser =
@@ -95,6 +110,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 SettingsEntryItem(
                   icon: Icons.save,
                   title: context.loc.settingsWalletBackupTitle,
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.appColors.primary,
+                    size: 20,
+                  ),
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
                   },
@@ -102,6 +122,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 SettingsEntryItem(
                   icon: Icons.currency_bitcoin,
                   title: context.loc.settingsBitcoinSettingsTitle,
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.appColors.primary,
+                    size: 20,
+                  ),
                   onTap: () {
                     context.pushNamed(SettingsRoute.bitcoinSettings.name);
                   },
@@ -109,14 +134,23 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                 SettingsEntryItem(
                   icon: Icons.app_settings_alt,
                   title: context.loc.settingsAppSettingsTitle,
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.appColors.primary,
+                    size: 20,
+                  ),
                   onTap: () {
                     context.pushNamed(SettingsRoute.appSettings.name);
                   },
                 ),
-
                 SettingsEntryItem(
                   icon: Icons.description,
                   title: context.loc.settingsTermsOfServiceTitle,
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.appColors.primary,
+                    size: 20,
+                  ),
                   onTap: () {
                     final url = Uri.parse(
                       SettingsConstants.termsAndConditionsLink,
@@ -129,9 +163,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   iconColor: serviceStatusLoading
                       ? context.appColors.textMuted
                       : serviceStatus.allServicesOnline
-                      ? context.appColors.success
-                      : context.appColors.error,
+                          ? context.appColors.success
+                          : context.appColors.error,
                   title: context.loc.settingsServicesStatusTitle,
+                  trailing: Icon(
+                    Icons.chevron_right,
+                    color: context.appColors.primary,
+                    size: 20,
+                  ),
                   onTap: () {
                     context.pushNamed(StatusCheckRoute.serviceStatus.name);
                   },
@@ -142,80 +181,87 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        height: 150,
+        height: 120,
         padding: EdgeInsets.zero,
         color: context.appColors.transparent,
         child: SafeArea(
           child: Column(
-            mainAxisSize: .min,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              if (appVersion != null)
-                ListTile(
-                  tileColor: context.appColors.surfaceContainerHighest,
-                  title: Center(
-                    child: Text(
-                      '${context.loc.settingsAppVersionLabel}$appVersion',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _SocialButton(
+                    icon: FontAwesomeIcons.telegram,
+                    label: context.loc.settingsTelegramLabel,
+                    url: SettingsConstants.telegramSupportLink,
                   ),
+                  const Gap(32),
+                  _SocialButton(
+                    icon: FontAwesomeIcons.github,
+                    label: context.loc.settingsGithubLabel,
+                    url: SettingsConstants.githubSupportLink,
+                  ),
+                ],
+              ),
+              const Gap(16),
+              if (appVersion != null)
+                GestureDetector(
                   onTap: () {
                     Clipboard.setData(ClipboardData(text: appVersion));
                   },
-                ),
-              Padding(
-                padding: const EdgeInsets.only(top: 24),
-                child: Row(
-                  mainAxisAlignment: .spaceEvenly,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        final url = Uri.parse(
-                          SettingsConstants.telegramSupportLink,
-                        );
-                        launchUrl(url, mode: LaunchMode.externalApplication);
-                      },
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          const Icon(FontAwesomeIcons.telegram),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsTelegramLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
+                  child: Text(
+                    'v$appVersion',
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.appColors.textMuted.withValues(alpha: 0.5),
                     ),
-                    InkWell(
-                      onTap: () {
-                        final url = Uri.parse(
-                          SettingsConstants.githubSupportLink,
-                        );
-                        launchUrl(url, mode: LaunchMode.externalApplication);
-                      },
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          const Icon(FontAwesomeIcons.github),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsGithubLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SocialButton extends StatelessWidget {
+  const _SocialButton({
+    required this.icon,
+    required this.label,
+    required this.url,
+  });
+
+  final IconData icon;
+  final String label;
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        final uri = Uri.parse(url);
+        launchUrl(uri, mode: LaunchMode.externalApplication);
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: context.appColors.textMuted,
+            ),
+            const Gap(4),
+            Text(
+              label,
+              style: context.font.labelSmall?.copyWith(
+                color: context.appColors.textMuted,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -20,23 +20,23 @@ class LabelsTableItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
-        crossAxisAlignment: .start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             flex: 2,
             child: BBText(
               title,
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
+              style: context.font.bodySmall?.copyWith(
+                color: context.appColors.textMuted,
               ),
             ),
           ),
           Expanded(
             flex: 3,
             child: Align(
-              alignment: .centerRight,
+              alignment: Alignment.centerRight,
               child: LabelsWidget(
                 labels: labels,
                 reference: reference,

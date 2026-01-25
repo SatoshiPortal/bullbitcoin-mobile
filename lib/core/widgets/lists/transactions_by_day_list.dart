@@ -90,12 +90,34 @@ class TransactionsByDayList extends StatelessWidget {
                     : date.year == DateTime.now().year
                     ? DateFormat.MMMMd().format(date)
                     : DateFormat.yMMMMd().format(date),
-                style: context.font.titleSmall?.copyWith(
-                  color: context.appColors.onSurface,
+                style: context.font.labelSmall?.copyWith(
+                  color: context.appColors.textMuted,
                 ),
               ),
-              const Gap(16),
-              ...txs.map((tx) => TxListItem(tx: tx)),
+              const Gap(8),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: context.appColors.border.withValues(alpha: 0.3),
+                    width: 0.5,
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (int i = 0; i < txs.length; i++) ...[
+                      TxListItem(tx: txs[i]),
+                      if (i < txs.length - 1)
+                        Divider(
+                          height: 1,
+                          thickness: 0.5,
+                          color: context.appColors.border.withValues(alpha: 0.2),
+                        ),
+                    ],
+                  ],
+                ),
+              ),
               const Gap(16),
             ],
           );

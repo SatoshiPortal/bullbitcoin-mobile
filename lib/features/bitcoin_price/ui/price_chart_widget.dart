@@ -54,18 +54,10 @@ class PriceChartWidget extends StatelessWidget {
         if (state.isLoading || hasNoLocalData) {
           if (state.isLoading) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: context.appColors.onPrimary),
-                  const Gap(16),
-                  BBText(
-                    context.loc.priceChartFetchingHistory,
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.onPrimary,
-                    ),
-                  ),
-                ],
+              child: BBText(
+                context.loc.priceChartFetchingHistory,
+                style: context.font.bodySmall,
+                color: context.appColors.textMuted,
               ),
             );
           }
@@ -78,12 +70,11 @@ class PriceChartWidget extends StatelessWidget {
             'CAD';
 
         return Padding(
-          padding: const EdgeInsets.only(bottom: 40.0),
+          padding: const EdgeInsets.only(bottom: 8.0),
           child: Stack(
             children: [
               Column(
                 children: [
-                  const Gap(72),
                   if (selectedIndex != null && selectedIndex < rates.length)
                     _PriceDisplay(
                       rate: rates[selectedIndex],
@@ -91,7 +82,7 @@ class PriceChartWidget extends StatelessWidget {
                     )
                   else if (rates.isNotEmpty)
                     _PriceDisplay(rate: rates.last, currency: currency),
-                  const Gap(16),
+                  const Gap(8),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(right: 16.0),
@@ -176,7 +167,7 @@ class _PriceDisplay extends StatelessWidget {
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  vertical: 8.0,
+                  vertical: 2.0,
                   horizontal: 16.0,
                 ),
                 alignment: Alignment.center,
@@ -193,9 +184,7 @@ class _PriceDisplay extends StatelessWidget {
                     BBText(
                       currency,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.onPrimary.withValues(
-                          alpha: 0.7,
-                        ),
+                        color: context.appColors.textMuted,
                       ),
                     ),
                   ],
@@ -215,7 +204,7 @@ class _PriceDisplay extends StatelessWidget {
                     decimalDigits: 2,
                   ).format(price),
                   style: context.font.displaySmall?.copyWith(
-                    color: context.appColors.onPrimary,
+                    color: context.appColors.text,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -231,7 +220,7 @@ class _PriceDisplay extends StatelessWidget {
                 child: BBText(
                   dateFormat.format(date.toLocal()),
                   style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.onPrimary.withValues(alpha: 0.6),
+                    color: context.appColors.textMuted,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -396,12 +385,12 @@ class _ChartState extends State<_Chart> with TickerProviderStateMixin {
               prices: prices,
               minPrice: minPrice - padding,
               maxPrice: maxPrice + padding,
-              lineColor: context.appColors.onPrimary,
+              lineColor: context.appColors.textMuted,
               selectedIndex: displayIndex,
               lineAnimation: _lineAnimation.value,
               pulseScale: _pulseAnimation.value,
-              dotColor: context.appColors.onTertiary,
-              borderColor: context.appColors.onPrimary,
+              dotColor: context.appColors.warning,
+              borderColor: context.appColors.text,
             ),
           );
         },

@@ -86,33 +86,44 @@ class LabelChip extends StatelessWidget {
     required this.label,
     required this.onDelete,
     this.isDeleting = false,
+    this.compact = false,
   });
 
   final String label;
   final VoidCallback? onDelete;
   final bool isDeleting;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final maxWidth = screenWidth * 0.8;
+    final maxWidth = screenWidth * 0.4;
     final isSystemLabel = LabelSystem.isSystemLabel(label);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 6 : 8,
+        vertical: compact ? 2 : 4,
+      ),
       decoration: BoxDecoration(
-        color: context.appColors.border,
-        borderRadius: BorderRadius.circular(2.0),
+        color: context.appColors.textMuted.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
+          color: context.appColors.textMuted.withValues(alpha: 0.2),
+          width: 0.5,
+        ),
       ),
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: Row(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
             child: LabelText(
               label,
-              style: context.font.labelSmall?.copyWith(
-                color: context.appColors.onSurface,
+              style: (compact ? context.font.labelSmall : context.font.bodySmall)
+                  ?.copyWith(
+                color: context.appColors.textMuted,
+                fontSize: compact ? 10 : null,
               ),
             ),
           ),
@@ -120,10 +131,10 @@ class LabelChip extends StatelessWidget {
             const SizedBox(width: 4),
             if (isDeleting)
               SizedBox(
-                width: 16,
-                height: 16,
+                width: 12,
+                height: 12,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2,
+                  strokeWidth: 1.5,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     context.appColors.primary,
                   ),
@@ -134,7 +145,7 @@ class LabelChip extends StatelessWidget {
                 onTap: onDelete,
                 child: Icon(
                   Icons.close,
-                  size: 16,
+                  size: 12,
                   color: context.appColors.primary,
                 ),
               ),

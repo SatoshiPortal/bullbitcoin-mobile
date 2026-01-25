@@ -20,7 +20,8 @@ class TopBarBullLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return enableSuperuserTapUnlocker
         ? SuperuserTapUnlocker(
-          tapsReachedMessageBackgroundColor: context.appColors.primary,
+          tapsReachedMessageBackgroundColor: context.appColors.surfaceContainer,
+          tapsReachedMessageTextColor: context.appColors.text,
           child: _BullLogo(onTap: onTap, playAnimation: playAnimation),
         )
         : _BullLogo(onTap: onTap, playAnimation: playAnimation);

@@ -68,16 +68,13 @@ class HomeFiatBalance extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: context.appColors.border.withValues(alpha: 0.3),
-          ),
-          color: context.appColors.border.withValues(alpha: 0.3),
+          color: const Color(0xFF2C2C2E),
         ),
         child: CurrencyText(
           balanceSat,
           showFiat: true,
           style: context.font.bodyLarge,
-          color: context.appColors.onPrimary,
+          color: Colors.white,
         ),
       ),
     );

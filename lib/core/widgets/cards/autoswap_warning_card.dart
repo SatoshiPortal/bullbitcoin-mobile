@@ -12,51 +12,49 @@ class AutoSwapWarningCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        onTap();
-      },
+      onTap: () => onTap(),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: context.appColors.surfaceContainer,
           border: Border.all(
-            color: context.appColors.surfaceContainerHighest,
+            color: context.appColors.primary.withValues(alpha: 0.3),
             width: 1,
           ),
-          borderRadius: BorderRadius.circular(2),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.check_circle_outline,
+              Icons.check_circle,
               color: context.appColors.success,
-              size: 24,
+              size: 20,
             ),
-            const Gap(14),
+            const Gap(12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   BBText(
                     context.loc.autoswapWarningCardTitle,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.onSurface,
+                    style: context.font.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    color: context.appColors.text,
                   ),
-                  const Gap(2),
-                  GestureDetector(
-                    onTap: () {
-                      onTap();
-                    },
-                    child: Text(
-                      'Click to learn more, disable or configure',
-                      style: context.font.bodySmall?.copyWith(
-                        decoration: TextDecoration.underline,
-                        color: context.appColors.onSurfaceVariant,
-                      ),
+                  Text(
+                    'Tap to configure',
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.appColors.textMuted,
                     ),
                   ),
                 ],
               ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: context.appColors.textMuted,
+              size: 20,
             ),
           ],
         ),

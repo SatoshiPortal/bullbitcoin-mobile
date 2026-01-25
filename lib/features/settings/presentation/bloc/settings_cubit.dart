@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/pin_code/domain/usecases/is_pin_code_set_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -32,6 +33,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetThemeModeUsecase setThemeModeUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
     required RevokeArkUsecase revokeArkUsecase,
+    required IsPinCodeSetUsecase isPinCodeSetUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
        _getSettingsUsecase = getSettingsUsecase,
@@ -43,6 +45,7 @@ class SettingsCubit extends Cubit<SettingsState> {
        _getOldSeedsUsecase = getOldSeedsUsecase,
        _setIsDevModeUsecase = setIsDevModeUsecase,
        _revokeArkUsecase = revokeArkUsecase,
+       _isPinCodeSetUsecase = isPinCodeSetUsecase,
        super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -56,18 +59,29 @@ class SettingsCubit extends Cubit<SettingsState> {
   final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
+  final IsPinCodeSetUsecase _isPinCodeSetUsecase;
 
   Future<void> init() async {
-    final (storedSettings, appInfo) = await (
+    final (storedSettings, appInfo, isPinSet) = await (
       _getSettingsUsecase.execute(),
       PackageInfo.fromPlatform(),
+      _isPinCodeSetUsecase.execute(),
     ).wait;
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';
 
     emit(
-      state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
+      state.copyWith(
+        storedSettings: storedSettings,
+        appVersion: appVersion,
+        isPinCodeSet: isPinSet,
+      ),
     );
     await checkHasLegacySeeds();
+  }
+
+  Future<void> refreshPinCodeStatus() async {
+    final isPinSet = await _isPinCodeSetUsecase.execute();
+    emit(state.copyWith(isPinCodeSet: isPinSet));
   }
 
   Future<void> toggleTestnetMode(bool active) async {

@@ -25,13 +25,12 @@ class HomeBalanceSection extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       transitionBuilder: (child, animation) {
         return SlideTransition(
-          position:
-              Tween<Offset>(
-                begin: const Offset(1.0, 0.0),
-                end: Offset.zero,
-              ).animate(
-                CurvedAnimation(parent: animation, curve: Curves.easeInOut),
-              ),
+          position: Tween<Offset>(
+            begin: const Offset(1.0, 0.0),
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+          ),
           child: child,
         );
       },
@@ -52,13 +51,7 @@ class _Amounts extends StatelessWidget {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(),
-            const _BtcTotalAmt(),
-            const Gap(8),
-            const EyeToggle(),
-            const Spacer(),
-          ],
+          children: [const Spacer(), const _BtcTotalAmt(), const Gap(8), const EyeToggle(), const Spacer()],
         ),
         const _FiatAmt(),
         const _UnconfirmedIncomingBalance(),
