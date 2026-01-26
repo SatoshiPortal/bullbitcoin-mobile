@@ -110,6 +110,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from10To11: Schema10To11.migrate,
         from11To12: Schema11To12.migrate,
         from12To13: Schema12To13.migrate,
+      ),
     );
   }
 
