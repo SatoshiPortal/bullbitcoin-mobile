@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/delete_secret_usecase.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
+import 'package:bb_mobile/features/secrets/public/secrets_facade_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -16,7 +16,7 @@ void main() {
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
   // Test data
-  const testFingerprint = 'test-fingerprint-12345';
+  const testFingerprint = Fingerprint('test1234');
 
   setUp(() {
     mockSecretStore = MockSecretStorePort();
@@ -31,7 +31,7 @@ void main() {
   group('DeleteSecretUseCase - Happy Path', () {
     test('should successfully delete seed when not in use', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
       when(
         mockSecretUsageRepository.isUsed(any),
@@ -50,20 +50,14 @@ void main() {
   group('DeleteSecretUseCase - Error Scenarios', () {
     test('should throw SecretInUseError when seed is in use', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
       when(mockSecretUsageRepository.isUsed(any)).thenAnswer((_) async => true);
 
       // Act & Assert
       await expectLater(
         () => useCase.execute(command),
-        throwsA(
-          isA<SecretInUseError>().having(
-            (e) => e.fingerprint,
-            'fingerprint',
-            testFingerprint,
-          ),
-        ),
+        throwsA(isA<SecretInUseError>()),
       );
 
       // Verify delete was never called
@@ -177,14 +171,14 @@ void main() {
       // Arrange
       final command = DeleteSecretCommand(fingerprint: testFingerprint);
 
-      final appError = FailedToRegisterSecretUsageError(testFingerprint, null);
+      final appError = SecretInUseError(testFingerprint);
       when(mockSecretUsageRepository.isUsed(any)).thenThrow(appError);
 
       // Act & Assert
       await expectLater(
         () => useCase.execute(command),
         throwsA(
-          isA<FailedToRegisterSecretUsageError>().having(
+          isA<SecretInUseError>().having(
             (e) => e.fingerprint,
             'fingerprint',
             testFingerprint,

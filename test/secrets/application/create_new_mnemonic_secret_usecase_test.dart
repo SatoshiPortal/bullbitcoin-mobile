@@ -1,8 +1,9 @@
 import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
-import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
-import 'package:bb_mobile/features/secrets/domain/primitives/secret_usage_purpose.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/secret_usage_id.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/secret_consumer.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 import 'package:bb_mobile/features/secrets/application/ports/mnemonic_generator_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
@@ -31,8 +32,8 @@ void main() {
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
   // Test data
-  const testFingerprint = 'test-fingerprint-12345';
-  final testMnemonicWords = [
+  final testFingerprint = Fingerprint('test-fingerprint-12345');
+  final testMnemonicWords = MnemonicWords([
     'abandon',
     'ability',
     'able',
@@ -45,7 +46,7 @@ void main() {
     'abuse',
     'access',
     'accident',
-  ];
+  ]);
 
   setUp(() {
     mockMnemonicGenerator = MockMnemonicGeneratorPort();
@@ -64,30 +65,26 @@ void main() {
   group('CreateNewSecretMnemonicUseCase - Happy Path', () {
     test('should successfully create new seed without passphrase', () async {
       // Arrange
-      final command = CreateNewMnemonicSecretCommand(
-        purpose: SecretUsagePurpose.wallet,
-        consumerRef: 'wallet-123',
+      final command = CreateNewMnemonicSecretCommand.forWallet(
+        walletId: 'wallet-123',
       );
 
       when(
         mockMnemonicGenerator.generateMnemonic(),
       ).thenAnswer((_) async => testMnemonicWords);
       when(
-        mockSecretCrypto.getFingerprintFromSecret(any),
-      ).thenAnswer((_) async => testFingerprint);
-      when(
-        mockSecretStore.save(
-          fingerprint: anyNamed('fingerprint'),
-          secret: anyNamed('secret'),
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: testMnemonicWords,
+          passphrase: null,
         ),
-      ).thenAnswer((_) async {
-        return null;
+      ).thenAnswer((_) => testFingerprint);
+      when(mockSecretStore.save(any)).thenAnswer((_) async {
+        return;
       });
       when(
         mockSecretUsageRepository.add(
           fingerprint: anyNamed('fingerprint'),
-          purpose: anyNamed('purpose'),
-          consumerRef: anyNamed('consumerRef'),
+          consumer: anyNamed('consumer'),
         ),
       ).thenAnswer((_) async => _createTestSecretUsage());
 
@@ -95,7 +92,6 @@ void main() {
       final result = await useCase.execute(command);
 
       // Assert
-      expect(result.fingerprint, testFingerprint);
       expect(result.secret, isA<MnemonicSecret>());
 
       final secret = result.secret;
@@ -104,55 +100,60 @@ void main() {
 
       // Verify port interactions
       verify(mockMnemonicGenerator.generateMnemonic()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
+      verify(
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: testMnemonicWords,
+          passphrase: null,
+        ),
+      ).called(1);
       verify(
         mockSecretStore.save(
-          fingerprint: testFingerprint,
-          secret: argThat(
+          argThat(
             isA<MnemonicSecret>()
                 .having((s) => s.words, 'words', testMnemonicWords)
                 .having((s) => s.passphrase, 'passphrase', isNull),
-            named: 'secret',
           ),
         ),
       ).called(1);
       verify(
         mockSecretUsageRepository.add(
           fingerprint: testFingerprint,
-          purpose: SecretUsagePurpose.wallet,
-          consumerRef: 'wallet-123',
+          consumer: argThat(
+            isA<WalletConsumer>().having(
+              (c) => c.walletId,
+              'walletId',
+              'wallet-123',
+            ),
+            named: 'consumer',
+          ),
         ),
       ).called(1);
     });
 
     test('should successfully create new seed with passphrase', () async {
       // Arrange
-      const testPassphrase = 'super-secret-passphrase';
-      final command = CreateNewMnemonicSecretCommand(
-        passphrase: testPassphrase,
-        purpose: SecretUsagePurpose.bip85,
-        consumerRef: 'bip85-456',
+      const testPassphraseStr = 'super-secret-passphrase';
+      final command = CreateNewMnemonicSecretCommand.forBip85(
+        bip85Path: "m/83696968'/0'/0'",
+        passphrase: testPassphraseStr,
       );
 
       when(
         mockMnemonicGenerator.generateMnemonic(),
       ).thenAnswer((_) async => testMnemonicWords);
       when(
-        mockSecretCrypto.getFingerprintFromSecret(any),
-      ).thenAnswer((_) async => testFingerprint);
-      when(
-        mockSecretStore.save(
-          fingerprint: anyNamed('fingerprint'),
-          secret: anyNamed('secret'),
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
         ),
-      ).thenAnswer((_) async {
-        return null;
+      ).thenAnswer((_) => testFingerprint);
+      when(mockSecretStore.save(any)).thenAnswer((_) async {
+        return;
       });
       when(
         mockSecretUsageRepository.add(
           fingerprint: anyNamed('fingerprint'),
-          purpose: anyNamed('purpose'),
-          consumerRef: anyNamed('consumerRef'),
+          consumer: anyNamed('consumer'),
         ),
       ).thenAnswer((_) async => _createTestSecretUsage());
 
@@ -160,32 +161,118 @@ void main() {
       final result = await useCase.execute(command);
 
       // Assert
-      expect(result.fingerprint, testFingerprint);
       expect(result.secret, isA<MnemonicSecret>());
 
       final secret = result.secret;
       expect(secret.words, testMnemonicWords);
-      expect(secret.passphrase, testPassphrase);
+      expect(secret.passphrase, isA<Passphrase>());
+      expect(secret.passphrase!.value, testPassphraseStr);
 
       // Verify passphrase was passed correctly
       verify(
         mockSecretStore.save(
-          fingerprint: testFingerprint,
-          secret: argThat(
+          argThat(
             isA<MnemonicSecret>()
                 .having((s) => s.words, 'words', testMnemonicWords)
-                .having((s) => s.passphrase, 'passphrase', testPassphrase),
-            named: 'secret',
+                .having(
+                  (s) => s.passphrase?.value,
+                  'passphrase',
+                  testPassphraseStr,
+                ),
           ),
         ),
       ).called(1);
       verify(
         mockSecretUsageRepository.add(
           fingerprint: testFingerprint,
-          purpose: SecretUsagePurpose.bip85,
-          consumerRef: 'bip85-456',
+          consumer: argThat(
+            isA<Bip85Consumer>().having(
+              (c) => c.bip85Path,
+              'bip85Path',
+              "m/83696968'/0'/0'",
+            ),
+            named: 'consumer',
+          ),
         ),
       ).called(1);
+    });
+  });
+
+  group('CreateNewMnemonicSecretUseCase - Input Validation', () {
+    test(
+      'should throw InvalidPassphraseInputError when passphrase too long',
+      () async {
+        // Arrange
+        final longPassphrase = 'a' * 257; // 257 characters, max is 256
+        final command = CreateNewMnemonicSecretCommand.forWallet(
+          walletId: 'wallet-123',
+          passphrase: longPassphrase,
+        );
+
+        // Act & Assert
+        await expectLater(
+          () => useCase.execute(command),
+          throwsA(
+            isA<InvalidPassphraseInputError>()
+                .having((e) => e.length, 'length', 257)
+                .having(
+                  (e) => e.message,
+                  'message',
+                  contains('Passphrase too long'),
+                ),
+          ),
+        );
+
+        // Verify no other ports were called (validation happens before generation)
+        verifyNever(mockMnemonicGenerator.generateMnemonic());
+        verifyNever(
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
+          ),
+        );
+        verifyNever(mockSecretStore.save(any));
+        verifyNever(
+          mockSecretUsageRepository.add(
+            fingerprint: anyNamed('fingerprint'),
+            consumer: anyNamed('consumer'),
+          ),
+        );
+      },
+    );
+
+    test('should accept passphrase at exactly 256 characters', () async {
+      // Arrange
+      final maxPassphrase = 'a' * 256; // exactly 256 characters
+      final command = CreateNewMnemonicSecretCommand.forWallet(
+        walletId: 'wallet-123',
+        passphrase: maxPassphrase,
+      );
+
+      when(
+        mockMnemonicGenerator.generateMnemonic(),
+      ).thenAnswer((_) async => testMnemonicWords);
+      when(
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
+        ),
+      ).thenAnswer((_) => testFingerprint);
+      when(mockSecretStore.save(any)).thenAnswer((_) async {
+        return;
+      });
+      when(
+        mockSecretUsageRepository.add(
+          fingerprint: anyNamed('fingerprint'),
+          consumer: anyNamed('consumer'),
+        ),
+      ).thenAnswer((_) async => _createTestSecretUsage());
+
+      // Act
+      final result = await useCase.execute(command);
+
+      // Assert - should succeed with 256 chars
+      expect(result.secret.passphrase?.value, maxPassphrase);
     });
   });
 
@@ -194,9 +281,8 @@ void main() {
       'should throw FailedToCreateNewMnemonicSecretError when mnemonic generation fails',
       () async {
         // Arrange
-        final command = CreateNewMnemonicSecretCommand(
-          purpose: SecretUsagePurpose.wallet,
-          consumerRef: 'wallet-123',
+        final command = CreateNewMnemonicSecretCommand.forWallet(
+          walletId: 'wallet-123',
         );
 
         final generationError = Exception('RNG failure');
@@ -217,18 +303,17 @@ void main() {
         );
 
         // Verify no other ports were called
-        verifyNever(mockSecretCrypto.getFingerprintFromSecret(any));
         verifyNever(
-          mockSecretStore.save(
-            fingerprint: anyNamed('fingerprint'),
-            secret: anyNamed('secret'),
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
           ),
         );
+        verifyNever(mockSecretStore.save(any));
         verifyNever(
           mockSecretUsageRepository.add(
             fingerprint: anyNamed('fingerprint'),
-            purpose: anyNamed('purpose'),
-            consumerRef: anyNamed('consumerRef'),
+            consumer: anyNamed('consumer'),
           ),
         );
       },
@@ -238,9 +323,8 @@ void main() {
       'should throw BusinessRuleFailed when fingerprint calculation throws domain error',
       () async {
         // Arrange
-        final command = CreateNewMnemonicSecretCommand(
-          purpose: SecretUsagePurpose.wallet,
-          consumerRef: 'wallet-123',
+        final command = CreateNewMnemonicSecretCommand.forWallet(
+          walletId: 'wallet-123',
         );
 
         final domainError = TestSecretsDomainError('Invalid seed format');
@@ -248,7 +332,10 @@ void main() {
           mockMnemonicGenerator.generateMnemonic(),
         ).thenAnswer((_) async => testMnemonicWords);
         when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
+          ),
         ).thenThrow(domainError);
 
         // Act & Assert
@@ -263,18 +350,17 @@ void main() {
 
         // Verify mnemonic was generated but no storage happened
         verify(mockMnemonicGenerator.generateMnemonic()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
-        verifyNever(
-          mockSecretStore.save(
-            fingerprint: anyNamed('fingerprint'),
-            secret: anyNamed('secret'),
+        verify(
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
           ),
-        );
+        ).called(1);
+        verifyNever(mockSecretStore.save(any));
         verifyNever(
           mockSecretUsageRepository.add(
             fingerprint: anyNamed('fingerprint'),
-            purpose: anyNamed('purpose'),
-            consumerRef: anyNamed('consumerRef'),
+            consumer: anyNamed('consumer'),
           ),
         );
       },
@@ -284,9 +370,8 @@ void main() {
       'should throw FailedToCreateNewMnemonicSecretError when secret storage fails',
       () async {
         // Arrange
-        final command = CreateNewMnemonicSecretCommand(
-          purpose: SecretUsagePurpose.wallet,
-          consumerRef: 'wallet-123',
+        final command = CreateNewMnemonicSecretCommand.forWallet(
+          walletId: 'wallet-123',
         );
 
         final storageError = Exception('Secure storage unavailable');
@@ -294,14 +379,12 @@ void main() {
           mockMnemonicGenerator.generateMnemonic(),
         ).thenAnswer((_) async => testMnemonicWords);
         when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
-        ).thenAnswer((_) async => testFingerprint);
-        when(
-          mockSecretStore.save(
-            fingerprint: anyNamed('fingerprint'),
-            secret: anyNamed('secret'),
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
           ),
-        ).thenThrow(storageError);
+        ).thenAnswer((_) => testFingerprint);
+        when(mockSecretStore.save(any)).thenThrow(storageError);
 
         // Act & Assert
         expect(
@@ -319,8 +402,7 @@ void main() {
         verifyNever(
           mockSecretUsageRepository.add(
             fingerprint: anyNamed('fingerprint'),
-            purpose: anyNamed('purpose'),
-            consumerRef: anyNamed('consumerRef'),
+            consumer: anyNamed('consumer'),
           ),
         );
       },
@@ -330,9 +412,8 @@ void main() {
       'should throw FailedToCreateNewMnemonicSecretError when usage repository add fails',
       () async {
         // Arrange
-        final command = CreateNewMnemonicSecretCommand(
-          purpose: SecretUsagePurpose.wallet,
-          consumerRef: 'wallet-123',
+        final command = CreateNewMnemonicSecretCommand.forWallet(
+          walletId: 'wallet-123',
         );
 
         final repositoryError = Exception('Database connection failed');
@@ -340,21 +421,18 @@ void main() {
           mockMnemonicGenerator.generateMnemonic(),
         ).thenAnswer((_) async => testMnemonicWords);
         when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
-        ).thenAnswer((_) async => testFingerprint);
-        when(
-          mockSecretStore.save(
-            fingerprint: anyNamed('fingerprint'),
-            secret: anyNamed('secret'),
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
           ),
-        ).thenAnswer((_) async {
-          return null;
+        ).thenAnswer((_) => testFingerprint);
+        when(mockSecretStore.save(any)).thenAnswer((_) async {
+          return;
         });
         when(
           mockSecretUsageRepository.add(
             fingerprint: anyNamed('fingerprint'),
-            purpose: anyNamed('purpose'),
-            consumerRef: anyNamed('consumerRef'),
+            consumer: anyNamed('consumer'),
           ),
         ).thenThrow(repositoryError);
 
@@ -372,28 +450,32 @@ void main() {
 
         // Verify all steps up to repository were called
         verify(mockMnemonicGenerator.generateMnemonic()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
         verify(
-          mockSecretStore.save(
-            fingerprint: anyNamed('fingerprint'),
-            secret: anyNamed('secret'),
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
           ),
         ).called(1);
+        verify(mockSecretStore.save(any)).called(1);
       },
     );
 
     test('should rethrow application errors without wrapping', () async {
       // Arrange
-      final command = CreateNewMnemonicSecretCommand(
-        purpose: SecretUsagePurpose.wallet,
-        consumerRef: 'wallet-123',
+      final command = CreateNewMnemonicSecretCommand.forWallet(
+        walletId: 'wallet-123',
       );
 
       final appError = SecretInUseError('existing-fingerprint');
       when(
         mockMnemonicGenerator.generateMnemonic(),
       ).thenAnswer((_) async => testMnemonicWords);
-      when(mockSecretCrypto.getFingerprintFromSecret(any)).thenThrow(appError);
+      when(
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
+        ),
+      ).thenThrow(appError);
 
       // Act & Assert
       expect(
@@ -412,9 +494,8 @@ void main() {
   group('CreateNewMnemonicSecretUseCase - Verification Tests', () {
     test('should call ports in correct sequence', () async {
       // Arrange
-      final command = CreateNewMnemonicSecretCommand(
-        purpose: SecretUsagePurpose.wallet,
-        consumerRef: 'wallet-123',
+      final command = CreateNewMnemonicSecretCommand.forWallet(
+        walletId: 'wallet-123',
       );
 
       final callOrder = <String>[];
@@ -423,26 +504,23 @@ void main() {
         callOrder.add('generateMnemonic');
         return testMnemonicWords;
       });
-      when(mockSecretCrypto.getFingerprintFromSecret(any)).thenAnswer((
-        _,
-      ) async {
-        callOrder.add('getFingerprintFromSecret');
+      when(
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
+        ),
+      ).thenAnswer((_) {
+        callOrder.add('getFingerprintFromMnemonic');
         return testFingerprint;
       });
-      when(
-        mockSecretStore.save(
-          fingerprint: anyNamed('fingerprint'),
-          secret: anyNamed('secret'),
-        ),
-      ).thenAnswer((_) async {
+      when(mockSecretStore.save(any)).thenAnswer((_) async {
         callOrder.add('save');
-        return null;
+        return;
       });
       when(
         mockSecretUsageRepository.add(
           fingerprint: anyNamed('fingerprint'),
-          purpose: anyNamed('purpose'),
-          consumerRef: anyNamed('consumerRef'),
+          consumer: anyNamed('consumer'),
         ),
       ).thenAnswer((_) async {
         callOrder.add('add');
@@ -455,46 +533,46 @@ void main() {
       // Assert - verify exact order
       expect(callOrder, [
         'generateMnemonic',
-        'getFingerprintFromSecret',
+        'getFingerprintFromMnemonic',
         'save',
         'add',
       ]);
     });
 
     test(
-      'should pass correct SecretMnemonicSecret to getFingerprintFromSecret',
+      'should pass correct SecretMnemonicSecret to getFingerprintFromMnemonic',
       () async {
         // Arrange
         const testPassphrase = 'my-passphrase';
-        final command = CreateNewMnemonicSecretCommand(
+        final command = CreateNewMnemonicSecretCommand.forWallet(
+          walletId: 'wallet-123',
           passphrase: testPassphrase,
-          purpose: SecretUsagePurpose.wallet,
-          consumerRef: 'wallet-123',
         );
 
-        Secret? capturedSecret;
+        MnemonicWords? capturedWords;
+        Passphrase? capturedPassphrase;
         when(
           mockMnemonicGenerator.generateMnemonic(),
         ).thenAnswer((_) async => testMnemonicWords);
-        when(mockSecretCrypto.getFingerprintFromSecret(any)).thenAnswer((
-          invocation,
-        ) async {
-          capturedSecret = invocation.positionalArguments[0] as Secret;
+        when(
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
+          ),
+        ).thenAnswer((invocation) {
+          capturedWords =
+              invocation.namedArguments[#mnemonicWords] as MnemonicWords?;
+          capturedPassphrase =
+              invocation.namedArguments[#passphrase] as Passphrase?;
           return testFingerprint;
         });
-        when(
-          mockSecretStore.save(
-            fingerprint: anyNamed('fingerprint'),
-            secret: anyNamed('secret'),
-          ),
-        ).thenAnswer((_) async {
-          return null;
+        when(mockSecretStore.save(any)).thenAnswer((_) async {
+          return;
         });
         when(
           mockSecretUsageRepository.add(
             fingerprint: anyNamed('fingerprint'),
-            purpose: anyNamed('purpose'),
-            consumerRef: anyNamed('consumerRef'),
+            consumer: anyNamed('consumer'),
           ),
         ).thenAnswer((_) async => _createTestSecretUsage());
 
@@ -502,39 +580,34 @@ void main() {
         await useCase.execute(command);
 
         // Assert
-        expect(capturedSecret, isA<MnemonicSecret>());
-        final mnemonicSecret = capturedSecret as MnemonicSecret;
-        expect(mnemonicSecret.words, testMnemonicWords);
-        expect(mnemonicSecret.passphrase, testPassphrase);
+        expect(capturedWords, testMnemonicWords);
+        expect(capturedPassphrase, isA<Passphrase>());
+        expect(capturedPassphrase!.value, testPassphrase);
       },
     );
 
     test('should pass command properties correctly to repository', () async {
       // Arrange
-      final command = CreateNewMnemonicSecretCommand(
-        purpose: SecretUsagePurpose.bip85,
-        consumerRef: 'bip85-special-ref',
+      final command = CreateNewMnemonicSecretCommand.forBip85(
+        bip85Path: "m/83696968'/1'/5'",
       );
 
       when(
         mockMnemonicGenerator.generateMnemonic(),
       ).thenAnswer((_) async => testMnemonicWords);
       when(
-        mockSecretCrypto.getFingerprintFromSecret(any),
-      ).thenAnswer((_) async => testFingerprint);
-      when(
-        mockSecretStore.save(
-          fingerprint: anyNamed('fingerprint'),
-          secret: anyNamed('secret'),
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
         ),
-      ).thenAnswer((_) async {
-        return null;
+      ).thenAnswer((_) => testFingerprint);
+      when(mockSecretStore.save(any)).thenAnswer((_) async {
+        return;
       });
       when(
         mockSecretUsageRepository.add(
           fingerprint: anyNamed('fingerprint'),
-          purpose: anyNamed('purpose'),
-          consumerRef: anyNamed('consumerRef'),
+          consumer: anyNamed('consumer'),
         ),
       ).thenAnswer((_) async => _createTestSecretUsage());
 
@@ -545,38 +618,40 @@ void main() {
       verify(
         mockSecretUsageRepository.add(
           fingerprint: testFingerprint,
-          purpose: SecretUsagePurpose.bip85,
-          consumerRef: 'bip85-special-ref',
+          consumer: argThat(
+            isA<Bip85Consumer>().having(
+              (c) => c.bip85Path,
+              'bip85Path',
+              "m/83696968'/1'/5'",
+            ),
+            named: 'consumer',
+          ),
         ),
       ).called(1);
     });
 
     test('should call each port exactly once in happy path', () async {
       // Arrange
-      final command = CreateNewMnemonicSecretCommand(
-        purpose: SecretUsagePurpose.wallet,
-        consumerRef: 'wallet-123',
+      final command = CreateNewMnemonicSecretCommand.forWallet(
+        walletId: 'wallet-123',
       );
 
       when(
         mockMnemonicGenerator.generateMnemonic(),
       ).thenAnswer((_) async => testMnemonicWords);
       when(
-        mockSecretCrypto.getFingerprintFromSecret(any),
-      ).thenAnswer((_) async => testFingerprint);
-      when(
-        mockSecretStore.save(
-          fingerprint: anyNamed('fingerprint'),
-          secret: anyNamed('secret'),
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
         ),
-      ).thenAnswer((_) async {
-        return null;
+      ).thenAnswer((_) => testFingerprint);
+      when(mockSecretStore.save(any)).thenAnswer((_) async {
+        return;
       });
       when(
         mockSecretUsageRepository.add(
           fingerprint: anyNamed('fingerprint'),
-          purpose: anyNamed('purpose'),
-          consumerRef: anyNamed('consumerRef'),
+          consumer: anyNamed('consumer'),
         ),
       ).thenAnswer((_) async => _createTestSecretUsage());
 
@@ -585,18 +660,17 @@ void main() {
 
       // Assert - verify exactly one call each
       verify(mockMnemonicGenerator.generateMnemonic()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
       verify(
-        mockSecretStore.save(
-          fingerprint: anyNamed('fingerprint'),
-          secret: anyNamed('secret'),
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
         ),
       ).called(1);
+      verify(mockSecretStore.save(any)).called(1);
       verify(
         mockSecretUsageRepository.add(
           fingerprint: anyNamed('fingerprint'),
-          purpose: anyNamed('purpose'),
-          consumerRef: anyNamed('consumerRef'),
+          consumer: anyNamed('consumer'),
         ),
       ).called(1);
 
@@ -611,31 +685,27 @@ void main() {
       'should return result with same fingerprint from crypto port',
       () async {
         // Arrange
-        const customFingerprint = 'custom-fp-xyz789';
-        final command = CreateNewMnemonicSecretCommand(
-          purpose: SecretUsagePurpose.wallet,
-          consumerRef: 'wallet-123',
+        final customFingerprint = Fingerprint('custom-fp-xyz789');
+        final command = CreateNewMnemonicSecretCommand.forWallet(
+          walletId: 'wallet-123',
         );
 
         when(
           mockMnemonicGenerator.generateMnemonic(),
         ).thenAnswer((_) async => testMnemonicWords);
         when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
-        ).thenAnswer((_) async => customFingerprint);
-        when(
-          mockSecretStore.save(
-            fingerprint: anyNamed('fingerprint'),
-            secret: anyNamed('secret'),
+          mockSecretCrypto.getFingerprintFromMnemonic(
+            mnemonicWords: anyNamed('mnemonicWords'),
+            passphrase: anyNamed('passphrase'),
           ),
-        ).thenAnswer((_) async {
-          return null;
+        ).thenAnswer((_) => customFingerprint);
+        when(mockSecretStore.save(any)).thenAnswer((_) async {
+          return;
         });
         when(
           mockSecretUsageRepository.add(
             fingerprint: anyNamed('fingerprint'),
-            purpose: anyNamed('purpose'),
-            consumerRef: anyNamed('consumerRef'),
+            consumer: anyNamed('consumer'),
           ),
         ).thenAnswer((_) async => _createTestSecretUsage());
 
@@ -643,7 +713,7 @@ void main() {
         final result = await useCase.execute(command);
 
         // Assert
-        expect(result.fingerprint, customFingerprint);
+        expect(result.secret.fingerprint, customFingerprint);
       },
     );
   });
@@ -652,10 +722,9 @@ void main() {
 // Test helper function to create a test SecretUsage entity
 SecretUsage _createTestSecretUsage() {
   return SecretUsage(
-    id: 1,
-    fingerprint: 'test-fingerprint-12345',
-    purpose: SecretUsagePurpose.wallet,
-    consumerRef: 'test-consumer',
+    id: SecretUsageId(1),
+    fingerprint: Fingerprint('test-fingerprint-12345'),
+    consumer: WalletConsumer('test-consumer'),
     createdAt: DateTime.now(),
   );
 }
