@@ -1,8 +1,9 @@
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/delete_secret_usecase.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
-import 'package:bb_mobile/features/secrets/public/secrets_facade_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -16,7 +17,7 @@ void main() {
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
   // Test data
-  const testFingerprint = Fingerprint('test1234');
+  final testFingerprint = Fingerprint.fromHex('12345678');
 
   setUp(() {
     mockSecretStore = MockSecretStorePort();
@@ -69,7 +70,7 @@ void main() {
       'should throw BusinessRuleFailed when isUsed throws domain error',
       () async {
         // Arrange
-        final command = DeleteSecretCommand(fingerprint: testFingerprint);
+        final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
         final domainError = TestSecretsDomainError(
           'Invalid fingerprint format',
@@ -95,7 +96,7 @@ void main() {
       'should throw BusinessRuleFailed when delete throws domain error',
       () async {
         // Arrange
-        final command = DeleteSecretCommand(fingerprint: testFingerprint);
+        final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
         final domainError = TestSecretsDomainError(
           'Storage constraint violated',
@@ -123,7 +124,7 @@ void main() {
 
     test('should throw FailedToDeleteSecretError when isUsed fails', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
       final repositoryError = Exception('Database connection lost');
       when(mockSecretUsageRepository.isUsed(any)).thenThrow(repositoryError);
@@ -133,7 +134,11 @@ void main() {
         () => useCase.execute(command),
         throwsA(
           isA<FailedToDeleteSecretError>()
-              .having((e) => e.fingerprint, 'fingerprint', testFingerprint)
+              .having(
+                (e) => e.fingerprint,
+                'fingerprint',
+                testFingerprint.value,
+              )
               .having((e) => e.cause, 'cause', repositoryError),
         ),
       );
@@ -144,7 +149,7 @@ void main() {
 
     test('should throw FailedToDeleteSecretError when delete fails', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
       final storageError = Exception('Secure storage unavailable');
       when(
@@ -157,7 +162,11 @@ void main() {
         () => useCase.execute(command),
         throwsA(
           isA<FailedToDeleteSecretError>()
-              .having((e) => e.fingerprint, 'fingerprint', testFingerprint)
+              .having(
+                (e) => e.fingerprint,
+                'fingerprint',
+                testFingerprint.value,
+              )
               .having((e) => e.cause, 'cause', storageError),
         ),
       );
@@ -169,9 +178,9 @@ void main() {
 
     test('should rethrow application errors without wrapping', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
-      final appError = SecretInUseError(testFingerprint);
+      final appError = SecretInUseError(testFingerprint.value);
       when(mockSecretUsageRepository.isUsed(any)).thenThrow(appError);
 
       // Act & Assert
@@ -181,7 +190,7 @@ void main() {
           isA<SecretInUseError>().having(
             (e) => e.fingerprint,
             'fingerprint',
-            testFingerprint,
+            testFingerprint.value,
           ),
         ),
       );
@@ -191,7 +200,7 @@ void main() {
   group('DeleteSecretUseCase - Verification Tests', () {
     test('should call ports in correct sequence', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
       final callOrder = <String>[];
 
@@ -212,8 +221,8 @@ void main() {
 
     test('should pass correct fingerprint to both ports', () async {
       // Arrange
-      const customFingerprint = 'custom-fp-xyz789';
-      final command = DeleteSecretCommand(fingerprint: customFingerprint);
+      final customFingerprint = Fingerprint.fromHex('abcdef12');
+      final command = DeleteSecretCommand(fingerprint: customFingerprint.value);
 
       when(
         mockSecretUsageRepository.isUsed(any),
@@ -230,7 +239,7 @@ void main() {
 
     test('should call each port exactly once in happy path', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
       when(
         mockSecretUsageRepository.isUsed(any),
@@ -251,7 +260,7 @@ void main() {
 
     test('should check if seed is used before attempting delete', () async {
       // Arrange
-      final command = DeleteSecretCommand(fingerprint: testFingerprint);
+      final command = DeleteSecretCommand(fingerprint: testFingerprint.value);
 
       bool deleteWasCalled = false;
       bool isUsedCalledBeforeDelete = false;

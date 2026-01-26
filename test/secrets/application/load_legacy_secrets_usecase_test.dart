@@ -1,9 +1,9 @@
 import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
 import 'package:bb_mobile/features/secrets/application/ports/legacy_seed_secret_store_port.dart';
-import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/load_legacy_secrets_usecase.dart';
 import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
@@ -13,11 +13,10 @@ import 'package:mockito/mockito.dart';
 
 import 'load_legacy_secrets_usecase_test.mocks.dart';
 
-@GenerateMocks([LegacySecretStorePort, SecretCryptoPort])
+@GenerateMocks([LegacySecretStorePort])
 void main() {
   late LoadLegacySecretsUseCase useCase;
   late MockLegacySecretStorePort mockLegacySecretStore;
-  late MockSecretCryptoPort mockSecretCrypto;
 
   // Test data
   final testMnemonicWords1 = [
@@ -52,56 +51,45 @@ void main() {
 
   setUp(() {
     mockLegacySecretStore = MockLegacySecretStorePort();
-    mockSecretCrypto = MockSecretCryptoPort();
 
     useCase = LoadLegacySecretsUseCase(
       legacySecretStore: mockLegacySecretStore,
-      secretCrypto: mockSecretCrypto,
     );
   });
 
   group('LoadLegacySecretsUseCase - Happy Path', () {
-    test(
-      'should successfully load all legacy seed secrets with fingerprints',
-      () async {
-        // Arrange
-        final query = LoadLegacySecretsQuery();
+    test('should successfully load all legacy secrets', () async {
+      // Arrange
+      final query = LoadLegacySecretsQuery();
 
-        final secret1 = MnemonicSecret(
-          words: MnemonicWords(testMnemonicWords1),
-        );
-        final secret2 = MnemonicSecret(
-          words: MnemonicWords(testMnemonicWords2),
-        );
-        final secrets = [secret1, secret2];
+      final fingerprint1 = Fingerprint.fromHex('1e6ac111');
+      final fingerprint2 = Fingerprint.fromHex('1e6ac222');
 
-        const fingerprint1 = 'legacy-fingerprint-1';
-        const fingerprint2 = 'legacy-fingerprint-2';
+      final secret1 = MnemonicSecret(
+        fingerprint: fingerprint1,
+        words: MnemonicWords(testMnemonicWords1),
+      );
+      final secret2 = MnemonicSecret(
+        fingerprint: fingerprint2,
+        words: MnemonicWords(testMnemonicWords2),
+      );
+      final secrets = [secret1, secret2];
 
-        when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => secrets);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(secret1),
-        ).thenAnswer((_) async => fingerprint1);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(secret2),
-        ).thenAnswer((_) async => fingerprint2);
+      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => secrets);
 
-        // Act
-        final result = await useCase.execute(query);
+      // Act
+      final result = await useCase.execute(query);
 
-        // Assert
-        expect(result.secretsByFingerprint.length, 2);
-        expect(result.secretsByFingerprint[fingerprint1], secret1);
-        expect(result.secretsByFingerprint[fingerprint2], secret2);
+      // Assert
+      expect(result.secrets.length, 2);
+      expect(result.secrets[0], secret1);
+      expect(result.secrets[1], secret2);
 
-        // Verify port interactions
-        verify(mockLegacySecretStore.loadAll()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(secret1)).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(secret2)).called(1);
-      },
-    );
+      // Verify port interactions
+      verify(mockLegacySecretStore.loadAll()).called(1);
+    });
 
-    test('should return empty map when no legacy seeds exist', () async {
+    test('should return empty list when no legacy secrets exist', () async {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
@@ -111,105 +99,122 @@ void main() {
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.secretsByFingerprint, isEmpty);
+      expect(result.secrets, isEmpty);
 
       // Verify port interactions
       verify(mockLegacySecretStore.loadAll()).called(1);
-      verifyNever(mockSecretCrypto.getFingerprintFromSecret(any));
     });
 
-    test('should handle single legacy seed secret', () async {
+    test('should handle single legacy secret', () async {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-      const fingerprint = 'single-legacy-fingerprint';
-
-      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret),
-      ).thenAnswer((_) async => fingerprint);
-
-      // Act
-      final result = await useCase.execute(query);
-
-      // Assert
-      expect(result.secretsByFingerprint.length, 1);
-      expect(result.secretsByFingerprint[fingerprint], secret);
-
-      // Verify port interactions
-      verify(mockLegacySecretStore.loadAll()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(secret)).called(1);
-    });
-
-    test('should handle both mnemonic and bytes legacy secrets', () async {
-      // Arrange
-      final query = LoadLegacySecretsQuery();
-
-      final mnemonicSecret = MnemonicSecret(
+      final fingerprint = Fingerprint.fromHex('51691e6f');
+      final secret = MnemonicSecret(
+        fingerprint: fingerprint,
         words: MnemonicWords(testMnemonicWords1),
       );
-      final bytesSecret = SeedSecret(
-        SeedBytes(List<int>.generate(32, (i) => i)),
-      );
-      final secrets = [mnemonicSecret, bytesSecret];
 
-      const fingerprint1 = 'legacy-mnemonic-fp';
-      const fingerprint2 = 'legacy-bytes-fp';
-
-      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => secrets);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(mnemonicSecret),
-      ).thenAnswer((_) async => fingerprint1);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(bytesSecret),
-      ).thenAnswer((_) async => fingerprint2);
+      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
 
       // Act
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.secretsByFingerprint.length, 2);
-      expect(result.secretsByFingerprint[fingerprint1], mnemonicSecret);
-      expect(result.secretsByFingerprint[fingerprint2], bytesSecret);
+      expect(result.secrets.length, 1);
+      expect(result.secrets[0], secret);
+      expect(result.secrets[0].fingerprint, fingerprint);
 
       // Verify port interactions
       verify(mockLegacySecretStore.loadAll()).called(1);
-      verify(
-        mockSecretCrypto.getFingerprintFromSecret(mnemonicSecret),
-      ).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(bytesSecret)).called(1);
+    });
+
+    test('should handle both mnemonic and seed legacy secrets', () async {
+      // Arrange
+      final query = LoadLegacySecretsQuery();
+
+      final fingerprint1 = Fingerprint.fromHex('1e6acaaa');
+      final fingerprint2 = Fingerprint.fromHex('1e6acbbb');
+
+      final mnemonicSecret = MnemonicSecret(
+        fingerprint: fingerprint1,
+        words: MnemonicWords(testMnemonicWords1),
+      );
+      final seedSecret = SeedSecret(
+        fingerprint: fingerprint2,
+        bytes: SeedBytes(List<int>.generate(32, (i) => i)),
+      );
+      final secrets = [mnemonicSecret, seedSecret];
+
+      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => secrets);
+
+      // Act
+      final result = await useCase.execute(query);
+
+      // Assert
+      expect(result.secrets.length, 2);
+      expect(result.secrets[0], mnemonicSecret);
+      expect(result.secrets[1], seedSecret);
+      expect(result.secrets[0].fingerprint, fingerprint1);
+      expect(result.secrets[1].fingerprint, fingerprint2);
+
+      // Verify port interactions
+      verify(mockLegacySecretStore.loadAll()).called(1);
     });
 
     test('should handle legacy secrets with passphrases', () async {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      const passphrase = 'legacy-passphrase';
+      final fingerprint = Fingerprint.fromHex('1e6acccc');
+      const passphraseStr = 'legacy-passphrase';
       final secret = MnemonicSecret(
-        words: testMnemonicWords1,
-        passphrase: passphrase,
+        fingerprint: fingerprint,
+        words: MnemonicWords(testMnemonicWords1),
+        passphrase: Passphrase(passphraseStr),
       );
-      const fingerprint = 'legacy-passphrase-fp';
 
       when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret),
-      ).thenAnswer((_) async => fingerprint);
 
       // Act
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.secretsByFingerprint.length, 1);
-      expect(result.secretsByFingerprint[fingerprint], secret);
-      final retrievedSecret =
-          result.secretsByFingerprint[fingerprint] as MnemonicSecret;
-      expect(retrievedSecret.passphrase, passphrase);
+      expect(result.secrets.length, 1);
+      expect(result.secrets[0], secret);
+      final retrievedSecret = result.secrets[0] as MnemonicSecret;
+      expect(retrievedSecret.passphrase?.value, passphraseStr);
 
       // Verify port interactions
       verify(mockLegacySecretStore.loadAll()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(secret)).called(1);
+    });
+
+    test('should handle many legacy secrets efficiently', () async {
+      // Arrange
+      final query = LoadLegacySecretsQuery();
+
+      final secrets = List.generate(
+        10,
+        (i) => SeedSecret(
+          fingerprint: Fingerprint.fromHex((i * 0x11111111).toRadixString(16).padLeft(8, '0').substring(0, 8)),
+          bytes: SeedBytes(List<int>.generate(32, (j) => i + j)),
+        ),
+      );
+
+      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => secrets);
+
+      // Act
+      final result = await useCase.execute(query);
+
+      // Assert
+      expect(result.secrets.length, 10);
+      for (int i = 0; i < 10; i++) {
+        expect(result.secrets[i], secrets[i]);
+        expect(result.secrets[i].fingerprint.value, (i * 0x11111111).toRadixString(16).padLeft(8, '0').substring(0, 8));
+      }
+
+      // Verify loadAll called once
+      verify(mockLegacySecretStore.loadAll()).called(1);
     });
   });
 
@@ -235,41 +240,8 @@ void main() {
           ),
         );
 
-        // Verify loadAll was called but not crypto
+        // Verify loadAll was called
         verify(mockLegacySecretStore.loadAll()).called(1);
-        verifyNever(mockSecretCrypto.getFingerprintFromSecret(any));
-      },
-    );
-
-    test(
-      'should throw BusinessRuleFailed when getFingerprintFromSecret throws domain error',
-      () async {
-        // Arrange
-        final query = LoadLegacySecretsQuery();
-
-        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-        final domainError = TestSecretsDomainError(
-          'Invalid legacy seed format',
-        );
-
-        when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
-        ).thenThrow(domainError);
-
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(query),
-          throwsA(
-            isA<BusinessRuleFailed>()
-                .having((e) => e.domainError, 'domainError', domainError)
-                .having((e) => e.cause, 'cause', domainError),
-          ),
-        );
-
-        // Verify both methods were called
-        verify(mockLegacySecretStore.loadAll()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
       },
     );
 
@@ -299,38 +271,6 @@ void main() {
       },
     );
 
-    test(
-      'should throw FailedToLoadLegacySecretsError when fingerprint calculation fails',
-      () async {
-        // Arrange
-        final query = LoadLegacySecretsQuery();
-
-        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-        final cryptoError = Exception('Crypto library error');
-
-        when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
-        ).thenThrow(cryptoError);
-
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(query),
-          throwsA(
-            isA<FailedToLoadLegacySecretsError>().having(
-              (e) => e.cause,
-              'cause',
-              cryptoError,
-            ),
-          ),
-        );
-
-        // Verify both methods were called
-        verify(mockLegacySecretStore.loadAll()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
-      },
-    );
-
     test('should rethrow application errors without wrapping', () async {
       // Arrange
       final query = LoadLegacySecretsQuery();
@@ -353,52 +293,16 @@ void main() {
   });
 
   group('LoadLegacySecretsUseCase - Verification Tests', () {
-    test('should call ports in correct sequence', () async {
+    test('should call loadAll exactly once', () async {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-      final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
-      final secrets = [secret1, secret2];
-
-      final callOrder = <String>[];
-
-      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async {
-        callOrder.add('loadAll');
-        return secrets;
-      });
-      when(mockSecretCrypto.getFingerprintFromSecret(secret1)).thenAnswer((
-        _,
-      ) async {
-        callOrder.add('getFingerprint-1');
-        return 'fp-1';
-      });
-      when(mockSecretCrypto.getFingerprintFromSecret(secret2)).thenAnswer((
-        _,
-      ) async {
-        callOrder.add('getFingerprint-2');
-        return 'fp-2';
-      });
-
-      // Act
-      await useCase.execute(query);
-
-      // Assert - verify loadAll is called first, then fingerprints
-      expect(callOrder[0], 'loadAll');
-      expect(callOrder, contains('getFingerprint-1'));
-      expect(callOrder, contains('getFingerprint-2'));
-    });
-
-    test('should call loadAll exactly once in happy path', () async {
-      // Arrange
-      final query = LoadLegacySecretsQuery();
-
-      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret = MnemonicSecret(
+        fingerprint: Fingerprint.fromHex('abcdef12'),
+        words: MnemonicWords(testMnemonicWords1),
+      );
 
       when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(any),
-      ).thenAnswer((_) async => 'fp');
 
       // Act
       await useCase.execute(query);
@@ -410,115 +314,63 @@ void main() {
       verifyNoMoreInteractions(mockLegacySecretStore);
     });
 
-    test(
-      'should call getFingerprintFromSecret for each legacy secret',
-      () async {
-        // Arrange
-        final query = LoadLegacySecretsQuery();
-
-        final secret1 = MnemonicSecret(
-          words: MnemonicWords(testMnemonicWords1),
-        );
-        final secret2 = MnemonicSecret(
-          words: MnemonicWords(testMnemonicWords2),
-        );
-        final secret3 = SeedSecret(SeedBytes(List<int>.generate(32, (i) => i)));
-
-        when(
-          mockLegacySecretStore.loadAll(),
-        ).thenAnswer((_) async => [secret1, secret2, secret3]);
-        when(mockSecretCrypto.getFingerprintFromSecret(any)).thenAnswer((
-          invocation,
-        ) async {
-          final secret = invocation.positionalArguments[0];
-          if (secret == secret1) return 'fp-1';
-          if (secret == secret2) return 'fp-2';
-          if (secret == secret3) return 'fp-3';
-          return 'unknown';
-        });
-
-        // Act
-        await useCase.execute(query);
-
-        // Assert
-        verify(mockSecretCrypto.getFingerprintFromSecret(secret1)).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(secret2)).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(secret3)).called(1);
-      },
-    );
-
-    test('should build map with correct fingerprint-secret pairs', () async {
+    test('should preserve secret order from legacy store', () async {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-      final secret2 = SeedSecret(SeedBytes([1, 2, 3, 4]));
-      const fp1 = 'legacy-fp-abc';
-      const fp2 = 'legacy-fp-xyz';
+      final secret1 = MnemonicSecret(
+        fingerprint: Fingerprint.fromHex('1e9ac111'),
+        words: MnemonicWords(testMnemonicWords1),
+      );
+      final secret2 = SeedSecret(
+        fingerprint: Fingerprint.fromHex('1e9ac222'),
+        bytes: SeedBytes([
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+        ]),
+      );
+      final secret3 = MnemonicSecret(
+        fingerprint: Fingerprint.fromHex('1e9ac333'),
+        words: MnemonicWords(testMnemonicWords2),
+      );
 
       when(
         mockLegacySecretStore.loadAll(),
-      ).thenAnswer((_) async => [secret1, secret2]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret1),
-      ).thenAnswer((_) async => fp1);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret2),
-      ).thenAnswer((_) async => fp2);
+      ).thenAnswer((_) async => [secret1, secret2, secret3]);
 
       // Act
       final result = await useCase.execute(query);
 
-      // Assert
-      expect(result.secretsByFingerprint.keys, containsAll([fp1, fp2]));
-      expect(result.secretsByFingerprint[fp1], same(secret1));
-      expect(result.secretsByFingerprint[fp2], same(secret2));
-    });
-
-    test('should handle many legacy seeds efficiently', () async {
-      // Arrange
-      final query = LoadLegacySecretsQuery();
-
-      final secrets = List.generate(
-        10,
-        (i) => SeedSecret(SeedBytes(List<int>.generate(32, (j) => i + j))),
-      );
-
-      when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => secrets);
-      when(mockSecretCrypto.getFingerprintFromSecret(any)).thenAnswer((
-        invocation,
-      ) async {
-        final index = secrets.indexOf(invocation.positionalArguments[0]);
-        return 'legacy-fingerprint-$index';
-      });
-
-      // Act
-      final result = await useCase.execute(query);
-
-      // Assert
-      expect(result.secretsByFingerprint.length, 10);
-      for (int i = 0; i < 10; i++) {
-        expect(
-          result.secretsByFingerprint['legacy-fingerprint-$i'],
-          secrets[i],
-        );
-      }
-
-      // Verify loadAll called once, but fingerprint called 10 times
-      verify(mockLegacySecretStore.loadAll()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(10);
+      // Assert - verify order is preserved
+      expect(result.secrets[0], same(secret1));
+      expect(result.secrets[1], same(secret2));
+      expect(result.secrets[2], same(secret3));
     });
 
     test('should use LegacySecretStorePort not SecretStorePort', () async {
       // Arrange
       final query = LoadLegacySecretsQuery();
 
-      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret = MnemonicSecret(
+        fingerprint: Fingerprint.fromHex('fedcba98'),
+        words: MnemonicWords(testMnemonicWords1),
+      );
 
       when(mockLegacySecretStore.loadAll()).thenAnswer((_) async => [secret]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(any),
-      ).thenAnswer((_) async => 'fp');
 
       // Act
       await useCase.execute(query);

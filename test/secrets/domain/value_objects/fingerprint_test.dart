@@ -39,7 +39,6 @@ void main() {
 
     test('should accept all valid hex characters (0-9, a-f, A-F)', () {
       // Arrange
-      const allValidChars = '0123456789abcdefABCDEF';
       final validHexStrings = [
         '01234567',
         '89abcdef',
@@ -60,28 +59,27 @@ void main() {
   });
 
   group('Fingerprint - Invalid Length', () {
-    test('should throw InvalidFingerprintFormatError when hex is too short', () {
-      // Arrange
-      const tooShortHex = '1234567'; // 7 characters
+    test(
+      'should throw InvalidFingerprintFormatError when hex is too short',
+      () {
+        // Arrange
+        const tooShortHex = '1234567'; // 7 characters
 
-      // Act & Assert
-      expect(
-        () => Fingerprint.fromHex(tooShortHex),
-        throwsA(
-          isA<InvalidFingerprintFormatError>()
-              .having(
-                (e) => e.message,
-                'message',
-                contains('must be 8 hex characters'),
-              )
-              .having(
-                (e) => e.invalidValue,
-                'invalidValue',
-                tooShortHex,
-              ),
-        ),
-      );
-    });
+        // Act & Assert
+        expect(
+          () => Fingerprint.fromHex(tooShortHex),
+          throwsA(
+            isA<InvalidFingerprintFormatError>()
+                .having(
+                  (e) => e.message,
+                  'message',
+                  contains('must be 8 hex characters'),
+                )
+                .having((e) => e.invalidValue, 'invalidValue', tooShortHex),
+          ),
+        );
+      },
+    );
 
     test('should throw InvalidFingerprintFormatError when hex is too long', () {
       // Arrange
@@ -97,11 +95,7 @@ void main() {
                 'message',
                 contains('must be 8 hex characters'),
               )
-              .having(
-                (e) => e.invalidValue,
-                'invalidValue',
-                tooLongHex,
-              ),
+              .having((e) => e.invalidValue, 'invalidValue', tooLongHex),
         ),
       );
     });
@@ -114,93 +108,97 @@ void main() {
       expect(
         () => Fingerprint.fromHex(emptyHex),
         throwsA(
-          isA<InvalidFingerprintFormatError>()
-              .having(
-                (e) => e.invalidValue,
-                'invalidValue',
-                emptyHex,
-              ),
+          isA<InvalidFingerprintFormatError>().having(
+            (e) => e.invalidValue,
+            'invalidValue',
+            emptyHex,
+          ),
         ),
       );
     });
 
-    test('should throw InvalidFingerprintFormatError for various invalid lengths', () {
-      // Arrange
-      final invalidLengths = [
-        '1', // 1 character
-        '12', // 2 characters
-        '123', // 3 characters
-        '1234', // 4 characters
-        '12345', // 5 characters
-        '123456', // 6 characters
-        '1234567', // 7 characters
-        '123456789', // 9 characters
-        '1234567890', // 10 characters
-        '12345678901234567890', // 20 characters
-      ];
+    test(
+      'should throw InvalidFingerprintFormatError for various invalid lengths',
+      () {
+        // Arrange
+        final invalidLengths = [
+          '1', // 1 character
+          '12', // 2 characters
+          '123', // 3 characters
+          '1234', // 4 characters
+          '12345', // 5 characters
+          '123456', // 6 characters
+          '1234567', // 7 characters
+          '123456789', // 9 characters
+          '1234567890', // 10 characters
+          '12345678901234567890', // 20 characters
+        ];
 
-      // Act & Assert
-      for (final invalidHex in invalidLengths) {
-        expect(
-          () => Fingerprint.fromHex(invalidHex),
-          throwsA(isA<InvalidFingerprintFormatError>()),
-          reason: 'Should reject hex with ${invalidHex.length} characters',
-        );
-      }
-    });
+        // Act & Assert
+        for (final invalidHex in invalidLengths) {
+          expect(
+            () => Fingerprint.fromHex(invalidHex),
+            throwsA(isA<InvalidFingerprintFormatError>()),
+            reason: 'Should reject hex with ${invalidHex.length} characters',
+          );
+        }
+      },
+    );
   });
 
   group('Fingerprint - Invalid Characters', () {
-    test('should throw InvalidFingerprintFormatError for non-hex characters', () {
-      // Arrange
-      const invalidHex = '1234567g'; // 'g' is not a hex character
+    test(
+      'should throw InvalidFingerprintFormatError for non-hex characters',
+      () {
+        // Arrange
+        const invalidHex = '1234567g'; // 'g' is not a hex character
 
-      // Act & Assert
-      expect(
-        () => Fingerprint.fromHex(invalidHex),
-        throwsA(
-          isA<InvalidFingerprintFormatError>()
-              .having(
-                (e) => e.message,
-                'message',
-                contains('must be valid hex string'),
-              )
-              .having(
-                (e) => e.invalidValue,
-                'invalidValue',
-                invalidHex,
-              ),
-        ),
-      );
-    });
-
-    test('should throw InvalidFingerprintFormatError for special characters', () {
-      // Arrange
-      final invalidHexStrings = [
-        '1234567!', // exclamation mark
-        '1234567@', // at sign
-        '1234567#', // hash
-        '1234567\$', // dollar sign
-        '1234567%', // percent
-        '1234567^', // caret
-        '1234567&', // ampersand
-        '1234567*', // asterisk
-        '1234567-', // dash
-        '1234567_', // underscore
-        '1234567+', // plus
-        '1234567=', // equals
-        '1234567 ', // space
-      ];
-
-      // Act & Assert
-      for (final invalidHex in invalidHexStrings) {
+        // Act & Assert
         expect(
           () => Fingerprint.fromHex(invalidHex),
-          throwsA(isA<InvalidFingerprintFormatError>()),
-          reason: 'Should reject hex with special character: $invalidHex',
+          throwsA(
+            isA<InvalidFingerprintFormatError>()
+                .having(
+                  (e) => e.message,
+                  'message',
+                  contains('must be valid hex string'),
+                )
+                .having((e) => e.invalidValue, 'invalidValue', invalidHex),
+          ),
         );
-      }
-    });
+      },
+    );
+
+    test(
+      'should throw InvalidFingerprintFormatError for special characters',
+      () {
+        // Arrange
+        final invalidHexStrings = [
+          '1234567!', // exclamation mark
+          '1234567@', // at sign
+          '1234567#', // hash
+          '1234567\$', // dollar sign
+          '1234567%', // percent
+          '1234567^', // caret
+          '1234567&', // ampersand
+          '1234567*', // asterisk
+          '1234567-', // dash
+          '1234567_', // underscore
+          '1234567+', // plus
+          '1234567=', // equals
+          '1234567 ', // space
+        ];
+
+        // Act & Assert
+        for (final invalidHex in invalidHexStrings) {
+          expect(
+            () => Fingerprint.fromHex(invalidHex),
+            throwsA(isA<InvalidFingerprintFormatError>()),
+            reason: 'Should reject hex with special character: $invalidHex',
+          );
+        }
+      },
+    );
 
     test('should throw InvalidFingerprintFormatError for letters beyond f', () {
       // Arrange
@@ -289,16 +287,16 @@ void main() {
   group('Fingerprint - Direct Constructor', () {
     test('should allow direct construction with const constructor', () {
       // Arrange & Act
-      const fingerprint = Fingerprint('12345678');
+      final fingerprint = Fingerprint.fromHex('12345678');
 
       // Assert
       expect(fingerprint.value, '12345678');
     });
 
-    test('should create equal fingerprints with direct constructor', () {
+    test('should create equal fingerprints with factory method', () {
       // Arrange
-      const fingerprint1 = Fingerprint('12345678');
-      const fingerprint2 = Fingerprint('12345678');
+      final fingerprint1 = Fingerprint.fromHex('12345678');
+      final fingerprint2 = Fingerprint.fromHex('12345678');
 
       // Act & Assert
       expect(fingerprint1, equals(fingerprint2));

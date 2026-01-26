@@ -1,7 +1,8 @@
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/deregister_secret_usage_usecase.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/secret_usage_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -14,7 +15,7 @@ void main() {
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
   // Test data
-  const testSecretUsageId = 42;
+  const testSecretUsageId = SecretUsageId(42);
 
   setUp(() {
     mockSecretUsageRepository = MockSecretUsageRepositoryPort();
@@ -28,11 +29,11 @@ void main() {
     test('should successfully deregister seed usage', () async {
       // Arrange
       final command = DeregisterSecretUsageCommand(
-        secretUsageId: testSecretUsageId,
+        secretUsageId: testSecretUsageId.value,
       );
 
       when(mockSecretUsageRepository.deleteById(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
 
       // Act
@@ -46,13 +47,13 @@ void main() {
       'should successfully deregister seed usage with different ID',
       () async {
         // Arrange
-        const differentId = 123;
+        const differentId = SecretUsageId(123);
         final command = DeregisterSecretUsageCommand(
-          secretUsageId: differentId,
+          secretUsageId: differentId.value,
         );
 
         when(mockSecretUsageRepository.deleteById(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
 
         // Act
@@ -70,7 +71,7 @@ void main() {
       () async {
         // Arrange
         final command = DeregisterSecretUsageCommand(
-          secretUsageId: testSecretUsageId,
+          secretUsageId: testSecretUsageId.value,
         );
 
         final domainError = TestSecretsDomainError('Invalid usage ID');
@@ -98,7 +99,7 @@ void main() {
       () async {
         // Arrange
         final command = DeregisterSecretUsageCommand(
-          secretUsageId: testSecretUsageId,
+          secretUsageId: testSecretUsageId.value,
         );
 
         final repositoryError = Exception('Database deletion failed');
@@ -114,7 +115,7 @@ void main() {
                 .having(
                   (e) => e.secretUsageId,
                   'secretUsageId',
-                  testSecretUsageId,
+                  testSecretUsageId.value,
                 )
                 .having((e) => e.cause, 'cause', repositoryError),
           ),
@@ -130,7 +131,7 @@ void main() {
     test('should rethrow application errors without wrapping', () async {
       // Arrange
       final command = DeregisterSecretUsageCommand(
-        secretUsageId: testSecretUsageId,
+        secretUsageId: testSecretUsageId.value,
       );
 
       final appError = SecretInUseError('test-fingerprint');
@@ -152,7 +153,7 @@ void main() {
     test('should handle not found scenario gracefully', () async {
       // Arrange
       final command = DeregisterSecretUsageCommand(
-        secretUsageId: testSecretUsageId,
+        secretUsageId: testSecretUsageId.value,
       );
 
       final notFoundError = Exception('Secret usage not found');
@@ -166,7 +167,7 @@ void main() {
               .having(
                 (e) => e.secretUsageId,
                 'secretUsageId',
-                testSecretUsageId,
+                testSecretUsageId.value,
               )
               .having((e) => e.cause, 'cause', notFoundError),
         ),
@@ -177,11 +178,13 @@ void main() {
   group('DeregisterSecretUsageUseCase - Verification Tests', () {
     test('should pass correct seed usage ID to repository', () async {
       // Arrange
-      const customId = 999;
-      final command = DeregisterSecretUsageCommand(secretUsageId: customId);
+      const customId = SecretUsageId(999);
+      final command = DeregisterSecretUsageCommand(
+        secretUsageId: customId.value,
+      );
 
       when(mockSecretUsageRepository.deleteById(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
 
       // Act
@@ -194,11 +197,11 @@ void main() {
     test('should call deleteById exactly once in happy path', () async {
       // Arrange
       final command = DeregisterSecretUsageCommand(
-        secretUsageId: testSecretUsageId,
+        secretUsageId: testSecretUsageId.value,
       );
 
       when(mockSecretUsageRepository.deleteById(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
 
       // Act
@@ -216,28 +219,28 @@ void main() {
       const captureId = 777;
       final command = DeregisterSecretUsageCommand(secretUsageId: captureId);
 
-      int? capturedId;
+      SecretUsageId? capturedId;
       when(mockSecretUsageRepository.deleteById(any)).thenAnswer((
         invocation,
       ) async {
-        capturedId = invocation.positionalArguments[0] as int;
-        return null;
+        capturedId = invocation.positionalArguments[0] as SecretUsageId;
+        return;
       });
 
       // Act
       await useCase.execute(command);
 
       // Assert
-      expect(capturedId, captureId);
+      expect(capturedId?.value, captureId);
     });
 
     test('should handle zero ID correctly', () async {
       // Arrange
-      const zeroId = 0;
-      final command = DeregisterSecretUsageCommand(secretUsageId: zeroId);
+      const zeroId = SecretUsageId(0);
+      final command = DeregisterSecretUsageCommand(secretUsageId: zeroId.value);
 
       when(mockSecretUsageRepository.deleteById(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
 
       // Act
@@ -249,11 +252,13 @@ void main() {
 
     test('should handle large ID correctly', () async {
       // Arrange
-      const largeId = 2147483647; // max int32
-      final command = DeregisterSecretUsageCommand(secretUsageId: largeId);
+      const largeId = SecretUsageId(2147483647); // max int32
+      final command = DeregisterSecretUsageCommand(
+        secretUsageId: largeId.value,
+      );
 
       when(mockSecretUsageRepository.deleteById(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
 
       // Act

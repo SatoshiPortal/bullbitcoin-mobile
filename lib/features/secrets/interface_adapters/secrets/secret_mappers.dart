@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/secrets/interface_adapters/secrets/secret_mod
 
 extension SecretModelMappersX on SecretModel {
   Secret toDomain(String fingerprint) {
-    final fp = Fingerprint(fingerprint);
+    final fp = Fingerprint.fromHex(fingerprint);
     return switch (this) {
       BytesSeedModel(:final bytes) => SeedSecret(
         fingerprint: fp,

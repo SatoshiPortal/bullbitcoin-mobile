@@ -32,7 +32,7 @@ void main() {
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
   // Test data
-  final testFingerprint = Fingerprint('test-fingerprint-12345');
+  final testFingerprint = Fingerprint.fromHex('12345678');
   final testMnemonicWords = MnemonicWords([
     'abandon',
     'ability',
@@ -685,7 +685,7 @@ void main() {
       'should return result with same fingerprint from crypto port',
       () async {
         // Arrange
-        final customFingerprint = Fingerprint('custom-fp-xyz789');
+        final customFingerprint = Fingerprint.fromHex('ffffffff');
         final command = CreateNewMnemonicSecretCommand.forWallet(
           walletId: 'wallet-123',
         );
@@ -723,7 +723,7 @@ void main() {
 SecretUsage _createTestSecretUsage() {
   return SecretUsage(
     id: SecretUsageId(1),
-    fingerprint: Fingerprint('test-fingerprint-12345'),
+    fingerprint: Fingerprint.fromHex('12345678'),
     consumer: WalletConsumer('test-consumer'),
     createdAt: DateTime.now(),
   );

@@ -1,9 +1,11 @@
-import 'package:bb_mobile/features/secrets/domain/primitives/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
 import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/list_used_secrets_usecase.dart';
 import 'package:bb_mobile/features/secrets/domain/entities/secret_usage_entity.dart';
 import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/secret_consumer.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/secret_usage_id.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -16,9 +18,9 @@ void main() {
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
   // Test data
-  const testFingerprint1 = 'fingerprint-1';
-  const testFingerprint2 = 'fingerprint-2';
-  const testFingerprint3 = 'fingerprint-3';
+  final testFingerprint1 = Fingerprint.fromHex('11111111');
+  final testFingerprint2 = Fingerprint.fromHex('22222222');
+  final testFingerprint3 = Fingerprint.fromHex('33333333');
 
   setUp(() {
     mockSecretUsageRepository = MockSecretUsageRepositoryPort();
@@ -34,9 +36,18 @@ void main() {
       final query = ListUsedSecretsQuery();
 
       final seedUsages = [
-        _createTestSecretUsage(id: 1, fingerprint: testFingerprint1),
-        _createTestSecretUsage(id: 2, fingerprint: testFingerprint2),
-        _createTestSecretUsage(id: 3, fingerprint: testFingerprint3),
+        _createTestSecretUsageForWalletConsumer(
+          id: 1,
+          fingerprint: testFingerprint1.value,
+        ),
+        _createTestSecretUsageForWalletConsumer(
+          id: 2,
+          fingerprint: testFingerprint2.value,
+        ),
+        _createTestSecretUsageForWalletConsumer(
+          id: 3,
+          fingerprint: testFingerprint3.value,
+        ),
       ];
 
       when(
@@ -78,7 +89,9 @@ void main() {
       final query = ListUsedSecretsQuery();
 
       final seedUsages = [
-        _createTestSecretUsage(fingerprint: testFingerprint1),
+        _createTestSecretUsageForWalletConsumer(
+          fingerprint: testFingerprint1.value,
+        ),
       ];
 
       when(
@@ -100,20 +113,17 @@ void main() {
       final query = ListUsedSecretsQuery();
 
       final seedUsages = [
-        _createTestSecretUsage(
+        _createTestSecretUsageForWalletConsumer(
           id: 1,
-          fingerprint: testFingerprint1,
-          purpose: SecretUsagePurpose.wallet,
+          fingerprint: testFingerprint1.value,
         ),
-        _createTestSecretUsage(
+        _createTestSecretUsageForBip85Consumer(
           id: 2,
-          fingerprint: testFingerprint2,
-          purpose: SecretUsagePurpose.bip85,
+          fingerprint: testFingerprint2.value,
         ),
-        _createTestSecretUsage(
+        _createTestSecretUsageForWalletConsumer(
           id: 3,
-          fingerprint: testFingerprint3,
-          purpose: SecretUsagePurpose.wallet,
+          fingerprint: testFingerprint3.value,
         ),
       ];
 
@@ -141,15 +151,13 @@ void main() {
         final query = ListUsedSecretsQuery();
 
         final seedUsages = [
-          _createTestSecretUsage(
+          _createTestSecretUsageForWalletConsumer(
             id: 1,
-            fingerprint: testFingerprint1,
-            purpose: SecretUsagePurpose.wallet,
+            fingerprint: testFingerprint1.value,
           ),
-          _createTestSecretUsage(
+          _createTestSecretUsageForBip85Consumer(
             id: 2,
-            fingerprint: testFingerprint1,
-            purpose: SecretUsagePurpose.bip85,
+            fingerprint: testFingerprint1.value,
           ),
         ];
 
@@ -249,7 +257,9 @@ void main() {
       final query = ListUsedSecretsQuery();
 
       final seedUsages = [
-        _createTestSecretUsage(fingerprint: testFingerprint1),
+        _createTestSecretUsageForWalletConsumer(
+          fingerprint: testFingerprint1.value,
+        ),
       ];
 
       when(
@@ -271,11 +281,11 @@ void main() {
       final query = ListUsedSecretsQuery();
 
       final seedUsages = [
-        _createTestSecretUsage(id: 1, fingerprint: 'fp-a'),
-        _createTestSecretUsage(id: 2, fingerprint: 'fp-b'),
-        _createTestSecretUsage(id: 3, fingerprint: 'fp-c'),
-        _createTestSecretUsage(id: 4, fingerprint: 'fp-d'),
-        _createTestSecretUsage(id: 5, fingerprint: 'fp-e'),
+        _createTestSecretUsageForWalletConsumer(id: 1, fingerprint: 'aaaa1111'),
+        _createTestSecretUsageForWalletConsumer(id: 2, fingerprint: 'bbbb2222'),
+        _createTestSecretUsageForWalletConsumer(id: 3, fingerprint: 'cccc3333'),
+        _createTestSecretUsageForWalletConsumer(id: 4, fingerprint: 'dddd4444'),
+        _createTestSecretUsageForWalletConsumer(id: 5, fingerprint: 'eeee5555'),
       ];
 
       when(
@@ -296,9 +306,18 @@ void main() {
       // Arrange
       final query = ListUsedSecretsQuery();
 
+      final uniqueFingerprint1 = Fingerprint.fromHex('aabbcc11');
+      final uniqueFingerprint2 = Fingerprint.fromHex('aabbcc22');
+
       final seedUsages = [
-        _createTestSecretUsage(id: 10, fingerprint: 'unique-fp-1'),
-        _createTestSecretUsage(id: 20, fingerprint: 'unique-fp-2'),
+        _createTestSecretUsageForWalletConsumer(
+          id: 10,
+          fingerprint: uniqueFingerprint1.value,
+        ),
+        _createTestSecretUsageForWalletConsumer(
+          id: 20,
+          fingerprint: uniqueFingerprint2.value,
+        ),
       ];
 
       when(
@@ -309,17 +328,30 @@ void main() {
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.fingerprints, ['unique-fp-1', 'unique-fp-2']);
+      expect(result.fingerprints, [uniqueFingerprint1, uniqueFingerprint2]);
     });
 
     test('should maintain order of fingerprints from repository', () async {
       // Arrange
       final query = ListUsedSecretsQuery();
 
+      final firstFingerprint = Fingerprint.fromHex('11223344');
+      final secondFingerprint = Fingerprint.fromHex('22334455');
+      final thirdFingerprint = Fingerprint.fromHex('33445566');
+
       final seedUsages = [
-        _createTestSecretUsage(id: 3, fingerprint: 'third'),
-        _createTestSecretUsage(id: 1, fingerprint: 'first'),
-        _createTestSecretUsage(id: 2, fingerprint: 'second'),
+        _createTestSecretUsageForWalletConsumer(
+          id: 3,
+          fingerprint: thirdFingerprint.value,
+        ),
+        _createTestSecretUsageForWalletConsumer(
+          id: 1,
+          fingerprint: firstFingerprint.value,
+        ),
+        _createTestSecretUsageForWalletConsumer(
+          id: 2,
+          fingerprint: secondFingerprint.value,
+        ),
       ];
 
       when(
@@ -330,7 +362,11 @@ void main() {
       final result = await useCase.execute(query);
 
       // Assert - order should be maintained as returned from repository
-      expect(result.fingerprints, ['third', 'first', 'second']);
+      expect(result.fingerprints, [
+        thirdFingerprint,
+        firstFingerprint,
+        secondFingerprint,
+      ]);
     });
 
     test('should work with large number of seed usages', () async {
@@ -339,7 +375,10 @@ void main() {
 
       final seedUsages = List.generate(
         100,
-        (i) => _createTestSecretUsage(id: i, fingerprint: 'fingerprint-$i'),
+        (i) => _createTestSecretUsageForWalletConsumer(
+          id: i,
+          fingerprint: i.toRadixString(16).padLeft(8, '0'),
+        ),
       );
 
       when(
@@ -352,7 +391,7 @@ void main() {
       // Assert
       expect(result.fingerprints.length, 100);
       for (int i = 0; i < 100; i++) {
-        expect(result.fingerprints[i], 'fingerprint-$i');
+        expect(result.fingerprints[i], Fingerprint.fromHex(i.toRadixString(16).padLeft(8, '0')));
       }
 
       // Verify getAll was called
@@ -362,17 +401,28 @@ void main() {
 }
 
 // Test helper function to create a test SecretUsage entity
-SecretUsage _createTestSecretUsage({
+SecretUsage _createTestSecretUsageForWalletConsumer({
   int? id,
   String? fingerprint,
-  SecretUsagePurpose? purpose,
-  String? consumerRef,
+  String? walletId,
 }) {
   return SecretUsage(
-    id: id ?? 1,
-    fingerprint: fingerprint ?? 'test-fingerprint',
-    purpose: purpose ?? SecretUsagePurpose.wallet,
-    consumerRef: consumerRef ?? 'test-consumer',
+    id: SecretUsageId(id ?? 1),
+    fingerprint: Fingerprint.fromHex(fingerprint ?? '12345678'),
+    consumer: WalletConsumer(walletId ?? 'test-wallet-id'),
+    createdAt: DateTime.now(),
+  );
+}
+
+SecretUsage _createTestSecretUsageForBip85Consumer({
+  int? id,
+  String? fingerprint,
+  String? bip85Path,
+}) {
+  return SecretUsage(
+    id: SecretUsageId(id ?? 1),
+    fingerprint: Fingerprint.fromHex(fingerprint ?? '12345678'),
+    consumer: Bip85Consumer(bip85Path ?? 'test-bip85-path'),
     createdAt: DateTime.now(),
   );
 }

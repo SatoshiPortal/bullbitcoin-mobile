@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
-import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/load_all_stored_secrets_usecase.dart';
@@ -13,14 +13,13 @@ import 'package:mockito/mockito.dart';
 
 import 'load_all_stored_secrets_usecase_test.mocks.dart';
 
-@GenerateMocks([SecretStorePort, SecretCryptoPort])
+@GenerateMocks([SecretStorePort])
 void main() {
   late LoadAllStoredSecretsUseCase useCase;
   late MockSecretStorePort mockSecretStore;
-  late MockSecretCryptoPort mockSecretCrypto;
 
   // Test data
-  final testMnemonicWords1 = [
+  final testMnemonicWords1 = MnemonicWords([
     'abandon',
     'ability',
     'able',
@@ -33,9 +32,9 @@ void main() {
     'abuse',
     'access',
     'accident',
-  ];
+  ]);
 
-  final testMnemonicWords2 = [
+  final testMnemonicWords2 = MnemonicWords([
     'zoo',
     'zone',
     'yield',
@@ -48,60 +47,47 @@ void main() {
     'wealth',
     'wave',
     'water',
-  ];
+  ]);
 
   setUp(() {
     mockSecretStore = MockSecretStorePort();
-    mockSecretCrypto = MockSecretCryptoPort();
 
-    useCase = LoadAllStoredSecretsUseCase(
-      secretStore: mockSecretStore,
-      secretCrypto: mockSecretCrypto,
-    );
+    useCase = LoadAllStoredSecretsUseCase(secretStore: mockSecretStore);
   });
 
   group('LoadAllStoredSecretsUseCase - Happy Path', () {
-    test(
-      'should successfully load all seed secrets with fingerprints',
-      () async {
-        // Arrange
-        final query = LoadAllStoredSecretsQuery();
+    test('should successfully load all stored secrets', () async {
+      // Arrange
+      final query = LoadAllStoredSecretsQuery();
 
-        final secret1 = MnemonicSecret(
-          words: MnemonicWords(testMnemonicWords1),
-        );
-        final secret2 = MnemonicSecret(
-          words: MnemonicWords(testMnemonicWords2),
-        );
-        final secrets = [secret1, secret2];
+      final fingerprint1 = Fingerprint.fromHex('aaaa1111');
+      final fingerprint2 = Fingerprint.fromHex('bbbb2222');
 
-        const fingerprint1 = 'fingerprint-1';
-        const fingerprint2 = 'fingerprint-2';
+      final secret1 = MnemonicSecret(
+        fingerprint: fingerprint1,
+        words: testMnemonicWords1,
+      );
+      final secret2 = MnemonicSecret(
+        fingerprint: fingerprint2,
+        words: testMnemonicWords2,
+      );
+      final secrets = [secret1, secret2];
 
-        when(mockSecretStore.loadAll()).thenAnswer((_) async => secrets);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(secret1),
-        ).thenAnswer((_) async => fingerprint1);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(secret2),
-        ).thenAnswer((_) async => fingerprint2);
+      when(mockSecretStore.loadAll()).thenAnswer((_) async => secrets);
 
-        // Act
-        final result = await useCase.execute(query);
+      // Act
+      final result = await useCase.execute(query);
 
-        // Assert
-        expect(result.secretsByFingerprint.length, 2);
-        expect(result.secretsByFingerprint[fingerprint1], secret1);
-        expect(result.secretsByFingerprint[fingerprint2], secret2);
+      // Assert
+      expect(result.secrets.length, 2);
+      expect(result.secrets[0], secret1);
+      expect(result.secrets[1], secret2);
 
-        // Verify port interactions
-        verify(mockSecretStore.loadAll()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(secret1)).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(secret2)).called(1);
-      },
-    );
+      // Verify port interactions
+      verify(mockSecretStore.loadAll()).called(1);
+    });
 
-    test('should return empty map when no secrets are stored', () async {
+    test('should return empty list when no secrets are stored', () async {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
@@ -111,105 +97,122 @@ void main() {
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.secretsByFingerprint, isEmpty);
+      expect(result.secrets, isEmpty);
 
       // Verify port interactions
       verify(mockSecretStore.loadAll()).called(1);
-      verifyNever(mockSecretCrypto.getFingerprintFromSecret(any));
     });
 
-    test('should handle single seed secret', () async {
+    test('should handle single secret', () async {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-      const fingerprint = 'single-fingerprint';
+      final fingerprint = Fingerprint.fromHex('51691e00');
+      final secret = MnemonicSecret(
+        fingerprint: fingerprint,
+        words: testMnemonicWords1,
+      );
 
       when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret),
-      ).thenAnswer((_) async => fingerprint);
 
       // Act
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.secretsByFingerprint.length, 1);
-      expect(result.secretsByFingerprint[fingerprint], secret);
+      expect(result.secrets.length, 1);
+      expect(result.secrets[0], secret);
+      expect(result.secrets[0].fingerprint, fingerprint);
 
       // Verify port interactions
       verify(mockSecretStore.loadAll()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(secret)).called(1);
     });
 
-    test('should handle both mnemonic and bytes secrets', () async {
+    test('should handle both mnemonic and seed secrets', () async {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final mnemonicSecret = MnemonicSecret(
-        words: MnemonicWords(testMnemonicWords1),
-      );
-      final bytesSecret = SeedSecret(
-        SeedBytes(List<int>.generate(32, (i) => i)),
-      );
-      final secrets = [mnemonicSecret, bytesSecret];
+      final fingerprint1 = Fingerprint.fromHex('ccccddd1');
+      final fingerprint2 = Fingerprint.fromHex('ccccddd2');
 
-      const fingerprint1 = 'mnemonic-fp';
-      const fingerprint2 = 'bytes-fp';
+      final mnemonicSecret = MnemonicSecret(
+        fingerprint: fingerprint1,
+        words: testMnemonicWords1,
+      );
+      final seedSecret = SeedSecret(
+        fingerprint: fingerprint2,
+        bytes: SeedBytes(List<int>.generate(32, (i) => i)),
+      );
+      final secrets = [mnemonicSecret, seedSecret];
 
       when(mockSecretStore.loadAll()).thenAnswer((_) async => secrets);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(mnemonicSecret),
-      ).thenAnswer((_) async => fingerprint1);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(bytesSecret),
-      ).thenAnswer((_) async => fingerprint2);
 
       // Act
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.secretsByFingerprint.length, 2);
-      expect(result.secretsByFingerprint[fingerprint1], mnemonicSecret);
-      expect(result.secretsByFingerprint[fingerprint2], bytesSecret);
+      expect(result.secrets.length, 2);
+      expect(result.secrets[0], mnemonicSecret);
+      expect(result.secrets[1], seedSecret);
+      expect(result.secrets[0].fingerprint, fingerprint1);
+      expect(result.secrets[1].fingerprint, fingerprint2);
 
       // Verify port interactions
       verify(mockSecretStore.loadAll()).called(1);
-      verify(
-        mockSecretCrypto.getFingerprintFromSecret(mnemonicSecret),
-      ).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(bytesSecret)).called(1);
     });
 
     test('should handle secrets with passphrases', () async {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
+      final fingerprint = Fingerprint.fromHex('feedface');
       const passphraseStr = 'my-passphrase';
       final secret = MnemonicSecret(
-        words: MnemonicWords(testMnemonicWords1),
+        fingerprint: fingerprint,
+        words: testMnemonicWords1,
         passphrase: Passphrase(passphraseStr),
       );
-      const fingerprint = 'passphrase-fp';
 
       when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret),
-      ).thenAnswer((_) async => fingerprint);
 
       // Act
       final result = await useCase.execute(query);
 
       // Assert
-      expect(result.secretsByFingerprint.length, 1);
-      expect(result.secretsByFingerprint[fingerprint], secret);
-      final retrievedSecret =
-          result.secretsByFingerprint[fingerprint] as MnemonicSecret;
+      expect(result.secrets.length, 1);
+      expect(result.secrets[0], secret);
+      final retrievedSecret = result.secrets[0] as MnemonicSecret;
       expect(retrievedSecret.passphrase?.value, passphraseStr);
 
       // Verify port interactions
       verify(mockSecretStore.loadAll()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(secret)).called(1);
+    });
+
+    test('should handle many secrets efficiently', () async {
+      // Arrange
+      final query = LoadAllStoredSecretsQuery();
+
+      final secrets = List.generate(
+        10,
+        (i) => SeedSecret(
+          fingerprint: Fingerprint.fromHex((i * 0x11111111).toRadixString(16).padLeft(8, '0').substring(0, 8)),
+          bytes: SeedBytes(List<int>.generate(32, (j) => i + j)),
+        ),
+      );
+
+      when(mockSecretStore.loadAll()).thenAnswer((_) async => secrets);
+
+      // Act
+      final result = await useCase.execute(query);
+
+      // Assert
+      expect(result.secrets.length, 10);
+      for (int i = 0; i < 10; i++) {
+        expect(result.secrets[i], secrets[i]);
+        expect(result.secrets[i].fingerprint.value, (i * 0x11111111).toRadixString(16).padLeft(8, '0').substring(0, 8));
+      }
+
+      // Verify loadAll called once
+      verify(mockSecretStore.loadAll()).called(1);
     });
   });
 
@@ -235,39 +238,8 @@ void main() {
           ),
         );
 
-        // Verify loadAll was called but not crypto
+        // Verify loadAll was called
         verify(mockSecretStore.loadAll()).called(1);
-        verifyNever(mockSecretCrypto.getFingerprintFromSecret(any));
-      },
-    );
-
-    test(
-      'should throw BusinessRuleFailed when getFingerprintFromSecret throws domain error',
-      () async {
-        // Arrange
-        final query = LoadAllStoredSecretsQuery();
-
-        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-        final domainError = TestSecretsDomainError('Invalid seed format');
-
-        when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
-        ).thenThrow(domainError);
-
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(query),
-          throwsA(
-            isA<BusinessRuleFailed>()
-                .having((e) => e.domainError, 'domainError', domainError)
-                .having((e) => e.cause, 'cause', domainError),
-          ),
-        );
-
-        // Verify both methods were called
-        verify(mockSecretStore.loadAll()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
       },
     );
 
@@ -297,38 +269,6 @@ void main() {
       },
     );
 
-    test(
-      'should throw FailedToLoadAllStoredSecretsError when fingerprint calculation fails',
-      () async {
-        // Arrange
-        final query = LoadAllStoredSecretsQuery();
-
-        final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-        final cryptoError = Exception('Crypto library error');
-
-        when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
-        when(
-          mockSecretCrypto.getFingerprintFromSecret(any),
-        ).thenThrow(cryptoError);
-
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(query),
-          throwsA(
-            isA<FailedToLoadAllStoredSecretsError>().having(
-              (e) => e.cause,
-              'cause',
-              cryptoError,
-            ),
-          ),
-        );
-
-        // Verify both methods were called
-        verify(mockSecretStore.loadAll()).called(1);
-        verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(1);
-      },
-    );
-
     test('should rethrow application errors without wrapping', () async {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
@@ -351,52 +291,16 @@ void main() {
   });
 
   group('LoadAllStoredSecretsUseCase - Verification Tests', () {
-    test('should call ports in correct sequence', () async {
+    test('should call loadAll exactly once', () async {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-      final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
-      final secrets = [secret1, secret2];
-
-      final callOrder = <String>[];
-
-      when(mockSecretStore.loadAll()).thenAnswer((_) async {
-        callOrder.add('loadAll');
-        return secrets;
-      });
-      when(mockSecretCrypto.getFingerprintFromSecret(secret1)).thenAnswer((
-        _,
-      ) async {
-        callOrder.add('getFingerprint-1');
-        return 'fp-1';
-      });
-      when(mockSecretCrypto.getFingerprintFromSecret(secret2)).thenAnswer((
-        _,
-      ) async {
-        callOrder.add('getFingerprint-2');
-        return 'fp-2';
-      });
-
-      // Act
-      await useCase.execute(query);
-
-      // Assert - verify loadAll is called first, then fingerprints
-      expect(callOrder[0], 'loadAll');
-      expect(callOrder, contains('getFingerprint-1'));
-      expect(callOrder, contains('getFingerprint-2'));
-    });
-
-    test('should call loadAll exactly once in happy path', () async {
-      // Arrange
-      final query = LoadAllStoredSecretsQuery();
-
-      final secret = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
+      final secret = MnemonicSecret(
+        fingerprint: Fingerprint.fromHex('abcd1234'),
+        words: testMnemonicWords1,
+      );
 
       when(mockSecretStore.loadAll()).thenAnswer((_) async => [secret]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(any),
-      ).thenAnswer((_) async => 'fp');
 
       // Act
       await useCase.execute(query);
@@ -408,93 +312,34 @@ void main() {
       verifyNoMoreInteractions(mockSecretStore);
     });
 
-    test('should call getFingerprintFromSecret for each secret', () async {
+    test('should preserve secret order from store', () async {
       // Arrange
       final query = LoadAllStoredSecretsQuery();
 
-      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-      final secret2 = MnemonicSecret(words: MnemonicWords(testMnemonicWords2));
-      final secret3 = SeedSecret(SeedBytes(List<int>.generate(32, (i) => i)));
+      final secret1 = MnemonicSecret(
+        fingerprint: Fingerprint.fromHex('dddddd11'),
+        words: testMnemonicWords1,
+      );
+      final secret2 = SeedSecret(
+        fingerprint: Fingerprint.fromHex('dddddd22'),
+        bytes: SeedBytes(List<int>.generate(16, (i) => i + 1)),
+      );
+      final secret3 = MnemonicSecret(
+        fingerprint: Fingerprint.fromHex('dddddd33'),
+        words: testMnemonicWords2,
+      );
 
       when(
         mockSecretStore.loadAll(),
       ).thenAnswer((_) async => [secret1, secret2, secret3]);
-      when(mockSecretCrypto.getFingerprintFromSecret(any)).thenAnswer((
-        invocation,
-      ) async {
-        final secret = invocation.positionalArguments[0];
-        if (secret == secret1) return 'fp-1';
-        if (secret == secret2) return 'fp-2';
-        if (secret == secret3) return 'fp-3';
-        return 'unknown';
-      });
-
-      // Act
-      await useCase.execute(query);
-
-      // Assert
-      verify(mockSecretCrypto.getFingerprintFromSecret(secret1)).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(secret2)).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(secret3)).called(1);
-    });
-
-    test('should build map with correct fingerprint-secret pairs', () async {
-      // Arrange
-      final query = LoadAllStoredSecretsQuery();
-
-      final secret1 = MnemonicSecret(words: MnemonicWords(testMnemonicWords1));
-      final secret2 = SeedSecret(SeedBytes([1, 2, 3, 4]));
-      const fp1 = 'custom-fp-abc';
-      const fp2 = 'custom-fp-xyz';
-
-      when(
-        mockSecretStore.loadAll(),
-      ).thenAnswer((_) async => [secret1, secret2]);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret1),
-      ).thenAnswer((_) async => fp1);
-      when(
-        mockSecretCrypto.getFingerprintFromSecret(secret2),
-      ).thenAnswer((_) async => fp2);
 
       // Act
       final result = await useCase.execute(query);
 
-      // Assert
-      expect(result.secretsByFingerprint.keys, containsAll([fp1, fp2]));
-      expect(result.secretsByFingerprint[fp1], same(secret1));
-      expect(result.secretsByFingerprint[fp2], same(secret2));
-    });
-
-    test('should handle many secrets efficiently', () async {
-      // Arrange
-      final query = LoadAllStoredSecretsQuery();
-
-      final secrets = List.generate(
-        10,
-        (i) => SeedSecret(SeedBytes(List<int>.generate(32, (j) => i + j))),
-      );
-
-      when(mockSecretStore.loadAll()).thenAnswer((_) async => secrets);
-      when(mockSecretCrypto.getFingerprintFromSecret(any)).thenAnswer((
-        invocation,
-      ) async {
-        final index = secrets.indexOf(invocation.positionalArguments[0]);
-        return 'fingerprint-$index';
-      });
-
-      // Act
-      final result = await useCase.execute(query);
-
-      // Assert
-      expect(result.secretsByFingerprint.length, 10);
-      for (int i = 0; i < 10; i++) {
-        expect(result.secretsByFingerprint['fingerprint-$i'], secrets[i]);
-      }
-
-      // Verify loadAll called once, but fingerprint called 10 times
-      verify(mockSecretStore.loadAll()).called(1);
-      verify(mockSecretCrypto.getFingerprintFromSecret(any)).called(10);
+      // Assert - verify order is preserved
+      expect(result.secrets[0], same(secret1));
+      expect(result.secrets[1], same(secret2));
+      expect(result.secrets[2], same(secret3));
     });
   });
 }

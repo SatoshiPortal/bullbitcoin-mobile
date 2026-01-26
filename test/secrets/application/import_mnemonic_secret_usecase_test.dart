@@ -1,7 +1,5 @@
 import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
-import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
-import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/secret_consumer.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/secret_usage_id.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
@@ -24,7 +22,7 @@ void main() {
   late MockSecretStorePort mockSecretStore;
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
-  final testFingerprint = Fingerprint('test-fingerprint-abc');
+  final testFingerprint = Fingerprint.fromHex('cafebabe');
   final testMnemonicWords = [
     'abandon',
     'ability',
@@ -67,7 +65,7 @@ void main() {
         ),
       ).thenReturn(testFingerprint);
       when(mockSecretStore.save(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
       when(
         mockSecretUsageRepository.add(
@@ -84,19 +82,24 @@ void main() {
 
       // Verify the secret was saved
       verify(
-        mockSecretStore.save(argThat(
-          isA<MnemonicSecret>()
-              .having((s) => s.words.value, 'words', testMnemonicWords)
-              .having((s) => s.passphrase, 'passphrase', isNull),
-        )),
+        mockSecretStore.save(
+          argThat(
+            isA<MnemonicSecret>()
+                .having((s) => s.words.value, 'words', testMnemonicWords)
+                .having((s) => s.passphrase, 'passphrase', isNull),
+          ),
+        ),
       ).called(1);
 
       verify(
         mockSecretUsageRepository.add(
           fingerprint: testFingerprint,
           consumer: argThat(
-            isA<WalletConsumer>()
-                .having((c) => c.walletId, 'walletId', 'wallet-123'),
+            isA<WalletConsumer>().having(
+              (c) => c.walletId,
+              'walletId',
+              'wallet-123',
+            ),
             named: 'consumer',
           ),
         ),
@@ -119,7 +122,7 @@ void main() {
         ),
       ).thenReturn(testFingerprint);
       when(mockSecretStore.save(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
       when(
         mockSecretUsageRepository.add(
@@ -135,15 +138,17 @@ void main() {
       expect(result.fingerprint, testFingerprint);
 
       verify(
-        mockSecretStore.save(argThat(
-          isA<MnemonicSecret>()
-              .having((s) => s.words.value, 'words', testMnemonicWords)
-              .having(
-                (s) => s.passphrase?.value,
-                'passphrase',
-                testPassphrase,
-              ),
-        )),
+        mockSecretStore.save(
+          argThat(
+            isA<MnemonicSecret>()
+                .having((s) => s.words.value, 'words', testMnemonicWords)
+                .having(
+                  (s) => s.passphrase?.value,
+                  'passphrase',
+                  testPassphrase,
+                ),
+          ),
+        ),
       ).called(1);
     });
   });
@@ -397,51 +402,50 @@ void main() {
       },
     );
 
-    test(
-      'should accept passphrase at exactly 256 characters',
-      () async {
-        // Arrange
-        final maxPassphrase = 'a' * 256;
-        final command = ImportMnemonicSecretCommand.forWallet(
-          walletId: 'wallet-123',
-          mnemonicWords: testMnemonicWords,
-          passphrase: maxPassphrase,
-        );
+    test('should accept passphrase at exactly 256 characters', () async {
+      // Arrange
+      final maxPassphrase = 'a' * 256;
+      final command = ImportMnemonicSecretCommand.forWallet(
+        walletId: 'wallet-123',
+        mnemonicWords: testMnemonicWords,
+        passphrase: maxPassphrase,
+      );
 
-        when(
-          mockSecretCrypto.getFingerprintFromMnemonic(
-            mnemonicWords: anyNamed('mnemonicWords'),
-            passphrase: anyNamed('passphrase'),
-          ),
-        ).thenReturn(testFingerprint);
-        when(mockSecretStore.save(any)).thenAnswer((_) async {
-          return null;
-        });
-        when(
-          mockSecretUsageRepository.add(
-            fingerprint: anyNamed('fingerprint'),
-            consumer: anyNamed('consumer'),
-          ),
-        ).thenAnswer((_) async => _createTestSecretUsage());
+      when(
+        mockSecretCrypto.getFingerprintFromMnemonic(
+          mnemonicWords: anyNamed('mnemonicWords'),
+          passphrase: anyNamed('passphrase'),
+        ),
+      ).thenReturn(testFingerprint);
+      when(mockSecretStore.save(any)).thenAnswer((_) async {
+        return;
+      });
+      when(
+        mockSecretUsageRepository.add(
+          fingerprint: anyNamed('fingerprint'),
+          consumer: anyNamed('consumer'),
+        ),
+      ).thenAnswer((_) async => _createTestSecretUsage());
 
-        // Act
-        final result = await useCase.execute(command);
+      // Act
+      final result = await useCase.execute(command);
 
-        // Assert - should succeed with 256 chars
-        expect(result.fingerprint, testFingerprint);
+      // Assert - should succeed with 256 chars
+      expect(result.fingerprint, testFingerprint);
 
-        // Verify the passphrase was passed correctly
-        verify(
-          mockSecretStore.save(argThat(
+      // Verify the passphrase was passed correctly
+      verify(
+        mockSecretStore.save(
+          argThat(
             isA<MnemonicSecret>().having(
               (s) => s.passphrase?.value,
               'passphrase',
               maxPassphrase,
             ),
-          )),
-        ).called(1);
-      },
-    );
+          ),
+        ),
+      ).called(1);
+    });
   });
 
   group('ImportMnemonicSecretUseCase - Error Scenarios', () {
@@ -540,7 +544,7 @@ void main() {
           ),
         ).thenReturn(testFingerprint);
         when(mockSecretStore.save(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(
           mockSecretUsageRepository.add(
@@ -601,15 +605,13 @@ void main() {
           mnemonicWords: anyNamed('mnemonicWords'),
           passphrase: anyNamed('passphrase'),
         ),
-      ).thenAnswer((
-        _,
-      ) {
+      ).thenAnswer((_) {
         callOrder.add('getFingerprintFromMnemonic');
         return testFingerprint;
       });
       when(mockSecretStore.save(any)).thenAnswer((_) async {
         callOrder.add('save');
-        return null;
+        return;
       });
       when(
         mockSecretUsageRepository.add(
@@ -642,7 +644,7 @@ void main() {
         ),
       ).thenReturn(testFingerprint);
       when(mockSecretStore.save(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
       when(
         mockSecretUsageRepository.add(
@@ -679,7 +681,7 @@ void main() {
 SecretUsage _createTestSecretUsage() {
   return SecretUsage(
     id: SecretUsageId(1),
-    fingerprint: Fingerprint('test-fingerprint-abc'),
+    fingerprint: Fingerprint.fromHex('cafebabe'),
     consumer: WalletConsumer('test-consumer'),
     createdAt: DateTime.now(),
   );

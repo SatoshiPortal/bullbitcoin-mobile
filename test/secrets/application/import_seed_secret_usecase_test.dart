@@ -4,7 +4,6 @@ import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/secret_consumer.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/secret_usage_id.dart';
-import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
@@ -25,7 +24,7 @@ void main() {
   late MockSecretStorePort mockSecretStore;
   late MockSecretUsageRepositoryPort mockSecretUsageRepository;
 
-  final testFingerprint = Fingerprint('test-fingerprint-bytes');
+  final testFingerprint = Fingerprint.fromHex('deadbeef');
   final testSecretBytes = Uint8List.fromList(
     List.generate(32, (index) => index),
   );
@@ -50,10 +49,11 @@ void main() {
         bytes: testSecretBytes,
       );
 
-      when(mockSecretCrypto.getFingerprintFromSeedBytes(any))
-          .thenReturn(testFingerprint);
+      when(
+        mockSecretCrypto.getFingerprintFromSeedBytes(any),
+      ).thenReturn(testFingerprint);
       when(mockSecretStore.save(any)).thenAnswer((_) async {
-        return null;
+        return;
       });
       when(
         mockSecretUsageRepository.add(
@@ -69,18 +69,26 @@ void main() {
       expect(result.fingerprint, testFingerprint);
 
       verify(
-        mockSecretStore.save(argThat(
-          isA<SeedSecret>()
-              .having((s) => s.bytes.value, 'bytes', testSecretBytes),
-        )),
+        mockSecretStore.save(
+          argThat(
+            isA<SeedSecret>().having(
+              (s) => s.bytes.value,
+              'bytes',
+              testSecretBytes,
+            ),
+          ),
+        ),
       ).called(1);
 
       verify(
         mockSecretUsageRepository.add(
           fingerprint: testFingerprint,
           consumer: argThat(
-            isA<WalletConsumer>()
-                .having((c) => c.walletId, 'walletId', 'wallet-456'),
+            isA<WalletConsumer>().having(
+              (c) => c.walletId,
+              'walletId',
+              'wallet-456',
+            ),
             named: 'consumer',
           ),
         ),
@@ -89,209 +97,188 @@ void main() {
   });
 
   group('ImportSeedSecretUseCase - Input Validation', () {
-    test(
-      'should throw InvalidSeedInputError when byte length is 15',
-      () async {
-        // Arrange
-        final invalidBytes = Uint8List.fromList(List.generate(15, (i) => i));
-        final command = ImportSeedSecretCommand.forWallet(
-          walletId: 'wallet-456',
-          bytes: invalidBytes,
-        );
+    test('should throw InvalidSeedInputError when byte length is 15', () async {
+      // Arrange
+      final invalidBytes = Uint8List.fromList(List.generate(15, (i) => i));
+      final command = ImportSeedSecretCommand.forWallet(
+        walletId: 'wallet-456',
+        bytes: invalidBytes,
+      );
 
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(command),
-          throwsA(
-            isA<InvalidSeedInputError>()
-                .having((e) => e.byteLength, 'byteLength', 15)
-                .having(
-                  (e) => e.message,
-                  'message',
-                  contains('Invalid seed length'),
-                ),
-          ),
-        );
+      // Act & Assert
+      await expectLater(
+        () => useCase.execute(command),
+        throwsA(
+          isA<InvalidSeedInputError>()
+              .having((e) => e.byteLength, 'byteLength', 15)
+              .having(
+                (e) => e.message,
+                'message',
+                contains('Invalid seed length'),
+              ),
+        ),
+      );
 
-        // Verify no ports were called (validation happens first)
-        verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
-        verifyNever(mockSecretStore.save(any));
-        verifyNever(
-          mockSecretUsageRepository.add(
-            fingerprint: anyNamed('fingerprint'),
-            consumer: anyNamed('consumer'),
-          ),
-        );
-      },
-    );
+      // Verify no ports were called (validation happens first)
+      verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
+      verifyNever(mockSecretStore.save(any));
+      verifyNever(
+        mockSecretUsageRepository.add(
+          fingerprint: anyNamed('fingerprint'),
+          consumer: anyNamed('consumer'),
+        ),
+      );
+    });
 
-    test(
-      'should throw InvalidSeedInputError when byte length is 17',
-      () async {
-        // Arrange
-        final invalidBytes = Uint8List.fromList(List.generate(17, (i) => i));
-        final command = ImportSeedSecretCommand.forWallet(
-          walletId: 'wallet-456',
-          bytes: invalidBytes,
-        );
+    test('should throw InvalidSeedInputError when byte length is 17', () async {
+      // Arrange
+      final invalidBytes = Uint8List.fromList(List.generate(17, (i) => i));
+      final command = ImportSeedSecretCommand.forWallet(
+        walletId: 'wallet-456',
+        bytes: invalidBytes,
+      );
 
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(command),
-          throwsA(
-            isA<InvalidSeedInputError>()
-                .having((e) => e.byteLength, 'byteLength', 17)
-                .having(
-                  (e) => e.message,
-                  'message',
-                  contains('Invalid seed length'),
-                ),
-          ),
-        );
+      // Act & Assert
+      await expectLater(
+        () => useCase.execute(command),
+        throwsA(
+          isA<InvalidSeedInputError>()
+              .having((e) => e.byteLength, 'byteLength', 17)
+              .having(
+                (e) => e.message,
+                'message',
+                contains('Invalid seed length'),
+              ),
+        ),
+      );
 
-        verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
-      },
-    );
+      verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
+    });
 
-    test(
-      'should throw InvalidSeedInputError when byte length is 31',
-      () async {
-        // Arrange
-        final invalidBytes = Uint8List.fromList(List.generate(31, (i) => i));
-        final command = ImportSeedSecretCommand.forWallet(
-          walletId: 'wallet-456',
-          bytes: invalidBytes,
-        );
+    test('should throw InvalidSeedInputError when byte length is 31', () async {
+      // Arrange
+      final invalidBytes = Uint8List.fromList(List.generate(31, (i) => i));
+      final command = ImportSeedSecretCommand.forWallet(
+        walletId: 'wallet-456',
+        bytes: invalidBytes,
+      );
 
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(command),
-          throwsA(
-            isA<InvalidSeedInputError>()
-                .having((e) => e.byteLength, 'byteLength', 31)
-                .having(
-                  (e) => e.message,
-                  'message',
-                  contains('Invalid seed length'),
-                ),
-          ),
-        );
+      // Act & Assert
+      await expectLater(
+        () => useCase.execute(command),
+        throwsA(
+          isA<InvalidSeedInputError>()
+              .having((e) => e.byteLength, 'byteLength', 31)
+              .having(
+                (e) => e.message,
+                'message',
+                contains('Invalid seed length'),
+              ),
+        ),
+      );
 
-        verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
-      },
-    );
+      verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
+    });
 
-    test(
-      'should throw InvalidSeedInputError when byte length is 33',
-      () async {
-        // Arrange
-        final invalidBytes = Uint8List.fromList(List.generate(33, (i) => i));
-        final command = ImportSeedSecretCommand.forWallet(
-          walletId: 'wallet-456',
-          bytes: invalidBytes,
-        );
+    test('should throw InvalidSeedInputError when byte length is 33', () async {
+      // Arrange
+      final invalidBytes = Uint8List.fromList(List.generate(33, (i) => i));
+      final command = ImportSeedSecretCommand.forWallet(
+        walletId: 'wallet-456',
+        bytes: invalidBytes,
+      );
 
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(command),
-          throwsA(
-            isA<InvalidSeedInputError>()
-                .having((e) => e.byteLength, 'byteLength', 33)
-                .having(
-                  (e) => e.message,
-                  'message',
-                  contains('Invalid seed length'),
-                ),
-          ),
-        );
+      // Act & Assert
+      await expectLater(
+        () => useCase.execute(command),
+        throwsA(
+          isA<InvalidSeedInputError>()
+              .having((e) => e.byteLength, 'byteLength', 33)
+              .having(
+                (e) => e.message,
+                'message',
+                contains('Invalid seed length'),
+              ),
+        ),
+      );
 
-        verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
-      },
-    );
+      verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
+    });
 
-    test(
-      'should throw InvalidSeedInputError when byte length is 63',
-      () async {
-        // Arrange
-        final invalidBytes = Uint8List.fromList(List.generate(63, (i) => i));
-        final command = ImportSeedSecretCommand.forWallet(
-          walletId: 'wallet-456',
-          bytes: invalidBytes,
-        );
+    test('should throw InvalidSeedInputError when byte length is 63', () async {
+      // Arrange
+      final invalidBytes = Uint8List.fromList(List.generate(63, (i) => i));
+      final command = ImportSeedSecretCommand.forWallet(
+        walletId: 'wallet-456',
+        bytes: invalidBytes,
+      );
 
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(command),
-          throwsA(
-            isA<InvalidSeedInputError>()
-                .having((e) => e.byteLength, 'byteLength', 63)
-                .having(
-                  (e) => e.message,
-                  'message',
-                  contains('Invalid seed length'),
-                ),
-          ),
-        );
+      // Act & Assert
+      await expectLater(
+        () => useCase.execute(command),
+        throwsA(
+          isA<InvalidSeedInputError>()
+              .having((e) => e.byteLength, 'byteLength', 63)
+              .having(
+                (e) => e.message,
+                'message',
+                contains('Invalid seed length'),
+              ),
+        ),
+      );
 
-        verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
-      },
-    );
+      verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
+    });
 
-    test(
-      'should throw InvalidSeedInputError when byte length is 65',
-      () async {
-        // Arrange
-        final invalidBytes = Uint8List.fromList(List.generate(65, (i) => i));
-        final command = ImportSeedSecretCommand.forWallet(
-          walletId: 'wallet-456',
-          bytes: invalidBytes,
-        );
+    test('should throw InvalidSeedInputError when byte length is 65', () async {
+      // Arrange
+      final invalidBytes = Uint8List.fromList(List.generate(65, (i) => i));
+      final command = ImportSeedSecretCommand.forWallet(
+        walletId: 'wallet-456',
+        bytes: invalidBytes,
+      );
 
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(command),
-          throwsA(
-            isA<InvalidSeedInputError>()
-                .having((e) => e.byteLength, 'byteLength', 65)
-                .having(
-                  (e) => e.message,
-                  'message',
-                  contains('Invalid seed length'),
-                ),
-          ),
-        );
+      // Act & Assert
+      await expectLater(
+        () => useCase.execute(command),
+        throwsA(
+          isA<InvalidSeedInputError>()
+              .having((e) => e.byteLength, 'byteLength', 65)
+              .having(
+                (e) => e.message,
+                'message',
+                contains('Invalid seed length'),
+              ),
+        ),
+      );
 
-        verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
-      },
-    );
+      verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
+    });
 
-    test(
-      'should throw InvalidSeedInputError when byte length is 1',
-      () async {
-        // Arrange
-        final invalidBytes = Uint8List.fromList([0]);
-        final command = ImportSeedSecretCommand.forWallet(
-          walletId: 'wallet-456',
-          bytes: invalidBytes,
-        );
+    test('should throw InvalidSeedInputError when byte length is 1', () async {
+      // Arrange
+      final invalidBytes = Uint8List.fromList([0]);
+      final command = ImportSeedSecretCommand.forWallet(
+        walletId: 'wallet-456',
+        bytes: invalidBytes,
+      );
 
-        // Act & Assert
-        await expectLater(
-          () => useCase.execute(command),
-          throwsA(
-            isA<InvalidSeedInputError>()
-                .having((e) => e.byteLength, 'byteLength', 1)
-                .having(
-                  (e) => e.message,
-                  'message',
-                  contains('Invalid seed length'),
-                ),
-          ),
-        );
+      // Act & Assert
+      await expectLater(
+        () => useCase.execute(command),
+        throwsA(
+          isA<InvalidSeedInputError>()
+              .having((e) => e.byteLength, 'byteLength', 1)
+              .having(
+                (e) => e.message,
+                'message',
+                contains('Invalid seed length'),
+              ),
+        ),
+      );
 
-        verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
-      },
-    );
+      verifyNever(mockSecretCrypto.getFingerprintFromSeedBytes(any));
+    });
 
     test(
       'should throw InvalidSeedInputError when byte length is 100',
@@ -333,8 +320,9 @@ void main() {
         );
 
         final domainError = TestSecretsDomainError('Invalid seed bytes');
-        when(mockSecretCrypto.getFingerprintFromSeedBytes(any))
-            .thenThrow(domainError);
+        when(
+          mockSecretCrypto.getFingerprintFromSeedBytes(any),
+        ).thenThrow(domainError);
 
         // Act & Assert
         await expectLater(
@@ -358,8 +346,9 @@ void main() {
       );
 
       final storageError = Exception('Storage unavailable');
-      when(mockSecretCrypto.getFingerprintFromSeedBytes(any))
-          .thenReturn(testFingerprint);
+      when(
+        mockSecretCrypto.getFingerprintFromSeedBytes(any),
+      ).thenReturn(testFingerprint);
       when(mockSecretStore.save(any)).thenThrow(storageError);
 
       // Act & Assert
@@ -385,10 +374,11 @@ void main() {
         );
 
         final repositoryError = Exception('Database error');
-        when(mockSecretCrypto.getFingerprintFromSeedBytes(any))
-            .thenReturn(testFingerprint);
+        when(
+          mockSecretCrypto.getFingerprintFromSeedBytes(any),
+        ).thenReturn(testFingerprint);
         when(mockSecretStore.save(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(
           mockSecretUsageRepository.add(
@@ -419,8 +409,9 @@ void main() {
       );
 
       final appError = SecretInUseError('existing-fp');
-      when(mockSecretCrypto.getFingerprintFromSeedBytes(any))
-          .thenThrow(appError);
+      when(
+        mockSecretCrypto.getFingerprintFromSeedBytes(any),
+      ).thenThrow(appError);
 
       // Act & Assert
       await expectLater(
@@ -440,15 +431,13 @@ void main() {
 
       final callOrder = <String>[];
 
-      when(mockSecretCrypto.getFingerprintFromSeedBytes(any)).thenAnswer((
-        _,
-      ) {
+      when(mockSecretCrypto.getFingerprintFromSeedBytes(any)).thenAnswer((_) {
         callOrder.add('getFingerprintFromSeedBytes');
         return testFingerprint;
       });
       when(mockSecretStore.save(any)).thenAnswer((_) async {
         callOrder.add('save');
-        return null;
+        return;
       });
       when(
         mockSecretUsageRepository.add(
@@ -472,7 +461,7 @@ void main() {
 SecretUsage _createTestSecretUsage() {
   return SecretUsage(
     id: SecretUsageId(1),
-    fingerprint: Fingerprint('test-fingerprint-bytes'),
+    fingerprint: Fingerprint.fromHex('deadbeef'),
     consumer: WalletConsumer('test-consumer'),
     createdAt: DateTime.now(),
   );

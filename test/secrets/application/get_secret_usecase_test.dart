@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/value_objects/fingerprint.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
@@ -15,13 +16,31 @@ import 'get_secret_usecase_test.mocks.dart';
 @GenerateMocks([SecretStorePort])
 void main() {
   // Provide dummy for sealed class Secret
-  provideDummy<Secret>(MnemonicSecret(words: MnemonicWords(['dummy'])));
+  provideDummy<Secret>(
+    MnemonicSecret(
+      fingerprint: Fingerprint.fromHex('abcd1234'),
+      words: MnemonicWords([
+        'dummy',
+        'words',
+        'for',
+        'testing',
+        'purposes',
+        'only',
+        'ignore',
+        'this',
+        'list',
+        'of',
+        'words',
+        'here',
+      ]),
+    ),
+  );
   late GetSecretUseCase useCase;
   late MockSecretStorePort mockSecretStore;
 
   // Test data
-  const testFingerprint = 'test-fingerprint-12345';
-  final testMnemonicWords = [
+  final testFingerprint = Fingerprint.fromHex('12345678');
+  final testMnemonicWords = MnemonicWords([
     'abandon',
     'ability',
     'able',
@@ -34,7 +53,7 @@ void main() {
     'abuse',
     'access',
     'accident',
-  ];
+  ]);
 
   setUp(() {
     mockSecretStore = MockSecretStorePort();
@@ -45,9 +64,10 @@ void main() {
   group('GetSecretUseCase - Happy Path', () {
     test('should successfully retrieve seed secret', () async {
       // Arrange
-      final query = GetSecretQuery(fingerprint: testFingerprint);
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
       final expectedSecret = MnemonicSecret(
-        words: MnemonicWords(testMnemonicWords),
+        fingerprint: testFingerprint,
+        words: testMnemonicWords,
       );
 
       when(mockSecretStore.load(any)).thenAnswer((_) async => expectedSecret);
@@ -67,9 +87,10 @@ void main() {
 
     test('should successfully retrieve seed secret with passphrase', () async {
       // Arrange
-      const testPassphrase = 'my-secret-passphrase';
-      final query = GetSecretQuery(fingerprint: testFingerprint);
+      final testPassphrase = Passphrase('my-secret-passphrase');
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
       final expectedSecret = MnemonicSecret(
+        fingerprint: testFingerprint,
         words: testMnemonicWords,
         passphrase: testPassphrase,
       );
@@ -91,9 +112,12 @@ void main() {
 
     test('should successfully retrieve seed bytes secret', () async {
       // Arrange
-      final query = GetSecretQuery(fingerprint: testFingerprint);
-      final testBytes = List<int>.generate(32, (i) => i);
-      final expectedSecret = SeedSecret(SeedBytes(testBytes));
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
+      final testBytes = SeedBytes(List<int>.generate(32, (i) => i));
+      final expectedSecret = SeedSecret(
+        fingerprint: testFingerprint,
+        bytes: testBytes,
+      );
 
       when(mockSecretStore.load(any)).thenAnswer((_) async => expectedSecret);
 
@@ -115,7 +139,7 @@ void main() {
       'should throw BusinessRuleFailed when load throws domain error',
       () async {
         // Arrange
-        final query = GetSecretQuery(fingerprint: testFingerprint);
+        final query = GetSecretQuery(fingerprint: testFingerprint.value);
 
         final domainError = TestSecretsDomainError(
           'Invalid fingerprint format',
@@ -139,7 +163,7 @@ void main() {
 
     test('should throw FailedToGetSecretError when load fails', () async {
       // Arrange
-      final query = GetSecretQuery(fingerprint: testFingerprint);
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
 
       final storageError = Exception('Secure storage unavailable');
       when(mockSecretStore.load(any)).thenThrow(storageError);
@@ -160,9 +184,9 @@ void main() {
 
     test('should rethrow application errors without wrapping', () async {
       // Arrange
-      final query = GetSecretQuery(fingerprint: testFingerprint);
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
 
-      final appError = SecretInUseError(testFingerprint);
+      final appError = SecretInUseError(testFingerprint.value);
       when(mockSecretStore.load(any)).thenThrow(appError);
 
       // Act & Assert
@@ -172,7 +196,7 @@ void main() {
           isA<SecretInUseError>().having(
             (e) => e.fingerprint,
             'fingerprint',
-            testFingerprint,
+            testFingerprint.value,
           ),
         ),
       );
@@ -182,10 +206,11 @@ void main() {
   group('GetSecretUseCase - Verification Tests', () {
     test('should pass correct fingerprint to load', () async {
       // Arrange
-      const customFingerprint = 'custom-fp-xyz789';
-      final query = GetSecretQuery(fingerprint: customFingerprint);
+      final customFingerprint = Fingerprint.fromHex('fedcba98');
+      final query = GetSecretQuery(fingerprint: customFingerprint.value);
       final expectedSecret = MnemonicSecret(
-        words: MnemonicWords(testMnemonicWords),
+        fingerprint: customFingerprint,
+        words: testMnemonicWords,
       );
 
       when(mockSecretStore.load(any)).thenAnswer((_) async => expectedSecret);
@@ -199,9 +224,10 @@ void main() {
 
     test('should call load exactly once in happy path', () async {
       // Arrange
-      final query = GetSecretQuery(fingerprint: testFingerprint);
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
       final expectedSecret = MnemonicSecret(
-        words: MnemonicWords(testMnemonicWords),
+        fingerprint: testFingerprint,
+        words: testMnemonicWords,
       );
 
       when(mockSecretStore.load(any)).thenAnswer((_) async => expectedSecret);
@@ -218,9 +244,12 @@ void main() {
 
     test('should return result with loaded secret', () async {
       // Arrange
-      final query = GetSecretQuery(fingerprint: testFingerprint);
-      final testBytes = List<int>.generate(64, (i) => i * 2);
-      final expectedSecret = SeedSecret(SeedBytes(testBytes));
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
+      final testBytes = SeedBytes(List<int>.generate(64, (i) => i * 2));
+      final expectedSecret = SeedSecret(
+        fingerprint: testFingerprint,
+        bytes: testBytes,
+      );
 
       when(mockSecretStore.load(any)).thenAnswer((_) async => expectedSecret);
 
@@ -233,9 +262,10 @@ void main() {
 
     test('should correctly capture loaded secret', () async {
       // Arrange
-      const testPassphrase = 'test-pass';
-      final query = GetSecretQuery(fingerprint: testFingerprint);
+      final testPassphrase = Passphrase('test-pass');
+      final query = GetSecretQuery(fingerprint: testFingerprint.value);
       final expectedSecret = MnemonicSecret(
+        fingerprint: testFingerprint,
         words: testMnemonicWords,
         passphrase: testPassphrase,
       );

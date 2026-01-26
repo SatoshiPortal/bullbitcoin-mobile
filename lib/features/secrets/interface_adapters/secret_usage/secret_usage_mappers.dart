@@ -15,7 +15,7 @@ extension SecretUsageRowMappersX on SecretUsageRow {
     return SecretUsage(
       id: SecretUsageId(id),
       consumer: consumer,
-      fingerprint: Fingerprint(fingerprint),
+      fingerprint: Fingerprint.fromHex(fingerprint),
       createdAt: createdAt,
     );
   }

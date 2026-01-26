@@ -20,7 +20,7 @@ void main() {
   // Test data
   const testWalletId = 'wallet-123';
   const testBip85Path = "m/83696968'/0'/0'";
-  final testFingerprint = Fingerprint('abcd1234');
+  final testFingerprint = Fingerprint.fromHex('abcd1234');
   final testUsageId = SecretUsageId(1);
   final testCreatedAt = DateTime(2024, 1, 1);
 
@@ -129,9 +129,9 @@ void main() {
       final query = GetSecretUsagesByConsumerQuery.byWallet(
         walletId: testWalletId,
       );
-      final fingerprint1 = Fingerprint('aaaa1111');
-      final fingerprint2 = Fingerprint('bbbb2222');
-      final fingerprint3 = Fingerprint('cccc3333');
+      final fingerprint1 = Fingerprint.fromHex('aaaa1111');
+      final fingerprint2 = Fingerprint.fromHex('bbbb2222');
+      final fingerprint3 = Fingerprint.fromHex('cccc3333');
 
       final usage1 = SecretUsage(
         id: SecretUsageId(1),
@@ -430,13 +430,13 @@ void main() {
 
       final usage1 = SecretUsage(
         id: SecretUsageId(1),
-        fingerprint: Fingerprint('aaaa1111'),
+        fingerprint: Fingerprint.fromHex('aaaa1111'),
         consumer: WalletConsumer(testWalletId),
         createdAt: testCreatedAt,
       );
       final usage2 = SecretUsage(
         id: SecretUsageId(2),
-        fingerprint: Fingerprint('bbbb2222'),
+        fingerprint: Fingerprint.fromHex('bbbb2222'),
         consumer: WalletConsumer(testWalletId),
         createdAt: testCreatedAt,
       );

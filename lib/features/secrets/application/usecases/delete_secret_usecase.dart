@@ -24,7 +24,7 @@ class DeleteSecretUseCase {
   Future<void> execute(DeleteSecretCommand cmd) async {
     try {
       // Check the cmd inputs
-      final fingerprint = Fingerprint(cmd.fingerprint);
+      final fingerprint = Fingerprint.fromHex(cmd.fingerprint);
 
       // Check if the secret is in use
       final isSecretUsed = await _secretUsageRepository.isUsed(fingerprint);

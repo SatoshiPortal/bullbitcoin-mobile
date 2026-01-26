@@ -6,8 +6,11 @@ import 'package:meta/meta.dart';
 class Fingerprint {
   final String value;
 
-  const Fingerprint(this.value);
+  const Fingerprint._(this.value);
 
+  /// Creates a Fingerprint instance with validation.
+  ///
+  /// Throws [InvalidFingerprintFormatError] if the hex string is not exactly 8 hex characters.
   factory Fingerprint.fromHex(String hex) {
     if (hex.length != 8) {
       throw InvalidFingerprintFormatError(
@@ -22,7 +25,7 @@ class Fingerprint {
         invalidValue: hex,
       );
     }
-    return Fingerprint(hex.toLowerCase());
+    return Fingerprint._(hex.toLowerCase());
   }
 
   @override

@@ -32,6 +32,6 @@ class Bip32And39SecretCrypto implements SecretCryptoPort {
     final root = Bip32Keys.fromSeed(Uint8List.fromList(seedBytes));
     final fingerprintBytes = root.fingerprint;
     final fingerprintHex = fingerprintBytes.toHexString();
-    return Fingerprint(fingerprintHex);
+    return Fingerprint.fromHex(fingerprintHex);
   }
 }

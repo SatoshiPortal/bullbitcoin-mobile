@@ -26,7 +26,7 @@ class GetSecretUseCase {
     Fingerprint? fingerprint;
     try {
       // Check the query inputs
-      final fingerprint = Fingerprint(query.fingerprint);
+      fingerprint = Fingerprint.fromHex(query.fingerprint);
 
       // Load the secret from the store
       final secret = await _secretStore.load(fingerprint);
