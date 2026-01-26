@@ -4126,5 +4126,14 @@
   "logoutConfirmationTitle": "Підтвердити вихід",
   "logoutConfirmationDescription": "Ви впевнені, що хочете вийти зі свого облікового запису Bull Bitcoin? Вам потрібно буде знову увійти, щоб отримати доступ до функцій обміну.",
   "logoutConfirmationCancel": "Скасувати",
-  "logoutConfirmationLogout": "Вийти"
+  "logoutConfirmationLogout": "Вийти",
+  "mempoolServerStatusOnline": "В мережі",
+  "mempoolServerStatusOffline": "Не в мережі",
+  "mempoolServerStatusChecking": "Перевірка...",
+  "mempoolServerStatusUnknown": "Невідомо",
+  "mempoolCustomServerSaveFailed": "Не вдалося зберегти сервер",
+  "mempoolCustomServerInfoDescription": "Сервери mempool використовуються для оцінки комісій та відкриття оглядача блоків при перегляді деталей транзакції.",
+  "mempoolCustomServerUseSsl": "Використовувати SSL",
+  "mempoolCustomServerSslAutoDetected": "(Визначено автоматично)",
+  "mempoolCustomServerSslHelpText": "Для локальних (.local, приватні IP) та Tor (.onion) серверів SSL зазвичай вимкнено. Публічні IP та домени повинні використовувати SSL."
 }

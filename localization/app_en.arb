@@ -560,6 +560,42 @@
   "@mempoolSettingsUseForFeeEstimationDescription": {
     "description": "Description for use for fee estimation toggle"
   },
+  "mempoolServerStatusOnline": "Online",
+  "@mempoolServerStatusOnline": {
+    "description": "Status label when mempool server is online"
+  },
+  "mempoolServerStatusOffline": "Offline",
+  "@mempoolServerStatusOffline": {
+    "description": "Status label when mempool server is offline"
+  },
+  "mempoolServerStatusChecking": "Checking...",
+  "@mempoolServerStatusChecking": {
+    "description": "Status label when checking mempool server status"
+  },
+  "mempoolServerStatusUnknown": "Unknown",
+  "@mempoolServerStatusUnknown": {
+    "description": "Status label when mempool server status is unknown"
+  },
+  "mempoolCustomServerSaveFailed": "Failed to save server",
+  "@mempoolCustomServerSaveFailed": {
+    "description": "Error message when saving custom mempool server fails"
+  },
+  "mempoolCustomServerInfoDescription": "Mempool servers are used for fee estimation and opening the block explorer when viewing transaction details.",
+  "@mempoolCustomServerInfoDescription": {
+    "description": "Info text explaining what mempool servers are used for"
+  },
+  "mempoolCustomServerUseSsl": "Use SSL",
+  "@mempoolCustomServerUseSsl": {
+    "description": "Label for SSL toggle in custom server settings"
+  },
+  "mempoolCustomServerSslAutoDetected": "(Auto-detected)",
+  "@mempoolCustomServerSslAutoDetected": {
+    "description": "Label shown when SSL setting was auto-detected"
+  },
+  "mempoolCustomServerSslHelpText": "For local (.local, private IPs) and Tor (.onion) servers, SSL is typically disabled. Public IPs and domains should use SSL.",
+  "@mempoolCustomServerSslHelpText": {
+    "description": "Help text explaining when to use SSL for mempool servers"
+  },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"

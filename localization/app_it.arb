@@ -4125,5 +4125,14 @@
   "logoutConfirmationTitle": "Conferma disconnessione",
   "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
   "logoutConfirmationCancel": "Annulla",
-  "logoutConfirmationLogout": "Disconnetti"
+  "logoutConfirmationLogout": "Disconnetti",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Verifica...",
+  "mempoolServerStatusUnknown": "Sconosciuto",
+  "mempoolCustomServerSaveFailed": "Impossibile salvare il server",
+  "mempoolCustomServerInfoDescription": "I server mempool vengono utilizzati per la stima delle commissioni e per aprire l'esploratore di blocchi quando si visualizzano i dettagli della transazione.",
+  "mempoolCustomServerUseSsl": "Usa SSL",
+  "mempoolCustomServerSslAutoDetected": "(Rilevato automaticamente)",
+  "mempoolCustomServerSslHelpText": "Per server locali (.local, IP privati) e Tor (.onion), SSL è solitamente disabilitato. Gli IP pubblici e i domini dovrebbero usare SSL."
 }

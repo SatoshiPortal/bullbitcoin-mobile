@@ -117,7 +117,7 @@ class _SetCustomServerBottomSheetState
     } else {
       final state = context.read<MempoolSettingsCubit>().state;
       setState(() {
-        _errorMessage = state.errorMessage ?? 'Failed to save server';
+        _errorMessage = state.errorMessage ?? context.loc.mempoolCustomServerSaveFailed;
       });
       context.read<MempoolSettingsCubit>().clearError();
     }
@@ -186,7 +186,7 @@ class _SetCustomServerBottomSheetState
                         const Gap(8),
                         Expanded(
                           child: Text(
-                            'Mempool servers are used for fee estimation and opening the block explorer when viewing transaction details.',
+                            context.loc.mempoolCustomServerInfoDescription,
                             style: context.font.bodySmall?.copyWith(
                               color: context.appColors.onSurface.withValues(
                                 alpha: 0.8,
@@ -252,11 +252,11 @@ class _SetCustomServerBottomSheetState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Use SSL', style: context.font.bodyMedium),
+                            Text(context.loc.mempoolCustomServerUseSsl, style: context.font.bodyMedium),
                             if (_sslAutoDetected) ...[
                               const Gap(2),
                               Text(
-                                '(Auto-detected)',
+                                context.loc.mempoolCustomServerSslAutoDetected,
                                 style: context.font.bodySmall?.copyWith(
                                   color: context.appColors.onSurface.withValues(
                                     alpha: 0.6,
@@ -282,7 +282,7 @@ class _SetCustomServerBottomSheetState
                   Padding(
                     padding: const EdgeInsets.only(left: 4.0),
                     child: Text(
-                      'For local (.local, private IPs) and Tor (.onion) servers, SSL is typically disabled. Public IPs and domains should use SSL.',
+                      context.loc.mempoolCustomServerSslHelpText,
                       style: context.font.bodySmall?.copyWith(
                         color: context.appColors.onSurface.withValues(
                           alpha: 0.6,

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class MempoolServerStatusIndicator extends StatelessWidget {
@@ -20,23 +21,19 @@ class MempoolServerStatusIndicator extends StatelessWidget {
       case MempoolServerStatus.online:
         icon = Icons.check_circle;
         color = context.appColors.success;
-        label = 'Online';
-        break;
+        label = context.loc.mempoolServerStatusOnline;
       case MempoolServerStatus.offline:
         icon = Icons.error;
         color = context.appColors.error;
-        label = 'Offline';
-        break;
+        label = context.loc.mempoolServerStatusOffline;
       case MempoolServerStatus.checking:
         icon = Icons.sync;
         color = context.appColors.textMuted;
-        label = 'Checking...';
-        break;
+        label = context.loc.mempoolServerStatusChecking;
       case MempoolServerStatus.unknown:
         icon = Icons.help_outline;
         color = context.appColors.textMuted;
-        label = 'Unknown';
-        break;
+        label = context.loc.mempoolServerStatusUnknown;
     }
 
     return Row(

@@ -4093,5 +4093,14 @@
   "logoutConfirmationTitle": "Confirmar saída",
   "logoutConfirmationDescription": "Tem certeza de que deseja sair da sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar os recursos de câmbio.",
   "logoutConfirmationCancel": "Cancelar",
-  "logoutConfirmationLogout": "Sair"
+  "logoutConfirmationLogout": "Sair",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Verificando...",
+  "mempoolServerStatusUnknown": "Desconhecido",
+  "mempoolCustomServerSaveFailed": "Falha ao salvar o servidor",
+  "mempoolCustomServerInfoDescription": "Os servidores mempool são usados para estimativa de taxas e para abrir o explorador de blocos ao visualizar detalhes da transação.",
+  "mempoolCustomServerUseSsl": "Usar SSL",
+  "mempoolCustomServerSslAutoDetected": "(Detectado automaticamente)",
+  "mempoolCustomServerSslHelpText": "Para servidores locais (.local, IPs privados) e Tor (.onion), SSL geralmente está desabilitado. IPs públicos e domínios devem usar SSL."
 }

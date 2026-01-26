@@ -4125,5 +4125,14 @@
   "logoutConfirmationTitle": "确认退出",
   "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
   "logoutConfirmationCancel": "取消",
-  "logoutConfirmationLogout": "退出"
+  "logoutConfirmationLogout": "退出",
+  "mempoolServerStatusOnline": "在线",
+  "mempoolServerStatusOffline": "离线",
+  "mempoolServerStatusChecking": "检查中...",
+  "mempoolServerStatusUnknown": "未知",
+  "mempoolCustomServerSaveFailed": "保存服务器失败",
+  "mempoolCustomServerInfoDescription": "Mempool 服务器用于费用估算以及在查看交易详情时打开区块浏览器。",
+  "mempoolCustomServerUseSsl": "使用 SSL",
+  "mempoolCustomServerSslAutoDetected": "(自动检测)",
+  "mempoolCustomServerSslHelpText": "对于本地服务器（.local、私有 IP）和 Tor（.onion）服务器，SSL 通常是禁用的。公共 IP 和域名应使用 SSL。"
 }
