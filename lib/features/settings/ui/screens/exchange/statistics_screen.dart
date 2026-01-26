@@ -118,7 +118,6 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
               ],
               _OrderStatsSection(
                 orderStats: state.orderStats!,
-                userCurrency: state.userCurrency,
               ),
               const SizedBox(height: 24),
               if (state.billerStats != null && state.billerStats!.hasStats)
@@ -134,11 +133,9 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 class _OrderStatsSection extends StatelessWidget {
   const _OrderStatsSection({
     required this.orderStats,
-    required this.userCurrency,
   });
 
   final OrderStats orderStats;
-  final String userCurrency;
 
   @override
   Widget build(BuildContext context) {
@@ -166,22 +163,22 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_downward,
           iconColor: Colors.green,
           stats: [
-            _buildStatRow(
+            _buildStatRowWithAmounts(
               context,
               context.loc.exchangeStatisticsVolume,
-              _formatVolumeAmount(orderStats.bitcoinBuyVolume),
+              orderStats.bitcoinBuyVolume,
               description: context.loc.exchangeStatisticsBuyVolumeDesc,
             ),
-            _buildStatRow(
+            _buildStatRowWithTradeCounts(
               context,
               context.loc.exchangeStatisticsTradeCount,
-              _formatTradeCount(orderStats.bitcoinBuyTradeCount),
+              orderStats.bitcoinBuyTradeCount,
               description: context.loc.exchangeStatisticsBuyTradeCountDesc,
             ),
-            _buildStatRow(
+            _buildStatRowWithAmounts(
               context,
               context.loc.exchangeStatisticsAveragePrice,
-              _formatFiatAmount(orderStats.averageBitcoinBuyPrice),
+              orderStats.averageBitcoinBuyPrice,
               description: context.loc.exchangeStatisticsBuyAvgPriceDesc,
             ),
           ],
@@ -193,32 +190,32 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_upward,
           iconColor: Colors.red,
           stats: [
-            _buildStatRow(
+            _buildStatRowWithAmounts(
               context,
               context.loc.exchangeStatisticsVolume,
-              _formatVolumeAmount(orderStats.bitcoinSellVolume),
+              orderStats.bitcoinSellVolume,
               description: context.loc.exchangeStatisticsSellVolumeDesc,
             ),
-            _buildStatRow(
+            _buildStatRowWithTradeCounts(
               context,
               context.loc.exchangeStatisticsTradeCount,
-              _formatTradeCount(orderStats.bitcoinSellTradeCount),
+              orderStats.bitcoinSellTradeCount,
               description: context.loc.exchangeStatisticsSellTradeCountDesc,
             ),
-            _buildStatRow(
+            _buildStatRowWithAmounts(
               context,
               context.loc.exchangeStatisticsAveragePrice,
-              _formatFiatAmount(orderStats.averageBitcoinSellPrice),
+              orderStats.averageBitcoinSellPrice,
               description: context.loc.exchangeStatisticsSellAvgPriceDesc,
             ),
           ],
           context: context,
         ),
         const SizedBox(height: 12),
-        _StatCard(
+        _MultiValueStatCard(
           title: context.loc.exchangeStatisticsTotalVolume,
           description: context.loc.exchangeStatisticsTotalVolumeDesc,
-          value: _formatVolumeAmount(orderStats.totalBitcoinTradingVolume),
+          amounts: orderStats.totalBitcoinTradingVolume,
           icon: Icons.trending_up,
           context: context,
         ),
@@ -226,10 +223,10 @@ class _OrderStatsSection extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(
+  Widget _buildStatRowWithAmounts(
     BuildContext context,
     String label,
-    String value, {
+    List<AmountByCurrencyCode> amounts, {
     String? description,
   }) {
     return Padding(
@@ -262,71 +259,112 @@ class _OrderStatsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          BBText(
-            value,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          _buildAmountsColumn(context, amounts),
         ],
       ),
     );
   }
 
-  /// Format volume amounts - prefer fiat in user currency, fallback to BTC
-  /// Shows currency code for clarity (e.g., "$279.57 CAD")
-  String _formatVolumeAmount(List<AmountByCurrencyCode> amounts) {
-    if (amounts.isEmpty) return '0';
-
-    // First, look for user's selected currency (already converted from CAD)
-    final userAmount =
-        amounts.where((a) => a.currency == userCurrency).firstOrNull;
-    if (userAmount != null) {
-      return _formatWithCurrencyCode(userAmount.value, userCurrency);
-    }
-
-    // Look for any fiat amount (non-BTC)
-    final fiatAmount = amounts.where((a) => a.currency != 'BTC').firstOrNull;
-    if (fiatAmount != null) {
-      return _formatWithCurrencyCode(fiatAmount.value, fiatAmount.currency);
-    }
-
-    // Fallback to BTC if no fiat available
-    final btcAmount = amounts.where((a) => a.currency == 'BTC').firstOrNull;
-    if (btcAmount != null) {
-      return '${_formatNumber(btcAmount.value)} BTC';
-    }
-
-    // Final fallback
-    final first = amounts.first;
-    return '${_formatNumber(first.value)} ${first.currency}';
+  Widget _buildStatRowWithTradeCounts(
+    BuildContext context,
+    String label,
+    List<AmountByCurrencyCode> tradeCounts, {
+    String? description,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BBText(
+                  label,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (description != null) ...[
+                  const SizedBox(height: 2),
+                  BBText(
+                    description,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          _buildTradeCountsColumn(context, tradeCounts),
+        ],
+      ),
+    );
   }
 
-  /// Format trade count (plain integer, no currency)
-  String _formatTradeCount(List<AmountByCurrencyCode> counts) {
-    if (counts.isEmpty) return '0';
-
-    // Sum all trade counts across currencies
-    final total = counts.fold(0.0, (sum, c) => sum + c.value);
-    return total.toInt().toString();
-  }
-
-  /// Format fiat amounts (for average price) using user's selected currency
-  /// Shows currency code for clarity (e.g., "$167.84K CAD")
-  String _formatFiatAmount(List<AmountByCurrencyCode> amounts) {
-    if (amounts.isEmpty) return '0';
-
-    // Find amount in user's selected currency
-    final userAmount =
-        amounts.where((a) => a.currency == userCurrency).firstOrNull;
-    if (userAmount != null) {
-      return _formatWithCurrencyCode(userAmount.value, userCurrency);
+  Widget _buildAmountsColumn(
+    BuildContext context,
+    List<AmountByCurrencyCode> amounts,
+  ) {
+    if (amounts.isEmpty) {
+      return BBText(
+        '0',
+        style: context.font.bodyMedium?.copyWith(
+          color: context.appColors.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      );
     }
 
-    // Fallback to first available amount
-    final first = amounts.first;
-    return _formatWithCurrencyCode(first.value, first.currency);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: amounts
+          .map(
+            (amount) => BBText(
+              _formatWithCurrencyCode(amount.value, amount.currency),
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Widget _buildTradeCountsColumn(
+    BuildContext context,
+    List<AmountByCurrencyCode> tradeCounts,
+  ) {
+    if (tradeCounts.isEmpty) {
+      return BBText(
+        '0 trades',
+        style: context.font.bodyMedium?.copyWith(
+          color: context.appColors.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: tradeCounts
+          .map(
+            (count) => BBText(
+              '${count.value.toInt()} trades (${count.currency})',
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          )
+          .toList(),
+    );
   }
 
   /// Format a value with currency code only (e.g., "279.57 CAD")
@@ -448,6 +486,124 @@ class _StatCard extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _MultiValueStatCard extends StatelessWidget {
+  const _MultiValueStatCard({
+    required this.title,
+    required this.amounts,
+    required this.icon,
+    required this.context,
+    this.description,
+  });
+
+  final String title;
+  final List<AmountByCurrencyCode> amounts;
+  final IconData icon;
+  final BuildContext context;
+  final String? description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: context.appColors.overlay.withValues(alpha: 0.05),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: context.appColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: context.appColors.primary,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BBText(
+                  title,
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ...amounts.map(
+                  (amount) => BBText(
+                    _formatWithCurrencyCode(amount.value, amount.currency),
+                    style: context.font.headlineSmall?.copyWith(
+                      color: context.appColors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                if (description != null) ...[
+                  const SizedBox(height: 6),
+                  BBText(
+                    description!,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatWithCurrencyCode(double value, String currencyCode) {
+    return '${_formatNumber(value)} $currencyCode';
+  }
+
+  String _formatNumber(double value) {
+    if (value < 1 && value > 0) {
+      return value.toStringAsFixed(8);
+    }
+    return _formatWithThousandsSeparator(value);
+  }
+
+  String _formatWithThousandsSeparator(double value) {
+    final parts = value.toStringAsFixed(2).split('.');
+    final intPart = parts[0];
+    final decPart = parts.length > 1 ? parts[1] : '00';
+
+    final buffer = StringBuffer();
+    final digits = intPart.replaceFirst('-', '');
+    final isNegative = intPart.startsWith('-');
+
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) {
+        buffer.write(',');
+      }
+      buffer.write(digits[i]);
+    }
+
+    final formatted = '${isNegative ? '-' : ''}${buffer.toString()}.$decPart';
+    return formatted;
   }
 }
 

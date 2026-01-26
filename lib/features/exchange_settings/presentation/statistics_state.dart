@@ -9,7 +9,6 @@ abstract class StatisticsState with _$StatisticsState {
     OrderStatsResponse? stats,
     @Default(false) bool isLoading,
     String? error,
-    @Default('CAD') String userCurrency,
   }) = _StatisticsState;
 
   const StatisticsState._();

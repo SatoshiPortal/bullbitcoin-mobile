@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_order_stats_rep
 import 'package:bb_mobile/core/exchange/data/repository/exchange_recipient_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_kyc_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_stats_repository.dart';
-import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_recipient_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
@@ -175,10 +174,6 @@ class ExchangeSettingsLocator {
     locator.registerFactory<StatisticsCubit>(
       () => StatisticsCubit(
         getOrderStatsUsecase: locator<GetOrderStatsUsecase>(),
-        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
-        exchangeRateRepository: locator<ExchangeRateRepository>(
-          instanceName: 'mainnetExchangeRateRepository',
-        ),
       ),
     );
   }
