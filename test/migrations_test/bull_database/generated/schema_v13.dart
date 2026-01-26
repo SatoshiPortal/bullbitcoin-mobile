@@ -1409,6 +1409,15 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Labels(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
+  );
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
     'label',
     aliasedName,
@@ -1417,8 +1426,8 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<String> ref = GeneratedColumn<String>(
-    'ref',
+  late final GeneratedColumn<String> reference = GeneratedColumn<String>(
+    'reference',
     aliasedName,
     false,
     type: DriftSqlType.string,
@@ -1441,34 +1450,34 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
     requiredDuringInsert: false,
     $customConstraints: 'NULL',
   );
-  late final GeneratedColumn<int> spendable = GeneratedColumn<int>(
-    'spendable',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NULL CHECK (spendable IN (0, 1))',
-  );
   @override
-  List<GeneratedColumn> get $columns => [label, ref, type, origin, spendable];
+  List<GeneratedColumn> get $columns => [id, label, reference, type, origin];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
   static const String $name = 'labels';
   @override
-  Set<GeneratedColumn> get $primaryKey => {label, ref};
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {label, reference},
+  ];
   @override
   LabelsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return LabelsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
       label: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}label'],
       )!,
-      ref: attachedDatabase.typeMapping.read(
+      reference: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}ref'],
+        data['${effectivePrefix}reference'],
       )!,
       type: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1477,10 +1486,6 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
       origin: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}origin'],
-      ),
-      spendable: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}spendable'],
       ),
     );
   }
@@ -1491,50 +1496,46 @@ class Labels extends Table with TableInfo<Labels, LabelsData> {
   }
 
   @override
-  List<String> get customConstraints => const ['PRIMARY KEY(label, ref)'];
+  List<String> get customConstraints => const ['UNIQUE(label, reference)'];
   @override
   bool get dontWriteConstraints => true;
 }
 
 class LabelsData extends DataClass implements Insertable<LabelsData> {
+  final int id;
   final String label;
-  final String ref;
+  final String reference;
   final String type;
   final String? origin;
-  final int? spendable;
   const LabelsData({
+    required this.id,
     required this.label,
-    required this.ref,
+    required this.reference,
     required this.type,
     this.origin,
-    this.spendable,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
     map['label'] = Variable<String>(label);
-    map['ref'] = Variable<String>(ref);
+    map['reference'] = Variable<String>(reference);
     map['type'] = Variable<String>(type);
     if (!nullToAbsent || origin != null) {
       map['origin'] = Variable<String>(origin);
-    }
-    if (!nullToAbsent || spendable != null) {
-      map['spendable'] = Variable<int>(spendable);
     }
     return map;
   }
 
   LabelsCompanion toCompanion(bool nullToAbsent) {
     return LabelsCompanion(
+      id: Value(id),
       label: Value(label),
-      ref: Value(ref),
+      reference: Value(reference),
       type: Value(type),
       origin: origin == null && nullToAbsent
           ? const Value.absent()
           : Value(origin),
-      spendable: spendable == null && nullToAbsent
-          ? const Value.absent()
-          : Value(spendable),
     );
   }
 
@@ -1544,142 +1545,138 @@ class LabelsData extends DataClass implements Insertable<LabelsData> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return LabelsData(
+      id: serializer.fromJson<int>(json['id']),
       label: serializer.fromJson<String>(json['label']),
-      ref: serializer.fromJson<String>(json['ref']),
+      reference: serializer.fromJson<String>(json['reference']),
       type: serializer.fromJson<String>(json['type']),
       origin: serializer.fromJson<String?>(json['origin']),
-      spendable: serializer.fromJson<int?>(json['spendable']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
       'label': serializer.toJson<String>(label),
-      'ref': serializer.toJson<String>(ref),
+      'reference': serializer.toJson<String>(reference),
       'type': serializer.toJson<String>(type),
       'origin': serializer.toJson<String?>(origin),
-      'spendable': serializer.toJson<int?>(spendable),
     };
   }
 
   LabelsData copyWith({
+    int? id,
     String? label,
-    String? ref,
+    String? reference,
     String? type,
     Value<String?> origin = const Value.absent(),
-    Value<int?> spendable = const Value.absent(),
   }) => LabelsData(
+    id: id ?? this.id,
     label: label ?? this.label,
-    ref: ref ?? this.ref,
+    reference: reference ?? this.reference,
     type: type ?? this.type,
     origin: origin.present ? origin.value : this.origin,
-    spendable: spendable.present ? spendable.value : this.spendable,
   );
   LabelsData copyWithCompanion(LabelsCompanion data) {
     return LabelsData(
+      id: data.id.present ? data.id.value : this.id,
       label: data.label.present ? data.label.value : this.label,
-      ref: data.ref.present ? data.ref.value : this.ref,
+      reference: data.reference.present ? data.reference.value : this.reference,
       type: data.type.present ? data.type.value : this.type,
       origin: data.origin.present ? data.origin.value : this.origin,
-      spendable: data.spendable.present ? data.spendable.value : this.spendable,
     );
   }
 
   @override
   String toString() {
     return (StringBuffer('LabelsData(')
+          ..write('id: $id, ')
           ..write('label: $label, ')
-          ..write('ref: $ref, ')
+          ..write('reference: $reference, ')
           ..write('type: $type, ')
-          ..write('origin: $origin, ')
-          ..write('spendable: $spendable')
+          ..write('origin: $origin')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(label, ref, type, origin, spendable);
+  int get hashCode => Object.hash(id, label, reference, type, origin);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is LabelsData &&
+          other.id == this.id &&
           other.label == this.label &&
-          other.ref == this.ref &&
+          other.reference == this.reference &&
           other.type == this.type &&
-          other.origin == this.origin &&
-          other.spendable == this.spendable);
+          other.origin == this.origin);
 }
 
 class LabelsCompanion extends UpdateCompanion<LabelsData> {
+  final Value<int> id;
   final Value<String> label;
-  final Value<String> ref;
+  final Value<String> reference;
   final Value<String> type;
   final Value<String?> origin;
-  final Value<int?> spendable;
-  final Value<int> rowid;
   const LabelsCompanion({
+    this.id = const Value.absent(),
     this.label = const Value.absent(),
-    this.ref = const Value.absent(),
+    this.reference = const Value.absent(),
     this.type = const Value.absent(),
     this.origin = const Value.absent(),
-    this.spendable = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   LabelsCompanion.insert({
+    this.id = const Value.absent(),
     required String label,
-    required String ref,
+    required String reference,
     required String type,
     this.origin = const Value.absent(),
-    this.spendable = const Value.absent(),
-    this.rowid = const Value.absent(),
   }) : label = Value(label),
-       ref = Value(ref),
+       reference = Value(reference),
        type = Value(type);
   static Insertable<LabelsData> custom({
+    Expression<int>? id,
     Expression<String>? label,
-    Expression<String>? ref,
+    Expression<String>? reference,
     Expression<String>? type,
     Expression<String>? origin,
-    Expression<int>? spendable,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
       if (label != null) 'label': label,
-      if (ref != null) 'ref': ref,
+      if (reference != null) 'reference': reference,
       if (type != null) 'type': type,
       if (origin != null) 'origin': origin,
-      if (spendable != null) 'spendable': spendable,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   LabelsCompanion copyWith({
+    Value<int>? id,
     Value<String>? label,
-    Value<String>? ref,
+    Value<String>? reference,
     Value<String>? type,
     Value<String?>? origin,
-    Value<int?>? spendable,
-    Value<int>? rowid,
   }) {
     return LabelsCompanion(
+      id: id ?? this.id,
       label: label ?? this.label,
-      ref: ref ?? this.ref,
+      reference: reference ?? this.reference,
       type: type ?? this.type,
       origin: origin ?? this.origin,
-      spendable: spendable ?? this.spendable,
-      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
     }
-    if (ref.present) {
-      map['ref'] = Variable<String>(ref.value);
+    if (reference.present) {
+      map['reference'] = Variable<String>(reference.value);
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
@@ -1687,24 +1684,17 @@ class LabelsCompanion extends UpdateCompanion<LabelsData> {
     if (origin.present) {
       map['origin'] = Variable<String>(origin.value);
     }
-    if (spendable.present) {
-      map['spendable'] = Variable<int>(spendable.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('LabelsCompanion(')
+          ..write('id: $id, ')
           ..write('label: $label, ')
-          ..write('ref: $ref, ')
+          ..write('reference: $reference, ')
           ..write('type: $type, ')
-          ..write('origin: $origin, ')
-          ..write('spendable: $spendable, ')
-          ..write('rowid: $rowid')
+          ..write('origin: $origin')
           ..write(')'))
         .toString();
   }
@@ -7398,8 +7388,368 @@ class PricesCompanion extends UpdateCompanion<PricesData> {
   }
 }
 
-class DatabaseAtV11 extends GeneratedDatabase {
-  DatabaseAtV11(QueryExecutor e) : super(e);
+class SecretUsages extends Table
+    with TableInfo<SecretUsages, SecretUsagesData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SecretUsages(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
+  );
+  late final GeneratedColumn<String> fingerprint = GeneratedColumn<String>(
+    'fingerprint',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> consumerType = GeneratedColumn<String>(
+    'consumer_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> walletId = GeneratedColumn<String>(
+    'wallet_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> bip85Path = GeneratedColumn<String>(
+    'bip85_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT CURRENT_TIMESTAMP',
+    defaultValue: const CustomExpression('CURRENT_TIMESTAMP'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    fingerprint,
+    consumerType,
+    walletId,
+    bip85Path,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'secret_usages';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {fingerprint, consumerType, walletId},
+    {fingerprint, consumerType, bip85Path},
+  ];
+  @override
+  SecretUsagesData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SecretUsagesData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      fingerprint: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fingerprint'],
+      )!,
+      consumerType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}consumer_type'],
+      )!,
+      walletId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_id'],
+      ),
+      bip85Path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bip85_path'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  SecretUsages createAlias(String alias) {
+    return SecretUsages(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'UNIQUE(fingerprint, consumer_type, wallet_id)',
+    'UNIQUE(fingerprint, consumer_type, bip85_path)',
+    'CHECK((consumerType = \'wallet\' AND walletId IS NOT NULL)OR(consumerType != \'wallet\'))',
+    'CHECK((consumerType = \'bip85\' AND bip85Path IS NOT NULL)OR(consumerType != \'bip85\'))',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SecretUsagesData extends DataClass
+    implements Insertable<SecretUsagesData> {
+  final int id;
+  final String fingerprint;
+  final String consumerType;
+  final String? walletId;
+  final String? bip85Path;
+  final String createdAt;
+  const SecretUsagesData({
+    required this.id,
+    required this.fingerprint,
+    required this.consumerType,
+    this.walletId,
+    this.bip85Path,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['fingerprint'] = Variable<String>(fingerprint);
+    map['consumer_type'] = Variable<String>(consumerType);
+    if (!nullToAbsent || walletId != null) {
+      map['wallet_id'] = Variable<String>(walletId);
+    }
+    if (!nullToAbsent || bip85Path != null) {
+      map['bip85_path'] = Variable<String>(bip85Path);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  SecretUsagesCompanion toCompanion(bool nullToAbsent) {
+    return SecretUsagesCompanion(
+      id: Value(id),
+      fingerprint: Value(fingerprint),
+      consumerType: Value(consumerType),
+      walletId: walletId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(walletId),
+      bip85Path: bip85Path == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bip85Path),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory SecretUsagesData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SecretUsagesData(
+      id: serializer.fromJson<int>(json['id']),
+      fingerprint: serializer.fromJson<String>(json['fingerprint']),
+      consumerType: serializer.fromJson<String>(json['consumerType']),
+      walletId: serializer.fromJson<String?>(json['walletId']),
+      bip85Path: serializer.fromJson<String?>(json['bip85Path']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'fingerprint': serializer.toJson<String>(fingerprint),
+      'consumerType': serializer.toJson<String>(consumerType),
+      'walletId': serializer.toJson<String?>(walletId),
+      'bip85Path': serializer.toJson<String?>(bip85Path),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  SecretUsagesData copyWith({
+    int? id,
+    String? fingerprint,
+    String? consumerType,
+    Value<String?> walletId = const Value.absent(),
+    Value<String?> bip85Path = const Value.absent(),
+    String? createdAt,
+  }) => SecretUsagesData(
+    id: id ?? this.id,
+    fingerprint: fingerprint ?? this.fingerprint,
+    consumerType: consumerType ?? this.consumerType,
+    walletId: walletId.present ? walletId.value : this.walletId,
+    bip85Path: bip85Path.present ? bip85Path.value : this.bip85Path,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  SecretUsagesData copyWithCompanion(SecretUsagesCompanion data) {
+    return SecretUsagesData(
+      id: data.id.present ? data.id.value : this.id,
+      fingerprint: data.fingerprint.present
+          ? data.fingerprint.value
+          : this.fingerprint,
+      consumerType: data.consumerType.present
+          ? data.consumerType.value
+          : this.consumerType,
+      walletId: data.walletId.present ? data.walletId.value : this.walletId,
+      bip85Path: data.bip85Path.present ? data.bip85Path.value : this.bip85Path,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SecretUsagesData(')
+          ..write('id: $id, ')
+          ..write('fingerprint: $fingerprint, ')
+          ..write('consumerType: $consumerType, ')
+          ..write('walletId: $walletId, ')
+          ..write('bip85Path: $bip85Path, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    fingerprint,
+    consumerType,
+    walletId,
+    bip85Path,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SecretUsagesData &&
+          other.id == this.id &&
+          other.fingerprint == this.fingerprint &&
+          other.consumerType == this.consumerType &&
+          other.walletId == this.walletId &&
+          other.bip85Path == this.bip85Path &&
+          other.createdAt == this.createdAt);
+}
+
+class SecretUsagesCompanion extends UpdateCompanion<SecretUsagesData> {
+  final Value<int> id;
+  final Value<String> fingerprint;
+  final Value<String> consumerType;
+  final Value<String?> walletId;
+  final Value<String?> bip85Path;
+  final Value<String> createdAt;
+  const SecretUsagesCompanion({
+    this.id = const Value.absent(),
+    this.fingerprint = const Value.absent(),
+    this.consumerType = const Value.absent(),
+    this.walletId = const Value.absent(),
+    this.bip85Path = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  SecretUsagesCompanion.insert({
+    this.id = const Value.absent(),
+    required String fingerprint,
+    required String consumerType,
+    this.walletId = const Value.absent(),
+    this.bip85Path = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : fingerprint = Value(fingerprint),
+       consumerType = Value(consumerType);
+  static Insertable<SecretUsagesData> custom({
+    Expression<int>? id,
+    Expression<String>? fingerprint,
+    Expression<String>? consumerType,
+    Expression<String>? walletId,
+    Expression<String>? bip85Path,
+    Expression<String>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (fingerprint != null) 'fingerprint': fingerprint,
+      if (consumerType != null) 'consumer_type': consumerType,
+      if (walletId != null) 'wallet_id': walletId,
+      if (bip85Path != null) 'bip85_path': bip85Path,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  SecretUsagesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? fingerprint,
+    Value<String>? consumerType,
+    Value<String?>? walletId,
+    Value<String?>? bip85Path,
+    Value<String>? createdAt,
+  }) {
+    return SecretUsagesCompanion(
+      id: id ?? this.id,
+      fingerprint: fingerprint ?? this.fingerprint,
+      consumerType: consumerType ?? this.consumerType,
+      walletId: walletId ?? this.walletId,
+      bip85Path: bip85Path ?? this.bip85Path,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (fingerprint.present) {
+      map['fingerprint'] = Variable<String>(fingerprint.value);
+    }
+    if (consumerType.present) {
+      map['consumer_type'] = Variable<String>(consumerType.value);
+    }
+    if (walletId.present) {
+      map['wallet_id'] = Variable<String>(walletId.value);
+    }
+    if (bip85Path.present) {
+      map['bip85_path'] = Variable<String>(bip85Path.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SecretUsagesCompanion(')
+          ..write('id: $id, ')
+          ..write('fingerprint: $fingerprint, ')
+          ..write('consumerType: $consumerType, ')
+          ..write('walletId: $walletId, ')
+          ..write('bip85Path: $bip85Path, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class DatabaseAtV13 extends GeneratedDatabase {
+  DatabaseAtV13(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
   late final WalletMetadatas walletMetadatas = WalletMetadatas(this);
   late final Labels labels = Labels(this);
@@ -7415,6 +7765,7 @@ class DatabaseAtV11 extends GeneratedDatabase {
   late final Bip85Derivations bip85Derivations = Bip85Derivations(this);
   late final Recoverbull recoverbull = Recoverbull(this);
   late final Prices prices = Prices(this);
+  late final SecretUsages secretUsages = SecretUsages(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7435,9 +7786,10 @@ class DatabaseAtV11 extends GeneratedDatabase {
     bip85Derivations,
     recoverbull,
     prices,
+    secretUsages,
   ];
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 13;
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);

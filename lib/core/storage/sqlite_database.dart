@@ -70,7 +70,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -109,7 +109,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from9To10: Schema9To10.migrate,
         from10To11: Schema10To11.migrate,
         from11To12: Schema11To12.migrate,
-      ),
+        from12To13: Schema12To13.migrate,
     );
   }
 
