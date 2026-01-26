@@ -1,18 +1,16 @@
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
+import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum WithdrawRoute {
   withdraw('/withdraw'),
+  withdrawRecipients('/withdraw/recipients'),
   withdrawConfirmation('/withdraw/confirmation'),
   withdrawSuccess('/withdraw/success');
 
@@ -47,32 +45,8 @@ class WithdrawRouter {
                   current is WithdrawRecipientInputState,
               listener: (context, state) {
                 context.pushNamed(
-                  RecipientsRoute.recipients.name,
-                  extra: RecipientsRouteExtra(
-                    onRecipientSelected: (RecipientViewModel recipient) async {
-                      final bloc = context.read<WithdrawBloc>();
-                      bloc.add(WithdrawEvent.recipientSelected(recipient));
-
-                      // Wait for the bloc to process and check for errors if any
-                      final resultState = await bloc.stream.firstWhere(
-                        (state) =>
-                            (state is WithdrawRecipientInputState &&
-                                !state.isCreatingWithdrawOrder) ||
-                            state is WithdrawConfirmationState,
-                      );
-
-                      if (resultState is WithdrawRecipientInputState &&
-                          resultState.error != null) {
-                        throw resultState.error!;
-                      }
-                    },
-                    allowedRecipientsFilters: AllowedRecipientFiltersViewModel(
-                      types: RecipientType.typesForCurrency(
-                        context.read<WithdrawBloc>().state.currency.code,
-                      ).toList(),
-                      isOwner: true,
-                    ),
-                  ),
+                  WithdrawRoute.withdrawRecipients.name,
+                  extra: context.read<WithdrawBloc>(),
                 );
               },
             ),
@@ -93,13 +67,17 @@ class WithdrawRouter {
       );
     },
     routes: [
-      /*GoRoute(
-        path: WithdrawRoute.withdrawDescription.path,
-        name: WithdrawRoute.withdrawDescription.name,
+      GoRoute(
+        path: WithdrawRoute.withdrawRecipients.path,
+        name: WithdrawRoute.withdrawRecipients.name,
         builder: (context, state) {
-          return const WithdrawDescriptionScreen();
+          final bloc = state.extra! as WithdrawBloc;
+          return BlocProvider.value(
+            value: bloc,
+            child: const WithdrawRecipientsScreen(),
+          );
         },
-      ),*/
+      ),
       GoRoute(
         path: WithdrawRoute.withdrawConfirmation.path,
         name: WithdrawRoute.withdrawConfirmation.name,

@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/infra/di/feature_di_module.dart';
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 
 class PayDiModule implements FeatureDiModule {
   @override
@@ -45,9 +44,8 @@ class PayDiModule implements FeatureDiModule {
 
   @override
   Future<void> registerDrivingAdapters() async {
-    sl.registerFactoryParam<PayBloc, RecipientViewModel, void>(
-      (recipient, _) => PayBloc(
-        recipient: recipient,
+    sl.registerFactory<PayBloc>(
+      () => PayBloc(
         getExchangeUserSummaryUsecase: sl(),
         placePayOrderUsecase: sl(),
         refreshPayOrderUsecase: sl(),

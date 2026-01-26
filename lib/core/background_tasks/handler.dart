@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/background_tasks/locator.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
@@ -31,7 +31,7 @@ Future<bool> tasksHandler(String task) async {
       await driftIsolate.connect(singleClientMode: true),
     );
     final locator = GetIt.asNewInstance();
-    await TaskLocator.setup(locator, sqlite);
+    await AppLocator.setup(locator, sqlite);
 
     final syncWalletUsecase = locator<SyncWalletUsecase>();
     final getWalletsUsecase = locator<GetWalletsUsecase>();

@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +14,9 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
     BuildContext context, {
     required Future<void> Function() onConfirm,
   }) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.appColors.onPrimary,
-      useRootNavigator: true,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (context) => LogoutConfirmationBottomSheet(onConfirm: onConfirm),
+      child: LogoutConfirmationBottomSheet(onConfirm: onConfirm),
     );
   }
 
@@ -46,15 +44,13 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
               Icon(Icons.logout, size: 48, color: context.appColors.primary),
               const SizedBox(height: 16),
               BBText(
-                'Confirm Logout',
-                style: context.font.headlineSmall?.copyWith(
-                  fontWeight: .bold,
-                ),
+                context.loc.logoutConfirmationTitle,
+                style: context.font.headlineSmall?.copyWith(fontWeight: .bold),
                 textAlign: .center,
               ),
               const SizedBox(height: 8),
               BBText(
-                'Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.',
+                context.loc.logoutConfirmationDescription,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),
@@ -67,22 +63,24 @@ class LogoutConfirmationBottomSheet extends StatelessWidget {
                 children: [
                   Expanded(
                     child: BBButton.small(
-                      label: 'Cancel',
+                      label: context.loc.logoutConfirmationCancel,
                       onPressed: () => Navigator.of(context).pop(),
-                      bgColor: context.appColors.secondaryFixed,
+                      outlined: true,
+                      bgColor: Colors.transparent,
                       textColor: context.appColors.secondary,
+                      borderColor: context.appColors.outline,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: BBButton.small(
-                      label: 'Logout',
+                      label: context.loc.logoutConfirmationLogout,
                       onPressed: () async {
                         Navigator.of(context).pop();
                         await onConfirm();
                       },
-                      bgColor: context.appColors.text,
-                      textColor: context.appColors.onPrimary,
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
                     ),
                   ),
                 ],

@@ -56,10 +56,9 @@ class _ReceivePageState extends State<ReceivePage> {
             ),
             const Gap(16),
             ReceiveQR(
-              qrData:
-                  _selectedOption! == context.loc.arkReceiveSegmentBoarding
-                      ? btcAddress
-                      : arkAddress,
+              qrData: _selectedOption! == context.loc.arkReceiveSegmentBoarding
+                  ? btcAddress
+                  : arkAddress,
             ),
             const Gap(16),
             ArkCopyAddressSection(
@@ -87,13 +86,16 @@ class ReceiveQR extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
         decoration: BoxDecoration(
-          color: context.appColors.onPrimary,
+          color: context.appColors.background,
           borderRadius: BorderRadius.circular(12),
         ),
-        child:
-            qrData.isNotEmpty
-                ? QrImageView(data: qrData)
-                : const LoadingBoxContent(height: 200),
+        child: qrData.isNotEmpty
+            ? QrImageView(
+                data: qrData,
+                // ignore: deprecated_member_use
+                foregroundColor: context.appColors.secondary,
+              )
+            : const LoadingBoxContent(height: 200),
       ),
     );
   }
@@ -120,12 +122,12 @@ class _ArkCopyAddressSectionState extends State<ArkCopyAddressSection> {
   Widget build(BuildContext context) {
     final currentAddress =
         widget.selectedOption == context.loc.arkReceiveSegmentBoarding
-            ? widget.btcAddress
-            : widget.arkAddress;
+        ? widget.btcAddress
+        : widget.arkAddress;
     final addressLabel =
         widget.selectedOption == context.loc.arkReceiveSegmentBoarding
-            ? context.loc.arkReceiveBoardingAddress
-            : context.loc.arkArkAddress;
+        ? context.loc.arkReceiveBoardingAddress
+        : context.loc.arkArkAddress;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -140,13 +142,12 @@ class _ArkCopyAddressSectionState extends State<ArkCopyAddressSection> {
             overflow: .ellipsis,
             canShowValueModal: true,
             modalTitle: addressLabel,
-            modalContent:
-                currentAddress
-                    .replaceAllMapped(
-                      RegExp('.{1,4}'),
-                      (match) => '${match.group(0)} ',
-                    )
-                    .trim(),
+            modalContent: currentAddress
+                .replaceAllMapped(
+                  RegExp('.{1,4}'),
+                  (match) => '${match.group(0)} ',
+                )
+                .trim(),
           ),
         ],
       ),

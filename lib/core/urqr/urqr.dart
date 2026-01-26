@@ -203,10 +203,9 @@ class CryptoHdKey {
 
       if (map.containsKey(5)) {
         final networkData = map[5] as CborMap;
-        network =
-            (networkData[CborValue(2)] as CborSmallInt?)?.value == 0
-                ? HdKeyNetwork.mainnet
-                : HdKeyNetwork.testnet;
+        network = (networkData[CborValue(2)] as CborSmallInt?)?.value == 0
+            ? HdKeyNetwork.mainnet
+            : HdKeyNetwork.testnet;
       } else {
         network = HdKeyNetwork.mainnet;
       }
@@ -391,15 +390,56 @@ class CryptoAccount {
 
   @override
   String toString() {
-    if (masterFingerprint != null && derivationPath != null && xpub != null) {
-      return Descriptor.fromStrings(
-        fingerprint: masterFingerprint!,
-        path: derivationPath!,
-        xpub: xpub!,
-      ).external;
+    if (masterFingerprint == null || hdKeys == null || hdKeys!.isEmpty) {
+      return 'CryptoAccount(no key found)';
     }
-    return 'CryptoAccount(no key found)';
+
+    if (hdKeys!.length == 1) {
+      final key = hdKeys!.first;
+      if (key.derivationPath != null && key.xpub != null) {
+        return Descriptor.fromStrings(
+          fingerprint: masterFingerprint!,
+          path: key.derivationPath!,
+          xpub: key.xpub!,
+        ).external;
+      }
+      return 'CryptoAccount(invalid key)';
+    }
+
+    final result = <String, String>{};
+    for (final key in hdKeys!) {
+      if (key.derivationPath == null || key.xpub == null) continue;
+      final bipType = _derivationToBipType(key.derivationPath!);
+      if (bipType != null) {
+        result[bipType] = Descriptor.fromStrings(
+          fingerprint: masterFingerprint!,
+          path: key.derivationPath!,
+          xpub: key.xpub!,
+        ).external;
+      }
+    }
+
+    if (result.isEmpty) {
+      final key = hdKeys!.first;
+      if (key.derivationPath != null && key.xpub != null) {
+        return Descriptor.fromStrings(
+          fingerprint: masterFingerprint!,
+          path: key.derivationPath!,
+          xpub: key.xpub!,
+        ).external;
+      }
+      return 'CryptoAccount(no valid keys)';
+    }
+
+    return json.encode(result);
   }
+}
+
+String? _derivationToBipType(String path) {
+  if (path.contains("/84'") || path.contains("/84h")) return 'bip84';
+  if (path.contains("/49'") || path.contains("/49h")) return 'bip49';
+  if (path.contains("/44'") || path.contains("/44h")) return 'bip44';
+  return null;
 }
 
 String _generateXPub(
@@ -429,8 +469,9 @@ String _generateXPub(
   extendedKey[8] = parentFingerprint & 0xFF;
 
   // Child number (4 bytes) - handle hardened keys
-  final childNumberValue =
-      childNumber >= 0x80000000 ? childNumber : childNumber + 0x80000000;
+  final childNumberValue = childNumber >= 0x80000000
+      ? childNumber
+      : childNumber + 0x80000000;
   extendedKey[9] = (childNumberValue >> 24) & 0xFF;
   extendedKey[10] = (childNumberValue >> 16) & 0xFF;
   extendedKey[11] = (childNumberValue >> 8) & 0xFF;
@@ -462,12 +503,11 @@ Map<String, String>? _parsePassportJsonDescriptors(Map<String, dynamic> data) {
         if (xpubDyn is String && derivDyn is String) {
           final String derivation = derivDyn.trim();
           final String xpub = xpubDyn.trim();
-          result[key] =
-              Descriptor.fromStrings(
-                fingerprint: fingerprint,
-                path: derivation,
-                xpub: xpub,
-              ).external;
+          result[key] = Descriptor.fromStrings(
+            fingerprint: fingerprint,
+            path: derivation,
+            xpub: xpub,
+          ).external;
         }
       }
     }

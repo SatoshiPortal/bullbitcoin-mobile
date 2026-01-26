@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -16,18 +17,12 @@ class ReceiveEnterNote extends StatelessWidget {
   static Future showBottomSheet(BuildContext context) async {
     final receive = context.read<ReceiveBloc>();
 
-    await showModalBottomSheet(
+    await BlurredBottomSheet.show(
       context: context,
-      useRootNavigator: true,
-      backgroundColor: context.appColors.onPrimary,
-      isScrollControlled: true,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (context) {
-        return BlocProvider.value(
-          value: receive,
-          child: const ReceiveEnterNote(),
-        );
-      },
+      child: BlocProvider.value(
+        value: receive,
+        child: const ReceiveEnterNote(),
+      ),
     );
   }
 

@@ -113,7 +113,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                 crossAxisAlignment: .stretch,
                 children: [
                   SizedBox(
-                    height: 60,
+                    height: 50,
                     child: Center(
                       child: BBText(
                         description,
@@ -125,7 +125,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       ),
                     ),
                   ),
-                  const Gap(16),
+                  const Gap(12),
                   BBText(
                     needPasswordConfirmation && validatedPassword.isNotEmpty
                         ? context.loc.recoverbullConfirmInput(inputTypeString)
@@ -173,12 +173,11 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                         padding: const EdgeInsets.all(5),
-                        icon:
-                            isObscured
-                                ? const Icon(Icons.visibility_outlined)
-                                : const Icon(Icons.visibility_off_outlined),
-                        onPressed:
-                            () => setState(() => isObscured = !isObscured),
+                        icon: isObscured
+                            ? const Icon(Icons.visibility_outlined)
+                            : const Icon(Icons.visibility_off_outlined),
+                        onPressed: () =>
+                            setState(() => isObscured = !isObscured),
                       ),
                       border: borderDecoration,
                       enabledBorder: borderDecoration,
@@ -188,7 +187,7 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                       errorMaxLines: 4,
                     ),
                   ),
-                  const Gap(30),
+                  const Gap(16),
                   if (needPasswordConfirmation && validatedPassword.isNotEmpty)
                     BBButton.small(
                       label: context.loc.recoverbullGoBackEdit,
@@ -204,38 +203,40 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                     )
                   else
                     Row(
-                      mainAxisAlignment: .spaceAround,
                       children: [
-                        BBButton.small(
-                          label:
-                              inputType == InputType.pin
-                                  ? context.loc.recoverbullSwitchToPassword
-                                  : context.loc.recoverbullSwitchToPIN,
-                          bgColor: context.appColors.transparent,
-                          textColor: context.appColors.info,
-                          textStyle: context.font.labelSmall,
-                          onPressed: () {
-                            inputType =
-                                inputType == InputType.pin
-                                    ? InputType.password
-                                    : InputType.pin;
-                            inputController.clear();
-                            validatedPassword = '';
-                            setState(() {});
-                          },
-                        ),
-                        if (inputType != InputType.vaultKey && hasVaultKeyInput)
-                          BBButton.small(
-                            label: context.loc.recoverbullEnterVaultKeyInstead,
+                        Expanded(
+                          child: BBButton.big(
+                            label: inputType == InputType.pin
+                                ? context.loc.recoverbullSwitchToPassword
+                                : context.loc.recoverbullSwitchToPIN,
                             bgColor: context.appColors.transparent,
                             textColor: context.appColors.info,
                             textStyle: context.font.labelSmall,
                             onPressed: () {
-                              inputType = InputType.vaultKey;
+                              inputType = inputType == InputType.pin
+                                  ? InputType.password
+                                  : InputType.pin;
                               inputController.clear();
                               validatedPassword = '';
                               setState(() {});
                             },
+                          ),
+                        ),
+                        if (inputType != InputType.vaultKey && hasVaultKeyInput)
+                          Expanded(
+                            child: BBButton.small(
+                              label:
+                                  context.loc.recoverbullEnterVaultKeyInstead,
+                              bgColor: context.appColors.transparent,
+                              textColor: context.appColors.info,
+                              textStyle: context.font.labelSmall,
+                              onPressed: () {
+                                inputType = InputType.vaultKey;
+                                inputController.clear();
+                                validatedPassword = '';
+                                setState(() {});
+                              },
+                            ),
                           ),
                       ],
                     ),
@@ -255,17 +256,15 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                         },
                       ),
                     ),
-                  if (inputType == InputType.pin) const Gap(16),
+                  if (inputType == InputType.pin) const Gap(12),
                   Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).size.height * 0.05,
-                    ),
+                    padding: const EdgeInsets.only(bottom: 60),
                     child: BBButton.big(
                       label:
                           needPasswordConfirmation &&
-                                  validatedPassword.isNotEmpty
-                              ? context.loc.recoverbullConfirm
-                              : context.loc.recoverbullContinue,
+                              validatedPassword.isNotEmpty
+                          ? context.loc.recoverbullConfirm
+                          : context.loc.recoverbullContinue,
                       textStyle: context.font.headlineLarge,
                       bgColor: context.appColors.onSurface,
                       textColor: context.appColors.surface,
@@ -287,20 +286,18 @@ class _PasswordInputPageState extends State<PasswordInputPage> {
                                 );
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder:
-                                        (context) =>
-                                            const VaultProviderSelectionPage(),
+                                    builder: (context) =>
+                                        const VaultProviderSelectionPage(),
                                   ),
                                 );
                               }
                             default:
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder:
-                                      (context) => FetchVaultKeyPage(
-                                        input: inputController.text,
-                                        inputType: inputType,
-                                      ),
+                                  builder: (context) => FetchVaultKeyPage(
+                                    input: inputController.text,
+                                    inputType: inputType,
+                                  ),
                                 ),
                               );
                           }

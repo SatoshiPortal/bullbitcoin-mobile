@@ -1,5 +1,21 @@
 {
   "@@locale": "en",
+  "translationWarningTitle": "AI-Generated Translations",
+  "@translationWarningTitle": {
+    "description": "Title for the AI translation warning bottom sheet"
+  },
+  "translationWarningDescription": "Most translations in this app were generated using AI and may contain inaccuracies. If you notice any errors or would like to help improve the translations, you can contribute through our community translation platform.",
+  "@translationWarningDescription": {
+    "description": "Description explaining that translations are AI-generated and may be inaccurate"
+  },
+  "translationWarningContributeButton": "Help Improve Translations",
+  "@translationWarningContributeButton": {
+    "description": "Button to open Weblate translation platform"
+  },
+  "translationWarningDismissButton": "Got It",
+  "@translationWarningDismissButton": {
+    "description": "Button to dismiss the translation warning"
+  },
   "durationSeconds": "{seconds} seconds",
   "@durationSeconds": {
     "description": "Duration format for seconds",
@@ -360,6 +376,10 @@
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
   },
+  "settingsThemeTitle": "Theme",
+  "@settingsThemeTitle": {
+    "description": "Title for the theme selection in app settings"
+  },
   "settingsArkTitle": "Ark",
   "@settingsArkTitle": {
     "description": "Title for the Ark protocol section in Bitcoin settings"
@@ -600,6 +620,14 @@
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"
   },
+  "exchangeSettingsRecipientsTitle": "Recipients",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transactions",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
   "exchangeTransactionsTitle": "Transactions",
   "@exchangeTransactionsTitle": {
     "description": "Title for the transactions section in exchange"
@@ -671,6 +699,10 @@
   "exchangeFileUploadButton": "Upload",
   "@exchangeFileUploadButton": {
     "description": "Button label for uploading files in exchange"
+  },
+  "exchangeFileUploadSuccess": "File uploaded successfully",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
   },
   "exchangeAccountTitle": "Exchange Account",
   "@exchangeAccountTitle": {
@@ -771,6 +803,178 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "User number copied to clipboard",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Email Notifications",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Receive email notifications for orders and account updates",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet address saved successfully",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Set default wallet addresses for automatic Bitcoin withdrawals.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeFileUploadDocumentsTitle": "Upload Documents",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Upload up to {maxFiles} files. Allowed formats: PDF, JPG, PNG, GIF, HEIC. Maximum file size: 10MB per file.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "No files selected",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Tap \"Select Files\" to choose documents",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Select Files",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Add More Files",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Uploading...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Clear All",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "All files uploaded successfully",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{uploaded} of {total} files uploaded",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Ready",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "In Review",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Accepted",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Rejected - Tap to re-upload",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "Your documents are currently under review. You cannot upload more files until the review is complete.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Your documents have been accepted. No additional uploads are needed.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Statistics",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "No statistics available",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "As of {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Order Statistics",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Buy/Sell Ratio",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Buy Statistics",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Sell Statistics",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Volume",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Trade Count",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Average Price",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Total Trading Volume",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Biller Statistics",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Currency: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsTotalAmount": "Total Amount",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
   },
   "walletsListTitle": "Wallet details",
   "@walletsListTitle": {
@@ -2285,6 +2489,30 @@
   "transactionFilterBuy": "Buy",
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
+  },
+  "transactionFilterWithdraw": "Withdraw",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "Pay",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "Funding",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "Reward",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "Refund",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionFilterBalanceAdjustment": "Adjustment",
+  "@transactionFilterBalanceAdjustment": {
+    "description": "Filter option to show only balance adjustment orders"
   },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
@@ -4767,11 +4995,11 @@
   "@autoswapMaxBalanceInfoText": {
     "description": "Help text explaining how the max balance threshold works"
   },
-  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this balance after an autoswap.",
+  "autoswapBaseBalanceInfoText": "Your instant payment wallet balance will return to this target balance after an autoswap.",
   "@autoswapBaseBalanceInfoText": {
     "description": "Info text explaining what happens to the balance after an autoswap"
   },
-  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this amount.",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap will trigger when your balance goes above this maximum balance.",
   "@autoswapTriggerAtBalanceInfoText": {
     "description": "Info text explaining when autoswap will trigger"
   },
@@ -4832,7 +5060,7 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap is enabled.",
+  "autoswapWarningCardTitle": "Autoswap is enabled",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
@@ -4840,7 +5068,7 @@
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
   },
-  "autoswapWarningDescription": "Autoswap ensures that a good balance is maintained between your Instant Payments and Secure Bitcoin Wallet.",
+  "autoswapWarningDescription": "Autoswap ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
@@ -4848,15 +5076,15 @@
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "autoswapWarningBaseBalance": "Base Balance 0.01 BTC",
+  "autoswapWarningBaseBalance": "Target Balance 0.01 BTC",
   "@autoswapWarningBaseBalance": {
-    "description": "Base balance text shown in the autoswap warning bottom sheet"
+    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
-  "autoswapWarningTriggerAmount": "Trigger Amount of 0.02 BTC",
+  "autoswapWarningTriggerAmount": "Maximum Balance of 0.02 BTC",
   "@autoswapWarningTriggerAmount": {
-    "description": "Trigger amount text shown in the autoswap warning bottom sheet"
+    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
   },
-  "autoswapWarningExplanation": "When your balance exceeds the trigger amount, a swap will be triggered. The base amount will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
+  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
@@ -4871,6 +5099,22 @@
   "autoswapWarningOkButton": "OK",
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
+  },
+  "autoswapInfoTitle": "Autoswap is active",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "autoswapInfoDismissButton": "Got it, don't show again",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "autoswapInfoSettingsButton": "Configure settings",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "autoswapInfoRemindLater": "Remind me later",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
   },
   "autoswapLoadSettingsError": "Failed to load auto swap settings",
   "@autoswapLoadSettingsError": {
@@ -4915,9 +5159,9 @@
       }
     }
   },
-  "autoswapTriggerBalanceError": "Trigger balance must be at least 2x the base balance",
+  "autoswapTriggerBalanceError": "Maximum balance must be at least 2x the target balance",
   "@autoswapTriggerBalanceError": {
-    "description": "Validation error shown when trigger balance is less than 2x the base balance"
+    "description": "Validation error shown when maximum balance is less than 2x the target balance"
   },
   "arkNoTransactionsYet": "No transactions yet.",
   "@arkNoTransactionsYet": {
@@ -9372,18 +9616,17 @@
   "@bip329LabelsExportButton": {
     "description": "Button text to export labels"
   },
-  "bip329LabelsExportSuccess": "{count, plural, =1{1 label exported} other{{count} labels exported}}",
+  "bip329LabelsExportSuccess": "Labels exported successfully",
   "@bip329LabelsExportSuccess": {
-    "description": "Success message after exporting labels",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
+    "description": "Success message after exporting labels"
   },
-  "bip329LabelsImportSuccess": "{count, plural, =1{1 label imported} other{{count} labels imported}}",
-  "@bip329LabelsImportSuccess": {
-    "description": "Success message after importing labels",
+  "bip329LabelsImportSuccessSingular": "1 label imported",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "bip329LabelsImportSuccessPlural": "{count} labels imported",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
     "placeholders": {
       "count": {
         "type": "int"
@@ -9620,27 +9863,27 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "importQrDeviceKeystoneStep1": "Power on your Keystone device",
+  "importQrDeviceKeystoneStep1": "Power on your Keystone",
   "@importQrDeviceKeystoneStep1": {
     "description": "Keystone instruction step 1"
   },
-  "importQrDeviceKeystoneStep2": "Enter your PIN",
+  "importQrDeviceKeystoneStep2": "Unlock it by entering your PIN",
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "importQrDeviceKeystoneStep3": "Click the three dots at the top right",
+  "importQrDeviceKeystoneStep3": "Tap the *** (three dots) in the top-right corner",
   "@importQrDeviceKeystoneStep3": {
     "description": "Keystone instruction step 3"
   },
-  "importQrDeviceKeystoneStep4": "Select Connect Software Wallet",
+  "importQrDeviceKeystoneStep4": "Tap \"Connect Software Wallet\"",
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "importQrDeviceKeystoneStep5": "Choose BULL wallet option",
+  "importQrDeviceKeystoneStep5": "Select \"BULL\" from the list of wallets",
   "@importQrDeviceKeystoneStep5": {
     "description": "Keystone instruction step 5"
   },
-  "importQrDeviceKeystoneStep6": "On your mobile device, tap Open Camera",
+  "importQrDeviceKeystoneStep6": "On your mobile, click \"open camera\"",
   "@importQrDeviceKeystoneStep6": {
     "description": "Keystone instruction step 6"
   },
@@ -9648,13 +9891,17 @@
   "@importQrDeviceKeystoneStep7": {
     "description": "Keystone instruction step 7"
   },
-  "importQrDeviceKeystoneStep8": "Enter a label for your Keystone wallet and tap Import",
+  "importQrDeviceKeystoneStep8": "In the BULL wallet, choose your preferred derivation type. If you are not sure, select \"Segwit (BIP84)\"",
   "@importQrDeviceKeystoneStep8": {
     "description": "Keystone instruction step 8"
   },
-  "importQrDeviceKeystoneStep9": "Setup is complete",
+  "importQrDeviceKeystoneStep9": "Enter a label for your Keystone wallet and tap \"Import\"",
   "@importQrDeviceKeystoneStep9": {
     "description": "Keystone instruction step 9"
+  },
+  "importQrDeviceKeystoneStep10": "Your Keystone is now connected and ready to use with BULL Wallet.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
   },
   "importQrDevicePassportName": "Foundation Passport",
   "@importQrDevicePassportName": {
@@ -9944,6 +10191,22 @@
   "@exchangeLandingLoginButton": {
     "description": "Button to proceed to login/signup"
   },
+  "exchangeLandingLoginToUseSupport": "Please login or sign up to use the support chat for exchange related issues.",
+  "@exchangeLandingLoginToUseSupport": {
+    "description": "Message prompting user to login to access support chat"
+  },
+  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support Account",
+  "@exchangeSupportLoginSubtitle": {
+    "description": "Subtitle on support chat login screen"
+  },
+  "exchangeSupportLoginAccessMessage": "You will only have access to the support chat feature.",
+  "@exchangeSupportLoginAccessMessage": {
+    "description": "Message explaining limited access on support-only login"
+  },
+  "exchangeSupportLoginAccountInfo": "You will be creating an account with bullbitcoin.com that you can always access via our web app.",
+  "@exchangeSupportLoginAccountInfo": {
+    "description": "Information about account creation on support login screen"
+  },
   "exchangeHomeDeposit": "Deposit",
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
@@ -10042,6 +10305,10 @@
   "exchangeAuthOk": "OK",
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
+  },
+  "recipientsSearchHint": "Search recipients by name or label",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
   },
   "withdrawAmountTitle": "Withdraw fiat",
   "@withdrawAmountTitle": {
@@ -11144,11 +11411,15 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "appStartupErrorMessageWithBackup": "On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. You will have to delete this app and reinstall it with your backed up seed.",
+  "appStartupErrorMessage": "App failed to startup. Try completely stop the app and restart. If the error persists, report the issue to support and share your logs.",
+  "@appStartupErrorMessage": {
+    "description": "Error message shown when app startup fails"
+  },
+  "appStartupErrorMessageWithBackup": "Could not initialize. Delete and reinstall to fix.",
   "@appStartupErrorMessageWithBackup": {
     "description": "Error message shown when app startup fails due to seed storage issue and user has a backup"
   },
-  "appStartupErrorMessageNoBackup": "On v5.4.0 a critical bug was discovered in one of our dependencies which affect private key storage. Your app has been affected by this. Contact our support team.",
+  "appStartupErrorMessageNoBackup": "Could not initialize. Delete and reinstall to fix. If your seed is not backed up, you can view it under Settings->Bitcoin Settings->View Seeds after reinstall.",
   "@appStartupErrorMessageNoBackup": {
     "description": "Error message shown when app startup fails due to seed storage issue and user has no backup"
   },
@@ -11262,7 +11533,7 @@
   "@ledgerInstructionsAndroidUsb": {
     "description": "Connection instructions for Android devices (USB only)"
   },
-  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.",
+  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.",
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },
@@ -12174,5 +12445,21 @@
         "type": "String"
       }
     }
+  },
+  "logoutConfirmationTitle": "Confirm Logout",
+  "@logoutConfirmationTitle": {
+    "description": "Title for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationDescription": "Are you sure you want to log out of your Bull Bitcoin account? You will need to log in again to access exchange features.",
+  "@logoutConfirmationDescription": {
+    "description": "Description text for logout confirmation bottom sheet"
+  },
+  "logoutConfirmationCancel": "Cancel",
+  "@logoutConfirmationCancel": {
+    "description": "Cancel button label for logout confirmation"
+  },
+  "logoutConfirmationLogout": "Logout",
+  "@logoutConfirmationLogout": {
+    "description": "Logout button label for logout confirmation"
   }
 }

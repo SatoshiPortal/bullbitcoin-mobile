@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
@@ -28,18 +29,12 @@ class CurrencySettingsScreen extends StatelessWidget {
       required List<String> availableCurrencies,
       required String selected,
     }) async {
-      final c = await showModalBottomSheet<String?>(
-        useRootNavigator: true,
+      final c = await BlurredBottomSheet.show<String?>(
         context: context,
-        isScrollControlled: true,
-        backgroundColor: context.appColors.surface,
-        constraints: const BoxConstraints(maxWidth: double.infinity),
-        builder: (context) {
-          return CurrencyBottomSheet(
-            availableCurrencies: availableCurrencies,
-            selectedValue: selected,
-          );
-        },
+        child: CurrencyBottomSheet(
+          availableCurrencies: availableCurrencies,
+          selectedValue: selected,
+        ),
       );
 
       return c;

@@ -10,7 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class InteracEmailCadForm extends StatefulWidget {
-  const InteracEmailCadForm({super.key});
+  const InteracEmailCadForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   InteracEmailCadFormState createState() => InteracEmailCadFormState();
@@ -219,7 +221,10 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             ),
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

@@ -7,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class CbuCvuArgentinaForm extends StatefulWidget {
-  const CbuCvuArgentinaForm({super.key});
+  const CbuCvuArgentinaForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   CbuCvuArgentinaFormState createState() => CbuCvuArgentinaFormState();
@@ -98,7 +100,10 @@ class CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
             },
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

@@ -241,7 +241,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                         BBText(
                           '$utxoValue ',
                           style: context.font.displaySmall?.copyWith(
-                            color: context.appColors.secondary,
+                            color: context.appColors.onSurface,
                             fontWeight: .w500,
                           ),
                         ),
@@ -259,7 +259,7 @@ class CommonCoinSelectTile extends StatelessWidget {
                   BBText(
                     '~$fiatEquivalent',
                     style: context.font.labelSmall?.copyWith(
-                      color: context.appColors.secondary,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -271,27 +271,27 @@ class CommonCoinSelectTile extends StatelessWidget {
                       BBText(
                         'Address: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.secondary,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       Expanded(
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge?.copyWith(
-                            color: context.appColors.secondary,
+                            color: context.appColors.onSurface,
                           ),
                         ),
                       ),
                       BBText(
                         'Type: ',
                         style: context.font.labelMedium?.copyWith(
-                          color: context.appColors.secondary,
+                          color: context.appColors.onSurfaceVariant,
                         ),
                       ),
                       BBText(
                         addressType,
                         style: context.font.labelLarge?.copyWith(
-                          color: context.appColors.secondary,
+                          color: context.appColors.onSurface,
                         ),
                       ),
                     ],

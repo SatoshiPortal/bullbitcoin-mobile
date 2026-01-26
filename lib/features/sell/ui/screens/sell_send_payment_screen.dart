@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -230,7 +231,7 @@ class _DetailRow extends StatelessWidget {
                   Text(
                     title,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.surfaceContainer,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   Expanded(
@@ -245,7 +246,7 @@ class _DetailRow extends StatelessWidget {
                                     textAlign: .end,
                                     maxLines: 2,
                                     style: context.font.bodyMedium?.copyWith(
-                                      color: valueColor,
+                                      color: context.appColors.secondary,
                                     ),
                                   ),
                                 ),
@@ -332,17 +333,12 @@ class _BottomButtons extends StatelessWidget {
           BBButton.big(
             label: context.loc.sellAdvancedSettings,
             onPressed: () {
-              showModalBottomSheet(
+              BlurredBottomSheet.show(
                 context: context,
-                isScrollControlled: true,
-                backgroundColor: context.appColors.secondaryFixed,
-                constraints: const BoxConstraints(maxWidth: double.infinity),
-                useSafeArea: true,
-                builder:
-                    (BuildContext buildContext) => BlocProvider.value(
-                      value: context.read<SellBloc>(),
-                      child: const SellAdvancedOptionsBottomSheet(),
-                    ),
+                child: BlocProvider.value(
+                  value: context.read<SellBloc>(),
+                  child: const SellAdvancedOptionsBottomSheet(),
+                ),
               );
             },
             bgColor: context.appColors.transparent,

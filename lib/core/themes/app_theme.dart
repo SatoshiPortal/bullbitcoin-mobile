@@ -70,7 +70,7 @@ class AppTheme {
         backButtonIconBuilder: (context) => const Icon(Icons.arrow_back),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: colors.surface,
+        backgroundColor: colors.background,
         selectedIconTheme: IconThemeData(color: colors.primary),
         unselectedIconTheme: IconThemeData(color: colors.textMuted),
         selectedLabelStyle: TextStyle(color: colors.primary),

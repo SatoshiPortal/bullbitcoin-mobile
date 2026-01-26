@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
-import 'package:bb_mobile/features/bip329_labels/router.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
@@ -26,7 +27,6 @@ import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/pay/ui/pay_router.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/recipients/frameworks/ui/routing/recipients_router.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
@@ -114,10 +114,12 @@ class AppRouter {
                           BottomNavigationBarItem(
                             icon: const Icon(Icons.currency_bitcoin),
                             label: context.loc.navigationTabWallet,
+                            backgroundColor: context.appColors.background,
                           ),
                           BottomNavigationBarItem(
                             icon: const Icon(Icons.attach_money),
                             label: context.loc.navigationTabExchange,
+                            backgroundColor: context.appColors.background,
                           ),
                         ],
                       ),
@@ -159,8 +161,7 @@ class AppRouter {
       ...ImportQrDeviceRouter.routes,
       RecoverBullRouter.route,
       RecoverBullGoogleDriveRouter.route,
-      RecipientsRouter.route,
-      Bip329LabelsRouter.route,
+      LabelsRouter.route,
       StatusCheckRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),

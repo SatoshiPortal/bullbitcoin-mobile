@@ -67,7 +67,11 @@ class PriceInput extends StatelessWidget {
                           : TextField(
                               controller: amountController,
                               focusNode: focusNode,
-                              keyboardType: TextInputType.none,
+                              keyboardType: TextInputType.numberWithOptions(
+                                signed: true,
+                                // We could pass the bitcoin unit to restrict the system DialPad
+                                // decimal: true
+                              ),
                               inputFormatters: [AmountInputFormatter(currency)],
                               showCursor: !readOnly,
                               readOnly: readOnly,

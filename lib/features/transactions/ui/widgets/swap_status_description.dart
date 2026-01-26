@@ -112,7 +112,7 @@ class SwapStatusDescription extends StatelessWidget {
           InfoCard(
             description: context.loc.transactionSwapDoNotUninstall,
             tagColor: context.appColors.tertiary,
-            bgColor: context.appColors.surfaceFixed,
+            bgColor: context.appColors.warningContainer,
             boldDescription: true,
           ),
         ],

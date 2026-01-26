@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -126,11 +125,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                 subtitle: Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
-                    e is SeedNotFoundException
-                        ? hasBackup
-                              ? context.loc.appStartupErrorMessageWithBackup
-                              : context.loc.appStartupErrorMessageNoBackup
-                        : e.toString(),
+                    context.loc.appStartupErrorMessage,
                     style: context.font.bodyMedium?.copyWith(
                       color: context.appColors.secondary.withValues(alpha: 0.7),
                     ),

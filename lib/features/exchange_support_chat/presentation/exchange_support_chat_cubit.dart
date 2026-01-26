@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:io';
+
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message_attachment.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message_attachment_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,16 +23,27 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     required SendSupportChatMessageUsecase sendMessageUsecase,
     required GetSupportChatMessageAttachmentUsecase getAttachmentUsecase,
     required GetExchangeUserSummaryUsecase getUserSummaryUsecase,
+    required CreateLogAttachmentUsecase createLogAttachmentUsecase,
+    required ExchangeNotificationService exchangeNotificationService,
   }) : _getMessagesUsecase = getMessagesUsecase,
        _sendMessageUsecase = sendMessageUsecase,
        _getAttachmentUsecase = getAttachmentUsecase,
        _getUserSummaryUsecase = getUserSummaryUsecase,
-       super(const ExchangeSupportChatState());
+       _createLogAttachmentUsecase = createLogAttachmentUsecase,
+       _exchangeNotificationService = exchangeNotificationService,
+       super(const ExchangeSupportChatState()) {
+    _notificationSubscription = _exchangeNotificationService.messageStream
+        .where((message) => message.type == 'message')
+        .listen((_) => loadMessages(page: 1));
+  }
 
   final GetSupportChatMessagesUsecase _getMessagesUsecase;
   final SendSupportChatMessageUsecase _sendMessageUsecase;
   final GetSupportChatMessageAttachmentUsecase _getAttachmentUsecase;
   final GetExchangeUserSummaryUsecase _getUserSummaryUsecase;
+  final CreateLogAttachmentUsecase _createLogAttachmentUsecase;
+  final ExchangeNotificationService _exchangeNotificationService;
+  StreamSubscription<NotificationMessage>? _notificationSubscription;
 
   bool _limitFetchingOlderMessages = false;
 
@@ -276,6 +292,27 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
     );
   }
 
+  Future<void> attachLogs() async {
+    try {
+      emit(state.copyWith(errorPermissionDenied: ''));
+
+      final attachment = await _createLogAttachmentUsecase.execute();
+
+      emit(
+        state.copyWith(
+          newMessageText: 'Here are my logs',
+          newMessageAttachments: [...state.newMessageAttachments, attachment],
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          errorPermissionDenied: 'Failed to attach logs. Please try again.',
+        ),
+      );
+    }
+  }
+
   Future<void> downloadAttachment(String attachmentId) async {
     try {
       emit(
@@ -354,6 +391,9 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         attachments: hasAttachments ? attachmentsToSend : null,
       );
 
+      // Don't immediately reload - let the message appear naturally
+      // The attachment might not be fully processed on the server yet
+      await Future.delayed(const Duration(seconds: 2));
       await loadMessages(page: 1);
 
       emit(state.copyWith(sendingMessage: false));
@@ -370,5 +410,11 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    _notificationSubscription?.cancel();
+    return super.close();
   }
 }

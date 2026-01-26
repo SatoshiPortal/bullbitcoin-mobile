@@ -57,7 +57,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
             child: Column(
               children: [
                 SettingsEntryItem(
-                  icon: Icons.account_balance_wallet,
+                  icon: Icons.currency_exchange,
                   title: context.loc.settingsExchangeSettingsTitle,
                   onTap: () {
                     if (Platform.isIOS) {
@@ -93,7 +93,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.save_alt,
+                  icon: Icons.save,
                   title: context.loc.settingsWalletBackupTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.backupSettings.name);
@@ -107,28 +107,7 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   },
                 ),
                 SettingsEntryItem(
-                  icon: Icons.security,
-                  title: context.loc.settingsSecurityPinTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.pinCode.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.attach_money,
-                  title: context.loc.settingsCurrencyTitle,
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.currency.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.palette,
-                  title: 'Theme',
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.theme.name);
-                  },
-                ),
-                SettingsEntryItem(
-                  icon: Icons.settings,
+                  icon: Icons.app_settings_alt,
                   title: context.loc.settingsAppSettingsTitle,
                   onTap: () {
                     context.pushNamed(SettingsRoute.appSettings.name);

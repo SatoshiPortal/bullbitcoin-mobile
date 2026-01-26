@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
@@ -31,6 +32,10 @@ class TransactionDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final returnHome =
+        GoRouterState.of(context).uri.queryParameters['returnHome'] == 'true';
+    final returnToExchange =
+        GoRouterState.of(context).uri.queryParameters['returnToExchange'] == 'true';
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -65,15 +70,18 @@ class TransactionDetailsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title:
-              isOngoingSwap == true
-                  ? (isChainSwap
-                      ? context.loc.transactionDetailTransferProgress
-                      : context.loc.transactionDetailSwapProgress)
-                  : context.loc.transactionDetailTitle,
+          title: isOngoingSwap == true
+              ? (isChainSwap
+                    ? context.loc.transactionDetailTransferProgress
+                    : context.loc.transactionDetailSwapProgress)
+              : context.loc.transactionDetailTitle,
           actionIcon: Icons.close,
           onAction: () {
-            if (context.canPop()) {
+            if (returnToExchange) {
+              context.goNamed(ExchangeRoute.exchangeHome.name);
+            } else if (returnHome) {
+              context.goNamed(WalletRoute.walletHome.name);
+            } else if (context.canPop()) {
               context.pop();
             } else {
               context.goNamed(WalletRoute.walletHome.name);
@@ -148,12 +156,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const Gap(16),
                   BBButton.big(
                     disabled: retryingSwap,
-                    label:
-                        isChainSwap
-                            ? context.loc.transactionDetailRetryTransfer(
-                              swapAction,
-                            )
-                            : context.loc.transactionDetailRetrySwap(swapAction),
+                    label: isChainSwap
+                        ? context.loc.transactionDetailRetryTransfer(swapAction)
+                        : context.loc.transactionDetailRetrySwap(swapAction),
                     onPressed: () async {
                       await context.read<TransactionDetailsCubit>().processSwap(
                         swap,

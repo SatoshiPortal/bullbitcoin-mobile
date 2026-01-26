@@ -294,7 +294,7 @@ class _TriggerBalanceField extends StatelessWidget {
       crossAxisAlignment: .start,
       children: [
         BBText(
-          'Trigger At Balance',
+          'Maximum Instant Wallet Balance',
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
           ),

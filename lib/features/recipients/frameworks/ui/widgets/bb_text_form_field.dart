@@ -79,7 +79,7 @@ class BBTextFormField extends StatelessWidget {
             fillColor:
                 isDisabled
                     ? context.appColors.surfaceContainerHighest
-                    : context.appColors.onPrimary,
+                    : context.appColors.onSecondary,
             filled: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.0),

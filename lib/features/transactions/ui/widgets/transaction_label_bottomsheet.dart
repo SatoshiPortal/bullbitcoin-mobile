@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -20,20 +21,14 @@ Future<void> showTransactionLabelBottomSheet(
 }) async {
   final detailsCubit = context.read<TransactionDetailsCubit>();
 
-  await showModalBottomSheet(
+  await BlurredBottomSheet.show(
     context: context,
-    useRootNavigator: true,
-    backgroundColor: context.appColors.surface,
-    isScrollControlled: true,
-    constraints: const BoxConstraints(maxWidth: double.infinity),
-    builder: (context) {
-      return BlocProvider.value(
-        value: detailsCubit,
-        child: TransactionLabelBottomsheet(
-          distinctLabelsFuture: detailsCubit.fetchDistinctLabels(),
-        ),
-      );
-    },
+    child: BlocProvider.value(
+      value: detailsCubit,
+      child: TransactionLabelBottomsheet(
+        distinctLabelsFuture: detailsCubit.fetchDistinctLabels(),
+      ),
+    ),
   );
 }
 
@@ -43,7 +38,7 @@ class TransactionLabelBottomsheet extends StatefulWidget {
     required this.distinctLabelsFuture,
   });
 
-  final Future<List<String>> distinctLabelsFuture;
+  final Future<Set<String>> distinctLabelsFuture;
 
   @override
   State<TransactionLabelBottomsheet> createState() =>
@@ -98,7 +93,7 @@ class _TransactionLabelBottomsheetState
   Widget build(BuildContext context) {
     final state = context.watch<TransactionDetailsCubit>().state;
 
-    return FutureBuilder<List<String>>(
+    return FutureBuilder<Set<String>>(
       future: widget.distinctLabelsFuture,
       builder: (context, snapshot) {
         return Padding(
@@ -134,7 +129,7 @@ class _TransactionLabelBottomsheetState
                 trigger: snapshot.connectionState == ConnectionState.waiting,
               ),
               Gap(Device.screen.height * 0.01),
-              _buildSuggestions(snapshot.data ?? []),
+              _buildSuggestions(snapshot.data?.toList() ?? []),
               Gap(Device.screen.height * 0.01),
               BBInputText(
                 controller: _controller,

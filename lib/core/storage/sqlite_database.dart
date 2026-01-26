@@ -1,17 +1,8 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_0_to_1.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_10_to_11.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_1_to_2.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_2_to_3.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_4_to_5.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_5_to_6.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_6_to_7.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_7_to_8.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_8_to_9.dart';
-import 'package:bb_mobile/core/storage/migrations/schema_9_to_10.dart';
+import 'package:bb_mobile/core/storage/migrations/migrations.dart';
+
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
@@ -79,7 +70,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -117,6 +108,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from8To9: Schema8To9.migrate,
         from9To10: Schema9To10.migrate,
         from10To11: Schema10To11.migrate,
+        from11To12: Schema11To12.migrate,
       ),
     );
   }

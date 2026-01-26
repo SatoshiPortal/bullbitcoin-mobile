@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 
 abstract class ExchangeUserRepository {
@@ -7,5 +8,7 @@ abstract class ExchangeUserRepository {
     String? currency,
     bool? dcaEnabled,
     String? autoBuyEnabled,
+    bool? emailNotificationsEnabled,
   });
+  Future<List<Announcement>> listAnnouncements();
 }

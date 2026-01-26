@@ -56,7 +56,6 @@ class ImportQrDevicePage extends StatelessWidget {
               Assets.misc.qRPlaceholder.path,
               height: 200,
               width: 200,
-              color: context.appColors.text,
             ),
             Gap(Device.screen.height * 0.05),
             Column(

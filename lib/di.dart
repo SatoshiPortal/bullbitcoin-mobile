@@ -35,13 +35,10 @@ import 'package:bb_mobile/features/tor_settings/tor_settings_di_module.dart';
 import 'package:bb_mobile/features/transactions/transactions_di_module.dart';
 import 'package:bb_mobile/features/wallet/wallet_di_module.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_di_module.dart';
+import 'package:bb_mobile/features/labels/labels_di_module.dart';
 
 Future<void> initializeDependencies() async {
   sl.enableRegisteringMultipleInstancesOfOneType();
-
-  // Register core dependencies first. Features can depend on core,
-  // but core should not depend on features.
-  await registerCoreDependencies();
 
   // Register feature-specific dependencies.
   // If a feature depends on another feature, ensure that the dependent feature
@@ -50,7 +47,10 @@ Future<void> initializeDependencies() async {
   // Ideally features should be as independent as possible,
   // communicating only via well-defined, strict interfaces (facades) if necessary.
   final featureModules = <FeatureDiModule>[
+    // Register core dependencies first.
+    CoreDiModule(),
     SecretsDiModule(), // ✅ Refactored
+    LabelsDiModule(), // Semi-refactored, missing proper domain modelling, unit tests and integration with other features (through ports instead of facade directly)
     // TODO: Remove Ark dependency from Settings feature and merge with core settings and define a clear api/facade for it
     SettingsDiModule(), // Depends on core settings, core storage, core ark
     // TODO: Manage all Tor settings in this feature itself so core settings can be removed as a dependency and merge with core tor in features/tor and define a clear api/facade for it

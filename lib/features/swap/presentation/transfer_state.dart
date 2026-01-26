@@ -181,4 +181,32 @@ sealed class TransferState with _$TransferState {
       return FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat));
     }
   }
+
+  String? get amountValidationError {
+    if (amount.isEmpty) return null;
+
+    if (inputAmountSat <= 0) return null;
+
+    final balanceSat = fromWallet?.balanceSat.toInt() ?? 0;
+    if (inputAmountSat > balanceSat) return null;
+
+    final limits = swapLimits;
+    if (limits == null) return null;
+
+    if (limits.min > inputAmountSat) {
+      final minAmount = bitcoinUnit == BitcoinUnit.btc
+          ? ConvertAmount.satsToBtc(limits.min)
+          : limits.min;
+      return 'Minimum amount is ${minAmount.toString()} $displayFromCurrencyCode';
+    }
+
+    if (limits.max < inputAmountSat) {
+      final maxAmount = bitcoinUnit == BitcoinUnit.btc
+          ? ConvertAmount.satsToBtc(limits.max)
+          : limits.max;
+      return 'Maximum amount is ${maxAmount.toString()} $displayFromCurrencyCode';
+    }
+
+    return null;
+  }
 }

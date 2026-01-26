@@ -113,13 +113,18 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
 
         return Container(
           decoration: BoxDecoration(
-            color: context.appColors.surfaceFixed,
+            color: context.appColors.background,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             mainAxisAlignment: .start,
             children: [
-              QrImageView(data: state.parts[state.currentIndex]),
+              QrImageView(
+                data: state.parts[state.currentIndex],
+                // This color must stay hardcoded and not adapt to the theme.
+                // ColdCard can read only QR with white background.
+                backgroundColor: context.appColors.onPrimaryFixed,
+              ),
               const Gap(16),
               if (widget.showSlider) ...[
                 Padding(

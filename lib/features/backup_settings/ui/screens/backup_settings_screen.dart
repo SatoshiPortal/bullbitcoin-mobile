@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/widgets/view_vault_key_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/bip329_labels/router.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:flutter/material.dart';
@@ -59,15 +59,14 @@ class _Screen extends StatelessWidget {
                       child: _BackupTestStatusWidget(),
                     ),
                     const Gap(40),
+                    const _StartBackupButton(),
                     if (state.lastEncryptedBackup != null)
                       const _ViewVaultKeyButton(),
                     if (state.lastEncryptedBackup != null ||
                         state.lastPhysicalBackup != null)
                       const _TestBackupButton(),
-                    const _StartBackupButton(),
-                    const _Bip329LabelsButton(),
                     const _RecoverBullSettingsButton(),
-                    const Gap(20),
+                    const _Bip329LabelsButton(),
                     if (state.error != null) ErrorWidget(error: state.error!),
                   ],
                 ),
@@ -155,7 +154,8 @@ class _StartBackupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsEntryItem(
-      icon: Icons.backup,
+      icon: Icons.save_as,
+      iconColor: context.appColors.primary,
       title: context.loc.backupSettingsStartBackup,
       onTap: () => context.pushNamed(
         BackupSettingsSubroute.backupOptions.name,
@@ -243,9 +243,9 @@ class _Bip329LabelsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsEntryItem(
-      icon: Icons.label,
+      icon: Icons.sell,
       title: context.loc.backupSettingsLabelsButton,
-      onTap: () => context.push(Bip329LabelsRouter.route.path),
+      onTap: () => context.push(LabelsRouter.route.path),
     );
   }
 }
@@ -256,7 +256,7 @@ class _RecoverBullSettingsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsEntryItem(
-      icon: Icons.settings,
+      icon: Icons.cloud_circle,
       iconColor: context.appColors.secondary,
       textColor: context.appColors.secondary,
       title: context.loc.backupSettingsRecoverBullSettings,

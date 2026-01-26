@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -27,14 +26,11 @@ class SwapAmountInput extends StatelessWidget {
     final bitcoinUnit = context.select(
       (TransferBloc bloc) => bloc.state.bitcoinUnit,
     );
-    final fromWallet = context.select(
-      (TransferBloc bloc) => bloc.state.fromWallet,
-    );
     final fromCurrency = context.select(
       (TransferBloc bloc) => bloc.state.displayFromCurrencyCode,
     );
-    final swapLimits = context.select(
-      (TransferBloc bloc) => bloc.state.swapLimits,
+    final amountValidationError = context.select(
+      (TransferBloc bloc) => bloc.state.amountValidationError,
     );
 
     return Column(
@@ -74,51 +70,6 @@ class SwapAmountInput extends StatelessWidget {
                           inputFormatters: [
                             AmountInputFormatter(bitcoinUnit.code),
                           ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return context.loc.swapValidationEnterAmount;
-                            }
-                            final inputAmountSat =
-                                bitcoinUnit == BitcoinUnit.sats
-                                    ? int.tryParse(value) ?? 0
-                                    : ConvertAmount.btcToSats(
-                                      double.tryParse(value) ?? 0,
-                                    );
-                            if (inputAmountSat <= 0) {
-                              return context.loc.swapValidationPositiveAmount;
-                            }
-                            final balanceSat =
-                                fromWallet?.balanceSat.toInt() ?? 0;
-                            if (inputAmountSat > balanceSat) {
-                              return context.loc.swapValidationInsufficientBalance;
-                            }
-                            if ((swapLimits?.min ?? 0) > inputAmountSat) {
-                              final minAmount =
-                                  bitcoinUnit == BitcoinUnit.btc
-                                      ? ConvertAmount.satsToBtc(
-                                        swapLimits?.min ?? 0,
-                                      )
-                                      : swapLimits?.min ?? 0;
-                              return context.loc.swapValidationMinimumAmount(
-                                minAmount.toString(),
-                                fromCurrency,
-                              );
-                            }
-                            if ((swapLimits?.max ?? double.infinity) <
-                                inputAmountSat) {
-                              final maxAmount =
-                                  bitcoinUnit == BitcoinUnit.btc
-                                      ? ConvertAmount.satsToBtc(
-                                        swapLimits?.max ?? 0,
-                                      )
-                                      : swapLimits?.max ?? 0;
-                              return context.loc.swapValidationMaximumAmount(
-                                maxAmount.toString(),
-                                fromCurrency,
-                              );
-                            }
-                            return null;
-                          },
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.primary,
                           ),
@@ -149,6 +100,15 @@ class SwapAmountInput extends StatelessWidget {
             ),
           ),
         ),
+        if (amountValidationError != null) ...[
+          const Gap(8),
+          Text(
+            amountValidationError,
+            style: context.font.labelLarge?.copyWith(
+              color: context.appColors.error,
+            ),
+          ),
+        ],
       ],
     );
   }

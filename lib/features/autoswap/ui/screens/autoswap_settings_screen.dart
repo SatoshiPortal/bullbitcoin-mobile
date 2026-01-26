@@ -125,7 +125,7 @@ class _AmountThresholdField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Base Instant Wallet Balance',
+          'Target Instant Wallet Balance',
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
           ),
@@ -234,7 +234,7 @@ class _TriggerBalanceField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Trigger At Balance',
+          'Maximum Instant Wallet Balance',
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
           ),

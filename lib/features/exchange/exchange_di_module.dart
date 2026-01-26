@@ -23,6 +23,8 @@ class ExchangeDiModule implements FeatureDiModule {
         getExchangeUserSummaryUsecase: sl(),
         saveUserPreferencesUsecase: sl(),
         deleteExchangeApiKeyUsecase: sl(),
+        getAnnouncementsUsecase: sl(),
+        exchangeNotificationService: sl(),
       ),
     );
   }

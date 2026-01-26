@@ -144,7 +144,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
             int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
       }
 
-      // Validate trigger balance is at least 2x the base balance
+      // Validate maximum balance is at least 2x the target balance
       if (triggerBalanceSats < 2 * balanceThresholdSats) {
         emit(
           state.copyWith(saving: false, error: 'autoswapTriggerBalanceError'),
@@ -169,6 +169,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
+          showWarning: state.enabledToggle ? state.settings?.showWarning ?? true : false,
         ),
         isTestnet: isTestnet,
       );
@@ -328,7 +329,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
             int.tryParse(state.triggerBalanceSatsInput ?? '0') ?? 0;
       }
 
-      // Validate trigger balance is at least 2x the base balance
+      // Validate maximum balance is at least 2x the target balance
       if (triggerBalanceSats < 2 * balanceThresholdSats) {
         emit(
           state.copyWith(saving: false, error: 'autoswapTriggerBalanceError'),
@@ -347,12 +348,13 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
       await _saveAutoSwapSettingsUsecase.execute(
         AutoSwap(
-          enabled: false, // Always false for auto-save when disabled
+          enabled: false,
           balanceThresholdSats: balanceThresholdSats,
           triggerBalanceSats: triggerBalanceSats,
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
+          showWarning: false,
         ),
         isTestnet: isTestnet,
       );

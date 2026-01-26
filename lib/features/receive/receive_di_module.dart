@@ -31,7 +31,7 @@ class ReceiveDiModule implements FeatureDiModule {
         ),
         seedRepository: sl(),
         getReceiveAddressUsecase: sl(),
-        labelRepository: sl(),
+        labelsFacade: sl(),
       ),
     );
   }
@@ -52,7 +52,7 @@ class ReceiveDiModule implements FeatureDiModule {
         watchPayjoinUsecase: sl(),
         watchWalletTransactionByAddressUsecase: sl(),
         watchSwapUsecase: sl(),
-        labelAddressUsecase: sl(),
+        labelsFacade: sl(),
         getSwapLimitsUsecase: sl(),
         wallet: wallet,
       ),

@@ -19,6 +19,7 @@ class SaveUserPreferencesUsecase {
     String? currency,
     bool? dcaEnabled,
     String? autoBuyEnabled,
+    bool? emailNotificationsEnabled,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -34,6 +35,7 @@ class SaveUserPreferencesUsecase {
         currency: currency,
         dcaEnabled: dcaEnabled,
         autoBuyEnabled: autoBuyEnabled,
+        emailNotificationsEnabled: emailNotificationsEnabled,
       );
     } catch (e) {
       throw Exception('Failed to save user preferences: $e');

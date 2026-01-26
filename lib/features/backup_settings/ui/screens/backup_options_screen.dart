@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_option_card.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -52,34 +53,32 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
               BackupOptionCard(
                 icon: Image.asset(
                   Assets.misc.encryptedVault.path,
-                  width: 36,
-                  height: 45,
-                  fit: .cover,
+                  width: 32,
+                  height: 40,
+                  fit: .contain,
                 ),
                 title: context.loc.backupWalletEncryptedVaultTitle,
                 description: context.loc.backupWalletEncryptedVaultDescription,
                 tag: context.loc.backupWalletEncryptedVaultTag,
-                onTap:
-                    () => context.pushNamed(
-                      RecoverBullRoute.recoverbullFlows.name,
-                      extra: RecoverBullFlowsExtra(
-                        flow: switch (widget.flow) {
-                          BackupSettingsFlow.backup =>
-                            RecoverBullFlow.secureVault,
-                          BackupSettingsFlow.test => RecoverBullFlow.testVault,
-                        },
-                        vault: null,
-                      ),
-                    ),
+                onTap: () => context.pushNamed(
+                  RecoverBullRoute.recoverbullFlows.name,
+                  extra: RecoverBullFlowsExtra(
+                    flow: switch (widget.flow) {
+                      BackupSettingsFlow.backup => RecoverBullFlow.secureVault,
+                      BackupSettingsFlow.test => RecoverBullFlow.testVault,
+                    },
+                    vault: null,
+                  ),
+                ),
               ),
               const Gap(16),
 
               BackupOptionCard(
                 icon: Image.asset(
                   Assets.misc.physicalBackup.path,
-                  width: 36,
-                  height: 45,
-                  fit: .cover,
+                  width: 32,
+                  height: 40,
+                  fit: .contain,
                 ),
                 title: context.loc.backupWalletPhysicalBackupTitle,
                 description: context.loc.backupWalletPhysicalBackupDescription,
@@ -98,10 +97,9 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
               const Gap(16),
               GestureDetector(
                 onTap: () {
-                  showModalBottomSheet(
+                  BlurredBottomSheet.show(
                     context: context,
-                    isScrollControlled: true,
-                    builder: (_) => const HowToDecideBackupOption(),
+                    child: const HowToDecideBackupOption(),
                   );
                 },
                 child: BBText(

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -36,20 +37,12 @@ class HomeFiatBalance extends StatelessWidget {
     final currentCurrency =
         context.read<SettingsCubit>().state.currencyCode ?? 'CAD';
 
-    final selectedCurrency = await showModalBottomSheet<String?>(
+    final selectedCurrency = await BlurredBottomSheet.show<String?>(
       context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      isDismissible: true,
-      useSafeArea: true,
-      backgroundColor: context.appColors.secondaryFixedDim,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (sheetContext) {
-        return CurrencyBottomSheet(
-          availableCurrencies: availableCurrencies,
-          selectedValue: currentCurrency,
-        );
-      },
+      child: CurrencyBottomSheet(
+        availableCurrencies: availableCurrencies,
+        selectedValue: currentCurrency,
+      ),
     );
 
     if (selectedCurrency != null &&

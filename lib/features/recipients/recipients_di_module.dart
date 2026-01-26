@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/infra/di/feature_di_module.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
@@ -10,28 +12,19 @@ import 'package:bb_mobile/features/recipients/frameworks/http/bullbitcoin_api_ke
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class RecipientsDiModule implements FeatureDiModule {
   @override
   Future<void> registerFrameworksAndDrivers() async {
-    // TODO: These instances should be moved to the core/shared locator so they can
-    //  be used by other features that need to call the Bull Bitcoin API, without
-    //  needing to have one big datasource with all API calls in it. Every feature
-    //  could then just reuse the clients and implement only the api calls they need
-    //  in their own gateways.
-    // The secure_storage and secure_storage_datasource were so much overkill,
-    // we should just share one instance with the settings like this.
-    sl.registerLazySingleton<FlutterSecureStorage>(
-      () => const FlutterSecureStorage(
-        aOptions: AndroidOptions(encryptedSharedPreferences: true),
-      ),
-    );
     sl.registerLazySingleton<BullbitcoinApiKeyProvider>(
-      () => BullbitcoinApiKeyProvider(secureStorage: sl()),
+      () => BullbitcoinApiKeyProvider(
+        secureStorage: sl<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
+      ),
     );
 
     sl.registerLazySingleton<Dio>(
@@ -105,8 +98,11 @@ class RecipientsDiModule implements FeatureDiModule {
   Future<void> registerDrivingAdapters() async {
     sl.registerFactoryParam<
       RecipientsBloc,
-      AllowedRecipientFiltersViewModel?,
-      Future<void>? Function(RecipientViewModel recipient)?
+      RecipientFilterCriteria?,
+      Future<void>? Function(
+        RecipientViewModel recipient, {
+        required bool isNew,
+      })?
     >(
       (allowedRecipientFilters, onRecipientSelected) => RecipientsBloc(
         allowedRecipientFilters: allowedRecipientFilters,

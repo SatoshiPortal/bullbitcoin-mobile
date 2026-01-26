@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
@@ -16,20 +19,55 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required SaveExchangeApiKeyUsecase saveExchangeApiKeyUsecase,
     required SaveUserPreferencesUsecase saveUserPreferencesUsecase,
     required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
+    required GetAnnouncementsUsecase getAnnouncementsUsecase,
+    required ExchangeNotificationService exchangeNotificationService,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
        _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
-       super(const ExchangeState());
-
-  Timer? _pollingTimer;
+       _getAnnouncementsUsecase = getAnnouncementsUsecase,
+       _exchangeNotificationService = exchangeNotificationService,
+       super(const ExchangeState()) {
+    _notificationSubscription = _exchangeNotificationService.messageStream
+        .where(
+          (message) =>
+              message.type == 'balance' ||
+              message.type == 'group' ||
+              message.type == 'kyc',
+        )
+        .listen((_) => fetchUserSummary());
+  }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final SaveExchangeApiKeyUsecase _saveExchangeApiKeyUsecase;
   final SaveUserPreferencesUsecase _saveUserPreferencesUsecase;
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
+  final GetAnnouncementsUsecase _getAnnouncementsUsecase;
+  final ExchangeNotificationService _exchangeNotificationService;
+  StreamSubscription<NotificationMessage>? _notificationSubscription;
 
-  Future<void> fetchUserSummary() async {
+  Future<void> connectWebSocket() async {
+    try {
+      await _exchangeNotificationService.connect();
+    } catch (e) {
+      log.warning('WebSocket connection failed: $e');
+    }
+  }
+
+  void disconnectWebSocket() {
+    _exchangeNotificationService.disconnect();
+  }
+
+  /// Call this when the network environment changes to reconnect to the correct WebSocket
+  Future<void> reconnectWebSocket() async {
+    try {
+      await _exchangeNotificationService.reconnect();
+    } catch (e) {
+      log.warning('WebSocket reconnection failed: $e');
+    }
+  }
+
+  Future<void> fetchUserSummary({bool force = false}) async {
     try {
       emit(
         state.copyWith(apiKeyException: null, getUserSummaryException: null),
@@ -38,34 +76,28 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
       emit(state.copyWith(userSummary: userSummary));
-      emit(state.copyWith(selectedLanguage: userSummary.language));
-      emit(state.copyWith(selectedCurrency: userSummary.currency));
 
-      startPolling();
+      if (force) {
+        emit(
+          state.copyWith(
+            selectedLanguage: userSummary.language,
+            selectedCurrency: userSummary.currency,
+            selectedEmailNotifications: userSummary.emailNotificationsEnabled,
+          ),
+        );
+      }
+
+      loadAnnouncements();
     } catch (e) {
       log.severe('$ExchangeCubit init: $e');
       if (e is ApiKeyException) {
         emit(state.copyWith(apiKeyException: e));
-        // Stop polling if API key is invalid
-        stopPolling();
+        // Disconnect WebSocket if API key is invalid
+        disconnectWebSocket();
       } else if (e is GetExchangeUserSummaryException) {
         emit(state.copyWith(getUserSummaryException: e));
       }
     }
-  }
-
-  void startPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (!state.notLoggedIn) {
-        fetchUserSummary();
-      }
-    });
-  }
-
-  void stopPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = null;
   }
 
   Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
@@ -91,6 +123,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     emit(state.copyWith(selectedCurrency: currency));
   }
 
+  void updateSelectedEmailNotifications(bool enabled) {
+    emit(state.copyWith(selectedEmailNotifications: enabled));
+  }
+
   Future<void> savePreferences() async {
     if (state.selectedLanguage == null && state.selectedCurrency == null) {
       return;
@@ -102,9 +138,14 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       await _saveUserPreferencesUsecase.execute(
         language: state.selectedLanguage,
         currency: state.selectedCurrency,
+        emailNotificationsEnabled: state.selectedEmailNotifications,
+        dcaEnabled: state.userSummary?.dca.isActive,
+        autoBuyEnabled: state.userSummary?.autoBuy.isActive.toString(),
       );
 
       emit(state.copyWith(isSaving: false));
+
+      await fetchUserSummary(force: true);
     } catch (e) {
       log.severe('Error in savePreferences: $e');
       emit(state.copyWith(isSaving: false));
@@ -128,7 +169,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> logout() async {
     try {
-      stopPolling();
+      disconnectWebSocket();
 
       emit(state.copyWith(deleteApiKeyException: null));
       await _deleteExchangeApiKeyUsecase.execute();
@@ -141,6 +182,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
           userSummary: null,
           selectedLanguage: null,
           selectedCurrency: null,
+          selectedEmailNotifications: null,
         ),
       );
     } catch (e) {
@@ -151,9 +193,33 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
   }
 
+  void loadAnnouncements() async {
+    emit(
+      state.copyWith(loadingAnnouncements: true, errLoadingAnnouncements: null),
+    );
+    try {
+      final announcements = await _getAnnouncementsUsecase.execute();
+      emit(
+        state.copyWith(
+          announcements: announcements,
+          loadingAnnouncements: false,
+        ),
+      );
+    } catch (e) {
+      log.warning('Failed to load announcements: $e');
+      emit(
+        state.copyWith(
+          errLoadingAnnouncements: e.toString(),
+          loadingAnnouncements: false,
+        ),
+      );
+    }
+  }
+
   @override
   Future<void> close() {
-    stopPolling();
+    _notificationSubscription?.cancel();
+    disconnectWebSocket();
     return super.close();
   }
 }

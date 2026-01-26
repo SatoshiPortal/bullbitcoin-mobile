@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:flutter/material.dart';
 
@@ -21,20 +22,15 @@ class ComingSoonBottomSheet extends StatelessWidget {
     String? icon,
     void Function()? onDismissed,
   }) {
-    return showModalBottomSheet<void>(
+    return BlurredBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.appColors.surface,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      useRootNavigator: true,
-      builder:
-          (context) => ComingSoonBottomSheet(
-            description:
-                description ??
-                'This feature is currently under development and will be available soon.',
-            icon: icon,
-            onDismissed: onDismissed,
-          ),
+      child: ComingSoonBottomSheet(
+        description:
+            description ??
+            'This feature is currently under development and will be available soon.',
+        icon: icon,
+        onDismissed: onDismissed,
+      ),
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
+import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:go_router/go_router.dart';
 enum ExchangeRoute {
   exchangeHome('/exchange'),
   exchangeLanding('/exchange/landing'),
+  exchangeLoginForSupport('/exchange/login-support'),
   exchangeAuth('/exchange/auth'),
   exchangeKyc('kyc');
 
@@ -75,15 +77,31 @@ class ExchangeRouter {
       },
     ),
     GoRoute(
+      name: ExchangeRoute.exchangeLoginForSupport.name,
+      path: ExchangeRoute.exchangeLoginForSupport.path,
+      pageBuilder: (context, state) {
+        Widget screen;
+        if (Platform.isIOS) {
+          final isSuperuser =
+              context.read<SettingsCubit>().state.isSuperuser ?? false;
+          screen = isSuperuser
+              ? const ExchangeLandingScreen()
+              : const ExchangeSupportLoginScreen();
+        } else {
+          screen = const ExchangeLandingScreen();
+        }
+        return NoTransitionPage(key: state.pageKey, child: screen);
+      },
+    ),
+    GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.notLoggedIn && !current.notLoggedIn,
+            listenWhen: (previous, current) =>
+                previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, state) {
               // Redirect to home screen if the API key becomes valid
               context.goNamed(ExchangeRoute.exchangeHome.name);

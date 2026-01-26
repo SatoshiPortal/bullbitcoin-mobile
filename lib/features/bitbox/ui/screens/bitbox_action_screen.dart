@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_useca
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -550,13 +551,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       ),
     ];
 
-    final selected = await showModalBottomSheet<String>(
-      useRootNavigator: true,
+    final selected = await BlurredBottomSheet.show<String>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.appColors.surface,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      builder: (BuildContext buildContext) => Padding(
+      child: Padding(
         padding: const EdgeInsets.all(16),
         child: SafeArea(
           child: SingleChildScrollView(
