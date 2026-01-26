@@ -11543,5 +11543,898 @@
     "importWatchOnlyCancel": "لغو",
     "@importWatchOnlyCancel": {
         "description": "Button to cancel watch-only import"
+    },
+    "importQrDeviceSpecterStep2": "وارد کردن PIN",
+    "@importQrDeviceSpecterStep2": {
+        "description": "Specter instruction step 2"
+    },
+    "transactionLabelPreimage": "تصویر",
+    "@transactionLabelPreimage": {
+        "description": "Label for preimage in Lightning swap details"
+    },
+    "fundExchangeCanadaPostStep5": "5. پرداخت با پول نقد یا کارت اعتباری",
+    "@fundExchangeCanadaPostStep5": {
+        "description": "Step 5 for Canada Post payment process"
+    },
+    "fundExchangeCanadaPostStep6": "6. پول نقد به شما یک رسید می دهد، آن را به عنوان اثبات پرداخت خود نگه دارید",
+    "@fundExchangeCanadaPostStep6": {
+        "description": "Step 6 for Canada Post payment process"
+    },
+    "autoswapUpdateSettingsError": "شکست در به روز رسانی تنظیمات مبادله خودکار",
+    "@autoswapUpdateSettingsError": {
+        "description": "Error message when updating settings fails"
+    },
+    "importQrDeviceSpecterName": "Specter",
+    "@importQrDeviceSpecterName": {
+        "description": "Name of Specter device"
+    },
+    "transactionSwapDescChainPending": "انتقال شما ایجاد شده اما هنوز آغاز نشده است.",
+    "@transactionSwapDescChainPending": {
+        "description": "Description for pending chain swap"
+    },
+    "customLocationTitle": "مکان های سفارشی",
+    "@customLocationTitle": {
+        "description": "Title for custom location screen"
+    },
+    "transactionSwapDescLnSendPending": "مبادله شما آغاز شده است. ما در حال پخش معامله زنجیره ای برای قفل کردن وجوه شما هستیم.",
+    "@transactionSwapDescLnSendPending": {
+        "description": "Description for pending Lightning send swap"
+    },
+    "sharedWithBullBitcoin": "مشترک با Bitcoin Bull.",
+    "@sharedWithBullBitcoin": {
+        "description": "End part of privacy assurance message"
+    },
+    "importQrDeviceSeedsignerName": "Seedsigner",
+    "@importQrDeviceSeedsignerName": {
+        "description": "Name of SeedSigner device"
+    },
+    "passwordMinLengthError": "{pinOrPassword} باید حداقل 6 رقمی طولانی داشته باشد",
+    "@passwordMinLengthError": {
+        "description": "Error message for password minimum length",
+        "placeholders": {
+            "pinOrPassword": {
+                "type": "String",
+                "example": "PIN"
+            }
+        }
+    },
+    "fundExchangeETransferLabelEmail": "ارسال E-Transfer به این ایمیل",
+    "@fundExchangeETransferLabelEmail": {
+        "description": "Label for E-transfer recipient email"
+    },
+    "autoswapWarningTitle": "Autoswap با تنظیمات زیر فعال می شود:",
+    "@autoswapWarningTitle": {
+        "description": "Title text in the autoswap warning bottom sheet"
+    },
+    "importQrDeviceKeystoneStep3": "۳) در گوشه سمت راست بالا",
+    "@importQrDeviceKeystoneStep3": {
+        "description": "Keystone instruction step 3"
+    },
+    "autoswapWarningOkButton": "OK",
+    "@autoswapWarningOkButton": {
+        "description": "OK button label in the autoswap warning bottom sheet"
+    },
+    "transactionSwapDescLnSendDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
+    "@transactionSwapDescLnSendDefault": {
+        "description": "Default description for Lightning send swap"
+    },
+    "fundExchangeETransferTitle": "جزئیات E-Transfer",
+    "@fundExchangeETransferTitle": {
+        "description": "Screen title for E-Transfer payment details"
+    },
+    "transactionSwapDescLnSendFailed": "یک مسئله با مبادله شما وجود دارد. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+    "@transactionSwapDescLnSendFailed": {
+        "description": "Description for failed Lightning send swap"
+    },
+    "transactionSwapDescLnSendExpired": "این مبادله منقضی شده است. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+    "@transactionSwapDescLnSendExpired": {
+        "description": "Description for expired Lightning send swap"
+    },
+    "psbtFlowScanDeviceQr": "کیف پول بیتکوین بول از شما می خواهد کد QR را در X64X اسکن کنید. آن را اسکن کنید.",
+    "@psbtFlowScanDeviceQr": {
+        "description": "Instruction to scan QR code from hardware device",
+        "placeholders": {
+            "device": {
+                "type": "String"
+            }
+        }
+    },
+    "fundExchangeOnlineBillPaymentHelpBillerName": "این شرکت را به عنوان یک پرداخت کننده اضافه کنید – این پردازنده پرداخت Bitcoin است",
+    "@fundExchangeOnlineBillPaymentHelpBillerName": {
+        "description": "Help text for biller name field"
+    },
+    "googleDriveProvider": "Google Drive",
+    "@googleDriveProvider": {
+        "description": "Name of Google Drive provider"
+    },
+    "physicalBackupRecommendationText": "شما به قابلیت های امنیتی عملیاتی خود برای پنهان کردن و حفظ کلمات بذر بیت کوین اعتماد دارید.",
+    "@physicalBackupRecommendationText": {
+        "description": "Text explaining when to use physical backup"
+    },
+    "autoswapSelectWalletError": "یک کیف پول Bitcoin را انتخاب کنید",
+    "@autoswapSelectWalletError": {
+        "description": "Validation error when trying to enable auto transfer without selecting a wallet"
+    },
+    "transactionLabelReceiveAmount": "دریافت مبلغ",
+    "@transactionLabelReceiveAmount": {
+        "description": "Label for receive amount in swap details"
+    },
+    "fundExchangeOnlineBillPaymentHelpAccountNumber": "این شماره حساب منحصر به فرد فقط برای شما ایجاد شده است",
+    "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
+        "description": "Help text for account number field"
+    },
+    "autoswapRecipientWalletInfoText": "انتخاب کنید که کیف پول بیت کوین وجوه منتقل شده (باید) را دریافت کند",
+    "@autoswapRecipientWalletInfoText": {
+        "description": "Help text explaining wallet selection"
+    },
+    "chooseAccessPinTitle": "انتخاب دسترسی (X14X)",
+    "@chooseAccessPinTitle": {
+        "description": "Title for choosing access PIN or password",
+        "placeholders": {
+            "pinOrPassword": {
+                "type": "String",
+                "example": "PIN"
+            }
+        }
+    },
+    "psbtFlowClickSign": "Click Sign",
+    "@psbtFlowClickSign": {
+        "description": "Instruction to click sign button on device"
+    },
+    "transactionSwapDescChainFailed": "مسئله ای با انتقال شما وجود داشت. لطفا پشتیبانی تماس بگیرید اگر وجوه در عرض 24 ساعت بازگردانده نشده باشد.",
+    "@transactionSwapDescChainFailed": {
+        "description": "Description for failed chain swap"
+    },
+    "transactionListNoTransactions": "هنوز معاملات نیست.",
+    "@transactionListNoTransactions": {
+        "description": "Message displayed when there are no transactions"
+    },
+    "lastKnownEncryptedVault": "آخرین رمزنگاری شده Vault: {date}",
+    "@lastKnownEncryptedVault": {
+        "description": "Label showing last known encrypted vault date",
+        "placeholders": {
+            "date": {
+                "type": "String",
+                "example": "2025-01-20 15:30:45"
+            }
+        }
+    },
+    "psbtFlowReviewTransaction": "هنگامی که معامله در (X41X) شما وارد می شود، آدرس مقصد و مقدار را بررسی کنید.",
+    "@psbtFlowReviewTransaction": {
+        "description": "Instruction to review transaction details on device",
+        "placeholders": {
+            "device": {
+                "type": "String"
+            }
+        }
+    },
+    "psbtFlowIncreaseBrightness": "افزایش روشنایی صفحه بر روی دستگاه شما",
+    "@psbtFlowIncreaseBrightness": {
+        "description": "Troubleshooting tip to increase brightness"
+    },
+    "fundExchangeETransferLabelSecretQuestion": "سوال محرمانه",
+    "@fundExchangeETransferLabelSecretQuestion": {
+        "description": "Label for E-transfer security question"
+    },
+    "encryptedVaultRecommendation": "بایگانی برچسب ها: ",
+    "@encryptedVaultRecommendation": {
+        "description": "Bold label for encrypted vault recommendation"
+    },
+    "importQrDevicePassportStep11": "یک برچسب برای کیف پول پاسپورت خود وارد کنید و به “Import” ضربه بزنید",
+    "@importQrDevicePassportStep11": {
+        "description": "Passport instruction step 11"
+    },
+    "autoswapWarningDontShowAgain": "این هشدار را دوباره نشان ندهید.",
+    "@autoswapWarningDontShowAgain": {
+        "description": "Checkbox label for dismissing the autoswap warning"
+    },
+    "transactionSwapDescLnSendCompleted": "پرداخت رعد و برق با موفقیت ارسال شده است! مبادله شما در حال حاضر کامل است.",
+    "@transactionSwapDescLnSendCompleted": {
+        "description": "Description for completed Lightning send swap"
+    },
+    "autoswapWarningTriggerAmount": "حداکثر تعادل 0.02 BTC",
+    "@autoswapWarningTriggerAmount": {
+        "description": "Maximum balance text shown in the autoswap warning bottom sheet"
+    },
+    "informationWillNotLeave": "این اطلاعات ",
+    "@informationWillNotLeave": {
+        "description": "First part of privacy assurance message"
+    },
+    "importQrDeviceSeedsignerStep5": "گزینه “Single Sig” را انتخاب کنید، سپس نوع اسکریپت ترجیحی خود را انتخاب کنید (در صورت عدم اطمینان، بومی Segwit را انتخاب کنید).",
+    "@importQrDeviceSeedsignerStep5": {
+        "description": "SeedSigner instruction step 5"
+    },
+    "howToDecideVaultLocationText2": "یک مکان سفارشی می تواند بسیار امن تر باشد، بسته به جایی که انتخاب می کنید. شما همچنین باید مطمئن شوید که فایل پشتیبان را از دست ندهید یا دستگاه ذخیره شده را از دست ندهید.",
+    "@howToDecideVaultLocationText2": {
+        "description": "Second paragraph explaining custom location benefits"
+    },
+    "pleaseWaitFetching": "لطفا منتظر بمانید تا فایل پشتیبان خود را تهیه کنید.",
+    "@pleaseWaitFetching": {
+        "description": "Message asking user to wait while fetching backup"
+    },
+    "transactionLabelSendAmount": "ارسال مبلغ",
+    "@transactionLabelSendAmount": {
+        "description": "Label for send amount in swap details"
+    },
+    "transactionLabelReceiveNetworkFee": "دریافت هزینه شبکه",
+    "@transactionLabelReceiveNetworkFee": {
+        "description": "Label for receive network fee in swap details"
+    },
+    "importQrDeviceSpecterStep1": "قدرت در دستگاه Specter",
+    "@importQrDeviceSpecterStep1": {
+        "description": "Specter instruction step 1"
+    },
+    "fundExchangeCanadaPostStep1": "1. به هر مکان پست کانادا بروید",
+    "@fundExchangeCanadaPostStep1": {
+        "description": "Step 1 for Canada Post payment process"
+    },
+    "importQrDeviceKeystoneStep5": "گزینه “BULL” را از لیست کیف پول ها انتخاب کنید",
+    "@importQrDeviceKeystoneStep5": {
+        "description": "Keystone instruction step 5"
+    },
+    "autoswapInfoSettingsButton": "تنظیمات Configure",
+    "@autoswapInfoSettingsButton": {
+        "description": "Secondary button to navigate to autoswap settings"
+    },
+    "psbtFlowTroubleScanningTitle": "اگر در اسکن مشکل دارید:",
+    "@psbtFlowTroubleScanningTitle": {
+        "description": "Header for troubleshooting scanning issues"
+    },
+    "importQrDeviceKeystoneStep6": "در تلفن همراه خود، روی “دوربین باز” کلیک کنید",
+    "@importQrDeviceKeystoneStep6": {
+        "description": "Keystone instruction step 6"
+    },
+    "autoswapLoadSettingsError": "شکست در بارگذاری تنظیمات مبادله خودکار",
+    "@autoswapLoadSettingsError": {
+        "description": "Error message when loading settings fails"
+    },
+    "autoswapTriggerBalanceError": "حداکثر تعادل باید حداقل 2 برابر تعادل هدف باشد",
+    "@autoswapTriggerBalanceError": {
+        "description": "Validation error shown when maximum balance is less than 2x the target balance"
+    },
+    "autoswapWarningCardSubtitle": "یک مبادله ایجاد خواهد شد اگر تعادل پرداخت فوری شما بیش از 0.02 بیت کوین باشد.",
+    "@autoswapWarningCardSubtitle": {
+        "description": "Subtitle text shown on the autoswap warning card on home screen"
+    },
+    "howToDecideBackupText1": "یکی از رایج ترین راه هایی که مردم بیت کوین خود را از دست می دهند این است که آنها پشتیبان فیزیکی خود را از دست می دهند. هر کسی که پشتیبان فیزیکی شما را پیدا کند می تواند تمام Bitcoin شما را بگیرد. اگر بسیار مطمئن هستید که می توانید آن را به خوبی پنهان کنید و هرگز آن را از دست ندهید، گزینه خوبی است.",
+    "@howToDecideBackupText1": {
+        "description": "First paragraph explaining backup method decision"
+    },
+    "importQrDeviceSeedsignerStep9": "یک برچسب برای کیف پول SeedSigner خود وارد کنید و وارد واردات شوید",
+    "@importQrDeviceSeedsignerStep9": {
+        "description": "SeedSigner instruction step 9"
+    },
+    "fundExchangeLabelBankAddress": "آدرس بانک ما",
+    "@fundExchangeLabelBankAddress": {
+        "description": "Label for bank address field"
+    },
+    "importQrDevicePassportStep2": "وارد کردن PIN",
+    "@importQrDevicePassportStep2": {
+        "description": "Passport instruction step 2"
+    },
+    "importQrDeviceKeystoneStep10": "Keystone شما در حال حاضر متصل و آماده برای استفاده با BU Wallet است.",
+    "@importQrDeviceKeystoneStep10": {
+        "description": "Keystone instruction step 10"
+    },
+    "importQrDeviceSpecterStep3": "وارد شوید و وارد شوید",
+    "@importQrDeviceSpecterStep3": {
+        "description": "Specter instruction step 3"
+    },
+    "transactionSwapInfoClaimableTransfer": "این انتقال به طور خودکار در عرض چند ثانیه تکمیل خواهد شد. اگر نه، شما می توانید یک ادعا دستی را با کلیک بر روی دکمه “Retry Transfer Request” امتحان کنید.",
+    "@transactionSwapInfoClaimableTransfer": {
+        "description": "Additional info for claimable transfers"
+    },
+    "transactionSwapDescChainExpired": "این انتقال منقضی شده است. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+    "@transactionSwapDescChainExpired": {
+        "description": "Description for expired chain swap"
+    },
+    "autoswapWarningCardTitle": "Autoswap فعال می شود",
+    "@autoswapWarningCardTitle": {
+        "description": "Title text shown on the autoswap warning card on home screen"
+    },
+    "visitRecoverBullMessage": "برای کسب اطلاعات بیشتر به Recoverybull.com مراجعه کنید.",
+    "@visitRecoverBullMessage": {
+        "description": "Message with link to more information"
+    },
+    "psbtFlowScanQrOption": "گزینه “Scan QR” را انتخاب کنید",
+    "@psbtFlowScanQrOption": {
+        "description": "Instruction to select scan QR menu option"
+    },
+    "transactionSwapDescLnReceiveDefault": "مبادله شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
+    "@transactionSwapDescLnReceiveDefault": {
+        "description": "Default description for Lightning receive swap"
+    },
+    "psbtFlowMoveBack": "سعی کنید دستگاه خود را کمی به عقب برگردانید",
+    "@psbtFlowMoveBack": {
+        "description": "Troubleshooting tip to adjust scanning distance"
+    },
+    "transactionListOngoingTransfersTitle": "انتقال مستمر",
+    "@transactionListOngoingTransfersTitle": {
+        "description": "Title for ongoing transfers section"
+    },
+    "recoverbullVaultRecoveryTitle": "بازیابی مجدد",
+    "@recoverbullVaultRecoveryTitle": {
+        "description": "Title for recoverbull vault recovery screen"
+    },
+    "physicalBackupRecommendation": "پشتیبانی فیزیکی: ",
+    "@physicalBackupRecommendation": {
+        "description": "Bold label for physical backup recommendation"
+    },
+    "transactionSwapDoNotUninstall": "برنامه را تا زمانی که مبادله کامل شود، نصب نکنید.",
+    "@transactionSwapDoNotUninstall": {
+        "description": "Warning message to not uninstall app during swap"
+    },
+    "importQrDevicePassportStep4": "گزینه “Connect Wallet” را انتخاب کنید",
+    "@importQrDevicePassportStep4": {
+        "description": "Passport instruction step 4"
+    },
+    "confirmAccessPinTitle": "تایید دسترسی (X15X)",
+    "@confirmAccessPinTitle": {
+        "description": "Title for confirming access PIN or password",
+        "placeholders": {
+            "pinOrPassword": {
+                "type": "String",
+                "example": "PIN"
+            }
+        }
+    },
+    "importQrDevicePassportStep7": "گزینه “QR Code” را انتخاب کنید",
+    "@importQrDevicePassportStep7": {
+        "description": "Passport instruction step 7"
+    },
+    "autoswapTriggerAtBalanceInfoText": "Autoswap زمانی ایجاد می شود که تعادل شما بالاتر از این حداکثر تعادل باشد.",
+    "@autoswapTriggerAtBalanceInfoText": {
+        "description": "Info text explaining when autoswap will trigger"
+    },
+    "transactionSwapDescChainClaimable": "معامله قفل سازی تایید شده است. شما در حال حاضر ادعا می کنید که وجوه برای تکمیل انتقال شما.",
+    "@transactionSwapDescChainClaimable": {
+        "description": "Description for claimable chain swap"
+    },
+    "transactionSwapDescChainRefundable": "این انتقال بازپرداخت خواهد شد. وجوه شما به طور خودکار به کیف پول شما بازگردانده خواهد شد.",
+    "@transactionSwapDescChainRefundable": {
+        "description": "Description for refundable chain swap"
+    },
+    "autoswapInfoRemindLater": "بعدا به من یادآوری کنید",
+    "@autoswapInfoRemindLater": {
+        "description": "Tertiary action to close sheet without dismissing"
+    },
+    "customLocationProvider": "مکان سفارشی",
+    "@customLocationProvider": {
+        "description": "Name of custom location provider"
+    },
+    "psbtFlowSelectSeed": "هنگامی که معامله در (X41X) شما وارد می شود، باید بذری را انتخاب کنید که می خواهید آن را امضا کنید.",
+    "@psbtFlowSelectSeed": {
+        "description": "Instruction to select seed on device for signing",
+        "placeholders": {
+            "device": {
+                "type": "String"
+            }
+        }
+    },
+    "psbtFlowHoldSteady": "کد QR را ثابت و متمرکز نگه دارید",
+    "@psbtFlowHoldSteady": {
+        "description": "Troubleshooting tip to hold QR code still"
+    },
+    "fundExchangeCanadaPostStep2": "2. از صندوقدار بخواهید کد QR “Loadhub” را اسکن کند",
+    "@fundExchangeCanadaPostStep2": {
+        "description": "Step 2 for Canada Post payment process"
+    },
+    "appleICloudProvider": "Apple iCloud",
+    "@appleICloudProvider": {
+        "description": "Name of Apple iCloud provider"
+    },
+    "autoswapWarningExplanation": "هنگامی که تعادل شما بالاتر از حداکثر تعادل باشد، یک مبادله ایجاد خواهد شد. تعادل هدف در کیف پول پرداخت فوری شما حفظ خواهد شد و مقدار باقی مانده به کیف پول Bitcoin امن شما مبادله خواهد شد.",
+    "@autoswapWarningExplanation": {
+        "description": "Explanation text in the autoswap warning bottom sheet"
+    },
+    "importQrDeviceSeedsignerStep6": "گزینه “Sparrow” را به عنوان گزینه صادرات انتخاب کنید",
+    "@importQrDeviceSeedsignerStep6": {
+        "description": "SeedSigner instruction step 6"
+    },
+    "fundExchangeETransferLabelBeneficiaryName": "استفاده از این به عنوان نام سود آور E-Transfer",
+    "@fundExchangeETransferLabelBeneficiaryName": {
+        "description": "Label for E-transfer beneficiary name"
+    },
+    "importQrDevicePassportStep1": "قدرت در دستگاه پاسپورت شما",
+    "@importQrDevicePassportStep1": {
+        "description": "Passport instruction step 1"
+    },
+    "transactionSwapDescChainCompleted": "انتقال شما با موفقیت تکمیل شده است! حالا باید در کیف پول شما در دسترس باشد.",
+    "@transactionSwapDescChainCompleted": {
+        "description": "Description for completed chain swap"
+    },
+    "autoswapInfoTitle": "Autoswap فعال است",
+    "@autoswapInfoTitle": {
+        "description": "Title for autoswap information bottom sheet"
+    },
+    "autoswapAlwaysBlockInfoEnabled": "هنگامی که فعال، انتقال خودکار با هزینه های بالاتر از حد تنظیم همیشه مسدود خواهد شد",
+    "@autoswapAlwaysBlockInfoEnabled": {
+        "description": "Help text when always block is enabled"
+    },
+    "importQrDeviceSeedsignerStep3": "چک کردن a SeedQR یا وارد عبارت بذر 12 یا 24 کلمه ای",
+    "@importQrDeviceSeedsignerStep3": {
+        "description": "SeedSigner instruction step 3"
+    },
+    "autoswapMaxBalanceInfoText": "هنگامی که تعادل کیف پول بیش از دو برابر است، انتقال خودکار باعث کاهش تعادل در این سطح می شود",
+    "@autoswapMaxBalanceInfoText": {
+        "description": "Help text explaining how the max balance threshold works"
+    },
+    "importQrDeviceSpecterStep4": "دنبال کردن راهنمایی با توجه به روش انتخاب شده خود",
+    "@importQrDeviceSpecterStep4": {
+        "description": "Specter instruction step 4"
+    },
+    "importQrDeviceKeystoneStep7": "کد QR را که در Keystone شما نمایش داده شده است، اسکن کنید",
+    "@importQrDeviceKeystoneStep7": {
+        "description": "Keystone instruction step 7"
+    },
+    "importQrDeviceKeystoneStep8": "در کیف پول BULL، نوع جذب ترجیحی خود را انتخاب کنید. اگر مطمئن نیستید، “Segwit” (BIP84) را انتخاب کنید",
+    "@importQrDeviceKeystoneStep8": {
+        "description": "Keystone instruction step 8"
+    },
+    "importQrDevicePassportName": "پایه گذرنامه",
+    "@importQrDevicePassportName": {
+        "description": "Name of Foundation Passport device"
+    },
+    "transactionFeesTotalDeducted": "این کل هزینه ای است که از مبلغ ارسال شده کسر می شود",
+    "@transactionFeesTotalDeducted": {
+        "description": "Fee deduction explanation for sending swaps"
+    },
+    "takeYourTimeTag": "زمان خود را در نظر بگیرید",
+    "@takeYourTimeTag": {
+        "description": "Tag for options requiring more time"
+    },
+    "importQrDevicePassportStep10": "در برنامه کیف پول BULL، گزینه “Segwit (BIP84)” را به عنوان گزینه جذب انتخاب کنید",
+    "@importQrDevicePassportStep10": {
+        "description": "Passport instruction step 10"
+    },
+    "passwordTooCommonError": "این {pinOrPassword} بسیار رایج است. لطفا یکی دیگر را انتخاب کنید.",
+    "@passwordTooCommonError": {
+        "description": "Error message for common password",
+        "placeholders": {
+            "pinOrPassword": {
+                "type": "String",
+                "example": "PIN"
+            }
+        }
+    },
+    "importQrDeviceSpecterInstructionsTitle": "دستورالعمل های Specter",
+    "@importQrDeviceSpecterInstructionsTitle": {
+        "description": "Title for Specter setup instructions"
+    },
+    "transactionListLoadingTransactions": "بارگذاری معاملات ...",
+    "@transactionListLoadingTransactions": {
+        "description": "Message displayed while loading transactions"
+    },
+    "googleAppleCloudRecommendationText": "شما می خواهید مطمئن شوید که هرگز دسترسی به فایل ذخیره خود را از دست ندهید حتی اگر دستگاه های خود را از دست بدهید.",
+    "@googleAppleCloudRecommendationText": {
+        "description": "Text explaining when to use Google/Apple cloud"
+    },
+    "psbtFlowTransactionImported": "این معامله در کیف پول Bitcoin بول وارد خواهد شد.",
+    "@psbtFlowTransactionImported": {
+        "description": "Confirmation that transaction was imported successfully"
+    },
+    "customLocationRecommendationText": "شما مطمئن هستید که فایل را از دست نخواهید داد و هنوز در صورت از دست دادن تلفن شما قابل دسترسی خواهد بود.",
+    "@customLocationRecommendationText": {
+        "description": "Text explaining when to use custom location"
+    },
+    "importQrDeviceSeedsignerStep10": "راه اندازی کامل",
+    "@importQrDeviceSeedsignerStep10": {
+        "description": "SeedSigner instruction step 10"
+    },
+    "transactionLabelServerNetworkFees": "هزینه های شبکه سرور",
+    "@transactionLabelServerNetworkFees": {
+        "description": "Label for server network fees in swap details"
+    },
+    "psbtFlowScanAnyQr": "گزینه “Scan Any QR code” را انتخاب کنید",
+    "@psbtFlowScanAnyQr": {
+        "description": "Instruction to select scan any QR code option"
+    },
+    "transactionSwapDescLnReceiveCompleted": "معامله شما با موفقیت تکمیل شده است! حالا باید در کیف پول شما در دسترس باشد.",
+    "@transactionSwapDescLnReceiveCompleted": {
+        "description": "Description for completed Lightning receive swap"
+    },
+    "importQrDevicePassportStep9": "کد QR نمایش داده شده در پاسپورت خود را اسکن کنید",
+    "@importQrDevicePassportStep9": {
+        "description": "Passport instruction step 9"
+    },
+    "enterPinAgainMessage": "دوباره وارد شوید تا ادامه دهید.",
+    "@enterPinAgainMessage": {
+        "description": "Message asking to re-enter PIN/password",
+        "placeholders": {
+            "pinOrPassword": {
+                "type": "String",
+                "example": "PIN"
+            }
+        }
+    },
+    "howToDecideBackupText2": "کابینت رمزگذاری شده مانع از شما دزدان می شود که به دنبال سرقت پشتیبان خود هستید. همچنین از از دست دادن نسخه پشتیبان خود به طور تصادفی جلوگیری می کند زیرا در ابر شما ذخیره می شود. ارائه دهندگان ذخیره سازی ابری مانند گوگل یا اپل به Bitcoin شما دسترسی نخواهند داشت زیرا رمز عبور رمزگذاری بسیار قوی است. احتمال کمی وجود دارد که سرور وب که کلید رمزگذاری پشتیبان شما را ذخیره می کند، به خطر بیفتد. در این رویداد، امنیت پشتیبان گیری در حساب ابری شما می تواند در معرض خطر باشد.",
+    "@howToDecideBackupText2": {
+        "description": "Second paragraph explaining encrypted vault benefits and risks"
+    },
+    "transactionSwapInfoRefundableTransfer": "این انتقال به طور خودکار در عرض چند ثانیه بازپرداخت خواهد شد. اگر نه، می توانید با کلیک بر روی دکمه “Retry Transfer Refund” یک بازپرداخت دستی را امتحان کنید.",
+    "@transactionSwapInfoRefundableTransfer": {
+        "description": "Additional info for refundable transfers"
+    },
+    "autoswapAlwaysBlockLabel": "همیشه هزینه های بالا را مسدود کنید",
+    "@autoswapAlwaysBlockLabel": {
+        "description": "Label for toggle to always block high fee transfers"
+    },
+    "importQrDevicePassportStep6": "گزینه “Single-sig” را انتخاب کنید",
+    "@importQrDevicePassportStep6": {
+        "description": "Passport instruction step 6"
+    },
+    "psbtFlowScanQrShown": "کد QR نشان داده شده در کیف پول بول",
+    "@psbtFlowScanQrShown": {
+        "description": "Instruction to scan QR code displayed in app"
+    },
+    "transactionSwapInfoClaimableSwap": "این مبادله به طور خودکار در عرض چند ثانیه تکمیل خواهد شد. اگر نه، شما می توانید یک ادعا دستی را با کلیک بر روی دکمه “Retry Request” امتحان کنید.",
+    "@transactionSwapInfoClaimableSwap": {
+        "description": "Additional info for claimable swaps"
+    },
+    "importQrDeviceSeedsignerStep4": "گزینه “Export Xpub” را انتخاب کنید",
+    "@importQrDeviceSeedsignerStep4": {
+        "description": "SeedSigner instruction step 4"
+    },
+    "recoverWalletScreenTitle": "بازیابی کیف پول",
+    "@recoverWalletScreenTitle": {
+        "description": "Title for recover wallet screen"
+    },
+    "fundExchangeCanadaPostStep4": "4. پول نقد از شما خواهد خواست تا یک قطعه از شناسه دولتی را ببینید و تأیید کنید که نام موجود در ID شما با حساب Bitcoin Bull شما مطابقت دارد",
+    "@fundExchangeCanadaPostStep4": {
+        "description": "Step 4 for Canada Post payment process - ID verification"
+    },
+    "leaveYourPhone": "تلفن خود را ترک کنید و ",
+    "@leaveYourPhone": {
+        "description": "Middle part of privacy assurance message"
+    },
+    "importQrDevicePassportInstructionsTitle": "دستورالعمل های پایه پاسپورت",
+    "@importQrDevicePassportInstructionsTitle": {
+        "description": "Title for Passport setup instructions"
+    },
+    "importQrDeviceKeystoneStep9": "یک برچسب برای کیف پول Keystone خود وارد کنید و روی “Import” ضربه بزنید",
+    "@importQrDeviceKeystoneStep9": {
+        "description": "Keystone instruction step 9"
+    },
+    "fundExchangeOnlineBillPaymentDescription": "هر مبلغی که شما از طریق ویژگی پرداخت صورتحساب آنلاین بانک خود با استفاده از اطلاعات زیر ارسال می کنید به تعادل حساب بول بیت کوین در عرض 3-4 روز کسب و کار اعتبار خواهد داشت.",
+    "@fundExchangeOnlineBillPaymentDescription": {
+        "description": "Description of how online bill payment works and timeframe"
+    },
+    "loadingBackupFile": "بارگذاری فایل پشتیبان ...",
+    "@loadingBackupFile": {
+        "description": "Message shown while loading backup file"
+    },
+    "psbtFlowClickDone": "روی گزینه “I’m Done” در کیف پول Bitcoin بول کلیک کنید.",
+    "@psbtFlowClickDone": {
+        "description": "Instruction to click done button in app"
+    },
+    "transactionSwapDescChainDefault": "انتقال شما در حال پیشرفت است. این فرآیند خودکار است و ممکن است مدتی طول بکشد تا تکمیل شود.",
+    "@transactionSwapDescChainDefault": {
+        "description": "Default description for chain swap"
+    },
+    "transactionLabelSendNetworkFees": "ارسال هزینه های شبکه",
+    "@transactionLabelSendNetworkFees": {
+        "description": "Label for send network fees in swap details"
+    },
+    "transactionListYesterday": "دیروز",
+    "@transactionListYesterday": {
+        "description": "Date label for yesterday's transactions"
+    },
+    "transactionFeesDeductedFrom": "این هزینه ها از مبلغ ارسال شده کسر خواهد شد",
+    "@transactionFeesDeductedFrom": {
+        "description": "Fee deduction explanation for receiving swaps"
+    },
+    "fundExchangeETransferLabelSecretAnswer": "پاسخ مخفی",
+    "@fundExchangeETransferLabelSecretAnswer": {
+        "description": "Label for E-transfer security answer"
+    },
+    "transactionSwapDescLnSendPaid": "معامله در زنجیره شما پخش شده است. پس از 1 تایید، پرداخت رعد و برق ارسال خواهد شد.",
+    "@transactionSwapDescLnSendPaid": {
+        "description": "Description for paid Lightning send swap"
+    },
+    "importQrDeviceSeedsignerStep2": "منوی “Seeds” را باز کنید",
+    "@importQrDeviceSeedsignerStep2": {
+        "description": "SeedSigner instruction step 2"
+    },
+    "autoswapBaseBalanceInfoText": "تعادل کیف پول پرداخت فوری شما پس از یک خودکار به این تعادل هدف باز می گردد.",
+    "@autoswapBaseBalanceInfoText": {
+        "description": "Info text explaining what happens to the balance after an autoswap"
+    },
+    "importQrDeviceSeedsignerStep1": "قدرت در دستگاه SeedSigner",
+    "@importQrDeviceSeedsignerStep1": {
+        "description": "SeedSigner instruction step 1"
+    },
+    "transactionListToday": "امروز",
+    "@transactionListToday": {
+        "description": "Date label for today's transactions"
+    },
+    "psbtFlowSignTransactionOnDevice": "روی دکمه ها کلیک کنید تا معامله را بر روی (X50X) خود امضا کنید.",
+    "@psbtFlowSignTransactionOnDevice": {
+        "description": "Instruction to sign transaction on hardware device",
+        "placeholders": {
+            "device": {
+                "type": "String"
+            }
+        }
+    },
+    "autoswapRecipientWalletPlaceholderRequired": "کیف پول Bitcoin را انتخاب کنید *",
+    "@autoswapRecipientWalletPlaceholderRequired": {
+        "description": "Dropdown placeholder with required indicator when auto transfer is enabled"
+    },
+    "autoswapRecipientWalletPlaceholder": "کیف پول Bitcoin را انتخاب کنید",
+    "@autoswapRecipientWalletPlaceholder": {
+        "description": "Dropdown placeholder text when no wallet is selected"
+    },
+    "fundExchangeETransferDescription": "هر مبلغی که از بانک خود از طریق ایمیل E-Transfer ارسال می کنید با استفاده از اطلاعات زیر به تعادل حساب Bitcoin Bull شما در عرض چند دقیقه اعتبار خواهد داد.",
+    "@fundExchangeETransferDescription": {
+        "description": "Description of how E-Transfer works and timeframe"
+    },
+    "autoswapMinimumThresholdErrorSats": "حداقل آستانه تعادل (X29X)",
+    "@autoswapMinimumThresholdErrorSats": {
+        "description": "Validation error shown when amount threshold is below minimum (sats display)",
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "psbtFlowClickPsbt": "روی PSBT کلیک کنید",
+    "@psbtFlowClickPsbt": {
+        "description": "Instruction to click PSBT option on device"
+    },
+    "quickAndEasyTag": "سریع و آسان",
+    "@quickAndEasyTag": {
+        "description": "Tag for quick and easy options"
+    },
+    "importQrDevicePassportStep5": "گزینه “Sparrow” را انتخاب کنید",
+    "@importQrDevicePassportStep5": {
+        "description": "Passport instruction step 5"
+    },
+    "arkNoTransactionsYet": "هنوز معاملات نیست.",
+    "@arkNoTransactionsYet": {
+        "description": "Empty state message shown when user has no transaction history"
+    },
+    "autoswapMaximumFeeError": "حداکثر هزینه (X25X)٪",
+    "@autoswapMaximumFeeError": {
+        "description": "Validation error shown when fee threshold exceeds maximum",
+        "placeholders": {
+            "threshold": {
+                "type": "String"
+            }
+        }
+    },
+    "transactionSwapInfoChainDelay": "انتقال On-chain ممکن است مدتی طول بکشد تا به دلیل زمان تأیید بلاک چین تکمیل شود.",
+    "@transactionSwapInfoChainDelay": {
+        "description": "Additional info about chain transfer delays"
+    },
+    "importQrDevicePassportStep3": "گزینه “Manage Account” را انتخاب کنید",
+    "@importQrDevicePassportStep3": {
+        "description": "Passport instruction step 3"
+    },
+    "googleDrivePrivacyMessage": "گوگل از شما می خواهد اطلاعات شخصی را با این برنامه به اشتراک بگذارید.",
+    "@googleDrivePrivacyMessage": {
+        "description": "Message about Google requesting personal information"
+    },
+    "transactionSwapDescLnReceiveExpired": "این مبادله منقضی شده است. هرگونه پول ارسال شده به صورت خودکار به فرستنده بازگردانده می شود.",
+    "@transactionSwapDescLnReceiveExpired": {
+        "description": "Description for expired Lightning receive swap"
+    },
+    "transactionSwapInfoRefundableSwap": "این مبادله به طور خودکار در عرض چند ثانیه بازپرداخت خواهد شد. اگر نه، می توانید با کلیک بر روی دکمه “Retry Refund”، بازپرداخت دستی را امتحان کنید.",
+    "@transactionSwapInfoRefundableSwap": {
+        "description": "Additional info for refundable swaps"
+    },
+    "encryptedVaultRecommendationText": "شما مطمئن نیستید و نیاز به زمان بیشتری برای یادگیری در مورد شیوه های امنیتی پشتیبان دارید.",
+    "@encryptedVaultRecommendationText": {
+        "description": "Text explaining when to use encrypted vault"
+    },
+    "autoswapWarningSettingsLink": "مرا به تنظیمات Autoswap ببرید",
+    "@autoswapWarningSettingsLink": {
+        "description": "Link text to navigate to autoswap settings from the warning bottom sheet"
+    },
+    "importQrDeviceSeedsignerStep8": "کد QR نمایش داده شده در SeedSigner",
+    "@importQrDeviceSeedsignerStep8": {
+        "description": "SeedSigner instruction step 8"
+    },
+    "autoswapWarningBaseBalance": "هدف قرار دادن تعادل 0.01 BTC",
+    "@autoswapWarningBaseBalance": {
+        "description": "Target balance text shown in the autoswap warning bottom sheet"
+    },
+    "savingToDevice": "پس انداز برای دستگاه شما.",
+    "@savingToDevice": {
+        "description": "Message shown when saving to device"
+    },
+    "pickPasswordOrPinButton": "در عوض {pinOrPassword} را انتخاب کنید",
+    "@pickPasswordOrPinButton": {
+        "description": "Button to switch between PIN and password",
+        "placeholders": {
+            "pinOrPassword": {
+                "type": "String",
+                "example": "password"
+            }
+        }
+    },
+    "importQrDevicePassportStep8": "در دستگاه تلفن همراه خود، روی “دوربین باز” ضربه بزنید",
+    "@importQrDevicePassportStep8": {
+        "description": "Passport instruction step 8"
+    },
+    "psbtFlowSignWithQr": "گزینه Click Sign with QR Code",
+    "@psbtFlowSignWithQr": {
+        "description": "Instruction to select QR code signing method"
+    },
+    "importQrDeviceKeystoneStep4": "گزینه “Connect Software Wallet” را بزنید",
+    "@importQrDeviceKeystoneStep4": {
+        "description": "Keystone instruction step 4"
+    },
+    "autoswapAutoSaveError": "شکست برای ذخیره تنظیمات",
+    "@autoswapAutoSaveError": {
+        "description": "Error message when auto-save on disable fails"
+    },
+    "googleAppleCloudRecommendation": "گوگل یا Apple Cloud : ",
+    "@googleAppleCloudRecommendation": {
+        "description": "Bold label for Google/Apple cloud recommendation"
+    },
+    "never": "هرگز ",
+    "@never": {
+        "description": "Bold part of privacy assurance (never)"
+    },
+    "psbtFlowLoadFromCamera": "روی Load از دوربین",
+    "@psbtFlowLoadFromCamera": {
+        "description": "Instruction to select camera load option on device"
+    },
+    "autoswapWarningDescription": "Autoswap تضمین می کند که شما به طور تصادفی پول زیادی را در کیف پول پرداخت فوری نگه ندارید، که برای ذخیره سازی طولانی مدت امن نیست.",
+    "@autoswapWarningDescription": {
+        "description": "Description text at the top of the autoswap warning bottom sheet"
+    },
+    "autoswapMaxFeeLabel": "هزینه انتقال Max",
+    "@autoswapMaxFeeLabel": {
+        "description": "Label for fee threshold percentage input field"
+    },
+    "importQrDevicePassportStep12": "راه اندازی کامل.",
+    "@importQrDevicePassportStep12": {
+        "description": "Passport instruction step 12"
+    },
+    "fundExchangeOnlineBillPaymentTitle": "پرداخت آنلاین",
+    "@fundExchangeOnlineBillPaymentTitle": {
+        "description": "Screen title for Online Bill Payment details"
+    },
+    "fundExchangeCanadaPostStep3": "3. به پول نقد، مبلغی که می خواهید بارگیری کنید",
+    "@fundExchangeCanadaPostStep3": {
+        "description": "Step 3 for Canada Post payment process"
+    },
+    "fundExchangeCanadaPostTitle": "پول نقد یا بدهی شخصی در کانادا",
+    "@fundExchangeCanadaPostTitle": {
+        "description": "Screen title for Canada Post payment method"
+    },
+    "fundExchangeOnlineBillPaymentLabelBillerName": "فهرست صورتحساب های بانک خود را برای این نام جستجو کنید",
+    "@fundExchangeOnlineBillPaymentLabelBillerName": {
+        "description": "Label for biller name in online bill payment"
+    },
+    "importQrDeviceSeedsignerStep7": "در دستگاه تلفن همراه خود، دوربین Open را بزنید",
+    "@importQrDeviceSeedsignerStep7": {
+        "description": "SeedSigner instruction step 7"
+    },
+    "importQrDeviceSeedsignerInstructionsTitle": "دستورالعمل های ناظر",
+    "@importQrDeviceSeedsignerInstructionsTitle": {
+        "description": "Title for SeedSigner setup instructions"
+    },
+    "transactionSwapInfoFailedExpired": "اگر سوالی یا نگرانی دارید، لطفا با حمایت از کمک تماس بگیرید.",
+    "@transactionSwapInfoFailedExpired": {
+        "description": "Additional info for failed or expired swaps"
+    },
+    "autoswapSaveButton": "Save",
+    "@autoswapSaveButton": {
+        "description": "Save button label at bottom of settings sheet"
+    },
+    "psbtFlowMoveCloserFurther": "سعی کنید دستگاه خود را نزدیک تر یا بیشتر حرکت دهید",
+    "@psbtFlowMoveCloserFurther": {
+        "description": "Troubleshooting tip to adjust distance"
+    },
+    "fundExchangeOnlineBillPaymentLabelAccountNumber": "اضافه کردن این به عنوان شماره حساب",
+    "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
+        "description": "Label for account number in online bill payment"
+    },
+    "autoswapMaxFeeInfoText": "اگر کل هزینه انتقال بالاتر از درصد تعیین شده باشد، انتقال خودکار مسدود خواهد شد",
+    "@autoswapMaxFeeInfoText": {
+        "description": "Help text explaining how the max fee threshold works"
+    },
+    "autoswapInfoDismissButton": "آن را، دوباره نشان ندهید",
+    "@autoswapInfoDismissButton": {
+        "description": "Primary button to dismiss autoswap info permanently"
+    },
+    "memorizePasswordWarning": "شما باید این {pinOrPassword} را برای بازیابی دسترسی به کیف پول خود حفظ کنید. باید حداقل 6 رقم باشد. اگر این را از دست بدهید، نمی توانید نسخه پشتیبان خود را بازیابی کنید.",
+    "@memorizePasswordWarning": {
+        "description": "Warning about memorizing PIN/password",
+        "placeholders": {
+            "pinOrPassword": {
+                "type": "String",
+                "example": "PIN"
+            }
+        }
+    },
+    "autoswapMinimumThresholdErrorBtc": "حداقل آستانه تعادل (X29X) BTC",
+    "@autoswapMinimumThresholdErrorBtc": {
+        "description": "Validation error shown when amount threshold is below minimum (BTC display)",
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            }
+        }
+    },
+    "transactionSwapDescChainPaid": "معامله شما پخش شده است. ما در حال حاضر منتظر معامله قفل هستیم تا تایید شود.",
+    "@transactionSwapDescChainPaid": {
+        "description": "Description for paid chain swap"
+    },
+    "autoswapRecipientWalletLabel": "راهنمای Bitcoin Wallet",
+    "@autoswapRecipientWalletLabel": {
+        "description": "Label for wallet selection dropdown"
+    },
+    "autoswapRecipientWalletDefaultLabel": "Bitcoin Wallet",
+    "@autoswapRecipientWalletDefaultLabel": {
+        "description": "Default label shown for wallets without a custom label in the dropdown"
+    },
+    "autoswapSaveErrorMessage": "شکست برای ذخیره تنظیمات: {error}",
+    "@autoswapSaveErrorMessage": {
+        "description": "SnackBar error message when save fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "googleDriveSignInMessage": "شما باید به Google Drive وارد شوید",
+    "@googleDriveSignInMessage": {
+        "description": "Message about needing to sign in to Google Drive"
+    },
+    "autoswapRecipientWalletRequired": "*",
+    "@autoswapRecipientWalletRequired": {
+        "description": "Required field indicator asterisk"
+    },
+    "chooseVaultLocationTitle": "انتخاب موقعیت مکانی",
+    "@chooseVaultLocationTitle": {
+        "description": "Title for choose vault location screen"
+    },
+    "autoswapMaxBalanceLabel": "Max Instant Wallet Balance",
+    "@autoswapMaxBalanceLabel": {
+        "description": "Label for amount threshold input field"
+    },
+    "psbtFlowDeviceShowsQr": "سپس کد QR خود را به شما نشان می دهد.",
+    "@psbtFlowDeviceShowsQr": {
+        "description": "Information that device will display QR code after signing",
+        "placeholders": {
+            "device": {
+                "type": "String"
+            }
+        }
+    },
+    "howToDecideVaultLocationText1": "ارائه دهندگان ذخیره سازی ابری مانند گوگل یا اپل به Bitcoin شما دسترسی نخواهند داشت زیرا رمز عبور رمزگذاری بسیار قوی است. آنها فقط می توانند به Bitcoin شما در رویداد غیر محتمل که آنها با سرور کلیدی (خدمات آنلاین که رمز رمزگذاری شما را ذخیره می کند) دسترسی پیدا کنند. اگر سرور کلیدی هک شود، Bitcoin شما می تواند در معرض خطر با Google یا Apple Cloud باشد.",
+    "@howToDecideVaultLocationText1": {
+        "description": "First paragraph explaining vault location decision"
+    },
+    "willNot": "نخواهد بود ",
+    "@willNot": {
+        "description": "Bold part of privacy assurance (will not)"
+    },
+    "psbtFlowMoveLaser": "لیزر قرمز را بالا و پایین تر از کد QR حرکت دهید",
+    "@psbtFlowMoveLaser": {
+        "description": "Troubleshooting tip for devices with laser scanners"
+    },
+    "transactionListOngoingTransfersDescription": "این انتقال ها در حال حاضر در حال پیشرفت هستند. وجوه شما امن است و در هنگام تکمیل انتقال در دسترس خواهد بود.",
+    "@transactionListOngoingTransfersDescription": {
+        "description": "Description for ongoing transfers section"
+    },
+    "customLocationRecommendation": "مکان سفارشی: ",
+    "@customLocationRecommendation": {
+        "description": "Bold label for custom location recommendation"
+    },
+    "transactionSwapDescLnReceiveFailed": "یک مسئله با مبادله شما وجود دارد. لطفا پشتیبانی تماس بگیرید اگر وجوه در عرض 24 ساعت بازگردانده نشده باشد.",
+    "@transactionSwapDescLnReceiveFailed": {
+        "description": "Description for failed Lightning receive swap"
+    },
+    "autoswapAlwaysBlockInfoDisabled": "هنگامی که معلول هستید، گزینه ای برای اجازه دادن به یک انتقال خودکار که به دلیل هزینه های بالا مسدود می شود، به شما داده می شود",
+    "@autoswapAlwaysBlockInfoDisabled": {
+        "description": "Help text when always block is disabled"
+    },
+    "transactionSwapDescLnReceiveClaimable": "معامله در زنجیره تایید شده است. ما در حال حاضر ادعا می کنیم که وجوه برای تکمیل مبادله شما.",
+    "@transactionSwapDescLnReceiveClaimable": {
+        "description": "Description for claimable Lightning receive swap"
     }
 }
