@@ -17,12 +17,7 @@ class DcaConfirmationDetailRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
-            ),
-          ),
+          Text(label, style: theme.textTheme.bodyMedium),
 
           Expanded(
             child: value == null
