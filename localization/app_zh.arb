@@ -4158,4 +4158,29 @@
   "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败：{error}",
   "mempoolErrorDeleteFailed": "删除自定义服务器失败：{error}",
   "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}"
+,
+  "settingsErrorReportingTitle": "错误报告",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "错误报告计划",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。\n\n启用后，当应用程序发生问题时，我们会自动发送错误报告。这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。\n\n我们不会与第三方分享此信息。我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "接受",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "取消",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "重新启动应用程序以应用此更改",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  }
 }

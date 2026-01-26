@@ -28,7 +28,7 @@ class DeleteSeedUsecase {
 
       await _seedRepository.delete(fingerprint);
     } catch (e) {
-      log.severe('Failed to delete seed with fingerprint $fingerprint: $e');
+      log.severe('Failed to delete seed with fingerprint $fingerprint: $e', trace: StackTrace.current);
       rethrow;
     }
   }

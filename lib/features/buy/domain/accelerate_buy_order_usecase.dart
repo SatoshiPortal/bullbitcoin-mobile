@@ -28,7 +28,7 @@ class AccelerateBuyOrderUsecase {
       final order = await repo.accelerateBuyOrder(orderId);
       return order;
     } catch (e) {
-      log.severe('Error in AccelerateBuyOrderUsecase: $e');
+      log.severe('Error in AccelerateBuyOrderUsecase: $e', trace: StackTrace.current);
       throw AccelerateBuyOrderException('$e');
     }
   }

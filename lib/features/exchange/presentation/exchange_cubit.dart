@@ -89,7 +89,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
       loadAnnouncements();
     } catch (e) {
-      log.severe('$ExchangeCubit init: $e');
+      log.severe('$ExchangeCubit init: $e', trace: StackTrace.current);
       if (e is ApiKeyException) {
         emit(state.copyWith(apiKeyException: e));
         // Disconnect WebSocket if API key is invalid
@@ -108,7 +108,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
       await fetchUserSummary();
     } catch (e) {
-      log.severe('Error in storeApiKey: $e');
+      log.severe('Error in storeApiKey: $e', trace: StackTrace.current);
       if (e is SaveExchangeApiKeyException) {
         emit(state.copyWith(saveApiKeyException: e));
       }
@@ -147,7 +147,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
       await fetchUserSummary(force: true);
     } catch (e) {
-      log.severe('Error in savePreferences: $e');
+      log.severe('Error in savePreferences: $e', trace: StackTrace.current);
       emit(state.copyWith(isSaving: false));
     }
   }
@@ -161,7 +161,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       // Trigger a refresh of the user summary to be sure the Dca was stopped
       await fetchUserSummary();
     } catch (e) {
-      log.severe('Error in stopDca: $e');
+      log.severe('Error in stopDca: $e', trace: StackTrace.current);
     } finally {
       emit(state.copyWith(isSaving: false));
     }
@@ -186,7 +186,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         ),
       );
     } catch (e) {
-      log.severe('Error in logout: $e');
+      log.severe('Error in logout: $e', trace: StackTrace.current);
       if (e is DeleteExchangeApiKeyException) {
         emit(state.copyWith(deleteApiKeyException: e));
       }

@@ -20,7 +20,7 @@ class ElectrumSettingsStorageDatasource {
         'Successfully stored/updated electrum settings: ${settings.network}',
       );
     } catch (e) {
-      log.severe('Failed to store/update electrum settings: $e');
+      log.severe('Failed to store/update electrum settings: $e', trace: StackTrace.current);
       rethrow;
     }
   }

@@ -40,7 +40,7 @@ class PlacePayOrderUsecase {
     } on PayError {
       rethrow;
     } catch (e) {
-      log.severe('Error in PlacePayOrderUsecase: $e');
+      log.severe('Error in PlacePayOrderUsecase: $e', trace: StackTrace.current);
       throw PayError.unexpected(message: '$e');
     }
   }

@@ -47,7 +47,7 @@ class ProcessAndSeparateSeedsUsecase {
         oldWallets: oldWallets,
       );
     } catch (e) {
-      log.severe('Failed to process and separate seeds: $e');
+      log.severe('Failed to process and separate seeds: $e', trace: StackTrace.current);
       rethrow;
     }
   }

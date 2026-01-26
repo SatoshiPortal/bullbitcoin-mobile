@@ -556,6 +556,20 @@
             "default_dart": "const CustomExpression('\\'system\\'')",
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "is_error_reporting_enabled",
+            "getter_name": "isErrorReportingEnabled",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"is_error_reporting_enabled\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"is_error_reporting_enabled\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -1890,7 +1904,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"theme_mode\" TEXT NOT NULL DEFAULT 'system');"
+          "sql": "CREATE TABLE IF NOT EXISTS \"settings\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"environment\" TEXT NOT NULL, \"bitcoin_unit\" TEXT NOT NULL, \"language\" TEXT NOT NULL, \"currency\" TEXT NOT NULL, \"hide_amounts\" INTEGER NOT NULL CHECK (\"hide_amounts\" IN (0, 1)), \"is_superuser\" INTEGER NOT NULL CHECK (\"is_superuser\" IN (0, 1)), \"is_dev_mode_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_dev_mode_enabled\" IN (0, 1)), \"use_tor_proxy\" INTEGER NOT NULL DEFAULT 0 CHECK (\"use_tor_proxy\" IN (0, 1)), \"tor_proxy_port\" INTEGER NOT NULL DEFAULT 9050, \"theme_mode\" TEXT NOT NULL DEFAULT 'system', \"is_error_reporting_enabled\" INTEGER NOT NULL DEFAULT 0 CHECK (\"is_error_reporting_enabled\" IN (0, 1)));"
         }
       ]
     },

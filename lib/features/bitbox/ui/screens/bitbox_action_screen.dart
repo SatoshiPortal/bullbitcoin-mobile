@@ -458,7 +458,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         );
       });
     } catch (e) {
-      log.severe('BitBox import with pairing failed');
+      log.severe('BitBox import with pairing failed', trace: StackTrace.current);
     }
   }
 

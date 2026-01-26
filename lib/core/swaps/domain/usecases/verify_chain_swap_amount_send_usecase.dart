@@ -24,6 +24,7 @@ class VerifyChainSwapAmountSendUsecase {
       if (actualAmount != swap.paymentAmount) {
         log.severe(
           'Amount mismatch: expected ${swap.paymentAmount}, actual $actualAmount',
+          trace: StackTrace.current,
         );
         throw SwapCreationException(
           'Amount mismatch: expected ${swap.paymentAmount} sats, but transaction sends $actualAmount sats to swap address',
@@ -33,7 +34,7 @@ class VerifyChainSwapAmountSendUsecase {
       if (e is SwapCreationException) {
         rethrow;
       }
-      log.severe('Error verifying swap amount: $e');
+      log.severe('Error verifying swap amount: $e', trace: StackTrace.current);
       throw SwapCreationException('Failed to verify swap amount: $e');
     }
   }

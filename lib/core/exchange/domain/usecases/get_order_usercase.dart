@@ -28,7 +28,7 @@ class GetOrderUsecase {
       final order = await repo.getOrder(orderId);
       return order;
     } catch (e) {
-      log.severe('Error in GetOrderUsecase: $e');
+      log.severe('Error in GetOrderUsecase: $e', trace: StackTrace.current);
       throw GetOrderException('$e');
     }
   }

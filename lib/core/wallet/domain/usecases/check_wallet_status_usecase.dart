@@ -121,7 +121,7 @@ class TheDirtyUsecase {
 
       return (satoshis: balance.confirmed, transactions: transactions.length);
     } catch (e) {
-      log.severe(e);
+      log.severe(e, trace: StackTrace.current);
       throw CheckWalletStatusException(e.toString());
     }
   }

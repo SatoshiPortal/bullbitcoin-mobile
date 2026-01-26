@@ -13,7 +13,7 @@ class RestartSwapWatcherUsecase {
       try {
         await _swapWatcherService.restartWatcherWithOngoingSwaps();
       } catch (e) {
-        log.severe('Error restarting swap watcher: $e');
+        log.severe('Error restarting swap watcher: $e', trace: StackTrace.current);
       }
     }
   }

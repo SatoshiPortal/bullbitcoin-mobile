@@ -28,7 +28,7 @@ class GoogleDriveAppDatasource {
 
       _driveApi = drive.DriveApi(client);
     } catch (e) {
-      log.severe('Google Sign-in error: $e');
+      log.severe('Google Sign-in error: $e', trace: StackTrace.current);
       await disconnect();
       rethrow;
     }

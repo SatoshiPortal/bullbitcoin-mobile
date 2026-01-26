@@ -288,7 +288,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         await _onRecipientSelectedHook(event.recipient, isNew: false);
       }
     } catch (e) {
-      log.severe('Error in recipient selection logging: $e');
+      log.severe('Error in recipient selection logging: $e', trace: StackTrace.current);
       emit(
         state.copyWith(
           failedToSelectRecipient: Exception(

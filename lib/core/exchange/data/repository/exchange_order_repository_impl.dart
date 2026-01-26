@@ -86,7 +86,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orderModel.toEntity(isTestnet: _isTestnet);
     } catch (e) {
-      log.severe('Error fetching order by txId: $e');
+      log.severe('Error fetching order by txId: $e', trace: StackTrace.current);
       return null;
     }
   }
@@ -118,10 +118,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
       );
 
-      List<Order> orders =
-          orderModels
-              .map((model) => model.toEntity(isTestnet: _isTestnet))
-              .toList();
+      List<Order> orders = orderModels
+          .map((model) => model.toEntity(isTestnet: _isTestnet))
+          .toList();
 
       // this filtering should also be done separately, read from disk not over network
       if (type != null) {
@@ -159,7 +158,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orders;
     } catch (e) {
-      log.severe('Error fetching orders: $e');
+      log.severe('Error fetching orders: $e', trace: StackTrace.current);
       return [];
     }
   }

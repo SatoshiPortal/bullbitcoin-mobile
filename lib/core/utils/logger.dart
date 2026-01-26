@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/report.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 export 'package:logging_colorful/logging_colorful.dart';
@@ -21,7 +22,7 @@ class Logger {
       final logs = await logsFile.readAsString();
       return logs.split('\n').where((e) => e.isNotEmpty).toList();
     } catch (e) {
-      severe('Failed to read logs: $e');
+      severe('Failed to read logs: $e', trace: StackTrace.current);
       rethrow;
     }
   }
@@ -85,7 +86,7 @@ class Logger {
       await logsFile.create(recursive: true);
       fine('Logs created');
     } catch (e) {
-      severe('Logs existence: $e');
+      severe('Logs existence: $e', trace: StackTrace.current);
     }
   }
 
@@ -137,8 +138,10 @@ class Logger {
 
   /// Logs serious errors that may prevent parts of the app from working correctly.
   /// Use for unrecoverable errors that require immediate attention.
-  void severe(Object? message, {Object? error, StackTrace? trace}) {
+  /// [trace] is required to ensure proper error tracking in Sentry.
+  void severe(Object message, {Object? error, required StackTrace trace}) {
     logger.severe(message, error, trace);
+    Report.error(message, trace);
   }
 
   /// Logs critical errors that could crash the app or make it unusable.

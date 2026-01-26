@@ -1277,7 +1277,7 @@ class SendCubit extends Cubit<SendState> {
         }
       }
     } catch (e) {
-      log.severe(e.toString());
+      log.severe(e, trace: StackTrace.current);
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
@@ -1505,7 +1505,7 @@ class SendCubit extends Cubit<SendState> {
       );
     } catch (e) {
       emit(state.copyWith(step: SendStep.confirm));
-      log.severe(e.toString());
+      log.severe(e, trace: StackTrace.current);
     }
   }
 

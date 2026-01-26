@@ -67,7 +67,7 @@ Future<bool> tasksHandler(String task) async {
     log.config('Background task $task completed in $elapsedTime seconds');
     return Future.value(true);
   } catch (e) {
-    log.severe('Background task $task failed: $e');
+    log.severe('Background task $task failed: $e', trace: StackTrace.current);
     return Future.value(false);
   }
 }

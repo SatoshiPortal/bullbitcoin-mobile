@@ -24,7 +24,7 @@ class IsTorRequiredUsecase {
         return await _walletRepository.isTorRequired();
       }
     } catch (e) {
-      log.severe('$IsTorRequiredUsecase: $e');
+      log.severe('$IsTorRequiredUsecase: $e', trace: StackTrace.current);
       return false;
     }
   }

@@ -26,7 +26,7 @@ class GetNetworkFeesUsecase {
 
       return await _feesRepository.getNetworkFees(network: network);
     } catch (e) {
-      log.severe('Network fees: $e');
+      log.severe('Network fees: $e', trace: StackTrace.current);
       throw GetNetworkFeesException('Error while getting network fees.');
     }
   }

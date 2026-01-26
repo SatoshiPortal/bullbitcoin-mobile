@@ -19,7 +19,7 @@ class DeleteExchangeApiKeyUsecase {
       final isTestnet = settings.environment.isTestnet;
       await _exchangeApiKeyRepository.deleteApiKey(isTestnet: isTestnet);
     } catch (e) {
-      log.severe('Error in DeleteExchangeApiKeyUsecase: $e');
+      log.severe('Error in DeleteExchangeApiKeyUsecase: $e', trace: StackTrace.current);
       throw DeleteExchangeApiKeyException('$e');
     }
   }

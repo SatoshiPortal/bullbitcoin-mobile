@@ -13,6 +13,7 @@ class SettingsModel {
   final bool useTorProxy;
   final int torProxyPort;
   final AppThemeMode themeMode;
+  final bool isErrorReportingEnabled;
 
   const SettingsModel({
     required this.id,
@@ -26,6 +27,7 @@ class SettingsModel {
     required this.useTorProxy,
     required this.torProxyPort,
     required this.themeMode,
+    required this.isErrorReportingEnabled,
   });
 
   SettingsRow toSqlite() {
@@ -41,6 +43,7 @@ class SettingsModel {
       useTorProxy: useTorProxy,
       torProxyPort: torProxyPort,
       themeMode: themeMode.name,
+      isErrorReportingEnabled: isErrorReportingEnabled,
     );
   }
 
@@ -57,6 +60,7 @@ class SettingsModel {
       useTorProxy: row.useTorProxy,
       torProxyPort: row.torProxyPort,
       themeMode: AppThemeMode.fromName(row.themeMode),
+      isErrorReportingEnabled: row.isErrorReportingEnabled,
     );
   }
 }

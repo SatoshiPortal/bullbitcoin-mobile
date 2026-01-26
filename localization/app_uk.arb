@@ -4159,4 +4159,29 @@
   "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool: {error}",
   "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер: {error}",
   "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}"
+,
+  "settingsErrorReportingTitle": "Звіт про помилки",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Програма звітування про помилки",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Допоможіть нам поліпшити Bull Bitcoin, беручи участь у нашій програмі звітування про помилки. Це безпосередньо допомагає нам зробити Bull Bitcoin кращим для всіх.\n\nКоли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми. Ці дані допомагають нам зрозуміти, що відбувається у наших користувачів по всьому світу, та відповідно розставити пріоритети для випралення.\n\nМи не діліться цією інформацією з третіми сторонами. Ми використовуємо клієнт з відкритим вихідним кодом Sentry з власним самостійно розміщеним серверним сервером.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Прийняти",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Скасувати",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Перезапустіть програму, щоб застосувати цю зміну",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  }
 }

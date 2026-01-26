@@ -92,10 +92,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       if (balances.isEmpty) {
         balances[preferredCurrency] = 0.0;
       }
-      final currencyInput =
-          balances[preferredCurrency] != null
-              ? preferredCurrency
-              : balances.keys.first;
+      final currencyInput = balances[preferredCurrency] != null
+          ? preferredCurrency
+          : balances.keys.first;
       emit(
         state.copyWith(
           userSummary: summary,
@@ -110,13 +109,12 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       final wallets = await _getWalletsUsecase.execute();
       // Always prefer the default liquid wallet if available, fallback to just
       // the first wallet if no default liquid wallet is found.
-      final selectedWallet =
-          wallets.isNotEmpty
-              ? wallets.firstWhere(
-                (w) => w.isDefault && w.isLiquid,
-                orElse: () => wallets.first,
-              )
-              : null;
+      final selectedWallet = wallets.isNotEmpty
+          ? wallets.firstWhere(
+              (w) => w.isDefault && w.isLiquid,
+              orElse: () => wallets.first,
+            )
+          : null;
 
       emit(state.copyWith(wallets: wallets, selectedWallet: selectedWallet));
 
@@ -128,13 +126,14 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       } catch (e) {
         log.severe(
           '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
+          trace: StackTrace.current,
         );
         if (e is ConvertSatsToCurrencyAmountException) {
           emit(state.copyWith(convertSatsToCurrencyAmountException: e));
         }
       }
     } catch (e) {
-      log.severe('[BuyBloc] _onStarted error: $e');
+      log.severe('[BuyBloc] _onStarted error: $e', trace: StackTrace.current);
       if (e is ApiKeyException) {
         // If the API key is invalid, we should not proceed with the buy flow.
         emit(state.copyWith(apiKeyException: e));
@@ -156,7 +155,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(amountInput: event.amount));
     } catch (e) {
-      log.severe('[BuyBloc] _onAmountInputChanged error: $e');
+      log.severe(
+        '[BuyBloc] _onAmountInputChanged error: $e',
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -176,13 +178,17 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       } catch (e) {
         log.severe(
           '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
+          trace: StackTrace.current,
         );
         if (e is ConvertSatsToCurrencyAmountException) {
           emit(state.copyWith(convertSatsToCurrencyAmountException: e));
         }
       }
     } catch (e) {
-      log.severe('[BuyBloc] _onCurrencyInputChanged error: $e');
+      log.severe(
+        '[BuyBloc] _onCurrencyInputChanged error: $e',
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -194,7 +200,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // Toggle the fiat currency input state.
       emit(state.copyWith(isFiatCurrencyInput: !state.isFiatCurrencyInput));
     } catch (e) {
-      log.severe('[BuyBloc] _onIsFiatCurrencyInputToggled error: $e');
+      log.severe(
+        '[BuyBloc] _onIsFiatCurrencyInputToggled error: $e',
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -205,7 +214,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(selectedWallet: event.wallet));
     } catch (e) {
-      log.severe('[BuyBloc] _onSelectedWalletChanged error: $e');
+      log.severe(
+        '[BuyBloc] _onSelectedWalletChanged error: $e',
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -216,7 +228,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(bitcoinAddressInput: event.bitcoinAddress));
     } catch (e) {
-      log.severe('[BuyBloc] _onBitcoinAddressInputChanged error: $e');
+      log.severe(
+        '[BuyBloc] _onBitcoinAddressInputChanged error: $e',
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -250,10 +265,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       }
       final order = await _createBuyOrderUsecase.execute(
         toAddress: toAddress,
-        orderAmount:
-            state.isFiatCurrencyInput
-                ? FiatAmount(state.amount!)
-                : BitcoinAmount(state.amountBtc!),
+        orderAmount: state.isFiatCurrencyInput
+            ? FiatAmount(state.amount!)
+            : BitcoinAmount(state.amountBtc!),
         currency: state.currency!,
         isLiquid: state.selectedWallet?.network.isLiquid == true,
         isOwner: true,
@@ -261,7 +275,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } on BuyError catch (e) {
-      log.severe('[BuyBloc] _onCreateOrder error: $e');
+      log.severe(
+        '[BuyBloc] _onCreateOrder error: $e',
+        trace: StackTrace.current,
+      );
       emit(state.copyWith(createOrderBuyError: e));
 
       // Refresh the exchange rate so that the user can update the amount better
@@ -274,13 +291,17 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       } catch (e) {
         log.severe(
           '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
+          trace: StackTrace.current,
         );
         if (e is ConvertSatsToCurrencyAmountException) {
           emit(state.copyWith(convertSatsToCurrencyAmountException: e));
         }
       }
     } on GetReceiveAddressException catch (e) {
-      log.severe('[BuyBloc] _onCreateOrder GetNewReceiveAddressException: $e');
+      log.severe(
+        '[BuyBloc] _onCreateOrder GetNewReceiveAddressException: $e',
+        trace: StackTrace.current,
+      );
       emit(state.copyWith(getNewReceiveAddressException: e));
     } finally {
       emit(state.copyWith(isCreatingOrder: false));
@@ -302,7 +323,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      log.severe('[BuyBloc] _onRefreshOrder error: $e');
+      log.severe(
+        '[BuyBloc] _onRefreshOrder error: $e',
+        trace: StackTrace.current,
+      );
       if (e is RefreshBuyOrderException) {
         emit(state.copyWith(refreshBuyOrderException: e));
       }
@@ -326,7 +350,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      log.severe('[BuyBloc] _onConfirmOrder error: $e');
+      log.severe(
+        '[BuyBloc] _onConfirmOrder error: $e',
+        trace: StackTrace.current,
+      );
       if (e is ConfirmBuyOrderException) {
         emit(state.copyWith(confirmBuyOrderException: e));
       }
@@ -352,13 +379,12 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         orderId: event.orderId,
       );
 
-      final (networkFees, exchangeRate) =
-          await (
-            _getNetworkFeesUsecase.execute(isLiquid: false),
-            _convertSatsToCurrencyAmountUsecase.execute(
-              currencyCode: order.payinCurrency,
-            ),
-          ).wait;
+      final (networkFees, exchangeRate) = await (
+        _getNetworkFeesUsecase.execute(isLiquid: false),
+        _convertSatsToCurrencyAmountUsecase.execute(
+          currencyCode: order.payinCurrency,
+        ),
+      ).wait;
 
       emit(
         state.copyWith(
@@ -368,7 +394,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         ),
       );
     } catch (e) {
-      log.severe('[BuyBloc] _onAccelerateTransactionPressed error: $e');
+      log.severe(
+        '[BuyBloc] _onAccelerateTransactionPressed error: $e',
+        trace: StackTrace.current,
+      );
 
       if (e is RefreshBuyOrderException) {
         emit(state.copyWith(refreshBuyOrderException: e));
@@ -404,7 +433,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      log.severe('[BuyBloc] _onAccelerateOrder error: $e');
+      log.severe(
+        '[BuyBloc] _onAccelerateOrder error: $e',
+        trace: StackTrace.current,
+      );
       if (e is AccelerateBuyOrderException) {
         emit(state.copyWith(accelerateBuyOrderException: e));
       }

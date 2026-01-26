@@ -40,7 +40,7 @@ class VerifyPhysicalBackupUsecase {
             (i) => mnemonic[i] == mnemonicWords[i],
           ).every((element) => element);
     } catch (e) {
-      log.severe('$VerifyPhysicalBackupUsecase: $e');
+      log.severe('$VerifyPhysicalBackupUsecase: $e', trace: StackTrace.current);
       rethrow;
     }
   }

@@ -24,7 +24,7 @@ class StatisticsCubit extends Cubit<StatisticsState> {
         ),
       );
     } catch (e) {
-      log.severe('Failed to load statistics: $e');
+      log.severe('Failed to load statistics: $e', trace: StackTrace.current);
       emit(
         state.copyWith(
           isLoading: false,

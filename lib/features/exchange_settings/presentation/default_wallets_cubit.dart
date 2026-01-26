@@ -47,7 +47,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         ),
       );
     } catch (e) {
-      log.severe('Failed to load default wallets: $e');
+      log.severe('Failed to load default wallets: $e', trace: StackTrace.current);
       emit(
         state.copyWith(
           isLoading: false,
@@ -137,7 +137,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         emit(state.copyWith(saveSuccess: false));
       }
     } catch (e) {
-      log.severe('Failed to save wallet: $e');
+      log.severe('Failed to save wallet: $e', trace: StackTrace.current);
       emit(
         state.copyWith(
           isSaving: false,
@@ -185,7 +185,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         emit(state.copyWith(saveSuccess: false));
       }
     } catch (e) {
-      log.severe('Failed to delete wallet: $e');
+      log.severe('Failed to delete wallet: $e', trace: StackTrace.current);
       emit(
         state.copyWith(
           isSaving: false,

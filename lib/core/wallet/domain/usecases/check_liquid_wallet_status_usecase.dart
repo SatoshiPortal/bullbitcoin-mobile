@@ -81,7 +81,7 @@ class TheDirtyLiquidUsecase {
         transactions: transactions.length,
       );
     } catch (e) {
-      log.severe(e);
+      log.severe(e, trace: StackTrace.current);
       throw CheckLiquidWalletStatusException(e.toString());
     } finally {
       if (dbPath != null) {

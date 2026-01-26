@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
@@ -57,8 +58,14 @@ class SettingsLocator {
       ),
     );
 
+    locator.registerFactory<SetErrorReportingUsecase>(
+      () => SetErrorReportingUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     // Blocs
-    locator.registerFactory<SettingsCubit>(
+    locator.registerLazySingleton<SettingsCubit>(
       () => SettingsCubit(
         setEnvironmentUsecase: locator<SetEnvironmentUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
@@ -71,6 +78,7 @@ class SettingsLocator {
         setIsDevModeUsecase: locator<SetIsDevModeUsecase>(),
         setThemeModeUsecase: locator<SetThemeModeUsecase>(),
         revokeArkUsecase: locator<RevokeArkUsecase>(),
+        setErrorReportingUsecase: locator<SetErrorReportingUsecase>(),
       ),
     );
   }

@@ -38,7 +38,7 @@ class CreateSellOrderUsecase {
     } on SellError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateSellOrderUsecase: $e');
+      log.severe('Error in CreateSellOrderUsecase: $e', trace: StackTrace.current);
       throw SellError.unexpected(message: '$e');
     }
   }

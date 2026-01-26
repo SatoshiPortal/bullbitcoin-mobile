@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
@@ -32,6 +33,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetThemeModeUsecase setThemeModeUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
     required RevokeArkUsecase revokeArkUsecase,
+    required SetErrorReportingUsecase setErrorReportingUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
        _getSettingsUsecase = getSettingsUsecase,
@@ -43,6 +45,7 @@ class SettingsCubit extends Cubit<SettingsState> {
        _getOldSeedsUsecase = getOldSeedsUsecase,
        _setIsDevModeUsecase = setIsDevModeUsecase,
        _revokeArkUsecase = revokeArkUsecase,
+       _setErrorReportingUsecase = setErrorReportingUsecase,
        super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -56,6 +59,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final GetOldSeedsUsecase _getOldSeedsUsecase;
   final SetIsDevModeUsecase _setIsDevModeUsecase;
   final RevokeArkUsecase _revokeArkUsecase;
+  final SetErrorReportingUsecase _setErrorReportingUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) = await (
@@ -160,7 +164,7 @@ class SettingsCubit extends Cubit<SettingsState> {
         // Only trigger refresh if walletBloc is provided
         walletBloc?.add(const RefreshArkWalletBalance());
       } catch (e) {
-        log.severe('Failed to revoke Ark: $e');
+        log.severe('Failed to revoke Ark: $e', trace: StackTrace.current);
       }
     }
 
@@ -168,6 +172,19 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(
         storedSettings: settings?.copyWith(isDevModeEnabled: isEnabled),
+      ),
+    );
+  }
+
+  Future<void> toggleErrorReporting(bool enabled) async {
+    final settings = state.storedSettings;
+    log.config(
+      'Error reporting toggled: $enabled was ${settings?.isErrorReportingEnabled}',
+    );
+    await _setErrorReportingUsecase.execute(enabled);
+    emit(
+      state.copyWith(
+        storedSettings: settings?.copyWith(isErrorReportingEnabled: enabled),
       ),
     );
   }

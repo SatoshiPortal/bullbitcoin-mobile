@@ -41,7 +41,7 @@ class ConfirmBuyOrderUsecase {
 
       return order;
     } catch (e) {
-      log.severe('Error in ConfirmBuyOrderUsecase: $e');
+      log.severe('Error in ConfirmBuyOrderUsecase: $e', trace: StackTrace.current);
       throw ConfirmBuyOrderException('$e');
     }
   }

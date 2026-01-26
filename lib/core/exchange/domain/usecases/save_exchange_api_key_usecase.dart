@@ -27,7 +27,7 @@ class SaveExchangeApiKeyUsecase {
 
       log.fine('API key saved successfully');
     } catch (e) {
-      log.severe('Error in SaveApiKeyUsecase: $e');
+      log.severe('Error in SaveApiKeyUsecase: $e', trace: StackTrace.current);
       throw SaveExchangeApiKeyException('$e');
     }
   }

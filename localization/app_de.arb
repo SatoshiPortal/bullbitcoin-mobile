@@ -4158,5 +4158,29 @@
   "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden: {error}",
   "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden: {error}",
   "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden: {error}"
+  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden: {error}",
+  "settingsErrorReportingTitle": "Fehlerberichte",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Fehlermeldungsprogramm",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Helfen Sie uns, Bull Bitcoin zu verbessern, indem Sie an unserem Fehlermeldungsprogramm teilnehmen. Es hilft uns direkt, Bull Bitcoin für alle besser zu machen.\n\nWenn aktiviert, senden wir automatisch Fehlerberichte, wenn Probleme in der App auftreten. Diese Daten helfen uns zu verstehen, was für unsere Benutzer weltweit passiert, und Fixes entsprechend zu priorisieren.\n\nWir teilen diese Informationen nicht mit Dritten. Wir verwenden Sentrys Open-Source-Client mit unserem eigenen selbstgehosteten Backend-Server.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Akzeptieren",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Abbrechen",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Starten Sie die App neu, um diese Änderung zu übernehmen",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  }
 }

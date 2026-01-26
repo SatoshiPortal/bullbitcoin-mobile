@@ -20,6 +20,7 @@ abstract class SettingsRepository {
     required bool useTorProxy,
     required int torProxyPort,
     AppThemeMode themeMode = AppThemeMode.system,
+    bool isErrorReportingEnabled = false,
   });
 
   Future<SettingsEntity> fetch();
@@ -43,4 +44,6 @@ abstract class SettingsRepository {
   Future<void> setTorProxyPort(int port);
 
   Future<void> setThemeMode(AppThemeMode themeMode);
+
+  Future<void> setErrorReportingEnabled(bool enabled);
 }

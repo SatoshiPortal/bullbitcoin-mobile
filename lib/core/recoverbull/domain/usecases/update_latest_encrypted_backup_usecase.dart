@@ -49,7 +49,7 @@ class UpdateLatestEncryptedVaultTestUsecase {
         }
       }
     } catch (e) {
-      log.severe('$UpdateLatestEncryptedVaultTestUsecase: $e');
+      log.severe('$UpdateLatestEncryptedVaultTestUsecase: $e', trace: StackTrace.current);
       rethrow;
     }
   }

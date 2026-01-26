@@ -96,7 +96,10 @@ class TorConnectivityService {
       return TorStatus.offline;
     } catch (e) {
       // Other errors - mark as unknown
-      log.severe('Unexpected error checking Tor status: $e');
+      log.severe(
+        'Unexpected error checking Tor status: $e',
+        trace: StackTrace.current,
+      );
       return TorStatus.unknown;
     }
   }

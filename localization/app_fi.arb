@@ -4160,4 +4160,29 @@
   "autoswapInfoSettingsButton": "EI, YMMÄRRÄN RISKIT",
   "autoswapInfoRemindLater": "Määritä Autoswap-asetukset",
   "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?"
+,
+  "settingsErrorReportingTitle": "Virheraportointi",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Virheraportoinnin ohjelma",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.\n\nKun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista. Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.\n\nEmme jaa näitä tietoja kolmansien osapuolten kanssa. Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Hyväksy",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Peruuta",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  }
 }

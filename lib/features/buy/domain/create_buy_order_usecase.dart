@@ -44,7 +44,7 @@ class CreateBuyOrderUsecase {
     } on BuyError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateBuyOrderUsecase: $e');
+      log.severe('Error in CreateBuyOrderUsecase: $e', trace: StackTrace.current);
       throw BuyError.unexpected(message: '$e');
     }
   }

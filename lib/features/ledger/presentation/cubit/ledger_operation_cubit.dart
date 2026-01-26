@@ -77,7 +77,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
       }
     } on LedgerError catch (e) {
       final message = e.message;
-      log.severe('Ledger operation failed: $message');
+      log.severe('Ledger operation failed: $message', trace: StackTrace.current);
       emit(
         state.copyWith(
           status: LedgerOperationStatus.error,
@@ -88,7 +88,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
     } on Exception catch (e) {
       final interpretedMessage = _interpretErrorCode(e.toString());
       if (interpretedMessage != null) {
-        log.severe('Ledger operation failed: $interpretedMessage');
+        log.severe('Ledger operation failed: $interpretedMessage', trace: StackTrace.current);
         emit(
           state.copyWith(
             status: LedgerOperationStatus.error,
@@ -96,7 +96,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
           ),
         );
       } else {
-        log.severe('Ledger operation failed: $e');
+        log.severe('Ledger operation failed: $e', trace: StackTrace.current);
         emit(
           state.copyWith(
             status: LedgerOperationStatus.error,

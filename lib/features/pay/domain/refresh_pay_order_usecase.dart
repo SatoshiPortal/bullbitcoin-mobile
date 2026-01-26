@@ -28,7 +28,7 @@ class RefreshPayOrderUsecase {
       final order = await repo.refreshPayOrder(orderId);
       return order;
     } catch (e) {
-      log.severe('Error in RefreshPayOrderUsecase: $e');
+      log.severe('Error in RefreshPayOrderUsecase: $e', trace: StackTrace.current);
       if (e is PayError) {
         rethrow;
       }

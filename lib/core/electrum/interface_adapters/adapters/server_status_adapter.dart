@@ -54,7 +54,7 @@ class ServerStatusAdapter implements ServerStatusPort {
           ? ElectrumServerStatus.online
           : ElectrumServerStatus.offline;
     } catch (e) {
-      log.severe('Error checking server status for $url: $e');
+      log.severe('Error checking server status for $url: $e', trace: StackTrace.current);
       return ElectrumServerStatus.offline;
     }
   }

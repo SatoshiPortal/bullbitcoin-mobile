@@ -35,7 +35,7 @@ class WatchWalletTransactionByAddressUsecase {
 
             return txs.last;
           } catch (e) {
-            log.severe('WatchWalletTransactionByAddressUsecase exception: $e');
+            log.severe('WatchWalletTransactionByAddressUsecase exception: $e', trace: StackTrace.current);
             return null;
           }
         })

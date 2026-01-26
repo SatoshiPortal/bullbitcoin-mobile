@@ -138,7 +138,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
                 await _controller.reload();
               } else {}
             } catch (e) {
-              log.severe('Error checking Flutter view readiness: $e');
+              log.severe('Error checking Flutter view readiness: $e', trace: StackTrace.current);
               await _controller.reload(); // fallback in case of JS failure
             }
           },

@@ -146,7 +146,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     // We should be on a clean SellWalletSelectionState state here
     final amountInputState = state.toCleanAmountInputState;
     if (amountInputState == null) {
-      log.severe('Expected to be on SellAmountInputState but on: $state');
+      log.severe('Expected to be on SellAmountInputState but on: $state', trace: StackTrace.current);
       return;
     }
     emit(amountInputState);
@@ -178,7 +178,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
 
     final walletSelectionState = state.toCleanWalletSelectionState;
     if (walletSelectionState == null) {
-      log.severe('Expected to be on SellWalletSelectionState but on: $state');
+      log.severe('Expected to be on SellWalletSelectionState but on: $state', trace: StackTrace.current);
       return;
     }
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true, error: null));
@@ -299,7 +299,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     } on SellError catch (e) {
       emit(walletSelectionState.copyWith(error: e));
     } catch (e) {
-      log.severe('Unexpected error in SellBloc: $e');
+      log.severe('Unexpected error in SellBloc: $e', trace: StackTrace.current);
     } finally {
       if (state is SellWalletSelectionState) {
         emit(
@@ -319,7 +319,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     //  to a clean SellWalletSelectionState state
     final walletSelectionState = state.toCleanWalletSelectionState;
     if (walletSelectionState == null) {
-      log.severe('Expected to be on SellWalletSelectionState but on: $state');
+      log.severe('Expected to be on SellWalletSelectionState but on: $state', trace: StackTrace.current);
       return;
     }
     emit(walletSelectionState.copyWith(isCreatingSellOrder: true));
@@ -342,7 +342,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       emit(walletSelectionState.copyWith(error: e));
     } catch (e) {
       // Log unexpected errors
-      log.severe('Unexpected error in SellBloc: $e');
+      log.severe('Unexpected error in SellBloc: $e', trace: StackTrace.current);
     } finally {
       if (state is SellWalletSelectionState) {
         emit(
@@ -361,7 +361,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     // We should be on a SellPaymentState
     final paymentState = state.toCleanPaymentState;
     if (paymentState == null) {
-      log.severe('Expected to be on SellPaymentState but on: $state');
+      log.severe('Expected to be on SellPaymentState but on: $state', trace: StackTrace.current);
       return;
     }
 
@@ -374,7 +374,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     } on SellError catch (e) {
       emit(paymentState.copyWith(error: e));
     } catch (e) {
-      log.severe('Unexpected error in SellBloc: $e');
+      log.severe('Unexpected error in SellBloc: $e', trace: StackTrace.current);
     }
   }
 
@@ -385,7 +385,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
     // We should be on a SellPaymentState
     final sellPaymentState = state.toCleanPaymentState;
     if (sellPaymentState == null) {
-      log.severe('Expected to be on SellPaymentState but on: $state');
+      log.severe('Expected to be on SellPaymentState but on: $state', trace: StackTrace.current);
       return;
     }
 
@@ -507,7 +507,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       );
     } catch (e) {
       // Log unexpected errors
-      log.severe('Unexpected error in SellBloc: $e');
+      log.severe('Unexpected error in SellBloc: $e', trace: StackTrace.current);
       emit(
         sellPaymentState.copyWith(
           error: SellError.unexpected(message: e.toString()),
@@ -535,7 +535,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
       );
 
       if (latestOrder is! SellOrder) {
-        log.severe('Expected SellOrder but received a different order type');
+        log.severe('Expected SellOrder but received a different order type', trace: StackTrace.current);
         return;
       }
 
@@ -556,7 +556,7 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
       }
     } catch (e) {
-      log.severe('Error polling order status: $e');
+      log.severe('Error polling order status: $e', trace: StackTrace.current);
     }
   }
 

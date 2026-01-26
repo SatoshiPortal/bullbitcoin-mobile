@@ -59,6 +59,7 @@ Future<void> doMigration0_1to0_2() async {
         } catch (e) {
           log.severe(
             '0.1.*: Failed to fetch seed for wallet ${walletObj['id']}',
+            trace: StackTrace.current,
           );
         }
 
@@ -78,7 +79,10 @@ Future<void> doMigration0_1to0_2() async {
         final w = OldWallet.fromJson(walletObj);
         wallets.add(w);
       } catch (e) {
-        log.severe('0.1.*: Error processing wallet $walletId: $e');
+        log.severe(
+          '0.1.*: Error processing wallet $walletId: $e',
+          trace: StackTrace.current,
+        );
         continue;
       }
     }
@@ -195,26 +199,23 @@ updateWalletObj(
 Future<Map<String, dynamic>> addIsLiquidFalse(
   Map<String, dynamic> walletObj,
 ) async {
-  walletObj['transactions'] =
-      walletObj['transactions']
-          .map((tx) => tx as Map<String, dynamic>)
-          .map((tx) => tx..addAll({'isLiquid': false}))
-          .toList();
+  walletObj['transactions'] = walletObj['transactions']
+      .map((tx) => tx as Map<String, dynamic>)
+      .map((tx) => tx..addAll({'isLiquid': false}))
+      .toList();
 
   if (walletObj['myAddressBook'] != null) {
-    walletObj['myAddressBook'] =
-        walletObj['myAddressBook']
-            .map((addr) => addr as Map<String, dynamic>)
-            .map((addr) => addr..addAll({'isLiquid': false}))
-            .toList();
+    walletObj['myAddressBook'] = walletObj['myAddressBook']
+        .map((addr) => addr as Map<String, dynamic>)
+        .map((addr) => addr..addAll({'isLiquid': false}))
+        .toList();
   }
 
   if (walletObj['externalAddressBook'] != null) {
-    walletObj['externalAddressBook'] =
-        walletObj['externalAddressBook']
-            .map((addr) => addr as Map<String, dynamic>)
-            .map((addr) => addr..addAll({'isLiquid': false}))
-            .toList();
+    walletObj['externalAddressBook'] = walletObj['externalAddressBook']
+        .map((addr) => addr as Map<String, dynamic>)
+        .map((addr) => addr..addAll({'isLiquid': false}))
+        .toList();
   }
 
   return walletObj;

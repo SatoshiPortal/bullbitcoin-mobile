@@ -28,7 +28,7 @@ class RefreshBuyOrderUsecase {
       final order = await repo.refreshBuyOrder(orderId);
       return order;
     } catch (e) {
-      log.severe('Error in RefreshBuyOrderUsecase: $e');
+      log.severe('Error in RefreshBuyOrderUsecase: $e', trace: StackTrace.current);
       throw RefreshBuyOrderException('$e');
     }
   }

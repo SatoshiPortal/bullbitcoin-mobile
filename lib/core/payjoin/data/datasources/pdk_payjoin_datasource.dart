@@ -268,6 +268,7 @@ class PdkPayjoinDatasource {
     } catch (e) {
       logger.log.severe(
         'Failed to preserve privacy: $e. Using first input pair.',
+        trace: StackTrace.current,
       );
     }
 

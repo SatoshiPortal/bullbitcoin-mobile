@@ -36,7 +36,7 @@ class ListAllOrdersUsecase {
       );
       return orders;
     } catch (e) {
-      log.severe('Error in ListAllOrdersUsecase: $e');
+      log.severe('Error in ListAllOrdersUsecase: $e', trace: StackTrace.current);
       throw ListAllOrdersException('$e');
     }
   }

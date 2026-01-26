@@ -27,7 +27,7 @@ class GetSwapLimitsUsecase {
       final result = await swapRepository.getSwapLimitsAndFees(type);
       return result;
     } catch (e) {
-      log.severe('[GetSwapLimitsUsecase] Error getting swap limits: $e');
+      log.severe('[GetSwapLimitsUsecase] Error getting swap limits: $e', trace: StackTrace.current);
       throw GetSwapLimitsException(e.toString());
     }
   }

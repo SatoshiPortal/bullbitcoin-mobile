@@ -60,7 +60,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     // We should be on a clean DcaBuyInputState state here
     final buyInputState = state.toCleanBuyInputState;
     if (buyInputState == null) {
-      log.severe('Expected to be on DcaBuyInputState but on: $state');
+      log.severe('Expected to be on DcaBuyInputState but on: $state', trace: StackTrace.current);
       return;
     }
     emit(buyInputState);
@@ -81,7 +81,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     // We should be on a clean DcaWalletSelectionState state here
     final walletSelectionState = state.toCleanWalletSelectionState;
     if (walletSelectionState == null) {
-      log.severe('Expected to be on DcaWalletSelectionState but on: $state');
+      log.severe('Expected to be on DcaWalletSelectionState but on: $state', trace: StackTrace.current);
       return;
     }
     emit(walletSelectionState);
@@ -99,7 +99,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     // We should be on a DcaConfirmationState here
     final dcaConfirmationState = state.toCleanConfirmationState;
     if (dcaConfirmationState == null) {
-      log.severe('Expected to be on DcaConfirmationState but on: $state');
+      log.severe('Expected to be on DcaConfirmationState but on: $state', trace: StackTrace.current);
       return;
     }
 
@@ -127,7 +127,7 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
     } catch (e) {
       // Log unexpected errors
       emit(dcaConfirmationState.copyWith(error: e));
-      log.severe('Unexpected error in DcaBloc: $e');
+      log.severe('Unexpected error in DcaBloc: $e', trace: StackTrace.current);
     } finally {
       if (state is DcaConfirmationState) {
         emit((state as DcaConfirmationState).copyWith(isConfirmingDca: false));

@@ -125,7 +125,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         final isTorRequired = await _isTorRequiredUsecase.execute();
         if (isTorRequired) unawaited(_initTorUsecase.execute());
       } catch (e) {
-        log.severe('Tor initialization check failed', error: e);
+        log.severe(
+          'Tor initialization check failed',
+          error: e,
+          trace: StackTrace.current,
+        );
       }
 
       emit(
@@ -143,6 +147,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         log.severe(
           'Failed to check for backup availability during app startup',
           error: e,
+          trace: StackTrace.current,
         );
         hasBackup = false;
       }

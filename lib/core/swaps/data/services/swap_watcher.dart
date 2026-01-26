@@ -45,7 +45,10 @@ class SwapWatcherService {
         await processSwap(swap);
       },
       onError: (error) {
-        log.severe('Swap stream error in watcher: $error');
+        log.severe(
+          'Swap stream error in watcher: $error',
+          trace: StackTrace.current,
+        );
       },
       onDone: () {
         log.fine('Swap stream done in watcher.');
@@ -130,6 +133,7 @@ class SwapWatcherService {
     } catch (e) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "processSwap", "action": "error", "error": "$e", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        trace: StackTrace.current,
       );
     } finally {
       Future.delayed(const Duration(seconds: 1), () {

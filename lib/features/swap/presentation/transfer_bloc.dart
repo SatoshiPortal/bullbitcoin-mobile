@@ -850,7 +850,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       );
       emit(state.copyWith(utxos: utxos));
     } catch (e) {
-      log.severe('Error loading UTXOs: $e');
+      log.severe('Error loading UTXOs: $e', trace: StackTrace.current);
     }
   }
 
@@ -988,7 +988,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         );
       }
     } catch (e) {
-      log.severe('Error rebuilding transaction: $e');
+      log.severe('Error rebuilding transaction: $e', trace: StackTrace.current);
     }
   }
 
@@ -1131,7 +1131,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final maxAmountSat = balanceSat - absoluteFees;
       return maxAmountSat;
     } catch (e) {
-      log.severe('Error getting max amount sat in transfer bloc: $e');
+      log.severe('Error getting max amount sat in transfer bloc: $e', trace: StackTrace.current);
       return null;
     }
   }

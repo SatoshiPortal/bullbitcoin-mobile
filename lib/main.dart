@@ -6,6 +6,7 @@ import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -24,12 +25,14 @@ import 'package:bb_mobile/router.dart';
 import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 
 class Bull {
@@ -96,10 +99,24 @@ Future main() async {
         delay++;
       }
 
+      // Error reports for users that gave consent in the app settings (default disabled)
+      // Empty DSN if no consent or debug mode - Sentry won't send anything
+      final isErrorReportingEnabled = await locator<SettingsRepository>()
+          .fetch()
+          .then((settings) => settings.isErrorReportingEnabled);
+      final dsnSentry = isErrorReportingEnabled && kReleaseMode
+          ? ApiServiceConstants.sentryDsn
+          : ''; // "If an empty string is used, the SDK will not send any events."
+
+      await SentryFlutter.init((options) {
+        options.dsn = dsnSentry;
+        options.compressPayload = true;
+      });
+
       runApp(const BullBitcoinWalletApp());
     },
-    (error, stack) {
-      log.severe(error, trace: stack);
+    (error, stackTrace) async {
+      log.severe(error, trace: stackTrace);
     },
   );
 }
@@ -154,7 +171,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     try {
       await locator<RestartSwapWatcherUsecase>().execute();
     } catch (e) {
-      log.severe('Error during app resume: $e');
+      log.severe('Error during app resume: $e', trace: StackTrace.current);
     }
   }
 
@@ -217,47 +234,47 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
           ],
           child:
-            BlocSelector<
-              SettingsCubit,
-              SettingsState,
-              (Language?, AppThemeMode?)
-            >(
-              selector: (settings) =>
-                  (settings.language, settings.storedSettings?.themeMode),
-              builder: (context, data) {
-                final (language, themeMode) = data;
-                final systemBrightness = MediaQuery.platformBrightnessOf(
-                  context,
-                );
-                final effectiveThemeMode = themeMode ?? AppThemeMode.system;
+              BlocSelector<
+                SettingsCubit,
+                SettingsState,
+                (Language?, AppThemeMode?)
+              >(
+                selector: (settings) =>
+                    (settings.language, settings.storedSettings?.themeMode),
+                builder: (context, data) {
+                  final (language, themeMode) = data;
+                  final systemBrightness = MediaQuery.platformBrightnessOf(
+                    context,
+                  );
+                  final effectiveThemeMode = themeMode ?? AppThemeMode.system;
 
-                late final AppThemeType appThemeType;
-                switch (effectiveThemeMode) {
-                  case AppThemeMode.light:
-                    appThemeType = AppThemeType.light;
-                  case AppThemeMode.dark:
-                    appThemeType = AppThemeType.dark;
-                  case AppThemeMode.system:
-                    appThemeType = systemBrightness == .dark
-                        ? AppThemeType.dark
-                        : AppThemeType.light;
-                }
+                  late final AppThemeType appThemeType;
+                  switch (effectiveThemeMode) {
+                    case AppThemeMode.light:
+                      appThemeType = AppThemeType.light;
+                    case AppThemeMode.dark:
+                      appThemeType = AppThemeType.dark;
+                    case AppThemeMode.system:
+                      appThemeType = systemBrightness == .dark
+                          ? AppThemeType.dark
+                          : AppThemeType.light;
+                  }
 
-                return MaterialApp.router(
-                  title: 'BullBitcoin Wallet',
-                  debugShowCheckedModeBanner: false,
-                  routerConfig: AppRouter.router,
-                  theme: AppTheme.themeData(appThemeType),
-                  locale: language?.locale,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  builder: (_, child) {
-                    return AppStartupWidget(app: child!);
-                  },
-                );
-              },
-            ),
+                  return MaterialApp.router(
+                    title: 'BullBitcoin Wallet',
+                    debugShowCheckedModeBanner: false,
+                    routerConfig: AppRouter.router,
+                    theme: AppTheme.themeData(appThemeType),
+                    locale: language?.locale,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    builder: (_, child) {
+                      return AppStartupWidget(app: child!);
+                    },
+                  );
+                },
+              ),
         ),
       ),
     );

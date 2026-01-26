@@ -17,7 +17,7 @@ class ElectrumServerStorageDatasource {
 
       log.fine('Successfully stored/updated server: ${server.url}');
     } catch (e) {
-      log.severe('Failed to store/update server: $e');
+      log.severe('Failed to store/update server: $e', trace: StackTrace.current);
       rethrow;
     }
   }
@@ -37,7 +37,7 @@ class ElectrumServerStorageDatasource {
 
       log.fine('Successfully stored/updated ${servers.length} server(s)');
     } catch (e) {
-      log.severe('Failed to store/update multiple servers: $e');
+      log.severe('Failed to store/update multiple servers: $e', trace: StackTrace.current);
       rethrow;
     }
   }
@@ -130,7 +130,7 @@ class ElectrumServerStorageDatasource {
       log.fine('Deleted $deleted server(s) with URL: $url');
       return deleted > 0;
     } catch (e) {
-      log.severe('Failed to delete server: $e');
+      log.severe('Failed to delete server: $e', trace: StackTrace.current);
       return false;
     }
   }

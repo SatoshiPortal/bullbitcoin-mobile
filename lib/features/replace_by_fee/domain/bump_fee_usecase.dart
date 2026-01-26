@@ -20,7 +20,7 @@ class BumpFeeUsecase {
       );
       return psbt;
     } catch (e) {
-      log.severe('$BumpFeeUsecase: $e');
+      log.severe('$BumpFeeUsecase: $e', trace: StackTrace.current);
       // Re-throw BDK exceptions to be caught and handled by the cubit
       rethrow;
     }

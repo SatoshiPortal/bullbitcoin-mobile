@@ -41,7 +41,7 @@ class ArkRouter {
       final wallet = context.watch<WalletBloc>().state.arkWallet;
 
       if (wallet == null) {
-        log.severe('Ark needs an ark wallet initialized');
+        log.severe('Ark needs an ark wallet initialized', trace: StackTrace.current);
         throw ArkWalletIsNotInitializedError();
       }
 

@@ -40,7 +40,7 @@ class CreateWithdrawOrderUsecase {
     } on WithdrawError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateWithdrawalOrderUsecase: $e');
+      log.severe('Error in CreateWithdrawalOrderUsecase: $e', trace: StackTrace.current);
       throw WithdrawError.unexpected(message: '$e');
     }
   }

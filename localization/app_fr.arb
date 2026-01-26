@@ -4161,4 +4161,29 @@
   "autoswapInfoSettingsButton": "NON, JE COMPRENDS LES RISQUES",
   "autoswapInfoRemindLater": "Configurer Autoswap",
   "autoswapInfoConsentMessage": "Autoswap est actuellement activé mais ne se déclenchera pas tant que vous n'aurez pas donné votre consentement. Souhaitez-vous le garder activé?"
+,
+  "settingsErrorReportingTitle": "Signalement d'erreurs",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Programme de signalement d'erreurs",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Aidez-nous à améliorer Bull Bitcoin en participant à notre programme de signalement d'erreurs. Cela nous aide directement à faire de Bull Bitcoin un meilleur service pour tous.\n\nLorsqu'elle est activée, nous envoyons automatiquement des rapports d'erreurs lorsque des problèmes surviennent dans l'application. Ces données nous aident à comprendre ce qui se passe pour nos utilisateurs du monde entier et à prioriser les correctifs en conséquence.\n\nNous ne partageons pas ces informations avec des tiers. Nous utilisons le client open-source de Sentry avec notre propre serveur backend auto-hébergé.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Accepter",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Annuler",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Relancez l'application pour appliquer ce changement",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  }
 }

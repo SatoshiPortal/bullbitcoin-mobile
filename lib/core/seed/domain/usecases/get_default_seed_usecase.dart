@@ -23,7 +23,7 @@ class GetDefaultSeedUsecase {
       final defaultWallet = wallets.first;
       return await _seedRepository.get(defaultWallet.masterFingerprint);
     } catch (e) {
-      log.severe('$GetDefaultSeedUsecase: $e');
+      log.severe('$GetDefaultSeedUsecase: $e', trace: StackTrace.current);
       rethrow;
     }
   }

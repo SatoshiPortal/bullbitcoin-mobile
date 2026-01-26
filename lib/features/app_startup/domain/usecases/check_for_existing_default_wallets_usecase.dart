@@ -34,6 +34,7 @@ class CheckForExistingDefaultWalletsUsecase {
           log.severe(
             'Seed not found for default wallet with fingerprint: ${wallet.masterFingerprint}',
             error: e,
+            trace: StackTrace.current,
           );
           rethrow;
         }

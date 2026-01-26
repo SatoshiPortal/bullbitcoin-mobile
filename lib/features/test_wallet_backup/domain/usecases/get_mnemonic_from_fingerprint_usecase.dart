@@ -23,7 +23,7 @@ class GetMnemonicFromFingerprintUsecase {
 
       return (mnemonicWords, passphrase);
     } catch (e) {
-      log.severe('GetMnemonicFromFingerprintUsecase: $e');
+      log.severe('GetMnemonicFromFingerprintUsecase: $e', trace: StackTrace.current);
       rethrow;
     }
   }

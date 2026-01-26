@@ -46,7 +46,7 @@ class RecoverBullGoogleDriveBloc
       emit(state.copyWith(driveMetadata: driveMetadata));
       log.fine('$OnFetchDriveVaults ${driveMetadata.length} metadata found');
     } catch (e) {
-      log.severe('$OnFetchDriveVaults: $e');
+      log.severe('$OnFetchDriveVaults: $e', trace: StackTrace.current);
       emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -63,7 +63,7 @@ class RecoverBullGoogleDriveBloc
       final vault = await _fetchDriveVaultUsecase.execute(event.fileMetadata);
       emit(state.copyWith(selectedVault: vault));
     } catch (e) {
-      log.severe('$OnSelectDriveFileMetadata: $e');
+      log.severe('$OnSelectDriveFileMetadata: $e', trace: StackTrace.current);
       emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -84,7 +84,7 @@ class RecoverBullGoogleDriveBloc
       emit(state.copyWith(driveMetadata: updatedMetadata));
       log.fine('$OnDeleteDriveFile succeed');
     } catch (e) {
-      log.severe('$OnDeleteDriveFile: $e');
+      log.severe('$OnDeleteDriveFile: $e', trace: StackTrace.current);
       emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -100,7 +100,7 @@ class RecoverBullGoogleDriveBloc
       await _exportDriveFileUsecase.execute(event.fileMetadata);
       log.fine('$OnExportDriveFile succeed');
     } catch (e) {
-      log.severe('$OnExportDriveFile: $e');
+      log.severe('$OnExportDriveFile: $e', trace: StackTrace.current);
       emit(state.copyWith(error: FetchAllDriveFilesError()));
     } finally {
       emit(state.copyWith(isLoading: false));

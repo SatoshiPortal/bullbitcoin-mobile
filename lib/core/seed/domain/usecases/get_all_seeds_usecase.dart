@@ -13,7 +13,7 @@ class GetAllSeedsUsecase {
       final seeds = await _seedRepository.getAllMnemonicSeeds();
       return seeds;
     } catch (e) {
-      log.severe('Failed to fetch all seeds from secure storage: $e');
+      log.severe('Failed to fetch all seeds from secure storage: $e', trace: StackTrace.current);
       rethrow;
     }
   }

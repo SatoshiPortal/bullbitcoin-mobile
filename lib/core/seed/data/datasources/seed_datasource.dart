@@ -71,6 +71,7 @@ class SeedDatasource {
 
         log.severe(
           'Failed to read seed for fingerprint $fingerprint after $maxRetries attempts: $e',
+          trace: StackTrace.current,
         );
         throw SeedNotFoundException(
           'Seed not found for fingerprint: $fingerprint',

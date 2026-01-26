@@ -28,7 +28,7 @@ class RefreshSellOrderUsecase {
       final order = await repo.refreshSellOrder(orderId);
       return order;
     } catch (e) {
-      log.severe('Error in RefreshSellOrderUsecase: $e');
+      log.severe('Error in RefreshSellOrderUsecase: $e', trace: StackTrace.current);
       if (e is SellError) {
         rethrow;
       }

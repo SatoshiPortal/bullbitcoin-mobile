@@ -24,7 +24,7 @@ class BullbitcoinApiKeyDatasource {
       await _secureStorage.saveValue(key: key, value: jsonString);
       log.fine('API key stored successfully');
     } catch (e) {
-      log.severe('Error storing API key: $e');
+      log.severe('Error storing API key: $e', trace: StackTrace.current);
       rethrow;
     }
   }
@@ -42,7 +42,7 @@ class BullbitcoinApiKeyDatasource {
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
       return ExchangeApiKeyModel.fromJson(json);
     } catch (e) {
-      log.severe('Error retrieving API key: $e');
+      log.severe('Error retrieving API key: $e', trace: StackTrace.current);
       return null;
     }
   }
@@ -53,7 +53,7 @@ class BullbitcoinApiKeyDatasource {
       await _secureStorage.deleteValue(key);
       log.fine('API key deleted successfully');
     } catch (e) {
-      log.severe('Error deleting API key: $e');
+      log.severe('Error deleting API key: $e', trace: StackTrace.current);
       rethrow;
     }
   }

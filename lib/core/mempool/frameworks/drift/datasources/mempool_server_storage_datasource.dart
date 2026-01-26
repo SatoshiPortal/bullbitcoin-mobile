@@ -16,7 +16,7 @@ class MempoolServerStorageDatasource {
 
       log.fine('Successfully stored/updated mempool server: ${server.url}');
     } catch (e) {
-      log.severe('Failed to store/update mempool server: $e');
+      log.severe('Failed to store/update mempool server: $e', trace: StackTrace.current);
       rethrow;
     }
   }
@@ -58,7 +58,7 @@ class MempoolServerStorageDatasource {
       log.fine('Deleted $deleted custom mempool server(s) for network: $network');
       return deleted > 0;
     } catch (e) {
-      log.severe('Failed to delete custom mempool server: $e');
+      log.severe('Failed to delete custom mempool server: $e', trace: StackTrace.current);
       return false;
     }
   }
