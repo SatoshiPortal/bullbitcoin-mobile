@@ -1780,15 +1780,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Falhado para exportar o vault do Google Drive",
   "exchangeKycLevelLight": "Luz",
   "transactionLabelCreatedAt": "Criado em",
-  "bip329LabelsExportSuccessSingular": "1 rótulo exportado",
-  "bip329LabelsExportSuccessPlural": "{count} rótulos exportados",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Rótulos exportados com sucesso",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Opção mais lenta, mas pode ser feito via banco on-line (3-4 dias úteis)",
   "walletDeletionErrorWalletNotFound": "A carteira que você está tentando excluir não existe.",
   "payEnableRBF": "Habilitar RBF",
@@ -3494,7 +3486,7 @@
   "payViewTransaction": "Ver Transação",
   "transactionLabelToWallet": "Para a carteira",
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
-  "ledgerInstructionsAndroidDual": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado, ou conectar o dispositivo via USB.",
+  "ledgerInstructionsAndroidDual": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
   "arkSendRecipientLabel": "Endereço do destinatário",
   "defaultWalletsLabel": "Carteiras padrão",
   "jadeStep9": "Uma vez que a transação é importada em seu Jade, revise o endereço de destino e o valor.",

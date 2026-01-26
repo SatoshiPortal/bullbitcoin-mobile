@@ -2,12 +2,16 @@ import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.d
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
 import 'package:bb_mobile/features/all_seed_view/ui/all_seed_view_screen.dart';
+import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/bitaxe/ui/bitaxe_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
@@ -27,9 +31,9 @@ import 'package:bb_mobile/features/settings/ui/screens/exchange/exchange_setting
 import 'package:bb_mobile/features/settings/ui/screens/exchange/file_upload_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/legacy_transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/logout_screen.dart';
-import 'package:bb_mobile/features/settings/ui/screens/exchange/recipients_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/referrals_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/security_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/exchange/statistics_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/exchange/transactions_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/theme/theme_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/failed_wallet_deletion_alert_dialog.dart';
@@ -41,7 +45,6 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:bb_mobile/features/autoswap/ui/screens/autoswap_settings_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum SettingsRoute {
@@ -65,9 +68,9 @@ enum SettingsRoute {
   exchangeBitcoinWallets('exchange-bitcoin-wallets'),
   exchangeAppSettings('exchange-app-settings'),
   exchangeFileUpload('exchange-file-upload'),
+  exchangeStatistics('exchange-statistics'),
   exchangeTransactions('exchange-transactions'),
   exchangeLegacyTransactions('exchange-legacy-transactions'),
-  exchangeRecipients('exchange-recipients'),
   exchangeReferrals('exchange-referrals'),
   exchangeLogout('exchange-logout'),
   bitcoinSettings('bitcoin-settings'),
@@ -121,7 +124,10 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeBitcoinWallets.name,
         path: SettingsRoute.exchangeBitcoinWallets.path,
-        builder: (context, state) => const ExchangeBitcoinWalletsScreen(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<DefaultWalletsCubit>(),
+          child: const ExchangeBitcoinWalletsScreen(),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAppSettings.name,
@@ -131,7 +137,18 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeFileUpload.name,
         path: SettingsRoute.exchangeFileUpload.path,
-        builder: (context, state) => const ExchangeFileUploadScreen(),
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<FileUploadCubit>(),
+          child: const ExchangeFileUploadScreen(),
+        ),
+      ),
+      GoRoute(
+        name: SettingsRoute.exchangeStatistics.name,
+        path: SettingsRoute.exchangeStatistics.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => locator<StatisticsCubit>(),
+          child: const ExchangeStatisticsScreen(),
+        ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeTransactions.name,
@@ -142,11 +159,6 @@ class SettingsRouter {
         name: SettingsRoute.exchangeLegacyTransactions.name,
         path: SettingsRoute.exchangeLegacyTransactions.path,
         builder: (context, state) => const ExchangeLegacyTransactionsScreen(),
-      ),
-      GoRoute(
-        name: SettingsRoute.exchangeRecipients.name,
-        path: SettingsRoute.exchangeRecipients.path,
-        builder: (context, state) => const ExchangeRecipientsScreen(),
       ),
       GoRoute(
         name: SettingsRoute.exchangeReferrals.name,

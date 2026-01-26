@@ -1,21 +1,18 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
 class LabelText extends StatelessWidget {
   const LabelText(this.label, {super.key, this.style});
 
-  final Label label;
+  final String label;
   final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
-    String displayLabel = label.label;
-    if (LabelSystem.isSystemLabel(label.label)) {
-      displayLabel = LabelSystem.fromLabel(
-        label.label,
-      ).toTranslatedLabel(context);
+    String displayLabel = label;
+    if (LabelSystem.isSystemLabel(label)) {
+      displayLabel = LabelSystem.fromLabel(label).toTranslatedLabel(context);
     }
     return LayoutBuilder(
       builder: (context, constraints) {

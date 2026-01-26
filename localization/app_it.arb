@@ -1783,15 +1783,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Non ha esportato il caveau da Google Drive",
   "exchangeKycLevelLight": "Luce",
   "transactionLabelCreatedAt": "Creato a",
-  "bip329LabelsExportSuccessSingular": "1 etichetta esportata",
-  "bip329LabelsExportSuccessPlural": "{count} etichette esportate",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Etichette esportate con successo",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "L'opzione più lenta, ma può essere fatto tramite online banking (3-4 giorni lavorativi)",
   "walletDeletionErrorWalletNotFound": "Il portafoglio che stai cercando di eliminare non esiste.",
   "payEnableRBF": "Abilitare RBF",
@@ -3518,7 +3510,7 @@
   "payViewTransaction": "Visualizza la Transazione",
   "transactionLabelToWallet": "Portafoglio",
   "exchangeFileUploadInstructions": "Se avete bisogno di inviare altri documenti, caricarli qui.",
-  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth, o collegare il dispositivo tramite USB.",
+  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth.",
   "arkSendRecipientLabel": "Indirizzo del destinatario",
   "defaultWalletsLabel": "Portafogli di default",
   "jadeStep9": "Una volta che la transazione viene importata nel tuo Jade, rivedere l'indirizzo di destinazione e l'importo.",
