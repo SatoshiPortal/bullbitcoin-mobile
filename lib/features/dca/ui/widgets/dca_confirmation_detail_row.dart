@@ -20,21 +20,20 @@ class DcaConfirmationDetailRow extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: context.appColors.surfaceContainer,
+              color: context.appColors.onSurface,
             ),
           ),
 
           Expanded(
-            child:
-                value == null
-                    ? const LoadingLineContent()
-                    : Text(
-                      value!,
-                      textAlign: .end,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: context.appColors.outlineVariant,
-                      ),
+            child: value == null
+                ? const LoadingLineContent()
+                : Text(
+                    value!,
+                    textAlign: .end,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: context.appColors.outlineVariant,
                     ),
+                  ),
           ),
         ],
       ),
