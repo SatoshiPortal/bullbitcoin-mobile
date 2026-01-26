@@ -12428,5 +12428,13 @@
     "exchangeSettingsSecuritySettingsTitle": "Güvenlik Düzeyi Ayarı",
     "@exchangeSettingsSecuritySettingsTitle": {
         "description": "Title for the security settings section in exchange settings"
+    },
+    "buyKYCLevel": "KYC Seviyesi",
+    "@buyKYCLevel": {
+        "description": "Label for verification tier"
+    },
+    "buyUpgradeKYC": "KYC Seviyesini Yükselt",
+    "@buyUpgradeKYC": {
+        "description": "Button to increase verification tier"
     }
 }
