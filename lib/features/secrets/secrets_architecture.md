@@ -671,6 +671,7 @@ sequenceDiagram
 - **Command/Query Segregation**: Clear separation between operations that modify state vs read state
 - **BLoC Pattern**: Transform data between Application and Presentation layers
 - **Domain Boundary Protection**: Entities and Value Objects cannot be constructed outside domain/application layers (see Business Rules)
+- **Error Boundary Pattern**: Each layer catches and transforms errors from lower layers, preventing error leakage (see Error Handling Strategy)
 
 ## Key Business Rules
 
@@ -690,3 +691,92 @@ sequenceDiagram
    - **Output Freedom**: Use cases, facade methods, and BLoC state can return Entities and Value Objects
    - **Validation Location**: All domain validation happens when Value Objects are constructed within use cases
    - **Prevents Business Rule Bypass**: External callers cannot construct invalid domain objects or bypass validation rules
+
+## Error Handling Strategy
+
+The Secrets feature implements a strict error boundary pattern where each layer catches and transforms errors from lower layers. This prevents error leakage and ensures each layer uses its own error vocabulary appropriate for its consumers.
+
+### Error Layer Hierarchy
+
+```mermaid
+graph TD
+    D[Domain Errors<br/>SecretsDomainError] --> A[Application Errors<br/>SecretsApplicationError]
+    A --> F[Facade Errors<br/>SecretsFacadeError]
+    A --> P[Presentation Errors<br/>SecretsPresentationError]
+
+    style D fill:#ffcccc,stroke:#cc0000,stroke-width:2px,color:#000
+    style A fill:#cce5ff,stroke:#0066cc,stroke-width:2px,color:#000
+    style F fill:#ccffcc,stroke:#00cc00,stroke-width:2px,color:#000
+    style P fill:#ffffcc,stroke:#cccc00,stroke-width:2px,color:#000
+```
+
+### Layer-by-Layer Error Handling
+
+#### 1. Domain Layer (`SecretsDomainError`)
+
+**Purpose**: Enforce domain invariants and validation rules
+
+**When Thrown**: When Value Objects are constructed with invalid data
+
+---
+
+#### 2. Application Layer (`SecretsApplicationError`)
+
+**Purpose**: Distinguish user input errors from infrastructure failures, use application-specific vocabulary
+
+**Key Principle**: Use cases NEVER let domain errors escape. They catch all `SecretsDomainError` exceptions and transform them to `SecretsApplicationError`.
+
+---
+
+#### 3. Facade Layer (`SecretsFacadeError`)
+
+**Purpose**: Provide clean error API for external features, hide internal implementation details
+
+**Key Principle**: Facade NEVER lets application errors escape. All `SecretsApplicationError` exceptions are caught and transformed to `SecretsFacadeError`.
+
+---
+
+#### 4. Presentation Layer (`SecretsPresentationError`)
+
+**Purpose**: Provide user-friendly error messages for UI display
+
+**Key Principle**: Presentation NEVER lets application errors escape. All `SecretsApplicationError` exceptions are caught and transformed to `SecretsPresentationError` with user-friendly messages.
+
+---
+
+### Error Flow Example
+
+**Scenario**: User imports a mnemonic with 11 words (invalid)
+
+```mermaid
+sequenceDiagram
+    participant UI as UI
+    participant BLoC as SecretsViewBloc
+    participant UC as ImportMnemonicUseCase
+    participant VO as MnemonicWords (Value Object)
+
+    UI->>BLoC: Import mnemonic (11 words)
+    BLoC->>UC: execute(command)
+    UC->>VO: new MnemonicWords(11 words)
+
+    Note over VO: Domain Layer Boundary
+    VO-->>UC: ❌ InvalidMnemonicWordCountError(actualCount: 11)
+
+    Note over UC: Application Layer Boundary<br/>Catch & Transform
+    UC-->>BLoC: ❌ InvalidMnemonicInputError(11)
+
+    Note over BLoC: Presentation Layer Boundary<br/>Catch & Transform
+    BLoC-->>UI: ❌ InvalidMnemonicPresentationError(11)<br/>"Invalid recovery phrase: Expected 12, 15, 18, 21,<br/>or 24 words but got 11 words. Please check<br/>your input and try again."
+
+    UI->>UI: Display error message to user
+```
+
+### Benefits of This Strategy
+
+1. **Error Isolation**: Errors are contained within layer boundaries and never leak upward
+2. **Appropriate Vocabulary**: Each layer uses terminology appropriate for its consumers
+3. **User Experience**: End users see friendly, actionable messages
+4. **Developer Experience**: External features get clear, documented error types
+5. **Debugging**: Error chain preserved via `cause` field for troubleshooting
+6. **Flexibility**: Layers can group, split, or transform errors differently based on their needs
+7. **Type Safety**: Exhaustive pattern matching ensures all error cases are handled

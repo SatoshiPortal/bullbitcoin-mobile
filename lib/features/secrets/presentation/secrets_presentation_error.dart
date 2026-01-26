@@ -13,16 +13,24 @@ sealed class SecretsPresentationError implements Exception {
     SecretsApplicationError applicationError,
   ) {
     return switch (applicationError) {
+      // Input validation errors - provide specific user-friendly messages
+      InvalidMnemonicInputError(:final wordCount) =>
+        InvalidMnemonicPresentationError(wordCount),
+      InvalidPassphraseInputError() => InvalidPassphrasePresentationError(),
+      InvalidSeedInputError() => InvalidSeedBytesPresentationError(),
+      // Operation-specific errors
+      SecretInUseError() => CannotDeleteSecretInUseError(applicationError),
+      FailedToDeleteSecretError() => FailedToDeleteSecretPresentationError(
+        applicationError,
+      ),
+      // Group infrastructure/loading errors together
       FailedToLoadAllStoredSecretsError() ||
       FailedToListUsedSecretsError() ||
       FailedToLoadLegacySecretsError() => FailedToLoadSecretsViewError(
         applicationError,
       ),
-      SecretInUseError() => CannotDeleteSecretInUseError(applicationError),
-      FailedToDeleteSecretError() => FailedToDeleteSecretPresentationError(
-        applicationError,
-      ),
-      BusinessRuleFailed() => FailedToLoadSecretsViewError(applicationError),
+      // Unexpected business rule violations (should not happen in normal flow)
+      BusinessRuleFailed() => UnexpectedBusinessRuleError(applicationError),
       _ => UnknownSecretsPresentationError(applicationError),
     };
   }
@@ -63,6 +71,48 @@ class FailedToDeleteSecretPresentationError extends SecretsPresentationError {
   FailedToDeleteSecretPresentationError(this.applicationError)
     : super(
         'Failed to delete seed. Please try again.',
+        cause: applicationError,
+      );
+}
+
+// Input validation errors - user-friendly messages for invalid input
+
+/// Presented when the user provides an invalid mnemonic phrase
+class InvalidMnemonicPresentationError extends SecretsPresentationError {
+  final int wordCount;
+
+  InvalidMnemonicPresentationError(this.wordCount)
+    : super(
+        'Invalid recovery phrase: Expected 12, 15, 18, 21, or 24 words but got $wordCount words. '
+        'Please check your input and try again.',
+      );
+}
+
+/// Presented when the user provides a passphrase that is too long
+class InvalidPassphrasePresentationError extends SecretsPresentationError {
+  InvalidPassphrasePresentationError()
+    : super(
+        'Passphrase is too long. The maximum allowed length is 256 characters. '
+        'Please shorten your passphrase and try again.',
+      );
+}
+
+/// Presented when the user provides invalid seed bytes
+class InvalidSeedBytesPresentationError extends SecretsPresentationError {
+  InvalidSeedBytesPresentationError()
+    : super(
+        'Invalid seed format. The seed must be 16, 32, or 64 bytes (128, 256, or 512 bits). '
+        'Please check your input and try again.',
+      );
+}
+
+/// Presented when an unexpected business rule is violated (should rarely happen)
+class UnexpectedBusinessRuleError extends SecretsPresentationError {
+  final SecretsApplicationError applicationError;
+
+  UnexpectedBusinessRuleError(this.applicationError)
+    : super(
+        'An unexpected validation error occurred. Please contact support if this persists.',
         cause: applicationError,
       );
 }

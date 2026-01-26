@@ -49,7 +49,7 @@ class SecretsFacade {
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {
-      throw UnknownSecretsFacadeError(e);
+      throw UnknownSecretsError(e);
     }
   }
 
@@ -69,7 +69,7 @@ class SecretsFacade {
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {
-      throw UnknownSecretsFacadeError(e);
+      throw UnknownSecretsError(e);
     }
   }
 
@@ -81,7 +81,7 @@ class SecretsFacade {
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {
-      throw UnknownSecretsFacadeError(e);
+      throw UnknownSecretsError(e);
     }
   }
 
@@ -95,7 +95,7 @@ class SecretsFacade {
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {
-      throw UnknownSecretsFacadeError(e);
+      throw UnknownSecretsError(e);
     }
   }
 
@@ -106,7 +106,7 @@ class SecretsFacade {
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {
-      throw UnknownSecretsFacadeError(e);
+      throw UnknownSecretsError(e);
     }
   }
 
@@ -121,7 +121,7 @@ class SecretsFacade {
     } on SecretsApplicationError catch (e) {
       throw SecretsFacadeError.fromApplicationError(e);
     } catch (e) {
-      throw UnknownSecretsFacadeError(e);
+      throw UnknownSecretsError(e);
     }
   }
 }

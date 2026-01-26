@@ -91,9 +91,10 @@ class ImportSeedSecretUseCase {
       );
 
       return ImportSeedSecretResult(fingerprint: fingerprint);
+    } on InvalidSeedBytesLengthError catch (e) {
+      throw InvalidSeedInputError(e.actualLength);
     } on SecretsDomainError catch (e) {
-      // Map domain errors to application errors
-      // For now just wrap all in a generic business rule failed
+      // Unexpected domain errors (e.g., InvalidFingerprintFormatError)
       throw BusinessRuleFailed(e);
     } on SecretsApplicationError {
       rethrow;

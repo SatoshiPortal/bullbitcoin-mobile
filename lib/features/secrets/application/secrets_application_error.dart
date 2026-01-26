@@ -18,6 +18,38 @@ class BusinessRuleFailed extends SecretsApplicationError {
     : super(domainError.message, cause: domainError);
 }
 
+// Input validation errors - these are user-facing errors that should be handled explicitly
+
+class InvalidMnemonicInputError extends SecretsApplicationError {
+  final int wordCount;
+  static const List<int> validCounts = [12, 15, 18, 21, 24];
+
+  InvalidMnemonicInputError(this.wordCount)
+    : super(
+        'Invalid mnemonic: expected ${validCounts.join(', ')} words, got $wordCount words.',
+      );
+}
+
+class InvalidPassphraseInputError extends SecretsApplicationError {
+  final int length;
+  static const int maxLength = 256;
+
+  InvalidPassphraseInputError(this.length)
+    : super(
+        'Passphrase too long: maximum $maxLength characters, got $length characters.',
+      );
+}
+
+class InvalidSeedInputError extends SecretsApplicationError {
+  final int byteLength;
+  static const List<int> validLengths = [16, 32, 64];
+
+  InvalidSeedInputError(this.byteLength)
+    : super(
+        'Invalid seed length: expected ${validLengths.join(', ')} bytes, got $byteLength bytes.',
+      );
+}
+
 class SecretInUseError extends SecretsApplicationError {
   final String fingerprint;
 
@@ -43,13 +75,6 @@ class FailedToDeregisterSecretUsagesOfConsumerError
         'Failed to deregister secret usages for consumer $consumer.',
         cause: cause,
       );
-}
-
-class FailedToRegisterSecretUsageError extends SecretsApplicationError {
-  final String fingerprint;
-
-  const FailedToRegisterSecretUsageError(this.fingerprint, Object? cause)
-    : super('Failed to register usage for secret $fingerprint.', cause: cause);
 }
 
 class FailedToDeregisterSecretUsageError extends SecretsApplicationError {

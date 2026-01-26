@@ -15,25 +15,30 @@ sealed class SecretsFacadeError implements Exception {
     SecretsApplicationError applicationError,
   ) {
     return switch (applicationError) {
+      // Input validation errors - expose clearly to external callers
+      InvalidMnemonicInputError(:final wordCount) => InvalidMnemonicError(
+        wordCount,
+      ),
+      InvalidPassphraseInputError() => InvalidPassphraseError(),
+      InvalidSeedInputError() => InvalidSeedBytesError(),
+      // Operation errors
       FailedToCreateNewMnemonicSecretError() => SecretCreationFailedError(
         applicationError,
       ),
       FailedToImportMnemonicSecretError() || FailedToImportSeedSecretError() =>
         SecretImportFailedError(applicationError),
       FailedToGetSecretError() => SecretNotFoundError(applicationError),
-      FailedToRegisterSecretUsageError() => SecretUsageRegistrationFailedError(
-        applicationError,
-      ),
       FailedToDeregisterSecretUsageError() =>
         SecretUsageDeregistrationFailedError(applicationError),
-      SecretInUseError() => SecretInUseFacadeError(applicationError),
+      SecretInUseError() => SecretInUseError(applicationError),
       FailedToDeleteSecretError() => SecretDeletionFailedError(
         applicationError,
       ),
+      // Unexpected business rule violations
       BusinessRuleFailed() => SecretBusinessRuleViolationError(
         applicationError,
       ),
-      _ => UnknownSecretsFacadeError(applicationError),
+      _ => UnknownSecretsError(applicationError),
     };
   }
 }
@@ -59,12 +64,6 @@ class SecretNotFoundError extends SecretsFacadeError {
     : super('Secret not found.', cause: cause);
 }
 
-/// Thrown when registering seed usage fails (e.g., duplicate registration)
-class SecretUsageRegistrationFailedError extends SecretsFacadeError {
-  const SecretUsageRegistrationFailedError(Object? cause)
-    : super('Failed to register seed usage.', cause: cause);
-}
-
 /// Thrown when deregistering seed usage fails
 class SecretUsageDeregistrationFailedError extends SecretsFacadeError {
   const SecretUsageDeregistrationFailedError(Object? cause)
@@ -72,8 +71,8 @@ class SecretUsageDeregistrationFailedError extends SecretsFacadeError {
 }
 
 /// Thrown when attempting to delete a seed that is still in use
-class SecretInUseFacadeError extends SecretsFacadeError {
-  const SecretInUseFacadeError(Object? cause)
+class SecretInUseError extends SecretsFacadeError {
+  const SecretInUseError(Object? cause)
     : super('Cannot delete seed because it is currently in use.', cause: cause);
 }
 
@@ -89,8 +88,34 @@ class SecretBusinessRuleViolationError extends SecretsFacadeError {
     : super('A seed business rule was violated.', cause: cause);
 }
 
+// Input validation errors - user-facing errors for invalid input
+
+/// Thrown when an invalid mnemonic phrase is provided
+class InvalidMnemonicError extends SecretsFacadeError {
+  final int wordCount;
+
+  const InvalidMnemonicError(this.wordCount)
+    : super(
+        'Invalid mnemonic phrase. Expected 12, 15, 18, 21, or 24 words, but got $wordCount words.',
+      );
+}
+
+/// Thrown when a passphrase exceeds the maximum allowed length
+class InvalidPassphraseError extends SecretsFacadeError {
+  const InvalidPassphraseError()
+    : super('Passphrase is too long. Maximum 256 characters allowed.');
+}
+
+/// Thrown when invalid seed bytes are provided
+class InvalidSeedBytesError extends SecretsFacadeError {
+  const InvalidSeedBytesError()
+    : super(
+        'Invalid seed format. Expected 16, 32, or 64 bytes (128, 256, or 512 bits).',
+      );
+}
+
 /// Thrown for any unexpected error
-class UnknownSecretsFacadeError extends SecretsFacadeError {
-  const UnknownSecretsFacadeError(Object? cause)
+class UnknownSecretsError extends SecretsFacadeError {
+  const UnknownSecretsError(Object? cause)
     : super('An unknown error occurred.', cause: cause);
 }

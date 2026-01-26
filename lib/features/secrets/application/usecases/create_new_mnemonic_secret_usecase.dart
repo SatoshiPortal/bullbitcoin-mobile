@@ -105,9 +105,13 @@ class CreateNewMnemonicSecretUseCase {
       );
 
       return CreateNewMnemonicSecretResult(secret: secret);
+    } on InvalidPassphraseLengthError catch (e) {
+      throw InvalidPassphraseInputError(e.actualLength);
+    } on InvalidMnemonicWordCountError catch (e) {
+      // Should not happen since mnemonic is generated, but handle for safety
+      throw InvalidMnemonicInputError(e.actualCount);
     } on SecretsDomainError catch (e) {
-      // Map domain errors to application errors
-      // For now just wrap all in a generic business rule failed
+      // Unexpected domain errors (e.g., InvalidFingerprintFormatError)
       throw BusinessRuleFailed(e);
     } on SecretsApplicationError {
       rethrow;
