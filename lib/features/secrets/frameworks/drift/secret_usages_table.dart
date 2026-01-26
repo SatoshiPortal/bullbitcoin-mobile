@@ -26,7 +26,7 @@ class SecretUsages extends Table {
 
   @override
   List<String> get customConstraints => [
-    r"CHECK((consumerType = 'wallet' AND walletId IS NOT NULL) OR (consumerType != 'wallet'))",
-    r"CHECK((consumerType = 'bip85' AND bip85Path IS NOT NULL) OR (consumerType != 'bip85'))",
+    r"CHECK((consumer_type = 'wallet' AND wallet_id IS NOT NULL) OR (consumer_type != 'wallet'))",
+    r"CHECK((consumer_type = 'bip85' AND bip85_path IS NOT NULL) OR (consumer_type != 'bip85'))",
   ];
 }

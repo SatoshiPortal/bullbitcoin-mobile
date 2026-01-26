@@ -7505,8 +7505,8 @@ class SecretUsages extends Table
   List<String> get customConstraints => const [
     'UNIQUE(fingerprint, consumer_type, wallet_id)',
     'UNIQUE(fingerprint, consumer_type, bip85_path)',
-    'CHECK((consumerType = \'wallet\' AND walletId IS NOT NULL)OR(consumerType != \'wallet\'))',
-    'CHECK((consumerType = \'bip85\' AND bip85Path IS NOT NULL)OR(consumerType != \'bip85\'))',
+    'CHECK((consumer_type = \'wallet\' AND wallet_id IS NOT NULL)OR(consumer_type != \'wallet\'))',
+    'CHECK((consumer_type = \'bip85\' AND bip85_path IS NOT NULL)OR(consumer_type != \'bip85\'))',
   ];
   @override
   bool get dontWriteConstraints => true;

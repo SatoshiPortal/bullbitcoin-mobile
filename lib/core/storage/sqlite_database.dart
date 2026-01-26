@@ -27,6 +27,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:bb_mobile/features/secrets/interface_adapters/secret_usage/secret_usage_mappers.dart';
 
 part 'sqlite_database.g.dart';
 

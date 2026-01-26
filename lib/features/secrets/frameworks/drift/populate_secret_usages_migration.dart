@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/features/secrets/interface_adapters/secret_usage/secret_usage_mappers.dart';
 import 'package:drift/drift.dart';
 
@@ -11,7 +12,11 @@ import 'package:drift/drift.dart';
 ///
 /// Can be called from the main migration strategy.
 class PopulateSecretUsagesMigration {
-  static Future<void> migrate(Migrator m) async {
+  static Future<void> migrate(Migrator m, Schema13 schema13) async {
+    // Create the new secret_usages table first
+    await m.createTable(schema13.secretUsages);
+
+    // Get the current db instance
     final db = m.database as SqliteDatabase;
 
     // Get all distinct master fingerprints from wallet_metadata
