@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
+import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/settings_page.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/translation_warning_bottom_sheet.dart';
@@ -65,7 +66,7 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                       const Gap(8),
                       const TorProxyWidget(),
                       SettingsEntryItem(
-                        icon: Icons.settings_input_component,
+                        icon: Icons.hub,
                         title: 'Custom Electrum Server',
                         onTap: () {
                           context.pushNamed(
@@ -74,7 +75,14 @@ class _AdvancedOptionsState extends State<AdvancedOptions> {
                         },
                       ),
                       SettingsEntryItem(
-                        icon: Icons.cloud_sync,
+                        icon: Icons.memory,
+                        title: 'Custom Mempool Server',
+                        onTap: () {
+                          context.pushNamed(MempoolSettingsRoute.name);
+                        },
+                      ),
+                      SettingsEntryItem(
+                        icon: Icons.cloud_circle,
                         title: 'Custom Recoverbull Server',
                         onTap: () {
                           Navigator.of(context).push(
