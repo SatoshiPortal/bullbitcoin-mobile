@@ -36,9 +36,9 @@ extension SecretUsageMappersX on SecretUsage {
       WalletConsumer() => null,
     };
     return SecretUsageRow(
-      id: id,
+      id: id.value,
       consumerType: consumerType,
-      fingerprint: fingerprint,
+      fingerprint: fingerprint.value,
       walletId: walletId,
       bip85Path: bip85Path,
       createdAt: createdAt,

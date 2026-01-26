@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
 import 'package:meta/meta.dart';
 
 @immutable

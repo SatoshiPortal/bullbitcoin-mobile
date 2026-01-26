@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 
 sealed class SecretsPresentationError implements Exception {
   final String message;

@@ -3,15 +3,15 @@ import 'package:bb_mobile/features/secrets/domain/value_objects/mnemonic_words.d
 import 'package:bb_mobile/features/secrets/domain/value_objects/passphrase.dart';
 import 'package:bb_mobile/features/secrets/domain/value_objects/seed_bytes.dart';
 
-import 'package:bb_mobile/features/secrets/domain/secret.dart';
-import 'package:bb_mobile/features/secrets/domain/secret_usage_purpose.dart';
+import 'package:bb_mobile/features/secrets/domain/entities/secret_entity.dart';
+import 'package:bb_mobile/features/secrets/domain/primitives/secret_usage_purpose.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_crypto_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_store_port.dart';
 import 'package:bb_mobile/features/secrets/application/ports/secret_usage_repository_port.dart';
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 import 'package:bb_mobile/features/secrets/application/usecases/import_seed_secret_usecase.dart';
 import 'package:bb_mobile/features/secrets/domain/entities/secret_usage_entity.dart';
-import 'package:bb_mobile/features/secrets/domain/secrets_domain_errors.dart';
+import 'package:bb_mobile/features/secrets/domain/secrets_domain_error.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';

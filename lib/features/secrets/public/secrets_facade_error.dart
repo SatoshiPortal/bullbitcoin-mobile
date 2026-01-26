@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/secrets/application/secrets_application_errors.dart';
+import 'package:bb_mobile/features/secrets/application/secrets_application_error.dart';
 
 /// Public errors that the SecretsFacade can throw.
 /// These are the only errors that external features should handle.

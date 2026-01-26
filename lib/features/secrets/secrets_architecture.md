@@ -38,7 +38,7 @@ graph LR
     end
 
     subgraph Application
-        UC[Use Cases<br/>11 operations]
+        UC[Use Cases<br/>10 operations]
         Ports[Ports<br/>5 interfaces]
     end
 
@@ -48,7 +48,8 @@ graph LR
     end
 
     subgraph Domain
-        Entities[SecretUsage<br/>Secret<br/>SecretUsagePurpose]
+        Entities[Entities<br/>Secret, SecretUsage]
+        VOs[Value Objects<br/>Fingerprint, SecretConsumer, etc.]
     end
 
     PF --> UC
@@ -65,40 +66,78 @@ Foundation types and business entities:
 
 ```mermaid
 classDiagram
-    %% Core/Primitives
+    %% Domain Entities
     class Secret {
         <<sealed>>
-        +kind: SecretKind
+        +fingerprint: Fingerprint
     }
 
     class SeedSecret {
-        +bytes: List~int~
+        +fingerprint: Fingerprint
+        +bytes: SeedBytes
     }
 
     class MnemonicSecret {
-        +words: List~String~
-        +passphrase: String?
-    }
-
-    class SecretUsagePurpose {
-        <<enumeration>>
-        wallet
-        bip85
+        +fingerprint: Fingerprint
+        +words: MnemonicWords
+        +passphrase: Passphrase?
     }
 
     Secret <|-- SeedSecret
     Secret <|-- MnemonicSecret
 
-    %% Domain Entities
     class SecretUsage {
-        +id: int
-        +fingerprint: String
-        +purpose: SecretUsagePurpose
-        +consumerRef: String
+        +id: SecretUsageId
+        +fingerprint: Fingerprint
+        +consumer: SecretConsumer
         +createdAt: DateTime
     }
 
-    SecretUsage --> SecretUsagePurpose
+    %% Value Objects
+    class Fingerprint {
+        +value: String
+        +fromHex(hex) Fingerprint
+    }
+
+    class SecretUsageId {
+        +value: int
+    }
+
+    class SecretConsumer {
+        <<sealed>>
+    }
+
+    class WalletConsumer {
+        +walletId: String
+    }
+
+    class Bip85Consumer {
+        +bip85Path: String
+    }
+
+    class MnemonicWords {
+        +value: List~String~
+    }
+
+    class Passphrase {
+        +value: String
+        +empty() Passphrase
+    }
+
+    class SeedBytes {
+        +value: List~int~
+    }
+
+    SecretConsumer <|-- WalletConsumer
+    SecretConsumer <|-- Bip85Consumer
+
+    Secret --> Fingerprint
+    SecretUsage --> Fingerprint
+    SecretUsage --> SecretUsageId
+    SecretUsage --> SecretConsumer
+    SeedSecret --> SeedBytes
+    MnemonicSecret --> MnemonicWords
+    MnemonicSecret --> Passphrase
 ```
 
 ### Application Layer - Ports (Interfaces)
@@ -109,7 +148,7 @@ Contracts that define dependencies on external systems:
 classDiagram
     class SecretStorePort {
         <<interface>>
-        +save(fingerprint, secret)
+        +save(secret)
         +load(fingerprint) Secret
         +loadAll() List~Secret~
         +exists(fingerprint) bool
@@ -118,21 +157,23 @@ classDiagram
 
     class SecretUsageRepositoryPort {
         <<interface>>
-        +add(fingerprint, purpose, consumerRef) SecretUsage
+        +add(fingerprint, consumer) SecretUsage
         +isUsed(fingerprint) bool
-        +getByConsumer(purpose, consumerRef) SecretUsage?
+        +getByConsumer(consumer) List~SecretUsage~
         +getAll() List~SecretUsage~
         +deleteById(id)
+        +deleteByConsumer(consumer)
     }
 
     class MnemonicGeneratorPort {
         <<interface>>
-        +generateMnemonic() List~String~
+        +generateMnemonic() MnemonicWords
     }
 
     class SecretCryptoPort {
         <<interface>>
-        +getFingerprintFromSecret(secret) String
+        +getFingerprintFromMnemonic(mnemonicWords, passphrase) Fingerprint
+        +getFingerprintFromSeed(seedBytes) Fingerprint
     }
 
     class LegacySeedSecretStorePort {
@@ -141,11 +182,34 @@ classDiagram
     }
 
     class SecretUsage {
-        +id: int
-        +fingerprint: String
+        +id: SecretUsageId
+        +fingerprint: Fingerprint
+        +consumer: SecretConsumer
+    }
+
+    class Fingerprint {
+        +value: String
+    }
+
+    class SecretConsumer {
+        <<sealed>>
+    }
+
+    class MnemonicWords {
+        +value: List~String~
+    }
+
+    class SecretUsageId {
+        +value: int
     }
 
     SecretUsageRepositoryPort --> SecretUsage
+    SecretUsageRepositoryPort --> Fingerprint
+    SecretUsageRepositoryPort --> SecretConsumer
+    SecretUsageRepositoryPort --> SecretUsageId
+    SecretCryptoPort --> Fingerprint
+    SecretCryptoPort --> MnemonicWords
+    MnemonicGeneratorPort --> MnemonicWords
 ```
 
 ### Application Layer - Use Cases
@@ -185,19 +249,15 @@ classDiagram
     }
 
     %% Secret Usage Management
-    class RegisterSecretUsageUseCase {
-        +execute(command)
-    }
-
     class DeregisterSecretUsageUseCase {
         +execute(command)
     }
 
-    class GetSecretUsageByConsumerUseCase {
+    class GetSecretUsagesByConsumerUseCase {
         +execute(query) Result
     }
 
-    class DeregisterSecretUsageWithFingerprintCheckUseCase {
+    class DeregisterSecretUsagesOfConsumerUseCase {
         +execute(command)
     }
 
@@ -236,11 +296,9 @@ classDiagram
     ImportSeedSecretUseCase ..> SecretCryptoPort
     ImportSeedSecretUseCase ..> SecretUsageRepositoryPort
 
-    RegisterSecretUsageUseCase ..> SecretUsageRepositoryPort
     DeregisterSecretUsageUseCase ..> SecretUsageRepositoryPort
-    GetSecretUsageByConsumerUseCase ..> SecretUsageRepositoryPort
-    DeregisterSecretUsageWithFingerprintCheckUseCase ..> GetSecretUsageByConsumerUseCase
-    DeregisterSecretUsageWithFingerprintCheckUseCase ..> DeregisterSecretUsageUseCase
+    GetSecretUsagesByConsumerUseCase ..> SecretUsageRepositoryPort
+    DeregisterSecretUsagesOfConsumerUseCase ..> SecretUsageRepositoryPort
     ListUsedSecretsUseCase ..> SecretUsageRepositoryPort
 
     GetSecretUseCase ..> SecretStorePort
@@ -332,7 +390,9 @@ classDiagram
     class CreateNewMnemonicSecretUseCase
     class ImportMnemonicSecretUseCase
     class GetSecretUseCase
-    class DeregisterSecretUsageWithFingerprintCheckUseCase
+    class GetSecretUsagesByConsumerUseCase
+    class DeregisterSecretUsageUseCase
+    class DeregisterSecretUsagesOfConsumerUseCase
     class LoadAllStoredSecretsUseCase
     class ListUsedSecretsUseCase
     class DeleteSecretUseCase
@@ -340,16 +400,20 @@ classDiagram
 
     %% Public Facade (for other features)
     class SecretsFacade {
-        +createNewMnemonic()
-        +importMnemonic()
-        +getSecret()
-        +deregisterUsage()
+        +createNewMnemonicForWallet(passphrase, walletId)
+        +importMnemonicForWallet(mnemonicWords, passphrase, walletId)
+        +getSecret(fingerprint)
+        +getSecretUsagesByWalletConsumer(walletId)
+        +deregisterUsage(usageId)
+        +deregisterUsagesOfWalletConsumer(walletId)
     }
 
     SecretsFacade ..> CreateNewMnemonicSecretUseCase
     SecretsFacade ..> ImportMnemonicSecretUseCase
     SecretsFacade ..> GetSecretUseCase
-    SecretsFacade ..> DeregisterSecretUsageWithFingerprintCheckUseCase
+    SecretsFacade ..> GetSecretUsagesByConsumerUseCase
+    SecretsFacade ..> DeregisterSecretUsageUseCase
+    SecretsFacade ..> DeregisterSecretUsagesOfConsumerUseCase
 
     %% Presentation (for UI)
     class SecretsViewBloc {
@@ -380,16 +444,20 @@ classDiagram
 
 ### Domain Layer
 
-- **Entities**: Core business domain objects with rules (`SecretUsage`)
-- **Value Objects**: Primitive types from `/lib/core/primitives/secrets/` (`Secret`, `SeedSecret`, `MnemonicSecret`, `SecretUsagePurpose`)
+- **Entities**: Core business domain objects with rules (`Secret`, `SeedSecret`, `MnemonicSecret`, `SecretUsage`)
+  - Located in `/lib/features/secrets/domain/entities/`
+- **Value Objects**: Immutable types with validation (`Fingerprint`, `SecretUsageId`, `SecretConsumer`, `MnemonicWords`, `Passphrase`, `SeedBytes`)
+  - Located in `/lib/features/secrets/domain/value_objects/`
+  - Enforce domain constraints (e.g., fingerprint must be 8 hex chars, mnemonic must be 12/15/18/21/24 words)
+- **Domain Errors**: Domain-specific exceptions (`InvalidFingerprintFormatError`, `InvalidMnemonicWordCountError`, etc.)
 
 ### Application Layer
 
-- **Use Cases**: Orchestration and business rule enforcement (12 use cases)
+- **Use Cases**: Orchestration and business rule enforcement (10 use cases)
   - Coordinate multiple ports to fulfill application requirements
   - Enforce business rules (e.g., "cannot delete secret if in use")
-  - Implement application workflows (e.g., create → store → register usage)
-  - **Composed Use Cases**: Higher-level use cases that combine multiple atomic use cases to handle complex scenarios while avoiding code duplication (e.g., `DeregisterSecretUsageWithFingerprintCheckUseCase` combines get-usage and deregister-usage with fingerprint validation)
+  - Implement application workflows (e.g., create → store → register usage as atomic operation)
+  - Registration now happens within import/create use cases (no separate RegisterSecretUsageUseCase)
 - **Ports**: Interfaces defining boundaries with external systems
 
 ### Interface Adapters Layer
@@ -423,15 +491,16 @@ sequenceDiagram
     participant SS as SecretStorePort
     participant SR as SecretUsageRepositoryPort
 
-    F->>UC: execute(command)
+    F->>UC: execute(CreateNewMnemonicSecretCommand.forWallet())
     UC->>MG: generateMnemonic()
-    MG-->>UC: words[]
-    UC->>SC: getFingerprintFromSecret()
-    SC-->>UC: fingerprint
-    UC->>SS: save(fingerprint, secret)
-    UC->>SR: add(fingerprint, purpose, consumerRef)
+    MG-->>UC: MnemonicWords
+    UC->>SC: getFingerprintFromMnemonic(words, passphrase)
+    SC-->>UC: Fingerprint
+    Note over UC: Create MnemonicSecret with value objects
+    UC->>SS: save(secret)
+    UC->>SR: add(fingerprint, WalletConsumer)
     SR-->>UC: SecretUsage
-    UC-->>F: Result(fingerprint, secret)
+    UC-->>F: Result(MnemonicSecret)
 ```
 
 ### Deleting a Secret
@@ -464,19 +533,15 @@ sequenceDiagram
     participant SS as SecretStorePort
     participant SR as SecretUsageRepositoryPort
 
-    F->>UC: execute(command)
-    UC->>SC: getFingerprintFromSecret()
-    SC-->>UC: fingerprint
-    UC->>SS: exists(fingerprint)
-    SS-->>UC: true/false
-    alt Secret already exists
-        UC-->>F: Error: SecretAlreadyExistsError
-    else Secret doesn't exist
-        UC->>SS: save(fingerprint, secret)
-        UC->>SR: add(fingerprint, purpose, consumerRef)
-        SR-->>UC: SecretUsage
-        UC-->>F: Result(fingerprint, secret)
-    end
+    F->>UC: execute(ImportMnemonicSecretCommand.forWallet())
+    Note over UC: Validate MnemonicWords, Passphrase
+    UC->>SC: getFingerprintFromMnemonic(words, passphrase)
+    SC-->>UC: Fingerprint
+    Note over UC: Create MnemonicSecret with value objects
+    UC->>SS: save(secret)
+    UC->>SR: add(fingerprint, WalletConsumer)
+    SR-->>UC: SecretUsage
+    UC-->>F: Result(Fingerprint)
 ```
 
 ### Importing a Seed Secret (bytes)
@@ -489,19 +554,15 @@ sequenceDiagram
     participant SS as SecretStorePort
     participant SR as SecretUsageRepositoryPort
 
-    F->>UC: execute(command)
-    UC->>SC: getFingerprintFromSecret()
-    SC-->>UC: fingerprint
-    UC->>SS: exists(fingerprint)
-    SS-->>UC: true/false
-    alt Secret already exists
-        UC-->>F: Error: SecretAlreadyExistsError
-    else Secret doesn't exist
-        UC->>SS: save(fingerprint, secret)
-        UC->>SR: add(fingerprint, purpose, consumerRef)
-        SR-->>UC: SecretUsage
-        UC-->>F: Result(fingerprint, secret)
-    end
+    F->>UC: execute(ImportSeedSecretCommand)
+    Note over UC: Validate SeedBytes
+    UC->>SC: getFingerprintFromSeed(seedBytes)
+    SC-->>UC: Fingerprint
+    Note over UC: Create SeedSecret with value objects
+    UC->>SS: save(secret)
+    UC->>SR: add(fingerprint, consumer)
+    SR-->>UC: SecretUsage
+    UC-->>F: Result(Fingerprint)
 ```
 
 ### Getting a Secret
@@ -518,35 +579,34 @@ sequenceDiagram
     UC-->>F: Result(secret)
 ```
 
-### Deregistering Secret Usage with Fingerprint Check
+### Getting Secret Usages by Consumer
 
 ```mermaid
 sequenceDiagram
     participant F as SecretsFacade
-    participant UC as DeregisterSecretUsageWithFingerprintCheckUseCase
-    participant GetUC as GetSecretUsageByConsumerUseCase
-    participant DeregUC as DeregisterSecretUsageUseCase
+    participant UC as GetSecretUsagesByConsumerUseCase
     participant SR as SecretUsageRepositoryPort
-    participant SC as SecretCryptoPort
-    participant SS as SecretStorePort
 
-    F->>UC: execute(command)
-    UC->>GetUC: execute(query)
-    GetUC->>SR: getByConsumer(purpose, consumerRef)
-    SR-->>GetUC: SecretUsage
-    GetUC-->>UC: Result(SecretUsage)
-    UC->>SS: load(fingerprint)
-    SS-->>UC: Secret
-    UC->>SC: getFingerprintFromSecret()
-    SC-->>UC: actualFingerprint
-    alt Fingerprint doesn't match
-        UC-->>F: Error: FingerprintMismatchError
-    else Fingerprint matches
-        UC->>DeregUC: execute(command)
-        DeregUC->>SR: deleteById(id)
-        DeregUC-->>UC: Success
-        UC-->>F: Success
-    end
+    F->>UC: execute(GetSecretUsagesByConsumerQuery.byWallet())
+    Note over UC: Create WalletConsumer from walletId
+    UC->>SR: getByConsumer(WalletConsumer)
+    SR-->>UC: List<SecretUsage>
+    UC-->>F: Result(List<SecretUsage>)
+```
+
+### Deregistering All Usages of a Consumer
+
+```mermaid
+sequenceDiagram
+    participant F as SecretsFacade
+    participant UC as DeregisterSecretUsagesOfConsumerUseCase
+    participant SR as SecretUsageRepositoryPort
+
+    F->>UC: execute(DeregisterSecretUsagesOfConsumerCommand.ofWallet())
+    Note over UC: Create WalletConsumer from walletId
+    UC->>SR: deleteByConsumer(WalletConsumer)
+    SR-->>UC: Success
+    UC-->>F: Success
 ```
 
 ### Loading All Stored Secrets
@@ -609,12 +669,24 @@ sequenceDiagram
 - **Port/Adapter Pattern**: External dependencies hidden behind interfaces
 - **Facade Pattern**: Simplified public API for complex subsystem
 - **Command/Query Segregation**: Clear separation between operations that modify state vs read state
-- **BLoC Pattern**: Business logic separation in presentation layer
+- **BLoC Pattern**: Transform data between Application and Presentation layers
+- **Domain Boundary Protection**: Entities and Value Objects cannot be constructed outside domain/application layers (see Business Rules)
 
 ## Key Business Rules
 
 1. **Secret Deletion Protection**: A secret cannot be deleted if it has registered usages
-2. **Usage Tracking**: All secret access must be registered with a purpose and consumer reference
-3. **Fingerprint Identity**: Secrets are uniquely identified by their BIP32 fingerprint
-4. **Legacy Support**: Old secrets can be loaded and migrated through dedicated use case
-5. **Secure Storage**: Secrets are stored separately from usage metadata (secrets in secure storage, usages in SQLite)
+2. **Atomic Registration**: Secret creation/import and usage registration happen atomically within the same use case
+3. **Fingerprint Identity**: Secrets are uniquely identified by their BIP32 fingerprint (4 bytes, 8 hex chars)
+4. **Value Object Validation**: Domain constraints are enforced at creation time:
+   - Fingerprint: Must be exactly 8 hexadecimal characters
+   - MnemonicWords: Must be 12, 15, 18, 21, or 24 words
+   - Passphrase: Maximum 256 characters
+   - SeedBytes: Must be 16, 32, or 64 bytes (128, 256, or 512 bits)
+5. **Consumer-Based Tracking**: Usages are tracked by consumer (WalletConsumer, Bip85Consumer) rather than generic purpose/reference strings
+6. **Legacy Support**: Old secrets can be loaded and migrated through dedicated use case
+7. **Secure Storage**: Secrets are stored separately from usage metadata (secrets in secure storage, usages in SQLite)
+8. **Domain Boundary Protection**: Business rules are enforced exclusively within the domain and application layers:
+   - **Input Constraint**: Use case commands/queries, facade methods, and BLoC events accept only primitive types (String, int, List\<String\>, etc.), never Entities or Value Objects
+   - **Output Freedom**: Use cases, facade methods, and BLoC state can return Entities and Value Objects
+   - **Validation Location**: All domain validation happens when Value Objects are constructed within use cases
+   - **Prevents Business Rule Bypass**: External callers cannot construct invalid domain objects or bypass validation rules
