@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +24,7 @@ class DcaConfirmationDetailRow extends StatelessWidget {
                 : Text(
                     value!,
                     textAlign: .end,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: context.appColors.outlineVariant,
-                    ),
+                    style: theme.textTheme.bodyMedium,
                   ),
           ),
         ],
