@@ -4110,7 +4110,7 @@
     "@torSettingsDescConnecting": {
         "description": "Description when Tor is connecting"
     },
-    "withdrawOwnershipMyAccount": "",
+    "withdrawOwnershipMyAccount": "Esta é a minha conta",
     "@withdrawOwnershipMyAccount": {
         "description": "Option indicating the account belongs to the user"
     },
@@ -4356,5 +4356,37 @@
     "retry": "Repito",
     "@retry": {
         "description": "Generic retry button label"
+    },
+    "exchangeSettingsRecipientsTitle": "Os participantes",
+    "@exchangeSettingsRecipientsTitle": {
+        "description": "Title for the recipients button in exchange settings"
+    },
+    "exchangeSettingsTransactionsTitle": "Transações",
+    "@exchangeSettingsTransactionsTitle": {
+        "description": "Title for the transactions button in exchange settings"
+    },
+    "exchangeAppSettingsEmailNotificationsLabel": "Notificações de e-mail",
+    "@exchangeAppSettingsEmailNotificationsLabel": {
+        "description": "Label for email notifications toggle in exchange app settings"
+    },
+    "exchangeAppSettingsEmailNotificationsDescription": "Receba notificações por e-mail para pedidos e atualizações de conta",
+    "@exchangeAppSettingsEmailNotificationsDescription": {
+        "description": "Description for email notifications toggle in exchange app settings"
+    },
+    "exchangeFileUploadDocumentsTitle": "Carregar documentos",
+    "@exchangeFileUploadDocumentsTitle": {
+        "description": "Title for the upload documents section"
+    },
+    "exchangeFileUploadSuccess": "Arquivo carregado com sucesso",
+    "@exchangeFileUploadSuccess": {
+        "description": "Success message when file is uploaded successfully"
+    },
+    "exchangeBitcoinWalletsSaveSuccess": "Endereço da carteira salvo com sucesso",
+    "@exchangeBitcoinWalletsSaveSuccess": {
+        "description": "Success message when wallet address is saved"
+    },
+    "exchangeBitcoinWalletsDescription": "Definir endereços de carteira padrão para retiradas automáticas de Bitcoin.",
+    "@exchangeBitcoinWalletsDescription": {
+        "description": "Description text on the default bitcoin wallets screen"
     }
 }
