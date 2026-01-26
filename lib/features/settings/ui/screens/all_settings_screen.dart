@@ -49,6 +49,9 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (ServiceStatusCubit cubit) => cubit.state.serviceStatus,
     );
 
+    final isSuperuser =
+        context.read<SettingsCubit>().state.isSuperuser ?? false;
+
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
@@ -62,9 +65,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   title: context.loc.settingsExchangeSettingsTitle,
                   onTap: () {
                     if (Platform.isIOS) {
-                      final isSuperuser =
-                          context.read<SettingsCubit>().state.isSuperuser ??
-                          false;
                       if (isSuperuser) {
                         final notLoggedIn = context
                             .read<ExchangeCubit>()
@@ -107,13 +107,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     context.pushNamed(SettingsRoute.bitcoinSettings.name);
                   },
                 ),
-                SettingsEntryItem(
-                  icon: Icons.model_training,
-                  title: 'Connect Bitaxe',
-                  onTap: () {
-                    context.pushNamed(BitaxeRoute.entry.name);
-                  },
-                ),
+                if (isSuperuser)
+                  SettingsEntryItem(
+                    icon: Icons.model_training,
+                    title: 'Connect Bitaxe',
+                    onTap: () {
+                      context.pushNamed(BitaxeRoute.entry.name);
+                    },
+                  ),
                 SettingsEntryItem(
                   icon: Icons.app_settings_alt,
                   title: context.loc.settingsAppSettingsTitle,
