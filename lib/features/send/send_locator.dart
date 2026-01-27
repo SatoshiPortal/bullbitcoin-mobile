@@ -177,10 +177,6 @@ class SendLocator {
             locator<WatchWalletTransactionByTxIdUsecase>(),
         calculateBitcoinAbsoluteFeesUsecase:
             locator<CalculateBitcoinAbsoluteFeesUsecase>(),
-        updateSendSwapLockupFeesUsecase:
-            locator<UpdateSendSwapLockupFeesUsecase>(),
-        verifyChainSwapAmountSendUsecase:
-            locator<VerifyChainSwapAmountSendUsecase>(),
       ),
     );
   }

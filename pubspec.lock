@@ -338,10 +338,10 @@ packages:
     dependency: "direct main"
     description:
       name: cbor
-      sha256: f574d83660e1a3dc4f99f23efaaea54064a40748786963b067b4e53a555a2299
+      sha256: "259230d0c7f3ae58cb68cbc17b95484a038b2f63b15963b019d4bd9d28bf3fe0"
       url: "https://pub.dev"
     source: hosted
-    version: "6.4.1"
+    version: "6.5.0"
   characters:
     dependency: transitive
     description:
@@ -1061,14 +1061,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
-  ieee754:
-    dependency: transitive
-    description:
-      name: ieee754
-      sha256: "7d87451c164a56c156180d34a4e93779372edd191d2c219206100b976203128c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
   image:
     dependency: transitive
     description:
@@ -1089,10 +1081,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "297e42bd236c4ac4b091d4277292159b3280545e030cae2be3d503f9ecf7e6a1"
+      sha256: "518a16108529fc18657a3e6dde4a043dc465d16596d20ab2abd49a4cac2e703d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.13+12"
+    version: "0.8.13+13"
   image_picker_for_web:
     dependency: transitive
     description:

@@ -1837,7 +1837,7 @@ class SignLedgerButton extends StatelessWidget {
             context.loc.sendTransactionSignedLedger,
           );
           // Update the signedBitcoinTx with the result from Ledger
-          await context.read<SendCubit>().updateSignedBitcoinTx(result);
+          context.read<SendCubit>().updateSignedBitcoinTx(result);
         }
       },
       bgColor: context.appColors.secondary,
@@ -1883,9 +1883,9 @@ class SignBitBoxButton extends StatelessWidget {
         );
 
         if (result != null && context.mounted) {
-          final finalizedTx = await _finalizePsbt(result);
+          await _finalizePsbt(result);
           if (context.mounted) {
-            await context.read<SendCubit>().updateSignedBitcoinTx(finalizedTx);
+            context.read<SendCubit>().updateSignedBitcoinTx(result);
           }
         }
       },
