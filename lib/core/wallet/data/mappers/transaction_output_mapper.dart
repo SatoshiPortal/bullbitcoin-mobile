@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class TransactionOutputMapper {
   static TransactionOutputModel fromEntity(
@@ -29,8 +30,8 @@ class TransactionOutputMapper {
 
   static TransactionOutput toEntity(
     TransactionOutputModel transactionOutputModel, {
-    List<String> labels = const [],
-    List<String> addressLabels = const [],
+    List<Label> labels = const [],
+    List<Label> addressLabels = const [],
   }) {
     switch (transactionOutputModel) {
       case BitcoinTransactionOutputModel _:

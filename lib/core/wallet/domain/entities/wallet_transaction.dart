@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -39,7 +40,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     required bool isRbf,
     DateTime? confirmationTime,
     @Default(false) bool isToSelf,
-    @Default([]) List<String> labels,
+    @Default([]) List<Label> labels,
     String? unblindedUrl,
   }) = _WalletTransaction;
 
@@ -69,5 +70,5 @@ sealed class WalletTransaction with _$WalletTransaction {
 
   String? get toAddress => destinationOutput?.address;
 
-  List<String>? get toAddressLabels => destinationOutput?.addressLabels;
+  List<Label>? get toAddressLabels => destinationOutput?.addressLabels;
 }

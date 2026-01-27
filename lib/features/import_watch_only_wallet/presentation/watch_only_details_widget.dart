@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
-import 'package:bb_mobile/core/widgets/labeled_text_input.dart';
+import 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -32,8 +32,10 @@ class _DescriptorDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ImportWatchOnlyCubit>();
-    final watchOnlyWallet =
-        context.watch<ImportWatchOnlyCubit>().state.watchOnlyWallet;
+    final watchOnlyWallet = context
+        .watch<ImportWatchOnlyCubit>()
+        .state
+        .watchOnlyWallet;
     final entity = watchOnlyWallet! as WatchOnlyDescriptorEntity;
 
     return Column(
@@ -74,19 +76,18 @@ class _DescriptorDetailsWidget extends StatelessWidget {
                     color: context.appColors.text,
                   ),
                   initialValue: entity.signerDevice,
-                  items:
-                      [null, ...SignerDeviceEntity.values]
-                          .map(
-                            (value) => DropdownMenuItem<SignerDeviceEntity?>(
-                              value: value,
-                              child: BBText(
-                                value?.displayName ??
-                                    context.loc.importWatchOnlyUnknown,
-                                style: context.font.headlineSmall,
-                              ),
-                            ),
-                          )
-                          .toList(),
+                  items: [null, ...SignerDeviceEntity.values]
+                      .map(
+                        (value) => DropdownMenuItem<SignerDeviceEntity?>(
+                          value: value,
+                          child: BBText(
+                            value?.displayName ??
+                                context.loc.importWatchOnlyUnknown,
+                            style: context.font.headlineSmall,
+                          ),
+                        ),
+                      )
+                      .toList(),
                   onChanged: cubit.onSignerDeviceChanged,
                 ),
               ),
@@ -125,8 +126,10 @@ class _XpubDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<ImportWatchOnlyCubit>();
-    final watchOnlyWallet =
-        context.watch<ImportWatchOnlyCubit>().state.watchOnlyWallet;
+    final watchOnlyWallet = context
+        .watch<ImportWatchOnlyCubit>()
+        .state
+        .watchOnlyWallet;
     final entity = watchOnlyWallet! as WatchOnlyXpubEntity;
     final isXpub = entity.pubkey.startsWith('xpub');
 
@@ -177,18 +180,17 @@ class _XpubDetailsWidget extends StatelessWidget {
                 color: context.appColors.text,
               ),
               initialValue: entity.extendedPubkey.derivation,
-              items:
-                  [...satoshifier.Derivation.values]
-                      .map(
-                        (value) => DropdownMenuItem<satoshifier.Derivation>(
-                          value: value,
-                          child: BBText(
-                            'BIP${value.purpose} - ${value.label}',
-                            style: context.font.headlineSmall,
-                          ),
-                        ),
-                      )
-                      .toList(),
+              items: [...satoshifier.Derivation.values]
+                  .map(
+                    (value) => DropdownMenuItem<satoshifier.Derivation>(
+                      value: value,
+                      child: BBText(
+                        'BIP${value.purpose} - ${value.label}',
+                        style: context.font.headlineSmall,
+                      ),
+                    ),
+                  )
+                  .toList(),
               onChanged: cubit.onDerivationChanged,
             ),
           ),

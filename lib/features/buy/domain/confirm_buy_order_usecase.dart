@@ -31,13 +31,12 @@ class ConfirmBuyOrderUsecase {
       final order = await repo.confirmBuyOrder(orderId);
 
       if (order.toAddress != null) {
-        await _labelsFacade.store([
-          Label.addr(
+        await _labelsFacade.store(
+          NewLabel.addr(
             address: order.toAddress!,
             label: LabelSystem.exchangeBuy.label,
-            origin: null,
           ),
-        ]);
+        );
       }
 
       return order;
