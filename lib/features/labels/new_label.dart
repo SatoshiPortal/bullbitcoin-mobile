@@ -1,28 +1,24 @@
 import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 
-class Label {
-  final int id;
+class NewLabel {
   final LabelType type;
   final String label;
   final String reference;
   final String? origin;
 
-  Label({
-    required this.id,
+  NewLabel({
     required this.type,
     required this.label,
     required this.reference,
     this.origin,
   });
 
-  factory Label.tx({
-    required int id,
+  factory NewLabel.tx({
     required String transactionId,
     required String label,
     String? origin,
   }) {
-    return Label(
-      id: id,
+    return NewLabel(
       type: LabelType.transaction,
       label: label,
       reference: transactionId,
@@ -30,14 +26,12 @@ class Label {
     );
   }
 
-  factory Label.addr({
-    required int id,
+  factory NewLabel.addr({
     required String address,
     required String label,
     String? origin,
   }) {
-    return Label(
-      id: id,
+    return NewLabel(
       type: LabelType.address,
       label: label,
       reference: address,

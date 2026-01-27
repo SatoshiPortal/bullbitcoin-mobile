@@ -2,22 +2,26 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/label_text.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
-class LabelsWidget extends StatefulWidget {
-  const LabelsWidget({
-    super.key,
-    required this.labels,
-    required this.reference,
-    this.onDelete,
-  });
+extension LabelErrorTranslation on LabelError {
+  String toTranslated(BuildContext context) => when(
+    notFound: (label) => context.loc.labelErrorNotFound(label),
+    unsupportedType: (type) =>
+        context.loc.labelErrorUnsupportedType(type.toString()),
+    unexpected: (message) =>
+        message != null ? context.loc.labelErrorUnexpected(message) : '',
+    systemLabelCannotBeDeleted: () => context.loc.labelErrorSystemCannotDelete,
+  );
+}
 
-  final List<String> labels;
-  final String reference;
-  final Future<void> Function(String)? onDelete;
+class LabelsWidget extends StatefulWidget {
+  const LabelsWidget({super.key, required this.labels, this.onDelete});
+
+  final List<Label> labels;
+  final Future<void> Function(Label)? onDelete;
 
   @override
   State<LabelsWidget> createState() => _LabelsWidgetState();
@@ -25,9 +29,9 @@ class LabelsWidget extends StatefulWidget {
 
 class _LabelsWidgetState extends State<LabelsWidget> {
   final _labelsFacade = locator<LabelsFacade>();
-  final Set<String> _deletingLabels = {};
+  final Set<Label> _deletingLabels = {};
 
-  Future<void> _deleteLabel(String label) async {
+  Future<void> _deleteLabel(Label label) async {
     if (_deletingLabels.contains(label)) return;
 
     setState(() {
@@ -38,7 +42,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       if (widget.onDelete != null) {
         await widget.onDelete!(label);
       } else {
-        await _labelsFacade.delete(label: label, reference: widget.reference);
+        await _labelsFacade.trash(label.id);
       }
       if (mounted) {
         setState(() => _deletingLabels.remove(label));
@@ -53,7 +57,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
         setState(() => _deletingLabels.remove(label));
         SnackBarUtils.showSnackBar(
           context,
-          context.loc.labelDeleteFailed(label),
+          context.loc.labelDeleteFailed(label.label),
         );
       }
     }
@@ -71,7 +75,7 @@ class _LabelsWidgetState extends State<LabelsWidget> {
       children: distinctLabels.map((label) {
         final isDeleting = _deletingLabels.contains(label);
         return LabelChip(
-          label: label,
+          label: label.label,
           isDeleting: isDeleting,
           onDelete: widget.onDelete != null ? () => _deleteLabel(label) : null,
         );

@@ -23,7 +23,7 @@ class LabelExchangeOrdersUsecase {
 
       log.config('$LabelExchangeOrdersUsecase is labeling exchange orders');
 
-      final labels = <Label>[];
+      final labels = <NewLabel>[];
       for (final order in orders) {
         try {
           final isBuyOrder = order is BuyOrder;
@@ -32,7 +32,7 @@ class LabelExchangeOrdersUsecase {
               : LabelSystem.exchangeSell.label;
 
           if (isBuyOrder && order.toAddress != null) {
-            final label = Label.addr(
+            final label = NewLabel.addr(
               address: order.toAddress!,
               label: systemLabel,
               origin: null,
@@ -41,7 +41,7 @@ class LabelExchangeOrdersUsecase {
           }
 
           if (order.transactionId != null) {
-            final label = Label.tx(
+            final label = NewLabel.tx(
               transactionId: order.transactionId!,
               label: systemLabel,
               origin: null,
@@ -53,7 +53,9 @@ class LabelExchangeOrdersUsecase {
         }
       }
 
-      await _labelsFacade.store(labels);
+      for (final label in labels) {
+        await _labelsFacade.store(label);
+      }
 
       log.fine(
         '$LabelExchangeOrdersUsecase labeled ${orders.length} exchange orders',
@@ -65,11 +67,11 @@ class LabelExchangeOrdersUsecase {
 
   Future<bool> _hasExistingExchangeSystemLabels() async {
     try {
-      final allLabels = await _labelsFacade.fetch();
+      final allLabels = await _labelsFacade.fetchAll();
       return allLabels.any(
         (label) =>
-            LabelSystem.isSystemLabel(label) &&
-            LabelSystem.fromLabel(label).isExchangeRelated(),
+            LabelSystem.isSystemLabel(label.label) &&
+            LabelSystem.fromLabel(label.label).isExchangeRelated(),
       );
     } catch (e) {
       log.warning('$LabelExchangeOrdersUsecase: $e');

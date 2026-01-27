@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/widgets/labels_widget.dart';
+import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
@@ -144,7 +144,6 @@ class CoinSelectTile extends StatelessWidget {
                       ...utxo.addressLabels,
                       ...utxo.txLabels,
                     ],
-                    reference: utxo.txId,
                   ),
                 ],
               ),

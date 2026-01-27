@@ -415,13 +415,13 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         await _broadcastLiquidTransactionUsecase.execute(signedPset);
         final tx = await LiquidTx.fromPset(signedPset);
         final txid = tx.txid;
-        await _labelsFacade.store([
-          Label.tx(
+        await _labelsFacade.store(
+          NewLabel.tx(
             transactionId: txid,
             label: LabelSystem.exchangeSell.label,
             origin: wallet.id,
           ),
-        ]);
+        );
       } else {
         final absoluteFees = sellPaymentState.absoluteFees;
         if (absoluteFees == null) {
@@ -453,13 +453,13 @@ class SellBloc extends Bloc<SellEvent, SellState> {
         );
         final tx = await BitcoinTx.fromPsbt(preparedSend.unsignedPsbt);
         final txid = tx.txid;
-        await _labelsFacade.store([
-          Label.tx(
+        await _labelsFacade.store(
+          NewLabel.tx(
             transactionId: txid,
             label: LabelSystem.exchangeSell.label,
             origin: wallet.id,
           ),
-        ]);
+        );
       }
       // 5s delay gives backend time to register the 0 conf
       await Future.delayed(const Duration(seconds: 5));

@@ -55,7 +55,7 @@ class WalletAddressRepository {
 
     var labels = await _labelsFacade.fetchByReference(address);
 
-    while (labels.any((label) => LabelSystem.isSystemLabel(label))) {
+    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
       index++;
       if (walletModel is PublicBdkWalletModel) {
         address = await _bdkWallet.getAddressByIndex(
@@ -124,7 +124,7 @@ class WalletAddressRepository {
 
     var labels = await _labelsFacade.fetchByReference(address);
 
-    while (labels.any((label) => LabelSystem.isSystemLabel(label))) {
+    while (labels.any((label) => LabelSystem.isSystemLabel(label.label))) {
       index++;
       if (walletModel is PublicBdkWalletModel) {
         address = await _bdkWallet.getAddressByIndex(

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction.freezed.dart';
@@ -90,7 +91,7 @@ sealed class Transaction with _$Transaction {
   String get walletId =>
       walletTransaction?.walletId ?? swap?.walletId ?? payjoin!.walletId;
 
-  List<String>? get labels => walletTransaction?.labels;
+  List<Label>? get labels => walletTransaction?.labels;
 }
 
 /*
