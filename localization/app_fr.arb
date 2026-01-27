@@ -3797,7 +3797,7 @@
   },
   "ledgerInstructionsIos": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé.",
   "ledgerInstructionsAndroidUsb": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et connectez-le via USB.",
-  "ledgerInstructionsAndroidDual": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé, ou connectez l'appareil via USB.",
+  "ledgerInstructionsAndroidDual": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé.",
   "ledgerScanningMessage": "Recherche d'appareils Ledger à proximité...",
   "ledgerConnectingSubtext": "Établissement d'une connexion sécurisée...",
   "ledgerErrorUnknown": "Erreur inconnue",

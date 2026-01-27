@@ -931,6 +931,10 @@
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
   },
+  "exchangeStatisticsBuySellRatioDesc": "Percentage of total volume from buying vs selling",
+  "@exchangeStatisticsBuySellRatioDesc": {
+    "description": "Description for buy/sell ratio statistic"
+  },
   "exchangeStatisticsBuyStats": "Buy Statistics",
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
@@ -943,17 +947,45 @@
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
   },
+  "exchangeStatisticsBuyVolumeDesc": "Total amount spent buying bitcoin",
+  "@exchangeStatisticsBuyVolumeDesc": {
+    "description": "Description for buy volume statistic"
+  },
+  "exchangeStatisticsSellVolumeDesc": "Total amount received from selling bitcoin",
+  "@exchangeStatisticsSellVolumeDesc": {
+    "description": "Description for sell volume statistic"
+  },
   "exchangeStatisticsTradeCount": "Trade Count",
   "@exchangeStatisticsTradeCount": {
     "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsBuyTradeCountDesc": "Number of bitcoin purchase transactions",
+  "@exchangeStatisticsBuyTradeCountDesc": {
+    "description": "Description for buy trade count statistic"
+  },
+  "exchangeStatisticsSellTradeCountDesc": "Number of bitcoin sell transactions",
+  "@exchangeStatisticsSellTradeCountDesc": {
+    "description": "Description for sell trade count statistic"
   },
   "exchangeStatisticsAveragePrice": "Average Price",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
   },
+  "exchangeStatisticsBuyAvgPriceDesc": "Average price paid per bitcoin when buying",
+  "@exchangeStatisticsBuyAvgPriceDesc": {
+    "description": "Description for buy average price statistic"
+  },
+  "exchangeStatisticsSellAvgPriceDesc": "Average price received per bitcoin when selling",
+  "@exchangeStatisticsSellAvgPriceDesc": {
+    "description": "Description for sell average price statistic"
+  },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
   "@exchangeStatisticsTotalVolume": {
     "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsTotalVolumeDesc": "Combined buy and sell volumes in fiat currencies",
+  "@exchangeStatisticsTotalVolumeDesc": {
+    "description": "Description for total trading volume statistic"
   },
   "exchangeStatisticsBillerStats": "Biller Statistics",
   "@exchangeStatisticsBillerStats": {
@@ -2489,6 +2521,30 @@
   "transactionFilterBuy": "Buy",
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
+  },
+  "transactionFilterWithdraw": "Withdraw",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "Pay",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "Funding",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "Reward",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "Refund",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionFilterBalanceAdjustment": "Adjustment",
+  "@transactionFilterBalanceAdjustment": {
+    "description": "Filter option to show only balance adjustment orders"
   },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
@@ -11509,7 +11565,7 @@
   "@ledgerInstructionsAndroidUsb": {
     "description": "Connection instructions for Android devices (USB only)"
   },
-  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.",
+  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.",
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },

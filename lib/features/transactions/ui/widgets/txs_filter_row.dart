@@ -37,6 +37,17 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
                       context.loc.transactionFilterPayjoin,
                     TransactionsFilter.sell => context.loc.transactionFilterSell,
                     TransactionsFilter.buy => context.loc.transactionFilterBuy,
+                    TransactionsFilter.withdraw =>
+                      context.loc.transactionFilterWithdraw,
+                    TransactionsFilter.pay => context.loc.transactionFilterPay,
+                    TransactionsFilter.funding =>
+                      context.loc.transactionFilterFunding,
+                    TransactionsFilter.reward =>
+                      context.loc.transactionFilterReward,
+                    TransactionsFilter.refund =>
+                      context.loc.transactionFilterRefund,
+                    TransactionsFilter.balanceAdjustment =>
+                      context.loc.transactionFilterBalanceAdjustment,
                   },
                   isSelected: selectedFilter == filter,
                   onTap: () {
