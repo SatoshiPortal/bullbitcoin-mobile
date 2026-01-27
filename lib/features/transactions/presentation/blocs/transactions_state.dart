@@ -1,6 +1,20 @@
 part of 'transactions_cubit.dart';
 
-enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
+enum TransactionsFilter {
+  all,
+  send,
+  receive,
+  swap,
+  payjoin,
+  sell,
+  buy,
+  withdraw,
+  pay,
+  funding,
+  reward,
+  refund,
+  balanceAdjustment,
+}
 
 @freezed
 abstract class TransactionsState with _$TransactionsState {
@@ -9,9 +23,24 @@ abstract class TransactionsState with _$TransactionsState {
     List<Transaction>? transactions,
     @Default(false) bool isSyncing,
     @Default(TransactionsFilter.all) TransactionsFilter filter,
+    @Default(false) bool exchangeOnly,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
+
+  List<TransactionsFilter> get availableFilters => exchangeOnly
+      ? [
+          TransactionsFilter.all,
+          TransactionsFilter.sell,
+          TransactionsFilter.buy,
+          TransactionsFilter.withdraw,
+          TransactionsFilter.pay,
+          TransactionsFilter.funding,
+          TransactionsFilter.reward,
+          TransactionsFilter.refund,
+          TransactionsFilter.balanceAdjustment,
+        ]
+      : TransactionsFilter.values;
 
   /// Extracts ongoing swaps from transactions
   List<Transaction>? get ongoingSwaps {
@@ -54,14 +83,13 @@ abstract class TransactionsState with _$TransactionsState {
       // they are in the future we assign them to a day that is always
       // greater than any other day. This way they will always be at the top
       // of the list when sorted by date.
-      final day =
-          tx.timestamp == null
-              ? 8640000000000000 // Max milliseconds value for DateTime
-              : DateTime(
-                tx.timestamp!.year,
-                tx.timestamp!.month,
-                tx.timestamp!.day,
-              ).millisecondsSinceEpoch;
+      final day = tx.timestamp == null
+          ? 8640000000000000 // Max milliseconds value for DateTime
+          : DateTime(
+              tx.timestamp!.year,
+              tx.timestamp!.month,
+              tx.timestamp!.day,
+            ).millisecondsSinceEpoch;
       grouped.putIfAbsent(day, () => []).add(tx);
     }
 
@@ -90,78 +118,84 @@ abstract class TransactionsState with _$TransactionsState {
     final filtered = <int, List<Transaction>>{};
 
     for (final entry in txByDay.entries) {
-      final filteredTxs =
-          entry.value.where((tx) {
-            // Skip ongoing swaps as they will be shown in their own section
-            if (tx.isOngoingSwap) {
-              return false;
-            }
+      final filteredTxs = entry.value.where((tx) {
+        // Skip ongoing swaps as they will be shown in their own section
+        if (tx.isOngoingSwap) {
+          return false;
+        }
 
-            // We don't want to show:
-            // - receive payjoin transactions that didn't get a request from the sender yet.
-            // - expired or failed swaps.
-            final isReceivePayjoinWithoutRequest =
-                tx.isOngoingPayjoinReceiver &&
-                tx.payjoin?.status == PayjoinStatus.started;
+        // We don't want to show:
+        // - receive payjoin transactions that didn't get a request from the sender yet.
+        // - expired or failed swaps.
+        final isReceivePayjoinWithoutRequest =
+            tx.isOngoingPayjoinReceiver &&
+            tx.payjoin?.status == PayjoinStatus.started;
 
-            final isExpiredOrFailedSwap =
-                tx.isSwap &&
-                [
-                  SwapStatus.expired,
-                  SwapStatus.failed,
-                ].contains(tx.swap?.status);
+        final isExpiredOrFailedSwap =
+            tx.isSwap &&
+            [SwapStatus.expired, SwapStatus.failed].contains(tx.swap?.status);
 
-            final isExpiredAndNotStartedOrder =
-                tx.isOrder &&
-                (tx.order?.orderStatus == OrderStatus.expired &&
-                    tx.order?.payinStatus == OrderPayinStatus.notStarted);
+        final isExpiredAndNotStartedOrder =
+            tx.isOrder &&
+            (tx.order?.orderStatus == OrderStatus.expired &&
+                tx.order?.payinStatus == OrderPayinStatus.notStarted);
 
-            if (isReceivePayjoinWithoutRequest ||
-                isExpiredOrFailedSwap ||
-                isExpiredAndNotStartedOrder) {
-              return false;
-            }
+        if (isReceivePayjoinWithoutRequest ||
+            isExpiredOrFailedSwap ||
+            isExpiredAndNotStartedOrder) {
+          return false;
+        }
 
-            // We also only want to show the incoming side of a chain swap,
-            // unless in specific sending wallet overview or with the 'send'
-            // filter selected.
-            // Exclude external swaps (receiveWalletId == null) as they should always be shown
-            final isExternalSwap =
-                tx.isChainSwap &&
-                (tx.swap as ChainSwap?)?.receiveWalletId == null;
+        // We also only want to show the incoming side of a chain swap,
+        // unless in specific sending wallet overview or with the 'send'
+        // filter selected.
+        // Exclude external swaps (receiveWalletId == null) as they should always be shown
+        final isExternalSwap =
+            tx.isChainSwap && (tx.swap as ChainSwap?)?.receiveWalletId == null;
 
-            final isLockupChainSwap =
-                !isExternalSwap &&
-                tx.isChainSwap &&
-                tx.walletTransaction?.isOutgoing == true &&
-                tx.swap?.receiveTxId != null;
+        final isLockupChainSwap =
+            !isExternalSwap &&
+            tx.isChainSwap &&
+            tx.walletTransaction?.isOutgoing == true &&
+            tx.swap?.receiveTxId != null;
 
-            // For swap-only chain swap transactions (no walletTransaction),
-            // we need to determine direction based on the current wallet context
-            final isSwapOnlyLockupChainSwap =
-                !isExternalSwap &&
-                tx.isChainSwap &&
-                tx.walletTransaction == null &&
-                tx.swap?.receiveTxId != null &&
-                walletId == (tx.swap as ChainSwap?)?.sendWalletId;
+        // For swap-only chain swap transactions (no walletTransaction),
+        // we need to determine direction based on the current wallet context
+        final isSwapOnlyLockupChainSwap =
+            !isExternalSwap &&
+            tx.isChainSwap &&
+            tx.walletTransaction == null &&
+            tx.swap?.receiveTxId != null &&
+            walletId == (tx.swap as ChainSwap?)?.sendWalletId;
 
-            final shouldFilterOutgoingChainSwap =
-                (isLockupChainSwap || isSwapOnlyLockupChainSwap) &&
-                walletId != tx.walletTransaction?.walletId &&
-                walletId != (tx.swap as ChainSwap?)?.sendWalletId;
+        final shouldFilterOutgoingChainSwap =
+            (isLockupChainSwap || isSwapOnlyLockupChainSwap) &&
+            walletId != tx.walletTransaction?.walletId &&
+            walletId != (tx.swap as ChainSwap?)?.sendWalletId;
 
-            return switch (filter) {
-              TransactionsFilter.all => !shouldFilterOutgoingChainSwap,
-              TransactionsFilter.send => tx.isOutgoing,
-              TransactionsFilter.receive => tx.isIncoming,
-              TransactionsFilter.swap =>
-                tx.isSwap && !shouldFilterOutgoingChainSwap,
-              TransactionsFilter.payjoin =>
-                tx.isPayjoin && !shouldFilterOutgoingChainSwap,
-              TransactionsFilter.sell => tx.isSellOrder,
-              TransactionsFilter.buy => tx.isBuyOrder,
-            };
-          }).toList();
+        if (exchangeOnly && !tx.isOrder) {
+          return false;
+        }
+
+        return switch (filter) {
+          TransactionsFilter.all =>
+            exchangeOnly ? tx.isOrder : !shouldFilterOutgoingChainSwap,
+          TransactionsFilter.send => tx.isOutgoing,
+          TransactionsFilter.receive => tx.isIncoming,
+          TransactionsFilter.swap =>
+            tx.isSwap && !shouldFilterOutgoingChainSwap,
+          TransactionsFilter.payjoin =>
+            tx.isPayjoin && !shouldFilterOutgoingChainSwap,
+          TransactionsFilter.sell => tx.isSellOrder,
+          TransactionsFilter.buy => tx.isBuyOrder,
+          TransactionsFilter.withdraw => tx.isWithdrawOrder,
+          TransactionsFilter.pay => tx.isPayOrder,
+          TransactionsFilter.funding => tx.isFundingOrder,
+          TransactionsFilter.reward => tx.isRewardOrder,
+          TransactionsFilter.refund => tx.isRefundOrder,
+          TransactionsFilter.balanceAdjustment => tx.isBalanceAdjustmentOrder,
+        };
+      }).toList();
 
       if (filteredTxs.isNotEmpty) {
         filtered[entry.key] = filteredTxs;

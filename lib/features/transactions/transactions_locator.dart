@@ -73,9 +73,10 @@ class TransactionsLocator {
 
   static void registerBlocs(GetIt locator) {
     // Bloc
-    locator.registerFactoryParam<TransactionsCubit, String?, void>(
-      (walletId, _) => TransactionsCubit(
+    locator.registerFactoryParam<TransactionsCubit, String?, bool?>(
+      (walletId, exchangeOnly) => TransactionsCubit(
         walletId: walletId,
+        exchangeOnly: exchangeOnly ?? false,
         getTransactionsUsecase: locator<GetTransactionsUsecase>(),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),

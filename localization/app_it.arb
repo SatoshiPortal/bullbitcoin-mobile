@@ -3510,7 +3510,7 @@
   "payViewTransaction": "Visualizza la Transazione",
   "transactionLabelToWallet": "Portafoglio",
   "exchangeFileUploadInstructions": "Se avete bisogno di inviare altri documenti, caricarli qui.",
-  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth, o collegare il dispositivo tramite USB.",
+  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth.",
   "arkSendRecipientLabel": "Indirizzo del destinatario",
   "defaultWalletsLabel": "Portafogli di default",
   "jadeStep9": "Una volta che la transazione viene importata nel tuo Jade, rivedere l'indirizzo di destinazione e l'importo.",

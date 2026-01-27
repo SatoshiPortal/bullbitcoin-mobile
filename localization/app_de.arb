@@ -3465,7 +3465,7 @@
   "payViewTransaction": "Transaction anzeigen",
   "transactionLabelToWallet": "Zur Brieftasche",
   "exchangeFileUploadInstructions": "Wenn Sie weitere Dokumente schicken müssen, laden Sie sie hier hoch.",
-  "ledgerInstructionsAndroidDual": "Stellen Sie sicher, dass Sie Ledger wird mit der Bitcoin App geöffnet und Bluetooth aktiviert, oder das Gerät über USB verbinden.",
+  "ledgerInstructionsAndroidDual": "Stellen Sie sicher, dass Sie Ledger wird mit der Bitcoin App geöffnet und Bluetooth aktiviert.",
   "arkSendRecipientLabel": "Adresse des Empfängers",
   "defaultWalletsLabel": "Standard Wallis",
   "jadeStep9": "Sobald die Transaktion in Ihrem Jade importiert wird, überprüfen Sie die Zieladresse und den Betrag.",

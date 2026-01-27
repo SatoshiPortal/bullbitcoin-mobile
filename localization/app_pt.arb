@@ -3486,7 +3486,7 @@
   "payViewTransaction": "Ver Transação",
   "transactionLabelToWallet": "Para a carteira",
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
-  "ledgerInstructionsAndroidDual": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado, ou conectar o dispositivo via USB.",
+  "ledgerInstructionsAndroidDual": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
   "arkSendRecipientLabel": "Endereço do destinatário",
   "defaultWalletsLabel": "Carteiras padrão",
   "jadeStep9": "Uma vez que a transação é importada em seu Jade, revise o endereço de destino e o valor.",

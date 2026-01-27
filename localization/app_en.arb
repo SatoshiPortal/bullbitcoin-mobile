@@ -620,6 +620,14 @@
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"
   },
+  "exchangeSettingsRecipientsTitle": "Recipients",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transactions",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
   "exchangeTransactionsTitle": "Transactions",
   "@exchangeTransactionsTitle": {
     "description": "Title for the transactions section in exchange"
@@ -691,6 +699,10 @@
   "exchangeFileUploadButton": "Upload",
   "@exchangeFileUploadButton": {
     "description": "Button label for uploading files in exchange"
+  },
+  "exchangeFileUploadSuccess": "File uploaded successfully",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
   },
   "exchangeAccountTitle": "Exchange Account",
   "@exchangeAccountTitle": {
@@ -791,6 +803,178 @@
   "exchangeAccountInfoUserNumberCopiedMessage": "User number copied to clipboard",
   "@exchangeAccountInfoUserNumberCopiedMessage": {
     "description": "Success message when user number is copied to clipboard"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Email Notifications",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Receive email notifications for orders and account updates",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet address saved successfully",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Set default wallet addresses for automatic Bitcoin withdrawals.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeFileUploadDocumentsTitle": "Upload Documents",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Upload up to {maxFiles} files. Allowed formats: PDF, JPG, PNG, GIF, HEIC. Maximum file size: 10MB per file.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "No files selected",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Tap \"Select Files\" to choose documents",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Select Files",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Add More Files",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Uploading...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Clear All",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "All files uploaded successfully",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{uploaded} of {total} files uploaded",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Ready",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "In Review",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Accepted",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Rejected - Tap to re-upload",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "Your documents are currently under review. You cannot upload more files until the review is complete.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Your documents have been accepted. No additional uploads are needed.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Statistics",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "No statistics available",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "As of {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Order Statistics",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Buy/Sell Ratio",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Buy Statistics",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Sell Statistics",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Volume",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Trade Count",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Average Price",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Total Trading Volume",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Biller Statistics",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Currency: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsTotalAmount": "Total Amount",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
   },
   "walletsListTitle": "Wallet details",
   "@walletsListTitle": {
@@ -2305,6 +2489,30 @@
   "transactionFilterBuy": "Buy",
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
+  },
+  "transactionFilterWithdraw": "Withdraw",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "Pay",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "Funding",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "Reward",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "Refund",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionFilterBalanceAdjustment": "Adjustment",
+  "@transactionFilterBalanceAdjustment": {
+    "description": "Filter option to show only balance adjustment orders"
   },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
@@ -11329,7 +11537,7 @@
   "@ledgerInstructionsAndroidUsb": {
     "description": "Connection instructions for Android devices (USB only)"
   },
-  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled, or connect the device via USB.",
+  "ledgerInstructionsAndroidDual": "Make sure your Ledger is unlocked with the Bitcoin app opened and Bluetooth enabled.",
   "@ledgerInstructionsAndroidDual": {
     "description": "Connection instructions for Android devices (Bluetooth or USB)"
   },

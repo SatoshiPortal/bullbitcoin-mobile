@@ -1,10 +1,10 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 
-class AllowedRecipientFiltersViewModel {
+class RecipientFilterCriteria {
   final bool? isOwner;
   final List<RecipientType> types;
 
-  const AllowedRecipientFiltersViewModel({
+  const RecipientFilterCriteria({
     this.isOwner,
     this.types = RecipientType.values,
   });

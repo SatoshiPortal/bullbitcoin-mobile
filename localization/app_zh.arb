@@ -3510,7 +3510,7 @@
   "payViewTransaction": "观点交易",
   "transactionLabelToWallet": "隔离墙",
   "exchangeFileUploadInstructions": "如果你需要寄发任何其他文件,则将这些文件上载.",
-  "ledgerInstructionsAndroidDual": "保证你能 液化与Steb和Blutooth的开关,或通过USB连接该装置.",
+  "ledgerInstructionsAndroidDual": "保证你能 液化与Steb和Blutooth的开关.",
   "arkSendRecipientLabel": "接收人的讲话",
   "defaultWalletsLabel": "违约情况",
   "jadeStep9": "一旦交易在Jade进口,审查目的地地址和数额.",

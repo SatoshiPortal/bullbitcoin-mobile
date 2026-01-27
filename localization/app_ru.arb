@@ -3508,7 +3508,7 @@
   "payViewTransaction": "Просмотр транзакции",
   "transactionLabelToWallet": "Кошелек",
   "exchangeFileUploadInstructions": "Если вам нужно отправить любые другие документы, загрузите их здесь.",
-  "ledgerInstructionsAndroidDual": "Убедитесь, что вы Ledger разблокирован с открытым приложением Bitcoin и включен Bluetooth, или подключает устройство через USB.",
+  "ledgerInstructionsAndroidDual": "Убедитесь, что вы Ledger разблокирован с открытым приложением Bitcoin и включен Bluetooth.",
   "arkSendRecipientLabel": "Адрес получателя",
   "defaultWalletsLabel": "По умолчанию",
   "jadeStep9": "После того, как транзакция будет импортирована в ваш Джейд, рассмотрите адрес назначения и сумму.",

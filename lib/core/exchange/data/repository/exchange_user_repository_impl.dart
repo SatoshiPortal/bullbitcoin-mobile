@@ -62,6 +62,7 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
     String? currency,
     bool? dcaEnabled,
     String? autoBuyEnabled,
+    bool? emailNotificationsEnabled,
   }) async {
     try {
       final apiKey = await _bullbitcoinApiKeyDatasource.get(
@@ -76,8 +77,9 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
       final params = UserPreferencePayloadModel(
         language: language,
         currencyCode: currency,
-        dcaEnabled: dcaEnabled.toString(),
+        dcaEnabled: dcaEnabled?.toString(),
         autoBuyEnabled: autoBuyEnabled,
+        emailNotificationsEnabled: emailNotificationsEnabled?.toString(),
       );
 
       await _bullbitcoinApiDatasource.saveUserPreference(
