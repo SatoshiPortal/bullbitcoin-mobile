@@ -9,20 +9,36 @@ import 'package:bb_mobile/core/mempool/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
+enum SetCustomMempoolServerError {
+  sameAsDefault,
+  validationFailed,
+  saveFailed,
+  unexpected,
+}
+
 class SetCustomMempoolServerResult {
   final bool isValid;
-  final String? errorMessage;
+  final SetCustomMempoolServerError? errorType;
+  final MempoolValidationErrorType? validationErrorType;
 
-  SetCustomMempoolServerResult({required this.isValid, this.errorMessage});
+  SetCustomMempoolServerResult({
+    required this.isValid,
+    this.errorType,
+    this.validationErrorType,
+  });
 
   factory SetCustomMempoolServerResult.success() {
     return SetCustomMempoolServerResult(isValid: true);
   }
 
-  factory SetCustomMempoolServerResult.failure(String errorMessage) {
+  factory SetCustomMempoolServerResult.failure(
+    SetCustomMempoolServerError errorType, {
+    MempoolValidationErrorType? validationErrorType,
+  }) {
     return SetCustomMempoolServerResult(
       isValid: false,
-      errorMessage: errorMessage,
+      errorType: errorType,
+      validationErrorType: validationErrorType,
     );
   }
 }
@@ -52,14 +68,20 @@ class SetCustomMempoolServerUsecase {
       isLiquid: request.isLiquid,
     );
 
-    final customUrl = NormalizedMempoolUrl(request.url, enableSsl: request.enableSsl);
+    final customUrl = NormalizedMempoolUrl(
+      request.url,
+      enableSsl: request.enableSsl,
+    );
 
     final defaultServerResult = await _fetchDefaultServerSafely(network);
     if (defaultServerResult != null) {
-      final defaultUrl = NormalizedMempoolUrl(defaultServerResult.url, enableSsl: defaultServerResult.enableSsl);
+      final defaultUrl = NormalizedMempoolUrl(
+        defaultServerResult.url,
+        enableSsl: defaultServerResult.enableSsl,
+      );
       if (customUrl == defaultUrl) {
         return SetCustomMempoolServerResult.failure(
-          'This URL is the same as the default server. Please use a different URL.',
+          SetCustomMempoolServerError.sameAsDefault,
         );
       }
     }
@@ -74,13 +96,18 @@ class SetCustomMempoolServerUsecase {
 
         if (!isValid) {
           return SetCustomMempoolServerResult.failure(
-            'Server validation failed: Unable to connect or invalid response',
+            SetCustomMempoolServerError.validationFailed,
           );
         }
       } on MempoolServerValidationException catch (e) {
-        return SetCustomMempoolServerResult.failure(e.message);
+        return SetCustomMempoolServerResult.failure(
+          SetCustomMempoolServerError.validationFailed,
+          validationErrorType: e.errorType,
+        );
       } catch (e) {
-        return SetCustomMempoolServerResult.failure('Unexpected error: ${e.toString()}');
+        return SetCustomMempoolServerResult.failure(
+          SetCustomMempoolServerError.unexpected,
+        );
       }
     }
 
@@ -95,8 +122,9 @@ class SetCustomMempoolServerUsecase {
 
       return SetCustomMempoolServerResult.success();
     } catch (e) {
+      log.warning('Failed to save mempool server: $e');
       return SetCustomMempoolServerResult.failure(
-        'Failed to save server: ${e.toString()}',
+        SetCustomMempoolServerError.saveFailed,
       );
     }
   }
@@ -108,9 +136,7 @@ class SetCustomMempoolServerUsecase {
       return await _serverRepository.fetchDefaultServer(network);
     } catch (e) {
       // log the error for debugging but don't throw.
-      log.warning(
-        'Could not fetch default mempool server for comparison: $e',
-      );
+      log.warning('Could not fetch default mempool server for comparison: $e');
       return null;
     }
   }

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
+import 'package:bb_mobile/features/mempool_settings/utils/mempool_settings_error_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -117,7 +118,11 @@ class _SetCustomServerBottomSheetState
     } else {
       final state = context.read<MempoolSettingsCubit>().state;
       setState(() {
-        _errorMessage = state.errorMessage ?? context.loc.mempoolCustomServerSaveFailed;
+        _errorMessage = getMempoolSettingsErrorMessage(
+          context,
+          state,
+          fallback: context.loc.mempoolCustomServerSaveFailed,
+        );
       });
       context.read<MempoolSettingsCubit>().clearError();
     }

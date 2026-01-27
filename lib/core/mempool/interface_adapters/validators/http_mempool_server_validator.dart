@@ -63,50 +63,53 @@ class HttpMempoolServerValidator implements MempoolServerValidatorPort {
       return true;
     } on DioException catch (e) {
       log.warning('Validation failed with DioException: ${e.message}');
-      final errorMessage = _getUserFriendlyErrorMessage(e, url);
-      throw MempoolServerValidationException(errorMessage, e);
+      final errorType = _getValidationErrorType(e, url);
+      throw MempoolServerValidationException(errorType, e);
     } catch (e) {
       log.warning('Validation failed with exception: $e');
       throw MempoolServerValidationException(
-        'Unexpected error during validation',
+        MempoolValidationErrorType.unexpected,
         e,
       );
     }
   }
 
-  String _getUserFriendlyErrorMessage(DioException e, String url) {
+  MempoolValidationErrorType _getValidationErrorType(
+    DioException e,
+    String url,
+  ) {
     if (e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.sendTimeout ||
         e.type == DioExceptionType.receiveTimeout) {
-      return 'Connection timed out. The server may be slow or unreachable.';
+      return MempoolValidationErrorType.connectionTimeout;
     }
 
     if (e.type == DioExceptionType.connectionError) {
       if (e.message?.contains('Failed host lookup') ?? false) {
         if (url.contains('.onion')) {
-          return 'Cannot reach .onion address. Make sure Tor/Orbot is running and try again.';
+          return MempoolValidationErrorType.torNotRunning;
         }
-        return 'Cannot find this server. Please check the URL and try again.';
+        return MempoolValidationErrorType.hostNotFound;
       }
-      return 'Unable to connect to server. Check your network connection and try again.';
+      return MempoolValidationErrorType.connectionError;
     }
 
     if (e.response != null) {
       final statusCode = e.response!.statusCode;
       if (statusCode == 404) {
-        return 'This URL does not appear to be a mempool server. Please verify the address.';
+        return MempoolValidationErrorType.notMempoolServer;
       }
       if (statusCode == 502 || statusCode == 503) {
-        return 'Server is unavailable.';
+        return MempoolValidationErrorType.serverUnavailable;
       }
       if (statusCode == 500) {
-        return 'Server encountered an error.';
+        return MempoolValidationErrorType.serverError;
       }
       if (statusCode != null && statusCode >= 400 && statusCode < 500) {
-        return 'Server rejected the request. Please verify the URL is correct.';
+        return MempoolValidationErrorType.notMempoolServer;
       }
     }
 
-    return 'Failed to connect to mempool server. Please check the URL and try again.';
+    return MempoolValidationErrorType.connectionError;
   }
 }

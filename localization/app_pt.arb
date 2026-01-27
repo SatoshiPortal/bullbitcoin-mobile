@@ -4102,5 +4102,19 @@
   "mempoolCustomServerInfoDescription": "Os servidores mempool são usados para estimativa de taxas e para abrir o explorador de blocos ao visualizar detalhes da transação.",
   "mempoolCustomServerUseSsl": "Usar SSL",
   "mempoolCustomServerSslAutoDetected": "(Detectado automaticamente)",
-  "mempoolCustomServerSslHelpText": "Para servidores locais (.local, IPs privados) e Tor (.onion), SSL geralmente está desabilitado. IPs públicos e domínios devem usar SSL."
+  "mempoolCustomServerSslHelpText": "Para servidores locais (.local, IPs privados) e Tor (.onion), SSL geralmente está desabilitado. IPs públicos e domínios devem usar SSL.",
+  "mempoolErrorSameAsDefault": "Este URL é o mesmo do servidor padrão. Por favor, use um URL diferente.",
+  "mempoolErrorConnectionTimeout": "Tempo de conexão esgotado. O servidor pode estar lento ou inacessível.",
+  "mempoolErrorHostNotFound": "Servidor não encontrado. Verifique a URL e tente novamente.",
+  "mempoolErrorTorNotRunning": "Não foi possível acessar o endereço .onion. Certifique-se de que o Tor/Orbot está em execução e tente novamente.",
+  "mempoolErrorConnectionFailed": "Não foi possível conectar ao servidor. Verifique sua conexão de rede e tente novamente.",
+  "mempoolErrorNotMempoolServer": "Esta URL não parece ser um servidor mempool. Verifique o endereço.",
+  "mempoolErrorServerUnavailable": "Servidor indisponível. Tente novamente mais tarde.",
+  "mempoolErrorServerError": "O servidor encontrou um erro. Tente novamente mais tarde.",
+  "mempoolErrorInvalidResponse": "O servidor retornou uma resposta inválida.",
+  "mempoolErrorUnexpected": "Ocorreu um erro inesperado",
+  "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor: {error}",
+  "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool: {error}",
+  "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}"
 }

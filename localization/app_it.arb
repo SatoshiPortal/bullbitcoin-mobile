@@ -4134,5 +4134,19 @@
   "mempoolCustomServerInfoDescription": "I server mempool vengono utilizzati per la stima delle commissioni e per aprire l'esploratore di blocchi quando si visualizzano i dettagli della transazione.",
   "mempoolCustomServerUseSsl": "Usa SSL",
   "mempoolCustomServerSslAutoDetected": "(Rilevato automaticamente)",
-  "mempoolCustomServerSslHelpText": "Per server locali (.local, IP privati) e Tor (.onion), SSL è solitamente disabilitato. Gli IP pubblici e i domini dovrebbero usare SSL."
+  "mempoolCustomServerSslHelpText": "Per server locali (.local, IP privati) e Tor (.onion), SSL è solitamente disabilitato. Gli IP pubblici e i domini dovrebbero usare SSL.",
+  "mempoolErrorSameAsDefault": "Questo URL è lo stesso del server predefinito. Utilizza un URL diverso.",
+  "mempoolErrorConnectionTimeout": "Timeout della connessione. Il server potrebbe essere lento o non raggiungibile.",
+  "mempoolErrorHostNotFound": "Server non trovato. Controlla l'URL e riprova.",
+  "mempoolErrorTorNotRunning": "Impossibile raggiungere l'indirizzo .onion. Assicurati che Tor/Orbot sia in esecuzione e riprova.",
+  "mempoolErrorConnectionFailed": "Impossibile connettersi al server. Controlla la connessione di rete e riprova.",
+  "mempoolErrorNotMempoolServer": "Questo URL non sembra essere un server mempool. Verifica l'indirizzo.",
+  "mempoolErrorServerUnavailable": "Server non disponibile. Riprova più tardi.",
+  "mempoolErrorServerError": "Il server ha riscontrato un errore. Riprova più tardi.",
+  "mempoolErrorInvalidResponse": "Il server ha restituito una risposta non valida.",
+  "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
+  "mempoolErrorSaveServerFailed": "Impossibile salvare il server: {error}",
+  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool: {error}",
+  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}"
 }

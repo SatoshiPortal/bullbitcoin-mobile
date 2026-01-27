@@ -596,6 +596,86 @@
   "@mempoolCustomServerSslHelpText": {
     "description": "Help text explaining when to use SSL for mempool servers"
   },
+  "mempoolErrorSameAsDefault": "This URL is the same as the default server. Please use a different URL.",
+  "@mempoolErrorSameAsDefault": {
+    "description": "Error when user tries to set a custom server URL that matches the default"
+  },
+  "mempoolErrorConnectionTimeout": "Connection timed out. The server may be slow or unreachable.",
+  "@mempoolErrorConnectionTimeout": {
+    "description": "Error when connection to mempool server times out"
+  },
+  "mempoolErrorHostNotFound": "Cannot find this server. Please check the URL and try again.",
+  "@mempoolErrorHostNotFound": {
+    "description": "Error when mempool server hostname cannot be resolved"
+  },
+  "mempoolErrorTorNotRunning": "Cannot reach .onion address. Make sure Tor/Orbot is running and try again.",
+  "@mempoolErrorTorNotRunning": {
+    "description": "Error when trying to reach a .onion address without Tor"
+  },
+  "mempoolErrorConnectionFailed": "Unable to connect to server. Check your network connection and try again.",
+  "@mempoolErrorConnectionFailed": {
+    "description": "Error when connection to mempool server fails"
+  },
+  "mempoolErrorNotMempoolServer": "This URL does not appear to be a mempool server. Please verify the address.",
+  "@mempoolErrorNotMempoolServer": {
+    "description": "Error when URL is not a valid mempool server"
+  },
+  "mempoolErrorServerUnavailable": "Server is unavailable. Please try again later.",
+  "@mempoolErrorServerUnavailable": {
+    "description": "Error when mempool server is unavailable (502/503)"
+  },
+  "mempoolErrorServerError": "Server encountered an error. Please try again later.",
+  "@mempoolErrorServerError": {
+    "description": "Error when mempool server returns 500 error"
+  },
+  "mempoolErrorInvalidResponse": "Server returned an invalid response.",
+  "@mempoolErrorInvalidResponse": {
+    "description": "Error when mempool server returns an invalid response"
+  },
+  "mempoolErrorUnexpected": "An unexpected error occurred",
+  "@mempoolErrorUnexpected": {
+    "description": "Generic unexpected error message"
+  },
+  "mempoolErrorSaveServerFailed": "Failed to save server: {error}",
+  "@mempoolErrorSaveServerFailed": {
+    "description": "Error when saving mempool server fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorLoadFailed": "Failed to load mempool server data: {error}",
+  "@mempoolErrorLoadFailed": {
+    "description": "Error when loading mempool server data fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorDeleteFailed": "Failed to delete custom server: {error}",
+  "@mempoolErrorDeleteFailed": {
+    "description": "Error when deleting custom mempool server fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorUpdateSettingsFailed": "Failed to update settings: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"

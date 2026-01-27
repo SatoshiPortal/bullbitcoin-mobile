@@ -4135,5 +4135,19 @@
   "mempoolCustomServerInfoDescription": "Mempool-Server werden für die Gebührenschätzung und zum Öffnen des Block-Explorers beim Anzeigen von Transaktionsdetails verwendet.",
   "mempoolCustomServerUseSsl": "SSL verwenden",
   "mempoolCustomServerSslAutoDetected": "(Automatisch erkannt)",
-  "mempoolCustomServerSslHelpText": "Für lokale (.local, private IPs) und Tor (.onion) Server ist SSL normalerweise deaktiviert. Öffentliche IPs und Domains sollten SSL verwenden."
+  "mempoolCustomServerSslHelpText": "Für lokale (.local, private IPs) und Tor (.onion) Server ist SSL normalerweise deaktiviert. Öffentliche IPs und Domains sollten SSL verwenden.",
+  "mempoolErrorSameAsDefault": "Diese URL ist dieselbe wie der Standardserver. Bitte verwenden Sie eine andere URL.",
+  "mempoolErrorConnectionTimeout": "Verbindung abgelaufen. Der Server ist möglicherweise langsam oder nicht erreichbar.",
+  "mempoolErrorHostNotFound": "Server nicht gefunden. Bitte überprüfen Sie die URL und versuchen Sie es erneut.",
+  "mempoolErrorTorNotRunning": ".onion-Adresse nicht erreichbar. Stellen Sie sicher, dass Tor/Orbot läuft und versuchen Sie es erneut.",
+  "mempoolErrorConnectionFailed": "Verbindung zum Server nicht möglich. Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
+  "mempoolErrorNotMempoolServer": "Diese URL scheint kein Mempool-Server zu sein. Bitte überprüfen Sie die Adresse.",
+  "mempoolErrorServerUnavailable": "Server nicht verfügbar. Bitte versuchen Sie es später erneut.",
+  "mempoolErrorServerError": "Server hat einen Fehler festgestellt. Bitte versuchen Sie es später erneut.",
+  "mempoolErrorInvalidResponse": "Server hat eine ungültige Antwort zurückgegeben.",
+  "mempoolErrorUnexpected": "Ein unerwarteter Fehler ist aufgetreten",
+  "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden: {error}",
+  "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden: {error}",
+  "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden: {error}"
 }
