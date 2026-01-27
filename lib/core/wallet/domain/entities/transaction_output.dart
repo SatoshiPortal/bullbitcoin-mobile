@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction_output.freezed.dart';
@@ -13,8 +14,8 @@ sealed class TransactionOutput with _$TransactionOutput {
     BigInt? value,
     required Uint8List scriptPubkey,
     String? address,
-    @Default([]) List<String> labels,
-    @Default([]) List<String> addressLabels,
+    @Default([]) List<Label> labels,
+    @Default([]) List<Label> addressLabels,
   }) = BitcoinTransactionOutput;
 
   const factory TransactionOutput.liquid({
@@ -24,8 +25,8 @@ sealed class TransactionOutput with _$TransactionOutput {
     required BigInt value,
     required String scriptPubkey,
     required String address,
-    @Default([]) List<String> labels,
-    @Default([]) List<String> addressLabels,
+    @Default([]) List<Label> labels,
+    @Default([]) List<Label> addressLabels,
   }) = LiquidTransactionOutput;
 
   const TransactionOutput._();

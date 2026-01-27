@@ -3743,7 +3743,7 @@
   },
   "ledgerInstructionsIos": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä.",
   "ledgerInstructionsAndroidUsb": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja liitä laite USB-kaapelilla.",
-  "ledgerInstructionsAndroidDual": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä tai liitä laite USB-kaapelilla.",
+  "ledgerInstructionsAndroidDual": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä.",
   "ledgerScanningMessage": "Etsitään lähellä olevia Ledger-laitteita...",
   "ledgerConnectingSubtext": "Muodostetaan suojattua yhteyttä...",
   "ledgerErrorUnknown": "Tuntematon virhe",

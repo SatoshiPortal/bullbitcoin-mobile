@@ -109,7 +109,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     Emitter<RecoverBullState> emit,
   ) async {
     try {
-      final externalTorConfig = await _torConfigPort.getExternalTorConfig();
+      final externalTorConfig = await _torConfigPort
+          .getAvailableExternalTorConfig();
 
       if (externalTorConfig == null) {
         await _initializeTorUsecase.execute();
@@ -253,8 +254,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       switch (event.provider) {
         case VaultProvider.googleDrive:
           await _connectToGoogleDriveUsecase.execute();
-          final encryptedVault =
-              await _fetchLatestGoogleDriveVaultUsecase.execute();
+          final encryptedVault = await _fetchLatestGoogleDriveVaultUsecase
+              .execute();
           emit(state.copyWith(vault: encryptedVault));
           return;
         case VaultProvider.customLocation:

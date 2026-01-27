@@ -21,7 +21,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class NewRecipientTab extends StatefulWidget {
-  const NewRecipientTab({super.key});
+  const NewRecipientTab({this.hookError, super.key});
+
+  final String? hookError;
 
   @override
   NewRecipientTabState createState() => NewRecipientTabState();
@@ -83,28 +85,52 @@ class NewRecipientTabState extends State<NewRecipientTab> {
         const Gap(16.0),
         switch (_selectedRecipientType) {
           // CANADA types
-          RecipientType.interacEmailCad => const InteracEmailCadForm(),
-          RecipientType.billPaymentCad => const BillPaymentCadForm(),
-          RecipientType.bankTransferCad => const BankTransferCadForm(),
+          RecipientType.interacEmailCad => InteracEmailCadForm(
+            hookError: widget.hookError,
+          ),
+          RecipientType.billPaymentCad => BillPaymentCadForm(
+            hookError: widget.hookError,
+          ),
+          RecipientType.bankTransferCad => BankTransferCadForm(
+            hookError: widget.hookError,
+          ),
           // EUROPE types
-          RecipientType.sepaEur => const SepaEurForm(),
+          RecipientType.sepaEur => SepaEurForm(
+            hookError: widget.hookError,
+          ),
           // MEXICO types
-          RecipientType.speiClabeMxn => const SpeiClabeMxnForm(),
-          RecipientType.speiSmsMxn => const SpeiSmsMxnForm(),
-          RecipientType.speiCardMxn => const SpeiCardMxnForm(),
+          RecipientType.speiClabeMxn => SpeiClabeMxnForm(
+            hookError: widget.hookError,
+          ),
+          RecipientType.speiSmsMxn => SpeiSmsMxnForm(
+            hookError: widget.hookError,
+          ),
+          RecipientType.speiCardMxn => SpeiCardMxnForm(
+            hookError: widget.hookError,
+          ),
           // COSTA RICA types
-          RecipientType.sinpeIbanUsd => const SinpeIbanForm(
+          RecipientType.sinpeIbanUsd => SinpeIbanForm(
             recipientType: RecipientType.sinpeIbanUsd,
+            hookError: widget.hookError,
           ),
-          RecipientType.sinpeIbanCrc => const SinpeIbanForm(
+          RecipientType.sinpeIbanCrc => SinpeIbanForm(
             recipientType: RecipientType.sinpeIbanCrc,
+            hookError: widget.hookError,
           ),
-          RecipientType.sinpeMovilCrc => const SinpeMovilCrcForm(),
+          RecipientType.sinpeMovilCrc => SinpeMovilCrcForm(
+            hookError: widget.hookError,
+          ),
           // ARGENTINA types
-          RecipientType.cbuCvuArgentina => const CbuCvuArgentinaForm(),
+          RecipientType.cbuCvuArgentina => CbuCvuArgentinaForm(
+            hookError: widget.hookError,
+          ),
           // TODO: Colombia types
-          RecipientType.pseColombia => const BankAccountCopForm(),
-          RecipientType.nequiColombia => const NequiCopForm(),
+          RecipientType.pseColombia => BankAccountCopForm(
+            hookError: widget.hookError,
+          ),
+          RecipientType.nequiColombia => NequiCopForm(
+            hookError: widget.hookError,
+          ),
           null => const SizedBox.shrink(),
         },
       ],

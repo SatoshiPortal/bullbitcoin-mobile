@@ -2,10 +2,14 @@ part of 'pay_bloc.dart';
 
 @freezed
 sealed class PayState with _$PayState {
-  const factory PayState.amountInput({
-    required RecipientViewModel selectedRecipient,
+  const factory PayState.recipientSelection({
     UserSummary? userSummary,
     @Default(false) bool isLoadingUserSummary,
+    PayError? error,
+  }) = PayRecipientSelectionState;
+  const factory PayState.amountInput({
+    required RecipientViewModel selectedRecipient,
+    required UserSummary userSummary,
     PayError? error,
   }) = PayAmountInputState;
   const factory PayState.walletSelection({
@@ -36,7 +40,8 @@ sealed class PayState with _$PayState {
 
   UserSummary? get userSummary {
     return whenOrNull(
-      amountInput: (_, userSummary, _, _) => userSummary,
+      recipientSelection: (userSummary, _, _) => userSummary,
+      amountInput: (_, userSummary, _) => userSummary,
       walletSelection: (_, userSummary, _, _, _) => userSummary,
       payment: (_, userSummary, _, _, _, _, _, _, _, _, _, _, _) => userSummary,
       success: (_) => null,
@@ -45,28 +50,40 @@ sealed class PayState with _$PayState {
 
   FiatCurrency get currency {
     return when(
-      amountInput:
-          (selectedRecipient, _, _, _) =>
-              FiatCurrency.fromCode(selectedRecipient.currencyCode),
-      walletSelection:
-          (selectedRecipient, _, _, _, _) =>
-              FiatCurrency.fromCode(selectedRecipient.currencyCode),
-      payment:
-          (_, _, _, _, payOrder, _, _, _, _, _, _, _, _) =>
-              FiatCurrency.fromCode(payOrder.payoutCurrency),
+      recipientSelection: (userSummary, _, _) => userSummary != null
+          ? FiatCurrency.fromCode(userSummary.currency!)
+          : FiatCurrency.cad,
+      amountInput: (selectedRecipient, _, _) =>
+          FiatCurrency.fromCode(selectedRecipient.currencyCode),
+      walletSelection: (selectedRecipient, _, _, _, _) =>
+          FiatCurrency.fromCode(selectedRecipient.currencyCode),
+      payment: (_, _, _, _, payOrder, _, _, _, _, _, _, _, _) =>
+          FiatCurrency.fromCode(payOrder.payoutCurrency),
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
+    );
+  }
+
+  PayRecipientSelectionState? get cleanRecipientSelectionState {
+    return whenOrNull(
+      recipientSelection: (userSummary, _, _) =>
+          PayRecipientSelectionState(userSummary: userSummary),
+      amountInput: (selectedRecipient, userSummary, _) =>
+          PayRecipientSelectionState(userSummary: userSummary),
+      walletSelection: (selectedRecipient, userSummary, amount, _, _) =>
+          PayRecipientSelectionState(userSummary: userSummary),
+      payment: (_, userSummary, _, _, _, _, _, _, _, _, _, _, _) =>
+          PayRecipientSelectionState(userSummary: userSummary),
     );
   }
 
   PayAmountInputState? get cleanAmountInputState {
     return whenOrNull(
-      amountInput:
-          (selectedRecipient, userSummary, _, _) => PayAmountInputState(
-            selectedRecipient: selectedRecipient,
-            userSummary: userSummary,
-          ),
-      walletSelection:
-          (selectedRecipient, userSummary, _, _, _) => PayAmountInputState(
+      amountInput: (selectedRecipient, userSummary, _) => PayAmountInputState(
+        selectedRecipient: selectedRecipient,
+        userSummary: userSummary,
+      ),
+      walletSelection: (selectedRecipient, userSummary, _, _, _) =>
+          PayAmountInputState(
             selectedRecipient: selectedRecipient,
             userSummary: userSummary,
           ),
@@ -81,13 +98,12 @@ sealed class PayState with _$PayState {
 
   PayWalletSelectionState? get cleanWalletSelectionState {
     return whenOrNull(
-      walletSelection:
-          (selectedRecipient, userSummary, amount, _, _) =>
-              PayWalletSelectionState(
-                selectedRecipient: selectedRecipient,
-                userSummary: userSummary,
-                amount: amount,
-              ),
+      walletSelection: (selectedRecipient, userSummary, amount, _, _) =>
+          PayWalletSelectionState(
+            selectedRecipient: selectedRecipient,
+            userSummary: userSummary,
+            amount: amount,
+          ),
       payment:
           (
             selectedRecipient,
@@ -139,14 +155,25 @@ sealed class PayState with _$PayState {
   }
 }
 
-extension PayAmountInputStateX on PayAmountInputState {
-  PayWalletSelectionState toWalletSelectionState({required FiatAmount amount}) {
+extension PayRecipientSelectionStateX on PayRecipientSelectionState {
+  PayAmountInputState toAmountInputState({
+    required RecipientViewModel selectedRecipient,
+  }) {
     if (userSummary == null) {
       throw StateError('Cannot create amount input state without user summary');
     }
 
-    return PayWalletSelectionState(
+    return PayAmountInputState(
+      selectedRecipient: selectedRecipient,
       userSummary: userSummary!,
+    );
+  }
+}
+
+extension PayAmountInputStateX on PayAmountInputState {
+  PayWalletSelectionState toWalletSelectionState({required FiatAmount amount}) {
+    return PayWalletSelectionState(
+      userSummary: userSummary,
       amount: amount,
       selectedRecipient: selectedRecipient,
       isCreatingPayOrder: false,
