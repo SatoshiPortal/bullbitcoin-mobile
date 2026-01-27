@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/socket_port.dart';
-import 'package:bb_mobile/core/tor/domain/usecases/check_tor_proxy_connection_usecase.dart';
 import 'package:bb_mobile/core/tor/infrastructure/adapters/socket_adapter.dart';
 import 'package:bb_mobile/core/tor/infrastructure/services/tor_connectivity_service.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -48,12 +47,6 @@ class TorLocator {
 
     locator.registerFactory<TorStatusUsecase>(
       () => TorStatusUsecase(locator<TorRepository>()),
-    );
-
-    locator.registerFactory<CheckTorProxyConnectionUsecase>(
-      () => CheckTorProxyConnectionUsecase(
-        torConnectivityService: locator<TorConnectivityService>(),
-      ),
     );
   }
 }
