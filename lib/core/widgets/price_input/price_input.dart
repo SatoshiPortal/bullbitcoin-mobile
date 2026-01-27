@@ -68,10 +68,11 @@ class PriceInput extends StatelessWidget {
                           : TextField(
                               controller: amountController,
                               focusNode: focusNode,
-                              keyboardType: TextInputType.numberWithOptions(
-                                // only sats are non-decimal
-                                decimal: currency != BitcoinUnit.sats.code,
-                              ),
+                              keyboardType: currency == BitcoinUnit.sats.code
+                                  ? TextInputType.number
+                                  : const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                               inputFormatters: [AmountInputFormatter(currency)],
                               showCursor: !readOnly,
                               readOnly: readOnly,
