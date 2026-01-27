@@ -4,11 +4,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -20,8 +20,8 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final _urlController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _fetchUrlUsecase = locator<FetchRecoverbullUrlUsecase>();
-  final _storeUrlUsecase = locator<StoreRecoverbullUrlUsecase>();
+  final _fetchUrlUsecase = sl<FetchRecoverbullUrlUsecase>();
+  final _storeUrlUsecase = sl<StoreRecoverbullUrlUsecase>();
   bool _isLoading = false;
   bool _isSaving = false;
   bool _isEditing = false;
@@ -105,117 +105,116 @@ class _SettingsPageState extends State<SettingsPage> {
           color: context.appColors.onSurface,
         ),
       ),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Padding(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: .stretch,
-                    children: [
-                      const Gap(16),
-                      Row(
-                        mainAxisAlignment: .spaceBetween,
-                        children: [
-                          BBText(
-                            'Key Server URL',
-                            style: context.font.titleMedium,
-                            color: context.appColors.onSurface,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: .stretch,
+                  children: [
+                    const Gap(16),
+                    Row(
+                      mainAxisAlignment: .spaceBetween,
+                      children: [
+                        BBText(
+                          'Key Server URL',
+                          style: context.font.titleMedium,
+                          color: context.appColors.onSurface,
+                        ),
+                        if (!_isEditing)
+                          TextButton.icon(
+                            onPressed: () {
+                              _urlController.text = _originalUrl;
+                              setState(() => _isEditing = true);
+                            },
+                            icon: const Icon(Icons.edit, size: 18),
+                            label: const Text('Edit'),
                           ),
-                          if (!_isEditing)
-                            TextButton.icon(
-                              onPressed: () {
-                                _urlController.text = _originalUrl;
-                                setState(() => _isEditing = true);
-                              },
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: const Text('Edit'),
+                      ],
+                    ),
+                    const Gap(12),
+                    if (_isEditing) ...[
+                      TextFormField(
+                        controller: _urlController,
+                        validator: _validateUrl,
+                        maxLines: null,
+                        autofocus: true,
+                        style: context.font.bodyMedium,
+                        decoration: InputDecoration(
+                          hintText: 'http://example.onion',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                      ),
+                    ] else ...[
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: context.appColors.cardBackground,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: context.appColors.border),
+                        ),
+                        child: BBText(
+                          _originalUrl,
+                          style: context.font.bodyMedium,
+                          color: context.appColors.onSurface,
+                        ),
+                      ),
+                    ],
+                    const Spacer(),
+                    if (_isEditing) ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: BBButton.big(
+                              label: 'Cancel',
+                              onPressed: _cancelEdit,
+                              bgColor: context.appColors.cardBackground,
+                              textColor: context.appColors.onSurface,
                             ),
+                          ),
+                          const Gap(8),
+                          Expanded(
+                            child: BBButton.big(
+                              label: 'Save',
+                              onPressed: _saveUrl,
+                              bgColor: context.appColors.onSurface,
+                              textColor: context.appColors.surface,
+                              disabled: _isSaving,
+                            ),
+                          ),
                         ],
                       ),
-                      const Gap(12),
-                      if (_isEditing) ...[
-                        TextFormField(
-                          controller: _urlController,
-                          validator: _validateUrl,
-                          maxLines: null,
-                          autofocus: true,
-                          style: context.font.bodyMedium,
-                          decoration: InputDecoration(
-                            hintText: 'http://example.onion',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            contentPadding: const EdgeInsets.all(16),
-                          ),
-                        ),
-                      ] else ...[
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: context.appColors.cardBackground,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: context.appColors.border),
-                          ),
-                          child: BBText(
-                            _originalUrl,
-                            style: context.font.bodyMedium,
-                            color: context.appColors.onSurface,
-                          ),
-                        ),
-                      ],
-                      const Spacer(),
-                      if (_isEditing) ...[
-                        Row(
-                          children: [
-                            Expanded(
-                              child: BBButton.big(
-                                label: 'Cancel',
-                                onPressed: _cancelEdit,
-                                bgColor: context.appColors.cardBackground,
-                                textColor: context.appColors.onSurface,
-                              ),
-                            ),
-                            const Gap(8),
-                            Expanded(
-                              child: BBButton.big(
-                                label: 'Save',
-                                onPressed: _saveUrl,
-                                bgColor: context.appColors.onSurface,
-                                textColor: context.appColors.surface,
-                                disabled: _isSaving,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Gap(16),
-                      ],
-                      GestureDetector(
-                        onTap: _openRecoverBullWebsite,
-                        child: Row(
-                          mainAxisAlignment: .center,
-                          children: [
-                            Icon(
-                              Icons.info_outline,
-                              size: 20,
-                              color: context.appColors.primary,
-                            ),
-                            const Gap(8),
-                            BBText(
-                              'Learn more about Recoverbull',
-                              style: context.font.bodyMedium,
-                              color: context.appColors.primary,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Gap(24),
+                      const Gap(16),
                     ],
-                  ),
+                    GestureDetector(
+                      onTap: _openRecoverBullWebsite,
+                      child: Row(
+                        mainAxisAlignment: .center,
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: context.appColors.primary,
+                          ),
+                          const Gap(8),
+                          BBText(
+                            'Learn more about Recoverbull',
+                            style: context.font.bodyMedium,
+                            color: context.appColors.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(24),
+                  ],
                 ),
               ),
+            ),
     );
   }
 }

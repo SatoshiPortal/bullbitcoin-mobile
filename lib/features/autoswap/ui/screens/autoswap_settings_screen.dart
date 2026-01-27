@@ -7,10 +7,10 @@ import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class AutoSwapSettingsScreen extends StatelessWidget {
   const AutoSwapSettingsScreen({super.key});
@@ -18,7 +18,7 @@ class AutoSwapSettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AutoSwapSettingsCubit>(
-      create: (_) => locator<AutoSwapSettingsCubit>()..loadSettings(),
+      create: (_) => sl<AutoSwapSettingsCubit>()..loadSettings(),
       child: Scaffold(
         appBar: AppBar(title: Text(context.loc.autoswapSettingsTitle)),
         body: SafeArea(

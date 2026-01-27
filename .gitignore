@@ -36,6 +36,8 @@ op/builds
 lib/generated
 *.freezed.dart
 *.g.dart
+*.mocks.dart
+coverage/
 
 # l10n internationalization related
 localization*.dart

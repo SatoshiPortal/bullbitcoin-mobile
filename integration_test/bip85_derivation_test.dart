@@ -10,23 +10,23 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:bip85_entropy/bip85_entropy.dart' as bip85;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final sqlite = locator<SqliteDatabase>();
-  final seedRepository = locator<SeedRepository>();
-  final walletRepository = locator<WalletRepository>();
-  final bip85Datasource = locator<Bip85Datasource>();
-  final bip85Repository = locator<Bip85Repository>();
-  final createDefaultWalletsUsecase = locator<CreateDefaultWalletsUsecase>();
+  final sqlite = sl<SqliteDatabase>();
+  final seedRepository = sl<SeedRepository>();
+  final walletRepository = sl<WalletRepository>();
+  final bip85Datasource = sl<Bip85Datasource>();
+  final bip85Repository = sl<Bip85Repository>();
+  final createDefaultWalletsUsecase = sl<CreateDefaultWalletsUsecase>();
 
   final mnemonic = Mnemonic.fromWords(
     words: [

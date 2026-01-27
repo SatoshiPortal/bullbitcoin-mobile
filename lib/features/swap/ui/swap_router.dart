@@ -1,10 +1,10 @@
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_confirm_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_in_progress_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_page.dart';
 import 'package:bb_mobile/features/swap/ui/pages/swap_qr_scanner_page.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,25 +23,23 @@ class SwapRouter {
   static final route = GoRoute(
     name: SwapRoute.swap.name,
     path: SwapRoute.swap.path,
-    builder:
-        (context, state) => BlocProvider(
-          create: (_) => locator<TransferBloc>()..add(const TransferStarted()),
-          child: BlocListener<TransferBloc, TransferState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.signedPsbt.isEmpty &&
-                    current.signedPsbt.isNotEmpty &&
-                    ((current.swap != null && current.swap is ChainSwap) ||
-                        current.isSameChainTransfer),
-            listener: (context, state) {
-              context.pushNamed(
-                SwapRoute.confirmSwap.name,
-                extra: context.read<TransferBloc>(),
-              );
-            },
-            child: const SwapPage(),
-          ),
-        ),
+    builder: (context, state) => BlocProvider(
+      create: (_) => sl<TransferBloc>()..add(const TransferStarted()),
+      child: BlocListener<TransferBloc, TransferState>(
+        listenWhen: (previous, current) =>
+            previous.signedPsbt.isEmpty &&
+            current.signedPsbt.isNotEmpty &&
+            ((current.swap != null && current.swap is ChainSwap) ||
+                current.isSameChainTransfer),
+        listener: (context, state) {
+          context.pushNamed(
+            SwapRoute.confirmSwap.name,
+            extra: context.read<TransferBloc>(),
+          );
+        },
+        child: const SwapPage(),
+      ),
+    ),
     routes: [
       GoRoute(
         name: SwapRoute.confirmSwap.name,
@@ -52,9 +50,8 @@ class SwapRouter {
           return BlocProvider.value(
             value: bloc,
             child: BlocListener<TransferBloc, TransferState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.txId.isEmpty && current.txId.isNotEmpty,
+              listenWhen: (previous, current) =>
+                  previous.txId.isEmpty && current.txId.isNotEmpty,
               listener: (context, state) {
                 context.goNamed(
                   SwapRoute.inProgressSwap.name,

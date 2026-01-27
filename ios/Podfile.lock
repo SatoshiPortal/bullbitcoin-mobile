@@ -100,9 +100,6 @@ PODS:
     - ScreenProtectorKit (~> 1.3.1)
   - package_info_plus (0.4.5):
     - Flutter
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - payjoin_flutter (0.20.0)
   - permission_handler_apple (9.3.0):
     - Flutter
@@ -172,7 +169,6 @@ DEPENDENCIES:
   - lwk (from `.symlinks/plugins/lwk/ios`)
   - no_screenshot (from `.symlinks/plugins/no_screenshot/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - payjoin_flutter (from `.symlinks/plugins/payjoin_flutter/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
@@ -235,8 +231,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/no_screenshot/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
-  path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   payjoin_flutter:
     :path: ".symlinks/plugins/payjoin_flutter/ios"
   permission_handler_apple:
@@ -261,14 +255,14 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
-  ark_wallet: cb7a2af0c3a711d488709b7b91b6e639cfd441b1
-  bdk_flutter: cef9180019b4c6b67a3e3dfb74611683fe140107
+  ark_wallet: f985745c06c7cf93f368c61218c51ac56b46c71e
+  bdk_flutter: 86c9ba59ee282dee08c3a29599abe867d10a8b10
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
-  camera_avfoundation: 5675ca25298b6f81fa0a325188e7df62cc217741
-  dart_bbqr: bfd89cc8a74538d94ef6d87d11e4a2ad55578e7d
+  camera_avfoundation: 281867ff09f1da66f031a184ecfbc6f2e625c9f5
+  dart_bbqr: 10143a83ef3919f9ac06974e3bbe23cac4abc39b
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
-  file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
+  file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
   flutter_nfc_kit: e1b71583eafd2c9650bc86844a7f2d185fb414f6
@@ -279,27 +273,26 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
-  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  image_picker_ios: 4f2f91b01abdb52842a8e277617df877e40f905b
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   lwk: 22e06bc5664247d6b2dac91cfe209b63b70dd580
-  no_screenshot: 6d183496405a3ab709a67a54e5cd0f639e94729e
-  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
-  path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
+  no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
   SDWebImage: e9c98383c7572d713c1a0d7dd2783b10599b9838
-  share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
+  share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   sqlite3: 8d708bc63e9f4ce48f0ad9d6269e478c5ced1d9b
-  sqlite3_flutter_libs: d13b8b3003f18f596e542bcb9482d105577eff41
+  sqlite3_flutter_libs: c7b32a4d17d2cbad19895873ccc815f276b1f125
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
-  tor: 767208930250ef7be241963b75568c55c0a81890
-  universal_ble: ff19787898040d721109c6324472e5dd4bc86adc
-  url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
-  webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
-  webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d
-  workmanager_apple: 904529ae31e97fc5be632cf628507652294a0778
+  tor: 662a9f5b980b5c86decb8ba611de9bcd4c8286eb
+  universal_ble: cf52a7b3fd2e7c14d6d7262e9fdadb72ab6b88a6
+  url_launcher_ios: bb13df5870e8c4234ca12609d04010a21be43dfa
+  webview_cookie_manager: eaf920722b493bd0f7611b5484771ca53fed03f7
+  webview_flutter_wkwebview: 29eb20d43355b48fe7d07113835b9128f84e3af4
+  workmanager_apple: 7bac258335c310689a641e2d66e88d4845d372e9
 
 PODFILE CHECKSUM: cc3fb9f3ad75d6f5db35855d6f129b8b2fb2d9f5
 

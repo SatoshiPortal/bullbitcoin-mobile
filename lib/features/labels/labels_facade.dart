@@ -8,7 +8,7 @@ export 'label.dart';
 export 'primitive/label_system.dart';
 export 'primitive/label_type.dart';
 export 'router.dart';
-export 'locator.dart';
+export 'labels_di_module.dart';
 
 class LabelsFacade {
   final FetchLabelByReferenceUsecase _fetchLabelByReferenceUsecase;

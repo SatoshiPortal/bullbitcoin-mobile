@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/ledger/domain/usecases/connect_ledger_device_usec
 import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
@@ -21,7 +21,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
     SignerDeviceEntity? requestedDeviceType,
   }) : _scanLedgerDevicesUsecase = scanLedgerDevicesUsecase,
        _connectLedgerDeviceUsecase = connectLedgerDeviceUsecase,
-       _repository = locator<LedgerDeviceRepository>(),
+       _repository = sl<LedgerDeviceRepository>(),
        _requestedDeviceType = requestedDeviceType,
        super(const LedgerOperationState());
 
@@ -50,7 +50,9 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
           errorMessage: null,
         ),
       );
-      final devices = await _scanLedgerDevicesUsecase.execute(deviceType: _requestedDeviceType);
+      final devices = await _scanLedgerDevicesUsecase.execute(
+        deviceType: _requestedDeviceType,
+      );
 
       emit(
         state.copyWith(
@@ -125,8 +127,8 @@ String? _interpretErrorCode(String error) {
 
   // Map error codes to localization keys
   final errorCodePatterns = {
-    '6985': 'LEDGER_ERROR_REJECTED_BY_USER',  // User rejected transaction
-    '5515': 'LEDGER_ERROR_DEVICE_LOCKED',     // Device is locked
+    '6985': 'LEDGER_ERROR_REJECTED_BY_USER', // User rejected transaction
+    '5515': 'LEDGER_ERROR_DEVICE_LOCKED', // Device is locked
     '6e01': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN', // Bitcoin app not open
     '6a87': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
     '6d02': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',

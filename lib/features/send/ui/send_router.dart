@@ -3,9 +3,9 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_screen.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum SendRoute {
   send('/send'),
@@ -25,10 +25,8 @@ class SendRouter {
       //  of the incoming route
       final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
       return BlocProvider(
-        create:
-            (_) =>
-                locator<SendCubit>(param1: wallet)
-                  ..loadWalletWithRatesAndFees(),
+        create: (_) =>
+            sl<SendCubit>(param1: wallet)..loadWalletWithRatesAndFees(),
         child: const SendScreen(),
       );
     },

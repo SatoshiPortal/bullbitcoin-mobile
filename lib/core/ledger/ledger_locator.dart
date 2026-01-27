@@ -7,48 +7,42 @@ import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecas
 import 'package:bb_mobile/core/ledger/domain/usecases/sign_psbt_ledger_usecase.dart';
 import 'package:bb_mobile/core/ledger/domain/usecases/verify_address_ledger_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class LedgerLocator {
-  static void registerDatasources(GetIt locator) {
-    locator.registerLazySingleton<LedgerDeviceDatasource>(
+  static void registerDatasources() {
+    sl.registerLazySingleton<LedgerDeviceDatasource>(
       () => LedgerDeviceDatasource(),
     );
   }
 
-  static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<LedgerDeviceRepository>(
-      () => LedgerDeviceRepositoryImpl(
-        datasource: locator<LedgerDeviceDatasource>(),
-      ),
+  static void registerRepositories() {
+    sl.registerLazySingleton<LedgerDeviceRepository>(
+      () =>
+          LedgerDeviceRepositoryImpl(datasource: sl<LedgerDeviceDatasource>()),
     );
   }
 
-  static void registerUsecases(GetIt locator) {
-    locator.registerFactory<ScanLedgerDevicesUsecase>(
-      () => ScanLedgerDevicesUsecase(
-        repository: locator<LedgerDeviceRepository>(),
-      ),
+  static void registerUsecases() {
+    sl.registerFactory<ScanLedgerDevicesUsecase>(
+      () => ScanLedgerDevicesUsecase(repository: sl<LedgerDeviceRepository>()),
     );
-    locator.registerFactory<ConnectLedgerDeviceUsecase>(
-      () => ConnectLedgerDeviceUsecase(
-        repository: locator<LedgerDeviceRepository>(),
-      ),
-    );
-    locator.registerFactory<GetLedgerWatchOnlyWalletUsecase>(
-      () => GetLedgerWatchOnlyWalletUsecase(
-        repository: locator<LedgerDeviceRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<SignPsbtLedgerUsecase>(
+    sl.registerFactory<ConnectLedgerDeviceUsecase>(
       () =>
-          SignPsbtLedgerUsecase(repository: locator<LedgerDeviceRepository>()),
+          ConnectLedgerDeviceUsecase(repository: sl<LedgerDeviceRepository>()),
     );
-    locator.registerFactory<VerifyAddressLedgerUsecase>(
-      () => VerifyAddressLedgerUsecase(
-        repository: locator<LedgerDeviceRepository>(),
+    sl.registerFactory<GetLedgerWatchOnlyWalletUsecase>(
+      () => GetLedgerWatchOnlyWalletUsecase(
+        repository: sl<LedgerDeviceRepository>(),
+        settingsRepository: sl<SettingsRepository>(),
       ),
+    );
+    sl.registerFactory<SignPsbtLedgerUsecase>(
+      () => SignPsbtLedgerUsecase(repository: sl<LedgerDeviceRepository>()),
+    );
+    sl.registerFactory<VerifyAddressLedgerUsecase>(
+      () =>
+          VerifyAddressLedgerUsecase(repository: sl<LedgerDeviceRepository>()),
     );
   }
 }

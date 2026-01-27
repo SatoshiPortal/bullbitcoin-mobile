@@ -15,9 +15,9 @@ import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_regula
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_warning_screen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum FundExchangeRoute {
   fundExchangeAccount('/fund-exchange-account'),
@@ -43,10 +43,8 @@ class FundExchangeRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
       return BlocProvider(
-        create:
-            (_) =>
-                locator<FundExchangeBloc>()
-                  ..add(const FundExchangeEvent.started()),
+        create: (_) =>
+            sl<FundExchangeBloc>()..add(const FundExchangeEvent.started()),
         child: child,
       );
     },

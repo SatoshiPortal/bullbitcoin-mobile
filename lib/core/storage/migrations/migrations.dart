@@ -1,6 +1,4 @@
 export 'package:bb_mobile/core/storage/migrations/schema_0_to_1.dart';
-export 'package:bb_mobile/core/storage/migrations/schema_10_to_11.dart';
-export 'package:bb_mobile/core/storage/migrations/schema_11_to_12.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_1_to_2.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_2_to_3.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_3_to_4.dart';
@@ -10,3 +8,6 @@ export 'package:bb_mobile/core/storage/migrations/schema_6_to_7.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_7_to_8.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_8_to_9.dart';
 export 'package:bb_mobile/core/storage/migrations/schema_9_to_10.dart';
+export 'package:bb_mobile/core/storage/migrations/schema_10_to_11.dart';
+export 'package:bb_mobile/core/storage/migrations/schema_11_to_12.dart';
+export 'package:bb_mobile/core/storage/migrations/schema_12_to_13.dart';

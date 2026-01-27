@@ -5,12 +5,13 @@ import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/di.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -19,7 +20,6 @@ import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
@@ -63,7 +63,7 @@ class Bull {
   }
 
   static Future<void> initLocator() async {
-    await AppLocator.setup(locator, SqliteDatabase());
+    await initializeDependencies();
     Bloc.observer = AppBlocObserver();
   }
 }
@@ -152,7 +152,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   Future<void> _onResumed() async {
     log.info('resumed');
     try {
-      await locator<RestartSwapWatcherUsecase>().execute();
+      await sl<RestartSwapWatcherUsecase>().execute();
     } catch (e) {
       log.severe('Error during app resume: $e');
     }
@@ -170,21 +170,20 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
+        BlocProvider(create: (_) => sl<SettingsCubit>()..init()),
         BlocProvider(
-          create: (_) =>
-              locator<AppStartupBloc>()..add(const AppStartupStarted()),
+          create: (_) => sl<AppStartupBloc>()..add(const AppStartupStarted()),
         ),
         BlocProvider(
           create: (_) =>
-              locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
+              sl<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
-        BlocProvider(create: (_) => locator<WalletBloc>()),
+        BlocProvider(create: (_) => sl<WalletBloc>()),
         // Make the exchange cubit available to the whole app so redirects
         // can use it to check if the user is authenticated
-        BlocProvider(create: (_) => locator<ExchangeCubit>()),
+        BlocProvider(create: (_) => sl<ExchangeCubit>()),
       ],
       child: ExchangeListener(
         child: MultiBlocListener(
@@ -217,47 +216,47 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
           ],
           child:
-            BlocSelector<
-              SettingsCubit,
-              SettingsState,
-              (Language?, AppThemeMode?)
-            >(
-              selector: (settings) =>
-                  (settings.language, settings.storedSettings?.themeMode),
-              builder: (context, data) {
-                final (language, themeMode) = data;
-                final systemBrightness = MediaQuery.platformBrightnessOf(
-                  context,
-                );
-                final effectiveThemeMode = themeMode ?? AppThemeMode.system;
+              BlocSelector<
+                SettingsCubit,
+                SettingsState,
+                (Language?, AppThemeMode?)
+              >(
+                selector: (settings) =>
+                    (settings.language, settings.storedSettings?.themeMode),
+                builder: (context, data) {
+                  final (language, themeMode) = data;
+                  final systemBrightness = MediaQuery.platformBrightnessOf(
+                    context,
+                  );
+                  final effectiveThemeMode = themeMode ?? AppThemeMode.system;
 
-                late final AppThemeType appThemeType;
-                switch (effectiveThemeMode) {
-                  case AppThemeMode.light:
-                    appThemeType = AppThemeType.light;
-                  case AppThemeMode.dark:
-                    appThemeType = AppThemeType.dark;
-                  case AppThemeMode.system:
-                    appThemeType = systemBrightness == .dark
-                        ? AppThemeType.dark
-                        : AppThemeType.light;
-                }
+                  late final AppThemeType appThemeType;
+                  switch (effectiveThemeMode) {
+                    case AppThemeMode.light:
+                      appThemeType = AppThemeType.light;
+                    case AppThemeMode.dark:
+                      appThemeType = AppThemeType.dark;
+                    case AppThemeMode.system:
+                      appThemeType = systemBrightness == .dark
+                          ? AppThemeType.dark
+                          : AppThemeType.light;
+                  }
 
-                return MaterialApp.router(
-                  title: 'BullBitcoin Wallet',
-                  debugShowCheckedModeBanner: false,
-                  routerConfig: AppRouter.router,
-                  theme: AppTheme.themeData(appThemeType),
-                  locale: language?.locale,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  builder: (_, child) {
-                    return AppStartupWidget(app: child!);
-                  },
-                );
-              },
-            ),
+                  return MaterialApp.router(
+                    title: 'BullBitcoin Wallet',
+                    debugShowCheckedModeBanner: false,
+                    routerConfig: AppRouter.router,
+                    theme: AppTheme.themeData(appThemeType),
+                    locale: language?.locale,
+                    localizationsDelegates:
+                        AppLocalizations.localizationsDelegates,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    builder: (_, child) {
+                      return AppStartupWidget(app: child!);
+                    },
+                  );
+                },
+              ),
         ),
       ),
     );

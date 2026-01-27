@@ -7,9 +7,9 @@ import 'package:bb_mobile/features/recoverbull/router.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/presentation/state.dart';
 import 'package:bb_mobile/features/recoverbull_google_drive/ui/drive_vaults_list_page.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum RecoverBullGoogleDriveRoute {
   listDriveVaults('/recoverbull/drive/list');
@@ -27,35 +27,34 @@ class RecoverBullGoogleDriveRouter {
       final flow = state.extra! as RecoverBullFlow;
 
       return BlocProvider(
-        create:
-            (_) => RecoverBullGoogleDriveBloc(
-              flow: flow,
-              fetchAllDriveFileMetadataUsecase:
-                  locator<FetchAllDriveFileMetadataUsecase>(),
-              fetchDriveBackupUsecase: locator<FetchVaultFromDriveUsecase>(),
-              deleteDriveFileUsecase: locator<DeleteDriveFileUsecase>(),
-              exportDriveFileUsecase: locator<ExportDriveFileUsecase>(),
-            ),
-        child: BlocListener<
-          RecoverBullGoogleDriveBloc,
-          RecoverBullGoogleDriveState
-        >(
-          listenWhen:
-              (previous, current) =>
+        create: (_) => RecoverBullGoogleDriveBloc(
+          flow: flow,
+          fetchAllDriveFileMetadataUsecase:
+              sl<FetchAllDriveFileMetadataUsecase>(),
+          fetchDriveBackupUsecase: sl<FetchVaultFromDriveUsecase>(),
+          deleteDriveFileUsecase: sl<DeleteDriveFileUsecase>(),
+          exportDriveFileUsecase: sl<ExportDriveFileUsecase>(),
+        ),
+        child:
+            BlocListener<
+              RecoverBullGoogleDriveBloc,
+              RecoverBullGoogleDriveState
+            >(
+              listenWhen: (previous, current) =>
                   previous.selectedVault == null &&
                       current.selectedVault != null ||
                   previous.selectedVault != current.selectedVault,
-          listener: (context, state) {
-            context.pushNamed(
-              RecoverBullRoute.recoverbullFlows.name,
-              extra: RecoverBullFlowsExtra(
-                flow: flow,
-                vault: state.selectedVault,
-              ),
-            );
-          },
-          child: const DriveVaultsListPage(),
-        ),
+              listener: (context, state) {
+                context.pushNamed(
+                  RecoverBullRoute.recoverbullFlows.name,
+                  extra: RecoverBullFlowsExtra(
+                    flow: flow,
+                    vault: state.selectedVault,
+                  ),
+                );
+              },
+              child: const DriveVaultsListPage(),
+            ),
       );
     },
   );

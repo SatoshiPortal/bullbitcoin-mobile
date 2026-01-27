@@ -3,15 +3,15 @@ import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 Future<void> main({bool isInitialized = false}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   if (!isInitialized) await Bull.init();
 
-  final sqlite = locator<SqliteDatabase>();
+  final sqlite = sl<SqliteDatabase>();
 
   group('WalletMetadata Sqlite Integration Tests', () {
     test('can store and fetch a wallet metadata', () async {
@@ -43,10 +43,9 @@ Future<void> main({bool isInitialized = false}) async {
       await sqlite.into(sqlite.walletMetadatas).insert(metadata.toSqlite());
 
       // Fetch one
-      final fetchedMetadata =
-          await sqlite.managers.walletMetadatas
-              .filter((e) => e.id(metadata.id))
-              .getSingleOrNull();
+      final fetchedMetadata = await sqlite.managers.walletMetadatas
+          .filter((e) => e.id(metadata.id))
+          .getSingleOrNull();
       expect(fetchedMetadata, isNotNull);
       expect(fetchedMetadata!.id, metadata.id);
 

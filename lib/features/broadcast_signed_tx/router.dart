@@ -3,9 +3,9 @@ import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_si
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/broadcast_signed_tx_page.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/scan_nfc_page.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/pages/scan_qr_page.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum BroadcastSignedTxRoute {
   broadcastHome('/broadcast-signed-tx'),
@@ -20,10 +20,12 @@ enum BroadcastSignedTxRoute {
 class BroadcastSignedTxRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
-      final unsignedPsbt = state.extra is String ? state.extra! as String : null;
+      final unsignedPsbt = state.extra is String
+          ? state.extra! as String
+          : null;
 
       return BlocProvider(
-        create: (_) => locator<BroadcastSignedTxCubit>(param1: unsignedPsbt),
+        create: (_) => sl<BroadcastSignedTxCubit>(param1: unsignedPsbt),
         child: child,
       );
     },
@@ -36,15 +38,10 @@ class BroadcastSignedTxRouter {
           GoRoute(
             name: BroadcastSignedTxRoute.broadcastScanQr.name,
             path: BroadcastSignedTxRoute.broadcastScanQr.path,
-            builder:
-                (context, state) => BlocListener<
-                  BroadcastSignedTxCubit,
-                  BroadcastSignedTxState
-                >(
-                  listenWhen:
-                      (previous, state) =>
-                          previous.transaction == null &&
-                          state.transaction != null,
+            builder: (context, state) =>
+                BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+                  listenWhen: (previous, state) =>
+                      previous.transaction == null && state.transaction != null,
                   listener: (context, state) => context.pop(),
                   child: const ScanQrPage(),
                 ),
@@ -52,15 +49,10 @@ class BroadcastSignedTxRouter {
           GoRoute(
             name: BroadcastSignedTxRoute.broadcastScanNfc.name,
             path: BroadcastSignedTxRoute.broadcastScanNfc.path,
-            builder:
-                (context, state) => BlocListener<
-                  BroadcastSignedTxCubit,
-                  BroadcastSignedTxState
-                >(
-                  listenWhen:
-                      (previous, state) =>
-                          previous.transaction == null &&
-                          state.transaction != null,
+            builder: (context, state) =>
+                BlocListener<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+                  listenWhen: (previous, state) =>
+                      previous.transaction == null && state.transaction != null,
                   listener: (context, state) => context.pop(),
                   child: const ScanNfcPage(),
                 ),

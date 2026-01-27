@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,8 +55,7 @@ class WalletDetailScreen extends StatelessWidget {
             const LoadingBoxContent(height: 100)
           else
             BlocProvider<TransactionsCubit>(
-              create: (_) =>
-                  locator<TransactionsCubit>(param1: walletId)..loadTxs(),
+              create: (_) => sl<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: RefreshIndicator(
                 onRefresh: () async {
                   final bloc = context.read<WalletBloc>();

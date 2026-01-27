@@ -13,11 +13,11 @@ import 'package:bb_mobile/features/import_watch_only_wallet/presentation/watch_o
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class ImportWatchOnlyScreen extends StatelessWidget {
   final WatchOnlyWalletEntity? watchOnlyWallet;
@@ -30,8 +30,8 @@ class ImportWatchOnlyScreen extends StatelessWidget {
       create: (context) => ImportWatchOnlyCubit(
         watchOnlyWallet: watchOnlyWallet,
         importWatchOnlyDescriptorUsecase:
-            locator<ImportWatchOnlyDescriptorUsecase>(),
-        importWatchOnlyXpubUsecase: locator<ImportWatchOnlyXpubUsecase>(),
+            sl<ImportWatchOnlyDescriptorUsecase>(),
+        importWatchOnlyXpubUsecase: sl<ImportWatchOnlyXpubUsecase>(),
       )..init(),
       child: Scaffold(
         appBar: AppBar(

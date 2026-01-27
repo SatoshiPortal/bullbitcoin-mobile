@@ -24,12 +24,12 @@ import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_en
 import 'package:bb_mobile/features/ledger/ledger_action.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_cubit.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class LedgerRouteParams {
   final String? psbt;
@@ -57,8 +57,8 @@ class LedgerActionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => LedgerOperationCubit(
-        scanLedgerDevicesUsecase: locator<ScanLedgerDevicesUsecase>(),
-        connectLedgerDeviceUsecase: locator<ConnectLedgerDeviceUsecase>(),
+        scanLedgerDevicesUsecase: sl<ScanLedgerDevicesUsecase>(),
+        connectLedgerDeviceUsecase: sl<ConnectLedgerDeviceUsecase>(),
         requestedDeviceType: parameters?.requestedDeviceType,
       ),
       child: _LedgerActionView(action: action, parameters: parameters),
@@ -486,7 +486,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
   Future<WatchOnlyWalletEntity> _executeImportWallet(
     LedgerDeviceEntity device,
   ) {
-    return locator<GetLedgerWatchOnlyWalletUsecase>().execute(
+    return sl<GetLedgerWatchOnlyWalletUsecase>().execute(
       label: context.loc.ledgerDefaultWalletLabel,
       device: device,
       scriptType: _selectedScriptType,
@@ -510,7 +510,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       throw Exception(context.loc.ledgerErrorMissingScriptTypeSign);
     }
 
-    final result = locator<SignPsbtLedgerUsecase>().execute(
+    final result = sl<SignPsbtLedgerUsecase>().execute(
       device,
       psbt: psbt,
       derivationPath: derivationPath,
@@ -536,7 +536,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
       throw Exception(context.loc.ledgerErrorMissingScriptTypeVerify);
     }
 
-    return locator<VerifyAddressLedgerUsecase>().execute(
+    return sl<VerifyAddressLedgerUsecase>().execute(
       device: device,
       address: address,
       derivationPath: derivationPath,

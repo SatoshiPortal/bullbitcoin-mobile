@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
+import 'package:bb_mobile/features/secrets/frameworks/drift/secret_usages_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
@@ -26,6 +27,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:bb_mobile/features/secrets/interface_adapters/secret_usage/secret_usage_mappers.dart';
 
 part 'sqlite_database.g.dart';
 
@@ -46,6 +48,7 @@ part 'sqlite_database.g.dart';
     Bip85Derivations,
     Recoverbull,
     Prices,
+    SecretUsages,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -68,7 +71,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -107,6 +110,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from9To10: Schema9To10.migrate,
         from10To11: Schema10To11.migrate,
         from11To12: Schema11To12.migrate,
+        from12To13: Schema12To13.migrate,
       ),
     );
   }

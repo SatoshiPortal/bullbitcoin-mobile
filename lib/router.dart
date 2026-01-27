@@ -1,9 +1,10 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:bb_mobile/features/pin_code/ui/pin_code_router.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
@@ -40,7 +41,6 @@ import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -68,7 +68,7 @@ class AppRouter {
           final isSupportChat = location.contains('/support-chat');
 
           return BlocProvider(
-            create: (_) => locator<PriceChartCubit>(),
+            create: (_) => sl<PriceChartCubit>(),
             child: PopScope(
               canPop: false,
               onPopInvokedWithResult: (didPop, _) {
@@ -130,7 +130,7 @@ class AppRouter {
         routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
       ),
       OnboardingRouter.route,
-      AppUnlockRouter.route,
+      PinCodeRouter.route,
       WalletRouter.walletDetailRoute,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,

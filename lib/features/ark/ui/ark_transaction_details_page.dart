@@ -9,12 +9,12 @@ import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class ArkTransactionDetailsPage extends StatelessWidget {
   const ArkTransactionDetailsPage({super.key, required this.transaction});
@@ -39,7 +39,9 @@ class ArkTransactionDetailsPage extends StatelessWidget {
           date = DateTime.fromMillisecondsSinceEpoch(tx.confirmedAt! * 1000);
         }
         type = context.loc.arkTxBoarding;
-        statusLabel = date != null ? context.loc.arkStatusConfirmed : context.loc.arkTxPending;
+        statusLabel = date != null
+            ? context.loc.arkStatusConfirmed
+            : context.loc.arkTxPending;
       case final ark_wallet.Transaction_Commitment tx:
         txid = tx.txid;
         sats = tx.sats;
@@ -53,7 +55,9 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         type = context.loc.arkTxPayment;
-        statusLabel = tx.isSettled ? context.loc.arkStatusSettled : context.loc.arkTxPending;
+        statusLabel = tx.isSettled
+            ? context.loc.arkStatusSettled
+            : context.loc.arkTxPending;
         isIncoming = false;
     }
 
@@ -104,32 +108,31 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                       label: context.loc.arkTransactionId,
                       displayValue: StringFormatting.truncateMiddle(txid),
                       copyValue: txid,
-                      displayWidget:
-                          isBoarding
-                              ? GestureDetector(
-                                onTap: () async {
-                                  final mempoolUrlBuilder =
-                                      locator<MempoolUrlBuilder>();
+                      displayWidget: isBoarding
+                          ? GestureDetector(
+                              onTap: () async {
+                                final mempoolUrlBuilder =
+                                    sl<MempoolUrlBuilder>();
 
-                                  final mempoolUrl =
-                                      await mempoolUrlBuilder.bitcoinTxidUrl(
-                                    txid,
-                                    isTestnet: false,
-                                  );
+                                final mempoolUrl = await mempoolUrlBuilder
+                                    .bitcoinTxidUrl(txid, isTestnet: false);
 
-                                  await launchUrl(Uri.parse(mempoolUrl));
-                                },
-                                child: Text(
-                                  StringFormatting.truncateMiddle(txid),
-                                  style: TextStyle(
-                                    color: context.appColors.primary,
-                                  ),
-                                  textAlign: TextAlign.end,
+                                await launchUrl(Uri.parse(mempoolUrl));
+                              },
+                              child: Text(
+                                StringFormatting.truncateMiddle(txid),
+                                style: TextStyle(
+                                  color: context.appColors.primary,
                                 ),
-                              )
-                              : null,
+                                textAlign: TextAlign.end,
+                              ),
+                            )
+                          : null,
                     ),
-                    DetailsTableItem(label: context.loc.arkType, displayValue: type),
+                    DetailsTableItem(
+                      label: context.loc.arkType,
+                      displayValue: type,
+                    ),
                     DetailsTableItem(
                       label: context.loc.arkStatus,
                       displayValue: statusLabel,

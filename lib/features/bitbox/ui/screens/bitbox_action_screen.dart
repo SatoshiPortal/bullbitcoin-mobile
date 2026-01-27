@@ -24,12 +24,12 @@ import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_cu
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class BitBoxRouteParams {
   final String? psbt;
@@ -56,11 +56,10 @@ class BitBoxActionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => BitBoxOperationCubit(
-            scanBitBoxDevicesUsecase: locator<ScanBitBoxDevicesUsecase>(),
-            connectBitBoxDeviceUsecase: locator<ConnectBitBoxDeviceUsecase>(),
-          ),
+      create: (context) => BitBoxOperationCubit(
+        scanBitBoxDevicesUsecase: sl<ScanBitBoxDevicesUsecase>(),
+        connectBitBoxDeviceUsecase: sl<ConnectBitBoxDeviceUsecase>(),
+      ),
       child: _BitBoxActionView(action: action, parameters: parameters),
     );
   }
@@ -373,7 +372,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
         cubit.showAddressVerification(address);
 
-        return await locator<VerifyAddressBitBoxUsecase>().execute(
+        return await sl<VerifyAddressBitBoxUsecase>().execute(
           device: device,
           address: address,
           derivationPath: derivationPath,
@@ -405,7 +404,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         if (derivationPath == null) {
           throw Exception('Derivation path is required for signing');
         }
-        return await locator<SignPsbtBitBoxUsecase>().execute(
+        return await sl<SignPsbtBitBoxUsecase>().execute(
           device,
           psbt: psbt,
           derivationPath: derivationPath,
@@ -419,20 +418,20 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
   Future<void> _ensureDeviceReady(BitBoxOperationCubit cubit) async {
     try {
-      await locator<BitBoxDeviceRepository>().getMasterFingerprint(
+      await sl<BitBoxDeviceRepository>().getMasterFingerprint(
         cubit.state.connectedDevice!,
       );
     } catch (e) {
       cubit.showWaitingForPassword();
 
-      final pairingCode = await locator<UnlockBitBoxDeviceUsecase>().execute(
+      final pairingCode = await sl<UnlockBitBoxDeviceUsecase>().execute(
         cubit.state.connectedDevice!,
       );
 
       if (pairingCode.isNotEmpty) {
         cubit.showPairingCode(pairingCode);
 
-        await locator<PairBitBoxDeviceUsecase>().execute(
+        await sl<PairBitBoxDeviceUsecase>().execute(
           cubit.state.connectedDevice!,
         );
       }
@@ -450,7 +449,7 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
 
         final device = cubit.state.connectedDevice!;
 
-        return await locator<GetBitBoxWatchOnlyWalletUsecase>().execute(
+        return await sl<GetBitBoxWatchOnlyWalletUsecase>().execute(
           device: device,
           deviceType: widget.parameters?.requestedDeviceType,
           label: context.loc.bitboxScreenDefaultWalletLabel,
@@ -496,7 +495,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                       children: [
                         Expanded(
                           child: BBText(
-                            _getScriptTypeDisplayName(context, _selectedScriptType),
+                            _getScriptTypeDisplayName(
+                              context,
+                              _selectedScriptType,
+                            ),
                             style: context.font.bodyLarge?.copyWith(
                               fontWeight: .w500,
                             ),
@@ -519,7 +521,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     );
   }
 
-  String _getScriptTypeDisplayName(BuildContext context, ScriptType scriptType) {
+  String _getScriptTypeDisplayName(
+    BuildContext context,
+    ScriptType scriptType,
+  ) {
     switch (scriptType) {
       case ScriptType.bip84:
         return context.loc.bitboxScreenSegwitBip84;
@@ -642,7 +647,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     );
   }
 
-  String _getMainTextForState(BuildContext context, BitBoxOperationState state) {
+  String _getMainTextForState(
+    BuildContext context,
+    BitBoxOperationState state,
+  ) {
     switch (state.status) {
       case BitBoxOperationStatus.initial:
         return context.loc.bitboxScreenConnectDevice;
@@ -661,7 +669,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       case BitBoxOperationStatus.success:
         return widget.action.toSuccessText(context);
       case BitBoxOperationStatus.error:
-        return context.loc.bitboxScreenActionFailed(widget.action.toTitle(context));
+        return context.loc.bitboxScreenActionFailed(
+          widget.action.toTitle(context),
+        );
     }
   }
 
@@ -684,7 +694,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       case BitBoxOperationStatus.success:
         return widget.action.toSuccessSubText(context);
       case BitBoxOperationStatus.error:
-        return state.error?.toTranslated(context) ?? context.loc.bitboxScreenUnknownError;
+        return state.error?.toTranslated(context) ??
+            context.loc.bitboxScreenUnknownError;
     }
   }
 }

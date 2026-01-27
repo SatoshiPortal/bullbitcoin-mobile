@@ -6,9 +6,9 @@ import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bb_mobile/features/replace_by_fee/ui/home_page.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum ReplaceByFeeRoute {
   replaceByFeeFlow('/replace-by-fee-flow');
@@ -26,19 +26,18 @@ class ReplaceByFeeRouter {
       final tx = state.extra! as WalletTransaction;
 
       return BlocProvider(
-        create:
-            (_) => ReplaceByFeeCubit(
-              originalTransaction: tx,
-              bumpFeeUsecase: locator<BumpFeeUsecase>(),
-              broadcastBitcoinTransactionUsecase:
-                  locator<BroadcastBitcoinTransactionUsecase>(),
-              getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-            ),
+        create: (_) => ReplaceByFeeCubit(
+          originalTransaction: tx,
+          bumpFeeUsecase: sl<BumpFeeUsecase>(),
+          broadcastBitcoinTransactionUsecase:
+              sl<BroadcastBitcoinTransactionUsecase>(),
+          getNetworkFeesUsecase: sl<GetNetworkFeesUsecase>(),
+        ),
         child: BlocListener<ReplaceByFeeCubit, ReplaceByFeeState>(
-          listenWhen:
-              (previous, state) => previous.txid == null && state.txid != null,
-          listener:
-              (context, state) => context.goNamed(WalletRoute.walletHome.name),
+          listenWhen: (previous, state) =>
+              previous.txid == null && state.txid != null,
+          listener: (context, state) =>
+              context.goNamed(WalletRoute.walletHome.name),
           child: ReplaceByFeeHomePage(tx: tx),
         ),
       );

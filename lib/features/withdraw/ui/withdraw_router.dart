@@ -1,10 +1,10 @@
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_confirmation_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_recipients_screen.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_success_screen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -25,8 +25,7 @@ class WithdrawRouter {
     name: WithdrawRoute.withdraw.name,
     builder: (context, state) {
       return BlocProvider(
-        create: (_) =>
-            locator<WithdrawBloc>()..add(const WithdrawEvent.started()),
+        create: (_) => sl<WithdrawBloc>()..add(const WithdrawEvent.started()),
         child: MultiBlocListener(
           listeners: [
             BlocListener<WithdrawBloc, WithdrawState>(

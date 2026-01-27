@@ -16,9 +16,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/flow.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 enum RecoverBullRoute {
   recoverbullFlows('/recoverbull-flows');
@@ -43,35 +43,28 @@ class RecoverBullRouter {
       final RecoverBullFlowsExtra extra = state.extra! as RecoverBullFlowsExtra;
 
       return BlocProvider(
-        create:
-            (context) => RecoverBullBloc(
-              flow: extra.flow,
-              preSelectedVault: extra.vault,
-              createEncryptedVaultUsecase:
-                  locator<CreateEncryptedVaultUsecase>(),
-              storeVaultKeyIntoServerUsecase:
-                  locator<StoreVaultKeyIntoServerUsecase>(),
-              checkKeyServerConnectionUsecase:
-                  locator<CheckServerConnectionUsecase>(),
-              fetchVaultKeyFromServerUsecase:
-                  locator<FetchVaultKeyFromServerUsecase>(),
-              decryptVaultUsecase: locator<DecryptVaultUsecase>(),
-              restoreVaultUsecase: locator<RestoreVaultUsecase>(),
-              connectToGoogleDriveUsecase:
-                  locator<ConnectToGoogleDriveUsecase>(),
-              saveToGoogleDriveUsecase:
-                  locator<SaveVaultToGoogleDriveUsecase>(),
-              initializeTorUsecase: locator<InitTorUsecase>(),
-              checkWalletStatusUsecase: locator<TheDirtyUsecase>(),
-              checkLiquidWalletStatusUsecase: locator<TheDirtyLiquidUsecase>(),
-              walletBloc: context.read(),
-              fetchLatestGoogleDriveVaultUsecase:
-                  locator<FetchLatestGoogleDriveVaultUsecase>(),
-              updateLatestEncryptedVaultTestUsecase:
-                  locator<UpdateLatestEncryptedVaultTestUsecase>(),
-              torStatusUsecase: locator<TorStatusUsecase>(),
-              torConfigPort: locator<TorConfigPort>(),
-            ),
+        create: (context) => RecoverBullBloc(
+          flow: extra.flow,
+          preSelectedVault: extra.vault,
+          createEncryptedVaultUsecase: sl<CreateEncryptedVaultUsecase>(),
+          storeVaultKeyIntoServerUsecase: sl<StoreVaultKeyIntoServerUsecase>(),
+          checkKeyServerConnectionUsecase: sl<CheckServerConnectionUsecase>(),
+          fetchVaultKeyFromServerUsecase: sl<FetchVaultKeyFromServerUsecase>(),
+          decryptVaultUsecase: sl<DecryptVaultUsecase>(),
+          restoreVaultUsecase: sl<RestoreVaultUsecase>(),
+          connectToGoogleDriveUsecase: sl<ConnectToGoogleDriveUsecase>(),
+          saveToGoogleDriveUsecase: sl<SaveVaultToGoogleDriveUsecase>(),
+          initializeTorUsecase: sl<InitTorUsecase>(),
+          checkWalletStatusUsecase: sl<TheDirtyUsecase>(),
+          checkLiquidWalletStatusUsecase: sl<TheDirtyLiquidUsecase>(),
+          walletBloc: context.read(),
+          fetchLatestGoogleDriveVaultUsecase:
+              sl<FetchLatestGoogleDriveVaultUsecase>(),
+          updateLatestEncryptedVaultTestUsecase:
+              sl<UpdateLatestEncryptedVaultTestUsecase>(),
+          torStatusUsecase: sl<TorStatusUsecase>(),
+          torConfigPort: sl<TorConfigPort>(),
+        ),
         child: const RecoverBullFlowNavigator(),
       );
     },

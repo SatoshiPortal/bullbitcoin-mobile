@@ -9,66 +9,58 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/sign_psbt_bitbox_usecase.d
 import 'package:bb_mobile/core/bitbox/domain/usecases/unlock_bitbox_device_usecase.dart';
 import 'package:bb_mobile/core/bitbox/domain/usecases/verify_address_bitbox_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:get_it/get_it.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class BitBoxCoreLocator {
-  static void registerDatasources(GetIt locator) {
-    locator.registerLazySingleton<BitBoxDeviceDatasource>(
+  static void registerDatasources() {
+    sl.registerLazySingleton<BitBoxDeviceDatasource>(
       () => BitBoxDeviceDatasource(),
     );
   }
 
-  static void registerRepositories(GetIt locator) {
-    locator.registerLazySingleton<BitBoxDeviceRepository>(
-      () => BitBoxDeviceRepositoryImpl(
-        datasource: locator<BitBoxDeviceDatasource>(),
-      ),
+  static void registerRepositories() {
+    sl.registerLazySingleton<BitBoxDeviceRepository>(
+      () =>
+          BitBoxDeviceRepositoryImpl(datasource: sl<BitBoxDeviceDatasource>()),
     );
   }
 
-  static void registerUsecases(GetIt locator) {
-    locator.registerLazySingleton<ScanBitBoxDevicesUsecase>(
-      () => ScanBitBoxDevicesUsecase(
-        repository: locator<BitBoxDeviceRepository>(),
-      ),
+  static void registerUsecases() {
+    sl.registerLazySingleton<ScanBitBoxDevicesUsecase>(
+      () => ScanBitBoxDevicesUsecase(repository: sl<BitBoxDeviceRepository>()),
     );
 
-    locator.registerLazySingleton<ConnectBitBoxDeviceUsecase>(
-      () => ConnectBitBoxDeviceUsecase(
-        repository: locator<BitBoxDeviceRepository>(),
-      ),
+    sl.registerLazySingleton<ConnectBitBoxDeviceUsecase>(
+      () =>
+          ConnectBitBoxDeviceUsecase(repository: sl<BitBoxDeviceRepository>()),
     );
 
-    locator.registerLazySingleton<UnlockBitBoxDeviceUsecase>(
-      () => UnlockBitBoxDeviceUsecase(
-        repository: locator<BitBoxDeviceRepository>(),
-      ),
+    sl.registerLazySingleton<UnlockBitBoxDeviceUsecase>(
+      () => UnlockBitBoxDeviceUsecase(repository: sl<BitBoxDeviceRepository>()),
     );
 
-    locator.registerLazySingleton<PairBitBoxDeviceUsecase>(
-      () => PairBitBoxDeviceUsecase(
-        repository: locator<BitBoxDeviceRepository>(),
-      ),
+    sl.registerLazySingleton<PairBitBoxDeviceUsecase>(
+      () => PairBitBoxDeviceUsecase(repository: sl<BitBoxDeviceRepository>()),
     );
 
-    locator.registerLazySingleton<VerifyAddressBitBoxUsecase>(
+    sl.registerLazySingleton<VerifyAddressBitBoxUsecase>(
       () => VerifyAddressBitBoxUsecase(
-        repository: locator<BitBoxDeviceRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        repository: sl<BitBoxDeviceRepository>(),
+        settingsRepository: sl<SettingsRepository>(),
       ),
     );
 
-    locator.registerLazySingleton<GetBitBoxWatchOnlyWalletUsecase>(
+    sl.registerLazySingleton<GetBitBoxWatchOnlyWalletUsecase>(
       () => GetBitBoxWatchOnlyWalletUsecase(
-        repository: locator<BitBoxDeviceRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        repository: sl<BitBoxDeviceRepository>(),
+        settingsRepository: sl<SettingsRepository>(),
       ),
     );
 
-    locator.registerLazySingleton<SignPsbtBitBoxUsecase>(
+    sl.registerLazySingleton<SignPsbtBitBoxUsecase>(
       () => SignPsbtBitBoxUsecase(
-        repository: locator<BitBoxDeviceRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        repository: sl<BitBoxDeviceRepository>(),
+        settingsRepository: sl<SettingsRepository>(),
       ),
     );
   }

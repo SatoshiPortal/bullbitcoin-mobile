@@ -9,10 +9,10 @@ import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:bb_mobile/core/infra/di/core_dependencies.dart';
 
 class AutoSwapSettingsBottomSheet extends StatelessWidget {
   const AutoSwapSettingsBottomSheet({super.key});
@@ -21,7 +21,7 @@ class AutoSwapSettingsBottomSheet extends StatelessWidget {
     return BlurredBottomSheet.show(
       context: context,
       child: BlocProvider<AutoSwapSettingsCubit>(
-        create: (_) => locator<AutoSwapSettingsCubit>()..loadSettings(),
+        create: (_) => sl<AutoSwapSettingsCubit>()..loadSettings(),
         child: const AutoSwapSettingsBottomSheet(),
       ),
     );
