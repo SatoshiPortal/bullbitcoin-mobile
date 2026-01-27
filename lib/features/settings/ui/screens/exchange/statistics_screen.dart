@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -116,12 +115,10 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
                 ),
                 const SizedBox(height: 16),
               ],
-              _OrderStatsSection(
-                orderStats: state.orderStats!,
-              ),
+              _OrderStatsSection(state: state),
               const SizedBox(height: 24),
               if (state.billerStats != null && state.billerStats!.hasStats)
-                _BillerStatsSection(billerStats: state.billerStats!),
+                _BillerStatsSection(state: state),
             ],
           ),
         ),
@@ -132,10 +129,10 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 
 class _OrderStatsSection extends StatelessWidget {
   const _OrderStatsSection({
-    required this.orderStats,
+    required this.state,
   });
 
-  final OrderStats orderStats;
+  final StatisticsState state;
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +150,8 @@ class _OrderStatsSection extends StatelessWidget {
         _StatCard(
           title: context.loc.exchangeStatisticsBuySellRatio,
           description: context.loc.exchangeStatisticsBuySellRatioDesc,
-          value: orderStats.buySellRatio,
+          value: state.orderStats?.buySellRatio ?? '',
           icon: Icons.compare_arrows,
-          context: context,
         ),
         const SizedBox(height: 12),
         _StatSectionCard(
@@ -163,26 +159,22 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_downward,
           iconColor: Colors.green,
           stats: [
-            _buildStatRowWithAmounts(
-              context,
-              context.loc.exchangeStatisticsVolume,
-              orderStats.bitcoinBuyVolume,
+            _StatRow(
+              label: context.loc.exchangeStatisticsVolume,
+              values: state.formattedBuyVolume,
               description: context.loc.exchangeStatisticsBuyVolumeDesc,
             ),
-            _buildStatRowWithTradeCounts(
-              context,
-              context.loc.exchangeStatisticsTradeCount,
-              orderStats.bitcoinBuyTradeCount,
+            _StatRow(
+              label: context.loc.exchangeStatisticsTradeCount,
+              values: state.formattedBuyTradeCount,
               description: context.loc.exchangeStatisticsBuyTradeCountDesc,
             ),
-            _buildStatRowWithAmounts(
-              context,
-              context.loc.exchangeStatisticsAveragePrice,
-              orderStats.averageBitcoinBuyPrice,
+            _StatRow(
+              label: context.loc.exchangeStatisticsAveragePrice,
+              values: state.formattedAvgBuyPrice,
               description: context.loc.exchangeStatisticsBuyAvgPriceDesc,
             ),
           ],
-          context: context,
         ),
         const SizedBox(height: 12),
         _StatSectionCard(
@@ -190,45 +182,48 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_upward,
           iconColor: Colors.red,
           stats: [
-            _buildStatRowWithAmounts(
-              context,
-              context.loc.exchangeStatisticsVolume,
-              orderStats.bitcoinSellVolume,
+            _StatRow(
+              label: context.loc.exchangeStatisticsVolume,
+              values: state.formattedSellVolume,
               description: context.loc.exchangeStatisticsSellVolumeDesc,
             ),
-            _buildStatRowWithTradeCounts(
-              context,
-              context.loc.exchangeStatisticsTradeCount,
-              orderStats.bitcoinSellTradeCount,
+            _StatRow(
+              label: context.loc.exchangeStatisticsTradeCount,
+              values: state.formattedSellTradeCount,
               description: context.loc.exchangeStatisticsSellTradeCountDesc,
             ),
-            _buildStatRowWithAmounts(
-              context,
-              context.loc.exchangeStatisticsAveragePrice,
-              orderStats.averageBitcoinSellPrice,
+            _StatRow(
+              label: context.loc.exchangeStatisticsAveragePrice,
+              values: state.formattedAvgSellPrice,
               description: context.loc.exchangeStatisticsSellAvgPriceDesc,
             ),
           ],
-          context: context,
         ),
         const SizedBox(height: 12),
         _MultiValueStatCard(
           title: context.loc.exchangeStatisticsTotalVolume,
           description: context.loc.exchangeStatisticsTotalVolumeDesc,
-          amounts: orderStats.totalBitcoinTradingVolume,
+          values: state.formattedTotalVolume,
           icon: Icons.trending_up,
-          context: context,
         ),
       ],
     );
   }
+}
 
-  Widget _buildStatRowWithAmounts(
-    BuildContext context,
-    String label,
-    List<AmountByCurrencyCode> amounts, {
-    String? description,
-  }) {
+class _StatRow extends StatelessWidget {
+  const _StatRow({
+    required this.label,
+    required this.values,
+    this.description,
+  });
+
+  final String label;
+  final List<String> values;
+  final String? description;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -248,7 +243,7 @@ class _OrderStatsSection extends StatelessWidget {
                 if (description != null) ...[
                   const SizedBox(height: 2),
                   BBText(
-                    description,
+                    description!,
                     style: context.font.bodySmall?.copyWith(
                       color: context.appColors.textMuted,
                       fontSize: 11,
@@ -259,148 +254,23 @@ class _OrderStatsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          _buildAmountsColumn(context, amounts),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatRowWithTradeCounts(
-    BuildContext context,
-    String label,
-    List<AmountByCurrencyCode> tradeCounts, {
-    String? description,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                BBText(
-                  label,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                if (description != null) ...[
-                  const SizedBox(height: 2),
-                  BBText(
-                    description,
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.appColors.textMuted,
-                      fontSize: 11,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: values
+                .map(
+                  (value) => BBText(
+                    value,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.onSurface,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ],
-              ],
-            ),
+                )
+                .toList(),
           ),
-          const SizedBox(width: 16),
-          _buildTradeCountsColumn(context, tradeCounts),
         ],
       ),
     );
-  }
-
-  Widget _buildAmountsColumn(
-    BuildContext context,
-    List<AmountByCurrencyCode> amounts,
-  ) {
-    if (amounts.isEmpty) {
-      return BBText(
-        '0',
-        style: context.font.bodyMedium?.copyWith(
-          color: context.appColors.onSurface,
-          fontWeight: FontWeight.w600,
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: amounts
-          .map(
-            (amount) => BBText(
-              _formatWithCurrencyCode(amount.value, amount.currency),
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  Widget _buildTradeCountsColumn(
-    BuildContext context,
-    List<AmountByCurrencyCode> tradeCounts,
-  ) {
-    if (tradeCounts.isEmpty) {
-      return BBText(
-        '0 trades',
-        style: context.font.bodyMedium?.copyWith(
-          color: context.appColors.onSurface,
-          fontWeight: FontWeight.w600,
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: tradeCounts
-          .map(
-            (count) => BBText(
-              '${count.value.toInt()} trades (${count.currency})',
-              style: context.font.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  /// Format a value with currency code only (e.g., "279.57 CAD")
-  String _formatWithCurrencyCode(double value, String currencyCode) {
-    return '${_formatNumber(value)} $currencyCode';
-  }
-
-  /// Format number with thousands separator, no abbreviations
-  String _formatNumber(double value) {
-    if (value < 1 && value > 0) {
-      return value.toStringAsFixed(8);
-    }
-    // Format with 2 decimal places and thousands separator
-    return _formatWithThousandsSeparator(value);
-  }
-
-  /// Format number with thousands separator (e.g., 1234567.89 -> "1,234,567.89")
-  String _formatWithThousandsSeparator(double value) {
-    final parts = value.toStringAsFixed(2).split('.');
-    final intPart = parts[0];
-    final decPart = parts.length > 1 ? parts[1] : '00';
-
-    // Add thousands separators
-    final buffer = StringBuffer();
-    final digits = intPart.replaceFirst('-', '');
-    final isNegative = intPart.startsWith('-');
-
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) {
-        buffer.write(',');
-      }
-      buffer.write(digits[i]);
-    }
-
-    final formatted = '${isNegative ? '-' : ''}${buffer.toString()}.$decPart';
-    return formatted;
   }
 }
 
@@ -409,14 +279,12 @@ class _StatCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.icon,
-    required this.context,
     this.description,
   });
 
   final String title;
   final String value;
   final IconData icon;
-  final BuildContext context;
   final String? description;
 
   @override
@@ -492,16 +360,14 @@ class _StatCard extends StatelessWidget {
 class _MultiValueStatCard extends StatelessWidget {
   const _MultiValueStatCard({
     required this.title,
-    required this.amounts,
+    required this.values,
     required this.icon,
-    required this.context,
     this.description,
   });
 
   final String title;
-  final List<AmountByCurrencyCode> amounts;
+  final List<String> values;
   final IconData icon;
-  final BuildContext context;
   final String? description;
 
   @override
@@ -548,9 +414,9 @@ class _MultiValueStatCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                ...amounts.map(
-                  (amount) => BBText(
-                    _formatWithCurrencyCode(amount.value, amount.currency),
+                ...values.map(
+                  (value) => BBText(
+                    value,
                     style: context.font.headlineSmall?.copyWith(
                       color: context.appColors.onSurface,
                       fontWeight: FontWeight.w600,
@@ -574,37 +440,6 @@ class _MultiValueStatCard extends StatelessWidget {
       ),
     );
   }
-
-  String _formatWithCurrencyCode(double value, String currencyCode) {
-    return '${_formatNumber(value)} $currencyCode';
-  }
-
-  String _formatNumber(double value) {
-    if (value < 1 && value > 0) {
-      return value.toStringAsFixed(8);
-    }
-    return _formatWithThousandsSeparator(value);
-  }
-
-  String _formatWithThousandsSeparator(double value) {
-    final parts = value.toStringAsFixed(2).split('.');
-    final intPart = parts[0];
-    final decPart = parts.length > 1 ? parts[1] : '00';
-
-    final buffer = StringBuffer();
-    final digits = intPart.replaceFirst('-', '');
-    final isNegative = intPart.startsWith('-');
-
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) {
-        buffer.write(',');
-      }
-      buffer.write(digits[i]);
-    }
-
-    final formatted = '${isNegative ? '-' : ''}${buffer.toString()}.$decPart';
-    return formatted;
-  }
 }
 
 class _StatSectionCard extends StatelessWidget {
@@ -613,14 +448,12 @@ class _StatSectionCard extends StatelessWidget {
     required this.icon,
     required this.iconColor,
     required this.stats,
-    required this.context,
   });
 
   final String title;
   final IconData icon;
   final Color iconColor;
   final List<Widget> stats;
-  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
@@ -666,12 +499,15 @@ class _StatSectionCard extends StatelessWidget {
 }
 
 class _BillerStatsSection extends StatelessWidget {
-  const _BillerStatsSection({required this.billerStats});
+  const _BillerStatsSection({required this.state});
 
-  final BillerStats billerStats;
+  final StatisticsState state;
 
   @override
   Widget build(BuildContext context) {
+    final billerStats = state.billerStats;
+    if (billerStats == null) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -690,11 +526,8 @@ class _BillerStatsSection extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 16),
-        ...billerStats.stats.map(
-          (stat) => _BillerStatCard(
-            stat: stat,
-            currencyCode: billerStats.currency,
-          ),
+        ...state.formattedBillerStats.map(
+          (stat) => _BillerStatCard(stat: stat),
         ),
       ],
     );
@@ -704,11 +537,9 @@ class _BillerStatsSection extends StatelessWidget {
 class _BillerStatCard extends StatelessWidget {
   const _BillerStatCard({
     required this.stat,
-    required this.currencyCode,
   });
 
-  final BillerStat stat;
-  final String currencyCode;
+  final FormattedBillerStat stat;
 
   @override
   Widget build(BuildContext context) {
@@ -745,7 +576,7 @@ class _BillerStatCard extends StatelessWidget {
                 child: _buildStatItem(
                   context,
                   context.loc.exchangeStatisticsTotalAmount,
-                  _formatAmount(stat.totalAmount),
+                  stat.formattedAmount,
                 ),
               ),
               Expanded(
@@ -783,32 +614,4 @@ class _BillerStatCard extends StatelessWidget {
       ],
     );
   }
-
-  String _formatAmount(double value) {
-    final code = currencyCode.isNotEmpty ? currencyCode : 'CAD';
-    return '${_formatWithThousandsSeparator(value)} $code';
-  }
-
-  /// Format number with thousands separator (e.g., 1234567.89 -> "1,234,567.89")
-  String _formatWithThousandsSeparator(double value) {
-    final parts = value.toStringAsFixed(2).split('.');
-    final intPart = parts[0];
-    final decPart = parts.length > 1 ? parts[1] : '00';
-
-    // Add thousands separators
-    final buffer = StringBuffer();
-    final digits = intPart.replaceFirst('-', '');
-    final isNegative = intPart.startsWith('-');
-
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) {
-        buffer.write(',');
-      }
-      buffer.write(digits[i]);
-    }
-
-    final formatted = '${isNegative ? '-' : ''}${buffer.toString()}.$decPart';
-    return formatted;
-  }
 }
-
