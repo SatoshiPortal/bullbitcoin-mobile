@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/features/tor_settings/domain/ports/socket_port.dart';
+import 'package:bb_mobile/core/tor/domain/ports/socket_port.dart';
 
 class SocketAdapter implements SocketPort {
   @override
