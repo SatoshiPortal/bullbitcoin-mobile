@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
@@ -57,6 +59,8 @@ class WalletLocator {
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
         getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
         saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
+        disableAutoswapWarningUsecase: locator<DisableAutoswapWarningUsecase>(),
+        disableAutoswapUsecase: locator<DisableAutoswapUsecase>(),
         autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
       ),
