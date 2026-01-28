@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/onboarding/complete_physical_backup_verification_usecase.dart';
@@ -19,6 +20,7 @@ class OnboardingLocator {
     locator.registerFactory<CompletePhysicalBackupVerificationUsecase>(
       () => CompletePhysicalBackupVerificationUsecase(
         walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }
