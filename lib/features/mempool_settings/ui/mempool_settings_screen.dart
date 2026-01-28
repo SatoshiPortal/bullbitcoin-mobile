@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
+import 'package:bb_mobile/features/mempool_settings/utils/mempool_settings_error_helper.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,7 +75,7 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
                     if (state.hasError) ...[
                       const Gap(16),
                       InfoCard(
-                        description: state.errorMessage!,
+                        description: getMempoolSettingsErrorMessage(context, state),
                         tagColor: context.appColors.error,
                         bgColor: context.appColors.errorContainer,
                         onTap: () {

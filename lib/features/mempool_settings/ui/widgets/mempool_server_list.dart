@@ -65,7 +65,7 @@ class MempoolServerList extends StatelessWidget {
                       .updateUseForFeeEstimation(value);
                 },
                 onDelete: () => _showDeleteConfirmation(context),
-                onEdit: () => _showEditServerSheet(context, customServer.url),
+                onEdit: () => _showEditServerSheet(context, customServer.url, customServer.enableSsl),
               ),
             ],
             const Gap(16),
@@ -95,15 +95,19 @@ class MempoolServerList extends StatelessWidget {
     SetCustomServerBottomSheet.show(context);
   }
 
-  void _showEditServerSheet(BuildContext context, String currentUrl) {
-    SetCustomServerBottomSheet.show(context, initialUrl: currentUrl);
+  void _showEditServerSheet(BuildContext context, String currentUrl, bool enableSsl) {
+    SetCustomServerBottomSheet.show(
+      context,
+      initialUrl: currentUrl,
+      initialEnableSsl: enableSsl,
+    );
   }
 
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        backgroundColor: context.appColors.onPrimary,
+        backgroundColor: context.appColors.surface,
         title: Text(context.loc.mempoolCustomServerDeleteTitle),
         content: Text(
           context.loc.mempoolCustomServerDeleteMessage,
