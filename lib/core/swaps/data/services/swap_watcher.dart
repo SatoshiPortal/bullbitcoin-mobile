@@ -150,6 +150,10 @@ class SwapWatcherService {
       if (receiveAddress == null) {
         throw Exception('Receive address is null');
       }
+
+      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String claimTxId;
       try {
         claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
@@ -178,8 +182,9 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToBitcoinClaim"}',
         error: e,
@@ -198,6 +203,10 @@ class SwapWatcherService {
       if (receiveAddress == null) {
         throw Exception('Receive address is null');
       }
+
+      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String claimTxId;
       log.fine(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -229,9 +238,10 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
       _swapStreamController.add(updatedSwap);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim"}',
         error: e,
@@ -343,6 +353,10 @@ class SwapWatcherService {
         swapType: swap.type,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
+
+      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -383,8 +397,9 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnRefund"}',
         error: e,
@@ -422,6 +437,10 @@ class SwapWatcherService {
         swapType: swap.type,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
+
+      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -462,7 +481,6 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnRefund"}',
@@ -506,6 +524,9 @@ class SwapWatcherService {
           finalClaimAddress = swap.receiveAddress!;
         }
       }
+      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String claimTxid;
       log.fine(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -537,8 +558,9 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim"',
         error: e,
@@ -584,6 +606,9 @@ class SwapWatcherService {
         }
       }
 
+      // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String claimTxid;
       log.fine(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -615,8 +640,9 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim"}',
         error: e,
@@ -658,6 +684,10 @@ class SwapWatcherService {
         refundAddressForChainSwaps: refundAddress,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
+
+      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -699,8 +729,9 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinRefund"}',
         error: e,
@@ -738,6 +769,10 @@ class SwapWatcherService {
         refundAddressForChainSwaps: refundAddress,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
+
+      // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
+      _boltzRepo.unsubscribeFromSwaps([swap.id]);
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -779,8 +814,9 @@ class SwapWatcherService {
         fees: swap.fees?.copyWith(claimFee: actualFeesUsed),
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidRefund"}',
         error: e,
@@ -810,19 +846,7 @@ class SwapWatcherService {
           return;
         case SwapType.liquidToBitcoin:
         case SwapType.bitcoinToLiquid:
-          if (swap is ChainSwap &&
-              swap.receiveTxid == null &&
-              swap.refundTxid == null) {
-            if (swap.status == SwapStatus.claimable) {
-              final updatedSwap = swap.copyWith(status: SwapStatus.claimable);
-              await _boltzRepo.updateSwap(swap: updatedSwap);
-            } else if (swap.status == SwapStatus.refundable) {
-              final updatedSwap = swap.copyWith(status: SwapStatus.refundable);
-              await _boltzRepo.updateSwap(swap: updatedSwap);
-            }
-          } else {
-            return;
-          }
+          return;
       }
     } catch (e, st) {
       log.severe(
