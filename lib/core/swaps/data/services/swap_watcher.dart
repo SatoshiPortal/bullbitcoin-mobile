@@ -482,6 +482,8 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(
         '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnRefund"}',
         error: e,
