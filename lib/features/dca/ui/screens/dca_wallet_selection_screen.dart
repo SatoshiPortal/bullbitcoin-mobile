@@ -87,7 +87,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     style: context.font.headlineSmall?.copyWith(
                       color: _useDefaultLightningAddress
                           ? context.appColors.surfaceContainer
-                          : context.appColors.secondary,
+                          : context.appColors.onSecondary,
                     ),
                     enabled: !_useDefaultLightningAddress,
                     decoration: InputDecoration(
@@ -123,7 +123,7 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                           Icons.paste,
                           color: _useDefaultLightningAddress
                               ? context.appColors.surfaceContainer
-                              : context.appColors.secondary,
+                              : context.appColors.onSecondary,
                         ),
                         onPressed: _useDefaultLightningAddress
                             ? null
