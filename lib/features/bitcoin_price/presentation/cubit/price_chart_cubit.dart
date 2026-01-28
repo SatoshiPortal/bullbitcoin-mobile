@@ -8,6 +8,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'price_chart_cubit.freezed.dart';
 part 'price_chart_state.dart';
 
+class PriceHistoryLoadException implements Exception {
+  const PriceHistoryLoadException();
+
+  @override
+  String toString() => 'PriceHistoryLoadException';
+}
+
 class PriceChartCubit extends Cubit<PriceChartState> {
   PriceChartCubit({
     required GetPriceHistoryUsecase getPriceHistoryUsecase,
@@ -103,7 +110,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
             isLoading: false,
             prices: [],
             currency: selectedCurrency,
-            error: Exception('Failed to load price history'),
+            error: const PriceHistoryLoadException(),
           ),
         );
       }
