@@ -14,7 +14,7 @@ class Report {
         exception,
         stackTrace: stackTrace,
         hint: Hint.withMap({
-          'message': message ?? exception.toString(),
+          'message': message ?? exception.runtimeType.toString(),
           'runtimeType': exception.runtimeType.toString(),
         }),
       );
