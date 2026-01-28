@@ -1478,13 +1478,13 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Le transfert automatique est activé.",
-  "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
+  "autoswapWarningCardTitle": "Autoswap est recommandé",
+  "autoswapWarningCardSubtitle": "Cliquez pour en savoir plus, désactiver ou configurer",
+  "autoswapActiveCardTitle": "Autoswap est actif",
   "autoswapWarningDescription": "Le transfert automatique garantit qu'un bon équilibre est maintenu entre votre portefeuille de paiements instantanés et votre portefeuille Bitcoin sécurisé.",
-  "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
-  "autoswapWarningBaseBalance": "Solde de base 0,01 BTC",
-  "autoswapWarningTriggerAmount": "Montant de déclenchement de 0,02 BTC",
-  "autoswapWarningExplanation": "Lorsque votre solde dépasse le montant de déclenchement, un échange sera déclenché. Le montant de base sera conservé dans votre portefeuille de paiements instantanés et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
+  "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants",
+  "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximum, un échange sera déclenché automatiquement. Le solde cible sera conservé dans votre portefeuille de paiements instantanés et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
+  "autoswapWarningExplanationBold": "automatiquement",
   "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
   "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
   "autoswapWarningOkButton": "OK",
@@ -3866,6 +3866,10 @@
   "exchangeFeatureCustomerSupport": "• Discutez avec le support client",
   "exchangeFeatureUnifiedHistory": "• Historique des transactions unifié",
   "priceChartFetchingHistory": "Récupération de l'historique des prix...",
+  "priceChartFailedToLoad": "Échec du chargement de l'historique des prix",
+  "priceFailedToLoad": "Échec du chargement du prix",
+  "statusScreenTryAgain": "Réessayer",
+  "statusScreenContinue": "Continuer",
   "exchangeLandingDisclaimerLegal": "L'accès aux services d'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Les services d'échange de cryptomonnaies ne sont pas disponibles dans l'application mobile Bull Bitcoin.",
   "exchangeLoginButton": "Se connecter ou s'inscrire",
@@ -4151,5 +4155,10 @@
   "logoutConfirmationTitle": "Confirmer la déconnexion",
   "logoutConfirmationDescription": "Êtes-vous sûr de vouloir vous déconnecter de votre compte Bull Bitcoin? Vous devrez vous reconnecter pour accéder aux fonctionnalités d'échange.",
   "logoutConfirmationCancel": "Annuler",
-  "logoutConfirmationLogout": "Déconnexion"
+  "logoutConfirmationLogout": "Déconnexion",
+  "autoswapInfoTitle": "Autoswap est recommandé",
+  "autoswapInfoDismissButton": "OUI, MERCI",
+  "autoswapInfoSettingsButton": "NON, JE COMPRENDS LES RISQUES",
+  "autoswapInfoRemindLater": "Configurer Autoswap",
+  "autoswapInfoConsentMessage": "Autoswap est actuellement activé mais ne se déclenchera pas tant que vous n'aurez pas donné votre consentement. Souhaitez-vous le garder activé?"
 }

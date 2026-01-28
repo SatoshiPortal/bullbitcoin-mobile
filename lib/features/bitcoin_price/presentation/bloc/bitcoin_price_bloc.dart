@@ -62,8 +62,8 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     try {
       final settings = await _getSettingsUsecase.execute();
       final currency = event.currency ?? settings.currencyCode;
-      final availableCurrencies =
-          await _getAvailableCurrenciesUsecase.execute();
+      final availableCurrencies = await _getAvailableCurrenciesUsecase
+          .execute();
 
       final price = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
@@ -74,11 +74,13 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           currency: currency,
           availableCurrencies: availableCurrencies,
           bitcoinPrice: price,
+          startupFailed: false,
+          error: null,
         ),
       );
     } catch (e) {
       log.severe(e.toString());
-      emit(state.copyWith(error: e));
+      emit(state.copyWith(error: e, startupFailed: true));
     }
   }
 

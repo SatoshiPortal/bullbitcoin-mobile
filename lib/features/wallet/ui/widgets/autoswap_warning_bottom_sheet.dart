@@ -20,6 +20,39 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
     );
   }
 
+  Widget _buildExplanationText(BuildContext context) {
+    final fullText = context.loc.autoswapWarningExplanation;
+    final boldWord = context.loc.autoswapWarningExplanationBold;
+    final parts = fullText.split(boldWord);
+
+    if (parts.length != 2) {
+      return BBText(
+        fullText,
+        style: context.font.bodyMedium,
+        color: context.appColors.onSurface,
+      );
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: context.font.bodyMedium?.copyWith(
+          color: context.appColors.onSurface,
+        ),
+        children: [
+          TextSpan(text: parts[0]),
+          TextSpan(
+            text: boldWord,
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.onSurface,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          TextSpan(text: parts[1]),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,27 +77,13 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
             color: context.appColors.onSurface,
           ),
           const Gap(16),
-          BBText(
-            context.loc.autoswapWarningTitle,
-            style: context.font.bodyLarge,
-            color: context.appColors.onSurface,
-          ),
-          const Gap(8),
-          BBText(
-            context.loc.autoswapWarningBaseBalance,
-            style: context.font.bodyMedium,
-            color: context.appColors.onSurface,
-          ),
-          const Gap(4),
-          BBText(
-            context.loc.autoswapWarningTriggerAmount,
-            style: context.font.bodyMedium,
-            color: context.appColors.onSurface,
-          ),
+          _buildExplanationText(context),
           const Gap(16),
           BBText(
-            context.loc.autoswapWarningExplanation,
-            style: context.font.bodyMedium,
+            context.loc.autoswapInfoConsentMessage,
+            style: context.font.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
             color: context.appColors.onSurface,
           ),
           const Gap(24),
@@ -81,8 +100,8 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
           BBButton.big(
             label: context.loc.autoswapInfoSettingsButton,
             onPressed: () {
+              context.read<WalletBloc>().add(const DisableAutoSwap());
               Navigator.of(context).pop();
-              context.pushNamed(SettingsRoute.autoswapSettings.name);
             },
             bgColor: context.appColors.surface,
             textColor: context.appColors.onSurface,
@@ -91,7 +110,10 @@ class AutoSwapWarningBottomSheet extends StatelessWidget {
           const Gap(16),
           Center(
             child: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
+              onTap: () {
+                Navigator.of(context).pop();
+                context.pushNamed(SettingsRoute.autoswapSettings.name);
+              },
               child: BBText(
                 context.loc.autoswapInfoRemindLater,
                 style: context.font.bodyMedium?.copyWith(
