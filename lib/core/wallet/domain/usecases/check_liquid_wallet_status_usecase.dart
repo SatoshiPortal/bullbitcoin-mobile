@@ -30,8 +30,9 @@ class TheDirtyLiquidUsecase {
         isLiquid: true,
       );
 
-      final lwkNetwork =
-          environment.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+      final lwkNetwork = environment.isTestnet
+          ? lwk.Network.testnet
+          : lwk.Network.mainnet;
 
       final descriptor = await lwk.Descriptor.newConfidential(
         mnemonic: mnemonic.words.join(' '),
@@ -70,18 +71,17 @@ class TheDirtyLiquidUsecase {
       final balances = await wallet.balances();
       final transactions = await wallet.txs();
 
-      final lBtcAssetBalance =
-          balances.firstWhere((balance) {
-            final assetId = _lBtcAssetId(network);
-            return balance.assetId == assetId;
-          }).value;
+      final lBtcAssetBalance = balances.firstWhere((balance) {
+        final assetId = _lBtcAssetId(network);
+        return balance.assetId == assetId;
+      }).value;
 
       return (
         satoshis: BigInt.from(lBtcAssetBalance),
         transactions: transactions.length,
       );
     } catch (e) {
-      log.severe(e, trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       throw CheckLiquidWalletStatusException(e.toString());
     } finally {
       if (dbPath != null) {

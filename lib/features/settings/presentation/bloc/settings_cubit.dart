@@ -164,7 +164,11 @@ class SettingsCubit extends Cubit<SettingsState> {
         // Only trigger refresh if walletBloc is provided
         walletBloc?.add(const RefreshArkWalletBalance());
       } catch (e) {
-        log.severe('Failed to revoke Ark: $e', trace: StackTrace.current);
+        log.severe(
+          message: 'Failed to revoke Ark',
+          error: e,
+          trace: StackTrace.current,
+        );
       }
     }
 

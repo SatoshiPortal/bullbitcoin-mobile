@@ -124,16 +124,13 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         );
         emit(state.copyWith(exchangeRate: exchangeRate));
       } catch (e) {
-        log.severe(
-          '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
-          trace: StackTrace.current,
-        );
+        log.severe(error: e, trace: StackTrace.current);
         if (e is ConvertSatsToCurrencyAmountException) {
           emit(state.copyWith(convertSatsToCurrencyAmountException: e));
         }
       }
     } catch (e) {
-      log.severe('[BuyBloc] _onStarted error: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       if (e is ApiKeyException) {
         // If the API key is invalid, we should not proceed with the buy flow.
         emit(state.copyWith(apiKeyException: e));
@@ -155,10 +152,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(amountInput: event.amount));
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onAmountInputChanged error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 
@@ -176,19 +170,13 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         );
         emit(state.copyWith(exchangeRate: exchangeRate));
       } catch (e) {
-        log.severe(
-          '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
-          trace: StackTrace.current,
-        );
+        log.severe(error: e, trace: StackTrace.current);
         if (e is ConvertSatsToCurrencyAmountException) {
           emit(state.copyWith(convertSatsToCurrencyAmountException: e));
         }
       }
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onCurrencyInputChanged error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 
@@ -200,10 +188,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       // Toggle the fiat currency input state.
       emit(state.copyWith(isFiatCurrencyInput: !state.isFiatCurrencyInput));
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onIsFiatCurrencyInputToggled error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 
@@ -214,10 +199,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(selectedWallet: event.wallet));
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onSelectedWalletChanged error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 
@@ -228,10 +210,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(bitcoinAddressInput: event.bitcoinAddress));
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onBitcoinAddressInputChanged error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 
@@ -275,10 +254,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } on BuyError catch (e) {
-      log.severe(
-        '[BuyBloc] _onCreateOrder error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(createOrderBuyError: e));
 
       // Refresh the exchange rate so that the user can update the amount better
@@ -289,19 +265,13 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         );
         emit(state.copyWith(exchangeRate: exchangeRate));
       } catch (e) {
-        log.severe(
-          '[BuyBloc] _onStarted convertSatsToCurrencyAmount error: $e',
-          trace: StackTrace.current,
-        );
+        log.severe(error: e, trace: StackTrace.current);
         if (e is ConvertSatsToCurrencyAmountException) {
           emit(state.copyWith(convertSatsToCurrencyAmountException: e));
         }
       }
     } on GetReceiveAddressException catch (e) {
-      log.severe(
-        '[BuyBloc] _onCreateOrder GetNewReceiveAddressException: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(getNewReceiveAddressException: e));
     } finally {
       emit(state.copyWith(isCreatingOrder: false));
@@ -323,10 +293,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onRefreshOrder error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
       if (e is RefreshBuyOrderException) {
         emit(state.copyWith(refreshBuyOrderException: e));
       }
@@ -350,10 +317,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onConfirmOrder error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
       if (e is ConfirmBuyOrderException) {
         emit(state.copyWith(confirmBuyOrderException: e));
       }
@@ -394,10 +358,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         ),
       );
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onAccelerateTransactionPressed error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
 
       if (e is RefreshBuyOrderException) {
         emit(state.copyWith(refreshBuyOrderException: e));
@@ -433,10 +394,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      log.severe(
-        '[BuyBloc] _onAccelerateOrder error: $e',
-        trace: StackTrace.current,
-      );
+      log.severe(error: e, trace: StackTrace.current);
       if (e is AccelerateBuyOrderException) {
         emit(state.copyWith(accelerateBuyOrderException: e));
       }

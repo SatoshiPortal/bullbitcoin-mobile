@@ -78,7 +78,7 @@ class SelectBestWalletUsecase {
 
       throw NotEnoughFundsException();
     } catch (e) {
-      log.severe(e, trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       rethrow;
     }
   }

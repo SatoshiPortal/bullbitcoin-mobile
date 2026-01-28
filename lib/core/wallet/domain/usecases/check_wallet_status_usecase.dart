@@ -27,8 +27,9 @@ class TheDirtyUsecase {
         isLiquid: false,
       );
 
-      final bdkNetwork =
-          environment.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+      final bdkNetwork = environment.isTestnet
+          ? bdk.Network.testnet
+          : bdk.Network.bitcoin;
 
       final bdkMnemonic = await bdk.Mnemonic.fromEntropy(mnemonic.entropy);
 
@@ -121,7 +122,7 @@ class TheDirtyUsecase {
 
       return (satoshis: balance.confirmed, transactions: transactions.length);
     } catch (e) {
-      log.severe(e, trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       throw CheckWalletStatusException(e.toString());
     }
   }

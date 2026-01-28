@@ -21,14 +21,13 @@ class RefreshPayOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
       final order = await repo.refreshPayOrder(orderId);
       return order;
     } catch (e) {
-      log.severe('Error in RefreshPayOrderUsecase: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       if (e is PayError) {
         rethrow;
       }

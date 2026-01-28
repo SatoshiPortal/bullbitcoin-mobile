@@ -25,10 +25,9 @@ class PlacePayOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
 
       final order = await repo.placePayOrder(
         orderAmount: orderAmount,
@@ -40,7 +39,7 @@ class PlacePayOrderUsecase {
     } on PayError {
       rethrow;
     } catch (e) {
-      log.severe('Error in PlacePayOrderUsecase: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       throw PayError.unexpected(message: '$e');
     }
   }

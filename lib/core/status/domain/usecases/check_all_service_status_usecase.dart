@@ -86,7 +86,8 @@ class CheckAllServiceStatusUsecase {
       );
     } catch (e) {
       log.severe(
-        'Error checking service status: $e',
+        message: 'Error checking service statuses',
+        error: e,
         trace: StackTrace.current,
       );
       return _createUnknownStatus(now);

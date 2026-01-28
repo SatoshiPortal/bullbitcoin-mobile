@@ -86,7 +86,11 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orderModel.toEntity(isTestnet: _isTestnet);
     } catch (e) {
-      log.severe('Error fetching order by txId: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'Error fetching order by txId',
+        error: e,
+        trace: StackTrace.current,
+      );
       return null;
     }
   }
@@ -158,7 +162,11 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orders;
     } catch (e) {
-      log.severe('Error fetching orders: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'Error fetching orders',
+        error: e,
+        trace: StackTrace.current,
+      );
       return [];
     }
   }

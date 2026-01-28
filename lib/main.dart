@@ -43,6 +43,8 @@ class Bull {
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator();
+
+    await initErrorReporting();
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
@@ -68,6 +70,36 @@ class Bull {
   static Future<void> initLocator() async {
     await AppLocator.setup(locator, SqliteDatabase());
     Bloc.observer = AppBlocObserver();
+  }
+
+  static Future<void> initErrorReporting() async {
+    // Error reports for users that gave consent in the app settings (default disabled)
+    // Empty DSN if no consent or debug mode - Sentry won't send anything
+    final isErrorReportingEnabled = await locator<SettingsRepository>()
+        .fetch()
+        .then((settings) => settings.isErrorReportingEnabled);
+    final dsnSentry = isErrorReportingEnabled && kReleaseMode
+        ? ApiServiceConstants.sentryDsn
+        : ''; // "If an empty string is used, the SDK will not send any events."
+
+    await SentryFlutter.init((options) {
+      options.dsn = dsnSentry;
+      options.compressPayload = true;
+      options.beforeSend = (event, hint) {
+        // Before sending the error report, anonymize the exception value
+        // to avoid sending potentially sensitive information (txid, addresses…)
+        final exceptions = event.exceptions;
+        if (exceptions != null && exceptions.isNotEmpty) {
+          final anonymizedExceptions = exceptions.map((e) {
+            e.value = null;
+            return e;
+          }).toList();
+          event.exceptions = anonymizedExceptions;
+        }
+
+        return event;
+      };
+    });
   }
 }
 
@@ -99,24 +131,10 @@ Future main() async {
         delay++;
       }
 
-      // Error reports for users that gave consent in the app settings (default disabled)
-      // Empty DSN if no consent or debug mode - Sentry won't send anything
-      final isErrorReportingEnabled = await locator<SettingsRepository>()
-          .fetch()
-          .then((settings) => settings.isErrorReportingEnabled);
-      final dsnSentry = isErrorReportingEnabled && kReleaseMode
-          ? ApiServiceConstants.sentryDsn
-          : ''; // "If an empty string is used, the SDK will not send any events."
-
-      await SentryFlutter.init((options) {
-        options.dsn = dsnSentry;
-        options.compressPayload = true;
-      });
-
       runApp(const BullBitcoinWalletApp());
     },
     (error, stackTrace) async {
-      log.severe(error, trace: stackTrace);
+      log.severe(error: error, trace: stackTrace);
     },
   );
 }
@@ -171,7 +189,11 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     try {
       await locator<RestartSwapWatcherUsecase>().execute();
     } catch (e) {
-      log.severe('Error during app resume: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'Error during app resume',
+        error: e,
+        trace: StackTrace.current,
+      );
     }
   }
 

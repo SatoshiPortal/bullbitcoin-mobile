@@ -145,7 +145,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
                 throw saveApiKeyException;
               }
             } catch (e) {
-              log.severe('Error generating or saving API key: $e', trace: StackTrace.current);
+              log.severe(message: 'Error generating or saving API key',error: e, trace: StackTrace.current);
               await _handleLoginError();
             } finally {
               // Reset the flag after the API key generation process is done

@@ -386,7 +386,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(walletDeletionError: e));
     } catch (e) {
       log.severe(
-        '[WalletBloc] Failed to delete wallet with id $walletId: $e',
+        message: '[WalletBloc] Failed to delete wallet',
+        error: e,
         trace: StackTrace.current,
       );
     } finally {
@@ -435,7 +436,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } catch (e) {
       log.severe(
-        '[WalletBloc] Failed to block auto swap: $e',
+        message: '[WalletBloc] Failed to block auto swap',
+        error: e,
         trace: StackTrace.current,
       );
     }
@@ -483,7 +485,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
       log.severe(
-        '[WalletBloc] Failed to execute auto swap: $e',
+        message: '[WalletBloc] Failed to execute auto swap',
+        error: e,
         trace: StackTrace.current,
       );
     }
@@ -537,7 +540,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
       log.severe(
-        '[WalletBloc] Failed to execute auto swap: $e',
+        message: '[WalletBloc] Failed to execute auto swap ',
+        error: e,
         trace: StackTrace.current,
       );
     }
@@ -593,7 +597,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(autoSwapSettings: updatedSettings));
     } catch (e) {
       log.severe(
-        '[WalletBloc] Failed to dismiss autoswap warning: $e',
+        message: '[WalletBloc] Failed to dismiss autoswap warning',
+        error: e,
         trace: StackTrace.current,
       );
     }
@@ -613,7 +618,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       emit(state.copyWith(autoSwapSettings: updatedSettings));
     } catch (e) {
-      log.severe('[WalletBloc] Failed to disable autoswap: $e');
+      log.severe(
+        message: '[WalletBloc] Failed to disable autoswap',
+        error: e,
+        trace: StackTrace.current,
+      );
     }
   }
 }

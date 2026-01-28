@@ -39,7 +39,7 @@ class Bbqr {
           this,
         );
       } catch (e) {
-        log.severe('e: $e', trace: StackTrace.current);
+        log.severe(error: e, trace: StackTrace.current);
         return (null, this);
       }
     } else {

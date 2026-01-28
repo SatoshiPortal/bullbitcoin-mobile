@@ -5505,13 +5505,19 @@ final class Schema12 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape28 mempoolServers = Shape28(
+  late final Shape36 mempoolServers = Shape36(
     source: i0.VersionedTable(
       entityName: 'mempool_servers',
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(url, is_testnet, is_liquid)'],
-      columns: [_column_178, _column_159, _column_179, _column_181],
+      columns: [
+        _column_178,
+        _column_159,
+        _column_179,
+        _column_181,
+        _column_234,
+      ],
       attachedDatabase: database,
     ),
     alias: null,
@@ -5698,6 +5704,30 @@ i1.GeneratedColumn<int> _column_233(String aliasedName) =>
       $customConstraints:
           'NOT NULL DEFAULT 0 CHECK (is_error_reporting_enabled IN (0, 1))',
       defaultValue: const i1.CustomExpression('0'),
+    );
+
+class Shape36 extends i0.VersionedTable {
+  Shape36({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get url =>
+      columnsByName['url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isTestnet =>
+      columnsByName['is_testnet']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isLiquid =>
+      columnsByName['is_liquid']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isCustom =>
+      columnsByName['is_custom']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get enableSsl =>
+      columnsByName['enable_ssl']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_234(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'enable_ssl',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 1 CHECK (enable_ssl IN (0, 1))',
+      defaultValue: const i1.CustomExpression('1'),
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

@@ -22,7 +22,7 @@ class ImportLabelsUsecase {
       }
       return newLabels.length;
     } catch (e) {
-      log.severe('Failed to import labels: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       throw ImportLabelsError('Failed to import labels: $e');
     }
   }

@@ -33,7 +33,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
   Future<void> _handleError(String error, Emitter<OnboardingState> emit) async {
-    log.severe('Error: $error', trace: StackTrace.current);
+    log.severe(error: error, trace: StackTrace.current);
     emit(
       state.copyWith(
         onboardingStepStatus: OnboardingStepStatus.none,

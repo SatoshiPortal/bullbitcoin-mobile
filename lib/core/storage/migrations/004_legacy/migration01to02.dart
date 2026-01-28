@@ -58,7 +58,8 @@ Future<void> doMigration0_1to0_2() async {
           );
         } catch (e) {
           log.severe(
-            '0.1.*: Failed to fetch seed for wallet ${walletObj['id']}',
+            message: '0.1.*: Failed to fetch seed',
+            error: e,
             trace: StackTrace.current,
           );
         }
@@ -80,7 +81,8 @@ Future<void> doMigration0_1to0_2() async {
         wallets.add(w);
       } catch (e) {
         log.severe(
-          '0.1.*: Error processing wallet $walletId: $e',
+          message: '0.1.*: Error processing wallet',
+          error: e,
           trace: StackTrace.current,
         );
         continue;
@@ -130,7 +132,7 @@ Future<void> doMigration0_1to0_2() async {
       value: '0.2.0',
     ); // gets overwritten by the exact 0.2.* version later
   } catch (e, stack) {
-    log.severe('Legacy Migration Failed', error: e, trace: stack);
+    log.severe(message: 'Legacy Migration Failed', error: e, trace: stack);
     rethrow;
   }
 }

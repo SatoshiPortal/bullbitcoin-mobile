@@ -107,7 +107,11 @@ class _ScannerState extends State<QrScannerWidget> {
         }
       }
     } catch (e) {
-      log.severe('UR processing failed $e', trace: StackTrace.current);
+      log.severe(
+        message: 'UR processing failed',
+        error: e,
+        trace: StackTrace.current,
+      );
       setState(() => _progressText = 'UR processing failed');
     }
   }

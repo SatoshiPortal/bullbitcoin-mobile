@@ -31,10 +31,9 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
     final isTestnet =
         context.read<SettingsCubit>().state.environment == Environment.testnet;
-    _bbKycUrl =
-        isTestnet
-            ? ApiServiceConstants.bbKycTestUrl
-            : ApiServiceConstants.bbKycUrl;
+    _bbKycUrl = isTestnet
+        ? ApiServiceConstants.bbKycTestUrl
+        : ApiServiceConstants.bbKycUrl;
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -138,7 +137,11 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
                 await _controller.reload();
               } else {}
             } catch (e) {
-              log.severe('Error checking Flutter view readiness: $e', trace: StackTrace.current);
+              log.severe(
+                message: 'Error checking Flutter view readiness',
+                error: e,
+                trace: StackTrace.current,
+              );
               await _controller.reload(); // fallback in case of JS failure
             }
           },

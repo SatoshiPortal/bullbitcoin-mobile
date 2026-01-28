@@ -120,7 +120,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       add(const OnServerCheck());
     } catch (e) {
-      log.severe('$OnTorInitialization failed: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(
         state.copyWith(
           error: TorNotStartedError(),
@@ -155,7 +155,10 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
 
       if (!isConnected) {
-        log.severe('Recoverbull server is not ready after $retries retries', trace: StackTrace.current);
+        log.severe(
+          error: 'Recoverbull server is not ready after $retries retries',
+          trace: StackTrace.current,
+        );
         emit(
           state.copyWith(
             error: KeyServerConnectionError(),
@@ -172,7 +175,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
         );
       }
     } catch (e) {
-      log.severe('$OnServerCheck: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(
         state.copyWith(
           error: UnexpectedError(),
@@ -237,7 +240,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
       log.fine('Vault provider ${event.provider.name} selected');
     } catch (e) {
-      log.severe('$OnVaultProviderSelection: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(error: UnexpectedError()));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -266,7 +269,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       }
       log.fine('Vault selected');
     } catch (e) {
-      log.severe('$OnVaultSelection: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       switch (e) {
         case core.InvalidVaultFileError():
           emit(state.copyWith(error: InvalidVaultFileFormatError()));
@@ -315,7 +318,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vault: vault, vaultProvider: event.provider));
       log.fine('Vault created and key stored in server');
     } catch (e) {
-      log.severe('$OnVaultCreation: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(error: VaultCreationError()));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -341,7 +344,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
 
       await _onVaultDecryption(OnVaultDecryption(vaultKey: vaultKey), emit);
     } catch (e) {
-      log.severe('$OnVaultFetchKey: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       switch (e) {
         case core.InvalidCredentialsError():
           emit(state.copyWith(error: InvalidVaultCredentials()));
@@ -405,7 +408,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(vaultKey: vaultKey));
       log.fine('Vault decrypted');
     } catch (e) {
-      log.severe('$OnVaultDecryption: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(error: VaultDecryptionError()));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -436,7 +439,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       emit(state.copyWith(liquidStatus: liquidStatus));
       log.fine('Vault Liquid status checked');
     } catch (e) {
-      log.severe('$OnVaultCheckStatus: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(error: VaultCheckStatusError()));
     } finally {
       emit(state.copyWith(isLoading: false));
@@ -464,7 +467,7 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
       log.fine('Vault recovered');
       emit(state.copyWith(isFlowFinished: true));
     } catch (e) {
-      log.severe('$OnVaultRecovery: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(error: VaultRecoveryError()));
     } finally {
       emit(state.copyWith(isLoading: false));

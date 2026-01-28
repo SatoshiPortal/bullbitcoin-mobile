@@ -50,7 +50,9 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
           errorMessage: null,
         ),
       );
-      final devices = await _scanLedgerDevicesUsecase.execute(deviceType: _requestedDeviceType);
+      final devices = await _scanLedgerDevicesUsecase.execute(
+        deviceType: _requestedDeviceType,
+      );
 
       emit(
         state.copyWith(
@@ -77,7 +79,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
       }
     } on LedgerError catch (e) {
       final message = e.message;
-      log.severe('Ledger operation failed: $message', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       emit(
         state.copyWith(
           status: LedgerOperationStatus.error,
@@ -88,7 +90,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
     } on Exception catch (e) {
       final interpretedMessage = _interpretErrorCode(e.toString());
       if (interpretedMessage != null) {
-        log.severe('Ledger operation failed: $interpretedMessage', trace: StackTrace.current);
+        log.severe(error: e, trace: StackTrace.current);
         emit(
           state.copyWith(
             status: LedgerOperationStatus.error,
@@ -96,7 +98,7 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
           ),
         );
       } else {
-        log.severe('Ledger operation failed: $e', trace: StackTrace.current);
+        log.severe(error: e, trace: StackTrace.current);
         emit(
           state.copyWith(
             status: LedgerOperationStatus.error,
@@ -125,8 +127,8 @@ String? _interpretErrorCode(String error) {
 
   // Map error codes to localization keys
   final errorCodePatterns = {
-    '6985': 'LEDGER_ERROR_REJECTED_BY_USER',  // User rejected transaction
-    '5515': 'LEDGER_ERROR_DEVICE_LOCKED',     // Device is locked
+    '6985': 'LEDGER_ERROR_REJECTED_BY_USER', // User rejected transaction
+    '5515': 'LEDGER_ERROR_DEVICE_LOCKED', // Device is locked
     '6e01': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN', // Bitcoin app not open
     '6a87': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',
     '6d02': 'LEDGER_ERROR_BITCOIN_APP_NOT_OPEN',

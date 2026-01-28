@@ -61,7 +61,7 @@ class LabelExchangeOrdersUsecase {
         '$LabelExchangeOrdersUsecase labeled ${orders.length} exchange orders',
       );
     } catch (e) {
-      log.severe('$LabelExchangeOrdersUsecase: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 

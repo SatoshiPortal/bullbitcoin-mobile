@@ -25,10 +25,9 @@ class CreateSellOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
       final order = await repo.placeSellOrder(
         orderAmount: orderAmount,
         currency: currency,
@@ -38,7 +37,7 @@ class CreateSellOrderUsecase {
     } on SellError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateSellOrderUsecase: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       throw SellError.unexpected(message: '$e');
     }
   }

@@ -93,7 +93,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       );
     } catch (e) {
       log.severe(
-        'Error loading auto swap settings: $e',
+        message: 'Error loading auto swap settings',
+        error: e,
         trace: StackTrace.current,
       );
       emit(state.copyWith(loading: false, error: 'autoswapLoadSettingsError'));
@@ -189,7 +190,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       );
     } catch (e) {
       log.severe(
-        'Error updating auto swap settings: $e',
+        message: 'Error updating auto swap settings',
+        error: e,
         trace: StackTrace.current,
       );
       emit(
@@ -377,7 +379,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       );
     } catch (e) {
       log.severe(
-        'Error auto-saving disabled auto swap settings: $e',
+        message: 'Error auto-saving disabled auto swap settings',
+        error: e,
         trace: StackTrace.current,
       );
       emit(

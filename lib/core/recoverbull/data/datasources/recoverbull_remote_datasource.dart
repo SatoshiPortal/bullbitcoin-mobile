@@ -22,7 +22,7 @@ class RecoverBullRemoteDatasource {
       final info = await KeyServer(address: url, client: client).infos();
       log.info('KeyServer canary: ${info.canary}');
     } catch (e) {
-      log.severe('infos error: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       rethrow;
     }
   }
@@ -44,7 +44,11 @@ class RecoverBullRemoteDatasource {
         salt: salt,
       );
     } catch (e) {
-      log.severe('storeBackupKey error: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'storeBackupKey error',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -63,7 +67,11 @@ class RecoverBullRemoteDatasource {
         client: client,
       ).fetchBackupKey(backupId: backupId, password: password, salt: salt);
     } catch (e) {
-      log.severe('fetchBackupKey error: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'fetchBackupKey error',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -82,7 +90,11 @@ class RecoverBullRemoteDatasource {
         client: client,
       ).trashBackupKey(backupId: backupId, password: password, salt: salt);
     } catch (e) {
-      log.severe('trashBackupKey error: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'trashBackupKey error',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -97,7 +109,11 @@ class RecoverBullRemoteDatasource {
       final url = await _recoverbullSettingsDatasource.fetch();
       await KeyServer(address: url, client: client).infos();
     } catch (e) {
-      log.severe('checkConnection: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'checkConnection error',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }

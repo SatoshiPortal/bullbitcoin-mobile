@@ -29,7 +29,11 @@ class ServiceStatusCubit extends Cubit<ServiceStatusState> {
 
       emit(state.copyWith(serviceStatus: serviceStatus, isLoading: false));
     } catch (e) {
-      log.severe('[ServiceStatusCubit] Failed to check service status: $e', trace: StackTrace.current);
+      log.severe(
+        message: '[ServiceStatusCubit] Failed to check service status',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }

@@ -36,7 +36,7 @@ class RestoreVaultUsecase {
 
       log.fine('Vault restored');
     } catch (e) {
-      log.severe('$RestoreVaultUsecase: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       rethrow;
     }
   }

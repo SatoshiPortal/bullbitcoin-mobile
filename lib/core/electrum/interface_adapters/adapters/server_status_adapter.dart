@@ -6,9 +6,8 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class ServerStatusAdapter implements ServerStatusPort {
   final SocketConnectivityDatasource _socketDatasource;
 
-  ServerStatusAdapter({
-    required SocketConnectivityDatasource socketDatasource,
-  }) : _socketDatasource = socketDatasource;
+  ServerStatusAdapter({required SocketConnectivityDatasource socketDatasource})
+    : _socketDatasource = socketDatasource;
 
   @override
   Future<ElectrumServerStatus> checkServerStatus({
@@ -54,7 +53,11 @@ class ServerStatusAdapter implements ServerStatusPort {
           ? ElectrumServerStatus.online
           : ElectrumServerStatus.offline;
     } catch (e) {
-      log.severe('Error checking server status for $url: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'Error checking server status',
+        error: e,
+        trace: StackTrace.current,
+      );
       return ElectrumServerStatus.offline;
     }
   }

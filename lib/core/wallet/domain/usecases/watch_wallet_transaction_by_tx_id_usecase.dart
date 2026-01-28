@@ -38,7 +38,7 @@ class WatchWalletTransactionByTxIdUsecase {
             // );
             return tx;
           } catch (e) {
-            log.severe('WatchWalletTransactionByTxIdUsecase exception: $e', trace: StackTrace.current);
+            log.severe(error: e, trace: StackTrace.current);
             return null;
           }
         })

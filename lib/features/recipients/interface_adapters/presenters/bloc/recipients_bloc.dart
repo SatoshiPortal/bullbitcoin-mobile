@@ -87,7 +87,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
                   return RecipientViewModel.fromDto(recipient);
                 } catch (err, stackTrace) {
                   log.severe(
-                    'Error transforming recipient to view model: $err',
+                    message: 'Error transforming recipient to view model',
+                    error: err,
                     trace: stackTrace,
                   );
                   return null;
@@ -145,7 +146,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
                 return RecipientViewModel.fromDto(recipient);
               } catch (err, stackTrace) {
                 log.severe(
-                  'Error transforming recipient to view model: $err',
+                  message: 'Error transforming recipient to view model',
+                  error: err,
                   trace: stackTrace,
                 );
                 return null;
@@ -254,7 +256,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
                   return CadBillerViewModel.fromDto(biller);
                 } catch (err, stackTrace) {
                   log.severe(
-                    'Error transforming biller to view model: $err',
+                    message: 'Error transforming biller to view model',
+                    error: err,
                     trace: stackTrace,
                   );
                   return null;
@@ -288,7 +291,11 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
         await _onRecipientSelectedHook(event.recipient, isNew: false);
       }
     } catch (e) {
-      log.severe('Error in recipient selection logging: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'Error in recipient selection logging',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           failedToSelectRecipient: Exception(

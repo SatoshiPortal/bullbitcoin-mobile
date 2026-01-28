@@ -23,7 +23,7 @@ class LoadWalletsForNetworkUsecase {
       );
       return wallets;
     } catch (e) {
-      log.severe('LoadWalletsForNetworkUsecase: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       rethrow;
     }
   }

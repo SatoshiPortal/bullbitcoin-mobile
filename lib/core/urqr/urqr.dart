@@ -25,7 +25,11 @@ class UrQrGenerator {
 
       return parts;
     } catch (e) {
-      log.severe('Failed to generate PSBT UR', trace: StackTrace.current);
+      log.severe(
+        message: 'Failed to generate PSBT UR',
+        error: e,
+        trace: StackTrace.current,
+      );
       return [];
     }
   }

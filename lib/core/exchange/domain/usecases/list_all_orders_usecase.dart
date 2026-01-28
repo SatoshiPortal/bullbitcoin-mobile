@@ -25,10 +25,9 @@ class ListAllOrdersUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
       final orders = await repo.getOrders(
         limit: limit,
         offset: offset,
@@ -36,7 +35,7 @@ class ListAllOrdersUsecase {
       );
       return orders;
     } catch (e) {
-      log.severe('Error in ListAllOrdersUsecase: $e', trace: StackTrace.current);
+      log.severe(error: e, trace: StackTrace.current);
       throw ListAllOrdersException('$e');
     }
   }

@@ -211,7 +211,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           // The payjoin receiver is created, now we can watch it for updates
           _watchPayjoin(payjoin.id);
         } catch (e) {
-          log.severe('Payjoin receiver creation failed: $e', trace: StackTrace.current);
+          log.severe(
+            message: 'Payjoin receiver creation failed',
+            error: e,
+            trace: StackTrace.current,
+          );
           error = e;
         }
 
@@ -600,7 +604,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         address: swap.receiveAddress!,
       );
     } catch (e) {
-      log.severe('Swap creation failed: $e', trace: StackTrace.current);
+      log.severe(
+        message: 'Swap creation failed',
+        error: e,
+        trace: StackTrace.current,
+      );
       error = e;
       emit(state.copyWith(error: error, creatingSwap: false));
     }
@@ -708,7 +716,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
               // The payjoin receiver is created, now we can watch it for updates
               _watchPayjoin(payjoin.id);
             } catch (e) {
-              log.severe('Payjoin receiver creation failed: $e', trace: StackTrace.current);
+              log.severe(
+                message: 'Payjoin receiver creation failed',
+                error: e,
+                trace: StackTrace.current,
+              );
               error = e;
             }
           }
