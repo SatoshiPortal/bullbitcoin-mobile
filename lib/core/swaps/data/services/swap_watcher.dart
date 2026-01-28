@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -190,6 +191,16 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processReceiveLnToBitcoinClaim',
+        isClaim: true,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
@@ -247,6 +258,16 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processReceiveLnToLiquidClaim',
+        isClaim: true,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
@@ -405,6 +426,16 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processSendLiquidToLnRefund',
+        isClaim: false,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
@@ -489,16 +520,26 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processSendBitcoinToLnRefund',
+        isClaim: false,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
 
   Future<void> _claimChainLiquidToBitcoin({required ChainSwap swap}) async {
+    String? finalClaimAddress;
     try {
       if (swap.receiveTxid != null) {
         return;
       }
-      String finalClaimAddress;
       if (swap.receiveWalletId != null) {
         if (swap.receiveAddress != null) {
           // Use existing receive address if available
@@ -568,16 +609,26 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processChainLiquidToBitcoinClaim',
+        isClaim: true,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
 
   Future<void> _claimChainBitcoinToLiquid({required ChainSwap swap}) async {
+    String? finalClaimAddress;
     try {
       if (swap.receiveTxid != null) {
         return;
       }
-      String finalClaimAddress;
       if (swap.receiveWalletId != null) {
         if (swap.receiveAddress != null) {
           // Use existing receive address if available
@@ -650,6 +701,16 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processChainBitcoinToLiquidClaim',
+        isClaim: true,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
@@ -739,6 +800,16 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processChainLiquidToBitcoinRefund',
+        isClaim: false,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
@@ -824,6 +895,16 @@ class SwapWatcherService {
         error: e,
         trace: st,
       );
+
+      // Check if transaction actually succeeded despite the error
+      final recovered = await _checkAndRecoverFromOutspend(
+        swap: swap,
+        error: e,
+        functionName: '_processChainBitcoinToLiquidRefund',
+        isClaim: false,
+      );
+      if (recovered) return;
+
       rethrow;
     }
   }
@@ -858,5 +939,129 @@ class SwapWatcherService {
       );
       rethrow;
     }
+  }
+
+  /// Helper method to check if a claim/refund transaction succeeded despite errors
+  /// Returns true if the transaction was found and the swap was updated
+  Future<bool> _checkAndRecoverFromOutspend({
+    required Swap swap,
+    required Object error,
+    required String functionName,
+    required bool isClaim,
+  }) async {
+    final errorStr = error.toString();
+    if (!errorStr.contains('bad-txns-inputs-missingorspent') &&
+        !errorStr.contains('txn-mempool-conflict')) {
+      return false;
+    }
+
+    log.fine(
+      '{"swapId": "${swap.id}", "function": "$functionName", "action": "checking_outspend", "timestamp": "${DateTime.now().toIso8601String()}"}',
+    );
+
+    try {
+      // Determine network based on swap type
+      final Network network;
+      final SwapDirection? swapDirection;
+
+      if (swap is ChainSwap) {
+        if (swap.type == SwapType.liquidToBitcoin) {
+          // Liquid → Bitcoin: check Bitcoin network for claim, Liquid for refund
+          network = Network.fromEnvironment(
+            isTestnet: swap.environment.isTestnet,
+            isLiquid: isClaim ? false : true,
+          );
+          swapDirection = isClaim
+              ? SwapDirection.liquidToBitcoin
+              : SwapDirection.liquidToBitcoin;
+        } else {
+          // Bitcoin → Liquid: check Liquid network for claim, Bitcoin for refund
+          network = Network.fromEnvironment(
+            isTestnet: swap.environment.isTestnet,
+            isLiquid: isClaim ? true : false,
+          );
+          swapDirection = isClaim
+              ? SwapDirection.bitcoinToLiquid
+              : SwapDirection.bitcoinToLiquid;
+        }
+      } else if (swap is LnReceiveSwap) {
+        // Lightning → Bitcoin/Liquid: only claims, no refunds
+        network = Network.fromEnvironment(
+          isTestnet: swap.environment.isTestnet,
+          isLiquid: swap.type == SwapType.lightningToLiquid,
+        );
+        swapDirection = null;
+      } else if (swap is LnSendSwap) {
+        // Bitcoin/Liquid → Lightning: only refunds, no claims
+        network = Network.fromEnvironment(
+          isTestnet: swap.environment.isTestnet,
+          isLiquid: swap.type == SwapType.liquidToLightning,
+        );
+        swapDirection = null;
+      } else {
+        return false;
+      }
+
+      final outspendStatus = await _boltzRepo.checkClaimOutspend(
+        swapId: swap.id,
+        swapType: swap.type,
+        network: network,
+        swapDirection: swapDirection,
+      );
+
+      if (outspendStatus.txid != null) {
+        log.fine(
+          '{"swapId": "${swap.id}", "function": "$functionName", "action": "outspend_found", "txid": "${outspendStatus.txid}", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        );
+
+        // Update swap based on type and whether it's a claim or refund
+        final Swap updatedSwap;
+        if (swap is ChainSwap) {
+          if (isClaim) {
+            updatedSwap = swap.copyWith(
+              receiveTxid: outspendStatus.txid!,
+              status: SwapStatus.completed,
+              completionTime: outspendStatus.timestamp ?? DateTime.now(),
+              fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
+            );
+          } else {
+            updatedSwap = swap.copyWith(
+              refundTxid: outspendStatus.txid!,
+              status: SwapStatus.completed,
+              completionTime: outspendStatus.timestamp ?? DateTime.now(),
+              fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
+            );
+          }
+        } else if (swap is LnReceiveSwap) {
+          updatedSwap = swap.copyWith(
+            receiveTxid: outspendStatus.txid!,
+            status: SwapStatus.completed,
+            completionTime: outspendStatus.timestamp ?? DateTime.now(),
+            fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
+          );
+        } else if (swap is LnSendSwap) {
+          updatedSwap = swap.copyWith(
+            refundTxid: outspendStatus.txid!,
+            status: SwapStatus.completed,
+            completionTime: outspendStatus.timestamp ?? DateTime.now(),
+            fees: swap.fees?.copyWith(claimFee: swap.fees!.claimFee),
+          );
+        } else {
+          return false;
+        }
+
+        await _boltzRepo.updateSwap(swap: updatedSwap);
+        _boltzRepo.unsubscribeFromSwaps([swap.id]);
+        return true;
+      }
+    } catch (outspendError, outspendSt) {
+      log.severe(
+        '{"swapId": "${swap.id}", "function": "$functionName", "action": "outspend_check_failed"}',
+        error: outspendError,
+        trace: outspendSt,
+      );
+    }
+
+    return false;
   }
 }
