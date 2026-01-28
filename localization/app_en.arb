@@ -11869,6 +11869,22 @@
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
   },
+  "priceChartFailedToLoad": "Failed to load price history",
+  "@priceChartFailedToLoad": {
+    "description": "Error message shown when price history fails to load"
+  },
+  "priceFailedToLoad": "Failed to load price",
+  "@priceFailedToLoad": {
+    "description": "Error message shown when bitcoin price fails to load"
+  },
+  "statusScreenTryAgain": "Try Again",
+  "@statusScreenTryAgain": {
+    "description": "Button text to retry after an error"
+  },
+  "statusScreenContinue": "Continue",
+  "@statusScreenContinue": {
+    "description": "Button text to proceed to next step"
+  },
   "exchangeLandingDisclaimerLegal": "Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"

@@ -8,6 +8,13 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'price_chart_cubit.freezed.dart';
 part 'price_chart_state.dart';
 
+class PriceHistoryLoadException implements Exception {
+  const PriceHistoryLoadException();
+
+  @override
+  String toString() => 'PriceHistoryLoadException';
+}
+
 class PriceChartCubit extends Cubit<PriceChartState> {
   PriceChartCubit({
     required GetPriceHistoryUsecase getPriceHistoryUsecase,
@@ -28,9 +35,10 @@ class PriceChartCubit extends Cubit<PriceChartState> {
   }) async {
     emit(state.copyWith(isLoading: true, error: null));
 
+    String? selectedCurrency;
     try {
       final settings = await _getSettingsUsecase.execute();
-      final selectedCurrency = currency ?? settings.currencyCode;
+      selectedCurrency = currency ?? settings.currencyCode;
 
       final localDayPrices = await _getPriceHistoryUsecase.execute(
         fromCurrency: 'BTC',
@@ -87,7 +95,7 @@ class PriceChartCubit extends Cubit<PriceChartState> {
 
       refreshedAllPrices.sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
-      if (refreshedAllPrices.isNotEmpty || localAllPrices.isEmpty) {
+      if (refreshedAllPrices.isNotEmpty) {
         emit(
           state.copyWith(
             isLoading: false,
@@ -96,9 +104,24 @@ class PriceChartCubit extends Cubit<PriceChartState> {
             error: null,
           ),
         );
+      } else if (localAllPrices.isEmpty) {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            prices: [],
+            currency: selectedCurrency,
+            error: const PriceHistoryLoadException(),
+          ),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          error: e,
+          currency: selectedCurrency ?? state.currency,
+        ),
+      );
     }
   }
 

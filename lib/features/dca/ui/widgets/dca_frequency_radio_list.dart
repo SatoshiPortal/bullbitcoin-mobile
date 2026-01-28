@@ -31,10 +31,6 @@ class DcaFrequencyRadioList extends StatelessWidget {
           context.loc.dcaSelectFrequencyLabel,
           style: context.font.bodyMedium,
         ),
-        Text(
-          context.loc.dcaSelectFrequencyLabel,
-          style: context.font.bodyMedium,
-        ),
         const Gap(4),
         RadioGroup<DcaBuyFrequency>(
           groupValue: selectedFrequency,

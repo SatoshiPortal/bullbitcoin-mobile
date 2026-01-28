@@ -2187,6 +2187,10 @@
     }
   },
   "priceChartFetchingHistory": "Історія ціни.",
+  "priceChartFailedToLoad": "Не вдалося завантажити історію цін",
+  "priceFailedToLoad": "Не вдалося завантажити ціну",
+  "statusScreenTryAgain": "Спробувати ще раз",
+  "statusScreenContinue": "Продовжити",
   "payFromWallet": "Від Wallet",
   "dcaConfirmRecurringBuyTitle": "Підтвердження Купити",
   "sellBankDetails": "Банк Детальніше",

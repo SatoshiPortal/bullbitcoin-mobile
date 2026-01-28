@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:flutter/widgets.dart';
 
 class StackedPage extends StatelessWidget {
@@ -24,6 +25,17 @@ class StackedPage extends StatelessWidget {
             right: 16,
           ),
           alignment: Alignment.bottomCenter,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                context.appColors.onSecondary.withValues(alpha: 0.0),
+                context.appColors.onSecondary,
+              ],
+              stops: const [0.0, 0.3],
+            ),
+          ),
           child: bottomChild,
         ),
       ],
