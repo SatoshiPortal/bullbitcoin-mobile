@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/domain/value_objects/user_address.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 
 class UserSummaryMapper {
@@ -14,10 +15,22 @@ class UserSummaryMapper {
       currency: model.currency,
       dca: model.dca.toEntity(),
       autoBuy: _mapUserAutoBuy(model.autoBuy),
+      address: model.address != null ? _mapUserAddress(model.address!) : null,
       emailNotificationsEnabled: model.emailNotificationsEnabled,
       kycDocumentStatus: model.kycDocumentStatus != null
           ? _mapKycDocumentStatus(model.kycDocumentStatus!)
           : null,
+    );
+  }
+
+  static UserAddress _mapUserAddress(UserAddressModel model) {
+    return UserAddress(
+      street1: model.street1,
+      street2: model.street2,
+      city: model.city,
+      province: model.province,
+      postalCode: model.postalCode,
+      countryCode: model.countryCode,
     );
   }
 

@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -105,12 +104,11 @@ class PayReceivePaymentScreen extends StatelessWidget {
             ),
             const Gap(32),
             CopyInput(
-              text:
-                  bitcoinUnit == BitcoinUnit.btc
-                      ? FormatAmount.btc(order.payinAmount)
-                      : FormatAmount.sats(
-                        ConvertAmount.btcToSats(order.payinAmount),
-                      ),
+              text: bitcoinUnit == BitcoinUnit.btc
+                  ? FormatAmount.btc(order.payinAmount)
+                  : FormatAmount.sats(
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             const Gap(32),
             _buildPaymentInput(context, order),
@@ -144,6 +142,13 @@ class PayReceivePaymentScreen extends StatelessWidget {
                 RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
                 RecipientType.pseColombia => 'Bank Account COP',
                 RecipientType.nequiColombia => 'Nequi',
+                // cjPayee is regular SEPA
+                RecipientType.cjPayee => 'SEPA Transfer',
+                // Virtual IBAN types - not supported in pay flow
+                RecipientType.frVirtualAccount ||
+                RecipientType.frPayee => throw UnimplementedError(
+                  'Virtual IBAN types not supported in pay flow',
+                ),
               },
             ),
             const Gap(8),
@@ -165,8 +170,8 @@ class PayReceivePaymentScreen extends StatelessWidget {
               bitcoinUnit == BitcoinUnit.btc
                   ? FormatAmount.btc(order.payinAmount)
                   : FormatAmount.sats(
-                    ConvertAmount.btcToSats(order.payinAmount),
-                  ),
+                      ConvertAmount.btcToSats(order.payinAmount),
+                    ),
             ),
             const Gap(8),
             _buildDetailRow(
@@ -262,7 +267,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
                     textAlign: .end,
                     maxLines: 2,
                     style: context.font.bodyMedium?.copyWith(
-                      color: isError ? context.appColors.error : context.appColors.secondary,
+                      color: isError
+                          ? context.appColors.error
+                          : context.appColors.secondary,
                     ),
                   ),
                 ),
@@ -335,6 +342,15 @@ class PayReceivePaymentScreen extends StatelessWidget {
         return 'Bank Account';
       case RecipientType.nequiColombia:
         return 'Phone Number';
+      // cjPayee is regular SEPA
+      case RecipientType.cjPayee:
+        return 'IBAN';
+      // Virtual IBAN types - not supported in pay flow
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+        throw UnimplementedError(
+          'Virtual IBAN types not supported in pay flow',
+        );
     }
   }
 
@@ -367,6 +383,15 @@ class PayReceivePaymentScreen extends StatelessWidget {
         return recipient.iban;
       case RecipientType.sinpeMovilCrc:
         return _formatSinpePhoneNumber(recipient.phoneNumber);
+      // cjPayee is regular SEPA
+      case RecipientType.cjPayee:
+        return recipient.iban;
+      // Virtual IBAN types - not supported in pay flow
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+        throw UnimplementedError(
+          'Virtual IBAN types not supported in pay flow',
+        );
     }
   }
 }

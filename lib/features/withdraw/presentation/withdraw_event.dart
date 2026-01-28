@@ -15,4 +15,8 @@ sealed class WithdrawEvent with _$WithdrawEvent {
     String description,
   ) = WithdrawDescriptionInputContinuePressed;*/
   const factory WithdrawEvent.confirmed() = WithdrawConfirmed;
+
+  /// Toggle the "Use Virtual IBAN" checkbox for EUR withdrawals.
+  const factory WithdrawEvent.useVirtualIbanToggled(bool useVirtualIban) =
+      WithdrawUseVirtualIbanToggled;
 }

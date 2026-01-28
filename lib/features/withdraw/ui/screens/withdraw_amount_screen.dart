@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
+import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_virtual_iban_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -61,6 +62,9 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
                     _fiatCurrency = fiatCurrency;
                   });
                 },
+              ),
+              WithdrawVirtualIbanCheckbox(
+                fiatCurrencyCode: _fiatCurrency.code,
               ),
               const Spacer(),
               BBButton.big(

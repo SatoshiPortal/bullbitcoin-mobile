@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
+/// Provider for retrieving the Bull Bitcoin API key from secure storage.
+/// Reusable across all exchange features.
 class BullbitcoinApiKeyProvider {
   final KeyValueStorageDatasource<String> _secureStorage;
 

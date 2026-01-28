@@ -6,13 +6,23 @@ sealed class WithdrawState with _$WithdrawState {
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = WithdrawInitialState;
-  const factory WithdrawState.amountInput({required UserSummary userSummary}) =
-      WithdrawAmountInputState;
+  const factory WithdrawState.amountInput({
+    required UserSummary userSummary,
+    /// Whether the user has an active Virtual IBAN (Confidential SEPA).
+    @Default(false) bool hasActiveVirtualIban,
+    /// Whether to use Virtual IBAN for EUR withdrawals (defaults to true when VIBAN is active).
+    @Default(true) bool useVirtualIban,
+  }) = WithdrawAmountInputState;
   const factory WithdrawState.recipientInput({
     required UserSummary userSummary,
     required FiatAmount amount,
     required FiatCurrency currency,
+    /// Whether the user has an active Virtual IBAN (Confidential SEPA).
+    @Default(false) bool hasActiveVirtualIban,
+    /// Whether to use Virtual IBAN for EUR withdrawals.
+    @Default(false) bool useVirtualIban,
     @Default(false) bool isCreatingWithdrawOrder,
+    // From develop: separate error fields for new vs selected recipient
     WithdrawError? newRecipientError,
     WithdrawError? selectedRecipientError,
   }) = WithdrawRecipientInputState;
@@ -41,10 +51,10 @@ sealed class WithdrawState with _$WithdrawState {
   FiatCurrency get currency {
     return when(
       initial: (_, _) => FiatCurrency.cad,
-      amountInput: (userSummary) => userSummary.currency != null
+      amountInput: (userSummary, _, _) => userSummary.currency != null
           ? FiatCurrency.fromCode(userSummary.currency!)
           : FiatCurrency.cad,
-      recipientInput: (_, _, currency, _, _, _) => currency,
+      recipientInput: (_, _, currency, _, _, _, _, _) => currency,
       confirmation: (_, _, currency, _, _, _, _) => currency,
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
     );
@@ -52,58 +62,72 @@ sealed class WithdrawState with _$WithdrawState {
 
   WithdrawAmountInputState? get cleanAmountInputState {
     return whenOrNull(
-      amountInput: (userSummary) =>
+      amountInput: (userSummary, hasActiveVirtualIban, useVirtualIban) =>
+          WithdrawAmountInputState(
+            userSummary: userSummary,
+            hasActiveVirtualIban: hasActiveVirtualIban,
+            useVirtualIban: useVirtualIban,
+          ),
+      recipientInput: (
+        userSummary,
+        amount,
+        currency,
+        hasActiveVirtualIban,
+        useVirtualIban,
+        isCreatingWithdrawOrder,
+        newRecipientError,
+        selectedRecipientError,
+      ) =>
+          WithdrawAmountInputState(
+            userSummary: userSummary,
+            hasActiveVirtualIban: hasActiveVirtualIban,
+            useVirtualIban: useVirtualIban,
+          ),
+      confirmation: (
+        userSummary,
+        amount,
+        currency,
+        recipient,
+        order,
+        isConfirmingWithdrawal,
+        error,
+      ) =>
           WithdrawAmountInputState(userSummary: userSummary),
-      recipientInput:
-          (
-            userSummary,
-            amount,
-            currency,
-            isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
-          ) => WithdrawAmountInputState(userSummary: userSummary),
-      confirmation:
-          (
-            userSummary,
-            amount,
-            currency,
-            recipient,
-            order,
-            isConfirmingWithdrawal,
-            error,
-          ) => WithdrawAmountInputState(userSummary: userSummary),
     );
   }
 
   WithdrawRecipientInputState? get cleanRecipientInputState {
     return whenOrNull(
-      recipientInput:
-          (
-            userSummary,
-            amount,
-            currency,
-            isCreatingWithdrawOrder,
-            newRecipientError,
-            selectedRecipientError,
-          ) => WithdrawRecipientInputState(
+      recipientInput: (
+        userSummary,
+        amount,
+        currency,
+        hasActiveVirtualIban,
+        useVirtualIban,
+        isCreatingWithdrawOrder,
+        newRecipientError,
+        selectedRecipientError,
+      ) =>
+          WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,
             currency: currency,
+            hasActiveVirtualIban: hasActiveVirtualIban,
+            useVirtualIban: useVirtualIban,
             isCreatingWithdrawOrder: false,
             newRecipientError: null,
             selectedRecipientError: null,
           ),
-      confirmation:
-          (
-            userSummary,
-            amount,
-            currency,
-            recipient,
-            order,
-            isConfirmingWithdrawal,
-            error,
-          ) => WithdrawRecipientInputState(
+      confirmation: (
+        userSummary,
+        amount,
+        currency,
+        recipient,
+        order,
+        isConfirmingWithdrawal,
+        error,
+      ) =>
+          WithdrawRecipientInputState(
             userSummary: userSummary,
             amount: amount,
             currency: currency,
@@ -113,16 +137,16 @@ sealed class WithdrawState with _$WithdrawState {
 
   WithdrawConfirmationState? get cleanConfirmationState {
     return whenOrNull(
-      confirmation:
-          (
-            userSummary,
-            amount,
-            currency,
-            recipient,
-            order,
-            isConfirmingWithdrawal,
-            error,
-          ) => WithdrawConfirmationState(
+      confirmation: (
+        userSummary,
+        amount,
+        currency,
+        recipient,
+        order,
+        isConfirmingWithdrawal,
+        error,
+      ) =>
+          WithdrawConfirmationState(
             userSummary: userSummary,
             amount: amount,
             currency: currency,
@@ -151,6 +175,8 @@ extension WithdrawAmountInputStateX on WithdrawAmountInputState {
       userSummary: userSummary,
       amount: amount,
       currency: currency,
+      hasActiveVirtualIban: hasActiveVirtualIban,
+      useVirtualIban: useVirtualIban,
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 
-// TODO: This should be moved to the core/shared folder since more features
-//  will need to call the Bull Bitcoin API.
+/// Factory for creating Dio instances configured for the Bull Bitcoin API.
+/// Reusable across all exchange features.
 class BullBitcoinApiDioFactory {
   static Dio create({required bool isTestnet}) {
     return isTestnet ? _buildBullbitcoinTestnetDio() : _buildBullbitcoinDio();

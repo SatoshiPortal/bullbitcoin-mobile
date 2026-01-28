@@ -1,11 +1,15 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/virtual_iban_recipient.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_virtual_iban_details_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/withdraw/domain/confirm_withdraw_order_usecase.dart';
+import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_from_viban_usecase.dart';
 import 'package:bb_mobile/features/withdraw/domain/create_withdraw_order_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -17,15 +21,22 @@ part 'withdraw_state.dart';
 class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   WithdrawBloc({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+    required GetVirtualIbanDetailsUsecase getVirtualIbanDetailsUsecase,
     required CreateWithdrawOrderUsecase createWithdrawUsecase,
+    required CreateWithdrawOrderFromVibanUsecase
+        createWithdrawOrderFromVibanUsecase,
     required ConfirmWithdrawOrderUsecase confirmWithdrawUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _createWithdrawOrderUsecase = createWithdrawUsecase,
-       _confirmWithdrawUsecase = confirmWithdrawUsecase,
-       super(const WithdrawInitialState()) {
+  })  : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+        _getVirtualIbanDetailsUsecase = getVirtualIbanDetailsUsecase,
+        _createWithdrawOrderUsecase = createWithdrawUsecase,
+        _createWithdrawOrderFromVibanUsecase =
+            createWithdrawOrderFromVibanUsecase,
+        _confirmWithdrawUsecase = confirmWithdrawUsecase,
+        super(const WithdrawInitialState()) {
     on<WithdrawStarted>(_onStarted);
     on<WithdrawAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<WithdrawRecipientSelected>(_onRecipientSelected);
+    on<WithdrawUseVirtualIbanToggled>(_onUseVirtualIbanToggled);
     /*on<WithdrawDescriptionInputContinuePressed>(
       _onDescriptionInputContinuePressed,
     );*/
@@ -33,7 +44,9 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  final GetVirtualIbanDetailsUsecase _getVirtualIbanDetailsUsecase;
   final CreateWithdrawOrderUsecase _createWithdrawOrderUsecase;
+  final CreateWithdrawOrderFromVibanUsecase _createWithdrawOrderFromVibanUsecase;
   final ConfirmWithdrawOrderUsecase _confirmWithdrawUsecase;
 
   Future<void> _onStarted(
@@ -57,11 +70,43 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
 
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
-      emit(initialState.toAmountInputState(userSummary: userSummary));
+      // Check if user has an active Virtual IBAN (for EUR withdrawals)
+      VirtualIbanRecipient? virtualIban;
+      try {
+        virtualIban = await _getVirtualIbanDetailsUsecase.execute();
+      } catch (e) {
+        // Silently ignore errors when checking for Virtual IBAN
+        // User might not have one or it might not be available
+        log.info('Could not fetch Virtual IBAN details: $e');
+      }
+
+      final hasActiveVirtualIban = virtualIban?.isActive ?? false;
+
+      emit(
+        WithdrawAmountInputState(
+          userSummary: userSummary,
+          hasActiveVirtualIban: hasActiveVirtualIban,
+          // Default to using Virtual IBAN if user has an active one
+          useVirtualIban: hasActiveVirtualIban,
+        ),
+      );
     } on ApiKeyException catch (e) {
       emit(WithdrawState.initial(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
       emit(WithdrawState.initial(getUserSummaryException: e));
+    }
+  }
+
+  void _onUseVirtualIbanToggled(
+    WithdrawUseVirtualIbanToggled event,
+    Emitter<WithdrawState> emit,
+  ) {
+    final currentState = state;
+    // Handle both states (user might navigate back from recipient selection)
+    if (currentState is WithdrawAmountInputState) {
+      emit(currentState.copyWith(useVirtualIban: event.useVirtualIban));
+    } else if (currentState is WithdrawRecipientInputState) {
+      emit(currentState.copyWith(useVirtualIban: event.useVirtualIban));
     }
   }
 
@@ -103,12 +148,29 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
 
     try {
       final recipient = event.recipient;
+      final useVirtualIban = recipientInputState.useVirtualIban;
+      final isEurCurrency = recipientInputState.currency.code == 'EUR';
 
-      final order = await _createWithdrawOrderUsecase.execute(
-        fiatAmount: recipientInputState.amount.amount,
-        recipientId: recipient.id,
-        recipientType: recipient.type,
-      );
+      WithdrawOrder order;
+
+      // Use Virtual IBAN withdrawal for EUR when:
+      // 1. useVirtualIban is enabled AND currency is EUR, OR
+      // 2. The recipient is already FR_PAYEE type
+      if ((useVirtualIban && isEurCurrency) ||
+          recipient.type == RecipientType.frPayee) {
+        order = await _createWithdrawOrderFromVibanUsecase.execute(
+          recipient: recipient,
+          fiatAmount: recipientInputState.amount.amount,
+        );
+      } else {
+        // Regular withdrawal process
+        order = await _createWithdrawOrderUsecase.execute(
+          fiatAmount: recipientInputState.amount.amount,
+          recipientId: recipient.id,
+          recipientType: recipient.type,
+        );
+      }
+
       emit(
         recipientInputState.toConfirmationState(
           recipient: recipient,

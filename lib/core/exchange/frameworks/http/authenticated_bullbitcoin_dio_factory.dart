@@ -1,8 +1,11 @@
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
-import 'package:bb_mobile/features/recipients/frameworks/http/bullbitcoin_api_dio_factory.dart';
-import 'package:bb_mobile/features/recipients/frameworks/http/bullbitcoin_api_key_provider.dart';
+import 'package:bb_mobile/core/exchange/frameworks/http/bullbitcoin_api_dio_factory.dart';
+import 'package:bb_mobile/core/exchange/frameworks/http/bullbitcoin_api_key_provider.dart';
 import 'package:dio/dio.dart';
 
+/// Factory for creating Dio instances with automatic API key authentication.
+/// Uses an interceptor to add the API key header to all requests.
+/// Reusable across all exchange features.
 class AuthenticatedBullBitcoinDioFactory {
   static Dio create({
     required bool isTestnet,

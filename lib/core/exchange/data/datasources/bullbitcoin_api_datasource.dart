@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/exchange/data/models/funding_details_request_para
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/virtual_iban_recipient_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -477,9 +478,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     final error = resp.data['error'];
     if (statusCode != 200) throw Exception('Failed to create withdrawal order');
     if (error != null) {
-      final reason = error['data']['reason'];
-      final limitReason = reason['limit'];
-      if (limitReason != null) {
+      final data = error['data'];
+      final apiError = data is Map<String, dynamic> ? data['apiError'] : null;
+      final reason = data is Map<String, dynamic> ? data['reason'] : null;
+      final limitReason = reason is Map<String, dynamic>
+          ? reason['limit']
+          : null;
+      if (limitReason is Map<String, dynamic>) {
         final isBelowLimit =
             limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
         final limitAmount = limitReason['amount'] as String;
@@ -496,7 +501,10 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
           );
         }
       }
-      throw Exception('Failed to create withdrawal order: $reason');
+      final message = apiError is Map<String, dynamic>
+          ? apiError['message']
+          : error['message'];
+      throw Exception('Failed to create withdrawal order: $message');
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
@@ -598,7 +606,126 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return resp.data['result'] as Map<String, dynamic>;
   }
 
-  // ==================== Recipients API ====================
+  // ==================== Virtual IBAN API (from HEAD) ====================
+
+  /// Gets the user's Virtual IBAN details by listing recipients filtered by FR_VIRTUAL_ACCOUNT type.
+  /// Returns null if no Virtual IBAN has been created yet.
+  Future<VirtualIbanRecipientModel?> getVirtualIbanDetails({
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listMyRecipients',
+        'params': {
+          'filters': {
+            'recipientType': ['FR_VIRTUAL_ACCOUNT'],
+          },
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to get virtual IBAN details');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw Exception('Failed to get virtual IBAN details: $error');
+    }
+
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null || elements.isEmpty) {
+      return null;
+    }
+
+    return VirtualIbanRecipientModel.fromJson(
+      elements.first as Map<String, dynamic>,
+    );
+  }
+
+  /// Creates a Virtual IBAN (FR_VIRTUAL_ACCOUNT) for the user.
+  Future<VirtualIbanRecipientModel> createVirtualIban({
+    required String apiKey,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createMyRecipient',
+        'params': {
+          'element': {'recipientType': 'FR_VIRTUAL_ACCOUNT', 'isOwner': true},
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create virtual IBAN');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      final message = error['message'] ?? 'Unknown error';
+      throw Exception('Failed to create virtual IBAN: $message');
+    }
+
+    final result = resp.data['result'] as Map<String, dynamic>?;
+    final element = result?['element'] as Map<String, dynamic>?;
+    if (element == null) {
+      throw Exception('Failed to create virtual IBAN: Invalid response');
+    }
+
+    return VirtualIbanRecipientModel.fromJson(element);
+  }
+
+  /// Creates an FR_PAYEE recipient from a Virtual IBAN.
+  /// This is needed when making withdrawals to the user's own Virtual IBAN.
+  Future<VirtualIbanRecipientModel> createFrPayeeRecipient({
+    required String apiKey,
+    required String iban,
+  }) async {
+    final resp = await _http.post(
+      _recipientsPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'createMyRecipient',
+        'params': {
+          'element': {
+            'recipientType': 'FR_PAYEE',
+            'isOwner': true,
+            'iban': iban,
+          },
+        },
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to create FR_PAYEE recipient');
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      final message = error['message'] ?? 'Unknown error';
+      throw Exception('Failed to create FR_PAYEE recipient: $message');
+    }
+
+    final result = resp.data['result'] as Map<String, dynamic>?;
+    final element = result?['element'] as Map<String, dynamic>?;
+    if (element == null) {
+      throw Exception('Failed to create FR_PAYEE recipient: Invalid response');
+    }
+
+    return VirtualIbanRecipientModel.fromJson(element);
+  }
+
+  // ==================== Recipients API (from develop) ====================
 
   /// List recipients with optional filters for default wallets
   Future<List<Map<String, dynamic>>> listMyRecipients({
@@ -743,7 +870,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
   }
 
-  // ==================== Order Stats API ====================
+  // ==================== Order Stats API (from develop) ====================
 
   /// Get order statistics for the user
   Future<Map<String, dynamic>> getOrderStats({required String apiKey}) async {
@@ -770,7 +897,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     return resp.data['result']['element'] as Map<String, dynamic>;
   }
 
-  // ==================== KYC Upload API ====================
+  // ==================== KYC Upload API (from develop) ====================
 
   /// Upload a KYC document file using multipart form (same as BB-Exchange)
   Future<void> uploadKycDocument({

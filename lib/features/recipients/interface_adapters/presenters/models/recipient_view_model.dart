@@ -99,6 +99,9 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         return null;
 
       case RecipientType.sepaEur:
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+      case RecipientType.cjPayee:
         if (name != null && name!.isNotEmpty) return name!;
         if (firstname != null && lastname != null) {
           return '$firstname $lastname';

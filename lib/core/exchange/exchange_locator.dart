@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/frameworks/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_local_datasource.dart';
@@ -11,6 +12,7 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/price_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/virtual_iban_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
@@ -19,6 +21,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_reposi
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_support_chat_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/price_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/virtual_iban_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
@@ -36,6 +39,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_virtual_iban_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_virtual_iban_details_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -56,6 +61,16 @@ class ExchangeLocator {
     // BB Exchange API Key Storage
     locator.registerLazySingleton<BullbitcoinApiKeyDatasource>(
       () => BullbitcoinApiKeyDatasource(
+        secureStorage: locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
+      ),
+    );
+
+    // API Key Provider - reusable across all exchange features
+    // (recipients, virtual_iban, etc.)
+    locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
+      () => BullbitcoinApiKeyProvider(
         secureStorage: locator<KeyValueStorageDatasource<String>>(
           instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
         ),
@@ -250,6 +265,28 @@ class ExchangeLocator {
         isTestnet: true,
       ),
       instanceName: 'testnetExchangeSupportChatRepository',
+    );
+
+    // Virtual IBAN Repositories - uses BullbitcoinApiKeyProvider for API key management
+    locator.registerLazySingleton<VirtualIbanRepository>(
+      () => VirtualIbanRepositoryImpl(
+        apiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
+        apiKeyProvider: locator<BullbitcoinApiKeyProvider>(),
+        isTestnet: false,
+      ),
+      instanceName: 'mainnetVirtualIbanRepository',
+    );
+    locator.registerLazySingleton<VirtualIbanRepository>(
+      () => VirtualIbanRepositoryImpl(
+        apiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+        apiKeyProvider: locator<BullbitcoinApiKeyProvider>(),
+        isTestnet: true,
+      ),
+      instanceName: 'testnetVirtualIbanRepository',
     );
   }
 
@@ -503,6 +540,31 @@ class ExchangeLocator {
       () => LabelExchangeOrdersUsecase(
         labelsFacade: locator<LabelsFacade>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
+      ),
+    );
+
+    // Virtual IBAN Usecases
+    locator.registerFactory<GetVirtualIbanDetailsUsecase>(
+      () => GetVirtualIbanDetailsUsecase(
+        mainnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'mainnetVirtualIbanRepository',
+        ),
+        testnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'testnetVirtualIbanRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<CreateVirtualIbanUsecase>(
+      () => CreateVirtualIbanUsecase(
+        mainnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'mainnetVirtualIbanRepository',
+        ),
+        testnetVirtualIbanRepository: locator<VirtualIbanRepository>(
+          instanceName: 'testnetVirtualIbanRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

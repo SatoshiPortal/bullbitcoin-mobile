@@ -5,6 +5,7 @@ enum FundingMethod {
   canadaPost(queryParam: 'canada-post'),
   instantSepa(queryParam: 'instant-sepa'),
   regularSepa(queryParam: 'regular-sepa'),
+  confidentialSepa(queryParam: 'confidential-sepa'),
   speiTransfer(queryParam: 'spei-transfer'),
   sinpe(queryParam: 'sinpe'),
   crIbanCrc(queryParam: 'cr-iban-crc'),

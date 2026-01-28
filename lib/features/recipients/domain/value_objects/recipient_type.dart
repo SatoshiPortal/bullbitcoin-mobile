@@ -8,6 +8,10 @@ enum RecipientType {
   bankTransferCad('BANK_TRANSFER_CAD'),
   // EUROPE
   sepaEur('SEPA_EUR'),
+  // EUROPE - Virtual IBAN (Confidential SEPA)
+  frVirtualAccount('FR_VIRTUAL_ACCOUNT'), // Virtual IBAN account
+  frPayee('FR_PAYEE'), // Payee for withdrawals from VIBAN
+  cjPayee('CJ_PAYEE'), // Regular SEPA payee (Clear Junction)
   // MEXICO
   speiClabeMxn('SPEI_CLABE_MXN'),
   speiSmsMxn('SPEI_SMS_MXN'),
@@ -39,6 +43,9 @@ enum RecipientType {
       case RecipientType.bankTransferCad:
         return 'CA';
       case RecipientType.sepaEur:
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+      case RecipientType.cjPayee:
         return 'EU';
       case RecipientType.speiClabeMxn:
       case RecipientType.speiSmsMxn:
@@ -64,6 +71,9 @@ enum RecipientType {
       case RecipientType.bankTransferCad:
         return 'CAD';
       case RecipientType.sepaEur:
+      case RecipientType.frVirtualAccount:
+      case RecipientType.frPayee:
+      case RecipientType.cjPayee:
         return 'EUR';
       case RecipientType.speiClabeMxn:
       case RecipientType.speiSmsMxn:

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
+import 'package:bb_mobile/features/recipients/domain/value_objects/recipients_location.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/screens/recipients_screen.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
@@ -17,6 +18,8 @@ class WithdrawRecipientsScreen extends StatelessWidget {
           filter: RecipientFilterCriteria(
             types: RecipientType.typesForCurrency(state.currency.code).toList(),
             isOwner: true,
+            // CRITICAL: Enable VIBAN step-based flow for withdraw
+            location: RecipientsLocation.withdrawView,
           ),
           onRecipientSelected: (recipient, {required isNew}) async {
             context.read<WithdrawBloc>().add(

@@ -117,6 +117,12 @@ sealed class FundingDetailsModel with _$FundingDetailsModel {
           beneficiaryName: beneficiaryName!,
           cvu: cvu!,
         );
+      case FundingMethod.confidentialSepa:
+        // Confidential SEPA uses Virtual IBAN which is handled separately
+        // through the VirtualIbanBloc and not through funding details API.
+        throw UnsupportedError(
+          'Confidential SEPA funding details should be fetched through Virtual IBAN flow',
+        );
     }
   }
 }
