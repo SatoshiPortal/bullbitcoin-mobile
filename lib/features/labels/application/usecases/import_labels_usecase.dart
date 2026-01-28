@@ -16,9 +16,11 @@ class ImportLabelsUsecase {
 
   Future<int> call(FormattedLabels labels) async {
     try {
-      final entities = _labelConverter.convertFrom(labels);
-      await _labelRepository.store(entities);
-      return entities.length;
+      final newLabels = _labelConverter.convertFrom(labels);
+      for (final newLabel in newLabels) {
+        await _labelRepository.store(newLabel);
+      }
+      return newLabels.length;
     } catch (e) {
       log.severe('Failed to import labels: $e');
       throw ImportLabelsError('Failed to import labels: $e');

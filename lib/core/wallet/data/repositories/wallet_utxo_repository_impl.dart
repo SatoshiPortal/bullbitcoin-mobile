@@ -70,7 +70,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
               frozenUtxo.txId == model.txId && frozenUtxo.vout == model.vout,
         );
         // Get the possible address labels for the UTXO
-        List<String> addressLabels;
+        List<Label> addressLabels;
         switch (model) {
           case LiquidWalletUtxoModel _:
             final (standardAddressLabels, confidentialAddressLabels) = await (
@@ -83,7 +83,8 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
               ...confidentialAddressLabels,
             ];
           case BitcoinWalletUtxoModel _:
-            addressLabels = await _labelsFacade.fetchByReference(model.address);
+            final labels = await _labelsFacade.fetchByReference(model.address);
+            addressLabels = labels;
         }
 
         return WalletUtxoMapper.toEntity(

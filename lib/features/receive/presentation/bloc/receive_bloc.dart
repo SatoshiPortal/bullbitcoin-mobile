@@ -632,22 +632,22 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (state.type) {
         case ReceiveType.bitcoin:
           if (state.bitcoinAddress == null) return;
-          await _labelsFacade.store([
-            Label.addr(
+          await _labelsFacade.store(
+            NewLabel.addr(
               address: state.bitcoinAddress!.address,
               origin: state.bitcoinAddress!.walletId,
               label: note,
             ),
-          ]);
+          );
         case ReceiveType.liquid:
           if (state.liquidAddress == null) return;
-          await _labelsFacade.store([
-            Label.addr(
+          await _labelsFacade.store(
+            NewLabel.addr(
               address: state.liquidAddress!.address,
               origin: state.liquidAddress!.walletId,
               label: note,
             ),
-          ]);
+          );
         case _:
           break;
       }

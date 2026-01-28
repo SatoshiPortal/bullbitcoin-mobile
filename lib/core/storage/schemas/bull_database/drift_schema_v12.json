@@ -1134,6 +1134,20 @@
             "default_dart": null,
             "default_client_dart": null,
             "dsl_features": []
+          },
+          {
+            "name": "enable_ssl",
+            "getter_name": "enableSsl",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"enable_ssl\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"enable_ssl\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
           }
         ],
         "is_virtual": false,
@@ -1921,7 +1935,7 @@
       "sql": [
         {
           "dialect": "sqlite",
-          "sql": "CREATE TABLE IF NOT EXISTS \"mempool_servers\" (\"url\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"is_liquid\" INTEGER NOT NULL CHECK (\"is_liquid\" IN (0, 1)), \"is_custom\" INTEGER NOT NULL CHECK (\"is_custom\" IN (0, 1)), PRIMARY KEY (\"url\", \"is_testnet\", \"is_liquid\"));"
+          "sql": "CREATE TABLE IF NOT EXISTS \"mempool_servers\" (\"url\" TEXT NOT NULL, \"is_testnet\" INTEGER NOT NULL CHECK (\"is_testnet\" IN (0, 1)), \"is_liquid\" INTEGER NOT NULL CHECK (\"is_liquid\" IN (0, 1)), \"is_custom\" INTEGER NOT NULL CHECK (\"is_custom\" IN (0, 1)), \"enable_ssl\" INTEGER NOT NULL DEFAULT 1 CHECK (\"enable_ssl\" IN (0, 1)), PRIMARY KEY (\"url\", \"is_testnet\", \"is_liquid\"));"
         }
       ]
     },

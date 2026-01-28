@@ -560,6 +560,122 @@
   "@mempoolSettingsUseForFeeEstimationDescription": {
     "description": "Description for use for fee estimation toggle"
   },
+  "mempoolServerStatusOnline": "Online",
+  "@mempoolServerStatusOnline": {
+    "description": "Status label when mempool server is online"
+  },
+  "mempoolServerStatusOffline": "Offline",
+  "@mempoolServerStatusOffline": {
+    "description": "Status label when mempool server is offline"
+  },
+  "mempoolServerStatusChecking": "Checking...",
+  "@mempoolServerStatusChecking": {
+    "description": "Status label when checking mempool server status"
+  },
+  "mempoolServerStatusUnknown": "Unknown",
+  "@mempoolServerStatusUnknown": {
+    "description": "Status label when mempool server status is unknown"
+  },
+  "mempoolCustomServerSaveFailed": "Failed to save server",
+  "@mempoolCustomServerSaveFailed": {
+    "description": "Error message when saving custom mempool server fails"
+  },
+  "mempoolCustomServerInfoDescription": "Mempool servers are used for fee estimation and opening the block explorer when viewing transaction details.",
+  "@mempoolCustomServerInfoDescription": {
+    "description": "Info text explaining what mempool servers are used for"
+  },
+  "mempoolCustomServerUseSsl": "Use SSL",
+  "@mempoolCustomServerUseSsl": {
+    "description": "Label for SSL toggle in custom server settings"
+  },
+  "mempoolCustomServerSslAutoDetected": "(Auto-detected)",
+  "@mempoolCustomServerSslAutoDetected": {
+    "description": "Label shown when SSL setting was auto-detected"
+  },
+  "mempoolCustomServerSslHelpText": "For local (.local, private IPs) and Tor (.onion) servers, SSL is typically disabled. Public IPs and domains should use SSL.",
+  "@mempoolCustomServerSslHelpText": {
+    "description": "Help text explaining when to use SSL for mempool servers"
+  },
+  "mempoolErrorSameAsDefault": "This URL is the same as the default server. Please use a different URL.",
+  "@mempoolErrorSameAsDefault": {
+    "description": "Error when user tries to set a custom server URL that matches the default"
+  },
+  "mempoolErrorConnectionTimeout": "Connection timed out. The server may be slow or unreachable.",
+  "@mempoolErrorConnectionTimeout": {
+    "description": "Error when connection to mempool server times out"
+  },
+  "mempoolErrorHostNotFound": "Cannot find this server. Please check the URL and try again.",
+  "@mempoolErrorHostNotFound": {
+    "description": "Error when mempool server hostname cannot be resolved"
+  },
+  "mempoolErrorTorNotRunning": "Cannot reach .onion address. Make sure Tor/Orbot is running and try again.",
+  "@mempoolErrorTorNotRunning": {
+    "description": "Error when trying to reach a .onion address without Tor"
+  },
+  "mempoolErrorConnectionFailed": "Unable to connect to server. Check your network connection and try again.",
+  "@mempoolErrorConnectionFailed": {
+    "description": "Error when connection to mempool server fails"
+  },
+  "mempoolErrorNotMempoolServer": "This URL does not appear to be a mempool server. Please verify the address.",
+  "@mempoolErrorNotMempoolServer": {
+    "description": "Error when URL is not a valid mempool server"
+  },
+  "mempoolErrorServerUnavailable": "Server is unavailable. Please try again later.",
+  "@mempoolErrorServerUnavailable": {
+    "description": "Error when mempool server is unavailable (502/503)"
+  },
+  "mempoolErrorServerError": "Server encountered an error. Please try again later.",
+  "@mempoolErrorServerError": {
+    "description": "Error when mempool server returns 500 error"
+  },
+  "mempoolErrorInvalidResponse": "Server returned an invalid response.",
+  "@mempoolErrorInvalidResponse": {
+    "description": "Error when mempool server returns an invalid response"
+  },
+  "mempoolErrorUnexpected": "An unexpected error occurred",
+  "@mempoolErrorUnexpected": {
+    "description": "Generic unexpected error message"
+  },
+  "mempoolErrorSaveServerFailed": "Failed to save server: {error}",
+  "@mempoolErrorSaveServerFailed": {
+    "description": "Error when saving mempool server fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorLoadFailed": "Failed to load mempool server data: {error}",
+  "@mempoolErrorLoadFailed": {
+    "description": "Error when loading mempool server data fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorDeleteFailed": "Failed to delete custom server: {error}",
+  "@mempoolErrorDeleteFailed": {
+    "description": "Error when deleting custom mempool server fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorUpdateSettingsFailed": "Failed to update settings: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
@@ -931,6 +1047,10 @@
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
   },
+  "exchangeStatisticsBuySellRatioDesc": "Percentage of total volume from buying vs selling",
+  "@exchangeStatisticsBuySellRatioDesc": {
+    "description": "Description for buy/sell ratio statistic"
+  },
   "exchangeStatisticsBuyStats": "Buy Statistics",
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
@@ -943,17 +1063,45 @@
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
   },
+  "exchangeStatisticsBuyVolumeDesc": "Total amount spent buying bitcoin",
+  "@exchangeStatisticsBuyVolumeDesc": {
+    "description": "Description for buy volume statistic"
+  },
+  "exchangeStatisticsSellVolumeDesc": "Total amount received from selling bitcoin",
+  "@exchangeStatisticsSellVolumeDesc": {
+    "description": "Description for sell volume statistic"
+  },
   "exchangeStatisticsTradeCount": "Trade Count",
   "@exchangeStatisticsTradeCount": {
     "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsBuyTradeCountDesc": "Number of bitcoin purchase transactions",
+  "@exchangeStatisticsBuyTradeCountDesc": {
+    "description": "Description for buy trade count statistic"
+  },
+  "exchangeStatisticsSellTradeCountDesc": "Number of bitcoin sell transactions",
+  "@exchangeStatisticsSellTradeCountDesc": {
+    "description": "Description for sell trade count statistic"
   },
   "exchangeStatisticsAveragePrice": "Average Price",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
   },
+  "exchangeStatisticsBuyAvgPriceDesc": "Average price paid per bitcoin when buying",
+  "@exchangeStatisticsBuyAvgPriceDesc": {
+    "description": "Description for buy average price statistic"
+  },
+  "exchangeStatisticsSellAvgPriceDesc": "Average price received per bitcoin when selling",
+  "@exchangeStatisticsSellAvgPriceDesc": {
+    "description": "Description for sell average price statistic"
+  },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
   "@exchangeStatisticsTotalVolume": {
     "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsTotalVolumeDesc": "Combined buy and sell volumes in fiat currencies",
+  "@exchangeStatisticsTotalVolumeDesc": {
+    "description": "Description for total trading volume statistic"
   },
   "exchangeStatisticsBillerStats": "Biller Statistics",
   "@exchangeStatisticsBillerStats": {

@@ -160,7 +160,12 @@ class _TransactionLabelBottomsheetState
                   if (validation.isValid) {
                     context
                         .read<TransactionDetailsCubit>()
-                        .saveTransactionLabel(trimmedLabel);
+                        .saveTransactionLabel(
+                          NewLabel.tx(
+                            transactionId: state.walletTransaction!.txId,
+                            label: trimmedLabel,
+                          ),
+                        );
                     context.pop();
                   }
                 },

@@ -1,10 +1,10 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order_stats.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_cubit.dart';
+import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -44,8 +44,23 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
   Widget _buildBody(BuildContext context) {
     final state = context.watch<StatisticsCubit>().state;
 
-    if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    return Column(
+      children: [
+        if (state.isLoading)
+          LinearProgressIndicator(
+            backgroundColor: context.appColors.surface,
+            color: context.appColors.primary,
+          ),
+        Expanded(
+          child: _buildContent(context, state),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(BuildContext context, StatisticsState state) {
+    if (state.isLoading && !state.hasStats) {
+      return const SizedBox.shrink();
     }
 
     if (state.error != null) {
@@ -100,10 +115,10 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
                 ),
                 const SizedBox(height: 16),
               ],
-              _OrderStatsSection(orderStats: state.orderStats!),
+              _OrderStatsSection(state: state),
               const SizedBox(height: 24),
               if (state.billerStats != null && state.billerStats!.hasStats)
-                _BillerStatsSection(billerStats: state.billerStats!),
+                _BillerStatsSection(state: state),
             ],
           ),
         ),
@@ -113,9 +128,11 @@ class _ExchangeStatisticsScreenState extends State<ExchangeStatisticsScreen> {
 }
 
 class _OrderStatsSection extends StatelessWidget {
-  const _OrderStatsSection({required this.orderStats});
+  const _OrderStatsSection({
+    required this.state,
+  });
 
-  final OrderStats orderStats;
+  final StatisticsState state;
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +149,9 @@ class _OrderStatsSection extends StatelessWidget {
         const SizedBox(height: 16),
         _StatCard(
           title: context.loc.exchangeStatisticsBuySellRatio,
-          value: orderStats.buySellRatio,
+          description: context.loc.exchangeStatisticsBuySellRatioDesc,
+          value: state.orderStats?.buySellRatio ?? '',
           icon: Icons.compare_arrows,
-          context: context,
         ),
         const SizedBox(height: 12),
         _StatSectionCard(
@@ -142,23 +159,22 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_downward,
           iconColor: Colors.green,
           stats: [
-            _buildAmountStatRow(
-              context,
-              context.loc.exchangeStatisticsVolume,
-              orderStats.bitcoinBuyVolume,
+            _StatRow(
+              label: context.loc.exchangeStatisticsVolume,
+              values: state.formattedBuyVolume,
+              description: context.loc.exchangeStatisticsBuyVolumeDesc,
             ),
-            _buildAmountStatRow(
-              context,
-              context.loc.exchangeStatisticsTradeCount,
-              orderStats.bitcoinBuyTradeCount,
+            _StatRow(
+              label: context.loc.exchangeStatisticsTradeCount,
+              values: state.formattedBuyTradeCount,
+              description: context.loc.exchangeStatisticsBuyTradeCountDesc,
             ),
-            _buildAmountStatRow(
-              context,
-              context.loc.exchangeStatisticsAveragePrice,
-              orderStats.averageBitcoinBuyPrice,
+            _StatRow(
+              label: context.loc.exchangeStatisticsAveragePrice,
+              values: state.formattedAvgBuyPrice,
+              description: context.loc.exchangeStatisticsBuyAvgPriceDesc,
             ),
           ],
-          context: context,
         ),
         const SizedBox(height: 12),
         _StatSectionCard(
@@ -166,85 +182,95 @@ class _OrderStatsSection extends StatelessWidget {
           icon: Icons.arrow_upward,
           iconColor: Colors.red,
           stats: [
-            _buildAmountStatRow(
-              context,
-              context.loc.exchangeStatisticsVolume,
-              orderStats.bitcoinSellVolume,
+            _StatRow(
+              label: context.loc.exchangeStatisticsVolume,
+              values: state.formattedSellVolume,
+              description: context.loc.exchangeStatisticsSellVolumeDesc,
             ),
-            _buildAmountStatRow(
-              context,
-              context.loc.exchangeStatisticsTradeCount,
-              orderStats.bitcoinSellTradeCount,
+            _StatRow(
+              label: context.loc.exchangeStatisticsTradeCount,
+              values: state.formattedSellTradeCount,
+              description: context.loc.exchangeStatisticsSellTradeCountDesc,
             ),
-            _buildAmountStatRow(
-              context,
-              context.loc.exchangeStatisticsAveragePrice,
-              orderStats.averageBitcoinSellPrice,
+            _StatRow(
+              label: context.loc.exchangeStatisticsAveragePrice,
+              values: state.formattedAvgSellPrice,
+              description: context.loc.exchangeStatisticsSellAvgPriceDesc,
             ),
           ],
-          context: context,
         ),
         const SizedBox(height: 12),
-        _StatCard(
+        _MultiValueStatCard(
           title: context.loc.exchangeStatisticsTotalVolume,
-          value: _formatAmountList(orderStats.totalBitcoinTradingVolume),
+          description: context.loc.exchangeStatisticsTotalVolumeDesc,
+          values: state.formattedTotalVolume,
           icon: Icons.trending_up,
-          context: context,
         ),
       ],
     );
   }
+}
 
-  Widget _buildAmountStatRow(
-    BuildContext context,
-    String label,
-    List<AmountByCurrencyCode> amounts,
-  ) {
+class _StatRow extends StatelessWidget {
+  const _StatRow({
+    required this.label,
+    required this.values,
+    this.description,
+  });
+
+  final String label;
+  final List<String> values;
+  final String? description;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          BBText(
-            label,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.textMuted,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BBText(
+                  label,
+                  style: context.font.bodyMedium?.copyWith(
+                    color: context.appColors.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                if (description != null) ...[
+                  const SizedBox(height: 2),
+                  BBText(
+                    description!,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
-          BBText(
-            _formatAmountList(amounts),
-            style: context.font.bodyMedium?.copyWith(
-              color: context.appColors.onSurface,
-              fontWeight: FontWeight.w500,
-            ),
+          const SizedBox(width: 16),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: values
+                .map(
+                  (value) => BBText(
+                    value,
+                    style: context.font.bodyMedium?.copyWith(
+                      color: context.appColors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
     );
-  }
-
-  String _formatAmountList(List<AmountByCurrencyCode> amounts) {
-    if (amounts.isEmpty) return '0';
-
-    // Show the first currency value or BTC if available
-    final btcAmount = amounts.where((a) => a.currency == 'BTC').firstOrNull;
-    if (btcAmount != null) {
-      return '${_formatNumber(btcAmount.value)} BTC';
-    }
-
-    final first = amounts.first;
-    return '${_formatNumber(first.value)} ${first.currency}';
-  }
-
-  String _formatNumber(double value) {
-    if (value >= 1000000) {
-      return '${(value / 1000000).toStringAsFixed(2)}M';
-    } else if (value >= 1000) {
-      return '${(value / 1000).toStringAsFixed(2)}K';
-    } else if (value < 1) {
-      return value.toStringAsFixed(8);
-    }
-    return value.toStringAsFixed(2);
   }
 }
 
@@ -253,13 +279,13 @@ class _StatCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.icon,
-    required this.context,
+    this.description,
   });
 
   final String title;
   final String value;
   final IconData icon;
-  final BuildContext context;
+  final String? description;
 
   @override
   Widget build(BuildContext context) {
@@ -279,6 +305,7 @@ class _StatCard extends StatelessWidget {
         ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(10),
@@ -311,6 +338,101 @@ class _StatCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                if (description != null) ...[
+                  const SizedBox(height: 6),
+                  BBText(
+                    description!,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MultiValueStatCard extends StatelessWidget {
+  const _MultiValueStatCard({
+    required this.title,
+    required this.values,
+    required this.icon,
+    this.description,
+  });
+
+  final String title;
+  final List<String> values;
+  final IconData icon;
+  final String? description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: context.appColors.overlay.withValues(alpha: 0.05),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: context.appColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: context.appColors.primary,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BBText(
+                  title,
+                  style: context.font.bodySmall?.copyWith(
+                    color: context.appColors.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                ...values.map(
+                  (value) => BBText(
+                    value,
+                    style: context.font.headlineSmall?.copyWith(
+                      color: context.appColors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                if (description != null) ...[
+                  const SizedBox(height: 6),
+                  BBText(
+                    description!,
+                    style: context.font.bodySmall?.copyWith(
+                      color: context.appColors.textMuted,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -326,14 +448,12 @@ class _StatSectionCard extends StatelessWidget {
     required this.icon,
     required this.iconColor,
     required this.stats,
-    required this.context,
   });
 
   final String title;
   final IconData icon;
   final Color iconColor;
   final List<Widget> stats;
-  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
@@ -379,12 +499,15 @@ class _StatSectionCard extends StatelessWidget {
 }
 
 class _BillerStatsSection extends StatelessWidget {
-  const _BillerStatsSection({required this.billerStats});
+  const _BillerStatsSection({required this.state});
 
-  final BillerStats billerStats;
+  final StatisticsState state;
 
   @override
   Widget build(BuildContext context) {
+    final billerStats = state.billerStats;
+    if (billerStats == null) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -403,7 +526,7 @@ class _BillerStatsSection extends StatelessWidget {
             ),
           ),
         const SizedBox(height: 16),
-        ...billerStats.stats.map(
+        ...state.formattedBillerStats.map(
           (stat) => _BillerStatCard(stat: stat),
         ),
       ],
@@ -412,9 +535,11 @@ class _BillerStatsSection extends StatelessWidget {
 }
 
 class _BillerStatCard extends StatelessWidget {
-  const _BillerStatCard({required this.stat});
+  const _BillerStatCard({
+    required this.stat,
+  });
 
-  final BillerStat stat;
+  final FormattedBillerStat stat;
 
   @override
   Widget build(BuildContext context) {
@@ -451,7 +576,7 @@ class _BillerStatCard extends StatelessWidget {
                 child: _buildStatItem(
                   context,
                   context.loc.exchangeStatisticsTotalAmount,
-                  _formatAmount(stat.totalAmount),
+                  stat.formattedAmount,
                 ),
               ),
               Expanded(
@@ -489,14 +614,4 @@ class _BillerStatCard extends StatelessWidget {
       ],
     );
   }
-
-  String _formatAmount(double value) {
-    if (value >= 1000000) {
-      return '\$${(value / 1000000).toStringAsFixed(2)}M';
-    } else if (value >= 1000) {
-      return '\$${(value / 1000).toStringAsFixed(2)}K';
-    }
-    return '\$${value.toStringAsFixed(2)}';
-  }
 }
-

@@ -1,13 +1,15 @@
 import 'package:bb_mobile/features/labels/adapters/labels_converter_apadater.dart';
 import 'package:bb_mobile/features/labels/adapters/labels_repository_adapter.dart';
 import 'package:bb_mobile/features/labels/application/labels_converter_port.dart';
+import 'package:bb_mobile/features/labels/application/labels_converter_port_registry.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/store_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/delete_label_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/export_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/fetch_distinct_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/fetch_label_by_reference_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/export_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/label_format.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/storage/storage.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
@@ -21,6 +23,11 @@ class LabelsLocator {
     locator.registerLazySingleton<LabelsConverterPort>(
       () => LabelsConverterAdapter(locator<Bip329LabelsCodec>()),
     );
+    locator.registerLazySingleton<LabelsConverterPortRegistry>(
+      () => LabelsConverterPortRegistry({
+        LabelFormat.bip329: locator<LabelsConverterPort>(),
+      }),
+    );
   }
 
   static void registerFrameworks(GetIt locator) {
@@ -28,15 +35,14 @@ class LabelsLocator {
   }
 
   static void registerUseCases(GetIt locator) {
-    locator.registerFactory<DeleteLabelUsecase>(
-      () =>
-          DeleteLabelUsecase(labelRepository: locator<LabelsRepositoryPort>()),
+    locator.registerFactory<TrashLabelUsecase>(
+      () => TrashLabelUsecase(labelRepository: locator<LabelsRepositoryPort>()),
     );
 
     locator.registerFactory<ExportLabelsUsecase>(
       () => ExportLabelsUsecase(
         labelRepository: locator<LabelsRepositoryPort>(),
-        labelConverter: locator<LabelsConverterPort>(),
+        converterRegistry: locator<LabelsConverterPortRegistry>(),
       ),
     );
 
@@ -47,15 +53,14 @@ class LabelsLocator {
       ),
     );
 
-    locator.registerFactory<FetchDistinctLabelsUsecase>(
-      () => FetchDistinctLabelsUsecase(
+    locator.registerFactory<FetchAllLabelsUsecase>(
+      () => FetchAllLabelsUsecase(
         labelRepository: locator<LabelsRepositoryPort>(),
       ),
     );
 
-    locator.registerFactory<StoreLabelsUsecase>(
-      () =>
-          StoreLabelsUsecase(labelRepository: locator<LabelsRepositoryPort>()),
+    locator.registerFactory<StoreLabelUsecase>(
+      () => StoreLabelUsecase(labelRepository: locator<LabelsRepositoryPort>()),
     );
 
     locator.registerFactory<FetchLabelByReferenceUsecase>(
@@ -69,9 +74,9 @@ class LabelsLocator {
     locator.registerLazySingleton<LabelsFacade>(
       () => LabelsFacade(
         fetchLabelByReferenceUsecase: locator<FetchLabelByReferenceUsecase>(),
-        fetchDistinctLabelsUsecase: locator<FetchDistinctLabelsUsecase>(),
-        storeLabelsUsecase: locator<StoreLabelsUsecase>(),
-        deleteLabelUsecase: locator<DeleteLabelUsecase>(),
+        fetchAllLabelsUsecase: locator<FetchAllLabelsUsecase>(),
+        storeLabelsUsecase: locator<StoreLabelUsecase>(),
+        trashLabelUsecase: locator<TrashLabelUsecase>(),
       ),
     );
   }

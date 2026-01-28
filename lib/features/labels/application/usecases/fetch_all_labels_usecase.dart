@@ -1,22 +1,25 @@
+import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
+import 'package:bb_mobile/features/labels/application/application_label.dart';
 import 'package:bb_mobile/features/labels/application/labels_repository_port.dart';
 import 'package:bb_mobile/features/labels/domain/label_error.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
-class FetchDistinctLabelsUsecase {
+class FetchAllLabelsUsecase {
   final LabelsRepositoryPort _labelRepository;
 
-  FetchDistinctLabelsUsecase({required LabelsRepositoryPort labelRepository})
+  FetchAllLabelsUsecase({required LabelsRepositoryPort labelRepository})
     : _labelRepository = labelRepository;
 
-  Future<Set<String>> execute() async {
+  Future<List<ApplicationLabel>> execute() async {
     try {
       final labels = await _labelRepository.fetchAll();
-      final strings = labels.map((label) => label.label).toList();
-      return strings.toSet();
+      return labels
+          .map((label) => LabelMapper.labelEntityToApplicationLabel(label))
+          .toList();
     } on LabelError {
       rethrow;
     } catch (e) {
-      log.severe('$FetchDistinctLabelsUsecase: $e');
+      log.severe('$FetchAllLabelsUsecase: $e');
       throw LabelError.unexpected('Failed to fetch distinct labels: $e');
     }
   }

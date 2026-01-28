@@ -51,5 +51,9 @@ class Schema11To12 {
     await m.database
         .update(schema12.autoSwap)
         .write(RawValuesInsertable({'show_warning': const Constant<int>(1)}));
+
+    // MempoolServers table: add enableSsl column
+    final mempoolServers = schema12.mempoolServers;
+    await m.addColumn(mempoolServers, mempoolServers.enableSsl);
   }
 }
