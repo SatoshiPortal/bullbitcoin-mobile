@@ -19,8 +19,8 @@ class FetchAllLabelsUsecase {
     } on LabelError {
       rethrow;
     } catch (e) {
-      log.severe('$FetchAllLabelsUsecase: $e');
-      throw LabelError.unexpected('Failed to fetch distinct labels: $e');
+      log.severe(error: e, trace: StackTrace.current);
+      throw LabelError.unexpected('Failed to fetch all labels: $e');
     }
   }
 }

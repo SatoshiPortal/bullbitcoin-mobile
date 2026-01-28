@@ -58,7 +58,9 @@ Future<void> doMigration0_1to0_2() async {
           );
         } catch (e) {
           log.severe(
-            '0.1.*: Failed to fetch seed for wallet ${walletObj['id']}',
+            message: '0.1.*: Failed to fetch seed',
+            error: e,
+            trace: StackTrace.current,
           );
         }
 
@@ -78,7 +80,11 @@ Future<void> doMigration0_1to0_2() async {
         final w = OldWallet.fromJson(walletObj);
         wallets.add(w);
       } catch (e) {
-        log.severe('0.1.*: Error processing wallet $walletId: $e');
+        log.severe(
+          message: '0.1.*: Error processing wallet',
+          error: e,
+          trace: StackTrace.current,
+        );
         continue;
       }
     }
@@ -126,7 +132,7 @@ Future<void> doMigration0_1to0_2() async {
       value: '0.2.0',
     ); // gets overwritten by the exact 0.2.* version later
   } catch (e, stack) {
-    log.severe('Legacy Migration Failed', error: e, trace: stack);
+    log.severe(message: 'Legacy Migration Failed', error: e, trace: stack);
     rethrow;
   }
 }
@@ -195,26 +201,23 @@ updateWalletObj(
 Future<Map<String, dynamic>> addIsLiquidFalse(
   Map<String, dynamic> walletObj,
 ) async {
-  walletObj['transactions'] =
-      walletObj['transactions']
-          .map((tx) => tx as Map<String, dynamic>)
-          .map((tx) => tx..addAll({'isLiquid': false}))
-          .toList();
+  walletObj['transactions'] = walletObj['transactions']
+      .map((tx) => tx as Map<String, dynamic>)
+      .map((tx) => tx..addAll({'isLiquid': false}))
+      .toList();
 
   if (walletObj['myAddressBook'] != null) {
-    walletObj['myAddressBook'] =
-        walletObj['myAddressBook']
-            .map((addr) => addr as Map<String, dynamic>)
-            .map((addr) => addr..addAll({'isLiquid': false}))
-            .toList();
+    walletObj['myAddressBook'] = walletObj['myAddressBook']
+        .map((addr) => addr as Map<String, dynamic>)
+        .map((addr) => addr..addAll({'isLiquid': false}))
+        .toList();
   }
 
   if (walletObj['externalAddressBook'] != null) {
-    walletObj['externalAddressBook'] =
-        walletObj['externalAddressBook']
-            .map((addr) => addr as Map<String, dynamic>)
-            .map((addr) => addr..addAll({'isLiquid': false}))
-            .toList();
+    walletObj['externalAddressBook'] = walletObj['externalAddressBook']
+        .map((addr) => addr as Map<String, dynamic>)
+        .map((addr) => addr..addAll({'isLiquid': false}))
+        .toList();
   }
 
   return walletObj;

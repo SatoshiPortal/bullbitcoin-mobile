@@ -77,4 +77,10 @@ class SettingsDatasource {
       (f) => f(id: const Value(1), themeMode: Value(themeMode.name)),
     );
   }
+
+  Future<void> setErrorReportingEnabled(bool enabled) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), isErrorReportingEnabled: Value(enabled)),
+    );
+  }
 }

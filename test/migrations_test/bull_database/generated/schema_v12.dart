@@ -1798,6 +1798,17 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     $customConstraints: 'NOT NULL DEFAULT \'system\'',
     defaultValue: const CustomExpression('\'system\''),
   );
+  late final GeneratedColumn<int> isErrorReportingEnabled =
+      GeneratedColumn<int>(
+        'is_error_reporting_enabled',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints:
+            'NOT NULL DEFAULT 0 CHECK (is_error_reporting_enabled IN (0, 1))',
+        defaultValue: const CustomExpression('0'),
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1811,6 +1822,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     useTorProxy,
     torProxyPort,
     themeMode,
+    isErrorReportingEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1867,6 +1879,10 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.string,
         data['${effectivePrefix}theme_mode'],
       )!,
+      isErrorReportingEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_error_reporting_enabled'],
+      )!,
     );
   }
 
@@ -1891,6 +1907,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final int useTorProxy;
   final int torProxyPort;
   final String themeMode;
+  final int isErrorReportingEnabled;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1903,6 +1920,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.useTorProxy,
     required this.torProxyPort,
     required this.themeMode,
+    required this.isErrorReportingEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1918,6 +1936,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['use_tor_proxy'] = Variable<int>(useTorProxy);
     map['tor_proxy_port'] = Variable<int>(torProxyPort);
     map['theme_mode'] = Variable<String>(themeMode);
+    map['is_error_reporting_enabled'] = Variable<int>(isErrorReportingEnabled);
     return map;
   }
 
@@ -1934,6 +1953,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       useTorProxy: Value(useTorProxy),
       torProxyPort: Value(torProxyPort),
       themeMode: Value(themeMode),
+      isErrorReportingEnabled: Value(isErrorReportingEnabled),
     );
   }
 
@@ -1954,6 +1974,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       useTorProxy: serializer.fromJson<int>(json['useTorProxy']),
       torProxyPort: serializer.fromJson<int>(json['torProxyPort']),
       themeMode: serializer.fromJson<String>(json['themeMode']),
+      isErrorReportingEnabled: serializer.fromJson<int>(
+        json['isErrorReportingEnabled'],
+      ),
     );
   }
   @override
@@ -1971,6 +1994,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'useTorProxy': serializer.toJson<int>(useTorProxy),
       'torProxyPort': serializer.toJson<int>(torProxyPort),
       'themeMode': serializer.toJson<String>(themeMode),
+      'isErrorReportingEnabled': serializer.toJson<int>(
+        isErrorReportingEnabled,
+      ),
     };
   }
 
@@ -1986,6 +2012,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     int? useTorProxy,
     int? torProxyPort,
     String? themeMode,
+    int? isErrorReportingEnabled,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -1998,6 +2025,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     useTorProxy: useTorProxy ?? this.useTorProxy,
     torProxyPort: torProxyPort ?? this.torProxyPort,
     themeMode: themeMode ?? this.themeMode,
+    isErrorReportingEnabled:
+        isErrorReportingEnabled ?? this.isErrorReportingEnabled,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -2026,6 +2055,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ? data.torProxyPort.value
           : this.torProxyPort,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      isErrorReportingEnabled: data.isErrorReportingEnabled.present
+          ? data.isErrorReportingEnabled.value
+          : this.isErrorReportingEnabled,
     );
   }
 
@@ -2042,7 +2074,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
-          ..write('themeMode: $themeMode')
+          ..write('themeMode: $themeMode, ')
+          ..write('isErrorReportingEnabled: $isErrorReportingEnabled')
           ..write(')'))
         .toString();
   }
@@ -2060,6 +2093,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     useTorProxy,
     torProxyPort,
     themeMode,
+    isErrorReportingEnabled,
   );
   @override
   bool operator ==(Object other) =>
@@ -2075,7 +2109,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.isDevModeEnabled == this.isDevModeEnabled &&
           other.useTorProxy == this.useTorProxy &&
           other.torProxyPort == this.torProxyPort &&
-          other.themeMode == this.themeMode);
+          other.themeMode == this.themeMode &&
+          other.isErrorReportingEnabled == this.isErrorReportingEnabled);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2090,6 +2125,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<int> useTorProxy;
   final Value<int> torProxyPort;
   final Value<String> themeMode;
+  final Value<int> isErrorReportingEnabled;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2102,6 +2138,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.isErrorReportingEnabled = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2115,6 +2152,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.isErrorReportingEnabled = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2133,6 +2171,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<int>? useTorProxy,
     Expression<int>? torProxyPort,
     Expression<String>? themeMode,
+    Expression<int>? isErrorReportingEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2146,6 +2185,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (useTorProxy != null) 'use_tor_proxy': useTorProxy,
       if (torProxyPort != null) 'tor_proxy_port': torProxyPort,
       if (themeMode != null) 'theme_mode': themeMode,
+      if (isErrorReportingEnabled != null)
+        'is_error_reporting_enabled': isErrorReportingEnabled,
     });
   }
 
@@ -2161,6 +2202,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<int>? useTorProxy,
     Value<int>? torProxyPort,
     Value<String>? themeMode,
+    Value<int>? isErrorReportingEnabled,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2174,6 +2216,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       useTorProxy: useTorProxy ?? this.useTorProxy,
       torProxyPort: torProxyPort ?? this.torProxyPort,
       themeMode: themeMode ?? this.themeMode,
+      isErrorReportingEnabled:
+          isErrorReportingEnabled ?? this.isErrorReportingEnabled,
     );
   }
 
@@ -2213,6 +2257,11 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (themeMode.present) {
       map['theme_mode'] = Variable<String>(themeMode.value);
     }
+    if (isErrorReportingEnabled.present) {
+      map['is_error_reporting_enabled'] = Variable<int>(
+        isErrorReportingEnabled.value,
+      );
+    }
     return map;
   }
 
@@ -2229,7 +2278,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
-          ..write('themeMode: $themeMode')
+          ..write('themeMode: $themeMode, ')
+          ..write('isErrorReportingEnabled: $isErrorReportingEnabled')
           ..write(')'))
         .toString();
   }

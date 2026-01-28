@@ -39,7 +39,11 @@ class RecoverBullRepository {
 
       return utf8.decode(decryptedBytes);
     } catch (e) {
-      log.severe('Error restoring backup: $e');
+      log.severe(
+        message: 'Error restoring vault',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }

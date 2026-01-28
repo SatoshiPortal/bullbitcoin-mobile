@@ -5393,7 +5393,7 @@ final class Schema12 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape23 settings = Shape23(
+  late final Shape35 settings = Shape35(
     source: i0.VersionedTable(
       entityName: 'settings',
       withoutRowId: false,
@@ -5411,6 +5411,7 @@ final class Schema12 extends i0.VersionedSchema {
         _column_155,
         _column_156,
         _column_157,
+        _column_233,
       ],
       attachedDatabase: database,
     ),
@@ -5504,7 +5505,7 @@ final class Schema12 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape35 mempoolServers = Shape35(
+  late final Shape36 mempoolServers = Shape36(
     source: i0.VersionedTable(
       entityName: 'mempool_servers',
       withoutRowId: false,
@@ -5515,7 +5516,7 @@ final class Schema12 extends i0.VersionedSchema {
         _column_159,
         _column_179,
         _column_181,
-        _column_233,
+        _column_234,
       ],
       attachedDatabase: database,
     ),
@@ -5668,6 +5669,45 @@ i1.GeneratedColumn<String> _column_232(String aliasedName) =>
 
 class Shape35 extends i0.VersionedTable {
   Shape35({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get environment =>
+      columnsByName['environment']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get bitcoinUnit =>
+      columnsByName['bitcoin_unit']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get language =>
+      columnsByName['language']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get currency =>
+      columnsByName['currency']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get hideAmounts =>
+      columnsByName['hide_amounts']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isSuperuser =>
+      columnsByName['is_superuser']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isDevModeEnabled =>
+      columnsByName['is_dev_mode_enabled']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get useTorProxy =>
+      columnsByName['use_tor_proxy']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get torProxyPort =>
+      columnsByName['tor_proxy_port']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get themeMode =>
+      columnsByName['theme_mode']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isErrorReportingEnabled =>
+      columnsByName['is_error_reporting_enabled']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_233(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'is_error_reporting_enabled',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints:
+          'NOT NULL DEFAULT 0 CHECK (is_error_reporting_enabled IN (0, 1))',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+
+class Shape36 extends i0.VersionedTable {
+  Shape36({required super.source, required super.alias}) : super.aliased();
   i1.GeneratedColumn<String> get url =>
       columnsByName['url']! as i1.GeneratedColumn<String>;
   i1.GeneratedColumn<int> get isTestnet =>
@@ -5680,7 +5720,7 @@ class Shape35 extends i0.VersionedTable {
       columnsByName['enable_ssl']! as i1.GeneratedColumn<int>;
 }
 
-i1.GeneratedColumn<int> _column_233(String aliasedName) =>
+i1.GeneratedColumn<int> _column_234(String aliasedName) =>
     i1.GeneratedColumn<int>(
       'enable_ssl',
       aliasedName,

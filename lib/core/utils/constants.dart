@@ -101,6 +101,9 @@ class ApiServiceConstants {
   static String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
   static String googleDriveClientId =
       dotenv.env['GOOGLE_DRIVE_CLIENT_ID'] ?? '';
+
+  // Error reports
+  static String sentryDsn = dotenv.env['SENTRY_DSN'] ?? '';
 }
 
 class LocatorInstanceNameConstants {

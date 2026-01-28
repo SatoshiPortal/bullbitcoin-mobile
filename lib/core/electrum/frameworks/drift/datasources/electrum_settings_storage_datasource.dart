@@ -20,7 +20,11 @@ class ElectrumSettingsStorageDatasource {
         'Successfully stored/updated electrum settings: ${settings.network}',
       );
     } catch (e) {
-      log.severe('Failed to store/update electrum settings: $e');
+      log.severe(
+        message: 'Failed to store/update electrum settings',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -28,8 +32,9 @@ class ElectrumSettingsStorageDatasource {
   Future<List<ElectrumSettingsModel>> fetchAll() async {
     final rows = await _sqlite.managers.electrumSettings.get();
 
-    final settings =
-        rows.map((row) => ElectrumSettingsModel.fromSqlite(row)).toList();
+    final settings = rows
+        .map((row) => ElectrumSettingsModel.fromSqlite(row))
+        .toList();
 
     return settings;
   }
@@ -37,25 +42,25 @@ class ElectrumSettingsStorageDatasource {
   Future<List<ElectrumSettingsModel>> fetchByEnvironment(
     ElectrumEnvironment environment,
   ) async {
-    final rows =
-        await _sqlite.managers.electrumSettings
-            .filter(
-              (f) =>
-                  f.network(
-                    environment.isTestnet
-                        ? ElectrumServerNetwork.bitcoinTestnet
-                        : ElectrumServerNetwork.bitcoinMainnet,
-                  ) |
-                  f.network(
-                    environment.isTestnet
-                        ? ElectrumServerNetwork.liquidTestnet
-                        : ElectrumServerNetwork.liquidMainnet,
-                  ),
-            )
-            .get();
+    final rows = await _sqlite.managers.electrumSettings
+        .filter(
+          (f) =>
+              f.network(
+                environment.isTestnet
+                    ? ElectrumServerNetwork.bitcoinTestnet
+                    : ElectrumServerNetwork.bitcoinMainnet,
+              ) |
+              f.network(
+                environment.isTestnet
+                    ? ElectrumServerNetwork.liquidTestnet
+                    : ElectrumServerNetwork.liquidMainnet,
+              ),
+        )
+        .get();
 
-    final settings =
-        rows.map((row) => ElectrumSettingsModel.fromSqlite(row)).toList();
+    final settings = rows
+        .map((row) => ElectrumSettingsModel.fromSqlite(row))
+        .toList();
 
     return settings;
   }
@@ -63,10 +68,9 @@ class ElectrumSettingsStorageDatasource {
   Future<ElectrumSettingsModel> fetchByNetwork(
     ElectrumServerNetwork network,
   ) async {
-    final row =
-        await _sqlite.managers.electrumSettings
-            .filter((f) => f.network(network))
-            .getSingle();
+    final row = await _sqlite.managers.electrumSettings
+        .filter((f) => f.network(network))
+        .getSingle();
 
     final settings = ElectrumSettingsModel.fromSqlite(row);
 

@@ -85,7 +85,11 @@ class CheckAllServiceStatusUsecase {
         lastChecked: now,
       );
     } catch (e) {
-      log.severe('Error checking service status: $e');
+      log.severe(
+        message: 'Error checking service statuses',
+        error: e,
+        trace: StackTrace.current,
+      );
       return _createUnknownStatus(now);
     }
   }
@@ -136,10 +140,9 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkBoltzService(Network network) async {
     try {
-      final boltzRepository =
-          network == Network.bitcoinMainnet
-              ? _mainnetBoltzSwapRepository
-              : _testnetBoltzSwapRepository;
+      final boltzRepository = network == Network.bitcoinMainnet
+          ? _mainnetBoltzSwapRepository
+          : _testnetBoltzSwapRepository;
 
       await boltzRepository.updateSwapLimitsAndFees(
         SwapType.bitcoinToLightning,

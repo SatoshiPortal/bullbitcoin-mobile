@@ -26,10 +26,9 @@ class CreateWithdrawOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
       final isETransfer = recipientType == RecipientType.interacEmailCad;
       final order = await repo.placeWithdrawalOrder(
         fiatAmount: fiatAmount,
@@ -40,7 +39,7 @@ class CreateWithdrawOrderUsecase {
     } on WithdrawError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateWithdrawalOrderUsecase: $e');
+      log.severe(error: e, trace: StackTrace.current);
       throw WithdrawError.unexpected(message: '$e');
     }
   }

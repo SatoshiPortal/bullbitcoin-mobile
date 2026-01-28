@@ -21,14 +21,13 @@ class GetOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
       final order = await repo.getOrder(orderId);
       return order;
     } catch (e) {
-      log.severe('Error in GetOrderUsecase: $e');
+      log.severe(error: e, trace: StackTrace.current);
       throw GetOrderException('$e');
     }
   }

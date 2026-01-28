@@ -16,7 +16,11 @@ class MempoolServerStorageDatasource {
 
       log.fine('Successfully stored/updated mempool server: ${server.url}');
     } catch (e) {
-      log.severe('Failed to store/update mempool server: $e');
+      log.severe(
+        message: 'Failed to store/update mempool server',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -48,17 +52,22 @@ class MempoolServerStorageDatasource {
 
   Future<bool> deleteCustomServer(MempoolServerNetwork network) async {
     try {
-      final deleted =
-          await _sqlite.managers.mempoolServers
-              .filter((f) => f.isLiquid(network.isLiquid))
-              .filter((f) => f.isTestnet(network.isTestnet))
-              .filter((f) => f.isCustom(true))
-              .delete();
+      final deleted = await _sqlite.managers.mempoolServers
+          .filter((f) => f.isLiquid(network.isLiquid))
+          .filter((f) => f.isTestnet(network.isTestnet))
+          .filter((f) => f.isCustom(true))
+          .delete();
 
-      log.fine('Deleted $deleted custom mempool server(s) for network: $network');
+      log.fine(
+        'Deleted $deleted custom mempool server(s) for network: $network',
+      );
       return deleted > 0;
     } catch (e) {
-      log.severe('Failed to delete custom mempool server: $e');
+      log.severe(
+        message: 'Failed to delete custom mempool server',
+        error: e,
+        trace: StackTrace.current,
+      );
       return false;
     }
   }

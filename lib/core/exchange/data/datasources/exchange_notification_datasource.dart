@@ -113,7 +113,11 @@ class ExchangeNotificationDatasource {
         _isManuallyDisconnected = true; // Prevent auto-reconnect
       }
 
-      log.severe('WebSocket connection failed: $e');
+      log.severe(
+        message: 'WebSocket connection failed',
+        error: e,
+        trace: StackTrace.current,
+      );
       _handleDisconnect();
       rethrow;
     }
@@ -149,7 +153,11 @@ class ExchangeNotificationDatasource {
   }
 
   void _handleError(dynamic error) {
-    log.severe('WebSocket error: $error');
+    log.severe(
+      message: 'WebSocket error',
+      error: error,
+      trace: StackTrace.current,
+    );
     _handleDisconnect();
   }
 

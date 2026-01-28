@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/report.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 export 'package:logging_colorful/logging_colorful.dart';
@@ -21,7 +22,11 @@ class Logger {
       final logs = await logsFile.readAsString();
       return logs.split('\n').where((e) => e.isNotEmpty).toList();
     } catch (e) {
-      severe('Failed to read logs: $e');
+      severe(
+        message: 'Failed to read logs',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -59,11 +64,7 @@ class Logger {
       // We don't want to keep the info session in memory, they should be written to file
       if (record.level != dep.Level.INFO) _queueWrite(tsvLine);
 
-      if (kDebugMode) {
-        // remove timestamp and errors
-        final debug = content.sublist(1, 3);
-        debugPrint(debug.join('\t'));
-      }
+      if (kDebugMode) debugPrint(content.join('\t'));
     });
   }
 
@@ -85,7 +86,7 @@ class Logger {
       await logsFile.create(recursive: true);
       fine('Logs created');
     } catch (e) {
-      severe('Logs existence: $e');
+      severe(message: 'Logs existence', error: e, trace: StackTrace.current);
     }
   }
 
@@ -137,8 +138,14 @@ class Logger {
 
   /// Logs serious errors that may prevent parts of the app from working correctly.
   /// Use for unrecoverable errors that require immediate attention.
-  void severe(Object? message, {Object? error, StackTrace? trace}) {
-    logger.severe(message, error, trace);
+  /// [trace] is required to ensure proper error tracking in Sentry.
+  void severe({
+    String? message,
+    required StackTrace trace,
+    required Object error,
+  }) {
+    logger.severe(message ?? error.toString(), error, trace);
+    Report.error(message: message, exception: error, stackTrace: trace);
   }
 
   /// Logs critical errors that could crash the app or make it unusable.

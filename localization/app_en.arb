@@ -12629,5 +12629,29 @@
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
+  },
+  "settingsErrorReportingTitle": "Error reporting",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Error Reporting Program",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Help us improve Bull Bitcoin by participating in our error reporting program. It directly helps us make Bull Bitcoin better for everyone.\n\nWhen enabled, we automatically send error reports when issues occur in the app. This data helps us understand what's happening for our users worldwide and prioritize fixes accordingly.\n\nWe do not share this information with any third parties. We use Sentry's open-source client with our own self-hosted backend server.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Accept",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Cancel",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Restart the app to apply this change",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
   }
 }

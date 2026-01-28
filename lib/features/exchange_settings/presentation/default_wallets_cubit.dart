@@ -47,7 +47,11 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         ),
       );
     } catch (e) {
-      log.severe('Failed to load default wallets: $e');
+      log.severe(
+        message: 'Failed to load default wallets',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           isLoading: false,
@@ -104,13 +108,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       return;
     }
 
-    emit(
-      state.copyWith(
-        isSaving: true,
-        saveError: null,
-        saveSuccess: false,
-      ),
-    );
+    emit(state.copyWith(isSaving: true, saveError: null, saveSuccess: false));
 
     try {
       final existingWallet = state.defaultWallets?.getWallet(type);
@@ -137,7 +135,11 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         emit(state.copyWith(saveSuccess: false));
       }
     } catch (e) {
-      log.severe('Failed to save wallet: $e');
+      log.severe(
+        message: 'Failed to save wallet',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           isSaving: false,
@@ -154,12 +156,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       return;
     }
 
-    emit(
-      state.copyWith(
-        isSaving: true,
-        saveError: null,
-      ),
-    );
+    emit(state.copyWith(isSaving: true, saveError: null));
 
     try {
       await _deleteDefaultWalletUsecase.execute(
@@ -185,7 +182,11 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
         emit(state.copyWith(saveSuccess: false));
       }
     } catch (e) {
-      log.severe('Failed to delete wallet: $e');
+      log.severe(
+        message: 'Failed to delete wallet',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           isSaving: false,
@@ -225,10 +226,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
           liquid: current.liquid,
         );
       case WalletAddressType.lightning:
-        return DefaultWallets(
-          bitcoin: current.bitcoin,
-          liquid: current.liquid,
-        );
+        return DefaultWallets(bitcoin: current.bitcoin, liquid: current.liquid);
       case WalletAddressType.liquid:
         return DefaultWallets(
           bitcoin: current.bitcoin,
@@ -248,4 +246,3 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
     }
   }
 }
-

@@ -45,7 +45,11 @@ class SwapWatcherService {
         await processSwap(swap);
       },
       onError: (error) {
-        log.severe('Swap stream error in watcher: $error');
+        log.severe(
+          message: 'Swap stream error in watcher',
+          error: error,
+          trace: StackTrace.current,
+        );
       },
       onDone: () {
         log.fine('Swap stream done in watcher.');
@@ -129,7 +133,9 @@ class SwapWatcherService {
       // ignore: empty_catches
     } catch (e) {
       log.severe(
-        '{"swapId": "${swap.id}", "function": "processSwap", "action": "error", "error": "$e", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        message: 'Error processing swap',
+        error: e,
+        trace: StackTrace.current,
       );
     } finally {
       Future.delayed(const Duration(seconds: 1), () {
@@ -163,7 +169,7 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend"}',
+          message: "Coop claim failed. Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -185,11 +191,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processReceiveLnToBitcoinClaim"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -219,7 +221,8 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend", "action": "coop_claim_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          message:
+              '"Coop claim failed. Attempting script path spend", "action": "coop_claim_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
           error: e,
           trace: st,
         );
@@ -242,11 +245,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -273,7 +272,8 @@ class SwapWatcherService {
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
       log.severe(
-        '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnCoopSign", "action": "coop_close_failed", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        message:
+            '"action": "coop_close_failed", "timestamp": "${DateTime.now().toIso8601String()}"}',
         error: e,
         trace: st,
       );
@@ -318,7 +318,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
     } catch (e, st) {
       log.severe(
-        '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnCoopSign", "action": "coop_close_failed", "timestamp": "${DateTime.now().toIso8601String()}"}',
+        message:
+            '"action": "coop_close_failed", "timestamp": "${DateTime.now().toIso8601String()}"}',
         error: e,
         trace: st,
       );
@@ -371,7 +372,7 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend", "action": "coop_refund_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          message: "Coop refund failed. Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -400,11 +401,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processSendLiquidToLnRefund"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -455,7 +452,7 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend", "action": "coop_refund_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          message: "Coop refund failed. Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -484,11 +481,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processSendBitcoinToLnRefund"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -541,7 +534,8 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend", "action": "coop_claim_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          message:
+              '"Coop claim failed. Attempting script path spend", "action": "coop_claim_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
           error: e,
           trace: st,
         );
@@ -563,11 +557,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim"',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -623,7 +613,7 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend", "action": "coop_claim_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          message: "Coop claim failed. Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -645,11 +635,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -704,7 +690,7 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend", "action": "coop_refund_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          message: "Coop refund failed. Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -734,11 +720,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinRefund"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -789,7 +771,8 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend", "action": "coop_refund_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+          message:
+              '"Coop refund failed. Attempting script path spend", "action": "coop_refund_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
           error: e,
           trace: st,
         );
@@ -819,11 +802,7 @@ class SwapWatcherService {
     } catch (e, st) {
       // Re-subscribe on error so watcher continues monitoring
       _boltzRepo.subscribeToSwaps([swap.id]);
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidRefund"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
@@ -851,11 +830,7 @@ class SwapWatcherService {
           return;
       }
     } catch (e, st) {
-      log.severe(
-        '{"swapId": "${swap.id}", "function": "_processCompletedWithoutTransaction"}',
-        error: e,
-        trace: st,
-      );
+      log.severe(error: e, trace: st);
       rethrow;
     }
   }
