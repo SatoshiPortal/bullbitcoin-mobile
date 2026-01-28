@@ -5208,31 +5208,31 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap is enabled",
+  "autoswapWarningCardTitle": "Autoswap is recommended",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
-  "autoswapWarningCardSubtitle": "A swap will be triggered if your Instant Payments balance exceeds 0.02 BTC.",
+  "autoswapWarningCardSubtitle": "Click to learn more, disable or configure",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
+  },
+  "autoswapActiveCardTitle": "Autoswap is active",
+  "@autoswapActiveCardTitle": {
+    "description": "Title text shown when autoswap is enabled and active"
   },
   "autoswapWarningDescription": "Autoswap ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
-  "autoswapWarningTitle": "Autoswap is enabled with the following settings:",
+  "autoswapWarningTitle": "Autoswap is enabled with the following settings",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "autoswapWarningBaseBalance": "Target Balance 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
+  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered automatically. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
+  "autoswapWarningExplanationBold": "automatically",
+  "@autoswapWarningExplanationBold": {
+    "description": "The word 'automatically' to be displayed in bold"
   },
-  "autoswapWarningTriggerAmount": "Maximum Balance of 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
-  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
@@ -5248,21 +5248,25 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "autoswapInfoTitle": "Autoswap is active",
+  "autoswapInfoTitle": "Autoswap is recommended",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "autoswapInfoDismissButton": "Got it, don't show again",
+  "autoswapInfoDismissButton": "YES, THANKS",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "autoswapInfoSettingsButton": "Configure settings",
+  "autoswapInfoSettingsButton": "NO, I UNDERSTAND THE RISKS",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to disable autoswap"
   },
-  "autoswapInfoRemindLater": "Remind me later",
+  "autoswapInfoRemindLater": "Configure Autoswap Settings",
   "@autoswapInfoRemindLater": {
-    "description": "Tertiary action to close sheet without dismissing"
+    "description": "Tertiary action to navigate to autoswap settings"
+  },
+  "autoswapInfoConsentMessage": "Autoswap is currently enabled but will not trigger until you consent. Would you like to keep it on?",
+  "@autoswapInfoConsentMessage": {
+    "description": "Consent message explaining autoswap status"
   },
   "autoswapLoadSettingsError": "Failed to load auto swap settings",
   "@autoswapLoadSettingsError": {

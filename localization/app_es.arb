@@ -1478,13 +1478,13 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "La transferencia automática está habilitada.",
-  "autoswapWarningCardSubtitle": "Se activará un intercambio si el saldo de su billetera de pagos instantáneos supera 0,02 BTC.",
+  "autoswapWarningCardTitle": "Autoswap es recomendado",
+  "autoswapWarningCardSubtitle": "Haga clic para obtener más información, desactivar o configurar",
+  "autoswapActiveCardTitle": "Autoswap está activo",
   "autoswapWarningDescription": "La transferencia automática garantiza que se mantenga un buen equilibrio entre su billetera de pagos instantáneos y su billetera Bitcoin segura.",
-  "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración:",
-  "autoswapWarningBaseBalance": "Saldo base 0,01 BTC",
-  "autoswapWarningTriggerAmount": "Monto de activación de 0,02 BTC",
-  "autoswapWarningExplanation": "Cuando su saldo supere el monto de activación, se activará un intercambio. El monto base se mantendrá en su billetera de pagos instantáneos y el monto restante se intercambiará en su billetera Bitcoin segura.",
+  "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración",
+  "autoswapWarningExplanation": "Cuando su saldo supere el saldo máximo, se activará automáticamente un intercambio. El saldo objetivo se mantendrá en su billetera de pagos instantáneos y el monto restante se intercambiará en su billetera Bitcoin segura.",
+  "autoswapWarningExplanationBold": "automáticamente",
   "autoswapWarningDontShowAgain": "No volver a mostrar esta advertencia.",
   "autoswapWarningSettingsLink": "Llévame a la configuración de transferencia automática",
   "autoswapWarningOkButton": "OK",
@@ -4150,5 +4150,10 @@
   "logoutConfirmationTitle": "Confirmar cierre de sesión",
   "logoutConfirmationDescription": "¿Está seguro de que desea cerrar sesión en su cuenta de Bull Bitcoin? Necesitará iniciar sesión nuevamente para acceder a las funciones de intercambio.",
   "logoutConfirmationCancel": "Cancelar",
-  "logoutConfirmationLogout": "Cerrar sesión"
+  "logoutConfirmationLogout": "Cerrar sesión",
+  "autoswapInfoTitle": "Autoswap es recomendado",
+  "autoswapInfoDismissButton": "SÍ, GRACIAS",
+  "autoswapInfoSettingsButton": "NO, ENTIENDO LOS RIESGOS",
+  "autoswapInfoRemindLater": "Configurar Autoswap",
+  "autoswapInfoConsentMessage": "Autoswap está actualmente habilitado pero no se activará hasta que usted dé su consentimiento. ¿Le gustaría mantenerlo activado?"
 }
