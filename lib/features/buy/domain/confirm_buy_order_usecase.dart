@@ -1,27 +1,25 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label.dart';
-import 'package:bb_mobile/core/labels/label_system.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class ConfirmBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
   final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final SettingsRepository _settingsRepository;
-  final LabelRepository _labelsRepository;
+  final LabelsFacade _labelsFacade;
 
   ConfirmBuyOrderUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
     required SettingsRepository settingsRepository,
-    required LabelRepository labelsRepository,
+    required LabelsFacade labelsFacade,
   }) : _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
        _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _settingsRepository = settingsRepository,
-       _labelsRepository = labelsRepository;
+       _labelsFacade = labelsFacade;
 
   Future<BuyOrder> execute({required String orderId}) async {
     try {
@@ -33,11 +31,10 @@ class ConfirmBuyOrderUsecase {
       final order = await repo.confirmBuyOrder(orderId);
 
       if (order.toAddress != null) {
-        await _labelsRepository.store(
-          Label.addr(
+        await _labelsFacade.store(
+          NewLabel.addr(
             address: order.toAddress!,
             label: LabelSystem.exchangeBuy.label,
-            origin: null,
           ),
         );
       }

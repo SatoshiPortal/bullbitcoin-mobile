@@ -1,7 +1,6 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/labels_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +36,7 @@ class LabelsTableItem extends StatelessWidget {
                 onDelete: (label) async {
                   await context
                       .read<TransactionDetailsCubit>()
-                      .deleteTransactionNote(label.label);
+                      .deleteTransactionNote(label);
                 },
               ),
             ),

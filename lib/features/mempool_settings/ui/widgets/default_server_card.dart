@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
+import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_status_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DefaultServerCard extends StatelessWidget {
   final MempoolServerDto server;
@@ -34,6 +37,22 @@ class DefaultServerCard extends StatelessWidget {
                     style: context.font.bodySmall?.copyWith(
                       color: context.appColors.textMuted,
                     ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      MempoolServerStatusIndicator(status: server.status),
+                      const SizedBox(width: 4),
+                      if (!server.status.isChecking)
+                        GestureDetector(
+                          onTap: () => context.read<MempoolSettingsCubit>().checkServerStatus(server),
+                          child: Icon(
+                            Icons.refresh,
+                            size: 16,
+                            color: context.appColors.textMuted,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),

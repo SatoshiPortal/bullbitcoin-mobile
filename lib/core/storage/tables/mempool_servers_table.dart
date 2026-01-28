@@ -6,6 +6,7 @@ class MempoolServers extends Table {
   BoolColumn get isTestnet => boolean()();
   BoolColumn get isLiquid => boolean()();
   BoolColumn get isCustom => boolean()();
+  BoolColumn get enableSsl => boolean().withDefault(const Constant(true))();
 
   @override
   Set<Column> get primaryKey => {url, isTestnet, isLiquid};

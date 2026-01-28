@@ -13,7 +13,8 @@ sealed class WithdrawState with _$WithdrawState {
     required FiatAmount amount,
     required FiatCurrency currency,
     @Default(false) bool isCreatingWithdrawOrder,
-    WithdrawError? error,
+    WithdrawError? newRecipientError,
+    WithdrawError? selectedRecipientError,
   }) = WithdrawRecipientInputState;
   /*onst factory WithdrawState.descriptionInput({
     required UserSummary userSummary,
@@ -40,12 +41,10 @@ sealed class WithdrawState with _$WithdrawState {
   FiatCurrency get currency {
     return when(
       initial: (_, _) => FiatCurrency.cad,
-      amountInput:
-          (userSummary) =>
-              userSummary.currency != null
-                  ? FiatCurrency.fromCode(userSummary.currency!)
-                  : FiatCurrency.cad,
-      recipientInput: (_, _, currency, _, _) => currency,
+      amountInput: (userSummary) => userSummary.currency != null
+          ? FiatCurrency.fromCode(userSummary.currency!)
+          : FiatCurrency.cad,
+      recipientInput: (_, _, currency, _, _, _) => currency,
       confirmation: (_, _, currency, _, _, _, _) => currency,
       success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
     );
@@ -53,11 +52,17 @@ sealed class WithdrawState with _$WithdrawState {
 
   WithdrawAmountInputState? get cleanAmountInputState {
     return whenOrNull(
-      amountInput:
-          (userSummary) => WithdrawAmountInputState(userSummary: userSummary),
+      amountInput: (userSummary) =>
+          WithdrawAmountInputState(userSummary: userSummary),
       recipientInput:
-          (userSummary, amount, currency, isCreatingWithdrawOrder, error) =>
-              WithdrawAmountInputState(userSummary: userSummary),
+          (
+            userSummary,
+            amount,
+            currency,
+            isCreatingWithdrawOrder,
+            newRecipientError,
+            selectedRecipientError,
+          ) => WithdrawAmountInputState(userSummary: userSummary),
       confirmation:
           (
             userSummary,
@@ -74,14 +79,21 @@ sealed class WithdrawState with _$WithdrawState {
   WithdrawRecipientInputState? get cleanRecipientInputState {
     return whenOrNull(
       recipientInput:
-          (userSummary, amount, currency, isCreatingWithdrawOrder, error) =>
-              WithdrawRecipientInputState(
-                userSummary: userSummary,
-                amount: amount,
-                currency: currency,
-                isCreatingWithdrawOrder: false,
-                error: null,
-              ),
+          (
+            userSummary,
+            amount,
+            currency,
+            isCreatingWithdrawOrder,
+            newRecipientError,
+            selectedRecipientError,
+          ) => WithdrawRecipientInputState(
+            userSummary: userSummary,
+            amount: amount,
+            currency: currency,
+            isCreatingWithdrawOrder: false,
+            newRecipientError: null,
+            selectedRecipientError: null,
+          ),
       confirmation:
           (
             userSummary,

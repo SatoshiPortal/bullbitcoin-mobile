@@ -1,9 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/fetch_distinct_labels_usecase.dart';
-import 'package:bb_mobile/core/labels/domain/label_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
@@ -19,6 +16,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -75,9 +73,10 @@ class TransactionsLocator {
 
   static void registerBlocs(GetIt locator) {
     // Bloc
-    locator.registerFactoryParam<TransactionsCubit, String?, void>(
-      (walletId, _) => TransactionsCubit(
+    locator.registerFactoryParam<TransactionsCubit, String?, bool?>(
+      (walletId, exchangeOnly) => TransactionsCubit(
         walletId: walletId,
+        exchangeOnly: exchangeOnly ?? false,
         getTransactionsUsecase: locator<GetTransactionsUsecase>(),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),
@@ -96,12 +95,10 @@ class TransactionsLocator {
         getOrderUsecase: locator<GetOrderUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
-        labelTransactionUsecase: locator<LabelTransactionUsecase>(),
-        deleteLabelUsecase: locator<DeleteLabelUsecase>(),
+        labelsFacade: locator<LabelsFacade>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
         processSwapUsecase: locator<ProcessSwapUsecase>(),
-        fetchDistinctLabelsUsecase: locator<FetchDistinctLabelsUsecase>(),
       ),
     );
   }
