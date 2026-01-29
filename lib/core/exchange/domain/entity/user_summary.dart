@@ -156,9 +156,11 @@ sealed class UserSummary with _$UserSummary {
 
     // If no balances above 0, show the user's default currency
     if (balancesAboveZero.isEmpty) {
-      final defaultCurrency =
-          currency != null && currency!.isNotEmpty ? currency! : 'CAD';
-      return [UserBalance(amount: 0, currencyCode: defaultCurrency)];
+      // Return an empty list if currency is null, else
+      if (currency == null) {
+        return [];
+      }
+      return [UserBalance(amount: 0, currencyCode: currency!)];
     }
 
     return balancesAboveZero;
