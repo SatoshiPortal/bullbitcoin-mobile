@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -111,6 +112,7 @@ class RecipientsLocator {
       (allowedRecipientFilters, onRecipientSelected) => RecipientsBloc(
         allowedRecipientFilters: allowedRecipientFilters,
         onRecipientSelectedHook: onRecipientSelected,
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         addRecipientUsecase: locator<AddRecipientUsecase>(),
         getRecipientsUsecase: locator<GetRecipientsUsecase>(),
         checkSinpeUsecase: locator<CheckSinpeUsecase>(),
