@@ -902,7 +902,7 @@ class SwapWatcherService {
       return false;
     }
 
-    log.fine('{"swapId": "${swap.id}", "action": "checking_outspend"}');
+    log.fine('{"swapId": "${swap.id}", "action": "checking_lockup_outspend"}');
 
     try {
       // Determine network based on swap type
@@ -911,7 +911,7 @@ class SwapWatcherService {
 
       if (swap is ChainSwap) {
         if (swap.type == SwapType.liquidToBitcoin) {
-          // Liquid → Bitcoin: check Bitcoin network for claim, Liquid for refund
+          // Liquid → Bitcoin: claim on Bitcoin, refund on Liquid
           network = Network.fromEnvironment(
             isTestnet: swap.environment.isTestnet,
             isLiquid: isClaim ? false : true,
@@ -920,7 +920,7 @@ class SwapWatcherService {
               ? SwapDirection.liquidToBitcoin
               : SwapDirection.liquidToBitcoin;
         } else {
-          // Bitcoin → Liquid: check Liquid network for claim, Bitcoin for refund
+          // Bitcoin → Liquid: claim on Liquid, refund on Bitcoin
           network = Network.fromEnvironment(
             isTestnet: swap.environment.isTestnet,
             isLiquid: isClaim ? true : false,
@@ -930,14 +930,14 @@ class SwapWatcherService {
               : SwapDirection.bitcoinToLiquid;
         }
       } else if (swap is LnReceiveSwap) {
-        // Lightning → Bitcoin/Liquid: only claims, no refunds
+        // Lightning → Bitcoin/Liquid: only claims
         network = Network.fromEnvironment(
           isTestnet: swap.environment.isTestnet,
           isLiquid: swap.type == SwapType.lightningToLiquid,
         );
         swapDirection = null;
       } else if (swap is LnSendSwap) {
-        // Bitcoin/Liquid → Lightning: only refunds, no claims
+        // Bitcoin/Liquid → Lightning: only refunds
         network = Network.fromEnvironment(
           isTestnet: swap.environment.isTestnet,
           isLiquid: swap.type == SwapType.liquidToLightning,
@@ -947,7 +947,7 @@ class SwapWatcherService {
         return false;
       }
 
-      final outspendStatus = await _boltzRepo.checkClaimOutspend(
+      final outspendStatus = await _boltzRepo.checkSwapLockupOutspend(
         swapId: swap.id,
         swapType: swap.type,
         network: network,

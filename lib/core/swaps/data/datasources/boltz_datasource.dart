@@ -1504,7 +1504,8 @@ class BoltzDatasource {
     }
   }
 
-  Future<SwapTxOutspendModel> checkClaimOutspend({
+  /// Checks the outspend status of a swap's lockup transaction
+  Future<SwapTxOutspendModel> checkSwapLockupOutspend({
     required String swapId,
     required swap_entity.SwapType swapType,
     required Network network,

@@ -813,13 +813,14 @@ class BoltzSwapRepository {
     }
   }
 
-  Future<SwapTxOutspend> checkClaimOutspend({
+  /// Checks the outspend status of a swap's lockup transaction
+  Future<SwapTxOutspend> checkSwapLockupOutspend({
     required String swapId,
     required SwapType swapType,
     required Network network,
     outspend.SwapDirection? swapDirection,
   }) async {
-    final model = await _boltz.checkClaimOutspend(
+    final model = await _boltz.checkSwapLockupOutspend(
       swapId: swapId,
       swapType: swapType,
       network: network,
