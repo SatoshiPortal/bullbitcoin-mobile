@@ -49,7 +49,7 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart
-      ref: 478a84dec4ac7a14a7edd3b65012a96ae321b360
+      ref: 5344da8a75b59e696856901ca5885bd6fe352269
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
@@ -101,7 +101,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/satoshifier-dart
-      ref: 65ecc3ab9462f6a3564e591dfd6978db41f5d07f
+      ref: 4eacd2aa741b79ef203fd7cd67addf3060a4e646
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
