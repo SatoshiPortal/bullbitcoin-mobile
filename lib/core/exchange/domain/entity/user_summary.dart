@@ -150,22 +150,6 @@ sealed class UserSummary with _$UserSummary {
 
   const UserSummary._();
 
-  List<UserBalance> get displayBalances {
-    // Filter balances above 0
-    final balancesAboveZero = balances.where((b) => b.amount > 0).toList();
-
-    // If no balances above 0, show the user's default currency
-    if (balancesAboveZero.isEmpty) {
-      // Return an empty list if currency is null, else
-      if (currency == null) {
-        return [];
-      }
-      return [UserBalance(amount: 0, currencyCode: currency!)];
-    }
-
-    return balancesAboveZero;
-  }
-
   bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
   bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');

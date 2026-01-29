@@ -16,7 +16,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
     final theme = context.theme;
 
     final balances = context.select(
-      (ExchangeCubit cubit) => cubit.state.userSummary?.displayBalances ?? [],
+      (ExchangeCubit cubit) => cubit.state.displayBalances,
     );
     final balanceTextStyle = switch (balances.length) {
       0 => theme.textTheme.displayMedium,
