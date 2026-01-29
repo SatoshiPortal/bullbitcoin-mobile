@@ -190,8 +190,6 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -203,6 +201,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
@@ -254,8 +254,6 @@ class SwapWatcherService {
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _swapStreamController.add(updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -267,6 +265,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
@@ -420,8 +420,6 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -433,6 +431,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
@@ -510,8 +510,6 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -523,6 +521,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
@@ -596,8 +596,6 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -609,6 +607,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
@@ -684,8 +684,6 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -697,6 +695,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
@@ -779,8 +779,6 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -792,6 +790,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
@@ -871,8 +871,6 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      // Re-subscribe on error so watcher continues monitoring
-      _boltzRepo.subscribeToSwaps([swap.id]);
       log.severe(error: e, trace: st);
 
       // Check if transaction actually succeeded despite the error
@@ -884,6 +882,8 @@ class SwapWatcherService {
       );
       if (recovered) return;
 
+      // Re-subscribe on error so watcher continues monitoring
+      _boltzRepo.subscribeToSwaps([swap.id]);
       rethrow;
     }
   }
