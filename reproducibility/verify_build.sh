@@ -283,6 +283,7 @@ buildFormat="apk"
 
 cd "$REPO_ROOT"
 $CONTAINER_CMD build \
+    --network=host \
     --build-arg VERSION="v${appVersion}" \
     --build-arg MODE=release \
     --build-arg FORMAT="$buildFormat" \
