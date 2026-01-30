@@ -25,7 +25,11 @@ class VerifyChainSwapAmountSendUsecase {
         final error = SwapCreationException(
           'Amount mismatch: expected ${swap.paymentAmount} sats, but transaction sends $actualAmount sats to swap address',
         );
-        log.severe(error: error, trace: StackTrace.current);
+        log.severe(
+          message: 'Swap amount verification failed: Amount mismatch',
+          error: error,
+          trace: StackTrace.current,
+        );
         throw error;
       }
     } catch (e) {
