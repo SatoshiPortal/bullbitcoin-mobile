@@ -31,4 +31,24 @@ class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
     final amountBtc = amountFiat / price;
     return BigInt.from((amountBtc * 100000000).truncate());
   }
+
+  @override
+  Future<double> convertFiatToFiat({
+    required double amount,
+    required String fromCurrency,
+    required String toCurrency,
+  }) async {
+    // No conversion needed if same currency
+    if (fromCurrency == toCurrency) return amount;
+
+    // Skip API calls for zero amounts
+    if (amount == 0) return 0;
+
+    // Get BTC prices in both currencies
+    final btcInFrom = await _bitcoinPrice.getPrice(fromCurrency);
+    final btcInTo = await _bitcoinPrice.getPrice(toCurrency);
+
+    // Convert: targetValue = sourceValue * (btcPriceInTarget / btcPriceInSource)
+    return amount * (btcInTo / btcInFrom);
+  }
 }

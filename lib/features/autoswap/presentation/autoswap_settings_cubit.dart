@@ -92,7 +92,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         ),
       );
     } catch (e) {
-      log.severe('Error loading auto swap settings: $e');
+      log.severe(
+        message: 'Error loading auto swap settings',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(state.copyWith(loading: false, error: 'autoswapLoadSettingsError'));
     }
   }
@@ -169,7 +173,9 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           feeThresholdPercent: feeThreshold,
           alwaysBlock: state.alwaysBlock,
           recipientWalletId: state.selectedBitcoinWalletId,
-          showWarning: state.enabledToggle ? state.settings?.showWarning ?? true : false,
+          showWarning: state.enabledToggle
+              ? state.settings?.showWarning ?? true
+              : false,
         ),
         isTestnet: isTestnet,
       );
@@ -183,7 +189,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         ),
       );
     } catch (e) {
-      log.severe('Error updating auto swap settings: $e');
+      log.severe(
+        message: 'Error updating auto swap settings',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           saving: false,
@@ -368,7 +378,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         ),
       );
     } catch (e) {
-      log.severe('Error auto-saving disabled auto swap settings: $e');
+      log.severe(
+        message: 'Error auto-saving disabled auto swap settings',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           saving: false,

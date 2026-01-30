@@ -15,7 +15,11 @@ class AddressScriptConversions {
 
       return address.asString();
     } catch (e) {
-      log.severe('error converting scriptPubkey to address: $e');
+      log.severe(
+        message: 'error converting scriptPubkey to address',
+        error: e,
+        trace: StackTrace.current,
+      );
       return null;
     }
   }

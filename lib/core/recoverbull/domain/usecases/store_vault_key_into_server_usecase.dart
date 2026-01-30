@@ -25,10 +25,10 @@ class StoreVaultKeyIntoServerUsecase {
         vaultKey,
       );
     } on recoverbull.KeyServerException catch (e) {
-      log.severe('$StoreVaultKeyIntoServerUsecase: $e');
+      log.severe(error: e, trace: StackTrace.current);
       throw ServerError.fromException(e);
     } catch (e) {
-      if (e is! ServerError) log.severe('$StoreVaultKeyIntoServerUsecase: $e');
+      if (e is! ServerError) log.severe(error: e, trace: StackTrace.current);
       throw ServerError(e.toString());
     }
   }

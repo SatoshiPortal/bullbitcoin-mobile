@@ -192,7 +192,11 @@ class BoltzStorageDatasource {
       final lbtcLnSwap = await LbtcLnSwap.fromJson(jsonStr: jsonSwap);
       return lbtcLnSwap;
     } catch (e) {
-      log.severe('Error getting LbtcLnSwap: $e');
+      log.severe(
+        message: 'Error getting LbtcLnSwap',
+        error: e,
+        trace: StackTrace.current,
+      );
       throw 'Error parsing LbtcLnSwap: $e';
     }
   }

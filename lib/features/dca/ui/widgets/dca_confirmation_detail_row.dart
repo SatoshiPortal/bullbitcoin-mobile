@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:flutter/material.dart';
 
@@ -17,24 +16,16 @@ class DcaConfirmationDetailRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: context.appColors.surfaceContainer,
-            ),
-          ),
+          Text(label, style: theme.textTheme.bodyMedium),
 
           Expanded(
-            child:
-                value == null
-                    ? const LoadingLineContent()
-                    : Text(
-                      value!,
-                      textAlign: .end,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: context.appColors.outlineVariant,
-                      ),
-                    ),
+            child: value == null
+                ? const LoadingLineContent()
+                : Text(
+                    value!,
+                    textAlign: .end,
+                    style: theme.textTheme.bodyMedium,
+                  ),
           ),
         ],
       ),

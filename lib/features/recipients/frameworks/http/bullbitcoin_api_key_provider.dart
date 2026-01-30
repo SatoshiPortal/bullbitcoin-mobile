@@ -35,7 +35,11 @@ class BullbitcoinApiKeyProvider {
 
       return apiKeyModel.key;
     } catch (e) {
-      log.severe('Error retrieving API key: $e');
+      log.severe(
+        message: 'Error retrieving API key',
+        error: e,
+        trace: StackTrace.current,
+      );
       return null;
     }
   }

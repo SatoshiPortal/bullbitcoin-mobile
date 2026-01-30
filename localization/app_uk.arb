@@ -1423,7 +1423,7 @@
   "ledgerVerifyTitle": "Перевірити адресу на Ledger",
   "recoverbullSwitchToPassword": "Підберіть пароль замість",
   "exchangeDcaNetworkBitcoin": "Bitcoin мережа",
-  "autoswapWarningTitle": "Autoswap включений до наступних налаштувань:",
+  "autoswapWarningTitle": "Autoswap включений до наступних налаштувань",
   "seedsignerStep1": "Увімкніть пристрій для насінництва",
   "backupWalletHowToDecideBackupLosePhysical": "Один з найбільш поширених способів втратити Біткойн, тому що вони втрачають фізичну резервну копію. Будь-ласка, що знаходить вашу фізичну резервну копію, зможе прийняти всі ваші біткойни. Якщо ви дуже впевнені, що ви можете приховати його добре і ніколи не втратите його, це хороший варіант.",
   "recoverbullErrorMissingBytes": "Пропускання байтів від реагування тор. Ретри, але якщо питання зберігається, це відомий питання для деяких пристроїв з Tor.",
@@ -1924,7 +1924,6 @@
   "informationWillNotLeave": "Інформація ",
   "backupWalletInstructionSecurityRisk": "Будь-який з доступом до вашого 12 резервного копіювання може вкрасти ваші біткоїни. Приховати його добре.",
   "torSettingsPortNumber": "Номер порту",
-  "autoswapWarningTriggerAmount": "Обсяг l2 кешу 0.02 BTC",
   "recoverbullErrorCheckStatusFailed": "Не вдалося перевірити статус за замовчуванням",
   "pleaseWaitFetching": "Будь ласка, почекайте, коли ми фіксуємо файл резервного копіювання.",
   "backupWalletPhysicalBackupTag": "Бездоганний (забрати час)",
@@ -2009,7 +2008,8 @@
   "fundExchangeLabelBeneficiaryAddress": "Адреса отримувача",
   "testBackupVerify": "Видання",
   "electrumAdvancedOptions": "Додаткові параметри",
-  "autoswapWarningCardSubtitle": "Запуск буде тривати, якщо ваш баланс миттєвих платежів перевищує 0.02 BTC.",
+  "autoswapWarningCardSubtitle": "Натисніть, щоб дізнатися більше, вимкнути або налаштувати",
+  "autoswapActiveCardTitle": "Autoswap активний",
   "dcaFrequencyDaily": "день",
   "payFilterPayments": "Фільтр платежів",
   "electrumCancel": "Зареєструватися",
@@ -2187,6 +2187,10 @@
     }
   },
   "priceChartFetchingHistory": "Історія ціни.",
+  "priceChartFailedToLoad": "Не вдалося завантажити історію цін",
+  "priceFailedToLoad": "Не вдалося завантажити ціну",
+  "statusScreenTryAgain": "Спробувати ще раз",
+  "statusScreenContinue": "Продовжити",
   "payFromWallet": "Від Wallet",
   "dcaConfirmRecurringBuyTitle": "Підтвердження Купити",
   "sellBankDetails": "Банк Детальніше",
@@ -2213,7 +2217,7 @@
   "keystoneStep2": "Натисніть сканування",
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
   "arkNoBalanceData": "Немає даних балансу",
-  "autoswapWarningCardTitle": "Увімкнення Autoswap.",
+  "autoswapWarningCardTitle": "Autoswap рекомендовано",
   "autoswapMaxBalance": "Max Миттєвий баланс гаманця",
   "importQrDeviceImport": "Імпорт",
   "importQrDeviceScanPrompt": "Скануйте QR-код {deviceName}",
@@ -2277,7 +2281,8 @@
   "payOnChainFee": "На-Чаїн Фе",
   "arkReceiveUnifiedAddress": "Єдина адреса (BIP21)",
   "payUseCoinjoin": "Використовуйте CoinJoin",
-  "autoswapWarningExplanation": "При перевищенні суми запобіжника, запобіжник буде спрацьовуватися. Введіть номер мобільного, який Ви вказали при укладаннi договору з банком - для ідентифікації.",
+  "autoswapWarningExplanation": "Коли ваш баланс перевищує максимальний баланс, своп буде запущено автоматично. Цільовий баланс буде збережено у вашому гаманці Instant Payments, а залишкова сума буде переведена у ваш Secure Bitcoin Wallet.",
+  "autoswapWarningExplanationBold": "автоматично",
   "recoverbullVaultRecoveryTitle": "Recoverbull відновлення",
   "passportStep14": "Зараз готовий до трансляції! Як тільки ви натиснете трансляцію, операція буде опублікована на мережі Біткойн і будуть відправлені кошти.",
   "sendSwapDetails": "Обмін подробиці",
@@ -2373,15 +2378,7 @@
   "sendSignatureReceived": "Отримали підпис",
   "recoverbullGoogleDriveErrorExportFailed": "Заборонено експортувати сховище з Google Drive",
   "exchangeKycLevelLight": "Світло",
-  "bip329LabelsExportSuccessSingular": "1 мітка експортована",
-  "bip329LabelsExportSuccessPlural": "{count} міток експортовано",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Мітки успішно експортовано",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Найменший варіант, але можна зробити через онлайн-банкінг (3-4 робочих днів)",
   "payEnableRBF": "Увімкнути RBF",
   "importQrDeviceInvalidQR": "Неточний QR-код",
@@ -3436,7 +3433,6 @@
   "savingToDevice": "Збереження вашого пристрою.",
   "bitboxActionImportWalletButton": "Імпорт",
   "fundExchangeLabelSwiftCode": "SWIFT код",
-  "autoswapWarningBaseBalance": "Базовий баланс 0.01 BTC",
   "importQrDeviceSpecterStep6": "Виберіть \"Single key\"",
   "importQrDeviceJadeStep10": "Що це!",
   "importQrDevicePassportStep8": "На мобільному пристрої натисніть \"відкрита камера\"",
@@ -3665,7 +3661,7 @@
   "fundExchangeLabelBeneficiaryName": "Ім'я одержувача",
   "exchangeSupportChatMessageEmptyError": "Повідомлення не може бути порожнім",
   "payViewTransaction": "Перегляд транзакцій",
-  "ledgerInstructionsAndroidDual": "Зареєструватися Ledger розблоковано за допомогою програми Bitcoin, відкритого та Bluetooth ввімкнено, або підключіть пристрій через USB.",
+  "ledgerInstructionsAndroidDual": "Зареєструватися Ledger розблоковано за допомогою програми Bitcoin, відкритого та Bluetooth ввімкнено.",
   "arkSendRecipientLabel": "Адреса одержувача",
   "jadeStep9": "Після того, як угода імпортується в Jade, перевірте адресу призначення і суму.",
   "ledgerWalletTypeNestedSegwitDescription": "П2ВПХ-нестед-в-П2Ш",
@@ -4134,5 +4130,58 @@
   "logoutConfirmationTitle": "Підтвердити вихід",
   "logoutConfirmationDescription": "Ви впевнені, що хочете вийти зі свого облікового запису Bull Bitcoin? Вам потрібно буде знову увійти, щоб отримати доступ до функцій обміну.",
   "logoutConfirmationCancel": "Скасувати",
-  "logoutConfirmationLogout": "Вийти"
+  "logoutConfirmationLogout": "Вийти",
+  "autoswapInfoTitle": "Autoswap рекомендовано",
+  "autoswapInfoDismissButton": "ТАК, ДЯКУЮ",
+  "autoswapInfoSettingsButton": "НІ, Я РОЗУМІЮ РИЗИКИ",
+  "autoswapInfoRemindLater": "Налаштувати Autoswap",
+  "autoswapInfoConsentMessage": "Autoswap наразі увімкнено, але він не спрацює, поки ви не дасте згоду. Бажаєте залишити його увімкненим?",
+  "mempoolServerStatusOnline": "В мережі",
+  "mempoolServerStatusOffline": "Не в мережі",
+  "mempoolServerStatusChecking": "Перевірка...",
+  "mempoolServerStatusUnknown": "Невідомо",
+  "mempoolCustomServerSaveFailed": "Не вдалося зберегти сервер",
+  "mempoolCustomServerInfoDescription": "Сервери mempool використовуються для оцінки комісій та відкриття оглядача блоків при перегляді деталей транзакції.",
+  "mempoolCustomServerUseSsl": "Використовувати SSL",
+  "mempoolCustomServerSslAutoDetected": "(Визначено автоматично)",
+  "mempoolCustomServerSslHelpText": "Для локальних (.local, приватні IP) та Tor (.onion) серверів SSL зазвичай вимкнено. Публічні IP та домени повинні використовувати SSL.",
+  "mempoolErrorSameAsDefault": "Ця URL-адреса така ж, як сервер за замовчуванням. Будь ласка, використовуйте іншу URL-адресу.",
+  "mempoolErrorConnectionTimeout": "Час з'єднання вичерпано. Сервер може бути повільним або недоступним.",
+  "mempoolErrorHostNotFound": "Сервер не знайдено. Перевірте URL та спробуйте знову.",
+  "mempoolErrorTorNotRunning": "Не вдається досягти .onion адреси. Переконайтеся, що Tor/Orbot запущений, і спробуйте знову.",
+  "mempoolErrorConnectionFailed": "Не вдалося підключитися до сервера. Перевірте мережеве з'єднання та спробуйте знову.",
+  "mempoolErrorNotMempoolServer": "Ця URL-адреса не є сервером mempool. Перевірте адресу.",
+  "mempoolErrorServerUnavailable": "Сервер недоступний. Спробуйте пізніше.",
+  "mempoolErrorServerError": "На сервері сталася помилка. Спробуйте пізніше.",
+  "mempoolErrorInvalidResponse": "Сервер повернув неправильну відповідь.",
+  "mempoolErrorUnexpected": "Сталася неочікувана помилка",
+  "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер: {error}",
+  "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool: {error}",
+  "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}"
+,
+  "settingsErrorReportingTitle": "Звіт про помилки",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Програма звітування про помилки",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Допоможіть нам поліпшити Bull Bitcoin, беручи участь у нашій програмі звітування про помилки. Це безпосередньо допомагає нам зробити Bull Bitcoin кращим для всіх.\n\nКоли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми. Ці дані допомагають нам зрозуміти, що відбувається у наших користувачів по всьому світу, та відповідно розставити пріоритети для випралення.\n\nМи не діліться цією інформацією з третіми сторонами. Ми використовуємо клієнт з відкритим вихідним кодом Sentry з власним самостійно розміщеним серверним сервером.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Прийняти",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Скасувати",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Перезапустіть програму, щоб застосувати цю зміну",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  }
 }

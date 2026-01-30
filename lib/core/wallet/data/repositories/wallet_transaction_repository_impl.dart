@@ -1,5 +1,3 @@
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -12,10 +10,11 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final LabelDatasource _labelDatasource;
+  final LabelsFacade _labelsFacade;
   final BdkWalletDatasource _bdkWalletTransactionDatasource;
   final LwkWalletDatasource _lwkWalletTransactionDatasource;
   // TODO: We should not pass a port into a repository, this is a dirty hack for now
@@ -24,11 +23,11 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
   WalletTransactionRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
-    required LabelDatasource labelDatasource,
+    required LabelsFacade labelsFacade,
     required BdkWalletDatasource bdkWalletTransactionDatasource,
     required LwkWalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerPort electrumServerPort,
-  }) : _labelDatasource = labelDatasource,
+  }) : _labelsFacade = labelsFacade,
        _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
        _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
@@ -100,38 +99,38 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
             final (inputs, outputs, labels) = await (
               Future.wait(
                 walletTransactionModel.inputs.map((inputModel) async {
-                  final inputLabels = await _labelDatasource.fetchByRef(
+                  final inputLabels = await _labelsFacade.fetchByReference(
                     inputModel.labelRef,
                   );
                   return TransactionInputMapper.toEntity(
                     inputModel,
-                    labels: inputLabels.map((model) => model.label).toList(),
+                    labels: inputLabels.map((label) => label.label).toList(),
                   );
                 }),
               ),
               Future.wait(
                 walletTransactionModel.outputs.map((outputModel) async {
-                  final outputLabels = await _labelDatasource.fetchByRef(
+                  final outputLabels = await _labelsFacade.fetchByReference(
                     outputModel.labelRef,
                   );
                   final outputModelAddress = outputModel.address;
-                  final addressLabels = outputModelAddress != null
-                      ? await _labelDatasource.fetchByRef(outputModelAddress)
-                      : <LabelModel>[];
+                  final addressLabels = <Label>[];
+                  if (outputModelAddress != null) {
+                    final rows = await _labelsFacade.fetchByReference(
+                      outputModelAddress,
+                    );
+                    addressLabels.addAll(rows);
+                  }
 
                   return TransactionOutputMapper.toEntity(
                     outputModel,
-                    labels: outputLabels
-                        .map((model) => model.toEntity())
-                        .toList(),
-                    addressLabels: addressLabels
-                        .map((model) => model.toEntity())
-                        .toList(),
+                    labels: outputLabels,
+                    addressLabels: addressLabels,
                     //isFrozen: isFrozen, // Todo: check if frozen
                   );
                 }),
               ),
-              _labelDatasource.fetchByRef(walletTransactionModel.txId),
+              _labelsFacade.fetchByReference(walletTransactionModel.txId),
             ).wait;
 
             return WalletTransactionMapper.toEntity(
@@ -139,7 +138,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               walletId: walletModel.id,
               inputs: inputs,
               outputs: outputs,
-              labels: labels.map((model) => model.toEntity()).toList(),
+              labels: labels,
               isRbf: walletTransactionModel.isRbf,
             );
           }).toList(),

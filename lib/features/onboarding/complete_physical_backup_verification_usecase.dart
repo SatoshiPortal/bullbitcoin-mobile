@@ -1,19 +1,23 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
 class CompletePhysicalBackupVerificationUsecase {
   final WalletRepository _walletRepository;
+  final SettingsRepository _settingsRepository;
 
   CompletePhysicalBackupVerificationUsecase({
     required WalletRepository walletRepository,
-  }) : _walletRepository = walletRepository;
+    required SettingsRepository settingsRepository,
+  }) : _walletRepository = walletRepository,
+       _settingsRepository = settingsRepository;
 
   Future<void> execute() async {
     try {
+      final settings = await _settingsRepository.fetch();
       final defaultWallets = await _walletRepository.getWallets(
         onlyDefaults: true,
-        environment: Environment.mainnet,
+        environment: settings.environment,
       );
       if (defaultWallets.isEmpty) {
         throw Exception('No default wallet found');

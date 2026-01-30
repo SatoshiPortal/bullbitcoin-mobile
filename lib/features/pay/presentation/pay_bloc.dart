@@ -37,7 +37,6 @@ part 'pay_state.dart';
 
 class PayBloc extends Bloc<PayEvent, PayState> {
   PayBloc({
-    required RecipientViewModel recipient,
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required PlacePayOrderUsecase placePayOrderUsecase,
     required RefreshPayOrderUsecase refreshPayOrderUsecase,
@@ -76,8 +75,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
        _getAddressAtIndexUsecase = getAddressAtIndexUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _getOrderUsecase = getOrderUsecase,
-       super(PayAmountInputState(selectedRecipient: recipient)) {
+       super(PayRecipientSelectionState()) {
     on<PayStarted>(_onStarted);
+    on<PayRecipientSelected>(_onRecipientSelected);
     on<PayAmountInputContinuePressed>(_onAmountInputContinuePressed);
     on<PayWalletSelected>(_onWalletSelected);
     on<PayExternalWalletNetworkSelected>(_onExternalWalletNetworkSelected);
@@ -111,31 +111,58 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   Timer? _pollingTimer;
 
   Future<void> _onStarted(PayStarted event, Emitter<PayState> emit) async {
-    final amountInputState = state.cleanAmountInputState;
-    emit(amountInputState!.copyWith(isLoadingUserSummary: true));
+    final recipientSelectionState = state.cleanRecipientSelectionState;
+    emit(recipientSelectionState!.copyWith(isLoadingUserSummary: true));
     try {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
-      emit(amountInputState.copyWith(userSummary: userSummary));
+      emit(recipientSelectionState.copyWith(userSummary: userSummary));
     } on ApiKeyException catch (e) {
       // Handle API key error by showing error in current state
 
       emit(
-        (state as PayAmountInputState).copyWith(
+        recipientSelectionState.copyWith(
           error: PayError.unexpected(message: e.message),
         ),
       );
     } on GetExchangeUserSummaryException catch (e) {
       emit(
-        (state as PayAmountInputState).copyWith(
+        recipientSelectionState.copyWith(
           error: PayError.unexpected(message: e.message),
         ),
       );
     } finally {
-      emit(
-        (state as PayAmountInputState).copyWith(isLoadingUserSummary: false),
-      );
+      if (state is PayRecipientSelectionState) {
+        emit(
+          (state as PayRecipientSelectionState).copyWith(
+            isLoadingUserSummary: false,
+          ),
+        );
+      }
     }
+  }
+
+  Future<void> _onRecipientSelected(
+    PayRecipientSelected event,
+    Emitter<PayState> emit,
+  ) async {
+    final recipientSelectionState = state.cleanRecipientSelectionState;
+    if (recipientSelectionState == null) {
+      log.severe(
+        error: 'Expected to be on PayRecipientSelectionState',
+        trace: StackTrace.current,
+      );
+      return;
+    }
+
+    // First emit the recipient selection state again since we went back to it,
+    // So that the change to amount input state can be listened to properly.
+    emit(recipientSelectionState);
+
+    final amountInputState = recipientSelectionState.toAmountInputState(
+      selectedRecipient: event.recipient,
+    );
+    emit(amountInputState);
   }
 
   Future<void> _onAmountInputContinuePressed(
@@ -146,20 +173,26 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     final amountInputState = state.cleanAmountInputState;
     if (amountInputState == null) {
       // Unexpected state, do nothing
-      log.severe('Expected to be on PayAmountInputState but on: $state');
+      log.severe(
+        error: 'Expected to be on PayAmountInputState',
+        trace: StackTrace.current,
+      );
       return;
     }
     emit(amountInputState);
 
     final amount = double.tryParse(event.amountInput);
     if (amount == null || amount <= 0) {
-      log.severe('Invalid amount input: ${event.amountInput}');
+      log.severe(error: 'Invalid amount input', trace: StackTrace.current);
       return;
     }
 
     final fiatAmount = FiatAmount(amount);
 
-    emit(amountInputState.toWalletSelectionState(amount: fiatAmount));
+    final walletSelectionState = amountInputState.toWalletSelectionState(
+      amount: fiatAmount,
+    );
+    emit(walletSelectionState);
   }
 
   // From Sell: Select internal wallet, calculate fees, create pay order
@@ -169,9 +202,13 @@ class PayBloc extends Bloc<PayEvent, PayState> {
   ) async {
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
-      log.severe('Expected to be on PayWalletSelectionState but on: $state');
+      log.severe(
+        error: 'Expected to be on PayWalletSelectionState',
+        trace: StackTrace.current,
+      );
       return;
     }
+
     emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
 
     int requiredAmountSat;
@@ -283,7 +320,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     } on PayError catch (e) {
       emit(walletSelectionState.copyWith(error: e));
     } catch (e) {
-      log.severe('Unexpected error in PayBloc: $e');
+      log.severe(error: e, trace: StackTrace.current);
     } finally {
       if (state is PayWalletSelectionState) {
         emit(
@@ -303,9 +340,13 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     // We should be on a PayWalletSelection state here
     final walletSelectionState = state.cleanWalletSelectionState;
     if (walletSelectionState == null) {
-      log.severe('Expected to be on PayWalletSelectionState but on: $state');
+      log.severe(
+        error: 'Expected to be on PayWalletSelectionState',
+        trace: StackTrace.current,
+      );
       return;
     }
+
     emit(walletSelectionState.copyWith(isCreatingPayOrder: true));
 
     try {
@@ -324,7 +365,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       emit(walletSelectionState.copyWith(error: e));
     } catch (e) {
       // Log unexpected errors
-      log.severe('Unexpected error in PayBloc: $e');
+      log.severe(error: e, trace: StackTrace.current);
     } finally {
       if (state is PayWalletSelectionState) {
         emit(
@@ -343,7 +384,10 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     // We should be on a PayPaymentState
     final paymentState = state.cleanPaymentState;
     if (paymentState == null) {
-      log.severe('Expected to be on PayPaymentState but on: $state');
+      log.severe(
+        error: 'Expected to be on PayPaymentState',
+        trace: StackTrace.current,
+      );
       return;
     }
 
@@ -356,7 +400,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     } on PayError catch (e) {
       emit(paymentState.copyWith(error: e));
     } catch (e) {
-      log.severe('Unexpected error in PayBloc: $e');
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 
@@ -368,7 +412,10 @@ class PayBloc extends Bloc<PayEvent, PayState> {
     // We should be on a PayPaymentState
     final payPaymentState = state.cleanPaymentState;
     if (payPaymentState == null) {
-      log.severe('Expected to be on PayPaymentState but on: $state');
+      log.severe(
+        error: 'Expected to be on PayPaymentState',
+        trace: StackTrace.current,
+      );
       return;
     }
 
@@ -473,7 +520,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       );
     } catch (e) {
       // Log unexpected errors
-      log.severe('Unexpected error in PayBloc: $e');
+      log.severe(error: e, trace: StackTrace.current);
       emit(
         payPaymentState.copyWith(
           error: PayError.unexpected(message: e.toString()),
@@ -499,7 +546,9 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
       if (latestOrder is! FiatPaymentOrder) {
         log.severe(
-          'Expected FiatPaymentOrder but received a different order type',
+          error:
+              'Expected FiatPaymentOrder but received a different order type',
+          trace: StackTrace.current,
         );
         return;
       }
@@ -519,7 +568,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         emit(payPaymentState.copyWith(payOrder: latestOrder, isPolling: true));
       }
     } catch (e) {
-      log.severe('Error polling order status: $e');
+      log.severe(error: e, trace: StackTrace.current);
     }
   }
 
@@ -588,7 +637,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         }
       }
     } catch (e) {
-      log.severe('Failed to update order status: $e');
+      log.severe(error: e, trace: StackTrace.current);
       // Don't emit error state for refresh failures in success screen
     }
   }

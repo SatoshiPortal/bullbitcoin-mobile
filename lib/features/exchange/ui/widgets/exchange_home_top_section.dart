@@ -16,9 +16,10 @@ class ExchangeHomeTopSection extends StatelessWidget {
     final theme = context.theme;
 
     final balances = context.select(
-      (ExchangeCubit cubit) => cubit.state.userSummary?.displayBalances ?? [],
+      (ExchangeCubit cubit) => cubit.state.displayBalances,
     );
     final balanceTextStyle = switch (balances.length) {
+      0 => theme.textTheme.displayMedium,
       1 => theme.textTheme.displayMedium,
       2 => theme.textTheme.displaySmall,
       _ => theme.textTheme.headlineLarge,
@@ -107,15 +108,24 @@ class _BalancesView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Gap(topGap),
-        ...balances.map(
-          (b) => BBText(
-            '${b.amount} ${b.currencyCode}',
+        if (balances.isEmpty)
+          BBText(
+            '0.00',
             style: balanceTextStyle?.copyWith(
               color: context.appColors.onSecondaryFixed,
               fontWeight: FontWeight.w500,
             ),
+          )
+        else
+          ...balances.map(
+            (b) => BBText(
+              '${b.amount} ${b.currencyCode}',
+              style: balanceTextStyle?.copyWith(
+                color: context.appColors.onSecondaryFixed,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
-        ),
       ],
     );
   }

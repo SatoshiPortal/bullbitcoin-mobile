@@ -72,7 +72,10 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     // We should be on a clean WithdrawAmountInputState here
     final amountInputState = state.cleanAmountInputState;
     if (amountInputState == null) {
-      log.severe('Expected to be on WithdrawAmountInputState but on: $state');
+      log.severe(
+        error: 'Expected to be on WithdrawAmountInputState',
+        trace: StackTrace.current,
+      );
       return;
     }
     emit(amountInputState);
@@ -95,7 +98,8 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     final recipientInputState = state.cleanRecipientInputState;
     if (recipientInputState == null) {
       log.severe(
-        'Expected to be on WithdrawRecipientInputState but on: $state',
+        error: 'Expected to be on WithdrawRecipientInputState',
+        trace: StackTrace.current,
       );
       return;
     }
@@ -116,13 +120,18 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         ),
       );
     } on WithdrawError catch (e) {
-      emit(recipientInputState.copyWith(error: e));
-    } catch (e) {
-      log.severe('Error in WithdrawBloc: $e');
       emit(
-        recipientInputState.copyWith(
-          error: WithdrawError.unexpected(message: '$e'),
-        ),
+        event.isNew
+            ? recipientInputState.copyWith(newRecipientError: e)
+            : recipientInputState.copyWith(selectedRecipientError: e),
+      );
+    } catch (e) {
+      log.severe(error: e, trace: StackTrace.current);
+      final error = WithdrawError.unexpected(message: '$e');
+      emit(
+        event.isNew
+            ? recipientInputState.copyWith(newRecipientError: error)
+            : recipientInputState.copyWith(selectedRecipientError: error),
       );
     } finally {
       // Reset the isCreatingWithdrawOrder flag if any error occured
@@ -186,7 +195,10 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
     // We should be on a WithdrawConfirmationState here
     final confirmationState = state.cleanConfirmationState;
     if (confirmationState == null) {
-      log.severe('Expected to be on WithdrawConfirmationState but on: $state');
+      log.severe(
+        error: 'Expected to be on WithdrawConfirmationState',
+        trace: StackTrace.current,
+      );
       return;
     }
     emit(confirmationState.copyWith(isConfirmingWithdrawal: true, error: null));

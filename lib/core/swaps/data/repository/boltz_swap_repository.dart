@@ -6,6 +6,11 @@ import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
+    hide SwapDirection;
+import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart'
+    as outspend;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class BoltzSwapRepository {
   final BoltzDatasource _boltz;
@@ -561,6 +566,10 @@ class BoltzSwapRepository {
     _boltz.unsubscribeToSwaps(swapIds);
   }
 
+  void subscribeToSwaps(List<String> swapIds) {
+    _boltz.subscribeToSwaps(swapIds);
+  }
+
   Future<List<Swap>> getOngoingSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
 
@@ -802,5 +811,21 @@ class BoltzSwapRepository {
     } else {
       await _boltz.storage.storeAutoSwapSettings(model);
     }
+  }
+
+  /// Checks the outspend status of a swap's lockup transaction
+  Future<SwapTxOutspend> checkSwapLockupOutspend({
+    required String swapId,
+    required SwapType swapType,
+    required Network network,
+    outspend.SwapDirection? swapDirection,
+  }) async {
+    final model = await _boltz.checkSwapLockupOutspend(
+      swapId: swapId,
+      swapType: swapType,
+      network: network,
+      swapDirection: swapDirection,
+    );
+    return model.toEntity();
   }
 }

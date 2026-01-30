@@ -62,8 +62,8 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     try {
       final settings = await _getSettingsUsecase.execute();
       final currency = event.currency ?? settings.currencyCode;
-      final availableCurrencies =
-          await _getAvailableCurrenciesUsecase.execute();
+      final availableCurrencies = await _getAvailableCurrenciesUsecase
+          .execute();
 
       final price = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
@@ -74,11 +74,13 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           currency: currency,
           availableCurrencies: availableCurrencies,
           bitcoinPrice: price,
+          startupFailed: false,
+          error: null,
         ),
       );
     } catch (e) {
-      log.severe(e.toString());
-      emit(state.copyWith(error: e));
+      log.severe(error: e, trace: StackTrace.current);
+      emit(state.copyWith(error: e, startupFailed: true));
     }
   }
 
@@ -99,7 +101,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         emit(state.copyWith(bitcoinPrice: price));
       }
     } catch (e) {
-      log.severe(e.toString());
+      log.severe(error: e, trace: StackTrace.current);
       // TODO: would it make sense to not emit a failure state here, but keep the
       //  previous success state as to be able to show an exchange rate allthough
       //  not the most recent one? If that makes sense, we can add the error directly
@@ -128,7 +130,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
 
       emit(state.copyWith(currency: currency, bitcoinPrice: price));
     } catch (e) {
-      log.severe(e.toString());
+      log.severe(error: e, trace: StackTrace.current);
       emit(state.copyWith(error: e));
     }
   }

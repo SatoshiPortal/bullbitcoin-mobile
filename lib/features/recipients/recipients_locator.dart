@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -11,7 +12,7 @@ import 'package:bb_mobile/features/recipients/frameworks/http/bullbitcoin_api_ke
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -102,12 +103,16 @@ class RecipientsLocator {
     // Register presenters, controllers, etc. here
     locator.registerFactoryParam<
       RecipientsBloc,
-      AllowedRecipientFiltersViewModel?,
-      Future<void>? Function(RecipientViewModel recipient)?
+      RecipientFilterCriteria?,
+      Future<void>? Function(
+        RecipientViewModel recipient, {
+        required bool isNew,
+      })?
     >(
       (allowedRecipientFilters, onRecipientSelected) => RecipientsBloc(
         allowedRecipientFilters: allowedRecipientFilters,
         onRecipientSelectedHook: onRecipientSelected,
+        getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         addRecipientUsecase: locator<AddRecipientUsecase>(),
         getRecipientsUsecase: locator<GetRecipientsUsecase>(),
         checkSinpeUsecase: locator<CheckSinpeUsecase>(),

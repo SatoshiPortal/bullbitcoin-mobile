@@ -45,6 +45,10 @@ class _VerifyMnemonicScreenState extends State<VerifyMnemonicScreen>
             } else if (state.reorderedMnemonic.length ==
                     state.mnemonic.length &&
                 state.statusError.isEmpty) {
+              // Verify and save backup completion before navigating
+              context.read<TestWalletBackupBloc>().add(
+                const VerifyPhysicalBackup(),
+              );
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const BackupTestSuccessScreen(),

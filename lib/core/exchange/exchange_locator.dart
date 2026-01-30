@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/exchange_notification_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/exchange_support_chat_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_local_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/price_remote_datasource.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository
 import 'package:bb_mobile/core/exchange/data/repository/exchange_support_chat_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/price_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
@@ -21,9 +23,9 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_log_attachment_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_price_history_usecase.dart';
@@ -33,11 +35,9 @@ import 'package:bb_mobile/core/exchange/domain/usecases/label_exchange_orders_us
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_price_history_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/batch_labels_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -108,6 +108,25 @@ class ExchangeLocator {
         ),
       ),
       instanceName: 'testnetExchangeSupportChatDatasource',
+    );
+
+    // WebSocket Notification Datasources
+    locator.registerLazySingleton<ExchangeNotificationDatasource>(
+      () => ExchangeNotificationDatasource(
+        baseUrl: ApiServiceConstants.bbApiUrl,
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: false,
+      ),
+      instanceName: 'mainnetExchangeNotificationDatasource',
+    );
+
+    locator.registerLazySingleton<ExchangeNotificationDatasource>(
+      () => ExchangeNotificationDatasource(
+        baseUrl: ApiServiceConstants.bbApiTestUrl,
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: true,
+      ),
+      instanceName: 'testnetExchangeNotificationDatasource',
     );
   }
 
@@ -340,7 +359,7 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
-        labelsRepository: locator<LabelRepository>(),
+        labelsFacade: locator<LabelsFacade>(),
       ),
     );
 
@@ -482,9 +501,23 @@ class ExchangeLocator {
 
     locator.registerFactory<LabelExchangeOrdersUsecase>(
       () => LabelExchangeOrdersUsecase(
-        labelDatasource: locator<LabelDatasource>(),
-        batchLabelsUsecase: locator<BatchLabelsUsecase>(),
+        labelsFacade: locator<LabelsFacade>(),
         listAllOrdersUsecase: locator<ListAllOrdersUsecase>(),
+      ),
+    );
+  }
+
+  static void registerServices(GetIt locator) {
+    // WebSocket Notification Service (primary/driving adapter)
+    locator.registerLazySingleton<ExchangeNotificationService>(
+      () => ExchangeNotificationService(
+        mainnetDatasource: locator<ExchangeNotificationDatasource>(
+          instanceName: 'mainnetExchangeNotificationDatasource',
+        ),
+        testnetDatasource: locator<ExchangeNotificationDatasource>(
+          instanceName: 'testnetExchangeNotificationDatasource',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }
@@ -493,5 +526,6 @@ class ExchangeLocator {
     registerDatasources(locator);
     registerRepositories(locator);
     registerUseCases(locator);
+    registerServices(locator);
   }
 }

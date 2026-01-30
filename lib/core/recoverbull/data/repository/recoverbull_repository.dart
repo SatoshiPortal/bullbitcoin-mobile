@@ -39,7 +39,11 @@ class RecoverBullRepository {
 
       return utf8.decode(decryptedBytes);
     } catch (e) {
-      log.severe('Error restoring backup: $e');
+      log.severe(
+        message: 'Error restoring vault',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -50,7 +54,7 @@ class RecoverBullRepository {
     String salt,
     String vaultKey,
   ) async {
-    final externalProxy = await torConfigPort.getExternalTorConfig();
+    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     await remoteDatasource.store(
       HEX.decode(identifier),
       utf8.encode(password),
@@ -65,7 +69,7 @@ class RecoverBullRepository {
     String password,
     String salt,
   ) async {
-    final externalProxy = await torConfigPort.getExternalTorConfig();
+    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     final vaultKey = await remoteDatasource.fetch(
       HEX.decode(identifier),
       utf8.encode(password),
@@ -80,7 +84,7 @@ class RecoverBullRepository {
     String password,
     String salt,
   ) async {
-    final externalProxy = await torConfigPort.getExternalTorConfig();
+    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     await remoteDatasource.trash(
       HEX.decode(identifier),
       utf8.encode(password),
@@ -90,7 +94,7 @@ class RecoverBullRepository {
   }
 
   Future<void> checkConnection() async {
-    final externalProxy = await torConfigPort.getExternalTorConfig();
+    final externalProxy = await torConfigPort.getAvailableExternalTorConfig();
     await remoteDatasource.checkConnection(externalProxy: externalProxy);
   }
 

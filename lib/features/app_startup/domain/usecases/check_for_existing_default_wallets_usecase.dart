@@ -32,8 +32,9 @@ class CheckForExistingDefaultWalletsUsecase {
           log.fine('FINE: Seed Found');
         } catch (e) {
           log.severe(
-            'Seed not found for default wallet with fingerprint: ${wallet.masterFingerprint}',
+            message: 'Seed not found for default wallet ',
             error: e,
+            trace: StackTrace.current,
           );
           rethrow;
         }

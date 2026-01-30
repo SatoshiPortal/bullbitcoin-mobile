@@ -29,15 +29,15 @@ sealed class WalletState with _$WalletState {
   bool get isSyncing => syncStatus.values.any((syncing) => syncing);
 
   Wallet? defaultLiquidWallet() => wallets.isEmpty
-          ? null
-          : wallets
-              .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
-              .firstOrNull;
+      ? null
+      : wallets
+            .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
+            .firstOrNull;
   Wallet? defaultBitcoinWallet() => wallets.isEmpty
-          ? null
-          : wallets
-              .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
-              .firstOrNull;
+      ? null
+      : wallets
+            .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
+            .firstOrNull;
 
   bool get noWalletsFound => noWalletsFoundException != null;
 
@@ -58,8 +58,21 @@ sealed class WalletState with _$WalletState {
   }
 
   bool showAutoSwapDefaultEnabledWarning() {
+    if (autoSwapSettings == null ||
+        !autoSwapSettings!.enabled ||
+        !autoSwapSettings!.showWarning) {
+      return false;
+    }
+    final liquidWallet = defaultLiquidWallet();
+    if (liquidWallet == null) return false;
+    return autoSwapSettings!.passedRequiredBalance(
+      liquidWallet.balanceSat.toInt(),
+    );
+  }
+
+  bool showAutoSwapActiveStatus() {
     return autoSwapSettings != null &&
         autoSwapSettings!.enabled &&
-        autoSwapSettings!.showWarning;
+        !autoSwapSettings!.showWarning;
   }
 }

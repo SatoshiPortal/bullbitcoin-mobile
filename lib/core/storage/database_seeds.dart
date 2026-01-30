@@ -22,6 +22,7 @@ class DatabaseSeeds {
             useTorProxy: false,
             torProxyPort: 9050,
             themeMode: 'system',
+            isErrorReportingEnabled: false,
           ),
         );
   }
@@ -130,6 +131,7 @@ class DatabaseSeeds {
         isTestnet: isTestnet,
         isLiquid: isLiquid,
         isCustom: false,
+        enableSsl: true,
       );
 
       await db.into(db.mempoolServers).insertOnConflictUpdate(server);
