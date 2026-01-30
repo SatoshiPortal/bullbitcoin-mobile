@@ -30,6 +30,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -65,6 +66,12 @@ class Bull {
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.init(directory: logDirectory);
     await log.ensureLogsExist();
+
+    // Log app version on startup
+    final packageInfo = await PackageInfo.fromPlatform();
+    log.info(
+      'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
+    );
   }
 
   static Future<void> initLocator() async {
