@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
+import 'package:boltz/boltz.dart' as boltz;
 
 class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;
@@ -34,6 +35,14 @@ class SwapWatcherService {
   }
 
   Stream<Swap> get swapStream => _swapStreamController.stream;
+
+  /// Helper method to extract readable error messages from BoltzError
+  String _extractErrorMessage(Object error) {
+    if (error is boltz.BoltzError) {
+      return error.message;
+    }
+    return error.toString();
+  }
 
   Future<void> startWatching() async {
     await _swapStreamSubscription?.cancel();
@@ -170,7 +179,8 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          message: "Coop claim failed. Attempting script path spend",
+          message:
+              "Coop claim failed (${_extractErrorMessage(e)}). Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -190,7 +200,12 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to claim Lightning to Bitcoin swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -233,7 +248,7 @@ class SwapWatcherService {
       } catch (e, st) {
         log.severe(
           message:
-              '"Coop claim failed. Attempting script path spend", "action": "coop_claim_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              'Coop claim failed (${_extractErrorMessage(e)}). Attempting script path spend. Action: coop_claim_failed_fallback_script, Timestamp: ${DateTime.now().toIso8601String()}',
           error: e,
           trace: st,
         );
@@ -254,7 +269,12 @@ class SwapWatcherService {
       await _boltzRepo.updateSwap(swap: updatedSwap);
       _swapStreamController.add(updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to claim Lightning to Liquid swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -294,7 +314,7 @@ class SwapWatcherService {
     } catch (e, st) {
       log.severe(
         message:
-            '"action": "coop_close_failed", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            'Cooperative close failed for Bitcoin to Lightning swap: ${_extractErrorMessage(e)}. Action: coop_close_failed, Timestamp: ${DateTime.now().toIso8601String()}',
         error: e,
         trace: st,
       );
@@ -340,7 +360,7 @@ class SwapWatcherService {
     } catch (e, st) {
       log.severe(
         message:
-            '"action": "coop_close_failed", "timestamp": "${DateTime.now().toIso8601String()}"}',
+            'Cooperative close failed for Liquid to Lightning swap: ${_extractErrorMessage(e)}. Action: coop_close_failed, Timestamp: ${DateTime.now().toIso8601String()}',
         error: e,
         trace: st,
       );
@@ -420,7 +440,12 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to refund Liquid to Lightning swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -510,7 +535,12 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to refund Bitcoin to Lightning swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -596,7 +626,12 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to claim Liquid to Bitcoin chain swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -664,7 +699,8 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          message: "Coop claim failed. Attempting script path spend",
+          message:
+              "Coop claim failed (${_extractErrorMessage(e)}). Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -684,7 +720,12 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to claim Bitcoin to Liquid chain swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -751,7 +792,8 @@ class SwapWatcherService {
         );
       } catch (e, st) {
         log.severe(
-          message: "Coop refund failed. Attempting script path spend",
+          message:
+              "Coop refund failed (${_extractErrorMessage(e)}). Attempting script path spend",
           error: e,
           trace: st,
         );
@@ -779,7 +821,12 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to refund Liquid to Bitcoin chain swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -843,7 +890,7 @@ class SwapWatcherService {
       } catch (e, st) {
         log.severe(
           message:
-              '"Coop refund failed. Attempting script path spend", "action": "coop_refund_failed_fallback_script", "timestamp": "${DateTime.now().toIso8601String()}"}',
+              'Coop refund failed (${_extractErrorMessage(e)}). Attempting script path spend. Action: coop_refund_failed_fallback_script, Timestamp: ${DateTime.now().toIso8601String()}',
           error: e,
           trace: st,
         );
@@ -871,7 +918,12 @@ class SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message:
+            'Failed to refund Bitcoin to Liquid chain swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
 
       // Check if transaction actually succeeded despite the error
       final recovered = await _checkAndRecoverFromOutspend(
@@ -1033,7 +1085,11 @@ class SwapWatcherService {
           return;
       }
     } catch (e, st) {
-      log.severe(error: e, trace: st);
+      log.severe(
+        message: 'Failed to process completed swap: ${_extractErrorMessage(e)}',
+        error: e,
+        trace: st,
+      );
       rethrow;
     }
   }
