@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
@@ -22,6 +23,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientFilterCriteria? allowedRecipientFilters,
     Future<void>? Function(RecipientViewModel recipient, {required bool isNew})?
     onRecipientSelectedHook,
+    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required AddRecipientUsecase addRecipientUsecase,
     required GetRecipientsUsecase getRecipientsUsecase,
     required CheckSinpeUsecase checkSinpeUsecase,
@@ -31,6 +33,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
        _getRecipientsUsecase = getRecipientsUsecase,
        _checkSinpeUsecase = checkSinpeUsecase,
        _listCadBillersUsecase = listCadBillersUsecase,
+       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        super(
          RecipientsState(
            allowedRecipientFilters:
@@ -55,6 +58,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   final GetRecipientsUsecase _getRecipientsUsecase;
   final CheckSinpeUsecase _checkSinpeUsecase;
   final ListCadBillersUsecase _listCadBillersUsecase;
+  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
 
   Future<void> _onStarted(
     RecipientsStarted event,
@@ -106,6 +110,41 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       );
     } finally {
       emit(state.copyWith(isLoadingRecipients: false));
+    }
+
+    String preferredJurisdictionCode = 'CA'; // Default to Canada
+    try {
+      log.info('Loading exchange user summary');
+      final summary = await _getExchangeUserSummaryUsecase.execute();
+      log.fine('Loaded exchange user summary: $summary');
+      final preferredCurrency = summary.currency;
+
+      // Set default jurisdiction based on user summary
+      switch (preferredCurrency) {
+        case 'EUR':
+          preferredJurisdictionCode = 'EU';
+        case 'MXN':
+          preferredJurisdictionCode = 'MX';
+        case 'CRC':
+          preferredJurisdictionCode = 'CR';
+        case 'ARS':
+          preferredJurisdictionCode = 'AR';
+        case 'COP':
+          preferredJurisdictionCode = 'CO';
+        //case 'USD':
+        //  preferredJurisdictionCode = 'US';
+        default:
+          preferredJurisdictionCode = 'CA';
+      }
+    } catch (e) {
+      log.severe(
+        message: 'Failed to load exchange user summary',
+        error: e,
+        trace: StackTrace.current,
+      );
+      // We don't emit an error state here since we have a default value
+    } finally {
+      emit(state.copyWith(preferredJurisdiction: preferredJurisdictionCode));
     }
   }
 
