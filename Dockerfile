@@ -84,7 +84,7 @@ RUN sudo mkdir /app
 RUN sudo chown -R $USER /app
 
 # Get source code (clone from GitHub or copy local files)
-COPY . /app/local-source/
+COPY --chown=$USER:$USER . /app/local-source/
 RUN if [ "$SOURCE" = "local" ]; then \
         cp -r /app/local-source/. /app/ && rm -rf /app/local-source; \
     else \
