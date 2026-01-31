@@ -6,6 +6,7 @@ ARG VERSION=main
 ARG MODE=debug
 ARG FORMAT=apk
 ARG SOURCE=github
+ARG GRADLE_HEAP=4g
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -114,6 +115,12 @@ RUN echo "storePassword=android" > /app/android/key.properties && \
     echo "keyPassword=android" >> /app/android/key.properties && \
     echo "keyAlias=upload" >> /app/android/key.properties && \
     echo "storeFile=/app/upload-keystore.jks" >> /app/android/key.properties
+
+# Configure Gradle for containerized builds
+ARG GRADLE_HEAP
+RUN mkdir -p /home/$USER/.gradle && \
+    echo "org.gradle.daemon=false" > /home/$USER/.gradle/gradle.properties && \
+    echo "org.gradle.jvmargs=-Xmx${GRADLE_HEAP} -XX:+HeapDumpOnOutOfMemoryError" >> /home/$USER/.gradle/gradle.properties
 
 # Build the app
 RUN if [ "$FORMAT" = "aab" ]; then \

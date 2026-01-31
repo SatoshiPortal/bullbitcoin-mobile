@@ -274,6 +274,17 @@ echo ""
 check_memory
 echo ""
 
+# Calculate Gradle heap based on available memory
+available_mem_gb=$(free -g | awk '/^Mem:/ {print $7}')
+if [[ $available_mem_gb -lt 6 ]]; then
+    gradle_heap="2g"
+elif [[ $available_mem_gb -lt 10 ]]; then
+    gradle_heap="4g"
+else
+    gradle_heap="6g"
+fi
+echo "Gradle heap size: $gradle_heap (based on ${available_mem_gb}GB available)"
+
 # Build using root Dockerfile
 echo "=== Building from source ==="
 echo "This may take 30-60 minutes..."
@@ -289,6 +300,7 @@ $CONTAINER_CMD build \
     --build-arg MODE=release \
     --build-arg FORMAT="$buildFormat" \
     --build-arg SOURCE=github \
+    --build-arg GRADLE_HEAP="$gradle_heap" \
     -t bullbitcoin-verify:v${appVersion} \
     .
 
