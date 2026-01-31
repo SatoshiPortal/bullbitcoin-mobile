@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check build
 
 fvm-check: 
 	@echo "🔍 Checking FVM"
@@ -61,6 +61,13 @@ docker-build:
 	@echo "🏗️ Building Docker image"
 	@ docker build -t bull-mobile .
 
+MODE ?= debug
+FORMAT ?= apk
+
+build:
+	@echo "🔨 Building $(FORMAT) ($(MODE))"
+	@RUSTFLAGS="--remap-path-prefix=$$HOME/.cargo=/cargo --remap-path-prefix=$$(pwd)=/build" \
+		fvm flutter build $(if $(filter aab,$(FORMAT)),appbundle,apk) --$(MODE)
 
 test: unit-test integration-test
 
