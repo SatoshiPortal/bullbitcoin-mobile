@@ -1,1 +1,78 @@
-{}
+{
+    "transactionNoteAddTitle": "შენიშვნის დამატება",
+    "@transactionNoteAddTitle": {
+        "description": "Title for add note dialog"
+    },
+    "transactionNoteEditTitle": "შენიშვნის ჩასწორება",
+    "@transactionNoteEditTitle": {
+        "description": "Title for edit note dialog"
+    },
+    "transactionNoteHint": "შენიშვნა",
+    "@transactionNoteHint": {
+        "description": "Hint text for note input field"
+    },
+    "transactionNoteSaveButton": "შენახვა",
+    "@transactionNoteSaveButton": {
+        "description": "Button label to save a note"
+    },
+    "transactionNoteUpdateButton": "განახლება",
+    "@transactionNoteUpdateButton": {
+        "description": "Button label to update a note"
+    },
+    "transactionPayjoinNoProposal": "არ მიგიღიათ payjoin შეთავაზება მიმღებისგან?",
+    "@transactionPayjoinNoProposal": {
+        "description": "Message displayed when payjoin proposal is not received"
+    },
+    "transactionPayjoinSendWithout": "გაგზავნა payjoin-ის გარეშე",
+    "@transactionPayjoinSendWithout": {
+        "description": "Button label to send transaction without payjoin"
+    },
+    "transactionSwapProgressInitiated": "ინიცირებულია",
+    "@transactionSwapProgressInitiated": {
+        "description": "Swap progress step: initiated"
+    },
+    "transactionSwapProgressPaymentMade": "გადახდა\nშესრულებულია",
+    "@transactionSwapProgressPaymentMade": {
+        "description": "Swap progress step: payment made"
+    },
+    "transactionSwapProgressFundsClaimed": "თანხა\nდაბრუნებულია",
+    "@transactionSwapProgressFundsClaimed": {
+        "description": "Swap progress step: funds claimed"
+    },
+    "transactionSwapProgressBroadcasted": "ტრანსლაცია",
+    "@transactionSwapProgressBroadcasted": {
+        "description": "Swap progress step: transaction broadcasted"
+    },
+    "transactionSwapProgressInvoicePaid": "ინვოისი\nგადახდილია",
+    "@transactionSwapProgressInvoicePaid": {
+        "description": "Swap progress step: Lightning invoice paid"
+    },
+    "transactionSwapProgressConfirmed": "დადასტურებულია",
+    "@transactionSwapProgressConfirmed": {
+        "description": "Swap progress step: confirmed"
+    },
+    "transactionSwapProgressClaim": "გამოთხოვა",
+    "@transactionSwapProgressClaim": {
+        "description": "Swap progress step: claim"
+    },
+    "transactionSwapProgressCompleted": "დასრულებულია",
+    "@transactionSwapProgressCompleted": {
+        "description": "Swap progress step: completed"
+    },
+    "transactionSwapProgressInProgress": "მიმდინარეობს",
+    "@transactionSwapProgressInProgress": {
+        "description": "Generic swap progress step: in progress"
+    },
+    "transactionSwapStatusTransferStatus": "გადაცემის სტატუსი",
+    "@transactionSwapStatusTransferStatus": {
+        "description": "Header for transfer status section"
+    },
+    "transactionSwapStatusSwapStatus": "მიმოცვლის სტატუსი",
+    "@transactionSwapStatusSwapStatus": {
+        "description": "Header for swap status section"
+    },
+    "transactionSwapDescLnReceivePending": "თქვენი მიმოცვლა ინიცირებულია. ჩვენ ველოდებით გადახდის მიღებას Lightning Network-ზე.",
+    "@transactionSwapDescLnReceivePending": {
+        "description": "Description for pending Lightning receive swap"
+    }
+}
