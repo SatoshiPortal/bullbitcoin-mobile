@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_back
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 part 'app_startup_bloc.freezed.dart';
 part 'app_startup_event.dart';
@@ -60,7 +61,14 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     Emitter<AppStartupState> emit,
   ) async {
     emit(const AppStartupState.loadingInProgress());
+
     try {
+      // Log app version on startup
+      final packageInfo = await PackageInfo.fromPlatform();
+      log.info(
+        'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
+      );
+
       // SQL Migrations
       // emit(const AppStartupState.failure(null));
       // return;
