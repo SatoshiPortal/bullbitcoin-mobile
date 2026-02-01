@@ -31,6 +31,13 @@ class StorageLocator {
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
       ),
     );
+
+    // Add delay to allow Android KeyStore to initialize on app startup.
+    // Without this delay, early secure storage access may fail if KeyStore
+    // is not ready yet (common after device boot or cold start).
+    // Using 5s to be conservative - better to wait than lose seed access.
+    await Future.delayed(const Duration(seconds: 5));
+
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(secureStorage),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
