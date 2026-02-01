@@ -1821,6 +1821,8 @@
   "urProcessingFailedMessage": "Procesamiento UR fallido",
   "scanNfcButton": "Escanear NFC",
   "shareLogsLabel": "Compartir registros",
+  "deleteLogsTitle": "Eliminar registros",
+  "logsDeletedMessage": "Registros eliminados",
   "viewLogsLabel": "Ver registros",
   "errorSharingLogsMessage": "Error al compartir registros: {error}",
   "@errorSharingLogsMessage": {

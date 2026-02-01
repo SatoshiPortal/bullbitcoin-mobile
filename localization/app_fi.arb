@@ -1771,6 +1771,8 @@
   "urProcessingFailedMessage": "UR:n käsittely epäonnistui",
   "scanNfcButton": "Skannaa NFC",
   "shareLogsLabel": "Jaa lokitiedot",
+  "deleteLogsTitle": "Poista lokit",
+  "logsDeletedMessage": "Lokit poistettu",
   "viewLogsLabel": "Näytä lokitiedot",
   "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
   "@errorSharingLogsMessage": {

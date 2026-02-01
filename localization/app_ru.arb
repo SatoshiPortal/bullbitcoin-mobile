@@ -1493,6 +1493,14 @@
       }
     }
   },
+  "deleteLogsTitle": "Удалить журналы",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Журналы удалены",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "Удаление счета-фактуры...",
   "importColdcardInstructionsStep5": "Выберите \"Export Wallet\"",
   "electrumStopGapTooHighError": "Стоп Гэп кажется слишком высоким. {maxStopGap}",

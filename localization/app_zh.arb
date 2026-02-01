@@ -1496,6 +1496,14 @@
       }
     }
   },
+  "deleteLogsTitle": "删除日志",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "日志已删除",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "发票的下降......",
   "importColdcardInstructionsStep5": "选择“Export Wallet”",
   "electrumStopGapTooHighError": "消除差距似乎太高。 (Max. {maxStopGap}",

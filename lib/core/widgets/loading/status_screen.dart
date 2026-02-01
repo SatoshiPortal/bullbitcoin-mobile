@@ -35,7 +35,7 @@ class StatusScreen extends StatelessWidget {
     final textColor = hasError ? context.appColors.error : null;
 
     return Scaffold(
-      backgroundColor: context.appColors.onSecondary,
+      backgroundColor: context.appColors.surface,
       body: StackedPage(
         bottomChild: (!isLoading && onTap != null)
             ? BBButton.big(

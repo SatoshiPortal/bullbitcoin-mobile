@@ -1821,6 +1821,8 @@
   "urProcessingFailedMessage": "Échec du traitement UR",
   "scanNfcButton": "Scanner NFC",
   "shareLogsLabel": "Partager les journaux",
+  "deleteLogsTitle": "Supprimer les journaux",
+  "logsDeletedMessage": "Journaux supprimés",
   "viewLogsLabel": "Voir les journaux",
   "errorSharingLogsMessage": "Erreur lors du partage des journaux : {error}",
   "@errorSharingLogsMessage": {

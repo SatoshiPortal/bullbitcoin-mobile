@@ -1496,6 +1496,14 @@
       }
     }
   },
+  "deleteLogsTitle": "Elimina registri",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Registri eliminati",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "Decoding fattura...",
   "importColdcardInstructionsStep5": "Selezionare \"Export Wallet\"",
   "electrumStopGapTooHighError": "Stop Gap sembra troppo alto. {maxStopGap}",

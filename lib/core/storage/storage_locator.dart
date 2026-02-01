@@ -19,7 +19,13 @@ import 'package:get_it/get_it.dart';
 class StorageLocator {
   static Future<void> registerDatasources(GetIt locator) async {
     const secureStorage = FlutterSecureStorage(
-      aOptions: AndroidOptions(),
+      aOptions: AndroidOptions(
+        resetOnError: false,
+        // CRITICAL: Never auto-delete wallet seeds!
+        // In flutter_secure_storage v10+, resetOnError defaults to TRUE.
+        // Setting true will delete secure storage contents on errors!!
+        // We must set it to false and handle errors manually.
+      ),
       iOptions: IOSOptions(
         accessibility: KeychainAccessibility.first_unlock_this_device,
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
