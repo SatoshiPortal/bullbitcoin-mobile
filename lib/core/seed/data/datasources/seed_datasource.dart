@@ -22,7 +22,7 @@ class SeedDatasource {
 
   Future<SeedModel> get(String fingerprint) async {
     const maxRetries = 5;
-    const initialDelay = Duration(milliseconds: 300);
+    const initialDelay = Duration(milliseconds: 500);
     final key = composeSeedStorageKey(fingerprint);
 
     for (int attempt = 0; attempt < maxRetries; attempt++) {
@@ -94,7 +94,11 @@ class SeedDatasource {
   }
 
   Future<List<SeedModel>> getAll() async {
-    final allEntries = await _secureStorage.getAll();
+    const maxRetries = 5;
+    const initialDelay = Duration(milliseconds: 500);
+
+    log.fine('Attempting to fetch all seeds from secure storage');
+
     // Top-level function for isolate processing
     @pragma('vm:entry-point')
     List<SeedModel> parseSeedsInIsolate(Map<String, String> allEntries) {
@@ -124,8 +128,63 @@ class SeedDatasource {
       return seeds;
     }
 
-    // Parse entries in isolate to avoid blocking UI
-    return await compute(parseSeedsInIsolate, allEntries);
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        final allEntries = await _secureStorage.getAll();
+        log.fine(
+          'Secure storage returned ${allEntries.length} total entries on attempt ${attempt + 1}',
+        );
+
+        final seedEntries = allEntries.entries
+            .where(
+              (e) => e.key.startsWith(SecureStorageKeyPrefixConstants.seed),
+            )
+            .toList();
+        log.fine('Found ${seedEntries.length} seed entries');
+
+        // If we got entries or it's the last attempt, proceed with parsing
+        if (allEntries.isNotEmpty || attempt == maxRetries - 1) {
+          final seeds = await compute(parseSeedsInIsolate, allEntries);
+          if (attempt > 0) {
+            log.fine('Successfully retrieved seeds on attempt ${attempt + 1}');
+          }
+          return seeds;
+        }
+
+        // Empty result might mean storage not ready, retry
+        if (attempt < maxRetries - 1) {
+          final delay = Duration(
+            milliseconds: initialDelay.inMilliseconds * (1 << attempt),
+          );
+          log.fine(
+            'Secure storage returned empty on attempt ${attempt + 1}, retrying in ${delay.inMilliseconds}ms',
+          );
+          await Future.delayed(delay);
+        }
+      } catch (e) {
+        if (attempt < maxRetries - 1) {
+          final delay = Duration(
+            milliseconds: initialDelay.inMilliseconds * (1 << attempt),
+          );
+          log.fine(
+            'Exception fetching all seeds on attempt ${attempt + 1}: $e, retrying in ${delay.inMilliseconds}ms',
+          );
+          await Future.delayed(delay);
+          continue;
+        }
+
+        log.severe(
+          message: 'Failed to fetch all seeds after $maxRetries attempts',
+          error: e,
+          trace: StackTrace.current,
+        );
+        rethrow;
+      }
+    }
+
+    // If all retries exhausted and storage was empty, return empty list
+    log.fine('All retry attempts exhausted, returning empty list');
+    return [];
   }
 
   static String composeSeedStorageKey(String fingerprint) =>
