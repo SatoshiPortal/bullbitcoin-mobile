@@ -1493,6 +1493,14 @@
       }
     }
   },
+  "deleteLogsTitle": "Excluir registros",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Registros excluídos",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "Fatura decodificação...",
   "importColdcardInstructionsStep5": "Selecione \"Export Wallet\"",
   "electrumStopGapTooHighError": "Pare Gap parece muito alto. (Max. {maxStopGap})",

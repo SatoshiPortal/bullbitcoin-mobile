@@ -2168,6 +2168,14 @@
       }
     }
   },
+  "deleteLogsTitle": "Видалити журнали",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Журнали видалено",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "Випадковий рахунок ...",
   "importColdcardInstructionsStep5": "Виберіть \"Експорт Гаманець\"",
   "electrumStopGapTooHighError": "Stop Gap здається занадто високою. {maxStopGap})",

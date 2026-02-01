@@ -3858,6 +3858,14 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
+  "deleteLogsTitle": "Poista lokit",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Lokit poistettu",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
       "frequency": {
         "type": "String"
       },
