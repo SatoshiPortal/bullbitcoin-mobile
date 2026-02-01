@@ -306,10 +306,10 @@ packages:
     dependency: transitive
     description:
       name: camera_android_camerax
-      sha256: dba476d6c316671ae943f20ad7d02b3d363eed0dbfd25465bb92d42e35faacd8
+      sha256: "1abae0a9853401ee875d7f99e9ec5083335f0aab6edf6eb9a219756143a1b3a8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.28"
+    version: "0.6.29"
   camera_avfoundation:
     dependency: transitive
     description:

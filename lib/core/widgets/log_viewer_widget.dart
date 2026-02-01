@@ -111,10 +111,9 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               outlined: true,
               onPressed: _selectDateRange,
               iconData: Icons.date_range,
-              label:
-                  _startDate != null && _endDate != null
-                      ? '${_formatDate(_startDate!)} - ${_formatDate(_endDate!)}'
-                      : 'Filter by Date',
+              label: _startDate != null && _endDate != null
+                  ? '${_formatDate(_startDate!)} - ${_formatDate(_endDate!)}'
+                  : 'Filter by Date',
             ),
             const Gap(8),
             Row(
@@ -154,8 +153,12 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   Color iconColor = context.appColors.secondary;
                   if (parts.length > 1) {
                     final colorForLevel = switch (parts[1]) {
-                      'FINEST' => context.appColors.success.withValues(alpha: 0.5),
-                      'FINER' => context.appColors.success.withValues(alpha: 0.7),
+                      'FINEST' => context.appColors.success.withValues(
+                        alpha: 0.5,
+                      ),
+                      'FINER' => context.appColors.success.withValues(
+                        alpha: 0.7,
+                      ),
                       'FINE' => context.appColors.success,
                       'CONFIG' => context.appColors.textMuted,
                       'INFO' => context.appColors.info,
@@ -182,9 +185,8 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   return Row(
                     children: [
                       IconButton(
-                        onPressed:
-                            () =>
-                                Clipboard.setData(ClipboardData(text: logLine)),
+                        onPressed: () =>
+                            Clipboard.setData(ClipboardData(text: logLine)),
                         icon: Icon(Icons.copy, color: iconColor),
                       ),
                       SelectableText(
@@ -237,7 +239,7 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
         maxHeight: MediaQuery.of(context).size.height * 0.3,
       ),
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
+        color: context.appColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Padding(
@@ -245,11 +247,18 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
         child: Column(
           children: [
             const Gap(16),
-            BBText('Delete logs', style: context.font.headlineMedium),
+            BBText(
+              'Delete logs',
+              style: context.font.headlineMedium?.copyWith(
+                color: context.appColors.onSurface,
+              ),
+            ),
             const Gap(16),
             BBText(
               'Are you sure you want to delete all logs? This action cannot be undone.',
-              style: context.font.bodyMedium,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+              ),
             ),
             const Gap(16),
             Row(

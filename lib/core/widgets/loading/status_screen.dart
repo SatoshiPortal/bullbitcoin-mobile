@@ -35,7 +35,7 @@ class StatusScreen extends StatelessWidget {
     final textColor = hasError ? context.appColors.error : null;
 
     return Scaffold(
-      backgroundColor: context.appColors.onSecondary,
+      backgroundColor: context.appColors.background,
       body: StackedPage(
         bottomChild: (!isLoading && onTap != null)
             ? BBButton.big(
@@ -43,8 +43,8 @@ class StatusScreen extends StatelessWidget {
                     ? (buttonText ?? context.loc.statusScreenTryAgain)
                     : (buttonText ?? context.loc.statusScreenContinue),
                 onPressed: onTap ?? () {},
-                textColor: context.appColors.onSecondary,
-                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onPrimary,
+                bgColor: context.appColors.primary,
               )
             : const SizedBox.shrink(),
         child: SafeArea(
