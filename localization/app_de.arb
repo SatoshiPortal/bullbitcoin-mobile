@@ -1467,6 +1467,14 @@
       }
     }
   },
+  "deleteLogsTitle": "Protokolle löschen",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Protokolle gelöscht",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "Rechnung wird decodiert…",
   "importColdcardInstructionsStep5": "Wählen Sie „Export-Wallet“",
   "electrumStopGapTooHighError": "Stop-Gap scheint zu hoch zu sein (max. {maxStopGap})",

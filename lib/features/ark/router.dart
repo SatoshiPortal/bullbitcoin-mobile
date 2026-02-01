@@ -103,9 +103,12 @@ class ArkRouter {
               context.pushNamed(
                 ArkRoute.arkSendAmount.name,
                 queryParameters: {
-                  if (prefilledAmount != null) 'amount': prefilledAmount,
-                  if (prefilledCurrencyCode != null)
-                    'currencyCode': prefilledCurrencyCode,
+                  ...?prefilledAmount != null
+                      ? {'amount': prefilledAmount}
+                      : null,
+                  ...?prefilledCurrencyCode != null
+                      ? {'currencyCode': prefilledCurrencyCode}
+                      : null,
                 },
               );
             },

@@ -6200,6 +6200,14 @@
   "@shareLogsLabel": {
     "description": "List tile label to share application logs"
   },
+  "deleteLogsTitle": "Delete logs",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Logs deleted",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "viewLogsLabel": "View logs",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
