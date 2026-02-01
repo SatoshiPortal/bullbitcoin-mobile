@@ -1821,6 +1821,8 @@
   "urProcessingFailedMessage": "Échec du traitement UR",
   "scanNfcButton": "Scanner NFC",
   "shareLogsLabel": "Partager les journaux",
+  "deleteLogsTitle": "Supprimer les journaux",
+  "logsDeletedMessage": "Journaux supprimés",
   "viewLogsLabel": "Voir les journaux",
   "errorSharingLogsMessage": "Erreur lors du partage des journaux : {error}",
   "@errorSharingLogsMessage": {
@@ -3912,14 +3914,6 @@
         "type": "String",
         "description": "The amount being purchased (e.g., '$100 CAD')"
       },
-  "deleteLogsTitle": "Supprimer les journaux",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
-  "logsDeletedMessage": "Journaux supprimés",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
       "frequency": {
         "type": "String"
       },
