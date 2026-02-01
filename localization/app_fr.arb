@@ -4185,5 +4185,17 @@
   "errorReportingRestartSnackbar": "Relancez l'application pour appliquer ce changement",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "Supprimer les journaux",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Êtes-vous sûr de vouloir supprimer tous les journaux ? Cette action ne peut pas être annulée.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Récupérer les seeds",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

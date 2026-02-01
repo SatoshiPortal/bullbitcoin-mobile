@@ -4183,5 +4183,17 @@
   "errorReportingRestartSnackbar": "Перезапустіть програму, щоб застосувати цю зміну",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "Видалити журнали",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Ви впевнені, що хочете видалити всі журнали? Цю дію не можна скасувати.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Відновити насіння",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

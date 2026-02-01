@@ -140,13 +140,29 @@ class SwapWatcherService {
         case SwapStatus.failed:
           return;
       }
-      // ignore: empty_catches
-    } catch (e) {
-      log.severe(
-        message: 'Error processing swap',
-        error: e,
-        trace: StackTrace.current,
-      );
+    } catch (e, st) {
+      log.severe(message: 'Error processing swap', error: e, trace: st);
+      // Check if transaction actually succeeded despite the error
+      // This handles cases where the error bubbles up from inner try-catch blocks
+      try {
+        final isClaim = swap.status == SwapStatus.claimable;
+        final recovered = await _checkAndRecoverFromOutspend(
+          swap: swap,
+          error: e,
+          functionName: 'processSwap',
+          isClaim: isClaim,
+        );
+        if (recovered) {
+          log.fine(
+            '{"swapId": "${swap.id}", "action": "recovered_via_outspend_check_in_main_handler"}',
+          );
+        }
+      } catch (recoveryError) {
+        // If recovery check fails, just continue - the swap will be retried
+        log.fine(
+          '{"swapId": "${swap.id}", "action": "outspend_recovery_check_failed"}',
+        );
+      }
     } finally {
       Future.delayed(const Duration(seconds: 1), () {
         _processingSwapIds.remove(swap.id);
@@ -948,7 +964,7 @@ class SwapWatcherService {
     required String functionName,
     required bool isClaim,
   }) async {
-    final errorStr = error.toString();
+    final errorStr = _extractErrorMessage(error);
     if (!errorStr.contains('bad-txns-inputs-missingorspent') &&
         !errorStr.contains('txn-mempool-conflict')) {
       return false;

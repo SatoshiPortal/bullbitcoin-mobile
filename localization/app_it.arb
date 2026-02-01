@@ -4182,5 +4182,17 @@
   "errorReportingRestartSnackbar": "Riavvia l'app per applicare questa modifica",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "Elimina registri",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Sei sicuro di voler eliminare tutti i registri? Questa azione non può essere annullata.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Recupera seed",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

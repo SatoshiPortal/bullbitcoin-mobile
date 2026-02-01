@@ -4179,5 +4179,17 @@
   "errorReportingRestartSnackbar": "Перезапустите приложение, чтобы применить это изменение",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "Удалить журналы",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Вы уверены, что хотите удалить все журналы? Это действие нельзя отменить.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Восстановить сиды",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

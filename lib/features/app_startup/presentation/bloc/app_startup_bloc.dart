@@ -61,16 +61,13 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     Emitter<AppStartupState> emit,
   ) async {
     emit(const AppStartupState.loadingInProgress());
+
     try {
       // Log app version on startup
       final packageInfo = await PackageInfo.fromPlatform();
       log.info(
         'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
       );
-
-      // SQL Migrations
-      // emit(const AppStartupState.failure(null));
-      // return;
       final migrationRequired = await _requiresMigrationUsecase.execute();
       if (migrationRequired == null) {
         emit(const AppStartupState.loadingInProgress());
@@ -145,15 +142,18 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
           hasDefaultWallets: doDefaultWalletsExist,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      // Log the actual startup error
+      log.severe(message: 'App startup failed', error: e, trace: st);
+
       bool hasBackup;
       try {
         // Check if there is a backup available
         hasBackup = await _checkBackupUsecase.execute();
-      } catch (_) {
+      } catch (backupError) {
         log.severe(
           message: 'Failed to check for backup availability during app startup',
-          error: e,
+          error: backupError,
           trace: StackTrace.current,
         );
         hasBackup = false;

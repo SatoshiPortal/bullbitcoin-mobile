@@ -4182,5 +4182,17 @@
   "errorReportingRestartSnackbar": "重新启动应用程序以应用此更改",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "删除日志",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "您确定要删除所有日志吗？此操作无法撤消。",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "恢复种子",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

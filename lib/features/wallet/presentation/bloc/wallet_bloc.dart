@@ -484,11 +484,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
-      log.severe(
-        message: '[WalletBloc] Failed to execute auto swap',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (e is AutoSwapDisabledException) {
+        log.fine('[WalletBloc] Auto swap execution skipped: ${e.toString()}');
+      } else {
+        log.severe(
+          message: '[WalletBloc] Failed to execute auto swap',
+          error: e,
+          trace: StackTrace.current,
+        );
+      }
     }
   }
 

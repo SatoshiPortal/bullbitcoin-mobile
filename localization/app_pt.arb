@@ -4150,5 +4150,17 @@
   "errorReportingRestartSnackbar": "Reinicie o aplicativo para aplicar essa mudança",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "Excluir registros",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Tem certeza de que deseja excluir todos os registros? Esta ação não pode ser desfeita.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Recuperar seeds",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

@@ -4,9 +4,12 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_startup/presentation/bloc/rescue_seeds_cubit.dart';
+import 'package:bb_mobile/features/app_startup/ui/rescue_seed_bottom_sheet.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,9 +70,8 @@ class AppStartupListener extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<AppStartupBloc, AppStartupState>(
-          listenWhen:
-              (previous, current) =>
-                  current is AppStartupSuccess && previous != current,
+          listenWhen: (previous, current) =>
+              current is AppStartupSuccess && previous != current,
           listener: (context, state) {
             if (state is AppStartupSuccess && state.isPinCodeSet) {
               AppRouter.router.go(AppUnlockRoute.appUnlock.path);
@@ -86,14 +88,48 @@ class AppStartupListener extends StatelessWidget {
   }
 }
 
-class AppStartupFailureScreen extends StatelessWidget {
+class AppStartupFailureScreen extends StatefulWidget {
   const AppStartupFailureScreen({super.key, this.e, required this.hasBackup});
 
   final Object? e;
   final bool hasBackup;
 
   @override
+  State<AppStartupFailureScreen> createState() =>
+      _AppStartupFailureScreenState();
+}
+
+class _AppStartupFailureScreenState extends State<AppStartupFailureScreen> {
+  bool _showingSeeds = false;
+
+  void _toggleRescueSeeds() {
+    setState(() {
+      _showingSeeds = !_showingSeeds;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_showingSeeds) {
+      return BlocProvider(
+        create: (context) {
+          final cubit = locator<RescueSeedsCubit>();
+          cubit.loadSeeds();
+          return cubit;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: _toggleRescueSeeds,
+            ),
+            title: Text(context.loc.rescueSeeds),
+          ),
+          body: const RescueSeedBottomSheet(),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -128,9 +164,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                   child: Text(
                     context.loc.appStartupErrorMessage,
                     style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.secondary.withValues(
-                        alpha: 0.7,
-                      ),
+                      color: context.appColors.secondary.withValues(alpha: 0.7),
                     ),
                   ),
                 ),
@@ -145,6 +179,13 @@ class AppStartupFailureScreen extends StatelessWidget {
                 label: context.loc.appStartupContactSupportButton,
                 bgColor: context.appColors.primary,
                 textColor: context.appColors.onPrimary,
+              ),
+              const SizedBox(height: 16),
+              BBButton.big(
+                onPressed: _toggleRescueSeeds,
+                label: context.loc.rescueSeeds,
+                bgColor: context.appColors.secondary,
+                textColor: context.appColors.onSecondary,
               ),
               const SizedBox(height: 24),
               const ShareLogsWidget(),

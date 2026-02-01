@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -248,14 +249,14 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
           children: [
             const Gap(16),
             BBText(
-              'Delete logs',
+              context.loc.deleteLogsTitle,
               style: context.font.headlineMedium?.copyWith(
                 color: context.appColors.onSurface,
               ),
             ),
             const Gap(16),
             BBText(
-              'Are you sure you want to delete all logs? This action cannot be undone.',
+              context.loc.deleteLogsMessage,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,
               ),

@@ -4183,5 +4183,17 @@
   "errorReportingRestartSnackbar": "Starten Sie bitte die App neu, um diese Änderung zu übernehmen",
   "@errorReportingRestartSnackbar": {
     "description": "Kurze Bestätigung, wenn die Einstellung zur Fehlerberichterstattung geändert wird"
+  },
+  "deleteLogsTitle": "Protokolle löschen",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Möchten Sie wirklich alle Protokolle löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Seeds wiederherstellen",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

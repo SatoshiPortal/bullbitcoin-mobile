@@ -7,8 +7,10 @@ import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/get_rescue_seeds_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_startup/presentation/bloc/rescue_seeds_cubit.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
@@ -28,6 +30,9 @@ class AppStartupLocator {
         seedRepository: locator<SeedRepository>(),
       ),
     );
+    locator.registerFactory<GetRescueSeedsUsecase>(
+      () => GetRescueSeedsUsecase(seedRepository: locator<SeedRepository>()),
+    );
 
     // Bloc
     locator.registerFactory<AppStartupBloc>(
@@ -42,6 +47,11 @@ class AppStartupLocator {
         checkBackupUsecase: locator<CheckBackupUsecase>(),
         isTorRequiredUsecase: locator<IsTorRequiredUsecase>(),
         initTorUsecase: locator<InitTorUsecase>(),
+      ),
+    );
+    locator.registerFactory<RescueSeedsCubit>(
+      () => RescueSeedsCubit(
+        getRescueSeedsUsecase: locator<GetRescueSeedsUsecase>(),
       ),
     );
   }

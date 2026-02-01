@@ -37,14 +37,19 @@ import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
-    await initLogs();
-    await initFlutterRustBridgeDependencies();
+    try {
+      await initLogs();
+      await initFlutterRustBridgeDependencies();
 
-    // The Locator setup might depend on the initialization of the libraries above
-    //  so it's important to call it after the initialization
-    await initLocator();
+      // The Locator setup might depend on the initialization of the libraries above
+      //  so it's important to call it after the initialization
+      await initLocator();
 
-    await initErrorReporting();
+      await initErrorReporting();
+    } catch (e, st) {
+      log.severe(message: 'Failed during Bull.init()', error: e, trace: st);
+      rethrow;
+    }
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
@@ -134,7 +139,17 @@ Future main() async {
       runApp(const BullBitcoinWalletApp());
     },
     (error, stackTrace) async {
-      log.severe(error: error, trace: stackTrace);
+      try {
+        log.severe(
+          message: 'Uncaught error in main',
+          error: error,
+          trace: stackTrace,
+        );
+      } catch (_) {
+        // If logging fails, print to console as last resort
+        print('FATAL ERROR: $error');
+        print(stackTrace);
+      }
     },
   );
 }

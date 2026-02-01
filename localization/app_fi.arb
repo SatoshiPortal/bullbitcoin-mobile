@@ -4184,5 +4184,17 @@
   "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "Poista lokit",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Haluatko varmasti poistaa kaikki lokit? Tätä toimintoa ei voi kumota.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Palauta siemenet",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }

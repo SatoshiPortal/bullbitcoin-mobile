@@ -6213,6 +6213,10 @@
       }
     }
   },
+  "logsDeletedMessage": "Logs deleted",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "copiedToClipboardMessage": "Copied to clipboard",
   "@copiedToClipboardMessage": {
     "description": "Snackbar confirmation message after copying to clipboard"
@@ -12653,5 +12657,73 @@
   "errorReportingRestartSnackbar": "Restart the app to apply this change",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "deleteLogsTitle": "Delete logs",
+  "@deleteLogsTitle": {
+    "description": "Title for the delete logs confirmation dialog"
+  },
+  "deleteLogsMessage": "Are you sure you want to delete all logs? This action cannot be undone.",
+  "@deleteLogsMessage": {
+    "description": "Confirmation message for deleting all logs"
+  },
+  "rescueSeeds": "Rescue Seeds",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
+  },
+  "rescueSeedsFailedToLoad": "Failed to load seeds: {error}",
+  "@rescueSeedsFailedToLoad": {
+    "description": "Error message when seeds fail to load",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rescueSeedsNoSeedsFound": "No seeds found in secure storage",
+  "@rescueSeedsNoSeedsFound": {
+    "description": "Message when no seeds are found in secure storage"
+  },
+  "rescueSeedsFoundSeeds": "Found {count} seed(s)",
+  "@rescueSeedsFoundSeeds": {
+    "description": "Message showing count of seeds found",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rescueSeedsMakeSureNoOneSees": "Make sure no one can see your screen",
+  "@rescueSeedsMakeSureNoOneSees": {
+    "description": "Privacy warning before showing seeds"
+  },
+  "rescueSeedsShowButton": "Show Seeds",
+  "@rescueSeedsShowButton": {
+    "description": "Button to reveal seeds"
+  },
+  "rescueSeedNumber": "Seed #{number}",
+  "@rescueSeedNumber": {
+    "description": "Label for seed number",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "rescueSeedFingerprint": "Fingerprint: {fingerprint}",
+  "@rescueSeedFingerprint": {
+    "description": "Label for seed fingerprint",
+    "placeholders": {
+      "fingerprint": {
+        "type": "String"
+      }
+    }
+  },
+  "rescueSeedPassphrase": "Passphrase:",
+  "@rescueSeedPassphrase": {
+    "description": "Label for seed passphrase"
+  },
+  "rescueSeeds": "Rescue Seeds",
+  "@rescueSeeds": {
+    "description": "Title for rescue seeds screen and button"
   }
 }
