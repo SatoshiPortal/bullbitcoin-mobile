@@ -1,0 +1,1 @@
+enum EnvironmentMode { production, test }
