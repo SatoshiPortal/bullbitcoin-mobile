@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/features/settings/domain/entities/app_settings.dart' as domain;
+import 'package:bb_mobile/features/settings/domain/entities/app_settings.dart'
+    as domain;
 import 'package:bb_mobile/features/settings/domain/primitives/bitcoin_unit.dart';
 import 'package:bb_mobile/features/settings/domain/primitives/environment_mode.dart';
 import 'package:bb_mobile/features/settings/domain/primitives/feature_level.dart';
@@ -42,14 +43,14 @@ class AppSettingsMapper {
   /// Convert from domain entity to Drift companion for insert/update
   static AppSettingsCompanion toCompanion(domain.AppSettings settings) {
     return AppSettingsCompanion.insert(
-      fiatCurrencyCode: settings.currency.fiatCurrency.code,
-      bitcoinUnit: settings.currency.bitcoinUnit.toDb(),
-      languageTag: settings.display.language.toBcp47(),
-      themeMode: settings.display.themeMode.toDb(),
-      hideAmounts: settings.display.hideAmounts,
-      environmentMode: settings.environment.environmentMode.toDb(),
-      superuserModeEnabled: settings.environment.superuserModeEnabled,
-      featureLevel: settings.environment.featureLevel.toDb(),
+      fiatCurrencyCode: Value(settings.currency.fiatCurrency.code),
+      bitcoinUnit: Value(settings.currency.bitcoinUnit.toDb()),
+      languageTag: Value(settings.display.language.toBcp47()),
+      themeMode: Value(settings.display.themeMode.toDb()),
+      hideAmounts: Value(settings.display.hideAmounts),
+      environmentMode: Value(settings.environment.environmentMode.toDb()),
+      superuserModeEnabled: Value(settings.environment.superuserModeEnabled),
+      featureLevel: Value(settings.environment.featureLevel.toDb()),
     );
   }
 }

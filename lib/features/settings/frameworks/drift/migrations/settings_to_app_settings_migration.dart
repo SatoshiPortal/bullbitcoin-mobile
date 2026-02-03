@@ -40,8 +40,9 @@ class SettingsToAppSettingsMigration {
 
     // Map old settings to new app_settings
     // Convert isDevModeEnabled (bool) to featureLevel (enum)
-    final featureLevel =
-        existingSettings.isDevModeEnabled ? FeatureLevelDb.alpha : FeatureLevelDb.stable;
+    final featureLevel = existingSettings.isDevModeEnabled
+        ? FeatureLevelDb.alpha
+        : FeatureLevelDb.stable;
 
     // Convert currency text to uppercase code (old DB stored lowercase enum names)
     final currencyCode = existingSettings.currency.toUpperCase();
@@ -67,16 +68,19 @@ class SettingsToAppSettingsMigration {
     // Old format was just language code like "en", we need to create BCP-47 tag
     final languageTag = _toBcp47Tag(existingSettings.language);
 
-    await db.into(db.appSettings).insert(
+    // Step 2: Insert migrated data into app_settings
+    await db
+        .into(db.appSettings)
+        .insert(
           AppSettingsCompanion.insert(
-            fiatCurrencyCode: currencyCode,
-            bitcoinUnit: bitcoinUnit,
-            languageTag: languageTag,
-            themeMode: themeMode,
-            hideAmounts: existingSettings.hideAmounts,
-            environmentMode: environmentMode,
-            superuserModeEnabled: existingSettings.isSuperuser,
-            featureLevel: featureLevel,
+            fiatCurrencyCode: Value(currencyCode),
+            bitcoinUnit: Value(bitcoinUnit),
+            languageTag: Value(languageTag),
+            themeMode: Value(themeMode),
+            hideAmounts: Value(existingSettings.hideAmounts),
+            environmentMode: Value(environmentMode),
+            superuserModeEnabled: Value(existingSettings.isSuperuser),
+            featureLevel: Value(featureLevel),
           ),
           mode: InsertMode.insertOrIgnore,
         );

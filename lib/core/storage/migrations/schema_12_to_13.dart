@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
-import 'package:bb_mobile/features/settings/frameworks/drift/settings_to_app_settings_migration.dart';
+import 'package:bb_mobile/features/settings/frameworks/drift/migrations/settings_to_app_settings_migration.dart';
 import 'package:drift/drift.dart';
 
 /// Migration from version 12 to 13

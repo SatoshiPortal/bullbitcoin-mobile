@@ -2286,6 +2286,472 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   }
 }
 
+class AppSettings extends Table with TableInfo<AppSettings, AppSettingsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  AppSettings(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
+  );
+  late final GeneratedColumn<String> fiatCurrencyCode = GeneratedColumn<String>(
+    'fiat_currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'CAD\'',
+    defaultValue: const CustomExpression('\'CAD\''),
+  );
+  late final GeneratedColumn<String> bitcoinUnit = GeneratedColumn<String>(
+    'bitcoin_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'btc\'',
+    defaultValue: const CustomExpression('\'btc\''),
+  );
+  late final GeneratedColumn<String> languageTag = GeneratedColumn<String>(
+    'language_tag',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'en-US\'',
+    defaultValue: const CustomExpression('\'en-US\''),
+  );
+  late final GeneratedColumn<String> themeMode = GeneratedColumn<String>(
+    'theme_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'system\'',
+    defaultValue: const CustomExpression('\'system\''),
+  );
+  late final GeneratedColumn<int> hideAmounts = GeneratedColumn<int>(
+    'hide_amounts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (hide_amounts IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<String> environmentMode = GeneratedColumn<String>(
+    'environment_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'production\'',
+    defaultValue: const CustomExpression('\'production\''),
+  );
+  late final GeneratedColumn<int> superuserModeEnabled = GeneratedColumn<int>(
+    'superuser_mode_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (superuser_mode_enabled IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<String> featureLevel = GeneratedColumn<String>(
+    'feature_level',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT \'stable\'',
+    defaultValue: const CustomExpression('\'stable\''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    fiatCurrencyCode,
+    bitcoinUnit,
+    languageTag,
+    themeMode,
+    hideAmounts,
+    environmentMode,
+    superuserModeEnabled,
+    featureLevel,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_settings';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AppSettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppSettingsData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      fiatCurrencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fiat_currency_code'],
+      )!,
+      bitcoinUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bitcoin_unit'],
+      )!,
+      languageTag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language_tag'],
+      )!,
+      themeMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}theme_mode'],
+      )!,
+      hideAmounts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hide_amounts'],
+      )!,
+      environmentMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}environment_mode'],
+      )!,
+      superuserModeEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}superuser_mode_enabled'],
+      )!,
+      featureLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}feature_level'],
+      )!,
+    );
+  }
+
+  @override
+  AppSettings createAlias(String alias) {
+    return AppSettings(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class AppSettingsData extends DataClass implements Insertable<AppSettingsData> {
+  final int id;
+  final String fiatCurrencyCode;
+  final String bitcoinUnit;
+  final String languageTag;
+  final String themeMode;
+  final int hideAmounts;
+  final String environmentMode;
+  final int superuserModeEnabled;
+  final String featureLevel;
+  const AppSettingsData({
+    required this.id,
+    required this.fiatCurrencyCode,
+    required this.bitcoinUnit,
+    required this.languageTag,
+    required this.themeMode,
+    required this.hideAmounts,
+    required this.environmentMode,
+    required this.superuserModeEnabled,
+    required this.featureLevel,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['fiat_currency_code'] = Variable<String>(fiatCurrencyCode);
+    map['bitcoin_unit'] = Variable<String>(bitcoinUnit);
+    map['language_tag'] = Variable<String>(languageTag);
+    map['theme_mode'] = Variable<String>(themeMode);
+    map['hide_amounts'] = Variable<int>(hideAmounts);
+    map['environment_mode'] = Variable<String>(environmentMode);
+    map['superuser_mode_enabled'] = Variable<int>(superuserModeEnabled);
+    map['feature_level'] = Variable<String>(featureLevel);
+    return map;
+  }
+
+  AppSettingsCompanion toCompanion(bool nullToAbsent) {
+    return AppSettingsCompanion(
+      id: Value(id),
+      fiatCurrencyCode: Value(fiatCurrencyCode),
+      bitcoinUnit: Value(bitcoinUnit),
+      languageTag: Value(languageTag),
+      themeMode: Value(themeMode),
+      hideAmounts: Value(hideAmounts),
+      environmentMode: Value(environmentMode),
+      superuserModeEnabled: Value(superuserModeEnabled),
+      featureLevel: Value(featureLevel),
+    );
+  }
+
+  factory AppSettingsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppSettingsData(
+      id: serializer.fromJson<int>(json['id']),
+      fiatCurrencyCode: serializer.fromJson<String>(json['fiatCurrencyCode']),
+      bitcoinUnit: serializer.fromJson<String>(json['bitcoinUnit']),
+      languageTag: serializer.fromJson<String>(json['languageTag']),
+      themeMode: serializer.fromJson<String>(json['themeMode']),
+      hideAmounts: serializer.fromJson<int>(json['hideAmounts']),
+      environmentMode: serializer.fromJson<String>(json['environmentMode']),
+      superuserModeEnabled: serializer.fromJson<int>(
+        json['superuserModeEnabled'],
+      ),
+      featureLevel: serializer.fromJson<String>(json['featureLevel']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'fiatCurrencyCode': serializer.toJson<String>(fiatCurrencyCode),
+      'bitcoinUnit': serializer.toJson<String>(bitcoinUnit),
+      'languageTag': serializer.toJson<String>(languageTag),
+      'themeMode': serializer.toJson<String>(themeMode),
+      'hideAmounts': serializer.toJson<int>(hideAmounts),
+      'environmentMode': serializer.toJson<String>(environmentMode),
+      'superuserModeEnabled': serializer.toJson<int>(superuserModeEnabled),
+      'featureLevel': serializer.toJson<String>(featureLevel),
+    };
+  }
+
+  AppSettingsData copyWith({
+    int? id,
+    String? fiatCurrencyCode,
+    String? bitcoinUnit,
+    String? languageTag,
+    String? themeMode,
+    int? hideAmounts,
+    String? environmentMode,
+    int? superuserModeEnabled,
+    String? featureLevel,
+  }) => AppSettingsData(
+    id: id ?? this.id,
+    fiatCurrencyCode: fiatCurrencyCode ?? this.fiatCurrencyCode,
+    bitcoinUnit: bitcoinUnit ?? this.bitcoinUnit,
+    languageTag: languageTag ?? this.languageTag,
+    themeMode: themeMode ?? this.themeMode,
+    hideAmounts: hideAmounts ?? this.hideAmounts,
+    environmentMode: environmentMode ?? this.environmentMode,
+    superuserModeEnabled: superuserModeEnabled ?? this.superuserModeEnabled,
+    featureLevel: featureLevel ?? this.featureLevel,
+  );
+  AppSettingsData copyWithCompanion(AppSettingsCompanion data) {
+    return AppSettingsData(
+      id: data.id.present ? data.id.value : this.id,
+      fiatCurrencyCode: data.fiatCurrencyCode.present
+          ? data.fiatCurrencyCode.value
+          : this.fiatCurrencyCode,
+      bitcoinUnit: data.bitcoinUnit.present
+          ? data.bitcoinUnit.value
+          : this.bitcoinUnit,
+      languageTag: data.languageTag.present
+          ? data.languageTag.value
+          : this.languageTag,
+      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      hideAmounts: data.hideAmounts.present
+          ? data.hideAmounts.value
+          : this.hideAmounts,
+      environmentMode: data.environmentMode.present
+          ? data.environmentMode.value
+          : this.environmentMode,
+      superuserModeEnabled: data.superuserModeEnabled.present
+          ? data.superuserModeEnabled.value
+          : this.superuserModeEnabled,
+      featureLevel: data.featureLevel.present
+          ? data.featureLevel.value
+          : this.featureLevel,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsData(')
+          ..write('id: $id, ')
+          ..write('fiatCurrencyCode: $fiatCurrencyCode, ')
+          ..write('bitcoinUnit: $bitcoinUnit, ')
+          ..write('languageTag: $languageTag, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('hideAmounts: $hideAmounts, ')
+          ..write('environmentMode: $environmentMode, ')
+          ..write('superuserModeEnabled: $superuserModeEnabled, ')
+          ..write('featureLevel: $featureLevel')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    fiatCurrencyCode,
+    bitcoinUnit,
+    languageTag,
+    themeMode,
+    hideAmounts,
+    environmentMode,
+    superuserModeEnabled,
+    featureLevel,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppSettingsData &&
+          other.id == this.id &&
+          other.fiatCurrencyCode == this.fiatCurrencyCode &&
+          other.bitcoinUnit == this.bitcoinUnit &&
+          other.languageTag == this.languageTag &&
+          other.themeMode == this.themeMode &&
+          other.hideAmounts == this.hideAmounts &&
+          other.environmentMode == this.environmentMode &&
+          other.superuserModeEnabled == this.superuserModeEnabled &&
+          other.featureLevel == this.featureLevel);
+}
+
+class AppSettingsCompanion extends UpdateCompanion<AppSettingsData> {
+  final Value<int> id;
+  final Value<String> fiatCurrencyCode;
+  final Value<String> bitcoinUnit;
+  final Value<String> languageTag;
+  final Value<String> themeMode;
+  final Value<int> hideAmounts;
+  final Value<String> environmentMode;
+  final Value<int> superuserModeEnabled;
+  final Value<String> featureLevel;
+  const AppSettingsCompanion({
+    this.id = const Value.absent(),
+    this.fiatCurrencyCode = const Value.absent(),
+    this.bitcoinUnit = const Value.absent(),
+    this.languageTag = const Value.absent(),
+    this.themeMode = const Value.absent(),
+    this.hideAmounts = const Value.absent(),
+    this.environmentMode = const Value.absent(),
+    this.superuserModeEnabled = const Value.absent(),
+    this.featureLevel = const Value.absent(),
+  });
+  AppSettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.fiatCurrencyCode = const Value.absent(),
+    this.bitcoinUnit = const Value.absent(),
+    this.languageTag = const Value.absent(),
+    this.themeMode = const Value.absent(),
+    this.hideAmounts = const Value.absent(),
+    this.environmentMode = const Value.absent(),
+    this.superuserModeEnabled = const Value.absent(),
+    this.featureLevel = const Value.absent(),
+  });
+  static Insertable<AppSettingsData> custom({
+    Expression<int>? id,
+    Expression<String>? fiatCurrencyCode,
+    Expression<String>? bitcoinUnit,
+    Expression<String>? languageTag,
+    Expression<String>? themeMode,
+    Expression<int>? hideAmounts,
+    Expression<String>? environmentMode,
+    Expression<int>? superuserModeEnabled,
+    Expression<String>? featureLevel,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (fiatCurrencyCode != null) 'fiat_currency_code': fiatCurrencyCode,
+      if (bitcoinUnit != null) 'bitcoin_unit': bitcoinUnit,
+      if (languageTag != null) 'language_tag': languageTag,
+      if (themeMode != null) 'theme_mode': themeMode,
+      if (hideAmounts != null) 'hide_amounts': hideAmounts,
+      if (environmentMode != null) 'environment_mode': environmentMode,
+      if (superuserModeEnabled != null)
+        'superuser_mode_enabled': superuserModeEnabled,
+      if (featureLevel != null) 'feature_level': featureLevel,
+    });
+  }
+
+  AppSettingsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? fiatCurrencyCode,
+    Value<String>? bitcoinUnit,
+    Value<String>? languageTag,
+    Value<String>? themeMode,
+    Value<int>? hideAmounts,
+    Value<String>? environmentMode,
+    Value<int>? superuserModeEnabled,
+    Value<String>? featureLevel,
+  }) {
+    return AppSettingsCompanion(
+      id: id ?? this.id,
+      fiatCurrencyCode: fiatCurrencyCode ?? this.fiatCurrencyCode,
+      bitcoinUnit: bitcoinUnit ?? this.bitcoinUnit,
+      languageTag: languageTag ?? this.languageTag,
+      themeMode: themeMode ?? this.themeMode,
+      hideAmounts: hideAmounts ?? this.hideAmounts,
+      environmentMode: environmentMode ?? this.environmentMode,
+      superuserModeEnabled: superuserModeEnabled ?? this.superuserModeEnabled,
+      featureLevel: featureLevel ?? this.featureLevel,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (fiatCurrencyCode.present) {
+      map['fiat_currency_code'] = Variable<String>(fiatCurrencyCode.value);
+    }
+    if (bitcoinUnit.present) {
+      map['bitcoin_unit'] = Variable<String>(bitcoinUnit.value);
+    }
+    if (languageTag.present) {
+      map['language_tag'] = Variable<String>(languageTag.value);
+    }
+    if (themeMode.present) {
+      map['theme_mode'] = Variable<String>(themeMode.value);
+    }
+    if (hideAmounts.present) {
+      map['hide_amounts'] = Variable<int>(hideAmounts.value);
+    }
+    if (environmentMode.present) {
+      map['environment_mode'] = Variable<String>(environmentMode.value);
+    }
+    if (superuserModeEnabled.present) {
+      map['superuser_mode_enabled'] = Variable<int>(superuserModeEnabled.value);
+    }
+    if (featureLevel.present) {
+      map['feature_level'] = Variable<String>(featureLevel.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('fiatCurrencyCode: $fiatCurrencyCode, ')
+          ..write('bitcoinUnit: $bitcoinUnit, ')
+          ..write('languageTag: $languageTag, ')
+          ..write('themeMode: $themeMode, ')
+          ..write('hideAmounts: $hideAmounts, ')
+          ..write('environmentMode: $environmentMode, ')
+          ..write('superuserModeEnabled: $superuserModeEnabled, ')
+          ..write('featureLevel: $featureLevel')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class PayjoinSenders extends Table
     with TableInfo<PayjoinSenders, PayjoinSendersData> {
   @override
@@ -7480,12 +7946,13 @@ class PricesCompanion extends UpdateCompanion<PricesData> {
   }
 }
 
-class DatabaseAtV12 extends GeneratedDatabase {
-  DatabaseAtV12(QueryExecutor e) : super(e);
+class DatabaseAtV13 extends GeneratedDatabase {
+  DatabaseAtV13(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
   late final WalletMetadatas walletMetadatas = WalletMetadatas(this);
   late final Labels labels = Labels(this);
   late final Settings settings = Settings(this);
+  late final AppSettings appSettings = AppSettings(this);
   late final PayjoinSenders payjoinSenders = PayjoinSenders(this);
   late final PayjoinReceivers payjoinReceivers = PayjoinReceivers(this);
   late final ElectrumServers electrumServers = ElectrumServers(this);
@@ -7506,6 +7973,7 @@ class DatabaseAtV12 extends GeneratedDatabase {
     walletMetadatas,
     labels,
     settings,
+    appSettings,
     payjoinSenders,
     payjoinReceivers,
     electrumServers,
@@ -7519,7 +7987,7 @@ class DatabaseAtV12 extends GeneratedDatabase {
     prices,
   ];
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);
