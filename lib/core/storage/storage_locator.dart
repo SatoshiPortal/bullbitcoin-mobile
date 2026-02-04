@@ -21,10 +21,12 @@ class StorageLocator {
     const secureStorage = FlutterSecureStorage(
       aOptions: AndroidOptions(
         resetOnError: false,
+        encryptedSharedPreferences: true,
         // CRITICAL: Never auto-delete wallet seeds!
         // In flutter_secure_storage v10+, resetOnError defaults to TRUE.
         // Setting true will delete secure storage contents on errors!!
         // We must set it to false and handle errors manually.
+        // Using encryptedSharedPreferences instead of Android Keystore for storage.
       ),
       iOptions: IOSOptions(
         accessibility: KeychainAccessibility.first_unlock_this_device,

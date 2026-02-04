@@ -8,6 +8,8 @@ import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/secure_storage_dump_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/wallet_metadata_dump_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +27,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
     required CheckForExistingDefaultWalletsUsecase
     checkForExistingDefaultWalletsUsecase,
+    required WalletMetadataDumpUsecase walletMetadataDumpUsecase,
+    required SecureStorageDumpUsecase secureStorageDumpUsecase,
     required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
     required RequiresMigrationUsecase requiresMigrationUsecase,
@@ -35,6 +39,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
            checkForExistingDefaultWalletsUsecase,
+       _walletMetadataDumpUsecase = walletMetadataDumpUsecase,
+       _secureStorageDumpUsecase = secureStorageDumpUsecase,
        _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
        _requiresMigrationUsecase = requiresMigrationUsecase,
@@ -49,6 +55,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
+  final WalletMetadataDumpUsecase _walletMetadataDumpUsecase;
+  final SecureStorageDumpUsecase _secureStorageDumpUsecase;
   final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
   final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
   final RequiresMigrationUsecase _requiresMigrationUsecase;
@@ -119,6 +127,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
+        // Dump wallet metadata for debugging
+        await _walletMetadataDumpUsecase.execute();
+
+        // Dump secure storage contents for debugging
+        await _secureStorageDumpUsecase.execute();
+
         isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {
