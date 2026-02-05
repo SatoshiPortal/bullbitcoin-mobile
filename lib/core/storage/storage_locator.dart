@@ -48,7 +48,10 @@ class StorageLocator {
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
     locator.registerLazySingleton<MigrationSecureStorageDatasource>(
-      () => MigrationSecureStorageDatasource(secureStorage),
+      () => MigrationSecureStorageDatasource(
+        secureStorage,
+        storageV9: secureStorageV9,
+      ),
     );
     final oldHiveBox = await OldHiveDatasource.getBox(secureStorage);
     locator.registerLazySingleton<OldHiveDatasource>(
