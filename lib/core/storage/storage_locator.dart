@@ -14,6 +14,8 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_secure_storage_v9/flutter_secure_storage_v9.dart'
+    as fss_v9;
 import 'package:get_it/get_it.dart';
 
 class StorageLocator {
@@ -31,8 +33,18 @@ class StorageLocator {
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
       ),
     );
+    const secureStorageV9 = fss_v9.FlutterSecureStorageV9(
+      aOptions: fss_v9.AndroidOptions(encryptedSharedPreferences: true),
+      iOptions: fss_v9.IOSOptions(
+        accessibility: fss_v9.KeychainAccessibility.first_unlock_this_device,
+        // This will ensure that secure storage can be used by background tasks while the phone is locked.
+      ),
+    );
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
-      () => SecureStorageDatasourceImpl(secureStorage),
+      () => SecureStorageDatasourceImpl(
+        secureStorage,
+        storageV9: secureStorageV9,
+      ),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
     locator.registerLazySingleton<MigrationSecureStorageDatasource>(

@@ -6,7 +6,6 @@ import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -25,7 +24,6 @@ import 'package:bb_mobile/router.dart';
 import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
@@ -37,19 +35,18 @@ import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
+    await dotenv.load(isOptional: true);
+    await initErrorReporting();
     await initLogs();
     await initFlutterRustBridgeDependencies();
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator();
-
-    await initErrorReporting();
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
-      dotenv.load(isOptional: true),
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),
@@ -75,27 +72,28 @@ class Bull {
   static Future<void> initErrorReporting() async {
     // Error reports for users that gave consent in the app settings (default disabled)
     // Empty DSN if no consent or debug mode - Sentry won't send anything
-    final isErrorReportingEnabled = await locator<SettingsRepository>()
+    /*final isErrorReportingEnabled = await locator<SettingsRepository>()
         .fetch()
         .then((settings) => settings.isErrorReportingEnabled);
     final dsnSentry = isErrorReportingEnabled && kReleaseMode
         ? ApiServiceConstants.sentryDsn
         : ''; // "If an empty string is used, the SDK will not send any events."
+        */
 
     await SentryFlutter.init((options) {
-      options.dsn = dsnSentry;
+      options.dsn = ApiServiceConstants.sentryDsn;
       options.compressPayload = true;
       options.beforeSend = (event, hint) {
         // Before sending the error report, anonymize the exception value
         // to avoid sending potentially sensitive information (txid, addresses…)
-        final exceptions = event.exceptions;
+        /*final exceptions = event.exceptions;
         if (exceptions != null && exceptions.isNotEmpty) {
           final anonymizedExceptions = exceptions.map((e) {
             e.value = null;
             return e;
           }).toList();
           event.exceptions = anonymizedExceptions;
-        }
+        }*/
 
         return event;
       };

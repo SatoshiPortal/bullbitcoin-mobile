@@ -791,7 +791,7 @@ packages:
     source: hosted
     version: "2.0.1"
   flutter_secure_storage_v9:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       path: "third_party/flutter_secure_storage/flutter_secure_storage_v9"
       relative: true
