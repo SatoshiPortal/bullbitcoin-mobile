@@ -161,7 +161,7 @@ elif [[ -f "$apkPath" ]]; then
 elif [[ -d "$apkPath" ]]; then
     verificationMode="device"
     echo "=== Mode: Play Store Split APKs ==="
-    apkDir="$apkPath"
+    apkDir="$(cd "$apkPath" && pwd)"
     if [[ ! -f "$apkDir/base.apk" ]]; then
         echo -e "${RED}Error: base.apk not found in $apkDir${NC}"
         exit 1
@@ -328,8 +328,7 @@ else
 fi
 
 # Extract git info
-$CONTAINER_CMD start "$containerId"
-$CONTAINER_CMD exec "$containerId" sh -c "cd /app && git rev-parse HEAD" > "$workDir/commit.txt" 2>/dev/null || echo "unknown" > "$workDir/commit.txt"
+$CONTAINER_CMD run --rm bullbitcoin-verify:v${appVersion} sh -c "cd /app && git rev-parse HEAD" > "$workDir/commit.txt" 2>/dev/null || echo "unknown" > "$workDir/commit.txt"
 $CONTAINER_CMD rm -f "$containerId"
 container_name=""
 
