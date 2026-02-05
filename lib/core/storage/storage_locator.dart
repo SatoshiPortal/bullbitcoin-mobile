@@ -39,7 +39,10 @@ class StorageLocator {
       ),
     );
     const secureStorageV9 = fss_v9.FlutterSecureStorageV9(
-      aOptions: fss_v9.AndroidOptions(encryptedSharedPreferences: true),
+      aOptions: fss_v9.AndroidOptions(
+        encryptedSharedPreferences: true,
+        sharedPreferencesName: 'FlutterSecureStorage',
+      ),
       iOptions: fss_v9.IOSOptions(
         accessibility: fss_v9.KeychainAccessibility.first_unlock_this_device,
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
