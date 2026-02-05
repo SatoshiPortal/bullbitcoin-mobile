@@ -37,19 +37,18 @@ import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
+    await dotenv.load(isOptional: true);
+    await initErrorReporting();
     await initLogs();
     await initFlutterRustBridgeDependencies();
 
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator();
-
-    await initErrorReporting();
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
-      dotenv.load(isOptional: true),
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),
