@@ -1,0 +1,26 @@
+name: flutter_secure_storage_v9_web
+description: Web implementation of flutter_secure_storage_v9. Use flutter_secure_storage_v9 for the full flutter package.
+repository: https://github.com/mogol/flutter_secure_storage_v9
+version: 2.0.0-beta.2
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_secure_storage_v9_platform_interface:
+    path: ../flutter_secure_storage_v9_platform_interface
+  flutter_web_plugins:
+    sdk: flutter
+  web: ">=0.5.0 <2.0.0"
+
+dev_dependencies:
+  lint: ^2.0.0
+flutter:
+  plugin:
+    platforms:
+      web:
+        pluginClass: FlutterSecureStorageV9Web
+        fileName: flutter_secure_storage_v9_web.dart

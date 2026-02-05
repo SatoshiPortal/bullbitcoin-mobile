@@ -1,0 +1,21 @@
+name: flutter_secure_storage_v9_linux
+description: Linux implementation of flutter_secure_storage_v9
+repository: https://github.com/mogol/flutter_secure_storage_v9
+version: 1.2.2
+
+environment:
+  sdk: ">=2.12.0 <4.0.0"
+  flutter: ">=1.20.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_secure_storage_v9_platform_interface:
+    path: ../flutter_secure_storage_v9_platform_interface
+
+flutter:
+  plugin:
+    implements: flutter_secure_storage_v9
+    platforms:
+      linux:
+        pluginClass: FlutterSecureStorageV9LinuxPlugin

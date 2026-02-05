@@ -146,6 +146,8 @@ dev_dependencies:
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
+  flutter_secure_storage_v9:
+    path: ./third_party/flutter_secure_storage/flutter_secure_storage_v9
 
 flutter:
   generate: true # Needed for code generation, for example for internationalization
