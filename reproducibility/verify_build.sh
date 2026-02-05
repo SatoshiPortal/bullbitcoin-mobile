@@ -53,6 +53,11 @@ else
     exit 1
 fi
 
+# Build verification tools container
+VERIFY_TOOLS_IMAGE="bullbitcoin-verify-tools:latest"
+echo "Building verification tools container..."
+$CONTAINER_CMD build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
+
 # Helper: Run apktool in container
 containerApktool() {
     local targetFolder="$1"
@@ -65,7 +70,7 @@ containerApktool() {
     $CONTAINER_CMD run --rm --user root \
         -v "$targetFolderParent":/tfp \
         -v "$appFolder":/af:ro \
-        docker.io/walletscrutiny/android:5 \
+        $VERIFY_TOOLS_IMAGE \
         sh -c "apktool d -f -o /tfp/$targetFolderBase /af/$appFile"
 }
 
@@ -77,7 +82,7 @@ getSigner() {
     $CONTAINER_CMD run --rm \
         -v "$dir":/mnt:ro \
         -w /mnt \
-        docker.io/walletscrutiny/android:5 \
+        $VERIFY_TOOLS_IMAGE \
         apksigner verify --print-certs "$base" 2>/dev/null | grep "Signer #1 certificate SHA-256" | awk '{print $6}'
 }
 
@@ -353,10 +358,9 @@ else
 
     $CONTAINER_CMD run --rm \
         -v "$workDir":/work \
-        docker.io/walletscrutiny/android:5 \
+        $VERIFY_TOOLS_IMAGE \
         sh -c "
-            wget -q https://github.com/google/bundletool/releases/download/1.17.2/bundletool-all-1.17.2.jar -O /tmp/bundletool.jar
-            java -jar /tmp/bundletool.jar build-apks \
+            bundletool build-apks \
                 --bundle=/work/built.aab \
                 --output=/work/built.apks \
                 --device-spec=/work/device-spec.json \
