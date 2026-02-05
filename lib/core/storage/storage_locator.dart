@@ -170,7 +170,15 @@ class StorageLocator {
       Directory? dir;
       if (Platform.isAndroid) {
         // Use external storage on Android so users can access the backup
-        dir = await getExternalStorageDirectory();
+        dir = await getDownloadsDirectory();
+        if (dir == null) {
+          log.severe(
+            message: 'Could not get Download directory for backup',
+            trace: StackTrace.current,
+            error: Exception('No directory'),
+          );
+          dir = await getExternalStorageDirectory();
+        }
       } else {
         // Use documents directory on iOS (accessible via Files app if enabled)
         dir = await getApplicationDocumentsDirectory();
