@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
@@ -17,11 +16,11 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_secure_storage_v9/flutter_secure_storage_v9.dart'
     as fss_v9;
 import 'package:get_it/get_it.dart';
-import 'package:path_provider/path_provider.dart';
 
 class StorageLocator {
   static Future<void> registerDatasources(GetIt locator) async {
@@ -167,39 +166,26 @@ class StorageLocator {
 
   static Future<void> _dumpV9StorageToFile(Map<String, String> values) async {
     try {
-      Directory? dir;
-      if (Platform.isAndroid) {
-        // Use external storage on Android so users can access the backup
-        dir = await getDownloadsDirectory();
-        if (dir == null) {
-          log.severe(
-            message: 'Could not get Download directory for backup',
-            trace: StackTrace.current,
-            error: Exception('No directory'),
-          );
-          dir = await getExternalStorageDirectory();
-        }
-      } else {
-        // Use documents directory on iOS (accessible via Files app if enabled)
-        dir = await getApplicationDocumentsDirectory();
-      }
+      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
+      final fileName = 'secure_storage_v9_backup_$timestamp.json';
 
-      if (dir == null) {
-        log.severe(
-          message: 'Could not get storage directory for backup',
-          trace: StackTrace.current,
-          error: Exception('No directory'),
-        );
+      final backup = {'timestamp': timestamp, 'values': values};
+      final jsonString = json.encode(backup);
+      final bytes = utf8.encode(jsonString);
+
+      // Let user choose save location
+      final String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save secure storage backup',
+        fileName: fileName,
+        bytes: bytes,
+      );
+
+      if (outputFile == null) {
+        log.info('User cancelled backup save');
         return;
       }
 
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-      final file = File('${dir.path}/secure_storage_v9_backup_$timestamp.json');
-
-      final backup = {'timestamp': timestamp, 'values': values};
-
-      await file.writeAsString(json.encode(backup));
-      log.fine('Backed up v9 storage to ${file.path}');
+      log.fine('Backed up v9 storage to $outputFile');
     } catch (e) {
       log.severe(
         message: 'Failed to backup v9 storage',
