@@ -130,16 +130,29 @@ class StorageLocator {
       // Backup v9 storage before migration
       await _dumpV9StorageToFile(valuesV9);
 
-      // Migrate all values to v10 storage
-      for (final entry in valuesV9.entries) {
+      /* Until we know we get the data, we can't risk wiping v10 storage.
+      // So the migration is disabled for now.
+      try {
         await storage.write(
-          key: entry.key,
-          value: entry.value,
+          key: valuesV9.entries.first.key,
+          value: valuesV9.entries.first.value,
           aOptions: AndroidOptions(resetOnError: true),
+        );
+      } catch (e) {
+        // This write is just to reset the v10 storage on error
+        log.info(
+          'Failed first write to v10 storage, attempting reset before migration',
+          error: e,
+          trace: StackTrace.current,
         );
       }
 
-      log.fine('Successfully migrated ${valuesV9.length} items from v9 to v10');
+      // Now that it's reset, we can migrate all values to v10 storage
+      for (final entry in valuesV9.entries) {
+        await storage.write(key: entry.key, value: entry.value);
+      }
+
+      log.fine('Successfully migrated ${valuesV9.length} items from v9 to v10');*/
     } catch (e) {
       log.severe(
         message: 'Failed to migrate from v9 to v10',
