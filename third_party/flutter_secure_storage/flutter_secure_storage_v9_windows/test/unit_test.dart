@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_futureor_void
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -1013,6 +1015,7 @@ void main() {
   group('Stub does not work at all', () {
     test(
       'constructor',
+      // ignore: unnecessary_async
       () async {
         expect(
           () => stub.FlutterSecureStorageV9Windows(),

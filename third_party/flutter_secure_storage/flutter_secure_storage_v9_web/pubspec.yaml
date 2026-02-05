@@ -2,6 +2,7 @@ name: flutter_secure_storage_v9_web
 description: Web implementation of flutter_secure_storage_v9. Use flutter_secure_storage_v9 for the full flutter package.
 repository: https://github.com/mogol/flutter_secure_storage_v9
 version: 2.0.0-beta.2
+publish_to: "none"
 
 environment:
   sdk: ">=3.3.0 <4.0.0"

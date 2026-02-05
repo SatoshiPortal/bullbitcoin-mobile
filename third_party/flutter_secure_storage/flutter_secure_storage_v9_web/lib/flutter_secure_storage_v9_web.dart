@@ -1,5 +1,7 @@
 /// Web library for flutter_secure_storage_v9
-library flutter_secure_storage_v9_web;
+// ignore_for_file: deprecated_member_use
+
+library;
 
 import 'dart:convert';
 import 'dart:js_interop' as js_interop;
@@ -71,6 +73,7 @@ class FlutterSecureStorageV9Web extends FlutterSecureStorageV9Platform {
   Future<String?> read({
     required String key,
     required Map<String, String> options,
+    // ignore: unnecessary_async
   }) async {
     final value = web.window.localStorage["${options[_publicKey]!}.$key"];
 
