@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
@@ -14,9 +12,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_stor
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_secure_storage_v9/flutter_secure_storage_v9.dart'
     as fss_v9;
@@ -47,9 +43,6 @@ class StorageLocator {
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
       ),
     );
-
-    // Attempt one-time migration from v9 to v10 at startup
-    await _tryMigrateFromV9ToV10(secureStorageV9, secureStorage);
 
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(
@@ -112,97 +105,5 @@ class StorageLocator {
         locator<WalletRepository>(),
       ),
     );
-  }
-
-  static Future<void> _tryMigrateFromV9ToV10(
-    fss_v9.FlutterSecureStorageV9 storageV9,
-    FlutterSecureStorage storage,
-  ) async {
-    log.info('Attempting custom migration from v9 to v10 secure storage');
-    try {
-      // First, check if v10 storage is working
-      await storage.readAll();
-      log.fine('v10 storage is working, no migration needed');
-      return;
-    } catch (e) {
-      log.fine('v10 storage failed, attempting migration from v9');
-    }
-
-    try {
-      log.info(
-        'Trying to read from v9 storage to verify it is accessible before migration',
-      );
-      // Read all values from v9 storage
-      final valuesV9 = await storageV9.readAll();
-      if (valuesV9.isEmpty) {
-        log.fine('No v9 storage to migrate');
-        return;
-      }
-
-      // Backup v9 storage before migration
-      await _dumpV9StorageToFile(valuesV9);
-
-      /* Until we know we get the data, we can't risk wiping v10 storage.
-      // So the migration is disabled for now.
-      try {
-        await storage.write(
-          key: valuesV9.entries.first.key,
-          value: valuesV9.entries.first.value,
-          aOptions: AndroidOptions(resetOnError: true),
-        );
-      } catch (e) {
-        // This write is just to reset the v10 storage on error
-        log.info(
-          'Failed first write to v10 storage, attempting reset before migration',
-          error: e,
-          trace: StackTrace.current,
-        );
-      }
-
-      // Now that it's reset, we can migrate all values to v10 storage
-      for (final entry in valuesV9.entries) {
-        await storage.write(key: entry.key, value: entry.value);
-      }
-
-      log.fine('Successfully migrated ${valuesV9.length} items from v9 to v10');*/
-    } catch (e) {
-      log.severe(
-        message: 'Failed to migrate from v9 to v10',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
-
-  static Future<void> _dumpV9StorageToFile(Map<String, String> values) async {
-    try {
-      log.info('Dumping v9 storage to file for backup before migration');
-      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
-      final fileName = 'secure_storage_v9_backup_$timestamp.json';
-
-      final backup = {'timestamp': timestamp, 'values': values};
-      final jsonString = json.encode(backup);
-      final bytes = utf8.encode(jsonString);
-
-      // Let user choose save location
-      final String? outputFile = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save secure storage backup',
-        fileName: fileName,
-        bytes: bytes,
-      );
-
-      if (outputFile == null) {
-        log.info('User cancelled backup save');
-        return;
-      }
-
-      log.fine('Backed up v9 storage to $outputFile');
-    } catch (e) {
-      log.severe(
-        message: 'Failed to backup v9 storage',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
   }
 }
