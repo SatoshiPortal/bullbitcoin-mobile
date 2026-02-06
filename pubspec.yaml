@@ -19,7 +19,7 @@ dependencies:
   gap: ^3.0.1
   go_router: ^17.0.0
   google_fonts: ^6.3.3
-  flutter_secure_storage: ^10.0.0
+  flutter_secure_storage: ^9.2.4
   path_provider: ^2.1.5
   payjoin_flutter:
     git:
@@ -132,8 +132,6 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.10.0
-  flutter_secure_storage_v9:
-    path: ./third_party/flutter_secure_storage/flutter_secure_storage_v9
 
 dev_dependencies:
   build_runner: ^2.10.4

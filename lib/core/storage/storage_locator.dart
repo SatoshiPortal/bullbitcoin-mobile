@@ -14,14 +14,13 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_secure_storage_v9/flutter_secure_storage_v9.dart'
-    as fss_v9;
 import 'package:get_it/get_it.dart';
 
 class StorageLocator {
   static Future<void> registerDatasources(GetIt locator) async {
     const secureStorage = FlutterSecureStorage(
       aOptions: AndroidOptions(
+        encryptedSharedPreferences: true,
         resetOnError: false,
         // CRITICAL: Never auto-delete wallet seeds!
         // In flutter_secure_storage v10+, resetOnError defaults to TRUE.
@@ -33,32 +32,15 @@ class StorageLocator {
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
       ),
     );
-    const secureStorageV9 = fss_v9.FlutterSecureStorageV9(
-      aOptions: fss_v9.AndroidOptions(
-        encryptedSharedPreferences: true,
-        sharedPreferencesName: 'FlutterSecureStorage',
-      ),
-      iOptions: fss_v9.IOSOptions(
-        accessibility: fss_v9.KeychainAccessibility.first_unlock_this_device,
-        // This will ensure that secure storage can be used by background tasks while the phone is locked.
-      ),
-    );
 
-    // Add delay to allow secure storage initialization to complete
     await Future.delayed(const Duration(seconds: 15));
 
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
-      () => SecureStorageDatasourceImpl(
-        secureStorage,
-        storageV9: secureStorageV9,
-      ),
+      () => SecureStorageDatasourceImpl(secureStorage),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
     locator.registerLazySingleton<MigrationSecureStorageDatasource>(
-      () => MigrationSecureStorageDatasource(
-        secureStorage,
-        storageV9: secureStorageV9,
-      ),
+      () => MigrationSecureStorageDatasource(secureStorage),
     );
     final oldHiveBox = await OldHiveDatasource.getBox(secureStorage);
     locator.registerLazySingleton<OldHiveDatasource>(
