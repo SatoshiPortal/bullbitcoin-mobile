@@ -44,6 +44,9 @@ class StorageLocator {
       ),
     );
 
+    // Add delay to allow secure storage initialization to complete
+    await Future.delayed(const Duration(seconds: 15));
+
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(
         secureStorage,
