@@ -52,11 +52,17 @@ class StorageLocator {
     await _tryMigrateFromV9ToV10(secureStorageV9, secureStorage);
 
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
-      () => SecureStorageDatasourceImpl(secureStorage),
+      () => SecureStorageDatasourceImpl(
+        secureStorage,
+        storageV9: secureStorageV9,
+      ),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
     locator.registerLazySingleton<MigrationSecureStorageDatasource>(
-      () => MigrationSecureStorageDatasource(secureStorage),
+      () => MigrationSecureStorageDatasource(
+        secureStorage,
+        storageV9: secureStorageV9,
+      ),
     );
     final oldHiveBox = await OldHiveDatasource.getBox(secureStorage);
     locator.registerLazySingleton<OldHiveDatasource>(
@@ -112,6 +118,7 @@ class StorageLocator {
     fss_v9.FlutterSecureStorageV9 storageV9,
     FlutterSecureStorage storage,
   ) async {
+    log.info('Attempting custom migration from v9 to v10 secure storage');
     try {
       // First, check if v10 storage is working
       await storage.readAll();
@@ -122,6 +129,9 @@ class StorageLocator {
     }
 
     try {
+      log.info(
+        'Trying to read from v9 storage to verify it is accessible before migration',
+      );
       // Read all values from v9 storage
       final valuesV9 = await storageV9.readAll();
       if (valuesV9.isEmpty) {
@@ -166,6 +176,7 @@ class StorageLocator {
 
   static Future<void> _dumpV9StorageToFile(Map<String, String> values) async {
     try {
+      log.info('Dumping v9 storage to file for backup before migration');
       final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-');
       final fileName = 'secure_storage_v9_backup_$timestamp.json';
 
