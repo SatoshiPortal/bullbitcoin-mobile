@@ -761,10 +761,11 @@ packages:
   flutter_secure_storage:
     dependency: "direct main"
     description:
-      name: flutter_secure_storage
-      sha256: da922f2aab2d733db7e011a6bcc4a825b844892d4edd6df83ff156b09a9b2e40
-      url: "https://pub.dev"
-    source: hosted
+      path: flutter_secure_storage
+      ref: simulate_hw_errors
+      resolved-ref: "597f1ada78f0ea3bdb811aef76100feaf4e55069"
+      url: "https://github.com/iosifpeterfi/flutter_secure_storage"
+    source: git
     version: "10.0.0"
   flutter_secure_storage_darwin:
     dependency: transitive
