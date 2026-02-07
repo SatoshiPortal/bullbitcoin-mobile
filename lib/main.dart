@@ -210,7 +210,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
         BlocProvider(
           create: (_) =>
-              locator<AppStartupBloc>()..add(const AppStartupStarted()),
+              locator<AppStartupBloc>(), //..add(const AppStartupStarted()),
         ),
         BlocProvider(
           create: (_) =>
