@@ -3,7 +3,10 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/log_ongoing_swaps_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
@@ -28,6 +31,19 @@ class AppStartupLocator {
         seedRepository: locator<SeedRepository>(),
       ),
     );
+    locator.registerFactory<LogOngoingSwapsUsecase>(
+      () => LogOngoingSwapsUsecase(
+        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
 
     // Bloc
     locator.registerFactory<AppStartupBloc>(
@@ -42,6 +58,7 @@ class AppStartupLocator {
         checkBackupUsecase: locator<CheckBackupUsecase>(),
         isTorRequiredUsecase: locator<IsTorRequiredUsecase>(),
         initTorUsecase: locator<InitTorUsecase>(),
+        logOngoingSwapsUsecase: locator<LogOngoingSwapsUsecase>(),
       ),
     );
   }
