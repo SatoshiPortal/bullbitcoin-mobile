@@ -33,6 +33,7 @@ import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:workmanager/workmanager.dart';
 
 class Bull {
@@ -135,8 +136,163 @@ Future main() async {
     },
     (error, stackTrace) async {
       log.severe(error: error, trace: stackTrace);
+      runApp(
+        BullBitcoinWalletAppInitErrorScreen(
+          error: error,
+          stackTrace: StackTrace.current,
+        ),
+      );
     },
   );
+}
+
+class BullBitcoinWalletAppInitErrorScreen extends StatelessWidget {
+  const BullBitcoinWalletAppInitErrorScreen({
+    super.key,
+    required this.error,
+    this.stackTrace,
+  });
+
+  final Object error;
+  final StackTrace? stackTrace;
+
+  Future<void> _shareLogs() async {
+    try {
+      final logs = await log.readLogs();
+      await SharePlus.instance.share(
+        ShareParams(
+          text: logs.join('\n'),
+          subject: 'bull_logs.tsv',
+          title: 'bull_logs.tsv',
+        ),
+      );
+    } catch (e) {
+      // Silently fail if sharing logs doesn't work
+      log.severe(
+        message: 'Failed to share logs',
+        error: e,
+        trace: StackTrace.current,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.red, width: 2),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.red,
+                        size: 32,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'App Initialization Error',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Error:',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(4.0),
+                          ),
+                          child: SelectableText(
+                            error.toString(),
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontFamily: 'monospace',
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                        if (stackTrace != null) ...[
+                          const SizedBox(height: 24),
+                          Text(
+                            'Stack Trace:',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.all(12.0),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[900],
+                              borderRadius: BorderRadius.circular(4.0),
+                            ),
+                            child: SelectableText(
+                              stackTrace.toString(),
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontFamily: 'monospace',
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _shareLogs,
+                  icon: const Icon(Icons.share),
+                  label: const Text('Share Logs'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                    backgroundColor: Colors.grey[800],
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class BullBitcoinWalletApp extends StatefulWidget {
