@@ -259,6 +259,14 @@
   "@settingsBitcoinSettingsTitle": {
     "description": "Title for the Bitcoin settings section in the settings menu"
   },
+  "settingsBtcMapTitle": "BTC Map",
+  "@settingsBtcMapTitle": {
+    "description": "Title for BTC Map menu entry in main Settings screen"
+  },
+  "btcMapScreenTitle": "BTC Map",
+  "@btcMapScreenTitle": {
+    "description": "AppBar title for BTC Map webview screen"
+  },
   "settingsSecurityPinTitle": "Security Pin",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
@@ -10355,11 +10363,11 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
-  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support Account",
+  "exchangeSupportLoginSubtitle": "Real Human Support",
   "@exchangeSupportLoginSubtitle": {
     "description": "Subtitle on support chat login screen"
   },
-  "exchangeSupportLoginAccessMessage": "You will only have access to the support chat feature.",
+  "exchangeSupportLoginAccessMessage": "Bull Bitcoin is proud to offer real human support to all its users, free of charge. To access this feature, please create an account or log-in. No KYC is required and all messages are 100% confidential, never leaked to 3rd parties.",
   "@exchangeSupportLoginAccessMessage": {
     "description": "Message explaining limited access on support-only login"
   },

@@ -79,33 +79,6 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Gap(16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.appColors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: context.appColors.primary,
-                      size: 20,
-                    ),
-                    const Gap(8),
-                    Expanded(
-                      child: BBText(
-                        context.loc.exchangeSupportLoginAccountInfo,
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.appColors.onSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               const Gap(40),
               SizedBox(
                 width: double.infinity,
