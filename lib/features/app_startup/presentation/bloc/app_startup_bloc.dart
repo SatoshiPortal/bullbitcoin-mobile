@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_
 import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/log_ongoing_swaps_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/rescue_orphaned_swap_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
@@ -33,6 +34,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required IsTorRequiredUsecase isTorRequiredUsecase,
     required InitTorUsecase initTorUsecase,
     required LogOngoingSwapsUsecase logOngoingSwapsUsecase,
+    required RescueOrphanedSwapUsecase rescueOrphanedSwapUsecase,
   }) : _resetAppDataUsecase = resetAppDataUsecase,
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
@@ -44,6 +46,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
        _isTorRequiredUsecase = isTorRequiredUsecase,
        _initTorUsecase = initTorUsecase,
        _logOngoingSwapsUsecase = logOngoingSwapsUsecase,
+       _rescueOrphanedSwapUsecase = rescueOrphanedSwapUsecase,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
@@ -59,6 +62,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
   final LogOngoingSwapsUsecase _logOngoingSwapsUsecase;
+  final RescueOrphanedSwapUsecase _rescueOrphanedSwapUsecase;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -143,9 +147,18 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
           trace: StackTrace.current,
         );
       }
-
       // Log ongoing swaps for debugging
       if (doDefaultWalletsExist) {
+        try {
+          await _rescueOrphanedSwapUsecase.execute();
+        } catch (e) {
+          log.warning(
+            'Failed to rescue orphaned swap during startup: $e',
+            error: e,
+            trace: StackTrace.current,
+          );
+        }
+
         try {
           await _logOngoingSwapsUsecase.execute();
         } catch (e) {
