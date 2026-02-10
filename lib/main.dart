@@ -115,22 +115,18 @@ Future main() async {
 
       await Bull.init();
 
-      int delay = 0;
-      for (final task in BackgroundTask.values) {
-        await Workmanager().registerPeriodicTask(
-          task.id,
-          task.name,
-          frequency: Duration(minutes: 15 + delay),
-          constraints: Constraints(
-            networkType: NetworkType.connected,
-            requiresBatteryNotLow: true,
-            requiresStorageNotLow: false,
-            requiresDeviceIdle: false,
-            requiresCharging: false,
-          ),
-        );
-        delay++;
-      }
+      await Workmanager().registerPeriodicTask(
+        BackgroundTask.logsPrune.id,
+        BackgroundTask.logsPrune.name,
+        frequency: const Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresBatteryNotLow: true,
+          requiresStorageNotLow: false,
+          requiresDeviceIdle: false,
+          requiresCharging: false,
+        ),
+      );
 
       runApp(const BullBitcoinWalletApp());
     },
@@ -176,120 +172,150 @@ class BullBitcoinWalletAppInitErrorScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _clearLogs() async {
+    try {
+      await log.deleteLogs();
+    } catch (e) {
+      log.severe(
+        message: 'Failed to clear logs',
+        error: e,
+        trace: StackTrace.current,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.black,
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8.0),
-                    border: Border.all(color: Colors.red, width: 2),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        color: Colors.red,
-                        size: 32,
+      theme: AppTheme.themeData(AppThemeType.dark),
+      home: Builder(
+        builder: (context) {
+          final colors = context.appColors;
+
+          return Scaffold(
+            backgroundColor: colors.background,
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: colors.errorContainer,
+                        borderRadius: BorderRadius.circular(8.0),
+                        border: Border.all(color: colors.error, width: 2),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'App Initialization Error',
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Error:',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[900],
-                            borderRadius: BorderRadius.circular(4.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: colors.error,
+                            size: 32,
                           ),
-                          child: SelectableText(
-                            error.toString(),
-                            style: const TextStyle(
-                              color: Colors.redAccent,
-                              fontFamily: 'monospace',
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                        if (stackTrace != null) ...[
-                          const SizedBox(height: 24),
-                          Text(
-                            'Stack Trace:',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.all(12.0),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[900],
-                              borderRadius: BorderRadius.circular(4.0),
-                            ),
-                            child: SelectableText(
-                              stackTrace.toString(),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontFamily: 'monospace',
-                                fontSize: 11,
-                              ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'App Initialization Error',
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(
+                                    color: colors.error,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Error:',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: colors.text,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12.0),
+                              decoration: BoxDecoration(
+                                color: colors.surfaceContainer,
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
+                              child: SelectableText(
+                                error.toString(),
+                                style: TextStyle(
+                                  color: colors.error,
+                                  fontFamily: 'monospace',
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            if (stackTrace != null) ...[
+                              const SizedBox(height: 24),
+                              Text(
+                                'Stack Trace:',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: colors.text,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.all(12.0),
+                                decoration: BoxDecoration(
+                                  color: colors.surfaceContainer,
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                                child: SelectableText(
+                                  stackTrace.toString(),
+                                  style: TextStyle(
+                                    color: colors.textMuted,
+                                    fontFamily: 'monospace',
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: _shareLogs,
+                      icon: const Icon(Icons.share),
+                      label: const Text('Share Logs'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
+                        backgroundColor: colors.surface,
+                        foregroundColor: colors.text,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: _clearLogs,
+                      icon: const Icon(Icons.delete_outline),
+                      label: const Text('Clear Logs'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
+                        backgroundColor: colors.error,
+                        foregroundColor: colors.onError,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: _shareLogs,
-                  icon: const Icon(Icons.share),
-                  label: const Text('Share Logs'),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(48),
-                    backgroundColor: Colors.grey[800],
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
