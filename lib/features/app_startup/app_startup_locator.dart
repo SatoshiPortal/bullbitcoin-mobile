@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
-import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
+// import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
+// import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
+// import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -36,9 +36,9 @@ class AppStartupLocator {
         checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
         checkForExistingDefaultWalletsUsecase:
             locator<CheckForExistingDefaultWalletsUsecase>(),
-        migrateHiveToSqliteUsecase: locator<MigrateToV5HiveToSqliteToUsecase>(),
-        migrateLegacyToV04Usecase: locator<MigrateToV4LegacyUsecase>(),
-        requiresMigrationUsecase: locator<RequiresMigrationUsecase>(),
+        // migrateHiveToSqliteUsecase: locator<MigrateToV5HiveToSqliteToUsecase>(),
+        // migrateLegacyToV04Usecase: locator<MigrateToV4LegacyUsecase>(),
+        // requiresMigrationUsecase: locator<RequiresMigrationUsecase>(),
         checkBackupUsecase: locator<CheckBackupUsecase>(),
         isTorRequiredUsecase: locator<IsTorRequiredUsecase>(),
         initTorUsecase: locator<InitTorUsecase>(),

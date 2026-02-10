@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
-import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
+// import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
+// import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
+// import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -25,9 +25,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
     required CheckForExistingDefaultWalletsUsecase
     checkForExistingDefaultWalletsUsecase,
-    required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
-    required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
-    required RequiresMigrationUsecase requiresMigrationUsecase,
+    // required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
+    // required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
+    // required RequiresMigrationUsecase requiresMigrationUsecase,
     required CheckBackupUsecase checkBackupUsecase,
     required IsTorRequiredUsecase isTorRequiredUsecase,
     required InitTorUsecase initTorUsecase,
@@ -35,9 +35,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
            checkForExistingDefaultWalletsUsecase,
-       _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
-       _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
-       _requiresMigrationUsecase = requiresMigrationUsecase,
+       // _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
+       // _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
+       // _requiresMigrationUsecase = requiresMigrationUsecase,
        _checkBackupUsecase = checkBackupUsecase,
        _isTorRequiredUsecase = isTorRequiredUsecase,
        _initTorUsecase = initTorUsecase,
@@ -49,9 +49,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
   _checkForExistingDefaultWalletsUsecase;
-  final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
-  final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
-  final RequiresMigrationUsecase _requiresMigrationUsecase;
+  // final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
+  // final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
+  // final RequiresMigrationUsecase _requiresMigrationUsecase;
   final CheckBackupUsecase _checkBackupUsecase;
   final IsTorRequiredUsecase _isTorRequiredUsecase;
   final InitTorUsecase _initTorUsecase;
@@ -72,46 +72,46 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       // SQL Migrations
       // emit(const AppStartupState.failure(null));
       // return;
-      final migrationRequired = await _requiresMigrationUsecase.execute();
-      if (migrationRequired == null) {
-        emit(const AppStartupState.loadingInProgress());
-      } else {
-        emit(const AppStartupState.loadingInProgress(requiresMigration: true));
+      // final migrationRequired = await _requiresMigrationUsecase.execute();
+      // if (migrationRequired == null) {
+      //   emit(const AppStartupState.loadingInProgress());
+      // } else {
+      //   emit(const AppStartupState.loadingInProgress(requiresMigration: true));
 
-        switch (migrationRequired) {
-          case MigrationRequired.v4:
-            await _migrateToV4LegacyUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-              ),
-            );
-            await _migrateToV5HiveToSqliteUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-                v5MigrationComplete: true,
-              ),
-            );
-          case MigrationRequired.v5:
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-              ),
-            );
-            await _migrateToV5HiveToSqliteUsecase.execute();
-            emit(
-              const AppStartupState.loadingInProgress(
-                requiresMigration: true,
-                v4MigrationComplete: true,
-                v5MigrationComplete: true,
-              ),
-            );
-        }
-      }
+      //   switch (migrationRequired) {
+      //     case MigrationRequired.v4:
+      //       await _migrateToV4LegacyUsecase.execute();
+      //       emit(
+      //         const AppStartupState.loadingInProgress(
+      //           requiresMigration: true,
+      //           v4MigrationComplete: true,
+      //         ),
+      //       );
+      //       await _migrateToV5HiveToSqliteUsecase.execute();
+      //       emit(
+      //         const AppStartupState.loadingInProgress(
+      //           requiresMigration: true,
+      //           v4MigrationComplete: true,
+      //           v5MigrationComplete: true,
+      //         ),
+      //       );
+      //     case MigrationRequired.v5:
+      //       emit(
+      //         const AppStartupState.loadingInProgress(
+      //           requiresMigration: true,
+      //           v4MigrationComplete: true,
+      //         ),
+      //       );
+      //       await _migrateToV5HiveToSqliteUsecase.execute();
+      //       emit(
+      //         const AppStartupState.loadingInProgress(
+      //           requiresMigration: true,
+      //           v4MigrationComplete: true,
+      //           v5MigrationComplete: true,
+      //         ),
+      //       );
+      //   }
+      // }
 
       // all here future migration calls
       final doDefaultWalletsExist = await _checkForExistingDefaultWalletsUsecase
