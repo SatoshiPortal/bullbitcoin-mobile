@@ -180,20 +180,47 @@ class BoltzStorageDatasource {
   }
 
   Future<BtcLnSwap> fetchBtcLnSwap(String swapId) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
-    return BtcLnSwap.fromJson(jsonStr: jsonSwap);
+    try {
+      final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
+      final jsonSwap = await _secureSwapStorage.getValue(key);
+
+      if (jsonSwap == null) {
+        throw 'Swap not found in secure storage for swapId: $swapId';
+      }
+
+      if (jsonSwap is! String) {
+        throw 'Invalid swap data type: expected String, got ${jsonSwap.runtimeType}';
+      }
+
+      return BtcLnSwap.fromJson(jsonStr: jsonSwap);
+    } catch (e) {
+      log.severe(
+        message: 'Error getting BtcLnSwap for swapId: $swapId',
+        error: e,
+        trace: StackTrace.current,
+      );
+      throw 'Error parsing BtcLnSwap: $e';
+    }
   }
 
   Future<LbtcLnSwap> fetchLbtcLnSwap(String swapId) async {
     try {
       final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-      final jsonSwap = await _secureSwapStorage.getValue(key) as String;
+      final jsonSwap = await _secureSwapStorage.getValue(key);
+
+      if (jsonSwap == null) {
+        throw 'Swap not found in secure storage for swapId: $swapId';
+      }
+
+      if (jsonSwap is! String) {
+        throw 'Invalid swap data type: expected String, got ${jsonSwap.runtimeType}';
+      }
+
       final lbtcLnSwap = await LbtcLnSwap.fromJson(jsonStr: jsonSwap);
       return lbtcLnSwap;
     } catch (e) {
       log.severe(
-        message: 'Error getting LbtcLnSwap',
+        message: 'Error getting LbtcLnSwap for swapId: $swapId',
         error: e,
         trace: StackTrace.current,
       );
@@ -202,9 +229,26 @@ class BoltzStorageDatasource {
   }
 
   Future<ChainSwap> fetchChainSwap(String swapId) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
+    try {
+      final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
+      final jsonSwap = await _secureSwapStorage.getValue(key);
 
-    return ChainSwap.fromJson(jsonStr: jsonSwap);
+      if (jsonSwap == null) {
+        throw 'Swap not found in secure storage for swapId: $swapId';
+      }
+
+      if (jsonSwap is! String) {
+        throw 'Invalid swap data type: expected String, got ${jsonSwap.runtimeType}';
+      }
+
+      return ChainSwap.fromJson(jsonStr: jsonSwap);
+    } catch (e) {
+      log.severe(
+        message: 'Error getting ChainSwap for swapId: $swapId',
+        error: e,
+        trace: StackTrace.current,
+      );
+      throw 'Error parsing ChainSwap: $e';
+    }
   }
 }
