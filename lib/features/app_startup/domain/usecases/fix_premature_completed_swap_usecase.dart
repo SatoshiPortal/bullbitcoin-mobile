@@ -52,6 +52,8 @@ class FixPrematureCompletedSwapUsecase {
         final updated = swap.copyWith(
           status: SwapStatus.claimable.name,
           completionTime: null,
+          receiveTxid: null,
+          refundTxid: null,
         );
         await _boltzStorage.store(updated);
         log.fine('FixSwap: updated swap $_swapId status to claimable');
