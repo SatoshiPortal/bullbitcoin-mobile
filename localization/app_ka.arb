@@ -175,7 +175,7 @@
     "@replaceByFeeBroadcastButton": {
         "description": "Button to broadcast the replacement transaction"
     },
-    "sendInvoicePaid": "ინვოისი\nგადახდილია",
+    "sendInvoicePaid": "ინვოისი გადახდილია",
     "@sendInvoicePaid": {
         "description": "Title when Lightning invoice payment succeeds"
     },
