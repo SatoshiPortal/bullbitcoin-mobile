@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'old_address.freezed.dart';
@@ -37,7 +37,7 @@ abstract class OldAddress with _$OldAddress {
   List<bdk.OutPoint> getUnspentUtxosOutpoints(List<OldUTXO> utxos) {
     return utxos
         .where((ut) => ut.address.address == address)
-        .map((e) => bdk.OutPoint(txid: e.txid, vout: e.txIndex))
+        .map((e) => bdk.OutPoint(bdk.Txid.fromString(e.txid), e.txIndex))
         .toList();
     // return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
   }
@@ -87,7 +87,7 @@ abstract class OldUTXO with _$OldUTXO {
   }
 
   bdk.OutPoint getUtxosOutpoints() {
-    return bdk.OutPoint(txid: txid, vout: txIndex);
+    return bdk.OutPoint(bdk.Txid.fromString(txid), txIndex);
   }
 }
 

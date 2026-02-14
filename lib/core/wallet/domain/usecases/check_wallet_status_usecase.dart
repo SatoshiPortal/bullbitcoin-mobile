@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart'
     as dirty_dependency;
@@ -6,7 +8,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 // This usecase has to be reworked, it has been implemented this way because of deadline
@@ -31,12 +33,14 @@ class TheDirtyUsecase {
           ? bdk.Network.testnet
           : bdk.Network.bitcoin;
 
-      final bdkMnemonic = await bdk.Mnemonic.fromEntropy(mnemonic.entropy);
+      final bdkMnemonic = bdk.Mnemonic.fromEntropy(
+        Uint8List.fromList(mnemonic.entropy),
+      );
 
-      final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
-        mnemonic: bdkMnemonic,
-        network: bdkNetwork,
-        password: mnemonic.passphrase,
+      final descriptorSecretKey = bdk.DescriptorSecretKey(
+        bdkNetwork,
+        bdkMnemonic,
+        mnemonic.passphrase,
       );
 
       bdk.Descriptor? external;
@@ -44,45 +48,46 @@ class TheDirtyUsecase {
 
       switch (scriptType) {
         case ScriptType.bip84:
-          external = await bdk.Descriptor.newBip84(
-            secretKey: descriptorSecretKey,
-            network: bdkNetwork,
-            keychain: bdk.KeychainKind.externalChain,
+          external = bdk.Descriptor.newBip84(
+            descriptorSecretKey,
+            bdk.KeychainKind.external_,
+            bdkNetwork,
           );
-          internal = await bdk.Descriptor.newBip84(
-            secretKey: descriptorSecretKey,
-            network: bdkNetwork,
-            keychain: bdk.KeychainKind.internalChain,
+          internal = bdk.Descriptor.newBip84(
+            descriptorSecretKey,
+            bdk.KeychainKind.internal,
+            bdkNetwork,
           );
         case ScriptType.bip49:
-          external = await bdk.Descriptor.newBip49(
-            secretKey: descriptorSecretKey,
-            network: bdkNetwork,
-            keychain: bdk.KeychainKind.externalChain,
+          external = bdk.Descriptor.newBip49(
+            descriptorSecretKey,
+            bdk.KeychainKind.external_,
+            bdkNetwork,
           );
-          internal = await bdk.Descriptor.newBip49(
-            secretKey: descriptorSecretKey,
-            network: bdkNetwork,
-            keychain: bdk.KeychainKind.internalChain,
+          internal = bdk.Descriptor.newBip49(
+            descriptorSecretKey,
+            bdk.KeychainKind.internal,
+            bdkNetwork,
           );
         case ScriptType.bip44:
-          external = await bdk.Descriptor.newBip44(
-            secretKey: descriptorSecretKey,
-            network: bdkNetwork,
-            keychain: bdk.KeychainKind.externalChain,
+          external = bdk.Descriptor.newBip44(
+            descriptorSecretKey,
+            bdk.KeychainKind.external_,
+            bdkNetwork,
           );
-          internal = await bdk.Descriptor.newBip44(
-            secretKey: descriptorSecretKey,
-            network: bdkNetwork,
-            keychain: bdk.KeychainKind.internalChain,
+          internal = bdk.Descriptor.newBip44(
+            descriptorSecretKey,
+            bdk.KeychainKind.internal,
+            bdkNetwork,
           );
       }
 
-      final wallet = await bdk.Wallet.create(
-        descriptor: external,
-        changeDescriptor: internal,
-        network: bdkNetwork,
-        databaseConfig: const bdk.DatabaseConfig.memory(),
+      final wallet = bdk.Wallet(
+        external,
+        internal,
+        bdkNetwork,
+        bdk.Persister.newInMemory(),
+        0,
       );
 
       final electrumServers = await _electrumServerPort.getElectrumServers(
@@ -107,7 +112,14 @@ class TheDirtyUsecase {
                 ),
               );
 
-          await wallet.sync(blockchain: blockchain);
+          final fullScanRequest = wallet.startFullScan().build();
+          final scanUpdate = blockchain.fullScan(
+            fullScanRequest,
+            electrumServer.stopGap,
+            20,
+            true,
+          );
+          wallet.applyUpdate(scanUpdate);
           break; // Exit the loop if sync is successful
         } catch (e) {
           log.warning('Failed to sync with ${electrumServers[i].url}: $e');
@@ -117,10 +129,13 @@ class TheDirtyUsecase {
         }
       }
 
-      final balance = wallet.getBalance();
-      final transactions = wallet.listTransactions(includeRaw: true);
+      final balance = wallet.balance();
+      final transactions = wallet.transactions();
 
-      return (satoshis: balance.confirmed, transactions: transactions.length);
+      return (
+        satoshis: BigInt.from(balance.confirmed.toSat()),
+        transactions: transactions.length,
+      );
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
       throw CheckWalletStatusException(e.toString());

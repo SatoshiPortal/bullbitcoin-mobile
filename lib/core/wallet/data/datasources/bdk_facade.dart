@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_setting
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
 class BdkFacade {
@@ -28,27 +28,14 @@ class BdkFacade {
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
 
-    final external = await bdk.Descriptor.create(
-      descriptor: walletModel.externalDescriptor,
-      network: network,
-    );
-    final internal = await bdk.Descriptor.create(
-      descriptor: walletModel.internalDescriptor,
-      network: network,
-    );
+    final external = bdk.Descriptor(walletModel.externalDescriptor, network);
+    final internal = bdk.Descriptor(walletModel.internalDescriptor, network);
 
     // Create the database configuration
     final dbPath = await _getDbPath(walletModel.dbName);
-    final dbConfig = bdk.DatabaseConfig.sqlite(
-      config: bdk.SqliteDbConfiguration(path: dbPath),
-    );
+    final dbPersister = bdk.Persister.newSqlite(dbPath);
 
-    final wallet = await bdk.Wallet.create(
-      descriptor: external,
-      changeDescriptor: internal,
-      network: network,
-      databaseConfig: dbConfig,
-    );
+    final wallet = bdk.Wallet(external, internal, network, dbPersister, 0);
 
     return wallet;
   }
@@ -62,11 +49,11 @@ class BdkFacade {
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
 
-    final bdkMnemonic = await bdk.Mnemonic.fromString(walletModel.mnemonic);
-    final secretKey = await bdk.DescriptorSecretKey.create(
-      network: network,
-      mnemonic: bdkMnemonic,
-      password: walletModel.passphrase,
+    final bdkMnemonic = bdk.Mnemonic.fromString(walletModel.mnemonic);
+    final secretKey = bdk.DescriptorSecretKey(
+      network,
+      bdkMnemonic,
+      walletModel.passphrase,
     );
 
     bdk.Descriptor? external;
@@ -74,59 +61,53 @@ class BdkFacade {
 
     switch (walletModel.scriptType) {
       case ScriptType.bip84:
-        external = await bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          network: network,
-          keychain: bdk.KeychainKind.externalChain,
+        external = bdk.Descriptor.newBip84(
+          secretKey,
+          bdk.KeychainKind.external_,
+          network,
         );
-        internal = await bdk.Descriptor.newBip84(
-          secretKey: secretKey,
-          network: network,
-          keychain: bdk.KeychainKind.internalChain,
+        internal = bdk.Descriptor.newBip84(
+          secretKey,
+          bdk.KeychainKind.internal,
+          network,
         );
       case ScriptType.bip49:
-        external = await bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          network: network,
-          keychain: bdk.KeychainKind.externalChain,
+        external = bdk.Descriptor.newBip49(
+          secretKey,
+          bdk.KeychainKind.external_,
+          network,
         );
-        internal = await bdk.Descriptor.newBip49(
-          secretKey: secretKey,
-          network: network,
-          keychain: bdk.KeychainKind.internalChain,
+        internal = bdk.Descriptor.newBip49(
+          secretKey,
+          bdk.KeychainKind.internal,
+          network,
         );
       case ScriptType.bip44:
-        external = await bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          network: network,
-          keychain: bdk.KeychainKind.externalChain,
+        external = bdk.Descriptor.newBip44(
+          secretKey,
+          bdk.KeychainKind.external_,
+          network,
         );
-        internal = await bdk.Descriptor.newBip44(
-          secretKey: secretKey,
-          network: network,
-          keychain: bdk.KeychainKind.internalChain,
+        internal = bdk.Descriptor.newBip44(
+          secretKey,
+          bdk.KeychainKind.internal,
+          network,
         );
     }
 
     // Create the database configuration
     final dbPath = await _getDbPath(walletModel.dbName);
-    final dbConfig = bdk.DatabaseConfig.sqlite(
-      config: bdk.SqliteDbConfiguration(path: dbPath),
-    );
+    final dbPersister = bdk.Persister.newSqlite(dbPath);
 
-    final wallet = await bdk.Wallet.create(
-      descriptor: external,
-      changeDescriptor: internal,
-      network: network,
-      databaseConfig: dbConfig,
-    );
+    final wallet = bdk.Wallet(external, internal, network, dbPersister, 0);
 
     return wallet;
   }
 
   static Future<String> _getDbPath(String dbName) async {
     final dir = await getApplicationDocumentsDirectory();
-    return '${dir.path}/$dbName';
+    // Add since bdk_dart might not migrate old db
+    return '${dir.path}/$dbName/bdk_dart';
   }
 
   static Future<void> delete(WalletModel walletModel) async {
@@ -143,24 +124,24 @@ class BdkFacade {
     ElectrumServerModel electrumServer,
     ElectrumSettingsModel electrumSettings,
   ) async {
-    final blockchain = await bdk.Blockchain.create(
-      config: bdk.BlockchainConfig.electrum(
-        config: bdk.ElectrumConfig(
-          url: electrumServer.url,
-          // Only set the socks5 if it's not empty,
-          //  otherwise bdk will throw an error
-          socks5: electrumSettings.socks5?.isNotEmpty == true
-              ? electrumSettings.socks5
-              : null,
-          retry: electrumSettings.retry,
-          timeout: electrumSettings.timeout,
-          stopGap: BigInt.from(electrumSettings.stopGap),
-          validateDomain: electrumSettings.validateDomain,
-        ),
-      ),
+    final blockchain = bdk.ElectrumClient(
+      electrumServer.url,
+      // Only set the socks5 if it's not empty,
+      //  otherwise bdk will throw an error
+      // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
+      electrumSettings.socks5?.isNotEmpty == true
+          ? electrumSettings.socks5
+          : null,
     );
 
     final bdkWallet = await BdkFacade.createWallet(wallet);
-    await bdkWallet.sync(blockchain: blockchain);
+    final scanRequest = bdkWallet.startFullScan().build();
+    final update = blockchain.fullScan(
+      scanRequest,
+      electrumSettings.stopGap,
+      20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
+      true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
+    );
+    bdkWallet.applyUpdate(update);
   }
 }

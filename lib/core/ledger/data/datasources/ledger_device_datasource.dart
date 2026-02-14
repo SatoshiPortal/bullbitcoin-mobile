@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart'
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:convert/convert.dart' as convert;
 import 'package:flutter/foundation.dart';
 import 'package:ledger_bitcoin/ledger_bitcoin.dart';
@@ -29,14 +29,15 @@ class LedgerDeviceDatasource {
   }) async {
     await dispose();
 
-    final ledgerDeviceType =
-        deviceType != null ? convertToLedgerDeviceType(deviceType) : null;
+    final ledgerDeviceType = deviceType != null
+        ? convertToLedgerDeviceType(deviceType)
+        : null;
     final needsBluetooth =
         ledgerDeviceType == null || !ledgerDeviceType.usbOnly;
     if (needsBluetooth) {
       if (Platform.isAndroid) {
-        final bluetoothConnectStatus =
-            await Permission.bluetoothConnect.request();
+        final bluetoothConnectStatus = await Permission.bluetoothConnect
+            .request();
         final bluetoothScanStatus = await Permission.bluetoothScan.request();
 
         if (!bluetoothConnectStatus.isGranted ||
@@ -56,11 +57,10 @@ class LedgerDeviceDatasource {
     if (needsBluetooth) {
       _ledgerBle = LedgerInterface.ble(
         onPermissionRequest: (_) async {
-          final Map<Permission, PermissionStatus> statuses =
-              await [
-                Permission.bluetoothScan,
-                Permission.bluetoothConnect,
-              ].request();
+          final Map<Permission, PermissionStatus> statuses = await [
+            Permission.bluetoothScan,
+            Permission.bluetoothConnect,
+          ].request();
 
           return statuses.values.where((status) => status.isDenied).isEmpty;
         },
@@ -127,10 +127,9 @@ class LedgerDeviceDatasource {
       await usbScanSubscription?.cancel();
     }
 
-    final deviceModels =
-        devices.map((device) {
-          return LedgerDeviceModel.fromLedgerDevice(device);
-        }).toList();
+    final deviceModels = devices.map((device) {
+      return LedgerDeviceModel.fromLedgerDevice(device);
+    }).toList();
 
     if (deviceModels.isEmpty) {
       throw const LedgerError.noDevicesFound();
@@ -198,14 +197,27 @@ class LedgerDeviceDatasource {
     return _cachedConnection!;
   }
 
-  BitcoinLedgerApp _createBitcoinApp(LedgerConnection connection, ScriptType scriptType, String derivationPath) {
+  BitcoinLedgerApp _createBitcoinApp(
+    LedgerConnection connection,
+    ScriptType scriptType,
+    String derivationPath,
+  ) {
     switch (scriptType) {
       case ScriptType.bip84:
-        return BitcoinLedgerApp.nativeSegwit(connection, derivationPath: derivationPath);
+        return BitcoinLedgerApp.nativeSegwit(
+          connection,
+          derivationPath: derivationPath,
+        );
       case ScriptType.bip49:
-        return BitcoinLedgerApp.nestedSegwit(connection, derivationPath: derivationPath);
+        return BitcoinLedgerApp.nestedSegwit(
+          connection,
+          derivationPath: derivationPath,
+        );
       case ScriptType.bip44:
-        return BitcoinLedgerApp.legacy(connection, derivationPath: derivationPath);
+        return BitcoinLedgerApp.legacy(
+          connection,
+          derivationPath: derivationPath,
+        );
     }
   }
 
@@ -215,7 +227,11 @@ class LedgerDeviceDatasource {
     required ScriptType scriptType,
   }) async {
     final sdkConnection = _getSdkConnection(device);
-    final bitcoinApp = _createBitcoinApp(sdkConnection, scriptType, derivationPath);
+    final bitcoinApp = _createBitcoinApp(
+      sdkConnection,
+      scriptType,
+      derivationPath,
+    );
 
     return await bitcoinApp.getXPubKey(
       derivationPath: derivationPath,
@@ -242,7 +258,11 @@ class LedgerDeviceDatasource {
     final psbtV2 = PsbtV2();
     await psbtV2.deserializeV0(decodedPsbt);
 
-    final bitcoinApp = _createBitcoinApp(sdkConnection, scriptType, derivationPath);
+    final bitcoinApp = _createBitcoinApp(
+      sdkConnection,
+      scriptType,
+      derivationPath,
+    );
 
     final rawHex = await bitcoinApp.signPsbt(psbt: psbtV2);
     final finalizedTx = convert.hex.encode(rawHex);
@@ -257,7 +277,11 @@ class LedgerDeviceDatasource {
     required ScriptType scriptType,
   }) async {
     final sdkConnection = _getSdkConnection(device);
-    final bitcoinApp = _createBitcoinApp(sdkConnection, scriptType, derivationPath);
+    final bitcoinApp = _createBitcoinApp(
+      sdkConnection,
+      scriptType,
+      derivationPath,
+    );
     final verifiedAddress = await bitcoinApp.getAccounts(
       accountsDerivationPath: derivationPath,
       display: true,
@@ -300,9 +324,7 @@ extension PsbtSigner on PsbtV2 {
     }
     while (_readKeyPair(globalMap, bufferReader)) {}
 
-    final bdkPsbt = await bdk.PartiallySignedTransaction.fromString(
-      base64.encode(psbt),
-    );
+    final bdkPsbt = bdk.Psbt(base64.encode(psbt));
     final tx = bdkPsbt.extractTx();
 
     setGlobalInputCount(tx.input().length);
@@ -318,7 +340,10 @@ extension PsbtSigner on PsbtV2 {
       setInputPreviousTxId(
         i,
         Uint8List.fromList(
-          convert.hex.decode(input.previousOutput.txid).reversed.toList(),
+          convert.hex
+              .decode(input.previousOutput.txid.toString())
+              .reversed
+              .toList(),
         ),
       );
 
@@ -328,8 +353,8 @@ extension PsbtSigner on PsbtV2 {
       outputMaps.insert(i, <String, Uint8List>{});
       while (_readKeyPair(outputMaps[i], bufferReader)) {}
       final output = tx.output()[i];
-      setOutputAmount(i, output.value.toInt());
-      setOutputScript(i, Uint8List.fromList(output.scriptPubkey.bytes));
+      setOutputAmount(i, output.value.toSat());
+      setOutputScript(i, Uint8List.fromList(output.scriptPubkey.toBytes()));
     }
   }
 

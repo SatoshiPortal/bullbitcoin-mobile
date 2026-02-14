@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 
 class AddressScriptConversions {
@@ -8,12 +8,12 @@ class AddressScriptConversions {
     required bool isTestnet,
   }) async {
     try {
-      final address = await bdk.Address.fromScript(
-        script: bdk.ScriptBuf(bytes: scriptPubkey),
-        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      final address = bdk.Address.fromScript(
+        bdk.Script(scriptPubkey),
+        isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
       );
 
-      return address.asString();
+      return address.toString();
     } catch (e) {
       log.severe(
         message: 'error converting scriptPubkey to address',

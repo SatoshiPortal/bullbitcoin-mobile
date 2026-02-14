@@ -31,7 +31,7 @@ class CreateDefaultWalletsUsecase {
 
       // Generate a mnemonic seed if the user creates a new wallet
       //  or use the provided mnemonic words in case of recovery.
-      final mnemonic = mnemonicWords ?? await _mnemonicGenerator.generate();
+      final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
 
       // The wallet birthday will be useful to optimize syncs.
       DateTime? birthday;
@@ -49,12 +49,12 @@ class CreateDefaultWalletsUsecase {
       // Get the current environment to determine the network
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final bitcoinNetwork =
-          environment.isMainnet
-              ? Network.bitcoinMainnet
-              : Network.bitcoinTestnet;
-      final liquidNetwork =
-          environment.isMainnet ? Network.liquidMainnet : Network.liquidTestnet;
+      final bitcoinNetwork = environment.isMainnet
+          ? Network.bitcoinMainnet
+          : Network.bitcoinTestnet;
+      final liquidNetwork = environment.isMainnet
+          ? Network.liquidMainnet
+          : Network.liquidTestnet;
 
       // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
       final defaultWallets = await Future.wait([
