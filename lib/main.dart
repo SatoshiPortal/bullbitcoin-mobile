@@ -109,6 +109,14 @@ Future main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
+      // Build expiration check - exit if launched after 5 PM today
+      final now = DateTime.now();
+      final expirationTime = DateTime(now.year, now.month, now.day, 17, 0); // 5 PM today
+      if (now.isAfter(expirationTime)) {
+        runApp(const BuildExpiredScreen());
+        return;
+      }
+
       // Initialize the background tasks before anything else
       await Workmanager().initialize(backgroundTasksHandler);
       await Workmanager().cancelAll();
@@ -479,6 +487,42 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   );
                 },
               ),
+        ),
+      ),
+    );
+  }
+}
+
+class BuildExpiredScreen extends StatelessWidget {
+  const BuildExpiredScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: AppTheme.themeData(AppThemeType.dark),
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                color: Colors.red,
+                size: 80,
+              ),
+              const SizedBox(height: 32),
+              Text(
+                'This release is expired',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );

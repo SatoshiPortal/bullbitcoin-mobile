@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_startup/ui/seed_recovery_screen.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
@@ -94,15 +95,17 @@ class AppStartupFailureScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: Column(
-            mainAxisAlignment: .center,
-            mainAxisSize: .min,
-            children: [
-              ListTile(
+    return Navigator(
+      onGenerateRoute: (settings) => MaterialPageRoute(
+        builder: (context) => Scaffold(
+          body: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Column(
+                mainAxisAlignment: .center,
+                mainAxisSize: .min,
+                children: [
+                ListTile(
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16.0,
                   vertical: 8.0,
@@ -138,6 +141,26 @@ class AppStartupFailureScreen extends StatelessWidget {
               const SizedBox(height: 24),
               BBButton.big(
                 onPressed: () {
+                  print('DEBUG: Wallet Recovery button pressed');
+                  try {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SeedRecoveryScreen(),
+                      ),
+                    );
+                    print('DEBUG: Navigator.push called');
+                  } catch (e) {
+                    print('DEBUG: Error during navigation: $e');
+                  }
+                },
+                label: 'Wallet Recovery',
+                bgColor: context.appColors.error,
+                textColor: context.appColors.onError,
+              ),
+              const SizedBox(height: 16),
+              BBButton.big(
+                onPressed: () {
                   final url = Uri.parse(SettingsConstants.telegramSupportLink);
                   // ignore: deprecated_member_use
                   launchUrl(url, mode: LaunchMode.externalApplication);
@@ -146,9 +169,11 @@ class AppStartupFailureScreen extends StatelessWidget {
                 bgColor: context.appColors.primary,
                 textColor: context.appColors.onPrimary,
               ),
-              const SizedBox(height: 24),
-              const ShareLogsWidget(),
-            ],
+                const SizedBox(height: 24),
+                const ShareLogsWidget(),
+                ],
+              ),
+            ),
           ),
         ),
       ),

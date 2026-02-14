@@ -19,7 +19,11 @@ dependencies:
   gap: ^3.0.1
   go_router: ^17.0.0
   google_fonts: ^6.3.3
-  flutter_secure_storage: ^10.0.0
+  flutter_secure_storage:
+    git:
+      url: https://github.com/iosifpeterfi/flutter_secure_storage
+      ref: 804f1cb51320a22fb609e71383d0490c378b2c66
+      path: flutter_secure_storage
   path_provider: ^2.1.5
   payjoin_flutter:
     git:

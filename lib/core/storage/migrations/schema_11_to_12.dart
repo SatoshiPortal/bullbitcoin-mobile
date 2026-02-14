@@ -69,14 +69,22 @@ class Schema11To12 {
         .update(schema12.autoSwap)
         .write(RawValuesInsertable({'show_warning': const Constant<int>(1)}));
 
-    // MempoolServers table: add enableSsl column
+    // MempoolServers table: add enableSsl column (if not exists)
     final mempoolServers = schema12.mempoolServers;
-    await m.addColumn(mempoolServers, mempoolServers.enableSsl);
+    try {
+      await m.addColumn(mempoolServers, mempoolServers.enableSsl);
+    } catch (e) {
+      // Column already exists, which is fine (likely from a previous migration attempt)
+    }
 
-    // Settings table: add isErrorReportingEnabled column
-    await m.addColumn(
-      schema12.settings,
-      schema12.settings.isErrorReportingEnabled,
-    );
+    // Settings table: add isErrorReportingEnabled column (if not exists)
+    try {
+      await m.addColumn(
+        schema12.settings,
+        schema12.settings.isErrorReportingEnabled,
+      );
+    } catch (e) {
+      // Column already exists, which is fine (likely from a previous migration attempt)
+    }
   }
 }
