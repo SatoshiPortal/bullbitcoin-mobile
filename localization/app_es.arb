@@ -1459,7 +1459,7 @@
     "autoswapWarningCardSubtitle": "Se disparará un intercambio si el saldo de su monedero de pagos instantáneos supera 0'02 BTC.",
     "autoswapWarningDescription": "Autoswap garantiza que no mantengas accidentalmente demasiado dinero en el monedero de pagos instantáneos, lo cual no es seguro para el almacenamiento a largo plazo.",
     "autoswapWarningTitle": "La transferencia automática está habilitada con la siguiente configuración:",
-    "autoswapWarningBaseBalance": "Saldo objetivo 0.01 BTC",
+    "autoswapWarningBaseBalance": "Saldo Objetivo 0'01 BTC",
     "autoswapWarningTriggerAmount": "Saldo máximo de 0.02 BTC",
     "autoswapWarningExplanation": "Cuando tu saldo supere el saldo máximo, se activará un intercambio. El saldo destino se mantendrá en tu monedero de pagos instantáneos y el monto restante se intercambiará en tu monedero de Bitcoin seguro.",
     "autoswapWarningDontShowAgain": "No volver a mostrar esta advertencia.",
@@ -4217,7 +4217,7 @@
     "@exchangeFileUploadUploading": {
         "description": "Loading text while uploading files"
     },
-    "exchangeFileUploadUploadCount": "Subir {count} {cuenta, plural, =1{File} other{Files}}",
+    "exchangeFileUploadUploadCount": "Subir {count} {count, plural, =1{Archivo} other{Archivos}}",
     "@exchangeFileUploadUploadCount": {
         "description": "Button label showing number of files to upload",
         "placeholders": {
@@ -4307,7 +4307,7 @@
     "@exchangeStatisticsVolume": {
         "description": "Label for volume statistic"
     },
-    "exchangeStatisticsTradeCount": "Número de operaciones",
+    "exchangeStatisticsTradeCount": "Número de Operaciones",
     "@exchangeStatisticsTradeCount": {
         "description": "Label for trade count statistic"
     },
@@ -4315,11 +4315,11 @@
     "@exchangeStatisticsAveragePrice": {
         "description": "Label for average price statistic"
     },
-    "exchangeStatisticsTotalVolume": "Volumen total de operaciones",
+    "exchangeStatisticsTotalVolume": "Volumen Total de Operaciones",
     "@exchangeStatisticsTotalVolume": {
         "description": "Label for total trading volume statistic"
     },
-    "exchangeStatisticsBillerStats": "Estadísticas de Biller",
+    "exchangeStatisticsBillerStats": "Estadísticas de Facturador",
     "@exchangeStatisticsBillerStats": {
         "description": "Title for biller statistics section"
     },
