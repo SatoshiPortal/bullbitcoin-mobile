@@ -4250,7 +4250,7 @@
     "@exchangeFileUploadStatusReady": {
         "description": "Status badge when files can be uploaded"
     },
-    "exchangeFileUploadStatusInReview": "In Review",
+    "exchangeFileUploadStatusInReview": "En revisión",
     "@exchangeFileUploadStatusInReview": {
         "description": "Status badge when files are under review"
     },
@@ -4262,7 +4262,7 @@
     "@exchangeFileUploadStatusRejected": {
         "description": "Status badge when files have been rejected, with re-upload option"
     },
-    "exchangeFileUploadInReviewMessage": "Sus documentos están actualmente en revisión. No puede subir más archivos hasta que la revisión esté completa.",
+    "exchangeFileUploadInReviewMessage": "Sus documentos están actualmente en revisión. No puede subir más archivos hasta que la revisión haya finalizado.",
     "@exchangeFileUploadInReviewMessage": {
         "description": "Message shown when documents are under review"
     },
@@ -4299,7 +4299,7 @@
     "@exchangeStatisticsBuyStats": {
         "description": "Title for buy statistics section"
     },
-    "exchangeStatisticsSellStats": "Sell Statistics",
+    "exchangeStatisticsSellStats": "Estadísticas de venta",
     "@exchangeStatisticsSellStats": {
         "description": "Title for sell statistics section"
     },
@@ -4307,7 +4307,7 @@
     "@exchangeStatisticsVolume": {
         "description": "Label for volume statistic"
     },
-    "exchangeStatisticsTradeCount": "Cuenta Comercial",
+    "exchangeStatisticsTradeCount": "Número de operaciones",
     "@exchangeStatisticsTradeCount": {
         "description": "Label for trade count statistic"
     },
