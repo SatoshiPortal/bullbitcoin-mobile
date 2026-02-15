@@ -4315,7 +4315,7 @@
     "@exchangeStatisticsAveragePrice": {
         "description": "Label for average price statistic"
     },
-    "exchangeStatisticsTotalVolume": "Volumen total de comercio",
+    "exchangeStatisticsTotalVolume": "Volumen total de operaciones",
     "@exchangeStatisticsTotalVolume": {
         "description": "Label for total trading volume statistic"
     },
