@@ -4150,11 +4150,11 @@
     "@autoswapInfoDismissButton": {
         "description": "Primary button to dismiss autoswap info permanently"
     },
-    "exchangeSettingsRecipientsTitle": "受援国",
+    "exchangeSettingsRecipientsTitle": "收件者",
     "@exchangeSettingsRecipientsTitle": {
         "description": "Title for the recipients button in exchange settings"
     },
-    "exchangeFileUploadSuccess": "成功载荷",
+    "exchangeFileUploadSuccess": "文件上传成功",
     "@exchangeFileUploadSuccess": {
         "description": "Success message when file is uploaded successfully"
     },
@@ -4166,11 +4166,11 @@
     "@exchangeAppSettingsEmailNotificationsDescription": {
         "description": "Description for email notifications toggle in exchange app settings"
     },
-    "exchangeBitcoinWalletsSaveSuccess": "成功挽救的瓦莱特地址",
+    "exchangeBitcoinWalletsSaveSuccess": "钱包地址保存成功",
     "@exchangeBitcoinWalletsSaveSuccess": {
         "description": "Success message when wallet address is saved"
     },
-    "exchangeBitcoinWalletsDescription": "为自动取款权设定了违约的围墙.",
+    "exchangeBitcoinWalletsDescription": "为比特币自动提现设置默认钱包地址",
     "@exchangeBitcoinWalletsDescription": {
         "description": "Description text on the default bitcoin wallets screen"
     },
@@ -4187,11 +4187,11 @@
             }
         }
     },
-    "exchangeFileUploadNoFilesSelected": "未选定档案",
+    "exchangeFileUploadNoFilesSelected": "没有文件被选择",
     "@exchangeFileUploadNoFilesSelected": {
         "description": "Message when no files are selected for upload"
     },
-    "exchangeFileUploadSelectFilesHint": "选择文件的标语",
+    "exchangeFileUploadSelectFilesHint": "单点“选择文件”以选择文档",
     "@exchangeFileUploadSelectFilesHint": {
         "description": "Hint text for selecting files"
     },
@@ -4199,15 +4199,15 @@
     "@exchangeFileUploadSelectFiles": {
         "description": "Button label to select files"
     },
-    "exchangeFileUploadAddMoreFiles": "增加文件",
+    "exchangeFileUploadAddMoreFiles": "增加更多文件",
     "@exchangeFileUploadAddMoreFiles": {
         "description": "Button label to add more files"
     },
-    "exchangeFileUploadUploading": "装载......",
+    "exchangeFileUploadUploading": "上传中......",
     "@exchangeFileUploadUploading": {
         "description": "Loading text while uploading files"
     },
-    "exchangeFileUploadUploadCount": "有效载荷{count}{对面、复数、=1{File}",
+    "exchangeFileUploadUploadCount": "上传{count}{对面、复数、=1{File}",
     "@exchangeFileUploadUploadCount": {
         "description": "Button label showing number of files to upload",
         "placeholders": {
@@ -4216,15 +4216,15 @@
             }
         }
     },
-    "exchangeFileUploadClearAll": "明确无误",
+    "exchangeFileUploadClearAll": "删除所有",
     "@exchangeFileUploadClearAll": {
         "description": "Button label to clear all files"
     },
-    "exchangeFileUploadAllSuccess": "所有文件均已成功上载",
+    "exchangeFileUploadAllSuccess": "所有文件均已成功上传",
     "@exchangeFileUploadAllSuccess": {
         "description": "Success message when all files are uploaded"
     },
-    "exchangeFileUploadPartialSuccess": "{total}份上载的档案{uploaded}",
+    "exchangeFileUploadPartialSuccess": "{total}份上传的文件{uploaded}",
     "@exchangeFileUploadPartialSuccess": {
         "description": "Message when some files failed to upload",
         "placeholders": {
@@ -4236,7 +4236,7 @@
             }
         }
     },
-    "exchangeFileUploadStatusReady": "阅读",
+    "exchangeFileUploadStatusReady": "准备就绪",
     "@exchangeFileUploadStatusReady": {
         "description": "Status badge when files can be uploaded"
     },
