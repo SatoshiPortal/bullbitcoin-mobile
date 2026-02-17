@@ -60,6 +60,9 @@ class LwkWalletDatasource {
       return balance;
     } catch (e) {
       if (e is lwk.LwkError) {
+        if (e.msg.contains('UpdateOnDifferentStatus')) {
+          await delete(wallet: wallet);
+        }
         throw e.msg;
       } else {
         rethrow;
@@ -87,6 +90,9 @@ class LwkWalletDatasource {
         //debugPrint('[Sync] Sync completed for wallet: ${wallet.id}');
       } catch (e) {
         if (e is lwk.LwkError) {
+          if (e.msg.contains('UpdateOnDifferentStatus')) {
+            await delete(wallet: wallet);
+          }
           throw e.msg;
         } else {
           rethrow;

@@ -19,10 +19,24 @@ class CheckForExistingDefaultWalletsUsecase {
   Future<bool> execute() async {
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
-    final defaultWallets = await _walletRepository.getWallets(
-      onlyDefaults: true,
-      environment: environment,
-    );
+    
+    late final List defaultWallets;
+    try {
+      defaultWallets = await _walletRepository.getWallets(
+        onlyDefaults: true,
+        environment: environment,
+      );
+    } catch (e) {
+      if (e.toString().contains('UpdateOnDifferentStatus')) {
+        log.fine('UpdateOnDifferentStatus error, retrying getWallets');
+        defaultWallets = await _walletRepository.getWallets(
+          onlyDefaults: true,
+          environment: environment,
+        );
+      } else {
+        rethrow;
+      }
+    }
 
     if (defaultWallets.isNotEmpty) {
       log.fine('FINE: found default wallet');
