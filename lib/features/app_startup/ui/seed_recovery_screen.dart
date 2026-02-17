@@ -103,8 +103,9 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
             if (jsonData.containsKey('mnemonicWords')) {
               // Extract mnemonic words and join them
               final words = (jsonData['mnemonicWords'] as List).cast<String>();
-              print('DEBUG: Found mnemonicWords array with ${words.length} words');
-              print('DEBUG: First few words: ${words.take(3).join(" ")}...');
+              print(
+                'DEBUG: Found mnemonicWords array with ${words.length} words',
+              );
 
               if (words.length >= 12 && words.length <= 24) {
                 parsedSeeds[entry.key] = words.join(' ');
