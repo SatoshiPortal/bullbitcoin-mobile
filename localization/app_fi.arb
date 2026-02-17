@@ -199,7 +199,7 @@
     "addressCardCopiedMessage": "Osoite kopioitu leikepöydälle",
     "addressCardIndexLabel": "Tunniste: ",
     "addressCardBalanceLabel": "Saldo: ",
-    "onboardingRecoverYourWallet": "Recover your wallet",
+    "onboardingRecoverYourWallet": "Palauta lompakkosi",
     "onboardingEncryptedVault": "Salattu holvi",
     "onboardingEncryptedVaultDescription": "Palauta varmuuskopio pilvestä PIN-koodillasi.",
     "onboardingPhysicalBackup": "Fyysinen varmuuskopio",
@@ -983,14 +983,14 @@
     },
     "defaultWalletsLabel": "Oletuslompakot",
     "confirmButton": "Vahvista",
-    "recoveryPhraseTitle": "Kirjoita siemenlauseen\nsanat järjestyksessä",
+    "recoveryPhraseTitle": "Tallenna siemenlauseen\nsanat oikeassa järjestyksessä",
     "storeItSafelyMessage": "Säilytä se turvallisessa paikassa.",
     "doNotShareWarning": "ÄLÄ JAA KENENKÄÄN KANSSA",
     "transcribeLabel": "Kirjoita ylös",
     "digitalCopyLabel": "Digitaalinen kopio",
     "screenshotLabel": "Näyttökuva",
     "nextButton": "Seuraava",
-    "tapWordsInOrderTitle": "Napauta palautussanoja \noikeassa järjestyksessä",
+    "tapWordsInOrderTitle": "Valitset siemenlauseen\nsanat oikeassa järjestyksessä",
     "whatIsWordNumberPrompt": "Mikä on sana numero {number}?",
     "@whatIsWordNumberPrompt": {
         "placeholders": {
@@ -2405,7 +2405,7 @@
     },
     "testBackupDefaultWallets": "Oletuslompakot",
     "testBackupConfirm": "Vahvista",
-    "testBackupWriteDownPhrase": "Kirjoita palautuslausekkeesi\noikeassa järjestyksessä",
+    "testBackupWriteDownPhrase": "Kirjoita siemenlauseen\nsanat oikeassa järjestyksessä",
     "testBackupStoreItSafe": "Säilytä se turvallisessa paikassa.",
     "testBackupLastBackupTest": "Viimeisin varmuuskopiointitesti: {timestamp}",
     "@testBackupLastBackupTest": {
@@ -2420,7 +2420,7 @@
     "testBackupDigitalCopy": "Digitaalinen kopio",
     "testBackupScreenshot": "Näyttökuva",
     "testBackupNext": "Seuraava",
-    "testBackupTapWordsInOrder": "Napauta palautussanoja \noikeassa järjestyksessä",
+    "testBackupTapWordsInOrder": "Napauta siemenlauseen\nsanat oikeassa järjestyksessä",
     "testBackupWhatIsWordNumber": "Mikä on sana numero {number}?",
     "@testBackupWhatIsWordNumber": {
         "placeholders": {
@@ -2689,7 +2689,7 @@
     "recoverbullSwitchToPIN": "Valitse PIN sen sijaan",
     "recoverbullTestBackupDescription": "Testataan nyt varmuuskopiosi varmistaaksemme, että kaikki tehtiin oikein.",
     "recoverbullTestCompletedTitle": "Testi suoritettu onnistuneesti!",
-    "recoverbullTestRecovery": "Testaa palautus",
+    "recoverbullTestRecovery": "Palautuksen testaus",
     "recoverbullTestSuccessDescription": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
     "recoverbullTorNetwork": "Tor-verkko",
     "recoverbullTransactions": "Transaktioita: {count}",
@@ -2704,7 +2704,7 @@
     "recoverbullVaultImportedSuccess": "Holvisi tuotiin onnistuneesti",
     "recoverbullVaultKey": "Holviavain",
     "recoverbullVaultKeyInput": "Holviavain",
-    "recoverbullVaultRecovery": "Holvin palautus",
+    "recoverbullVaultRecovery": "Palauta Holvi",
     "recoverbullVaultSelected": "Holvi valittu",
     "recoverbullWaiting": "Odotetaan",
     "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
@@ -2717,7 +2717,7 @@
             }
         }
     },
-    "recoverbullRecoveryTransactionsLabel": "Transaktiot: {count}",
+    "recoverbullRecoveryTransactionsLabel": "Transaktioita: {count}",
     "@recoverbullRecoveryTransactionsLabel": {
         "placeholders": {
             "count": {
