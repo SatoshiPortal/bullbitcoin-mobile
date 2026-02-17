@@ -69,6 +69,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
       );
 
+      // TEMPORARY: Force failure to test recovery mode
+      throw Exception('Testing recovery mode');
+
       // SQL Migrations
       // emit(const AppStartupState.failure(null));
       // return;
