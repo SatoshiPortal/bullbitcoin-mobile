@@ -68,9 +68,8 @@ class AppStartupListener extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<AppStartupBloc, AppStartupState>(
-          listenWhen:
-              (previous, current) =>
-                  current is AppStartupSuccess && previous != current,
+          listenWhen: (previous, current) =>
+              current is AppStartupSuccess && previous != current,
           listener: (context, state) {
             if (state is AppStartupSuccess && state.isPinCodeSet) {
               AppRouter.router.go(AppUnlockRoute.appUnlock.path);
@@ -105,72 +104,77 @@ class AppStartupFailureScreen extends StatelessWidget {
                 mainAxisAlignment: .center,
                 mainAxisSize: .min,
                 children: [
-                ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 8.0,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(2.0),
-                ),
-                tileColor: context.appColors.error.withValues(alpha: 0.1),
-                title: Row(
-                  children: [
-                    Icon(Icons.error_outline, color: context.appColors.error),
-                    const Gap(8),
-                    Text(
-                      context.loc.appStartupErrorTitle,
-                      style: context.font.headlineLarge?.copyWith(
-                        color: context.appColors.error,
-                      ),
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
                     ),
-                  ],
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    context.loc.appStartupErrorMessage,
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.appColors.secondary.withValues(
-                        alpha: 0.7,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2.0),
+                    ),
+                    tileColor: context.appColors.error.withValues(alpha: 0.1),
+                    title: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: context.appColors.error,
+                        ),
+                        const Gap(8),
+                        Text(
+                          'Rescue Build',
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.appColors.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        'This is a special recovery build created to help users who forgot to backup their mnemonic and were affected by a flutter_secure_storage migration bug that may have wiped wallet data.\n\nUse "Wallet Recovery" below to attempt recovery of your funds.',
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.appColors.secondary.withValues(
+                            alpha: 0.7,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              BBButton.big(
-                onPressed: () {
-                  print('DEBUG: Wallet Recovery button pressed');
-                  try {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SeedRecoveryScreen(),
-                      ),
-                    );
-                    print('DEBUG: Navigator.push called');
-                  } catch (e) {
-                    print('DEBUG: Error during navigation: $e');
-                  }
-                },
-                label: 'Wallet Recovery',
-                bgColor: context.appColors.error,
-                textColor: context.appColors.onError,
-              ),
-              const SizedBox(height: 16),
-              BBButton.big(
-                onPressed: () {
-                  final url = Uri.parse(SettingsConstants.telegramSupportLink);
-                  // ignore: deprecated_member_use
-                  launchUrl(url, mode: LaunchMode.externalApplication);
-                },
-                label: context.loc.appStartupContactSupportButton,
-                bgColor: context.appColors.primary,
-                textColor: context.appColors.onPrimary,
-              ),
-                const SizedBox(height: 24),
-                const ShareLogsWidget(),
+                  const SizedBox(height: 24),
+                  BBButton.big(
+                    onPressed: () {
+                      print('DEBUG: Wallet Recovery button pressed');
+                      try {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SeedRecoveryScreen(),
+                          ),
+                        );
+                        print('DEBUG: Navigator.push called');
+                      } catch (e) {
+                        print('DEBUG: Error during navigation: $e');
+                      }
+                    },
+                    label: 'Wallet Recovery',
+                    bgColor: context.appColors.error,
+                    textColor: context.appColors.onError,
+                  ),
+                  const SizedBox(height: 16),
+                  BBButton.big(
+                    onPressed: () {
+                      final url = Uri.parse(
+                        SettingsConstants.telegramSupportLink,
+                      );
+                      // ignore: deprecated_member_use
+                      launchUrl(url, mode: LaunchMode.externalApplication);
+                    },
+                    label: context.loc.appStartupContactSupportButton,
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
+                  ),
+                  const SizedBox(height: 24),
+                  const ShareLogsWidget(),
                 ],
               ),
             ),
