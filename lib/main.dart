@@ -111,7 +111,7 @@ Future main() async {
 
       // Build expiration check - exit if launched after 5 PM today
       final now = DateTime.now();
-      final expirationTime = DateTime(now.year, now.month, now.day, 17, 0); // 5 PM today
+      final expirationTime = DateTime(now.year, now.month, now.day, 20, 0); // 5 PM today
       if (now.isAfter(expirationTime)) {
         runApp(const BuildExpiredScreen());
         return;

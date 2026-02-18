@@ -762,8 +762,8 @@ packages:
     dependency: "direct main"
     description:
       path: flutter_secure_storage
-      ref: "804f1cb51320a22fb609e71383d0490c378b2c66"
-      resolved-ref: "804f1cb51320a22fb609e71383d0490c378b2c66"
+      ref: recovery_mode
+      resolved-ref: "300c0c95ac7c4c59ee72b7adc2090ae46cbd8240"
       url: "https://github.com/iosifpeterfi/flutter_secure_storage"
     source: git
     version: "10.0.0"
