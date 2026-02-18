@@ -22,7 +22,7 @@ dependencies:
   flutter_secure_storage:
     git:
       url: https://github.com/iosifpeterfi/flutter_secure_storage
-      ref: 804f1cb51320a22fb609e71383d0490c378b2c66
+      ref: recovery_mode
       path: flutter_secure_storage
   path_provider: ^2.1.5
   payjoin_flutter:
