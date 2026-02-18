@@ -109,9 +109,15 @@ Future main() async {
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
-      // Build expiration check - exit if launched after 5 PM today
+      // Build expiration check
       final now = DateTime.now();
-      final expirationTime = DateTime(now.year, now.month, now.day, 20, 0); // 5 PM today
+      final expirationTime = DateTime(
+        2026,
+        2,
+        28,
+        23,
+        59,
+      ); // Feb 28, 2026 at 11:59 PM
       if (now.isAfter(expirationTime)) {
         runApp(const BuildExpiredScreen());
         return;
@@ -506,11 +512,7 @@ class BuildExpiredScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 80,
-              ),
+              Icon(Icons.error_outline, color: Colors.red, size: 80),
               const SizedBox(height: 32),
               Text(
                 'This release is expired',
