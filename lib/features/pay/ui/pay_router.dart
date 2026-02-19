@@ -4,17 +4,18 @@ import 'package:bb_mobile/features/pay/ui/screens/pay_external_wallet_network_se
 import 'package:bb_mobile/features/pay/ui/screens/pay_in_progress_screen.dart'
     as progress;
 import 'package:bb_mobile/features/pay/ui/screens/pay_receive_payment_screen.dart';
+import 'package:bb_mobile/features/pay/ui/screens/pay_recipient_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_send_payment_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_sinpe_success_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_success_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_wallet_selection_screen.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum PayRoute {
   pay('/pay'),
+  payAmount('amount'),
   payWalletSelection('wallet-selection'),
   payExternalWalletNetworkSelection('external-wallet-network-selection'),
   paySendPayment('send-payment'),
@@ -33,28 +34,45 @@ class PayRouter {
     path: PayRoute.pay.path,
     name: PayRoute.pay.name,
     builder: (context, state) {
-      final recipient = state.extra! as RecipientViewModel;
       return BlocProvider(
-        create:
-            (_) =>
-                locator<PayBloc>(param1: recipient)
-                  ..add(const PayEvent.started()),
+        create: (_) => locator<PayBloc>()..add(const PayEvent.started()),
         child: BlocListener<PayBloc, PayState>(
-          listenWhen:
-              (previous, current) =>
-                  previous is PayAmountInputState &&
-                  current is PayWalletSelectionState,
+          listenWhen: (previous, current) =>
+              previous is PayRecipientSelectionState &&
+              current is PayAmountInputState,
           listener: (context, state) {
             context.pushNamed(
-              PayRoute.payWalletSelection.name,
+              PayRoute.payAmount.name,
               extra: context.read<PayBloc>(),
             );
           },
-          child: const PayAmountScreen(),
+          child: const PayRecipientScreen(),
         ),
       );
     },
     routes: [
+      GoRoute(
+        path: PayRoute.payAmount.path,
+        name: PayRoute.payAmount.name,
+        builder: (context, state) {
+          final bloc = state.extra! as PayBloc;
+          return BlocProvider.value(
+            value: bloc,
+            child: BlocListener<PayBloc, PayState>(
+              listenWhen: (previous, current) =>
+                  previous is PayAmountInputState &&
+                  current is PayWalletSelectionState,
+              listener: (context, state) {
+                context.pushNamed(
+                  PayRoute.payWalletSelection.name,
+                  extra: context.read<PayBloc>(),
+                );
+              },
+              child: const PayAmountScreen(),
+            ),
+          );
+        },
+      ),
       GoRoute(
         path: PayRoute.payWalletSelection.path,
         name: PayRoute.payWalletSelection.name,
@@ -63,11 +81,10 @@ class PayRouter {
           return BlocProvider.value(
             value: bloc,
             child: BlocListener<PayBloc, PayState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is PayWalletSelectionState &&
-                      current is PayPaymentState &&
-                      current.isInternalWallet,
+              listenWhen: (previous, current) =>
+                  previous is PayWalletSelectionState &&
+                  current is PayPaymentState &&
+                  current.isInternalWallet,
               listener: (context, state) {
                 context.pushNamed(
                   PayRoute.paySendPayment.name,
@@ -87,11 +104,10 @@ class PayRouter {
           return BlocProvider.value(
             value: bloc,
             child: BlocListener<PayBloc, PayState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is PayWalletSelectionState &&
-                      current is PayPaymentState &&
-                      current.isExternalWallet,
+              listenWhen: (previous, current) =>
+                  previous is PayWalletSelectionState &&
+                  current is PayPaymentState &&
+                  current.isExternalWallet,
               listener: (context, state) {
                 context.pushNamed(
                   PayRoute.payReceivePayment.name,
@@ -111,9 +127,8 @@ class PayRouter {
           return BlocProvider.value(
             value: bloc,
             child: BlocListener<PayBloc, PayState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is PayPaymentState && current is PaySuccessState,
+              listenWhen: (previous, current) =>
+                  previous is PayPaymentState && current is PaySuccessState,
               listener: (context, state) {
                 context.pushNamed(
                   PayRoute.payInProgress.name,
@@ -133,9 +148,8 @@ class PayRouter {
           return BlocProvider.value(
             value: bloc,
             child: BlocListener<PayBloc, PayState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is PayPaymentState && current is PaySuccessState,
+              listenWhen: (previous, current) =>
+                  previous is PayPaymentState && current is PaySuccessState,
               listener: (context, state) {
                 context.pushNamed(
                   PayRoute.payInProgress.name,
@@ -150,29 +164,26 @@ class PayRouter {
       GoRoute(
         path: PayRoute.payInProgress.path,
         name: PayRoute.payInProgress.name,
-        builder:
-            (context, state) => BlocProvider.value(
-              value: state.extra! as PayBloc,
-              child: const progress.PayInProgressScreen(),
-            ),
+        builder: (context, state) => BlocProvider.value(
+          value: state.extra! as PayBloc,
+          child: const progress.PayInProgressScreen(),
+        ),
       ),
       GoRoute(
         path: PayRoute.payPaymentCompleted.path,
         name: PayRoute.payPaymentCompleted.name,
-        builder:
-            (context, state) => BlocProvider.value(
-              value: state.extra! as PayBloc,
-              child: const PaySuccessScreen(),
-            ),
+        builder: (context, state) => BlocProvider.value(
+          value: state.extra! as PayBloc,
+          child: const PaySuccessScreen(),
+        ),
       ),
       GoRoute(
         path: PayRoute.paySinpeSuccess.path,
         name: PayRoute.paySinpeSuccess.name,
-        builder:
-            (context, state) => BlocProvider.value(
-              value: state.extra! as PayBloc,
-              child: const PaySinpeSuccessScreen(),
-            ),
+        builder: (context, state) => BlocProvider.value(
+          value: state.extra! as PayBloc,
+          child: const PaySinpeSuccessScreen(),
+        ),
       ),
     ],
   );

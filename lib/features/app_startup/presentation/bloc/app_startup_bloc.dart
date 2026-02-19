@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_back
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 part 'app_startup_bloc.freezed.dart';
 part 'app_startup_event.dart';
@@ -60,7 +61,14 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     Emitter<AppStartupState> emit,
   ) async {
     emit(const AppStartupState.loadingInProgress());
+
     try {
+      // Log app version on startup
+      final packageInfo = await PackageInfo.fromPlatform();
+      log.info(
+        'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
+      );
+
       // SQL Migrations
       // emit(const AppStartupState.failure(null));
       // return;
@@ -125,7 +133,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         final isTorRequired = await _isTorRequiredUsecase.execute();
         if (isTorRequired) unawaited(_initTorUsecase.execute());
       } catch (e) {
-        log.severe('Tor initialization check failed', error: e);
+        log.severe(
+          message: 'Tor initialization check failed',
+          error: e,
+          trace: StackTrace.current,
+        );
       }
 
       emit(
@@ -141,8 +153,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         hasBackup = await _checkBackupUsecase.execute();
       } catch (_) {
         log.severe(
-          'Failed to check for backup availability during app startup',
+          message: 'Failed to check for backup availability during app startup',
           error: e,
+          trace: StackTrace.current,
         );
         hasBackup = false;
       }

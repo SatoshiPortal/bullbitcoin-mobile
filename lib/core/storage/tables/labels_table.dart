@@ -8,42 +8,18 @@ const selfSpendLabelSystem = 'self-spend';
 const exchangeBuyLabelSystem = 'exchange_buy';
 const exchangeSellLabelSystem = 'exchange_sell';
 
-enum LabelType {
-  tx,
-  address,
-  pubkey,
-  input,
-  output,
-  xpub;
-
-  static LabelType fromString(String string) {
-    switch (string) {
-      case 'tx':
-        return LabelType.tx;
-      case 'address':
-        return LabelType.address;
-      case 'pubkey':
-        return LabelType.pubkey;
-      case 'input':
-        return LabelType.input;
-      case 'output':
-        return LabelType.output;
-      case 'xpub':
-        return LabelType.xpub;
-      default:
-        throw ArgumentError('Invalid type: $string');
-    }
-  }
-}
+enum LabelTypeColumn { tx, address, pubkey, input, output, xpub }
 
 @DataClassName('LabelRow')
 class Labels extends Table {
+  IntColumn get id => integer().autoIncrement()();
   TextColumn get label => text()();
-  TextColumn get ref => text()();
-  TextColumn get type => textEnum<LabelType>()();
+  TextColumn get reference => text()();
+  TextColumn get type => textEnum<LabelTypeColumn>()();
   TextColumn get origin => text().nullable()();
-  BoolColumn get spendable => boolean().nullable()();
 
   @override
-  Set<Column> get primaryKey => {label, ref};
+  List<Set<Column>> get uniqueKeys => [
+    {label, reference},
+  ];
 }

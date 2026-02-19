@@ -267,7 +267,9 @@ class PdkPayjoinDatasource {
       );
     } catch (e) {
       logger.log.severe(
-        'Failed to preserve privacy: $e. Using first input pair.',
+        message: 'Failed to preserve privacy: Using first input pair.',
+        error: e,
+        trace: StackTrace.current,
       );
     }
 

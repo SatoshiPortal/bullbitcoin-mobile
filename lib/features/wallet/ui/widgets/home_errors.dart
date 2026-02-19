@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/widgets/cards/autoswap_warning_card.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/autoswap_warning_bottom_sheet.dart';
 import 'package:flutter/material.dart';
@@ -20,15 +21,19 @@ class HomeWarnings extends StatelessWidget {
           previous.showBackupWarning() != current.showBackupWarning() ||
           previous.showAutoSwapDefaultEnabledWarning() !=
               current.showAutoSwapDefaultEnabledWarning() ||
+          previous.showAutoSwapActiveStatus() !=
+              current.showAutoSwapActiveStatus() ||
           previous.warnings != current.warnings,
       builder: (context, state) {
         final showBackupWarning = state.showBackupWarning();
         final showAutoSwapDefaultEnabledWarning = state
             .showAutoSwapDefaultEnabledWarning();
+        final showAutoSwapActiveStatus = state.showAutoSwapActiveStatus();
         final serverWarning = state.warnings;
 
         if (!showBackupWarning &&
             !showAutoSwapDefaultEnabledWarning &&
+            !showAutoSwapActiveStatus &&
             serverWarning.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -49,6 +54,15 @@ class HomeWarnings extends StatelessWidget {
                 if (showBackupWarning) const Gap(5),
                 AutoSwapWarningCard(
                   onTap: () => AutoSwapWarningBottomSheet.show(context),
+                ),
+              ],
+
+              if (showAutoSwapActiveStatus) ...[
+                if (showBackupWarning) const Gap(5),
+                AutoSwapWarningCard(
+                  isActiveMode: true,
+                  onTap: () =>
+                      context.pushNamed(SettingsRoute.autoswapSettings.name),
                 ),
               ],
 

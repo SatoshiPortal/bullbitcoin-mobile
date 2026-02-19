@@ -14,6 +14,10 @@ class UserSummaryMapper {
       currency: model.currency,
       dca: model.dca.toEntity(),
       autoBuy: _mapUserAutoBuy(model.autoBuy),
+      emailNotificationsEnabled: model.emailNotificationsEnabled,
+      kycDocumentStatus: model.kycDocumentStatus != null
+          ? _mapKycDocumentStatus(model.kycDocumentStatus!)
+          : null,
     );
   }
 
@@ -40,5 +44,37 @@ class UserSummaryMapper {
       lightning: model.lightning,
       liquid: model.liquid,
     );
+  }
+
+  static UserKycDocumentStatus _mapKycDocumentStatus(
+    UserKycDocumentStatusModel model,
+  ) {
+    return UserKycDocumentStatus(
+      secureFileUpload: _parseKycDocumentStatus(model.secureFileUpload),
+      documents: _mapKycDocuments(model.documents),
+    );
+  }
+
+  static UserKycDocuments _mapKycDocuments(UserKycDocumentsModel model) {
+    return UserKycDocuments(
+      id: _parseKycDocumentStatus(model.id),
+      proofOfResidence: _parseKycDocumentStatus(model.proofOfResidence),
+      selfie: _parseKycDocumentStatus(model.selfie),
+    );
+  }
+
+  /// Parse KYC document status string to enum
+  static KycDocumentStatus _parseKycDocumentStatus(String status) {
+    switch (status.toUpperCase()) {
+      case 'ACCEPTED':
+        return KycDocumentStatus.accepted;
+      case 'UNDER_REVIEW':
+        return KycDocumentStatus.underReview;
+      case 'REJECTED':
+        return KycDocumentStatus.rejected;
+      case 'NOT_UPLOADED':
+      default:
+        return KycDocumentStatus.notUploaded;
+    }
   }
 }

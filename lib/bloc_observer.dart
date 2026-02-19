@@ -35,7 +35,8 @@ class AppBlocObserver extends BlocObserver {
     super.onError(bloc, error, stackTrace);
     if (_showConsoleLogs) {
       log.severe(
-        'Error in bloc ${bloc.runtimeType}: $error',
+        message: 'Error in bloc ${bloc.runtimeType}',
+        error: error,
         trace: stackTrace,
       );
     }

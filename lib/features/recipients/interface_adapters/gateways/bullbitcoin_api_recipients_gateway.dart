@@ -48,7 +48,8 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
       return RecipientModel.fromJson(result).toDomain;
     } catch (e, stackTrace) {
       log.severe(
-        'Error parsing RecipientModel.fromJson: $e',
+        message: 'Error parsing RecipientModel.fromJson',
+        error: e,
         trace: stackTrace,
       );
       rethrow;
@@ -90,28 +91,26 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
       return (recipients: <Recipient>[], totalRecipients: totalElements);
     }
 
-    final recipients =
-        elements
-            .map((e) {
-              // Wrap each transformation in try/catch so a single malformed element
-              // doesn't fail the entire list. Nulls are filtered out below.
-              // This also helps when the api supports recipient types that the app
-              // doesn't support yet, which without does would cause the user not
-              // to see any recipients at all.
-              try {
-                return RecipientModel.fromJson(
-                  e as Map<String, dynamic>,
-                ).toDomain;
-              } catch (err, stackTrace) {
-                log.severe(
-                  'Error parsing recipient element: $err',
-                  trace: stackTrace,
-                );
-                return null;
-              }
-            })
-            .whereType<Recipient>()
-            .toList();
+    final recipients = elements
+        .map((e) {
+          // Wrap each transformation in try/catch so a single malformed element
+          // doesn't fail the entire list. Nulls are filtered out below.
+          // This also helps when the api supports recipient types that the app
+          // doesn't support yet, which without does would cause the user not
+          // to see any recipients at all.
+          try {
+            return RecipientModel.fromJson(e as Map<String, dynamic>).toDomain;
+          } catch (err, stackTrace) {
+            log.severe(
+              message: 'Error parsing recipient element',
+              error: err,
+              trace: stackTrace,
+            );
+            return null;
+          }
+        })
+        .whereType<Recipient>()
+        .toList();
     return (recipients: recipients, totalRecipients: totalElements);
   }
 
@@ -186,7 +185,8 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
             return CadBillerModel.fromJson(e as Map<String, dynamic>).toDomain;
           } catch (err, stackTrace) {
             log.severe(
-              'Error parsing CAD biller element: $err',
+              message: 'Error parsing CAD biller element',
+              error: err,
               trace: stackTrace,
             );
             return null;

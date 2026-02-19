@@ -27,12 +27,12 @@ class CreateBuyOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
-      final network =
-          isLiquid ? OrderBitcoinNetwork.liquid : OrderBitcoinNetwork.bitcoin;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
+      final network = isLiquid
+          ? OrderBitcoinNetwork.liquid
+          : OrderBitcoinNetwork.bitcoin;
       final order = await repo.placeBuyOrder(
         toAddress: toAddress,
         orderAmount: orderAmount,
@@ -44,7 +44,7 @@ class CreateBuyOrderUsecase {
     } on BuyError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateBuyOrderUsecase: $e');
+      log.severe(error: e, trace: StackTrace.current);
       throw BuyError.unexpected(message: '$e');
     }
   }

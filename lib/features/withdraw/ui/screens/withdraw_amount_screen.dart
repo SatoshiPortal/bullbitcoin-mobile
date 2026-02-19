@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -20,13 +22,20 @@ class WithdrawAmountScreen extends StatefulWidget {
 class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
-  late FiatCurrency _fiatCurrency;
+  FiatCurrency? _fiatCurrency;
+  late final StreamSubscription<WithdrawState> stateSubscription;
 
   @override
   void initState() {
     super.initState();
     final bloc = context.read<WithdrawBloc>();
-    _fiatCurrency = bloc.state.currency;
+    stateSubscription = bloc.stream.listen((state) {
+      if (state is WithdrawAmountInputState && _fiatCurrency == null) {
+        setState(() {
+          _fiatCurrency = state.currency;
+        });
+      }
+    });
   }
 
   @override
@@ -35,15 +44,14 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
       appBar: AppBar(
         // Adding the leading icon button here manually since we are in the first
         // route of a shellroute and so no back button is provided by default.
-        leading:
-            context.canPop()
-                ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    context.pop();
-                  },
-                )
-                : null,
+        leading: context.canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  context.pop();
+                },
+              )
+            : null,
         title: Text(context.loc.withdrawAmountTitle),
       ),
       body: SafeArea(
@@ -65,12 +73,13 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
               const Spacer(),
               BBButton.big(
                 label: context.loc.withdrawAmountContinue,
+                disabled: _fiatCurrency == null,
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     context.read<WithdrawBloc>().add(
                       WithdrawEvent.amountInputContinuePressed(
                         amountInput: _amountController.text,
-                        fiatCurrency: _fiatCurrency,
+                        fiatCurrency: _fiatCurrency!,
                       ),
                     );
                   }
@@ -89,6 +98,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   @override
   void dispose() {
     _amountController.dispose();
+    stateSubscription.cancel();
     super.dispose();
   }
 }

@@ -41,7 +41,11 @@ class SocketConnectivityDatasource {
       log.warning('Socket connection failed for $host:$port - $e');
       return false;
     } catch (e) {
-      log.severe('Unexpected error checking socket connection: $e');
+      log.severe(
+        message: 'Unexpected error checking socket connection for',
+        error: e,
+        trace: StackTrace.current,
+      );
       return false;
     }
   }
@@ -116,13 +120,20 @@ class SocketConnectivityDatasource {
       if (connectResponse.length < 2 ||
           connectResponse[0] != 0x05 ||
           connectResponse[1] != 0x00) {
-        log.severe('SOCKS5 connection to $host:$port failed');
+        log.severe(
+          error: Exception('SOCKS5 connection failed'),
+          trace: StackTrace.current,
+        );
         return false;
       }
 
       return true;
     } catch (e) {
-      log.severe('SOCKS5 connection check failed for $host:$port - $e');
+      log.severe(
+        message: 'SOCKS5 connection check failed for $host:$port',
+        error: e,
+        trace: StackTrace.current,
+      );
       return false;
     } finally {
       await subscription?.cancel();

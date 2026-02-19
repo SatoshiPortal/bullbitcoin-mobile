@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/labels/domain/label.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
@@ -6,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class WalletTransactionMapper {
   static WalletTransactionModel fromEntity(
@@ -65,7 +65,7 @@ class WalletTransactionMapper {
             )
           : null,
       isToSelf: walletTransactionModel.isToSelf,
-      labels: labels ?? const [],
+      labels: labels ?? [],
       inputs: inputs,
       outputs: outputs,
       unblindedUrl: walletTransactionModel.unblindedUrl,

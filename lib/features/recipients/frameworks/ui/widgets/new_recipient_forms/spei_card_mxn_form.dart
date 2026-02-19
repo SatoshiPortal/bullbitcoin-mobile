@@ -7,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class SpeiCardMxnForm extends StatefulWidget {
-  const SpeiCardMxnForm({super.key});
+  const SpeiCardMxnForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   SpeiCardMxnFormState createState() => SpeiCardMxnFormState();
@@ -118,7 +120,10 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
             },
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

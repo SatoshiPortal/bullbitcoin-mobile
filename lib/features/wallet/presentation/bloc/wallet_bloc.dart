@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_resul
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
@@ -46,6 +48,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     getUnconfirmedIncomingBalanceUsecase,
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
     required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
+    required DisableAutoswapWarningUsecase disableAutoswapWarningUsecase,
+    required DisableAutoswapUsecase disableAutoswapUsecase,
     required AutoSwapExecutionUsecase autoSwapExecutionUsecase,
     required DeleteWalletUsecase deleteWalletUsecase,
     required GetArkWalletUsecase getArkWalletUsecase,
@@ -63,6 +67,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
            getUnconfirmedIncomingBalanceUsecase,
        _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
        _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
+       _disableAutoswapWarningUsecase = disableAutoswapWarningUsecase,
+       _disableAutoswapUsecase = disableAutoswapUsecase,
        _autoSwapExecutionUsecase = autoSwapExecutionUsecase,
        _deleteWalletUsecase = deleteWalletUsecase,
        _getArkWalletUsecase = getArkWalletUsecase,
@@ -80,6 +86,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletDeleted>(_onDeleted);
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
     on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
+    on<DisableAutoSwap>(_onDisableAutoSwap);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -94,6 +101,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   _getUnconfirmedIncomingBalanceUsecase;
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
+  final DisableAutoswapWarningUsecase _disableAutoswapWarningUsecase;
+  final DisableAutoswapUsecase _disableAutoswapUsecase;
   final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
@@ -376,7 +385,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     } on WalletError catch (e) {
       emit(state.copyWith(walletDeletionError: e));
     } catch (e) {
-      log.severe('[WalletBloc] Failed to delete wallet with id $walletId: $e');
+      log.severe(
+        message: '[WalletBloc] Failed to delete wallet',
+        error: e,
+        trace: StackTrace.current,
+      );
     } finally {
       emit(state.copyWith(isDeletingWallet: false));
     }
@@ -422,7 +435,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
     } catch (e) {
-      log.severe('[WalletBloc] Failed to block auto swap: $e');
+      log.severe(
+        message: '[WalletBloc] Failed to block auto swap',
+        error: e,
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -467,7 +484,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
-      log.severe('[WalletBloc] Failed to execute auto swap: $e');
+      log.severe(
+        message: '[WalletBloc] Failed to execute auto swap',
+        error: e,
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -518,7 +539,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
-      log.severe('[WalletBloc] Failed to execute auto swap: $e');
+      log.severe(
+        message: '[WalletBloc] Failed to execute auto swap ',
+        error: e,
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -565,19 +590,39 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
-      final currentSettings = await _getAutoSwapSettingsUsecase.execute(
-        isTestnet: defaultLiquidWallet.isTestnet,
-      );
-
-      final updatedSettings = currentSettings.copyWith(showWarning: false);
-      await _saveAutoSwapSettingsUsecase.execute(
-        updatedSettings,
+      final updatedSettings = await _disableAutoswapWarningUsecase.execute(
         isTestnet: defaultLiquidWallet.isTestnet,
       );
 
       emit(state.copyWith(autoSwapSettings: updatedSettings));
     } catch (e) {
-      log.severe('[WalletBloc] Failed to dismiss autoswap warning: $e');
+      log.severe(
+        message: '[WalletBloc] Failed to dismiss autoswap warning',
+        error: e,
+        trace: StackTrace.current,
+      );
+    }
+  }
+
+  Future<void> _onDisableAutoSwap(
+    DisableAutoSwap event,
+    Emitter<WalletState> emit,
+  ) async {
+    try {
+      final defaultLiquidWallet = state.defaultLiquidWallet();
+      if (defaultLiquidWallet == null) return;
+
+      final updatedSettings = await _disableAutoswapUsecase.execute(
+        isTestnet: defaultLiquidWallet.isTestnet,
+      );
+
+      emit(state.copyWith(autoSwapSettings: updatedSettings));
+    } catch (e) {
+      log.severe(
+        message: '[WalletBloc] Failed to disable autoswap',
+        error: e,
+        trace: StackTrace.current,
+      );
     }
   }
 }
