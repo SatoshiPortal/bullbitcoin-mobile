@@ -19,7 +19,7 @@ class CheckForExistingDefaultWalletsUsecase {
   Future<bool> execute() async {
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
-    
+
     late final List defaultWallets;
     try {
       defaultWallets = await _walletRepository.getWallets(
@@ -29,6 +29,7 @@ class CheckForExistingDefaultWalletsUsecase {
     } catch (e) {
       if (e.toString().contains('UpdateOnDifferentStatus')) {
         log.fine('UpdateOnDifferentStatus error, retrying getWallets');
+        await _walletRepository.deleteLwkDb();
         defaultWallets = await _walletRepository.getWallets(
           onlyDefaults: true,
           environment: environment,

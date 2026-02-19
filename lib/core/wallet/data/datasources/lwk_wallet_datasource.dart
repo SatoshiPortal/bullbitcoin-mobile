@@ -60,7 +60,8 @@ class LwkWalletDatasource {
       return balance;
     } catch (e) {
       if (e is lwk.LwkError) {
-        if (e.msg.contains('UpdateOnDifferentStatus')) {
+        if (e.toString().contains('UpdateOnDifferentStatus') ||
+            e.msg.contains('UpdateOnDifferentStatus')) {
           await delete(wallet: wallet);
         }
         throw e.msg;
