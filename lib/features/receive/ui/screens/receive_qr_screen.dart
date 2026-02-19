@@ -21,7 +21,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 
 class ReceiveQrPage extends StatelessWidget {
   const ReceiveQrPage({super.key, this.wallet});
@@ -141,21 +141,9 @@ class ReceiveQRDetails extends StatelessWidget {
             ),
           const Gap(20),
           Center(
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
-              decoration: BoxDecoration(
-                color: context.appColors.background,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: qrData.isNotEmpty
-                  ? QrImageView(
-                      data: qrData,
-                      // ignore: deprecated_member_use
-                      foregroundColor: context.appColors.secondary,
-                    )
-                  : const LoadingBoxContent(height: 200),
-            ),
+            child: qrData.isNotEmpty
+                ? QrDisplayWidget(data: qrData)
+                : const LoadingBoxContent(height: 200),
           ),
           if (isPayjoinAvailable) ...[
             const Gap(16),
