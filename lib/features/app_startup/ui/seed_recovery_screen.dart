@@ -54,9 +54,6 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
       // Store debug log if available
       if (seeds.containsKey('__DEBUG_LOG__')) {
         _debugLog = seeds['__DEBUG_LOG__'] ?? '';
-        print('=== RECOVERY DEBUG LOG ===');
-        print(_debugLog);
-        print('=== END DEBUG LOG ===');
       } else {
         _debugLog = 'No debug log available';
       }
@@ -83,21 +80,12 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
         totalSeedCount++;
         print('DEBUG: ==========================================');
         print('DEBUG: Processing seed: ${entry.key}');
-        print('DEBUG: Raw value type: ${entry.value.runtimeType}');
-        print('DEBUG: Raw value length: ${entry.value.length}');
-        print(
-          'DEBUG: First 100 chars: ${entry.value.substring(0, entry.value.length < 100 ? entry.value.length : 100)}',
-        );
 
         bool isValidMnemonic = false;
 
         try {
           // Try to parse as JSON (SeedModel format)
-          print('DEBUG: Attempting JSON parse...');
           final jsonData = jsonDecode(entry.value);
-          print(
-            'DEBUG: JSON parsed successfully, type: ${jsonData.runtimeType}',
-          );
 
           if (jsonData is Map) {
             print('DEBUG: JSON keys: ${jsonData.keys.toList()}');
@@ -124,28 +112,25 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
               print('DEBUG: ✗ JSON does not contain mnemonicWords key');
             }
           } else {
-            print(
-              'DEBUG: ✗ Parsed JSON is not a Map, it is: ${jsonData.runtimeType}',
-            );
+            print('DEBUG: ✗ Parsed JSON is not a Map');
           }
         } catch (e) {
-          print('DEBUG: ✗ JSON parsing failed: $e');
+          print('DEBUG: ✗ JSON parsing failed');
 
           // Check if it might be a raw mnemonic (space-separated words)
           final words = entry.value.trim().split(RegExp(r'\s+'));
           if (words.length >= 12 &&
               words.length <= 24 &&
               !entry.value.contains(RegExp(r'[^a-z\s]'))) {
-            print('DEBUG: Looks like raw mnemonic with ${words.length} words');
+            print(
+              'DEBUG: Raw mnemonic format detected (${words.length} words)',
+            );
             parsedSeeds[entry.key] = entry.value;
             isValidMnemonic = true;
             print('DEBUG: ✓ Treating as valid raw mnemonic');
           } else {
             print('DEBUG: ✗ Does not look like valid mnemonic format');
             print('DEBUG:   - Word count: ${words.length}');
-            print(
-              'DEBUG:   - Contains non-letter chars: ${entry.value.contains(RegExp(r'[^a-z\s]'))}',
-            );
           }
         }
 
