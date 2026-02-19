@@ -21,6 +21,9 @@ class StorageLocator {
     const secureStorage = FlutterSecureStorage(
       aOptions: AndroidOptions(
         resetOnError: false,
+        recoveryMode: true,
+        migrateWithBackup: false,
+        migrateOnAlgorithmChange: false,
         // CRITICAL: Never auto-delete wallet seeds!
         // In flutter_secure_storage v10+, resetOnError defaults to TRUE.
         // Setting true will delete secure storage contents on errors!!
@@ -31,6 +34,9 @@ class StorageLocator {
         // This will ensure that secure storage can be used by background tasks while the phone is locked.
       ),
     );
+    // Register the FlutterSecureStorage instance directly for features that need
+    // direct access to custom methods like getAllSeeds() and exportRawBackup()
+    locator.registerLazySingleton<FlutterSecureStorage>(() => secureStorage);
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(secureStorage),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,

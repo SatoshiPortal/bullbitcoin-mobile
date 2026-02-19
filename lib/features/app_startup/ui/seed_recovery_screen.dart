@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -37,15 +38,10 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
     try {
       print('DEBUG: Starting seed recovery');
 
-      // Initialize FlutterSecureStorage with recovery mode enabled
-      const secureStorage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          recoveryMode: true,
-          resetOnError: false,
-        ),
-      );
+      // Get FlutterSecureStorage from the locator
+      final secureStorage = locator<FlutterSecureStorage>();
 
-      print('DEBUG: FlutterSecureStorage initialized');
+      print('DEBUG: FlutterSecureStorage retrieved from locator');
 
       // FORCE recovery mode - skip normal readAll to see comprehensive Java debug logging
       print('DEBUG: FORCING recovery mode (skipping normal readAll)');
@@ -65,9 +61,11 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
         _debugLog = 'No debug log available';
       }
 
-      if (seeds.isEmpty || (seeds.length == 1 && seeds.containsKey('__DEBUG_LOG__'))) {
+      if (seeds.isEmpty ||
+          (seeds.length == 1 && seeds.containsKey('__DEBUG_LOG__'))) {
         setState(() {
-          _error = 'No seeds found in storage.\n\nPress "View Debug Log" to see detailed recovery information.';
+          _error =
+              'No seeds found in storage.\n\nPress "View Debug Log" to see detailed recovery information.';
           _isLoading = false;
         });
         return;
@@ -87,7 +85,9 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
         print('DEBUG: Processing seed: ${entry.key}');
         print('DEBUG: Raw value type: ${entry.value.runtimeType}');
         print('DEBUG: Raw value length: ${entry.value.length}');
-        print('DEBUG: First 100 chars: ${entry.value.substring(0, entry.value.length < 100 ? entry.value.length : 100)}');
+        print(
+          'DEBUG: First 100 chars: ${entry.value.substring(0, entry.value.length < 100 ? entry.value.length : 100)}',
+        );
 
         bool isValidMnemonic = false;
 
@@ -95,7 +95,9 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
           // Try to parse as JSON (SeedModel format)
           print('DEBUG: Attempting JSON parse...');
           final jsonData = jsonDecode(entry.value);
-          print('DEBUG: JSON parsed successfully, type: ${jsonData.runtimeType}');
+          print(
+            'DEBUG: JSON parsed successfully, type: ${jsonData.runtimeType}',
+          );
 
           if (jsonData is Map) {
             print('DEBUG: JSON keys: ${jsonData.keys.toList()}');
@@ -110,22 +112,30 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
               if (words.length >= 12 && words.length <= 24) {
                 parsedSeeds[entry.key] = words.join(' ');
                 isValidMnemonic = true;
-                print('DEBUG: ✓ Successfully extracted valid mnemonic (${words.length} words)');
+                print(
+                  'DEBUG: ✓ Successfully extracted valid mnemonic (${words.length} words)',
+                );
               } else {
-                print('DEBUG: ✗ Invalid word count: ${words.length} (expected 12-24)');
+                print(
+                  'DEBUG: ✗ Invalid word count: ${words.length} (expected 12-24)',
+                );
               }
             } else {
               print('DEBUG: ✗ JSON does not contain mnemonicWords key');
             }
           } else {
-            print('DEBUG: ✗ Parsed JSON is not a Map, it is: ${jsonData.runtimeType}');
+            print(
+              'DEBUG: ✗ Parsed JSON is not a Map, it is: ${jsonData.runtimeType}',
+            );
           }
         } catch (e) {
           print('DEBUG: ✗ JSON parsing failed: $e');
 
           // Check if it might be a raw mnemonic (space-separated words)
           final words = entry.value.trim().split(RegExp(r'\s+'));
-          if (words.length >= 12 && words.length <= 24 && !entry.value.contains(RegExp(r'[^a-z\s]'))) {
+          if (words.length >= 12 &&
+              words.length <= 24 &&
+              !entry.value.contains(RegExp(r'[^a-z\s]'))) {
             print('DEBUG: Looks like raw mnemonic with ${words.length} words');
             parsedSeeds[entry.key] = entry.value;
             isValidMnemonic = true;
@@ -133,7 +143,9 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
           } else {
             print('DEBUG: ✗ Does not look like valid mnemonic format');
             print('DEBUG:   - Word count: ${words.length}');
-            print('DEBUG:   - Contains non-letter chars: ${entry.value.contains(RegExp(r'[^a-z\s]'))}');
+            print(
+              'DEBUG:   - Contains non-letter chars: ${entry.value.contains(RegExp(r'[^a-z\s]'))}',
+            );
           }
         }
 
@@ -166,7 +178,9 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
       }
 
       if (failedSeeds.isNotEmpty) {
-        print('WARNING: Some seeds could not be recovered: ${failedSeeds.join(", ")}');
+        print(
+          'WARNING: Some seeds could not be recovered: ${failedSeeds.join(", ")}',
+        );
       }
 
       setState(() {
@@ -219,10 +233,7 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-          'Export Encrypted Backup',
-          style: context.font.titleMedium,
-        ),
+        title: Text('Export Encrypted Backup', style: context.font.titleMedium),
         content: Text(
           'WARNING: This backup is STILL ENCRYPTED!\n\n'
           'The exported data cannot be used without the original encryption keys. '
@@ -248,13 +259,8 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
     if (confirmed != true) return;
 
     try {
-      // Initialize FlutterSecureStorage with recovery mode
-      const secureStorage = FlutterSecureStorage(
-        aOptions: AndroidOptions(
-          recoveryMode: true,
-          resetOnError: false,
-        ),
-      );
+      // Get FlutterSecureStorage from the locator
+      final secureStorage = locator<FlutterSecureStorage>();
 
       // Export raw encrypted backup
       final backup = await secureStorage.exportRawBackup();
@@ -292,10 +298,7 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
-          'Recovery Debug Log',
-          style: context.font.titleMedium,
-        ),
+        title: Text('Recovery Debug Log', style: context.font.titleMedium),
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
@@ -427,9 +430,7 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(
-                      color: context.appColors.primary,
-                    ),
+                    CircularProgressIndicator(color: context.appColors.primary),
                     const SizedBox(height: 24),
                     Text(
                       'Attempting to recover seeds...',
@@ -447,125 +448,126 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
                   ],
                 )
               : _error != null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: context.appColors.error,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Recovery Failed',
+                      style: context.font.headlineSmall?.copyWith(
+                        color: context.appColors.error,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      _error!,
+                      style: context.font.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 32),
+                    BBButton.big(
+                      onPressed: _exportRawBackup,
+                      label: 'Export Encrypted Backup',
+                      bgColor: context.appColors.error.withOpacity(0.2),
+                      textColor: context.appColors.error,
+                    ),
+                    const SizedBox(height: 16),
+                    BBButton.big(
+                      onPressed: _showDebugLog,
+                      label: 'View Debug Log',
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.onSurface,
+                    ),
+                    const SizedBox(height: 16),
+                    BBButton.big(
+                      onPressed: () => Navigator.of(context).pop(),
+                      label: 'Back',
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
+                    ),
+                  ],
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: context.appColors.surfaceContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            'Seed ${_currentSeedIndex + 1} of ${_seedKeys.length}',
+                            style: context.font.titleMedium?.copyWith(
+                              color: context.appColors.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            _seedKeys[_currentSeedIndex],
+                            style: context.font.bodySmall?.copyWith(
+                              color: context.appColors.onSurface.withOpacity(
+                                0.6,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSeedWordsDisplay(
+                      _recoveredSeeds![_seedKeys[_currentSeedIndex]] ??
+                          '[Error: Seed value not found]',
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
                       children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: context.appColors.error,
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Recovery Failed',
-                          style: context.font.headlineSmall?.copyWith(
-                            color: context.appColors.error,
+                        if (_currentSeedIndex > 0)
+                          Expanded(
+                            child: BBButton.big(
+                              onPressed: _previousSeed,
+                              label: 'Previous',
+                              bgColor: context.appColors.surface,
+                              textColor: context.appColors.onSurface,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _error!,
-                          style: context.font.bodyMedium,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-                        BBButton.big(
-                          onPressed: _exportRawBackup,
-                          label: 'Export Encrypted Backup',
-                          bgColor: context.appColors.error.withOpacity(0.2),
-                          textColor: context.appColors.error,
-                        ),
-                        const SizedBox(height: 16),
-                        BBButton.big(
-                          onPressed: _showDebugLog,
-                          label: 'View Debug Log',
-                          bgColor: context.appColors.surface,
-                          textColor: context.appColors.onSurface,
-                        ),
-                        const SizedBox(height: 16),
-                        BBButton.big(
-                          onPressed: () => Navigator.of(context).pop(),
-                          label: 'Back',
-                          bgColor: context.appColors.primary,
-                          textColor: context.appColors.onPrimary,
-                        ),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: context.appColors.surfaceContainer,
-                            borderRadius: BorderRadius.circular(12),
+                        if (_currentSeedIndex > 0 &&
+                            _currentSeedIndex < _seedKeys.length - 1)
+                          const SizedBox(width: 16),
+                        if (_currentSeedIndex < _seedKeys.length - 1)
+                          Expanded(
+                            child: BBButton.big(
+                              onPressed: _nextSeed,
+                              label: 'Next',
+                              bgColor: context.appColors.primary,
+                              textColor: context.appColors.onPrimary,
+                            ),
                           ),
-                          child: Column(
-                            children: [
-                              Text(
-                                'Seed ${_currentSeedIndex + 1} of ${_seedKeys.length}',
-                                style: context.font.titleMedium?.copyWith(
-                                  color: context.appColors.primary,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                _seedKeys[_currentSeedIndex],
-                                style: context.font.bodySmall?.copyWith(
-                                  color: context.appColors.onSurface
-                                      .withOpacity(0.6),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        _buildSeedWordsDisplay(
-                          _recoveredSeeds![_seedKeys[_currentSeedIndex]] ??
-                              '[Error: Seed value not found]',
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          children: [
-                            if (_currentSeedIndex > 0)
-                              Expanded(
-                                child: BBButton.big(
-                                  onPressed: _previousSeed,
-                                  label: 'Previous',
-                                  bgColor: context.appColors.surface,
-                                  textColor: context.appColors.onSurface,
-                                ),
-                              ),
-                            if (_currentSeedIndex > 0 &&
-                                _currentSeedIndex < _seedKeys.length - 1)
-                              const SizedBox(width: 16),
-                            if (_currentSeedIndex < _seedKeys.length - 1)
-                              Expanded(
-                                child: BBButton.big(
-                                  onPressed: _nextSeed,
-                                  label: 'Next',
-                                  bgColor: context.appColors.primary,
-                                  textColor: context.appColors.onPrimary,
-                                ),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 32),
-                        BBButton.big(
-                          onPressed: _showDebugLog,
-                          label: 'View Debug Log',
-                          bgColor: context.appColors.surface,
-                          textColor: context.appColors.onSurface,
-                        ),
-                        const SizedBox(height: 16),
-                        BBButton.big(
-                          onPressed: () => Navigator.of(context).pop(),
-                          label: 'DONE',
-                          bgColor: context.appColors.secondary,
-                          textColor: context.appColors.onSecondary,
-                        ),
                       ],
                     ),
+                    const SizedBox(height: 32),
+                    BBButton.big(
+                      onPressed: _showDebugLog,
+                      label: 'View Debug Log',
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.onSurface,
+                    ),
+                    const SizedBox(height: 16),
+                    BBButton.big(
+                      onPressed: () => Navigator.of(context).pop(),
+                      label: 'DONE',
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
+                    ),
+                  ],
+                ),
         ),
       ),
     );
