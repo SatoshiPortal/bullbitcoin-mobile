@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -9,6 +10,10 @@ class QrDisplayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (data.isEmpty) {
+      return LoadingBoxContent(height: size, width: size);
+    }
+
     return Container(
       padding: const EdgeInsets.all(16),
       constraints: BoxConstraints(maxHeight: size, maxWidth: size),
@@ -16,9 +21,7 @@ class QrDisplayWidget extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: data.isNotEmpty
-          ? QrImageView(data: data)
-          : const SizedBox.shrink(),
+      child: QrImageView(data: data),
     );
   }
 }

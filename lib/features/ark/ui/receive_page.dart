@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
@@ -83,9 +82,7 @@ class ReceiveQR extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 42),
-        child: qrData.isNotEmpty
-            ? QrDisplayWidget(data: qrData)
-            : const LoadingBoxContent(height: 200),
+        child: QrDisplayWidget(data: qrData),
       ),
     );
   }

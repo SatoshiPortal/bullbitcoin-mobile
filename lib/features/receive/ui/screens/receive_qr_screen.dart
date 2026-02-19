@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -140,11 +139,7 @@ class ReceiveQRDetails extends StatelessWidget {
               ),
             ),
           const Gap(20),
-          Center(
-            child: qrData.isNotEmpty
-                ? QrDisplayWidget(data: qrData)
-                : const LoadingBoxContent(height: 200),
-          ),
+          Center(child: QrDisplayWidget(data: qrData)),
           if (isPayjoinAvailable) ...[
             const Gap(16),
             BBText(

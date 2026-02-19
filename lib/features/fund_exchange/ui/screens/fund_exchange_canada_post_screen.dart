@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -72,10 +71,10 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                         textAlign: .center,
                       ),
                       const Gap(8.0),
-                      if (details?.code == null)
-                        const LoadingBoxContent(height: 250.0, width: 250.0)
-                      else
-                        QrDisplayWidget(data: details!.code, size: 250),
+                      QrDisplayWidget(
+                        data: details?.code ?? '',
+                        size: 250,
+                      ),
                       const Gap(24.0),
                     ],
                   ),
