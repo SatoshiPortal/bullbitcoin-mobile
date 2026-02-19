@@ -14,14 +14,7 @@ class OldHiveDatasource {
   static Future<Box> getBox(FlutterSecureStorage secureStorage) async {
     final dir = await getApplicationDocumentsDirectory();
     Hive.init(dir.path);
-    final password = await secureStorage.read(
-      key: OldStorageKeys.hiveEncryption.name,
-    );
-
-    if (password == null) return await Hive.openBox('store');
-
-    final cipher = HiveAesCipher(base64Url.decode(password));
-    final box = await Hive.openBox('store', encryptionCipher: cipher);
+    final box = await Hive.openBox('store');
     return box;
   }
 

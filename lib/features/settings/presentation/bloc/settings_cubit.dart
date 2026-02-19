@@ -71,7 +71,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
-    await checkHasLegacySeeds();
+    // await checkHasLegacySeeds();
   }
 
   Future<void> toggleTestnetMode(bool active) async {
