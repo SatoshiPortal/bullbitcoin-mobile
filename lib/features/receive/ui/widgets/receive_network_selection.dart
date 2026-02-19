@@ -12,30 +12,34 @@ class ReceiveNetworkSelection extends StatelessWidget {
 
   final Wallet? wallet;
 
-  static const _routes = {
-    ReceiveNetworkType.bitcoin: ReceiveRoute.receiveBitcoin,
-    ReceiveNetworkType.lightning: ReceiveRoute.receiveLightning,
-    ReceiveNetworkType.liquid: ReceiveRoute.receiveLiquid,
-  };
-
   @override
   Widget build(BuildContext context) {
-    final labelToType = {
-      for (final type in wallet.availableReceiveNetworks)
-        _label(context, type): type,
-    };
+    final availableNetworks =
+        wallet?.availableReceiveNetworks ?? ReceiveNetworkType.values;
+    final defaultNetwork =
+        wallet?.defaultReceiveNetwork ?? ReceiveNetworkType.bitcoin;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBSegmentFull(
-        items: labelToType.keys.toSet(),
-        initialValue: _label(context, wallet.defaultReceiveNetwork),
+        items: {for (final type in availableNetworks) _label(context, type)},
+        initialValue: _label(context, defaultNetwork),
         onSelected: (label) {
-          final route = _routes[labelToType[label]]!;
-          context.goNamed(route.name, extra: wallet);
+          final type = availableNetworks.firstWhere(
+            (t) => _label(context, t) == label,
+          );
+          context.goNamed(_route(type).name, extra: wallet);
         },
       ),
     );
+  }
+
+  static ReceiveRoute _route(ReceiveNetworkType type) {
+    return switch (type) {
+      ReceiveNetworkType.bitcoin => ReceiveRoute.receiveBitcoin,
+      ReceiveNetworkType.lightning => ReceiveRoute.receiveLightning,
+      ReceiveNetworkType.liquid => ReceiveRoute.receiveLiquid,
+    };
   }
 
   String _label(BuildContext context, ReceiveNetworkType type) {
