@@ -42,9 +42,9 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
         onPopInvokedWithResult: (didPop, _) {},
         child: Column(
           children: [
-            const WalletHomeTopSection(),
             Expanded(
               child: RefreshIndicator(
+                edgeOffset: MediaQuery.of(context).padding.top + 30,
                 onRefresh: () async {
                   final bloc = context.read<WalletBloc>();
                   bloc.add(const WalletRefreshed());
@@ -55,6 +55,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      const WalletHomeTopSection(),
                       const HomeWarnings(),
                       const AutoSwapFeeWarning(),
                       WalletCards(
