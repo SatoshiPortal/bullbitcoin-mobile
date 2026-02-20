@@ -12661,5 +12661,21 @@
   "errorReportingRestartSnackbar": "Restart the app to apply this change",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "Back up your wallet",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if you lose your phone, delete the app, or if the app encounters some error. There is no way to recover your wallet without a backup.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "BACKUP NOW",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "BACKUP LATER, I UNDERSTAND THE RISK",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }
