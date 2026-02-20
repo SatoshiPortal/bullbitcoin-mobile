@@ -114,22 +114,22 @@ Future main() async {
 
       await Bull.init();
 
-      int delay = 0;
-      for (final task in BackgroundTask.values) {
-        await Workmanager().registerPeriodicTask(
-          task.id,
-          task.name,
-          frequency: Duration(minutes: 15 + delay),
-          constraints: Constraints(
-            networkType: NetworkType.connected,
-            requiresBatteryNotLow: true,
-            requiresStorageNotLow: false,
-            requiresDeviceIdle: false,
-            requiresCharging: false,
-          ),
-        );
-        delay++;
-      }
+      // int delay = 0;
+      // for (final task in BackgroundTask.values) {
+      await Workmanager().registerPeriodicTask(
+        BackgroundTask.logsPrune.id,
+        BackgroundTask.logsPrune.name,
+        frequency: Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresBatteryNotLow: true,
+          requiresStorageNotLow: false,
+          requiresDeviceIdle: false,
+          requiresCharging: false,
+        ),
+      );
+      // delay++;
+      // }
 
       runApp(const BullBitcoinWalletApp());
     },

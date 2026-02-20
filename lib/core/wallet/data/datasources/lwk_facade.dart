@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:lwk/lwk.dart' as lwk;
@@ -27,9 +28,10 @@ class LwkFacade {
       final dbFile = File(dbPath);
 
       if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
-
+      log.fine('Found LwkDb');
       await dbFile.delete();
     } catch (e) {
+      log.fine('Failed to delete LwkDb');
       rethrow;
     }
   }

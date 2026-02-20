@@ -28,8 +28,9 @@ class CheckForExistingDefaultWalletsUsecase {
       );
     } catch (e) {
       if (e.toString().contains('UpdateOnDifferentStatus')) {
-        log.fine('UpdateOnDifferentStatus error, retrying getWallets');
+        log.fine('UpdateOnDifferentStatus error, deleting lwkDb');
         await _walletRepository.deleteLwkDb();
+        log.fine('Deleted LwkDb, retrying getWallets');
         defaultWallets = await _walletRepository.getWallets(
           onlyDefaults: true,
           environment: environment,
