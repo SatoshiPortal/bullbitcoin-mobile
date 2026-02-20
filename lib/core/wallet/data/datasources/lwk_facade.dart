@@ -29,9 +29,10 @@ class LwkFacade {
 
       if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
       log.fine('Found LwkDb');
-      await dbFile.delete();
+      await dbFile.delete(recursive: true);
     } catch (e) {
       log.fine('Failed to delete LwkDb');
+      log.fine(e.toString());
       rethrow;
     }
   }
