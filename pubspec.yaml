@@ -40,7 +40,7 @@ dependencies:
   flutter_dotenv: ^6.0.0
   hex: ^0.2.0
   auto_size_text: ^3.0.0
-  no_screenshot: ^0.3.1
+  no_screenshot: ^0.10.0
   freezed_annotation: ^3.1.0
   convert: ^3.1.2
   crypto: ^3.0.7

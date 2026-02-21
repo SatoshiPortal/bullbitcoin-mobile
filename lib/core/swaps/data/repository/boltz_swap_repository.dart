@@ -333,6 +333,26 @@ class BoltzSwapRepository {
 
   // STORAGE
 
+  Future<SwapModel?> fetchSwapModel(String swapId) async {
+    return _boltz.storage.fetch(swapId);
+  }
+
+  Future<Object?> tryFetchSwapFromSecureStorage(String swapId) async {
+    try {
+      return await _boltz.storage.fetchLbtcLnSwap(swapId);
+    } catch (_) {
+      try {
+        return await _boltz.storage.fetchBtcLnSwap(swapId);
+      } catch (_) {
+        try {
+          return await _boltz.storage.fetchChainSwap(swapId);
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+  }
+
   Future<Swap> getSwap({required String swapId}) async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {

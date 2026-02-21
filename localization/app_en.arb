@@ -384,6 +384,19 @@
   "@settingsArkTitle": {
     "description": "Title for the Ark protocol section in Bitcoin settings"
   },
+  "manualSwapStatusResetTitle": "Manual Swap Status Reset",
+  "@manualSwapStatusResetTitle": {
+    "description": "Title for manual swap status reset screen"
+  },
+  "manualSwapStatusResetWarning": "Only use this under guidance of BULL support. Resetting swap status can put swaps in invalid states and may require rescue using external tools if done incorrectly.",
+  "@manualSwapStatusResetWarning": {
+    "description": "Warning about manual swap status reset"
+  },
+  "manualSwapStatusResetSwapIdLabel": "Swap ID",
+  "manualSwapStatusResetSwapIdHint": "Enter swap ID",
+  "manualSwapStatusResetLookup": "Look up swap",
+  "manualSwapStatusResetMetadataTitle": "Swap metadata",
+  "manualSwapStatusResetSetToPaid": "Set to paid",
   "settingsDevModeWarningTitle": "Dev Mode",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"

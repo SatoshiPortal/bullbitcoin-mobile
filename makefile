@@ -49,9 +49,9 @@ drift-migrations:
 	fvm dart run drift_dev make-migrations
 
 ios-pod-update:
-	@echo " Fetching dependencies"
+	@echo "Fetching dependencies"
 	@fvm flutter precache --ios
-	@cd ios && pod install --repo-update && cd -
+	@cd ios && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 pod install --repo-update && cd -
 
 ios-sqlite-update:
 	@echo "🔄 Updating SQLite"
