@@ -388,15 +388,22 @@
   "@manualSwapStatusResetTitle": {
     "description": "Title for manual swap status reset screen"
   },
-  "manualSwapStatusResetWarning": "Only use this under guidance of BULL support. Resetting swap status can put swaps in invalid states and may require rescue using external tools if done incorrectly.",
+  "manualSwapStatusResetWarning": "Only use this tool under the guidance of BULL support. Only use swap IDs for swaps that are incomplete. Using it on completed swaps will put them in a bad state and will not be corrected by an update. If you are unable to rescue your swap, contact BULL support with details you see on this screen and the app logs, we will guide you on how to use our swap recovery tool.",
   "@manualSwapStatusResetWarning": {
     "description": "Warning about manual swap status reset"
   },
   "manualSwapStatusResetSwapIdLabel": "Swap ID",
   "manualSwapStatusResetSwapIdHint": "Enter swap ID",
-  "manualSwapStatusResetLookup": "Look up swap",
+  "manualSwapStatusResetLookup": "Reset Swap",
   "manualSwapStatusResetMetadataTitle": "Swap metadata",
   "manualSwapStatusResetSetToPaid": "Set to paid",
+  "manualSwapStatusResetSuccessMessage": "Swap recovered and updated to status paid. Go back home and wait for the swap to be correctly processed.",
+  "manualSwapStatusResetCopyMetadata": "Copy Swap Metadata",
+  "manualSwapStatusResetMetadataCopied": "Copied to clipboard",
+  "manualSwapStatusResetReverseIndex": "Reverse index",
+  "manualSwapStatusResetChainIndex": "Chain index",
+  "manualSwapStatusResetSubmarineIndex": "Submarine index",
+  "manualSwapStatusResetIndicesForRescue": "Current indices for swap rescue:",
   "settingsDevModeWarningTitle": "Dev Mode",
   "@settingsDevModeWarningTitle": {
     "description": "Title for the developer mode warning dialog"

@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity
+    hide ChainSwap;
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:boltz/boltz.dart';
@@ -158,6 +160,45 @@ class BoltzStorageDatasource {
     } catch (e) {
       log.fine('Error deleting swap from secure storage: $e');
     }
+  }
+
+  Future<int> getNextRevIndex({bool? isTestnet}) async {
+    final all = await fetchAll(isTestnet: isTestnet);
+    final revSwaps = all
+        .where(
+          (s) =>
+              s.type == swap_entity.SwapType.lightningToBitcoin.name ||
+              s.type == swap_entity.SwapType.lightningToLiquid.name,
+        )
+        .toList();
+    if (revSwaps.isEmpty) return 0;
+    return revSwaps.map((s) => s.keyIndex).reduce((a, b) => a > b ? a : b) + 1;
+  }
+
+  Future<int> getNextChainIndex({bool? isTestnet}) async {
+    final all = await fetchAll(isTestnet: isTestnet);
+    final chainSwaps = all
+        .where(
+          (s) =>
+              s.type == swap_entity.SwapType.bitcoinToLiquid.name ||
+              s.type == swap_entity.SwapType.liquidToBitcoin.name,
+        )
+        .toList();
+    if (chainSwaps.isEmpty) return 0;
+    return chainSwaps.map((s) => s.keyIndex).reduce((a, b) => a > b ? a : b) + 1;
+  }
+
+  Future<int> getNextSubIndex({bool? isTestnet}) async {
+    final all = await fetchAll(isTestnet: isTestnet);
+    final subSwaps = all
+        .where(
+          (s) =>
+              s.type == swap_entity.SwapType.bitcoinToLightning.name ||
+              s.type == swap_entity.SwapType.liquidToLightning.name,
+        )
+        .toList();
+    if (subSwaps.isEmpty) return 0;
+    return subSwaps.map((s) => s.keyIndex).reduce((a, b) => a > b ? a : b) + 1;
   }
 
   // SECURE STORAGE

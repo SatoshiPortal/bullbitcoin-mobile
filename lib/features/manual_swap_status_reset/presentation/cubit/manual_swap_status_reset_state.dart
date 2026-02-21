@@ -8,6 +8,9 @@ sealed class ManualSwapStatusResetState with _$ManualSwapStatusResetState {
     @Default(false) bool isLoading,
     String? errorMessage,
     String? successMessage,
+    int? nextReverseIndex,
+    int? nextChainIndex,
+    int? nextSubmarineIndex,
   }) = _ManualSwapStatusResetState;
   const ManualSwapStatusResetState._();
 }

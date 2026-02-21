@@ -94,16 +94,14 @@ class ArkRouter {
           final prefilledCurrencyCode =
               state.uri.queryParameters['currencyCode'];
           return BlocListener<ArkCubit, ArkState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.sendAddress == null && current.sendAddress != null,
+            listenWhen: (previous, current) =>
+                previous.sendAddress == null && current.sendAddress != null,
             listener: (BuildContext context, ArkState state) {
               context.pushNamed(
                 ArkRoute.arkSendAmount.name,
                 queryParameters: {
-                  if (prefilledAmount != null) 'amount': prefilledAmount,
-                  if (prefilledCurrencyCode != null)
-                    'currencyCode': prefilledCurrencyCode,
+                  'amount': ?prefilledAmount,
+                  'currencyCode': ?prefilledCurrencyCode,
                 },
               );
             },
@@ -119,9 +117,8 @@ class ArkRouter {
           final prefilledCurrencyCode =
               state.uri.queryParameters['currencyCode'];
           return BlocListener<ArkCubit, ArkState>(
-            listenWhen:
-                (previous, current) =>
-                    previous.amountSat == null && current.amountSat != null,
+            listenWhen: (previous, current) =>
+                previous.amountSat == null && current.amountSat != null,
             listener: (BuildContext context, ArkState state) {
               context.pushNamed(ArkRoute.arkSendConfirm.name);
             },
@@ -135,16 +132,14 @@ class ArkRouter {
       GoRoute(
         name: ArkRoute.arkSendConfirm.name,
         path: ArkRoute.arkSendConfirm.path,
-        builder:
-            (context, state) => BlocListener<ArkCubit, ArkState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous.txid.isEmpty && current.txid.isNotEmpty,
-              listener: (BuildContext context, ArkState state) {
-                context.goNamed(ArkRoute.arkSendSuccess.name);
-              },
-              child: const SendConfirmPage(),
-            ),
+        builder: (context, state) => BlocListener<ArkCubit, ArkState>(
+          listenWhen: (previous, current) =>
+              previous.txid.isEmpty && current.txid.isNotEmpty,
+          listener: (BuildContext context, ArkState state) {
+            context.goNamed(ArkRoute.arkSendSuccess.name);
+          },
+          child: const SendConfirmPage(),
+        ),
       ),
       GoRoute(
         name: ArkRoute.arkSendSuccess.name,

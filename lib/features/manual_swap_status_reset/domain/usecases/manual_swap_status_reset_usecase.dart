@@ -23,10 +23,23 @@ class ManualSwapStatusResetUsecase {
        _walletRepository = walletRepository,
        _settingsRepository = settingsRepository;
 
-  Future<Swap?> execute(String swapId) async {
+  Future<
+      ({
+        Swap? swap,
+        int? nextReverseIndex,
+        int? nextChainIndex,
+        int? nextSubmarineIndex,
+      })> execute(String swapId) async {
     try {
       final id = swapId.trim();
-      if (id.isEmpty) return null;
+      if (id.isEmpty) {
+        return (
+          swap: null,
+          nextReverseIndex: null,
+          nextChainIndex: null,
+          nextSubmarineIndex: null,
+        );
+      }
 
       log.fine('Rescue: Starting rescue for swap $id');
 
@@ -42,7 +55,12 @@ class ManualSwapStatusResetUsecase {
         log.fine(
           'Rescue: Swap $id already exists in SQLite with status paid or pending, skipping',
         );
-        return existing.toEntity();
+        return (
+          swap: existing.toEntity(),
+          nextReverseIndex: null,
+          nextChainIndex: null,
+          nextSubmarineIndex: null,
+        );
       }
       if (existing != null) {
         log.fine(
@@ -55,7 +73,12 @@ class ManualSwapStatusResetUsecase {
         );
         await repository.updateSwap(swap: updated);
         log.fine('Rescue: Updated swap $id in SQLite');
-        return updated;
+        return (
+          swap: updated,
+          nextReverseIndex: null,
+          nextChainIndex: null,
+          nextSubmarineIndex: null,
+        );
       }
 
       log.fine('Rescue: Swap $id not found in SQLite, trying secure storage');
@@ -69,10 +92,21 @@ class ManualSwapStatusResetUsecase {
           environment: settings.environment,
         );
         final model = await repository.fetchSwapModel(id);
-        return model?.toEntity();
+        return (
+          swap: model?.toEntity(),
+          nextReverseIndex: null,
+          nextChainIndex: null,
+          nextSubmarineIndex: null,
+        );
       }
       log.fine('Rescue: Swap $id not found in secure storage');
-      return null;
+      final indices = await repository.getNextSwapIndices();
+      return (
+        swap: null,
+        nextReverseIndex: indices.nextReverse,
+        nextChainIndex: indices.nextChain,
+        nextSubmarineIndex: indices.nextSubmarine,
+      );
     } catch (e, stackTrace) {
       log.severe(
         'Rescue: Failed to rescue swap $swapId',

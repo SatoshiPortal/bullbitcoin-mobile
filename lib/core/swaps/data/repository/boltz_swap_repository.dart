@@ -516,6 +516,16 @@ class BoltzSwapRepository {
         .toList();
   }
 
+  Future<({int nextReverse, int nextChain, int nextSubmarine})>
+      getNextSwapIndices() async {
+    final nextRev = await _boltz.storage.getNextRevIndex(isTestnet: _isTestnet);
+    final nextChain =
+        await _boltz.storage.getNextChainIndex(isTestnet: _isTestnet);
+    final nextSub =
+        await _boltz.storage.getNextSubIndex(isTestnet: _isTestnet);
+    return (nextReverse: nextRev, nextChain: nextChain, nextSubmarine: nextSub);
+  }
+
   Future<void> updateSwap({required Swap swap}) {
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }

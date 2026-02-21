@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/ark_setup/router.dart';
-// import 'package:bb_mobile/features/ark_setup/router.dart';
 import 'package:bb_mobile/features/bip85_entropy/router.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
@@ -116,7 +115,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                     onTap: () =>
                         context.pushNamed(Bip85EntropyRoute.bip85Home.name),
                   ),
-                if (isSuperuser && isDevModeEnabled)
+                if (isSuperuser)
                   SettingsEntryItem(
                     icon: Icons.swap_vert,
                     title: context.loc.manualSwapStatusResetTitle,

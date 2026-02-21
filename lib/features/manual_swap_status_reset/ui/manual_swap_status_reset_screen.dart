@@ -8,8 +8,49 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/manual_swap_status_reset/presentation/cubit/manual_swap_status_reset_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
+class _CopyableIndexRow extends StatelessWidget {
+  const _CopyableIndexRow({
+    required this.label,
+    required this.value,
+    required this.onCopied,
+  });
+
+  final String label;
+  final String value;
+  final VoidCallback onCopied;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: BBText(
+            '$label: $value',
+            style: context.font.bodySmall?.copyWith(
+              color: context.appColors.onSurfaceVariant,
+            ),
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            Clipboard.setData(ClipboardData(text: value));
+            onCopied();
+          },
+          icon: Icon(
+            Icons.copy,
+            size: 18,
+            color: context.appColors.primary,
+          ),
+          tooltip: context.loc.manualSwapStatusResetCopyMetadata,
+        ),
+      ],
+    );
+  }
+}
 
 class ManualSwapStatusResetScreen extends StatelessWidget {
   const ManualSwapStatusResetScreen({super.key});
@@ -98,11 +139,85 @@ class ManualSwapStatusResetScreen extends StatelessWidget {
                                 .read<ManualSwapStatusResetCubit>()
                                 .clearMessages(),
                           ),
+                          if (state.nextReverseIndex != null ||
+                              state.nextChainIndex != null ||
+                              state.nextSubmarineIndex != null) ...[
+                            const Gap(12),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: context.appColors.surfaceContainer,
+                                borderRadius: BorderRadius.circular(2),
+                                border: Border.all(
+                                  color: context.appColors.surfaceContainerHighest,
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  BBText(
+                                    context.loc.manualSwapStatusResetIndicesForRescue,
+                                    style: context.font.labelMedium?.copyWith(
+                                      color: context.appColors.onSurface,
+                                    ),
+                                  ),
+                                  if (state.nextReverseIndex != null) ...[
+                                    const Gap(8),
+                                    _CopyableIndexRow(
+                                      label: context
+                                          .loc.manualSwapStatusResetReverseIndex,
+                                      value: state.nextReverseIndex.toString(),
+                                      onCopied: () =>
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                        SnackBar(
+                                          content: Text(context.loc
+                                              .manualSwapStatusResetMetadataCopied),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  if (state.nextChainIndex != null) ...[
+                                    const Gap(8),
+                                    _CopyableIndexRow(
+                                      label: context
+                                          .loc.manualSwapStatusResetChainIndex,
+                                      value: state.nextChainIndex.toString(),
+                                      onCopied: () =>
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                        SnackBar(
+                                          content: Text(context.loc
+                                              .manualSwapStatusResetMetadataCopied),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  if (state.nextSubmarineIndex != null) ...[
+                                    const Gap(8),
+                                    _CopyableIndexRow(
+                                      label: context
+                                          .loc.manualSwapStatusResetSubmarineIndex,
+                                      value: state.nextSubmarineIndex.toString(),
+                                      onCopied: () =>
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                        SnackBar(
+                                          content: Text(context.loc
+                                              .manualSwapStatusResetMetadataCopied),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                         if (state.successMessage != null) ...[
                           const Gap(12),
                           InfoCard(
-                            description: state.successMessage!,
+                            description: context.loc.manualSwapStatusResetSuccessMessage,
                             tagColor: context.appColors.success,
                             bgColor: context.appColors.surfaceContainer,
                             onTap: () => context
@@ -124,11 +239,38 @@ class ManualSwapStatusResetScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                BBText(
-                                  context.loc.manualSwapStatusResetMetadataTitle,
-                                  style: context.font.labelMedium?.copyWith(
-                                    color: context.appColors.onSurface,
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    BBText(
+                                      context.loc.manualSwapStatusResetMetadataTitle,
+                                      style: context.font.labelMedium?.copyWith(
+                                        color: context.appColors.onSurface,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        Clipboard.setData(
+                                          ClipboardData(
+                                            text: _formatSwapMetadata(state.swap!),
+                                          ),
+                                        );
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              context.loc.manualSwapStatusResetMetadataCopied,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.copy,
+                                        size: 20,
+                                        color: context.appColors.primary,
+                                      ),
+                                      tooltip: context.loc.manualSwapStatusResetCopyMetadata,
+                                    ),
+                                  ],
                                 ),
                                 const Gap(8),
                                 BBText(

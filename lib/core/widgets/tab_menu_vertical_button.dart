@@ -39,7 +39,7 @@ class TabMenuVerticalButton extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              if (icon != null) icon!,
+              ...? (icon != null ? [icon!] : null),
               const Gap(8),
               BBText(title, style: context.font.headlineLarge),
             ],

@@ -28,7 +28,6 @@ class AppStartupLocator {
         seedRepository: locator<SeedRepository>(),
       ),
     );
-
     // Bloc
     locator.registerFactory<AppStartupBloc>(
       () => AppStartupBloc(

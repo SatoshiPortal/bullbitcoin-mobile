@@ -23,17 +23,23 @@ class ManualSwapStatusResetCubit extends Cubit<ManualSwapStatusResetState> {
       isLoading: true,
       errorMessage: null,
       successMessage: null,
+      nextReverseIndex: null,
+      nextChainIndex: null,
+      nextSubmarineIndex: null,
     ));
     try {
-      final swap = await _manualSwapStatusResetUsecase.execute(id);
-      if (swap == null) {
+      final result = await _manualSwapStatusResetUsecase.execute(id);
+      if (result.swap == null) {
         emit(state.copyWith(
           isLoading: false,
           errorMessage: 'Swap not found',
+          nextReverseIndex: result.nextReverseIndex,
+          nextChainIndex: result.nextChainIndex,
+          nextSubmarineIndex: result.nextSubmarineIndex,
         ));
       } else {
         emit(state.copyWith(
-          swap: swap,
+          swap: result.swap,
           isLoading: false,
           successMessage: 'Status updated to paid',
         ));
@@ -51,6 +57,12 @@ class ManualSwapStatusResetCubit extends Cubit<ManualSwapStatusResetState> {
   }
 
   void clearMessages() {
-    emit(state.copyWith(errorMessage: null, successMessage: null));
+    emit(state.copyWith(
+      errorMessage: null,
+      successMessage: null,
+      nextReverseIndex: null,
+      nextChainIndex: null,
+      nextSubmarineIndex: null,
+    ));
   }
 }

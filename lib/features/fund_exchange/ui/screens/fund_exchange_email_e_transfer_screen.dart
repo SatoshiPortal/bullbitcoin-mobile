@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
-// ignore: unused_import
-import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -35,8 +33,8 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               BBText(
                 context.loc.fundExchangeETransferTitle,
