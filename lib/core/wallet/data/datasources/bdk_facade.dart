@@ -9,6 +9,9 @@ import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
 class BdkFacade {
+  // Standard lookahead value for address discovery
+  static const int _lookahead = 25;
+
   static Future<bdk.Wallet> createWallet(WalletModel walletModel) {
     if (walletModel is PublicBdkWalletModel) {
       return createPublicWallet(walletModel);
@@ -31,13 +34,28 @@ class BdkFacade {
     final external = bdk.Descriptor(walletModel.externalDescriptor, network);
     final internal = bdk.Descriptor(walletModel.internalDescriptor, network);
 
-    // Create the database configuration
-    final dbPath = await _getDbPath(walletModel.dbName);
-    final dbPersister = bdk.Persister.newSqlite(dbPath);
+    // Get the database path based on the wallet's id for uniqueness and in hex
+    // to ensure it's a valid filename
+    final dbPath = await _getDbPath(walletModel.hexId);
+    final dbFile = File(dbPath);
 
-    final wallet = bdk.Wallet(external, internal, network, dbPersister, 0);
+    try {
+      final dbPersister = bdk.Persister.newSqlite(dbPath);
 
-    return wallet;
+      // Use load if database (wallet) exists, otherwise create new
+      final wallet = await dbFile.exists()
+          ? bdk.Wallet.load(external, internal, dbPersister, _lookahead)
+          : bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+
+      return wallet;
+    } catch (e) {
+      // If there's any error (corrupted db, etc.), delete and recreate
+      if (await dbFile.exists()) {
+        await dbFile.delete();
+      }
+      final dbPersister = bdk.Persister.newSqlite(dbPath);
+      return bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+    }
   }
 
   static Future<bdk.Wallet> createPrivateWallet(WalletModel walletModel) async {
@@ -95,23 +113,47 @@ class BdkFacade {
         );
     }
 
-    // Create the database configuration
-    final dbPath = await _getDbPath(walletModel.dbName);
-    final dbPersister = bdk.Persister.newSqlite(dbPath);
+    // Get the database path
+    final dbPath = await _getDbPath(walletModel.hexId);
+    final dbFile = File(dbPath);
 
-    final wallet = bdk.Wallet(external, internal, network, dbPersister, 0);
+    try {
+      final dbPersister = bdk.Persister.newSqlite(dbPath);
 
-    return wallet;
+      // Use load if database exists, otherwise create new
+      final wallet = await dbFile.exists()
+          ? bdk.Wallet.load(external, internal, dbPersister, _lookahead)
+          : bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+
+      return wallet;
+    } catch (e) {
+      // If there's any error (corrupted db, etc.), delete and recreate
+      if (await dbFile.exists()) {
+        await dbFile.delete();
+      }
+      final dbPersister = bdk.Persister.newSqlite(dbPath);
+      return bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+    }
   }
 
-  static Future<String> _getDbPath(String dbName) async {
+  /// Persists wallet changes to the database
+  static Future<void> saveWallet(
+    bdk.Wallet bdkWallet,
+    String walletIdHex,
+  ) async {
+    final dbPath = await _getDbPath(walletIdHex);
+    final persister = bdk.Persister.newSqlite(dbPath);
+    bdkWallet.persist(persister);
+  }
+
+  static Future<String> _getDbPath(String walletIdHex) async {
     final dir = await getApplicationDocumentsDirectory();
-    // Add since bdk_dart might not migrate old db
-    return '${dir.path}/$dbName/bdk_dart';
+    // Add since bdk_dart might not migrate old bdk_flutter db we suffix the db name with `_bdk_dart` to avoid conflicts
+    return '${dir.path}/${'${walletIdHex}_bdk_dart'}';
   }
 
   static Future<void> delete(WalletModel walletModel) async {
-    final dbPath = await _getDbPath(walletModel.dbName);
+    final dbPath = await _getDbPath(walletModel.hexId);
     final dbFile = File(dbPath);
 
     if (!await dbFile.exists()) WalletError.notFound(walletModel.id);

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
@@ -15,7 +14,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -113,7 +112,10 @@ class BdkWalletDatasource {
           20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
           true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
         );
+        // Apply update to the wallet in memory
         bdkWallet.applyUpdate(update);
+        // Persist the updated wallet to the database
+        await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
         //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
       } catch (e) {
         // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
@@ -184,16 +186,17 @@ class BdkWalletDatasource {
       txBuilder.addUtxos(selectableOutPoints);
     }
 
-    // TODO: Investigate if bdk_dart always has enableRbf enabled by default as option doesn't seem to be exposed in the TxBuilder, if so remove the replaceByFee parameter and logic
-    //if (replaceByFee) txBuilder.enableRbf();
+    // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,
+    // so we set the sequence to 0xFFFFFFFE if replaceByFee is explicitly set to false to disable RBF.
+    if (!replaceByFee) txBuilder.setExactSequence(0xFFFFFFFE);
 
     if (networkFee.isAbsolute) {
       txBuilder = txBuilder.feeAbsolute(
-        bdk.Amount.fromSat(networkFee.value as int),
+        bdk.Amount.fromSat(networkFee.value.toInt()),
       );
     } else {
       txBuilder = txBuilder.feeRate(
-        bdk.FeeRate.fromSatPerVb(networkFee.value as int),
+        bdk.FeeRate.fromSatPerVb(networkFee.value.round()),
       );
     }
 
@@ -314,10 +317,7 @@ class BdkWalletDatasource {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final transactions = bdkWallet.transactions();
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
-      transactions
-          .map((tx) => bdkWallet.txDetails(tx.transaction.computeTxid()))
-          .nonNulls
-          .toList(),
+      transactions,
       wallet: wallet,
     );
 
@@ -426,9 +426,15 @@ class BdkWalletDatasource {
 
   Future<({String address, int index})> getNewAddress({
     required WalletModel wallet,
+    bool isChange = false,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
-    final addressInfo = bdkWallet.revealNextAddress(bdk.KeychainKind.external_);
+    final addressInfo = bdkWallet.revealNextAddress(
+      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
+    );
+
+    // Persist the revealed address to avoid address reuse
+    await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
 
     final index = addressInfo.index;
     final address = addressInfo.address.toString();
@@ -436,32 +442,41 @@ class BdkWalletDatasource {
     return (index: index, address: address);
   }
 
-  Future<({String address, int index})> getLastUnusedAddress({
+  Future<({String address, int index})> getLastRevealedAddressOrNew({
     required WalletModel wallet,
+    isChange = false,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
-    final addressInfo = bdkWallet
-        .listUnusedAddresses(bdk.KeychainKind.external_)
-        .last;
+    final lastRevealedAddress = bdkWallet.revealNextAddress(
+      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
+    );
+    final lastRevealedAddressIndex = lastRevealedAddress.index - 1;
 
-    final index = addressInfo.index;
-    final address = addressInfo.address.toString();
+    if (lastRevealedAddressIndex < 0) {
+      // No address has been revealed yet, so we get a new one which will be the first one (index 0)
+      return getNewAddress(wallet: wallet, isChange: isChange);
+    }
+
+    final index = lastRevealedAddress.index;
+    final address = lastRevealedAddress.address.toString();
 
     return (index: index, address: address);
   }
 
-  Future<int> getLastUnusedAddressIndex({
+  // This can return -1 if no address has been revealed yet.
+  // This should be handled accordingly by the caller.
+  Future<int> getLastRevealedAddressIndex({
     required WalletModel wallet,
     bool isChange = false,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
-    final lastUnusedAddress = bdkWallet
-        .listUnusedAddresses(
-          isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
-        )
-        .last;
+    final nextAddress = bdkWallet.revealNextAddress(
+      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
+    );
 
-    final index = lastUnusedAddress.index;
+    final index =
+        nextAddress.index -
+        1; // Subtract 1 to get the last revealed address index
 
     return index;
   }
@@ -479,48 +494,6 @@ class BdkWalletDatasource {
     final address = addressInfo.address.toString();
 
     return address;
-  }
-
-  Future<List<({String address, int index})>> getReceiveAddresses({
-    required WalletModel wallet,
-    required int limit,
-    required int offset,
-  }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-
-    final addresses = <({String address, int index})>[];
-    for (int i = offset; i < offset + limit; i++) {
-      final addressInfo = bdkWallet.peekAddress(bdk.KeychainKind.external_, i);
-
-      final address = (
-        index: addressInfo.index,
-        address: addressInfo.address.toString(),
-      );
-      addresses.add(address);
-    }
-
-    return addresses;
-  }
-
-  Future<List<({String address, int index})>> getChangeAddresses({
-    required WalletModel wallet,
-    required int limit,
-    required int offset,
-  }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-
-    final addresses = <({String address, int index})>[];
-    for (int i = offset; i < offset + limit; i++) {
-      final addressInfo = bdkWallet.peekAddress(bdk.KeychainKind.internal, i);
-
-      final address = (
-        index: addressInfo.index,
-        address: addressInfo.address.toString(),
-      );
-      addresses.add(address);
-    }
-
-    return addresses;
   }
 
   Future<bool> isAddressUsed(
@@ -574,12 +547,12 @@ class BdkWalletDatasource {
   }
 
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
-    List<bdk.TxDetails> transactions, {
+    List<bdk.CanonicalTx> transactions, {
     required WalletModel wallet,
   }) async {
     final listOfOutputs = await Future.wait(
       transactions.map((tx) async {
-        final outputs = tx.tx.output();
+        final outputs = tx.transaction.output();
         final models = await Future.wait(
           outputs.asMap().entries.map((outputEntry) async {
             final vout = outputEntry.key;
@@ -592,7 +565,7 @@ class BdkWalletDatasource {
                 );
 
             return TransactionOutputModel.bitcoin(
-              txId: tx.txid.toString(),
+              txId: tx.transaction.computeTxid().toString(),
               vout: vout,
               isOwn: await isMine(scriptPubkeyBytes, wallet: wallet),
               value: BigInt.from(output.value.toSat()),

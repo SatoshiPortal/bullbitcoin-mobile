@@ -26,7 +26,7 @@ class WalletAddressRepository {
        _lwkWallet = lwkWalletDatasource,
        _labelsFacade = labelsFacade;
 
-  Future<WalletAddress> getLastUnusedReceiveAddress({
+  Future<WalletAddress> getLastRevealedReceiveAddress({
     required String walletId,
   }) async {
     int index;
@@ -40,7 +40,7 @@ class WalletAddressRepository {
     final walletModel = WalletModel.fromMetadata(metadata);
 
     if (walletModel is PublicBdkWalletModel) {
-      final addressInfo = await _bdkWallet.getLastUnusedAddress(
+      final addressInfo = await _bdkWallet.getLastRevealedAddressOrNew(
         wallet: walletModel,
       );
       index = addressInfo.index;
@@ -173,7 +173,7 @@ class WalletAddressRepository {
     final from =
         fromIndex ??
         (isBdkWallet
-            ? await _bdkWallet.getLastUnusedAddressIndex(wallet: walletModel)
+            ? await _bdkWallet.getLastRevealedAddressIndex(wallet: walletModel)
             : await _lwkWallet.getLastUnusedAddressIndex(wallet: walletModel));
     final to = limit != null ? max(from - limit + 1, 0) : 0;
 
@@ -274,7 +274,56 @@ class WalletAddressRepository {
     int? fromIndex,
     required bool descending,
   }) async {
-    return [];
+    // Fetch wallet metadata and history in parallel
+    final walletMetadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (walletMetadata == null) throw WalletError.notFound(walletId);
+
+    final walletModel = WalletModel.fromMetadata(walletMetadata);
+    final isBdkWallet = walletModel is PublicBdkWalletModel;
+
+    if (!isBdkWallet) {
+      // LWK currently doesn't support fetching
+      // change addresses separately, so we return an empty list here.
+      return [];
+    }
+
+    final from =
+        fromIndex ??
+        await _bdkWallet.getLastRevealedAddressIndex(
+          wallet: walletModel,
+          isChange: true,
+        );
+    if (from < 0) {
+      // No change addresses have been revealed yet, so we return an empty list.
+      return [];
+    }
+    final to = limit != null ? max(from - limit + 1, 0) : 0;
+
+    // This is already in case we want to support both ascending and descending in the future
+    final step = from <= to ? 1 : -1;
+    final indexes = List.generate(
+      (to - from).abs() + 1,
+      (i) => from + i * step,
+    );
+
+    final addresses = await Future.wait(
+      indexes.map((index) async {
+        return await _generateAddressModel(
+          index: index,
+          walletModel: walletModel,
+          walletId: walletId,
+          isBdkWallet: isBdkWallet,
+        );
+      }),
+    );
+
+    // Enrich addresses with balance and transaction data in parallel
+    return await _enrichAddresses(
+      addresses: addresses,
+      walletModel: walletModel,
+      isBdkWallet: isBdkWallet,
+    );
   }
 
   Future<WalletAddress> getAddressAtIndex({
