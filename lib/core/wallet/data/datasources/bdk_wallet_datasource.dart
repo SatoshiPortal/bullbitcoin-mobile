@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 extension NetworkX on Network {
   bdk.Network get bdkNetwork {
@@ -95,27 +96,22 @@ class BdkWalletDatasource {
 
         // Increment the sync execution count for this wallet for testing purposes
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
-        final bdkWallet = await BdkFacade.createWallet(wallet);
-        final blockchain = bdk.ElectrumClient(
-          electrumServer.url,
-          // Only set the socks5 if it's not empty,
-          //  otherwise bdk will throw an error
-          // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
-          electrumServer.socks5?.isNotEmpty == true
-              ? electrumServer.socks5
-              : null,
+
+        await compute(
+          _performFullScan,
+          _SyncParams(
+            walletId: wallet.id,
+            externalDescriptor:
+                (wallet as PublicBdkWalletModel).externalDescriptor,
+            internalDescriptor: wallet.internalDescriptor,
+            isTestnet: wallet.isTestnet,
+            electrumUrl: electrumServer.url,
+            electrumSocks5: electrumServer.socks5,
+            electrumStopGap: electrumServer.stopGap,
+            walletHexId: wallet.hexId,
+            rootIsolateToken: ServicesBinding.rootIsolateToken!,
+          ),
         );
-        final scanRequest = bdkWallet.startFullScan().build();
-        final update = blockchain.fullScan(
-          scanRequest,
-          electrumServer.stopGap,
-          20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
-          true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
-        );
-        // Apply update to the wallet in memory
-        bdkWallet.applyUpdate(update);
-        // Persist the updated wallet to the database
-        await BdkFacade.saveWallet(bdkWallet, wallet.hexId);
         //debugPrint('Sync completed for wallet: ${wallet.id} with server ${electrumServer.url}',);
       } catch (e) {
         // debugPrint('Sync error for wallet ${wallet.id} with server ${electrumServer.url}: $e');
@@ -610,6 +606,66 @@ class BdkWalletDatasource {
     await BdkFacade.delete(wallet);
     log.fine('Deleted wallet ${wallet.id} BDK database');
   }
+}
+
+// Top-level function for isolate execution
+class _SyncParams {
+  final String walletId;
+  final String externalDescriptor;
+  final String internalDescriptor;
+  final bool isTestnet;
+  final String electrumUrl;
+  final String? electrumSocks5;
+  final int electrumStopGap;
+  final String walletHexId;
+  final RootIsolateToken rootIsolateToken;
+
+  _SyncParams({
+    required this.walletId,
+    required this.externalDescriptor,
+    required this.internalDescriptor,
+    required this.isTestnet,
+    required this.electrumUrl,
+    required this.electrumSocks5,
+    required this.electrumStopGap,
+    required this.walletHexId,
+    required this.rootIsolateToken,
+  });
+}
+
+Future<void> _performFullScan(_SyncParams params) async {
+  // Initialize the binary messenger for platform channel access in isolate
+  // Needed for things like getting the database path from BdkFacade which
+  // uses path_provider under the hood
+  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
+
+  // Recreate wallet model in the isolate
+  final wallet = WalletModel.publicBdk(
+    id: params.walletId,
+    externalDescriptor: params.externalDescriptor,
+    internalDescriptor: params.internalDescriptor,
+    isTestnet: params.isTestnet,
+  );
+
+  final bdkWallet = await BdkFacade.createWallet(wallet);
+  final blockchain = bdk.ElectrumClient(
+    params.electrumUrl,
+    // Only set the socks5 if it's not empty,
+    //  otherwise bdk will throw an error
+    // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
+    params.electrumSocks5?.isNotEmpty == true ? params.electrumSocks5 : null,
+  );
+  final scanRequest = bdkWallet.startFullScan().build();
+  final update = blockchain.fullScan(
+    scanRequest,
+    params.electrumStopGap,
+    20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
+    true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
+  );
+  // Apply update to the wallet in memory
+  bdkWallet.applyUpdate(update);
+  // Persist the updated wallet to the database
+  await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
 }
 
 class FailedToSignPsbtException extends BullException {
