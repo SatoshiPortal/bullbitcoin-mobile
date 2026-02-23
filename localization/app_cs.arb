@@ -12117,5 +12117,324 @@
     "importWatchOnlyCancel": "Hledat",
     "@importWatchOnlyCancel": {
         "description": "Button to cancel watch-only import"
+    },
+    "arkAboutDurationSeconds": "{seconds} vteřin(y)",
+    "@arkAboutDurationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "int"
+            }
+        }
+    },
+    "arkContinueButton": "Pokračovat",
+    "@arkContinueButton": {
+        "description": "Continue button text used in ark send flow"
+    },
+    "transactionStatusSwapExpired": "Swap vypršel",
+    "@transactionStatusSwapExpired": {
+        "description": "Status label for expired swaps"
+    },
+    "transactionPayjoinStatusCompleted": "Hotovo",
+    "@transactionPayjoinStatusCompleted": {
+        "description": "Payjoin status: completed"
+    },
+    "recoverbullFailed": "Selhalo",
+    "@recoverbullFailed": {
+        "description": "Status label indicating operation failure"
+    },
+    "dcaWalletSelectionContinueButton": "Pokračovat",
+    "@dcaWalletSelectionContinueButton": {
+        "description": "Button label to proceed to confirmation screen"
+    },
+    "pinButtonChange": "Změnit PIN",
+    "@pinButtonChange": {
+        "description": "Button label when PIN already exists"
+    },
+    "arkDurationMinutes": "{minutes} minut(y)",
+    "@arkDurationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "payExpired": "Vypršelo",
+    "@payExpired": {
+        "description": "Status label for expired invoice"
+    },
+    "transactionPayjoinStatusExpired": "Vypršelo",
+    "@transactionPayjoinStatusExpired": {
+        "description": "Payjoin status: expired"
+    },
+    "arkDurationSeconds": "{seconds} vteřin(y)",
+    "@arkDurationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "String"
+            }
+        }
+    },
+    "transactionDetailLabelPayjoinExpired": "Vypršelo",
+    "@transactionDetailLabelPayjoinExpired": {
+        "description": "Payjoin expired status"
+    },
+    "transactionSwapProgressCompleted": "Hotovo",
+    "@transactionSwapProgressCompleted": {
+        "description": "Swap progress step: completed"
+    },
+    "receiveConfirmed": "Potvrzeno",
+    "@receiveConfirmed": {
+        "description": "Status when fully confirmed"
+    },
+    "confirmButton": "Potvrdit",
+    "@confirmButton": {
+        "description": "Button label to confirm action"
+    },
+    "buyInputContinue": "Pokračovat",
+    "@buyInputContinue": {
+        "description": "Continue button on buy input"
+    },
+    "walletBalanceUnconfirmedIncoming": "Zpracovávám",
+    "@walletBalanceUnconfirmedIncoming": {
+        "description": "Label for unconfirmed incoming balance"
+    },
+    "arkDurationMinute": "{minutes} minuta",
+    "@arkDurationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "transactionDetailLabelPayjoinCompleted": "Hotovo",
+    "@transactionDetailLabelPayjoinCompleted": {
+        "description": "Payjoin completed status"
+    },
+    "transactionStatusConfirmed": "Potvrzeno",
+    "@transactionStatusConfirmed": {
+        "description": "Status label for confirmed transactions"
+    },
+    "withdrawAmountContinue": "Pokračovat",
+    "@withdrawAmountContinue": {
+        "description": "Continue button on amount screen"
+    },
+    "pinProtectionDescription": "PIN chrání přístup k Tvé peněžence a nastavením. Zapamatuj si ho.",
+    "@pinProtectionDescription": {
+        "description": "Informational text explaining PIN purpose"
+    },
+    "backupSettingsRecoverBullSettings": "Recoverbull",
+    "@backupSettingsRecoverBullSettings": {
+        "description": "Button text for Recoverbull"
+    },
+    "pinButtonContinue": "Pokračovat",
+    "@pinButtonContinue": {
+        "description": "Button label to proceed after entering new PIN"
+    },
+    "transactionSwapProgressInProgress": "Zpracovávám",
+    "@transactionSwapProgressInProgress": {
+        "description": "Generic swap progress step: in progress"
+    },
+    "arkStatusConfirmed": "Potvrzeno",
+    "@arkStatusConfirmed": {
+        "description": "Status label for confirmed boarding transactions"
+    },
+    "pinStatusCheckingDescription": "Ověřování PINu",
+    "@pinStatusCheckingDescription": {
+        "description": "Status screen description during initialization"
+    },
+    "coreScreensConfirmButton": "Potvrdit",
+    "@coreScreensConfirmButton": {
+        "description": "Text for confirm button"
+    },
+    "sellSendPaymentContinue": "Pokračovat",
+    "@sellSendPaymentContinue": {
+        "description": "Continue button on sell payment"
+    },
+    "payFailedPayments": "Selhalo",
+    "@payFailedPayments": {
+        "description": "Filter for failed payments"
+    },
+    "pinStatusLoading": "Nahrávám",
+    "@pinStatusLoading": {
+        "description": "Status screen title during initialization"
+    },
+    "pinCreateHeadline": "Vytvoř nový PIN",
+    "@pinCreateHeadline": {
+        "description": "Headline text on PIN creation screen"
+    },
+    "transactionSwapProgressConfirmed": "Potvrzeno",
+    "@transactionSwapProgressConfirmed": {
+        "description": "Swap progress step: confirmed"
+    },
+    "electrumCloseTooltip": "Zavřít",
+    "@electrumCloseTooltip": {
+        "description": "Close button tooltip"
+    },
+    "dcaContinueButton": "Pokračovat",
+    "@dcaContinueButton": {
+        "description": "Button label to proceed to next step in DCA flow"
+    },
+    "pinButtonCreate": "Vytvořit PIN",
+    "@pinButtonCreate": {
+        "description": "Button label when no PIN exists"
+    },
+    "closeDialogButton": "Zavřít",
+    "@closeDialogButton": {
+        "description": "Button to close the value display modal dialog"
+    },
+    "pinValidationError": "PIN musí mít nejméně {minLength} číslic",
+    "@pinValidationError": {
+        "description": "Error message when PIN is too short",
+        "placeholders": {
+            "minLength": {
+                "type": "String"
+            }
+        }
+    },
+    "arkSendConfirm": "Potvrdit",
+    "@arkSendConfirm": {
+        "description": "Confirm button on send screen"
+    },
+    "recoverbullRecoveryContinueButton": "Pokračovat",
+    "@recoverbullRecoveryContinueButton": {
+        "description": "Button text to proceed with importing the wallet"
+    },
+    "confirmButtonLabel": "Potvrdit",
+    "@confirmButtonLabel": {
+        "description": "Button label to confirm and execute the transaction"
+    },
+    "arkConfirmed": "Potvrzeno",
+    "@arkConfirmed": {
+        "description": "Label for confirmed balance in breakdown"
+    },
+    "withdrawRecipientsContinue": "Pokračovat",
+    "@withdrawRecipientsContinue": {
+        "description": "Continue button on recipients screen"
+    },
+    "pinConfirmHeadline": "Potvrdit nový PIN",
+    "@pinConfirmHeadline": {
+        "description": "Headline text on PIN confirmation screen"
+    },
+    "transactionStatusInProgress": "Zpracovávám",
+    "@transactionStatusInProgress": {
+        "description": "Status label for transactions in progress"
+    },
+    "dcaConfirmButton": "Pokračovat",
+    "@dcaConfirmButton": {
+        "description": "Button label to confirm and activate DCA"
+    },
+    "pinStatusProcessing": "Zpracovávám",
+    "@pinStatusProcessing": {
+        "description": "Status screen title during PIN save/delete operations"
+    },
+    "pinButtonRemove": "Odstranit bezpečnostní PIN",
+    "@pinButtonRemove": {
+        "description": "Button label to delete existing PIN"
+    },
+    "recoverbullContinue": "Pokračovat",
+    "@recoverbullContinue": {
+        "description": "Button text to proceed to next step"
+    },
+    "dcaSetupContinue": "Pokračovat",
+    "@dcaSetupContinue": {
+        "description": "Continue button on DCA setup"
+    },
+    "testBackupConfirm": "Potvrdit",
+    "@testBackupConfirm": {
+        "description": "Button text to confirm wallet selection"
+    },
+    "pinAuthenticationTitle": "Ověření",
+    "@pinAuthenticationTitle": {
+        "description": "AppBar title for create/confirm PIN screens"
+    },
+    "swapContinue": "Pokračovat",
+    "@swapContinue": {
+        "description": "Continue button on swap amount screen"
+    },
+    "arkReceiveSegmentArk": "Ark",
+    "@arkReceiveSegmentArk": {
+        "description": "Segment option for Ark address type"
+    },
+    "swapContinueButton": "Pokračovat",
+    "@swapContinueButton": {
+        "description": "Button to proceed from amount page to confirmation"
+    },
+    "pinSecurityTitle": "Bezpečnostní PIN",
+    "@pinSecurityTitle": {
+        "description": "AppBar title for PIN settings screen"
+    },
+    "receiveArkNetwork": "Ark",
+    "@receiveArkNetwork": {
+        "description": "Ark Instant Payments option"
+    },
+    "arkConfirmButton": "Potvrdit",
+    "@arkConfirmButton": {
+        "description": "Confirm button to proceed with send transaction"
+    },
+    "pinStatusSettingUpDescription": "Nastavování PINu",
+    "@pinStatusSettingUpDescription": {
+        "description": "Status screen description during PIN save/delete operations"
+    },
+    "dcaConfirmContinue": "Pokračovat",
+    "@dcaConfirmContinue": {
+        "description": "Continue button on DCA confirmation"
+    },
+    "electrumConfirm": "Potvrdit",
+    "@electrumConfirm": {
+        "description": "Confirm button label in advanced options"
+    },
+    "recoverbullConfirm": "Potvrdit",
+    "@recoverbullConfirm": {
+        "description": "Button text to confirm an action"
+    },
+    "appUnlockScreenTitle": "Ověření",
+    "@appUnlockScreenTitle": {
+        "description": "Title of the app unlock screen"
+    },
+    "arkAboutDurationMinutes": "{minutes} minut(y)",
+    "@arkAboutDurationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "pinButtonConfirm": "Potvrdit",
+    "@pinButtonConfirm": {
+        "description": "Button label to submit confirmed PIN"
+    },
+    "transactionStatusSwapFailed": "Swap selhal.",
+    "@transactionStatusSwapFailed": {
+        "description": "Status label for failed swaps"
+    },
+    "continueButton": "Pokračovat",
+    "@continueButton": {
+        "description": "Default button text for success state"
+    },
+    "arkAboutDurationMinute": "{minutes} minuta",
+    "@arkAboutDurationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "pinConfirmMismatchError": "PIN nesouhlasí",
+    "@pinConfirmMismatchError": {
+        "description": "Error message when confirmation PIN doesn't match original"
+    },
+    "torSettingsTitle": "Nastavení Toru",
+    "@torSettingsTitle": {
+        "description": "AppBar title for the Tor settings screen"
+    },
+    "importMnemonicContinue": "Pokračovat",
+    "@importMnemonicContinue": {
+        "description": "Button text to proceed after entering mnemonic"
     }
 }
