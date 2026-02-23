@@ -191,6 +191,7 @@ class WalletAddressRepository {
           walletModel: walletModel,
           walletId: walletId,
           isBdkWallet: isBdkWallet,
+          isChange: false,
         );
       }),
     );
@@ -208,9 +209,14 @@ class WalletAddressRepository {
     required WalletModel walletModel,
     required String walletId,
     required bool isBdkWallet,
+    required bool isChange,
   }) async {
     final address = isBdkWallet
-        ? await _bdkWallet.getAddressByIndex(index, wallet: walletModel)
+        ? await _bdkWallet.getAddressByIndex(
+            index,
+            wallet: walletModel,
+            isChange: isChange,
+          )
         : (await _lwkWallet.getAddressByIndex(
             index,
             wallet: walletModel,
@@ -314,6 +320,7 @@ class WalletAddressRepository {
           walletModel: walletModel,
           walletId: walletId,
           isBdkWallet: isBdkWallet,
+          isChange: true,
         );
       }),
     );
@@ -329,6 +336,7 @@ class WalletAddressRepository {
   Future<WalletAddress> getAddressAtIndex({
     required String walletId,
     required int index,
+    required bool isChange,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
@@ -340,7 +348,11 @@ class WalletAddressRepository {
     String address;
 
     if (walletModel is PublicBdkWalletModel) {
-      address = await _bdkWallet.getAddressByIndex(index, wallet: walletModel);
+      address = await _bdkWallet.getAddressByIndex(
+        index,
+        wallet: walletModel,
+        isChange: isChange,
+      );
     } else {
       final addressInfo = await _lwkWallet.getAddressByIndex(
         index,

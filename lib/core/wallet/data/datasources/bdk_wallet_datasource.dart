@@ -315,7 +315,9 @@ class BdkWalletDatasource {
     String? toAddress,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
+
     final transactions = bdkWallet.transactions();
+
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
       transactions,
       wallet: wallet,
@@ -444,23 +446,30 @@ class BdkWalletDatasource {
 
   Future<({String address, int index})> getLastRevealedAddressOrNew({
     required WalletModel wallet,
-    isChange = false,
+    bool isChange = false,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    final lastRevealedAddress = bdkWallet.revealNextAddress(
-      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
+    final lastRevealedAddressIndex = await getLastRevealedAddressIndex(
+      wallet: wallet,
+      isChange: isChange,
     );
-    final lastRevealedAddressIndex = lastRevealedAddress.index - 1;
 
     if (lastRevealedAddressIndex < 0) {
-      // No address has been revealed yet, so we get a new one which will be the first one (index 0)
+      // No address has been revealed yet, so we get a new one
       return getNewAddress(wallet: wallet, isChange: isChange);
     }
 
-    final index = lastRevealedAddress.index;
-    final address = lastRevealedAddress.address.toString();
+    final address = await getAddressByIndex(
+      lastRevealedAddressIndex,
+      wallet: wallet,
+    );
 
-    return (index: index, address: address);
+    if (await isAddressUsed(address, wallet: wallet)) {
+      // If the last revealed address has been used,
+      //  we need to get a new one to avoid address reuse
+      return getNewAddress(wallet: wallet, isChange: isChange);
+    }
+
+    return (index: lastRevealedAddressIndex, address: address);
   }
 
   // This can return -1 if no address has been revealed yet.
@@ -484,10 +493,11 @@ class BdkWalletDatasource {
   Future<String> getAddressByIndex(
     int index, {
     required WalletModel wallet,
+    isChange = false,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final addressInfo = bdkWallet.peekAddress(
-      bdk.KeychainKind.external_,
+      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
       index,
     );
 
