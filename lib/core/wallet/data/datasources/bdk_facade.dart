@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
@@ -159,31 +157,5 @@ class BdkFacade {
     if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
 
     await dbFile.delete();
-  }
-
-  static Future<void> sync(
-    WalletModel wallet,
-    ElectrumServerModel electrumServer,
-    ElectrumSettingsModel electrumSettings,
-  ) async {
-    final blockchain = bdk.ElectrumClient(
-      electrumServer.url,
-      // Only set the socks5 if it's not empty,
-      //  otherwise bdk will throw an error
-      // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
-      electrumSettings.socks5?.isNotEmpty == true
-          ? electrumSettings.socks5
-          : null,
-    );
-
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    final scanRequest = bdkWallet.startFullScan().build();
-    final update = blockchain.fullScan(
-      scanRequest,
-      electrumSettings.stopGap,
-      20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
-      true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
-    );
-    bdkWallet.applyUpdate(update);
   }
 }
