@@ -1,1 +1,306 @@
-{}
+{
+    "durationSeconds": "{seconds} vteřin(y)",
+    "@durationSeconds": {
+        "description": "Duration format for seconds",
+        "placeholders": {
+            "seconds": {
+                "type": "String"
+            }
+        }
+    },
+    "durationMinute": "{minutes} minuta",
+    "@durationMinute": {
+        "description": "Duration format for singular minute",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "durationMinutes": "{minutes} minut(y)",
+    "@durationMinutes": {
+        "description": "Duration format for plural minutes",
+        "placeholders": {
+            "minutes": {
+                "type": "String"
+            }
+        }
+    },
+    "coreSwapsStatusInProgress": "Zpracovávám",
+    "@coreSwapsStatusInProgress": {
+        "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+    },
+    "coreSwapsStatusCompleted": "Hotovo",
+    "@coreSwapsStatusCompleted": {
+        "description": "Display name for completed swap status"
+    },
+    "coreSwapsStatusExpired": "Vypršelo",
+    "@coreSwapsStatusExpired": {
+        "description": "Display name for expired swap status"
+    },
+    "coreSwapsStatusFailed": "Selhalo",
+    "@coreSwapsStatusFailed": {
+        "description": "Display name for failed swap status"
+    },
+    "coreSwapsActionClose": "Zavřít",
+    "@coreSwapsActionClose": {
+        "description": "Action label for closing a swap cooperatively"
+    },
+    "coreSwapsActionRefund": "Refundovat",
+    "@coreSwapsActionRefund": {
+        "description": "Action label for refunding a swap"
+    },
+    "coreSwapsLnReceivePaid": "Faktura uhrazena odesílatelem.",
+    "@coreSwapsLnReceivePaid": {
+        "description": "Status message for paid Lightning receive swap"
+    },
+    "coreSwapsLnReceiveExpired": "Swap vypršel.",
+    "@coreSwapsLnReceiveExpired": {
+        "description": "Status message for expired Lightning receive swap"
+    },
+    "coreSwapsLnReceiveFailed": "Swap selhal.",
+    "@coreSwapsLnReceiveFailed": {
+        "description": "Status message for failed Lightning receive swap"
+    },
+    "coreSwapsLnSendPaid": "Faktura bude zaplacena po potvrzení Tvé platby.",
+    "@coreSwapsLnSendPaid": {
+        "description": "Status message for paid Lightning send swap"
+    },
+    "coreSwapsLnSendExpired": "Swap vypršel",
+    "@coreSwapsLnSendExpired": {
+        "description": "Status message for expired Lightning send swap"
+    },
+    "coreSwapsLnSendCompletedSuccess": "Swap proběhnul úspěšně.",
+    "@coreSwapsLnSendCompletedSuccess": {
+        "description": "Status message for successfully completed Lightning send swap"
+    },
+    "coreSwapsLnSendFailedRefunding": "Swap bude brzy refundován.",
+    "@coreSwapsLnSendFailedRefunding": {
+        "description": "Status message for failed Lightning send swap that will be refunded"
+    },
+    "coreSwapsLnSendFailed": "Swap selhal.",
+    "@coreSwapsLnSendFailed": {
+        "description": "Status message for failed Lightning send swap"
+    },
+    "coreWalletTransactionStatusConfirmed": "Potvrzeno",
+    "@coreWalletTransactionStatusConfirmed": {
+        "description": "Display name for confirmed wallet transaction status"
+    },
+    "onboardingScreenTitle": "Vítej",
+    "@onboardingScreenTitle": {
+        "description": "The title of the onboarding screen"
+    },
+    "onboardingCreateWalletButtonLabel": "Založit peněženku",
+    "@onboardingCreateWalletButtonLabel": {
+        "description": "The label for the button to create a wallet from the onboarding screen"
+    },
+    "onboardingRecoverWalletButtonLabel": "Obnovit peněženku",
+    "@onboardingRecoverWalletButtonLabel": {
+        "description": "The label for the button to recover a wallet from the onboarding screen"
+    },
+    "settingsScreenTitle": "Nastavení",
+    "@settingsScreenTitle": {
+        "description": "The title of the settings screen"
+    },
+    "pinCodeSettingsLabel": "PIN kód",
+    "@pinCodeSettingsLabel": {
+        "description": "The label for the button to access the PIN code settings"
+    },
+    "languageSettingsLabel": "Jazyk",
+    "@languageSettingsLabel": {
+        "description": "The label for the button to access the language settings"
+    },
+    "backupSettingsLabel": "Záloha peněženky",
+    "@backupSettingsLabel": {
+        "description": "The label for the button to access the backup settings"
+    },
+    "fiatCurrencySettingsLabel": "Fiat měna",
+    "@fiatCurrencySettingsLabel": {
+        "description": "The label for the button to access the fiat currency settings"
+    },
+    "languageSettingsScreenTitle": "Jazyk",
+    "@languageSettingsScreenTitle": {
+        "description": "The title of the language settings screen"
+    },
+    "backupSettingsScreenTitle": "Nastavení zálohy",
+    "@backupSettingsScreenTitle": {
+        "description": "AppBar title for backup settings screen"
+    },
+    "settingsWalletBackupTitle": "Záloha peněženky",
+    "@settingsWalletBackupTitle": {
+        "description": "Title for the wallet backup section in the settings menu"
+    },
+    "translationWarningTitle": "Poznámka k překladu",
+    "@translationWarningTitle": {
+        "description": "Title for the AI translation warning bottom sheet"
+    },
+    "translationWarningDescription": "Český překlad nebyl generován pomocí AI. Některá spojení bude potřeba doladit během užívání appky. K návrhům na zlepšení čitelnosti, srozumitelnosti a opravu chyb můžeš využít komunitní překladovou platformu.",
+    "@translationWarningDescription": {
+        "description": "Description explaining that translations are AI-generated and may be inaccurate"
+    },
+    "translationWarningContributeButton": "Pomoz vylepšit překlad",
+    "@translationWarningContributeButton": {
+        "description": "Button to open Weblate translation platform"
+    },
+    "translationWarningDismissButton": "Rozumím",
+    "@translationWarningDismissButton": {
+        "description": "Button to dismiss the translation warning"
+    },
+    "settingsSecurityPinTitle": "Bezpečnostní PIN",
+    "@settingsSecurityPinTitle": {
+        "description": "Title for the security PIN section in the settings menu"
+    },
+    "pinCodeAuthentication": "Ověření",
+    "@pinCodeAuthentication": {
+        "description": "AppBar title for PIN code authentication screens"
+    },
+    "pinCodeCreateTitle": "Vytvoř nový PIN",
+    "@pinCodeCreateTitle": {
+        "description": "Title for creating a new PIN code"
+    },
+    "pinCodeCreateDescription": "PIN chrání přístup k Tvé peněžence a nastavením. Zapamatuj si ho.",
+    "@pinCodeCreateDescription": {
+        "description": "Description explaining the purpose of the PIN code"
+    },
+    "pinCodeMinLengthError": "PIN musí mít nejméně {minLength} číslic",
+    "@pinCodeMinLengthError": {
+        "description": "Error message when PIN is too short",
+        "placeholders": {
+            "minLength": {
+                "type": "String"
+            }
+        }
+    },
+    "pinCodeConfirmTitle": "Potvrdit nový PIN",
+    "@pinCodeConfirmTitle": {
+        "description": "Title for confirming the new PIN code"
+    },
+    "pinCodeMismatchError": "PIN nesouhlasí",
+    "@pinCodeMismatchError": {
+        "description": "Error message when PIN confirmation doesn't match"
+    },
+    "pinCodeSecurityPinTitle": "Bezpečnostní PIN",
+    "@pinCodeSecurityPinTitle": {
+        "description": "AppBar title for PIN settings screen"
+    },
+    "pinCodeChangeButton": "Změnit PIN",
+    "@pinCodeChangeButton": {
+        "description": "Button label to change existing PIN"
+    },
+    "pinCodeCreateButton": "Vytvořit PIN",
+    "@pinCodeCreateButton": {
+        "description": "Button label to create a new PIN"
+    },
+    "pinCodeRemoveButton": "Odstranit bezpečnostní PIN",
+    "@pinCodeRemoveButton": {
+        "description": "Button label to remove the security PIN"
+    },
+    "pinCodeContinue": "Pokračovat",
+    "@pinCodeContinue": {
+        "description": "Button label to continue with PIN entry"
+    },
+    "pinCodeConfirm": "Potvrdit",
+    "@pinCodeConfirm": {
+        "description": "Button label to confirm PIN entry"
+    },
+    "pinCodeLoading": "Nahrávám",
+    "@pinCodeLoading": {
+        "description": "Status screen title while loading PIN settings"
+    },
+    "pinCodeCheckingStatus": "Ověřování PINu",
+    "@pinCodeCheckingStatus": {
+        "description": "Status screen description while checking PIN status"
+    },
+    "pinCodeProcessing": "Zpracovávám",
+    "@pinCodeProcessing": {
+        "description": "Status screen title while processing PIN changes"
+    },
+    "pinCodeSettingUp": "Nastavování PINu",
+    "@pinCodeSettingUp": {
+        "description": "Status screen description while setting up PIN"
+    },
+    "settingsCurrencyTitle": "Měna",
+    "@settingsCurrencyTitle": {
+        "description": "Title for the currency settings section in the settings menu"
+    },
+    "settingsAppSettingsTitle": "Nastavení appky",
+    "@settingsAppSettingsTitle": {
+        "description": "Title for the app settings section in the settings menu"
+    },
+    "settingsTermsOfServiceTitle": "Smluvní podmínky",
+    "@settingsTermsOfServiceTitle": {
+        "description": "Title for the terms of service section in the settings menu"
+    },
+    "settingsAppVersionLabel": "Verze appky: ",
+    "@settingsAppVersionLabel": {
+        "description": "Label displayed before the app version number in settings"
+    },
+    "settingsTelegramLabel": "Telegram",
+    "@settingsTelegramLabel": {
+        "description": "Label for the Telegram link in settings"
+    },
+    "settingsGithubLabel": "Github",
+    "@settingsGithubLabel": {
+        "description": "Label for the Github link in settings"
+    },
+    "settingsTorSettingsTitle": "Nastavení Toru",
+    "@settingsTorSettingsTitle": {
+        "description": "Title for the Tor settings section in app settings"
+    },
+    "settingsRecoverbullTitle": "Recoverbull",
+    "@settingsRecoverbullTitle": {
+        "description": "Title for the Recoverbull backup section in app settings"
+    },
+    "settingsLanguageTitle": "Jazyk",
+    "@settingsLanguageTitle": {
+        "description": "Title for the language selection in app settings"
+    },
+    "settingsThemeTitle": "Vzhled",
+    "@settingsThemeTitle": {
+        "description": "Title for the theme selection in app settings"
+    },
+    "settingsArkTitle": "Ark",
+    "@settingsArkTitle": {
+        "description": "Title for the Ark protocol section in Bitcoin settings"
+    },
+    "settingsDevModeWarningTitle": "Pro vývojáře",
+    "@settingsDevModeWarningTitle": {
+        "description": "Title for the developer mode warning dialog"
+    },
+    "settingsDevModeWarningMessage": "Tento mód není bezpečný. Pokud nevíš, co děláš, můžeš přijít o své peníze.",
+    "@settingsDevModeWarningMessage": {
+        "description": "Warning message displayed when enabling developer mode"
+    },
+    "settingsDevModeUnderstandButton": "Rozumím",
+    "@settingsDevModeUnderstandButton": {
+        "description": "Button label to acknowledge developer mode warning"
+    },
+    "settingsSuperuserModeDisabledMessage": "Pokročilý mód deaktivován.",
+    "@settingsSuperuserModeDisabledMessage": {
+        "description": "Message shown when superuser mode is disabled"
+    },
+    "settingsSuperuserModeUnlockedMessage": "Pokročilý mód odemčen!",
+    "@settingsSuperuserModeUnlockedMessage": {
+        "description": "Message shown when superuser mode is enabled"
+    },
+    "walletOptionsUnnamedWalletFallback": "Bezejmenná peněženka",
+    "@walletOptionsUnnamedWalletFallback": {
+        "description": "Fallback name displayed for wallets without a specified name"
+    },
+    "walletOptionsNotFoundMessage": "Peněženka nenalezena",
+    "@walletOptionsNotFoundMessage": {
+        "description": "Error message displayed when a wallet cannot be found"
+    },
+    "walletOptionsWalletDetailsTitle": "Detaily peněženky",
+    "@walletOptionsWalletDetailsTitle": {
+        "description": "Title for the wallet details screen"
+    },
+    "addressViewAddressesTitle": "Adresy",
+    "@addressViewAddressesTitle": {
+        "description": "Title for the addresses section in wallet options"
+    },
+    "walletDetailsDeletingMessage": "Mazání peněženky...",
+    "@walletDetailsDeletingMessage": {
+        "description": "Message displayed while a wallet is being deleted"
+    }
+}
