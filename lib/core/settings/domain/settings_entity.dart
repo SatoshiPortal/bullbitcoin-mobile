@@ -60,7 +60,8 @@ enum Language {
   thai('th', null, 'ภาษาไทย'),
   turkish('tr', null, 'Türkçe'),
   ukrainian('uk', 'UA', 'Українська'),
-  simplifiedChinese('zh', 'CN', '简体中文');
+  simplifiedChinese('zh', 'CN', '简体中文'),
+  assamese('as', null, 'অসমীয়া');
 
   final String languageCode;
   final String? countryCode;
