@@ -50,7 +50,7 @@
     "@coreSwapsActionRefund": {
         "description": "Action label for refunding a swap"
     },
-    "coreSwapsLnReceivePaid": "Faktura uhrazena odesílatelem.",
+    "coreSwapsLnReceivePaid": "Odesílatel zaplatil fakturu",
     "@coreSwapsLnReceivePaid": {
         "description": "Status message for paid Lightning receive swap"
     },
