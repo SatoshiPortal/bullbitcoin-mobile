@@ -50,7 +50,7 @@
     "@coreSwapsActionRefund": {
         "description": "Action label for refunding a swap"
     },
-    "coreSwapsLnReceivePaid": "Odesílatel zaplatil fakturu",
+    "coreSwapsLnReceivePaid": "Odesílatel zaplatil fakturu.",
     "@coreSwapsLnReceivePaid": {
         "description": "Status message for paid Lightning receive swap"
     },
@@ -130,19 +130,19 @@
     "@settingsWalletBackupTitle": {
         "description": "Title for the wallet backup section in the settings menu"
     },
-    "translationWarningTitle": "AI-Generované překlady",
+    "translationWarningTitle": "Poznámka k překladu",
     "@translationWarningTitle": {
         "description": "Title for the AI translation warning bottom sheet"
     },
-    "translationWarningDescription": "Většina překladů v této aplikaci byla generována pomocí AI a může obsahovat nepřesnosti. Pokud si všimnete chyby nebo chcete přispět ke zlepšení překladů, můžete přispět přes naši platformu pro překlad komunity.",
+    "translationWarningDescription": "Český překlad nebyl vytvořen pomocí AI. Pokud si všimneš chyby, máš návrh na vhodnější použití slov nebo na zlepšení čitelnosti, můžeš přispět prostřednictvím naší platformy pro komunitní překlady.",
     "@translationWarningDescription": {
         "description": "Description explaining that translations are AI-generated and may be inaccurate"
     },
-    "translationWarningContributeButton": "Nápověda Zlepšovat překlady",
+    "translationWarningContributeButton": "Chci pomoci vylepšit překlad",
     "@translationWarningContributeButton": {
         "description": "Button to open Weblate translation platform"
     },
-    "translationWarningDismissButton": "Čeština",
+    "translationWarningDismissButton": "Rozumím",
     "@translationWarningDismissButton": {
         "description": "Button to dismiss the translation warning"
     },
@@ -4700,7 +4700,7 @@
     "@importQrDeviceSpecterStep8": {
         "description": "Specter instruction step 8"
     },
-    "coreSwapsStatusPending": "Čeština",
+    "coreSwapsStatusPending": "Čeká na zpracování",
     "@coreSwapsStatusPending": {
         "description": "Display name for pending swap status"
     },
@@ -9840,7 +9840,7 @@
     "@payLowPriority": {
         "description": "Low fee priority option"
     },
-    "coreSwapsLnReceivePending": "Swap není dosud iniciován.",
+    "coreSwapsLnReceivePending": "Swap zatím nebyl iniciován.",
     "@coreSwapsLnReceivePending": {
         "description": "Status message for pending Lightning receive swap"
     },
