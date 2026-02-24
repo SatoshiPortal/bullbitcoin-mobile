@@ -4190,5 +4190,21 @@
   "errorReportingRestartSnackbar": "重新启动应用程序以应用此更改",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "备份您的钱包",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "没有备份，如果您丢失手机、删除应用程序或应用程序遇到错误，您将失去对比特币的访问权限。没有备份，就无法恢复您的钱包。",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "立即备份",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "稍后备份，我了解风险",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

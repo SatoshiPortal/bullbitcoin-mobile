@@ -4186,5 +4186,21 @@
   "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "Varmuuskopioi lompakkosi",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai jos sovellus kohtaa virheen. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "VARMUUSKOPIOI NYT",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "VARMUUSKOPIOI MYÖHEMMIN, YMMÄRRÄN RISKIN",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

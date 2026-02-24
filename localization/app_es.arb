@@ -4186,5 +4186,21 @@
   "errorReportingRestartSnackbar": "Reinicie la aplicación para aplicar este cambio",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "Haz una copia de seguridad",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Sin una copia de seguridad, perderás el acceso a tus bitcoin si pierdes tu teléfono, eliminas la aplicación o si la aplicación encuentra algún error. No hay forma de recuperar tu billetera sin una copia de seguridad.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "HACER COPIA AHORA",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "HACER COPIA DESPUÉS, ENTIENDO EL RIESGO",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

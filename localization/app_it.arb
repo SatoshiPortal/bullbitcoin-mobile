@@ -4190,5 +4190,21 @@
   "errorReportingRestartSnackbar": "Riavvia l'app per applicare questa modifica",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "Esegui il backup del portafoglio",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se perdi il telefono, elimini l'app o se l'app incontra un errore. Non c'è modo di recuperare il portafoglio senza un backup.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "ESEGUI BACKUP ORA",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "ESEGUI BACKUP PIÙ TARDI, CAPISCO IL RISCHIO",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

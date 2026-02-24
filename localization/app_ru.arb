@@ -4187,5 +4187,21 @@
   "errorReportingRestartSnackbar": "Перезапустите приложение, чтобы применить это изменение",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "Создайте резервную копию",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если потеряете телефон, удалите приложение или если приложение столкнётся с ошибкой. Нет способа восстановить кошелёк без резервной копии.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "СОЗДАТЬ КОПИЮ СЕЙЧАС",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "СОЗДАТЬ КОПИЮ ПОЗЖЕ, Я ПОНИМАЮ РИСК",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }
