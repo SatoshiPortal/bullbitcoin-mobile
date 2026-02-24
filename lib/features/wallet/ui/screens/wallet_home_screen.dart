@@ -44,7 +44,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
           children: [
             Expanded(
               child: RefreshIndicator(
-                edgeOffset: MediaQuery.of(context).padding.top + 30,
+                edgeOffset: 30,
                 onRefresh: () async {
                   final bloc = context.read<WalletBloc>();
                   bloc.add(const WalletRefreshed());
