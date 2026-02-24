@@ -1153,5 +1153,241 @@
   "encryptedVaultStatusLabel": "এনক্ৰিপ্টেড Vault",
   "testedStatus": "পৰীক্ষিত",
   "notTestedStatus": "পৰীক্ষা কৰা হোৱা নাই",
-  "startBackupButton": "বেকআপ আৰম্ভ কৰক"
-}
+  "startBackupButton": "বেকআপ আৰম্ভ কৰক",
+  "exportVaultButton": "Vault ৰপ্তানি কৰক",
+  "exportingVaultButton": "ৰপ্তানি হৈ আছে...",
+  "viewVaultKeyButton": "Vault Key চাওক",
+  "revealingVaultKeyButton": "প্ৰকাশ কৰা হৈ আছে...",
+  "errorLabel": "ত্ৰুটি",
+  "backupKeyTitle": "বেকআপ Key",
+  "failedToDeriveBackupKey": "বেকআপ key উলিয়াব পৰা নগ'ল",
+  "securityWarningTitle": "সুৰক্ষা সতৰ্কবাণী",
+  "backupKeyWarningMessage": "সতৰ্কবাণী: আপুনি বেকআপ key ক'ত সংৰক্ষণ কৰিছে সেই বিষয়ে সাৱধান হওক।",
+  "backupKeySeparationWarning": "অতি গুৰুত্বপূৰ্ণ যে আপুনি বেকআপ key আৰু বেকআপ ফাইল একেটা ঠাইতে সংৰক্ষণ নকৰে। সদায় সেইবোৰ পৃথক ডিভাইচত বা পৃথক cloud প্ৰদানকৰ্তাত ৰাখক।",
+  "backupKeyExampleWarning": "উদাহৰণস্বৰূপে, যদি আপুনি বেকআপ ফাইলৰ বাবে Google Drive ব্যৱহাৰ কৰিছে, তেন্তে বেকআপ key-ৰ বাবে Google Drive ব্যৱহাৰ নকৰিব।",
+  "cancelButton": "বাতিল কৰক",
+  "continueButton": "অব্যাহত ৰাখক",
+  "testWalletTitle": "{walletName} পৰীক্ষা কৰক",
+  "@testWalletTitle": {
+    "description": "Title for testing wallet backup",
+    "placeholders": {
+      "walletName": {
+        "type": "String",
+        "example": "Default Wallets"
+      }
+    }
+  },
+  "defaultWalletsLabel": "ডিফল্ট Wallets",
+  "confirmButton": "নিশ্চিত কৰক",
+  "recoveryPhraseTitle": "আপোনাৰ recovery phrase সঠিক ক্ৰমত লিখি ৰাখক\n",
+  "storeItSafelyMessage": "ইয়াক কোনো সুৰক্ষিত ঠাইত সংৰক্ষণ কৰক।",
+  "doNotShareWarning": "কাৰো সৈতে ভাগ নকৰিব",
+  "transcribeLabel": "লিখি লওক",
+  "digitalCopyLabel": "ডিজিটেল কপি",
+  "screenshotLabel": "Screenshot",
+  "nextButton": "পৰৱৰ্তী",
+  "tapWordsInOrderTitle": "recovery শব্দবোৰ সঠিক ক্ৰমত টেপ কৰক\n",
+  "whatIsWordNumberPrompt": "{number} নম্বৰ শব্দটো কি?",
+  "@whatIsWordNumberPrompt": {
+    "description": "Prompt asking for specific word number",
+    "placeholders": {
+      "number": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "allWordsSelectedMessage": "আপুনি সকলো শব্দ বাছনি কৰিছে",
+  "verifyButton": "যাচাই কৰক",
+  "passphraseLabel": "Passphrase",
+  "testYourWalletTitle": "আপোনাৰ wallet পৰীক্ষা কৰক",
+  "vaultSuccessfullyImported": "আপোনাৰ vault সফলতাৰে আমদানি কৰা হৈছে",
+  "backupIdLabel": "বেকআপ ID:",
+  "createdAtLabel": "তৈয়াৰ হোৱাৰ তাৰিখ:",
+  "enterBackupKeyManuallyButton": "বেকআপ key হাতেৰে দিয়ক >>",
+  "decryptVaultButton": "Vault ডিক্ৰিপ্ট কৰক",
+  "testCompletedSuccessTitle": "পৰীক্ষা সফলতাৰে সম্পন্ন হৈছে!",
+  "testCompletedSuccessMessage": "আপুনি হেৰুওৱা Bitcoin wallet পুনৰ প্ৰাপ্ত কৰিব পাৰিব",
+  "gotItButton": "বুজিলোঁ",
+  "legacySeedViewScreenTitle": "Legacy Seeds",
+  "legacySeedViewNoSeedsMessage": "কোনো legacy seed পোৱা নগ'ল।",
+  "legacySeedViewMnemonicLabel": "Mnemonic",
+  "legacySeedViewPassphrasesLabel": "Passphrases:",
+  "legacySeedViewEmptyPassphrase": "(খালী)",
+  "enterBackupKeyManuallyTitle": "বেকআপ key হাতেৰে দিয়ক",
+  "enterBackupKeyManuallyDescription": "যদি আপুনি বেকআপ key ৰপ্তানি কৰি নিজে পৃথক ঠাইত সংৰক্ষণ কৰিছে, তেন্তে ইয়াত হাতেৰে দিব পাৰে। অন্যথা, আগৰ স্ক্ৰীনলৈ উভতি যাওক।",
+  "enterBackupKeyLabel": "বেকআপ key দিয়ক",
+  "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2…",
+  "automaticallyFetchKeyButton": "স্বয়ংক্ৰিয়ভাৱে key আনক >>",
+  "enterYourPinTitle": "আপোনাৰ {pinOrPassword} দিয়ক",
+  "@enterYourPinTitle": {
+    "description": "Title for entering PIN or password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "enterYourBackupPinTitle": "আপোনাৰ বেকআপ {pinOrPassword} দিয়ক",
+  "@enterYourBackupPinTitle": {
+    "description": "Title for entering backup PIN or password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "enterPinToContinueMessage": "অব্যাহত ৰাখিবলৈ আপোনাৰ {pinOrPassword} দিয়ক",
+  "@enterPinToContinueMessage": {
+    "description": "Message prompting user to enter PIN/password to continue",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "testBackupPinMessage": "আপোনাৰ বেকআপ {pinOrPassword} মনত আছে নে নাই পৰীক্ষা কৰক",
+  "@testBackupPinMessage": {
+    "description": "Message prompting user to test backup PIN/password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "passwordLabel": "পাছৱৰ্ড",
+  "pickPasswordInsteadButton": "পৰিৱৰ্তে পাছৱৰ্ড বাছক >>",
+  "pickPinInsteadButton": "পৰিৱৰ্তে PIN বাছক >>",
+  "recoverYourWalletTitle": "আপোনাৰ wallet পুনৰুদ্ধাৰ কৰক",
+  "recoverViaCloudDescription": "আপোনাৰ PIN ব্যৱহাৰ কৰি cloud-ৰ জৰিয়তে বেকআপ পুনৰুদ্ধাৰ কৰক।",
+  "recoverVia12WordsDescription": "12 টা শব্দৰ জৰিয়তে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰক।",
+  "recoverButton": "পুনৰুদ্ধাৰ কৰক",
+  "recoverWalletButton": "Wallet পুনৰুদ্ধাৰ কৰক",
+  "importMnemonicTitle": "Mnemonic আমদানি কৰক",
+  "howToDecideBackupTitle": "কেনেকৈ সিদ্ধান্ত লব",
+  "howToDecideBackupText1": "মানুহে Bitcoin হেৰুওৱাৰ এটা সাধাৰণ কাৰণ হ'ল ভৌতিক বেকআপ হেৰুওৱা। যিকোনো মানুহে আপোনাৰ ভৌতিক বেকআপ বিচাৰি পালে আপোনাৰ সকলো Bitcoin লৈ যাব পাৰিব। যদি আপুনি নিশ্চিত যে ভালকৈ লুকাই ৰাখিব পাৰিব আৰু কেতিয়াও হেৰাব নিদিব, তেন্তে ই এটা ভাল বিকল্প।",
+  "howToDecideBackupText2": "এনক্ৰিপ্টেড vault-এ চোৰক আপোনাৰ বেকআপ চুৰি কৰাৰ পৰা ৰক্ষা কৰে। ই আপোনাক আকস্মিকভাৱে বেকআপ হেৰুওৱাৰ পৰাও ৰক্ষা কৰে কাৰণ ই cloud-ত সংৰক্ষিত থাকিব। Google বা Apple-ৰ দৰে cloud সংৰক্ষণ প্ৰদানকৰ্তাৰ আপোনাৰ Bitcoin-লৈ প্ৰৱেশ নাথাকিব কাৰণ এনক্ৰিপশ্যন পাছৱৰ্ড অতি শক্তিশালী।",
+  "physicalBackupRecommendation": "ভৌতিক বেকআপ: ",
+  "physicalBackupRecommendationText": "আপুনি আপোনাৰ Bitcoin seed শব্দবোৰ লুকাই ৰখা আৰু সংৰক্ষণ কৰাৰ নিজৰ অপাৰেশ্যনেল সুৰক্ষা সক্ষমতাৰ প্ৰতি আত্মবিশ্বাসী।",
+  "encryptedVaultRecommendation": "এনক্ৰিপ্টেড vault: ",
+  "encryptedVaultRecommendationText": "আপুনি নিশ্চিত নহয় আৰু বেকআপ সুৰক্ষা পদ্ধতিৰ বিষয়ে জানিবলৈ আৰু সময়ৰ প্ৰয়োজন।",
+  "visitRecoverBullMessage": "অধিক তথ্যৰ বাবে recoverbull.com চাওক।",
+  "howToDecideVaultLocationText1": "Google বা Apple-ৰ দৰে cloud সংৰক্ষণ প্ৰদানকৰ্তাসকলৰ আপোনাৰ Bitcoin-লৈ প্ৰৱেশাধিকাৰ নাথাকিব কাৰণ এনক্ৰিপশ্যন পাছৱৰ্ড অতি শক্তিশালী।",
+  "howToDecideVaultLocationText2": "আপুনি কোন ঠাই বাছনি কৰিছে তাৰ ওপৰত নিৰ্ভৰ কৰি এটা কাস্টম ঠাই অনেক বেছি সুৰক্ষিত হ'ব পাৰে।",
+  "customLocationRecommendation": "কাস্টম ঠাই: ",
+  "customLocationRecommendationText": "আপুনি আত্মবিশ্বাসী যে vault ফাইলটো নেহেৰাব আৰু ফোন হেৰালেও সেইটো প্ৰৱেশযোগ্য হৈ থাকিব।",
+  "googleAppleCloudRecommendation": "Google বা Apple cloud: ",
+  "googleAppleCloudRecommendationText": "আপুনি নিশ্চিত হ'ব বিচাৰে যে ডিভাইচ হেৰালেও vault ফাইলটো কেতিয়াও হেৰাব নাযায়।",
+  "chooseVaultLocationTitle": "Vault ৰ ঠাই বাছনি কৰক",
+  "lastKnownEncryptedVault": "শেষবাৰ জনা এনক্ৰিপ্টেড Vault: {date}",
+  "@lastKnownEncryptedVault": {
+    "description": "Label showing last known encrypted vault date",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "2025-01-20 15:30:45"
+      }
+    }
+  },
+  "googleDriveSignInMessage": "আপুনি Google Drive-ত ছাইন-ইন কৰিব লাগিব",
+  "googleDrivePrivacyMessage": "Google-এ এই এপৰ সৈতে ব্যক্তিগত তথ্য ভাগ কৰিবলৈ কব।",
+  "informationWillNotLeave": "এই তথ্য ",
+  "willNot": "নাযাব ",
+  "leaveYourPhone": "আপোনাৰ ফোনৰ বাহিৰলৈ আৰু ",
+  "never": "কেতিয়াও ",
+  "sharedWithBullBitcoin": "Bull Bitcoin-ৰ সৈতে ভাগ কৰা নহয়।",
+  "savingToDevice": "আপোনাৰ ডিভাইচত সংৰক্ষণ হৈ আছে।",
+  "loadingBackupFile": "বেকআপ ফাইল লোড হৈ আছে...",
+  "pleaseWaitFetching": "অনুগ্ৰহ কৰি অপেক্ষা কৰক, আপোনাৰ বেকআপ ফাইল আনি আছোঁ।",
+  "googleDriveProvider": "Google Drive",
+  "appleICloudProvider": "Apple iCloud",
+  "customLocationProvider": "কাস্টম ঠাই",
+  "quickAndEasyTag": "দ্ৰুত আৰু সহজ",
+  "takeYourTimeTag": "সময় লওক",
+  "customLocationTitle": "কাস্টম ঠাই",
+  "recoverWalletScreenTitle": "Wallet পুনৰুদ্ধাৰ কৰক",
+  "recoverbullVaultRecoveryTitle": "Recoverbull vault পুনৰুদ্ধাৰ",
+  "chooseAccessPinTitle": "প্ৰৱেশ {pinOrPassword} বাছনি কৰক",
+  "@chooseAccessPinTitle": {
+    "description": "Title for choosing access PIN or password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "memorizePasswordWarning": "wallet-লৈ প্ৰৱেশ পুনৰুদ্ধাৰ কৰিবলৈ আপুনি এই {pinOrPassword} মনত ৰাখিব লাগিব। ই কমেও 6 অংকৰ হ'ব লাগিব। যদি এই {pinOrPassword} হেৰায় তেন্তে আপুনি বেকআপ পুনৰুদ্ধাৰ কৰিব নোৱাৰিব।",
+  "@memorizePasswordWarning": {
+    "description": "Warning about memorizing PIN/password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "passwordTooCommonError": "এই {pinOrPassword} অতি সাধাৰণ। অনুগ্ৰহ কৰি এটা বেলেগ বাছক।",
+  "@passwordTooCommonError": {
+    "description": "Error message for common password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "passwordMinLengthError": "{pinOrPassword} কমেও 6 অংকৰ দীঘল হ'ব লাগিব",
+  "@passwordMinLengthError": {
+    "description": "Error message for password minimum length",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "pickPasswordOrPinButton": "পৰিৱৰ্তে {pinOrPassword} বাছক >>",
+  "@pickPasswordOrPinButton": {
+    "description": "Button to switch between PIN and password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "password"
+      }
+    }
+  },
+  "confirmAccessPinTitle": "প্ৰৱেশ {pinOrPassword} নিশ্চিত কৰক",
+  "@confirmAccessPinTitle": {
+    "description": "Title for confirming access PIN or password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "enterPinAgainMessage": "অব্যাহত ৰাখিবলৈ আপোনাৰ {pinOrPassword} পুনৰ দিয়ক।",
+  "@enterPinAgainMessage": {
+    "description": "Message asking to re-enter PIN/password",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "PIN"
+      }
+    }
+  },
+  "usePasswordInsteadButton": "পৰিৱৰ্তে {pinOrPassword} ব্যৱহাৰ কৰক >>",
+  "@usePasswordInsteadButton": {
+    "description": "Button to use password/PIN instead",
+    "placeholders": {
+      "pinOrPassword": {
+        "type": "String",
+        "example": "password"
+      }
+    }
+  },
