@@ -19,7 +19,7 @@ import 'package:get_it/get_it.dart';
 class StorageLocator {
   static Future<void> registerDatasources(GetIt locator) async {
     const secureStorage = FlutterSecureStorage(
-      aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      aOptions: AndroidOptions(resetOnError: false),
       // iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock),
     );
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
