@@ -55,8 +55,13 @@ class ManualSwapStatusResetUsecase {
         log.fine(
           'Rescue: Swap $id already exists in SQLite with status paid or pending, skipping',
         );
+        final swap = _fixWalletIds(existing.toEntity());
+        if (swap != existing.toEntity()) {
+          await repository.updateSwap(swap: swap);
+          log.fine('Rescue: Fixed wallet ID for swap $id in SQLite');
+        }
         return (
-          swap: existing.toEntity(),
+          swap: swap,
           nextReverseIndex: null,
           nextChainIndex: null,
           nextSubmarineIndex: null,
@@ -66,7 +71,7 @@ class ManualSwapStatusResetUsecase {
         log.fine(
           'Rescue: Swap $id exists in SQLite with status: ${existing.status}, updating status to paid and clearing completionTime',
         );
-        final swap = existing.toEntity();
+        final swap = _fixWalletIds(existing.toEntity());
         final updated = swap.copyWith(
           status: SwapStatus.paid,
           completionTime: null,
@@ -293,5 +298,25 @@ class ManualSwapStatusResetUsecase {
       await repository.updateSwap(swap: swapModel.toEntity());
     }
     log.fine('Rescue: Recreated ChainSwap ${chainSwap.id} in SQLite');
+  }
+
+  /// Fixes wallet IDs that were stored with the wrong Liquid coin type (1667h)
+  /// by replacing them with the correct value (1776h).
+  Swap _fixWalletIds(Swap swap) {
+    String fix(String walletId) =>
+        walletId.replaceAll('/1667h/', '/1776h/');
+
+    return switch (swap) {
+      LnReceiveSwap(:final receiveWalletId) => swap.copyWith(
+        receiveWalletId: fix(receiveWalletId),
+      ),
+      LnSendSwap(:final sendWalletId) => swap.copyWith(
+        sendWalletId: fix(sendWalletId),
+      ),
+      ChainSwap(:final sendWalletId, :final receiveWalletId) => swap.copyWith(
+        sendWalletId: fix(sendWalletId),
+        receiveWalletId: receiveWalletId != null ? fix(receiveWalletId) : null,
+      ),
+    };
   }
 }
