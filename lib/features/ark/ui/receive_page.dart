@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class ReceivePage extends StatefulWidget {
   const ReceivePage({super.key});
@@ -81,21 +80,9 @@ class ReceiveQR extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 42),
-        padding: const EdgeInsets.all(16),
-        constraints: const BoxConstraints(maxHeight: 300, maxWidth: 300),
-        decoration: BoxDecoration(
-          color: context.appColors.background,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: qrData.isNotEmpty
-            ? QrImageView(
-                data: qrData,
-                // ignore: deprecated_member_use
-                foregroundColor: context.appColors.secondary,
-              )
-            : const LoadingBoxContent(height: 200),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 42),
+        child: QrDisplayWidget(data: qrData),
       ),
     );
   }
