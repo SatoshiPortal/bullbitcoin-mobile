@@ -4187,19 +4187,19 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
-  "backupWarningTitle": "Varmuuskopioi lompakkosi",
+  "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai jos sovellus kohtaa virheen. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
+  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
   "@backupWarningDescription": {
     "description": "Description explaining why backup is important"
   },
-  "backupWarningBackupNow": "VARMUUSKOPIOI NYT",
+  "backupWarningBackupNow": "KYLLÄ",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
   },
-  "backupWarningBackupLater": "VARMUUSKOPIOI MYÖHEMMIN, YMMÄRRÄN RISKIN",
+  "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   }

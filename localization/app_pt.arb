@@ -4159,19 +4159,19 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
-  "backupWarningTitle": "Faça backup da sua carteira",
+  "backupWarningTitle": "FAÇA BACKUP DA SUA CARTEIRA AGORA",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Sem um backup, você perderá o acesso aos seus bitcoin se perder o telefone, excluir o aplicativo ou se o aplicativo encontrar algum erro. Não há como recuperar sua carteira sem um backup.",
+  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se perder o telefone, excluir o aplicativo ou encontrar um problema crítico relacionado ao aplicativo ou ao dispositivo. Não há como recuperar sua carteira sem um backup.",
   "@backupWarningDescription": {
     "description": "Description explaining why backup is important"
   },
-  "backupWarningBackupNow": "FAZER BACKUP AGORA",
+  "backupWarningBackupNow": "SIM",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
   },
-  "backupWarningBackupLater": "FAZER BACKUP DEPOIS, ENTENDO O RISCO",
+  "backupWarningBackupLater": "NÃO, ENTENDO O RISCO",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   }

@@ -4188,19 +4188,19 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
-  "backupWarningTitle": "Sauvegardez votre portefeuille",
+  "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoin si vous perdez votre téléphone, supprimez l'application ou si l'application rencontre une erreur. Il n'y a aucun moyen de récupérer votre portefeuille sans sauvegarde.",
+  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si vous perdez votre téléphone, supprimez l'application, ou si vous rencontrez un problème critique lié à l'application ou à l'appareil. Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
   "@backupWarningDescription": {
     "description": "Description explaining why backup is important"
   },
-  "backupWarningBackupNow": "SAUVEGARDER MAINTENANT",
+  "backupWarningBackupNow": "OUI",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
   },
-  "backupWarningBackupLater": "SAUVEGARDER PLUS TARD, JE COMPRENDS LE RISQUE",
+  "backupWarningBackupLater": "NON, JE COMPRENDS LE RISQUE",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   }
