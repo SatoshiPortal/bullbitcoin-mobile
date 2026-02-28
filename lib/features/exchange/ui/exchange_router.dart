@@ -80,17 +80,10 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeLoginForSupport.name,
       path: ExchangeRoute.exchangeLoginForSupport.path,
       pageBuilder: (context, state) {
-        Widget screen;
-        if (Platform.isIOS) {
-          final isSuperuser =
-              context.read<SettingsCubit>().state.isSuperuser ?? false;
-          screen = isSuperuser
-              ? const ExchangeLandingScreen()
-              : const ExchangeSupportLoginScreen();
-        } else {
-          screen = const ExchangeLandingScreen();
-        }
-        return NoTransitionPage(key: state.pageKey, child: screen);
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: const ExchangeSupportLoginScreen(),
+        );
       },
     ),
     GoRoute(
