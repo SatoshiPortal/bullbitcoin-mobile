@@ -3568,9 +3568,6 @@
   "payInvoiceDetails": "Деталі вступу",
   "exchangeLandingLoginButton": "Увійти",
   "exchangeLandingLoginToUseSupport": "Будь ласка, увійдіть або зареєструйтесь, щоб використовувати чат підтримки для питань, пов'язаних з біржею.",
-  "exchangeSupportLoginSubtitle": "Підключитися до облікового запису підтримки Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "У вас буде доступ лише до функції чату підтримки.",
-  "exchangeSupportLoginAccountInfo": "Ви створите обліковий запис на bullbitcoin.com, до якого завжди зможете отримати доступ через наш веб-додаток.",
   "torSettingsEnableProxy": "Увімкнути Tor Proxy",
   "bitboxScreenAddressToVerify": "Адреса для перевірки:",
   "bitboxErrorPermissionDenied": "Для підключення до пристроїв BitBox потрібні дозволи на USB.",
@@ -4166,8 +4163,7 @@
   "mempoolErrorSaveServerFailed": "Не вдалося зберегти сервер: {error}",
   "mempoolErrorLoadFailed": "Не вдалося завантажити дані сервера mempool: {error}",
   "mempoolErrorDeleteFailed": "Не вдалося видалити користувацький сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}"
-,
+  "mempoolErrorUpdateSettingsFailed": "Не вдалося оновити налаштування: {error}",
   "settingsErrorReportingTitle": "Звіт про помилки",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

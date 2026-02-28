@@ -65,7 +65,8 @@ class AppRouter {
           final isExchangeLanding = location.contains(
             ExchangeRoute.exchangeLanding.path,
           );
-          final isSupportChat = location.contains('/support-chat');
+          final isSupportChat = location.contains('/support-chat') ||
+              location.contains('/login-support');
 
           return BlocProvider(
             create: (_) => locator<PriceChartCubit>(),
