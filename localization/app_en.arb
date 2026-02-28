@@ -360,6 +360,10 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Get Help",
+  "@settingsGetHelpLabel": {
+    "description": "Label for the Get Help support chat link in settings"
+  },
   "settingsServicesStatusTitle": "Services Status",
   "@settingsServicesStatusTitle": {
     "description": "Title for the services status section in the settings menu"
@@ -10355,17 +10359,9 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
-  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support Account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
-  },
-  "exchangeSupportLoginAccessMessage": "You will only have access to the support chat feature.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
-  "exchangeSupportLoginAccountInfo": "You will be creating an account with bullbitcoin.com that you can always access via our web app.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
+  "exchangeSupportLoginChatRequired": "To get human support, you must first log in to your Bull Bitcoin account. It's 100% free and no KYC is required, only an email address.",
+  "@exchangeSupportLoginChatRequired": {
+    "description": "Message on chat preview overlay prompting login to access support chat"
   },
   "exchangeHomeDeposit": "Deposit",
   "@exchangeHomeDeposit": {

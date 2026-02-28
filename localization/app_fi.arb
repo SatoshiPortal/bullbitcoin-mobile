@@ -3253,9 +3253,6 @@
   "exchangeLandingRestriction": "Pörssipalvelujen käyttö on rajoitettua maihin, joissa Bull Bitcoin voi toimia laillisesti, ja se voi edellyttää KYC-tunnistusta.",
   "exchangeLandingLoginButton": "Kirjaudu tai rekisteröidy",
   "exchangeLandingLoginToUseSupport": "Ole hyvä ja kirjaudu sisään tai rekisteröidy käyttääksesi tukichattia pörssiongelmiin.",
-  "exchangeSupportLoginSubtitle": "Yhdistä Bull Bitcoin -tukitiliin",
-  "exchangeSupportLoginAccessMessage": "Sinulla on pääsy vain tukichat-ominaisuuteen.",
-  "exchangeSupportLoginAccountInfo": "Luot tilin osoitteeseen bullbitcoin.com, johon voit aina käyttää verkkosovelluksemme kautta.",
   "exchangeHomeDeposit": "Talleta",
   "exchangeHomeWithdraw": "Nosta",
   "exchangeKycLight": "Kevyt",
@@ -4161,8 +4158,7 @@
   "autoswapInfoDismissButton": "KYLLÄ, KIITOS",
   "autoswapInfoSettingsButton": "EI, YMMÄRRÄN RISKIT",
   "autoswapInfoRemindLater": "Määritä Autoswap-asetukset",
-  "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?"
-,
+  "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?",
   "settingsErrorReportingTitle": "Virheraportointi",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

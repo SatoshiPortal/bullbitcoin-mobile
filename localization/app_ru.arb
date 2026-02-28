@@ -3388,9 +3388,6 @@
   "payInvoiceDetails": "Детали счетов-фактур",
   "exchangeLandingLoginButton": "Зарегистрироваться или зарегистрироваться",
   "exchangeLandingLoginToUseSupport": "Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать чат поддержки для вопросов, связанных с биржей.",
-  "exchangeSupportLoginSubtitle": "Подключиться к учетной записи поддержки Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "У вас будет доступ только к функции чата поддержки.",
-  "exchangeSupportLoginAccountInfo": "Вы создадите учетную запись на bullbitcoin.com, к которой всегда сможете получить доступ через наше веб-приложение.",
   "torSettingsEnableProxy": "Включить Tor Proxy",
   "bitboxScreenAddressToVerify": "Адрес для проверки:",
   "payConfirmPayment": "Подтвердить оплату",
@@ -4162,8 +4159,7 @@
   "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер: {error}",
   "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool: {error}",
   "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}"
-,
+  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}",
   "settingsErrorReportingTitle": "Отчет об ошибках",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

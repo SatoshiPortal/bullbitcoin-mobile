@@ -3366,9 +3366,6 @@
   "payInvoiceDetails": "Detalhes da fatura",
   "exchangeLandingLoginButton": "Login Ou Inscreva-se",
   "exchangeLandingLoginToUseSupport": "Por favor, faça login ou inscreva-se para usar o chat de suporte para questões relacionadas à exchange.",
-  "exchangeSupportLoginSubtitle": "Conectar à conta de suporte Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "Você terá acesso apenas ao recurso de chat de suporte.",
-  "exchangeSupportLoginAccountInfo": "Você estará criando uma conta com bullbitcoin.com que poderá sempre acessar através do nosso aplicativo web.",
   "torSettingsEnableProxy": "Ativar Proxy Tor",
   "bitboxScreenAddressToVerify": "Endereço para verificar:",
   "payConfirmPayment": "Confirmar pagamento",
@@ -4133,8 +4130,7 @@
   "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor: {error}",
   "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool: {error}",
   "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}"
-,
+  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",
   "settingsErrorReportingTitle": "Relatório de erros",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
