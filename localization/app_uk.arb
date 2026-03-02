@@ -4191,5 +4191,21 @@
   "errorReportingRestartSnackbar": "Перезапустіть програму, щоб застосувати цю зміну",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ГАМАНЦЯ ЗАРАЗ",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо втратите телефон, видалите застосунок або зіткнетеся з критичною проблемою застосунку чи пристрою. Відновити гаманець без резервної копії неможливо.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "ТАК",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "НІ, Я РОЗУМІЮ РИЗИК",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }
