@@ -36,11 +36,17 @@ class SellAmountInputBottomButtons extends StatelessWidget {
     final isLimitedKyc = context.select(
       (SellBloc bloc) => bloc.state.isLimitedKycLevel,
     );
+    final stateFiatCurrency = context.select(
+      (SellBloc bloc) => bloc.state.fiatCurrency,
+    );
     // For CAD, we allow selling with limited KYC.
     // For other fiat currencies, we require full KYC.
+    // Fall back to the state's fiat currency (from userSummary) when the
+    // dropdown hasn't been changed yet and fiatCurrency is null.
+    final effectiveFiatCurrency = fiatCurrency ?? stateFiatCurrency;
     final isKycLevelOk =
         isFullyVerifiedKycLevel ||
-        fiatCurrency == FiatCurrency.cad && isLimitedKyc;
+        effectiveFiatCurrency == FiatCurrency.cad && isLimitedKyc;
 
     if (isLoading) {
       return const LoadingLineContent(height: 48);
