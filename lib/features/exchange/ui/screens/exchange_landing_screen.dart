@@ -33,128 +33,132 @@ class ExchangeLandingScreen extends StatelessWidget {
           ),
         ),
         extendBodyBehindAppBar: true,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            children: [
-              const Gap(32),
-              Center(
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
-                    Image.asset(
-                      Assets.logos.bbLogoSmall.path,
-                      width: 120,
-                      height: 120,
+                    const Gap(32),
+                    Center(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            Assets.logos.bbLogoSmall.path,
+                            width: 120,
+                            height: 120,
+                          ),
+                          const Gap(16),
+                          BBText(
+                            context.loc.exchangeBrandName,
+                            style: AppFonts.textTitleTheme.textStyle.copyWith(
+                              color: context.appColors.primary,
+                              fontSize: 64,
+                            ),
+                          ),
+                          const Gap(12),
+                          BBText(
+                            context.loc.exchangeLandingConnectAccount,
+                            style: context.font.headlineSmall?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Gap(32),
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: context.appColors.surfaceContainer,
+                        border: Border.all(
+                          color: context.appColors.outline,
+                          width: 0,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BBText(
+                            context.loc.exchangeFeatureSelfCustody,
+                            style: context.font.bodyLarge?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                          const Gap(12),
+                          BBText(
+                            context.loc.exchangeFeatureDcaOrders,
+                            style: context.font.bodyLarge?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                          const Gap(12),
+                          BBText(
+                            context.loc.exchangeFeatureSellBitcoin,
+                            style: context.font.bodyLarge?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                          const Gap(12),
+                          BBText(
+                            context.loc.exchangeFeatureBankTransfers,
+                            style: context.font.bodyLarge?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                          const Gap(12),
+                          BBText(
+                            context.loc.exchangeFeatureCustomerSupport,
+                            style: context.font.bodyLarge?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                          const Gap(12),
+                          BBText(
+                            context.loc.exchangeFeatureUnifiedHistory,
+                            style: context.font.bodyLarge?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     const Gap(16),
-                    BBText(
-                      context.loc.exchangeBrandName,
-                      style: AppFonts.textTitleTheme.textStyle.copyWith(
-                        color: context.appColors.primary,
-                        fontSize: 64,
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: context.appColors.warningContainer,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                    const Gap(12),
-                    BBText(
-                      context.loc.exchangeLandingConnectAccount,
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Gap(32),
-              Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: context.appColors.surfaceContainer,
-                  border: Border.all(
-                    color: context.appColors.outline,
-                    width: 0,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    BBText(
-                      context.loc.exchangeFeatureSelfCustody,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
-                      context.loc.exchangeFeatureDcaOrders,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
-                      context.loc.exchangeFeatureSellBitcoin,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
-                      context.loc.exchangeFeatureBankTransfers,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
-                      context.loc.exchangeFeatureCustomerSupport,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
-                      ),
-                    ),
-                    const Gap(12),
-                    BBText(
-                      context.loc.exchangeFeatureUnifiedHistory,
-                      style: context.font.bodyLarge?.copyWith(
-                        color: context.appColors.onSurface,
+                      child: BBText(
+                        context.loc.exchangeLandingDisclaimerLegal,
+                        style: context.font.bodySmall?.copyWith(
+                          color: context.appColors.onSurface,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const Gap(16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.appColors.warningContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: BBText(
-                  context.loc.exchangeLandingDisclaimerLegal,
-                  style: context.font.bodySmall?.copyWith(
-                    color: context.appColors.onSurface,
-                  ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 13.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: BBButton.big(
+                  label: context.loc.exchangeLoginButton,
+                  onPressed: () {
+                    context.goNamed(ExchangeRoute.exchangeAuth.name);
+                  },
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
                 ),
               ),
-              const Gap(40),
-              Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: BBButton.big(
-                      label: context.loc.exchangeLoginButton,
-                      onPressed: () {
-                        context.goNamed(ExchangeRoute.exchangeAuth.name);
-                      },
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                    ),
-                  ),
-                ],
-              ),
-              const Gap(32),
-            ],
-          ),
+            ),
+            const Gap(16),
+          ],
         ),
       ),
     );
