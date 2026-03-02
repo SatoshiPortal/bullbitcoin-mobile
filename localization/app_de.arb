@@ -4191,5 +4191,21 @@
   "errorReportingRestartSnackbar": "Starten Sie bitte die App neu, um diese Änderung zu übernehmen",
   "@errorReportingRestartSnackbar": {
     "description": "Kurze Bestätigung, wenn die Einstellung zur Fehlerberichterstattung geändert wird"
+  },
+  "backupWarningTitle": "SICHERN SIE IHR WALLET JETZT",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Ohne ein Backup verlieren Sie den Zugang zu Ihren Bitcoin, wenn Sie Ihr Telefon verlieren, die App löschen oder ein kritisches anwendungs- oder gerätebezogenes Problem aufritt. Es gibt keine Möglichkeit, Ihr Wallet ohne ein Backup wiederherzustellen.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "JA",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

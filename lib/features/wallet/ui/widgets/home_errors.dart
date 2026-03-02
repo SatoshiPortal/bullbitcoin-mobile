@@ -18,14 +18,14 @@ class HomeWarnings extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<WalletBloc, WalletState>(
       buildWhen: (previous, current) =>
-          previous.showBackupWarning() != current.showBackupWarning() ||
+          previous.hasNoBackup() != current.hasNoBackup() ||
           previous.showAutoSwapDefaultEnabledWarning() !=
               current.showAutoSwapDefaultEnabledWarning() ||
           previous.showAutoSwapActiveStatus() !=
               current.showAutoSwapActiveStatus() ||
           previous.warnings != current.warnings,
       builder: (context, state) {
-        final showBackupWarning = state.showBackupWarning();
+        final showBackupWarning = state.hasNoBackup();
         final showAutoSwapDefaultEnabledWarning = state
             .showAutoSwapDefaultEnabledWarning();
         final showAutoSwapActiveStatus = state.showAutoSwapActiveStatus();
