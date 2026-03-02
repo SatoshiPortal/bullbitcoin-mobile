@@ -79,7 +79,7 @@ class AppRouter {
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
-                  bottomNavigationBar: isExchangeLanding || isSupportChat
+                  bottomNavigationBar: isSupportChat
                       ? null
                       : BottomNavigationBar(
                           currentIndex: tabIndex,
