@@ -36,7 +36,9 @@ class BuyInputScreen extends StatelessWidget {
       final error = bloc.state.createOrderBuyError;
       return error is AboveMaxAmountBuyError ? error : null;
     });
-    final buyState = context.watch<BuyBloc>().state;
+    final needsKycUpgrade = context.select(
+      (BuyBloc bloc) => bloc.state.needsKycUpgrade(bloc.state.amount ?? 0),
+    );
     final showInsufficientBalanceError = context.select(
       (BuyBloc bloc) => bloc.state.showInsufficientBalanceError,
     );
@@ -97,7 +99,7 @@ class BuyInputScreen extends StatelessWidget {
 
                 const Gap(16),
                 if (isStarted) ...[
-                  if (buyState.needsKycUpgrade(buyState.amount ?? 0)) ...[
+                  if (needsKycUpgrade) ...[
                     InfoCard(
                       title: context.loc.buyInputKycPending,
                       description: context.loc.buyInputKycMessage,

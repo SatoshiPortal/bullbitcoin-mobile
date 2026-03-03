@@ -41,8 +41,11 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final payState = context.watch<PayBloc>().state;
     final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
+    final currency = context.select((PayBloc bloc) => bloc.state.currency);
+    final needsKycUpgrade = context.select(
+      (PayBloc bloc) => bloc.state.needsKycUpgrade(enteredAmount),
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pay')),
@@ -55,10 +58,10 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
               const Gap(24.0),
               PayAmountInputFields(
                 amountController: _amountController,
-                fiatCurrency: payState.currency,
+                fiatCurrency: currency,
               ),
               const Spacer(),
-              if (payState.needsKycUpgrade(enteredAmount)) ...[
+              if (needsKycUpgrade) ...[
                 InfoCard(
                   title: context.loc.buyInputKycPending,
                   description: context.loc.buyInputKycMessage,
