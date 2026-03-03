@@ -11,7 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SellAmountInputBottomButtons extends StatelessWidget {
+class SellAmountInputBottomButtons extends StatefulWidget {
   const SellAmountInputBottomButtons({
     super.key,
     required this.amountController,
@@ -24,6 +24,38 @@ class SellAmountInputBottomButtons extends StatelessWidget {
   final bool isFiatCurrencyInput;
   final GlobalKey<FormState> formKey;
   final FiatCurrency? fiatCurrency;
+
+  @override
+  State<SellAmountInputBottomButtons> createState() =>
+      _SellAmountInputBottomButtonsState();
+}
+
+class _SellAmountInputBottomButtonsState
+    extends State<SellAmountInputBottomButtons> {
+  @override
+  void initState() {
+    super.initState();
+    widget.amountController.addListener(_onAmountChanged);
+  }
+
+  void _onAmountChanged() {
+    setState(() {});
+  }
+
+  @override
+  void didUpdateWidget(SellAmountInputBottomButtons oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.amountController != widget.amountController) {
+      oldWidget.amountController.removeListener(_onAmountChanged);
+      widget.amountController.addListener(_onAmountChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.amountController.removeListener(_onAmountChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +75,25 @@ class SellAmountInputBottomButtons extends StatelessWidget {
     // For other fiat currencies, we require full KYC.
     // Fall back to the state's fiat currency (from userSummary) when the
     // dropdown hasn't been changed yet and fiatCurrency is null.
-    final effectiveFiatCurrency = fiatCurrency ?? stateFiatCurrency;
+    final effectiveFiatCurrency = widget.fiatCurrency ?? stateFiatCurrency;
     final isKycLevelOk =
         isFullyVerifiedKycLevel ||
         effectiveFiatCurrency == FiatCurrency.cad && isLimitedKyc;
 
+    // Limited KYC CAD users can only sell up to 999 CAD at a time.
+    const cadLimitedKycMaxAmount = 999.0;
+    final enteredAmount =
+        double.tryParse(widget.amountController.text) ?? 0.0;
+    final isCadLimitExceeded =
+        isLimitedKyc &&
+        !isFullyVerifiedKycLevel &&
+        effectiveFiatCurrency == FiatCurrency.cad &&
+        widget.isFiatCurrencyInput &&
+        enteredAmount > cadLimitedKycMaxAmount;
+
     if (isLoading) {
       return const LoadingLineContent(height: 48);
-    } else if (!isKycLevelOk) {
+    } else if (!isKycLevelOk || isCadLimitExceeded) {
       return Column(
         children: [
           InfoCard(
@@ -74,15 +117,15 @@ class SellAmountInputBottomButtons extends StatelessWidget {
       return BBButton.big(
         label: context.loc.sellSendPaymentContinue,
         onPressed: () {
-          if (formKey.currentState!.validate()) {
+          if (widget.formKey.currentState!.validate()) {
             final sellBloc = context.read<SellBloc>();
             final sellState = sellBloc.state;
             sellBloc.add(
               SellEvent.amountInputContinuePressed(
-                amountInput: amountController.text,
-                isFiatCurrencyInput: isFiatCurrencyInput,
+                amountInput: widget.amountController.text,
+                isFiatCurrencyInput: widget.isFiatCurrencyInput,
                 fiatCurrency:
-                    fiatCurrency ??
+                    widget.fiatCurrency ??
                     ((sellState is SellAmountInputState)
                         ? FiatCurrency.fromCode(
                           sellState.userSummary.currency ?? 'CAD',
