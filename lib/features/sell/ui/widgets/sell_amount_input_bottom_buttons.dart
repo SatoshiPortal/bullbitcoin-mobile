@@ -68,32 +68,36 @@ class _SellAmountInputBottomButtonsState
     final isLimitedKyc = context.select(
       (SellBloc bloc) => bloc.state.isLimitedKycLevel,
     );
+    final isLightKyc = context.select(
+      (SellBloc bloc) => bloc.state.isLightKycLevel,
+    );
     final stateFiatCurrency = context.select(
       (SellBloc bloc) => bloc.state.fiatCurrency,
     );
-    // For CAD, we allow selling with limited KYC.
+    // For CAD, we allow selling with limited or light KYC (subject to limits).
     // For other fiat currencies, we require full KYC.
     // Fall back to the state's fiat currency (from userSummary) when the
     // dropdown hasn't been changed yet and fiatCurrency is null.
     final effectiveFiatCurrency = widget.fiatCurrency ?? stateFiatCurrency;
     final isKycLevelOk =
         isFullyVerifiedKycLevel ||
-        effectiveFiatCurrency == FiatCurrency.cad && isLimitedKyc;
+        effectiveFiatCurrency == FiatCurrency.cad &&
+            (isLimitedKyc || isLightKyc);
 
-    // Limited KYC CAD users can only sell up to 999 CAD at a time.
-    const cadLimitedKycMaxAmount = 999.0;
+    // CAD per-transaction limits by KYC level:
+    //   Limited: $999, Light: $3,000, Full: no limit.
     final enteredAmount =
         double.tryParse(widget.amountController.text) ?? 0.0;
-    final isCadLimitExceeded =
-        isLimitedKyc &&
+    final isCadAmountLimitExceeded =
         !isFullyVerifiedKycLevel &&
         effectiveFiatCurrency == FiatCurrency.cad &&
         widget.isFiatCurrencyInput &&
-        enteredAmount > cadLimitedKycMaxAmount;
+        ((isLimitedKyc && enteredAmount > 999.0) ||
+            (isLightKyc && enteredAmount > 3000.0));
 
     if (isLoading) {
       return const LoadingLineContent(height: 48);
-    } else if (!isKycLevelOk || isCadLimitExceeded) {
+    } else if (!isKycLevelOk || isCadAmountLimitExceeded) {
       return Column(
         children: [
           InfoCard(

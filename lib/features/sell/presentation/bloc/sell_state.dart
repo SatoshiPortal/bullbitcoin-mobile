@@ -266,6 +266,42 @@ sealed class SellState with _$SellState {
     );
   }
 
+  bool get isLightKycLevel {
+    return when(
+      initial: (apiKeyException, getUserSummaryException) => false,
+      amountInput: (userSummary, bitcoinUnit) => userSummary.isLightKycLevel,
+      walletSelection:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            isCreatingSellOrder,
+            error,
+          ) => userSummary.isLightKycLevel,
+      payment:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            selectedWallet,
+            sellOrder,
+            isConfirmingPayment,
+            isPolling,
+            error,
+            absoluteFees,
+            _,
+            _,
+            _,
+            _,
+          ) => userSummary.isLightKycLevel,
+      success:
+          (bitcoinUnit, sellOrder) =>
+              true, // Success state implies KYC was sufficient
+    );
+  }
+
   bool get isFullyVerifiedKycLevel {
     return when(
       initial: (apiKeyException, getUserSummaryException) => false,
