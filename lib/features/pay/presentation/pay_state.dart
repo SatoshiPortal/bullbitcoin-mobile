@@ -48,6 +48,13 @@ sealed class PayState with _$PayState {
     );
   }
 
+  bool get isFullyVerifiedKycLevel =>
+      userSummary?.isFullyVerifiedKycLevel == true;
+
+  bool get isLimitedKycLevel => userSummary?.isLimitedKycLevel == true;
+
+  bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
+
   FiatCurrency get currency {
     return when(
       recipientSelection: (userSummary, _, _) => userSummary != null

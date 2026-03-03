@@ -53,6 +53,12 @@ post_install do |installer|
               'PERMISSION_CAMERA=1',
               'PERMISSION_PHOTOS=1',
             ]
+
+          # Suppress pod deployment target warnings — some pods declare targets
+          # below the Xcode minimum (12.0). Raise them to match our floor.
+          if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 12.0
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+          end
       end
   end
 end

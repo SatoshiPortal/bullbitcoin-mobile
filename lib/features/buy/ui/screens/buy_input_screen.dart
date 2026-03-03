@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -39,6 +41,33 @@ class BuyInputScreen extends StatelessWidget {
     final isFullyVerifiedKycLevel = context.select(
       (BuyBloc bloc) => bloc.state.isFullyVerifiedKycLevel,
     );
+    final isLimitedKyc = context.select(
+      (BuyBloc bloc) => bloc.state.isLimitedKycLevel,
+    );
+    final isLightKyc = context.select(
+      (BuyBloc bloc) => bloc.state.isLightKycLevel,
+    );
+    final buyAmount = context.select(
+      (BuyBloc bloc) => bloc.state.amount,
+    );
+    final buyCurrency = context.select(
+      (BuyBloc bloc) => bloc.state.currency,
+    );
+    // For CAD, limited/light KYC users can buy up to their per-tx limits.
+    // For other currencies, full KYC is required.
+    final isKycLevelOk =
+        isFullyVerifiedKycLevel ||
+        buyCurrency == FiatCurrency.cad && (isLimitedKyc || isLightKyc);
+    // CAD per-transaction limits: Limited $999, Light $3,000, Full no limit.
+    final isCadAmountLimitExceeded =
+        !isFullyVerifiedKycLevel &&
+        buyCurrency == FiatCurrency.cad &&
+        ((isLimitedKyc &&
+                (buyAmount ?? 0) >
+                    ExchangeKycConstants.cadLimitedKycMaxAmount) ||
+            (isLightKyc &&
+                (buyAmount ?? 0) >
+                    ExchangeKycConstants.cadLightKycMaxAmount));
     final showInsufficientBalanceError = context.select(
       (BuyBloc bloc) => bloc.state.showInsufficientBalanceError,
     );
@@ -100,7 +129,7 @@ class BuyInputScreen extends StatelessWidget {
 
                 const Gap(16),
                 if (isStarted) ...[
-                  if (!isFullyVerifiedKycLevel) ...[
+                  if (!isKycLevelOk || isCadAmountLimitExceeded) ...[
                     InfoCard(
                       title: context.loc.buyInputKycPending,
                       description: context.loc.buyInputKycMessage,

@@ -135,6 +135,14 @@ class LabelConstants {
   static const labelKeyPrefix = 'label';
 }
 
+class ExchangeKycConstants {
+  /// Maximum CAD transaction amount for Limited Identity Verification users.
+  static const double cadLimitedKycMaxAmount = 999.0;
+
+  /// Maximum CAD transaction amount for Canada Light Verification users.
+  static const double cadLightKycMaxAmount = 3000.0;
+}
+
 class CountryConstants {
   // Better to make this a map to fetch by code directly instead of needing a where
   // clause each time. But for now keeping it as is since best would be to get

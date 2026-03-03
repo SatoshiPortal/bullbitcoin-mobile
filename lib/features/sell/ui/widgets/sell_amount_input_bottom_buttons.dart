@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -92,8 +93,10 @@ class _SellAmountInputBottomButtonsState
         !isFullyVerifiedKycLevel &&
         effectiveFiatCurrency == FiatCurrency.cad &&
         widget.isFiatCurrencyInput &&
-        ((isLimitedKyc && enteredAmount > 999.0) ||
-            (isLightKyc && enteredAmount > 3000.0));
+        ((isLimitedKyc &&
+                enteredAmount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
+            (isLightKyc &&
+                enteredAmount > ExchangeKycConstants.cadLightKycMaxAmount));
 
     if (isLoading) {
       return const LoadingLineContent(height: 48);

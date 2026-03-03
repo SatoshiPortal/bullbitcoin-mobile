@@ -36,6 +36,10 @@ sealed class BuyState with _$BuyState {
   bool get isFullyVerifiedKycLevel =>
       userSummary?.isFullyVerifiedKycLevel == true;
 
+  bool get isLimitedKycLevel => userSummary?.isLimitedKycLevel == true;
+
+  bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
+
   double? get balance => balances[currencyInput];
 
   int? get maxAmountSat =>
