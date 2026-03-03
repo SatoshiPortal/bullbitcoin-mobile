@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -63,44 +62,16 @@ class _SellAmountInputBottomButtonsState
     final isLoading = context.select(
       (SellBloc bloc) => bloc.state is SellInitialState,
     );
-    final isFullyVerifiedKycLevel = context.select(
-      (SellBloc bloc) => bloc.state.isFullyVerifiedKycLevel,
-    );
-    final isLimitedKyc = context.select(
-      (SellBloc bloc) => bloc.state.isLimitedKycLevel,
-    );
-    final isLightKyc = context.select(
-      (SellBloc bloc) => bloc.state.isLightKycLevel,
-    );
-    final stateFiatCurrency = context.select(
-      (SellBloc bloc) => bloc.state.fiatCurrency,
-    );
-    // For CAD, we allow selling with limited or light KYC (subject to limits).
-    // For other fiat currencies, we require full KYC.
-    // Fall back to the state's fiat currency (from userSummary) when the
-    // dropdown hasn't been changed yet and fiatCurrency is null.
-    final effectiveFiatCurrency = widget.fiatCurrency ?? stateFiatCurrency;
-    final isKycLevelOk =
-        isFullyVerifiedKycLevel ||
-        effectiveFiatCurrency == FiatCurrency.cad &&
-            (isLimitedKyc || isLightKyc);
+    final sellState = context.watch<SellBloc>().state;
 
-    // CAD per-transaction limits by KYC level:
-    //   Limited: $999, Light: $3,000, Full: no limit.
-    final enteredAmount =
-        double.tryParse(widget.amountController.text) ?? 0.0;
-    final isCadAmountLimitExceeded =
-        !isFullyVerifiedKycLevel &&
-        effectiveFiatCurrency == FiatCurrency.cad &&
-        widget.isFiatCurrencyInput &&
-        ((isLimitedKyc &&
-                enteredAmount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
-            (isLightKyc &&
-                enteredAmount > ExchangeKycConstants.cadLightKycMaxAmount));
+    // Only apply the fiat amount limit when the user is typing in fiat mode.
+    final cadAmount = widget.isFiatCurrencyInput
+        ? double.tryParse(widget.amountController.text) ?? 0.0
+        : 0.0;
 
     if (isLoading) {
       return const LoadingLineContent(height: 48);
-    } else if (!isKycLevelOk || isCadAmountLimitExceeded) {
+    } else if (sellState.needsKycUpgrade(cadAmount, currency: widget.fiatCurrency)) {
       return Column(
         children: [
           InfoCard(
@@ -126,19 +97,19 @@ class _SellAmountInputBottomButtonsState
         onPressed: () {
           if (widget.formKey.currentState!.validate()) {
             final sellBloc = context.read<SellBloc>();
-            final sellState = sellBloc.state;
+            final state = sellBloc.state;
             sellBloc.add(
               SellEvent.amountInputContinuePressed(
                 amountInput: widget.amountController.text,
                 isFiatCurrencyInput: widget.isFiatCurrencyInput,
                 fiatCurrency:
                     widget.fiatCurrency ??
-                    ((sellState is SellAmountInputState)
+                    ((state is SellAmountInputState)
                         ? FiatCurrency.fromCode(
-                          sellState.userSummary.currency ?? 'CAD',
+                          state.userSummary.currency ?? 'CAD',
                         )
-                        : sellState is SellWalletSelectionState
-                        ? sellState.fiatCurrency
+                        : state is SellWalletSelectionState
+                        ? state.fiatCurrency
                         : FiatCurrency.cad),
               ),
             );

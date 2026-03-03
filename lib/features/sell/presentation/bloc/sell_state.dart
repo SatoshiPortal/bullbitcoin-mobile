@@ -338,6 +338,34 @@ sealed class SellState with _$SellState {
               true, // Success state implies KYC was sufficient
     );
   }
+
+  /// Whether the user's KYC level permits transactions in [currency].
+  /// Falls back to [fiatCurrency] when [currency] is null.
+  bool isKycOk({FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? fiatCurrency;
+    return isFullyVerifiedKycLevel ||
+        effectiveCurrency == FiatCurrency.cad &&
+            (isLimitedKycLevel || isLightKycLevel);
+  }
+
+  /// Whether [cadAmount] exceeds the per-transaction limit for the user's
+  /// KYC level in [currency]. Falls back to [fiatCurrency] when null.
+  bool isCadAmountExceeded(double cadAmount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? fiatCurrency;
+    return !isFullyVerifiedKycLevel &&
+        effectiveCurrency == FiatCurrency.cad &&
+        ((isLimitedKycLevel &&
+                cadAmount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
+            (isLightKycLevel &&
+                cadAmount > ExchangeKycConstants.cadLightKycMaxAmount));
+  }
+
+  /// Returns true when the "Complete KYC" prompt should be shown instead of
+  /// the normal action button.
+  bool needsKycUpgrade(double cadAmount, {FiatCurrency? currency}) {
+    return !isKycOk(currency: currency) ||
+        isCadAmountExceeded(cadAmount, currency: currency);
+  }
 }
 
 extension SellAmountInputStateX on SellAmountInputState {

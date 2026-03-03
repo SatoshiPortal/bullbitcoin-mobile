@@ -55,6 +55,28 @@ sealed class PayState with _$PayState {
 
   bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
 
+  bool isKycOk({FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency;
+    return isFullyVerifiedKycLevel ||
+        effectiveCurrency == FiatCurrency.cad &&
+            (isLimitedKycLevel || isLightKycLevel);
+  }
+
+  bool isCadAmountExceeded(double cadAmount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency;
+    return !isFullyVerifiedKycLevel &&
+        effectiveCurrency == FiatCurrency.cad &&
+        ((isLimitedKycLevel &&
+                cadAmount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
+            (isLightKycLevel &&
+                cadAmount > ExchangeKycConstants.cadLightKycMaxAmount));
+  }
+
+  bool needsKycUpgrade(double cadAmount, {FiatCurrency? currency}) {
+    return !isKycOk(currency: currency) ||
+        isCadAmountExceeded(cadAmount, currency: currency);
+  }
+
   FiatCurrency get currency {
     return when(
       recipientSelection: (userSummary, _, _) => userSummary != null

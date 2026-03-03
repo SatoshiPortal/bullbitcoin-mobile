@@ -1,6 +1,4 @@
-import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -43,34 +41,8 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currency = context.select<PayBloc, FiatCurrency>(
-      (bloc) => bloc.state.currency,
-    );
-    final isFullyVerifiedKycLevel = context.select(
-      (PayBloc bloc) => bloc.state.isFullyVerifiedKycLevel,
-    );
-    final isLimitedKyc = context.select(
-      (PayBloc bloc) => bloc.state.isLimitedKycLevel,
-    );
-    final isLightKyc = context.select(
-      (PayBloc bloc) => bloc.state.isLightKycLevel,
-    );
-
-    // For CAD, limited/light KYC users can pay up to their per-tx limits.
-    // For other currencies, full KYC is required.
-    final isKycLevelOk =
-        isFullyVerifiedKycLevel ||
-        currency == FiatCurrency.cad && (isLimitedKyc || isLightKyc);
-    // CAD per-transaction limits: Limited $999, Light $3,000, Full no limit.
-    final enteredAmount =
-        double.tryParse(_amountController.text) ?? 0.0;
-    final isCadAmountLimitExceeded =
-        !isFullyVerifiedKycLevel &&
-        currency == FiatCurrency.cad &&
-        ((isLimitedKyc &&
-                enteredAmount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
-            (isLightKyc &&
-                enteredAmount > ExchangeKycConstants.cadLightKycMaxAmount));
+    final payState = context.watch<PayBloc>().state;
+    final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pay')),
@@ -83,10 +55,10 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
               const Gap(24.0),
               PayAmountInputFields(
                 amountController: _amountController,
-                fiatCurrency: currency,
+                fiatCurrency: payState.currency,
               ),
               const Spacer(),
-              if (!isKycLevelOk || isCadAmountLimitExceeded) ...[
+              if (payState.needsKycUpgrade(enteredAmount)) ...[
                 InfoCard(
                   title: context.loc.buyInputKycPending,
                   description: context.loc.buyInputKycMessage,
