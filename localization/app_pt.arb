@@ -3717,6 +3717,7 @@
   "fundExchangeWarningTactic8": "Eles estão pressionando você para agir rapidamente",
   "encryptedVaultStatusLabel": "Vault criptografado",
   "sendConfirmSend": "Enviar",
+  "sendSelfTransfer": "Autotransferência",
   "fundExchangeBankTransfer": "Transferência bancária",
   "importQrDeviceButtonInstructions": "Instruções",
   "buyLevel3Limit": "Limite de nível 3: {amount}",
