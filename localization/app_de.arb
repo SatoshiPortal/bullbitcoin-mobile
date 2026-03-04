@@ -1000,10 +1000,10 @@
   "transactionSwapInfoClaimableTransfer": "Der Transfer wird innerhalb weniger Sekunden automatisch abgeschlossen. Falls nicht, können Sie einen manuellen Claim versuchen, indem Sie auf „Transfer Claim erneut versuchen“ klicken.",
   "payActualFee": "Tatsächliche Gebühr",
   "electrumValidateDomain": "Gültige Domain",
-  "importQrDeviceJadeFirmwareWarning": "Stellen Sie sicher, dass Ihr Gerät die neueste Firmware-Version hat",
+  "importQrDeviceJadeFirmwareWarning": "Stellen Sie sicher, dass Ihr Gerät die neueste Firmware-Version hat.",
   "arkPreconfirmed": "Vorbestätigt",
-  "recoverbullSelectFileNotSelectedError": "Keine Datei ausgewählt",
-  "arkDurationDay": "{days} Tag",
+  "recoverbullSelectFileNotSelectedError": "Keine Datei ausgewählt.",
+  "arkDurationDay": "{days} Tag.",
   "@arkDurationDay": {
     "placeholders": {
       "days": {
@@ -1014,13 +1014,13 @@
   "arkSendButton": "Senden",
   "buyInputContinue": "Fortfahren",
   "fundExchangeMethodSpeiTransferSubtitle": "Überweisung mit CLABE",
-  "importQrDeviceJadeStep3": "Folgen Sie den Anweisungen auf dem Gerät, um die Jade zu entsperren",
+  "importQrDeviceJadeStep3": "Folgen Sie den Anweisungen auf dem Gerät, um die Jade zu entsperren.",
   "paySecurityQuestionLengthError": "Muss zwischen 10 und 40 Zeichen lang sein",
-  "sendSigningFailed": "Signieren fehlgeschlagen",
+  "sendSigningFailed": "Signieren fehlgeschlagen.",
   "bitboxErrorDeviceNotPaired": "Gerät nicht gepairt. Bitte führen Sie zunächst den Pairing-Prozess durch.",
   "transferIdLabel": "Transfer-ID",
-  "paySelectActiveWallet": "Bitte wählen Sie eine Wallet aus",
-  "arkDurationHours": "{hours} Stunden",
+  "paySelectActiveWallet": "Bitte wählen Sie eine Wallet aus.",
+  "arkDurationHours": "{hours} Stunden.",
   "@arkDurationHours": {
     "placeholders": {
       "hours": {
