@@ -3202,7 +3202,7 @@
         }
     },
     "autoswapAutoSaveError": "Fehler beim Speichern von Einstellungen",
-    "exchangeAccountInfoVerificationLightVerification": "Light-KYC-Überprüfung",
+    "exchangeAccountInfoVerificationLightVerification": "Light KYC-Überprüfung",
     "exchangeFeatureBankTransfers": "• Banküberweisungen tätigen und Rechnungen bezahlen",
     "sellSendPaymentInstantPayments": "Sofortzahlungen",
     "onboardingRecoverWalletButton": "Wallet wiederherstellen",
@@ -3537,7 +3537,7 @@
     "dcaAddressLiquid": "Liquidadresse",
     "buyVerificationInProgress": "Überprüfung des Fortschritts...",
     "transactionSwapDescChainPaid": "Ihre Transaktion wurde übertragen. Wir warten nun darauf, dass die Sperrtransaktion bestätigt wird.",
-    "mempoolSettingsUseForFeeEstimation": "Verwendung der Gebührenschätzungen",
+    "mempoolSettingsUseForFeeEstimation": "Verwendung für die Gebührenschätzung.",
     "buyPaymentMethod": "Zahlungsmethode",
     "fundExchangeCrIbanUsdDescriptionEnd": ". Fonds werden zu Ihrem Kontostand hinzugefügt.",
     "psbtFlowMoveCloserFurther": "Versuchen Sie, Ihr Gerät näher oder weiter weg zu bewegen",
