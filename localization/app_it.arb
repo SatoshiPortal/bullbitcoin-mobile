@@ -3139,7 +3139,7 @@
   "payEmail": "Email",
   "coldcardStep10": "Fare clic sui pulsanti per firmare la transazione sulla Coldcard.",
   "sendErrorAmountBelowSwapLimits": "L'importo è inferiore ai limiti di swap",
-  "sendErrorAmountBelowSwapLimitsBitcoin": "L'importo è inferiore al limite di swap di {minLimit} sat. Per pagamenti più piccoli, considera di trasferire fondi nel portafoglio di Pagamenti Istantanei.",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Considera di finanziare Pagamenti Istantanei per effettuare pagamenti più piccoli.",
   "labelErrorNotFound": "Etichetta \"{label}\" non trovata.",
   "@labelErrorNotFound": {
     "placeholders": {

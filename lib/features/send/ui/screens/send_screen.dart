@@ -466,6 +466,17 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             readOnly: _isMax,
                             isMax: _isMax,
                           ),
+                          if (swapLimitsError?.suggestInstantPayments == true)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: BBText(
+                                context.loc.sendErrorAmountBelowSwapLimitsBitcoin,
+                                style: context.font.bodySmall,
+                                color: context.appColors.error,
+                                maxLines: 3,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           const Gap(48),
                           Divider(
                             height: 1,
@@ -660,24 +671,12 @@ class _SendError extends StatelessWidget {
     if (buildError != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            BBText(
-              context.loc.sendErrorBuildFailed,
-              style: context.font.bodyLarge,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-            const Gap(8),
-            BBText(
-              buildError.message,
-              style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-          ],
+        child: BBText(
+          context.loc.sendErrorBuildFailed,
+          style: context.font.bodyLarge,
+          color: context.appColors.error,
+          maxLines: 5,
+          textAlign: .center,
         ),
       );
     }
@@ -693,14 +692,16 @@ class _SendError extends StatelessWidget {
               maxLines: 5,
               textAlign: .center,
             ),
-            const Gap(8),
-            BBText(
-              confirmError.message,
-              style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
+            if (confirmError.isBroadcastFailure) ...[
+              const Gap(8),
+              BBText(
+                context.loc.sendErrorBroadcastFailed,
+                style: context.font.bodyMedium,
+                color: context.appColors.error,
+                maxLines: 5,
+                textAlign: .center,
+              ),
+            ],
           ],
         ),
       );
@@ -1916,11 +1917,6 @@ String _getSwapLimitsErrorMessage(
   SwapLimitsException error,
 ) {
   if (error.isBelowMinimum) {
-    if (error.suggestInstantPayments) {
-      return context.loc.sendErrorAmountBelowSwapLimitsBitcoin(
-        error.minLimit.toString(),
-      );
-    }
     return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
   }
   if (error.isAboveMaximum) {

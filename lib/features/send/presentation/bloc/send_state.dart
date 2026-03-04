@@ -495,5 +495,7 @@ class BuildTransactionException extends BullException {
 /// Stored in SendState and displayed by UI using sendErrorConfirmationFailed.
 /// The message parameter is for debugging/logging only.
 class ConfirmTransactionException extends BullException {
-  ConfirmTransactionException(super.message);
+  ConfirmTransactionException(super.message, {this.isBroadcastFailure = false});
+
+  final bool isBroadcastFailure;
 }

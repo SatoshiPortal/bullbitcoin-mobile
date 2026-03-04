@@ -944,6 +944,7 @@ class SendCubit extends Cubit<SendState> {
             swapLimitsException: SwapLimitsException(
               'Amount below minimum swap limit: $minLimit sats',
               minLimit: minLimit,
+              suggestInstantPayments: !isLiquidToLightning,
             ),
             amountConfirmedClicked: false,
           ),
@@ -1508,7 +1509,8 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           confirmTransactionException: ConfirmTransactionException(
-            'Failed to broadcast transaction. Check your network connection and try again.',
+            'BroadcastTransactionException',
+            isBroadcastFailure: true,
           ),
           broadcastingTransaction: false,
         ),
