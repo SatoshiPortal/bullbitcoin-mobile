@@ -3391,6 +3391,7 @@
   "dcaSetupFundAccount": "Оберіть Ваш рахунок",
   "coldcardStep10": "Натисніть кнопку, щоб записати операцію на холодильнику.",
   "sendErrorAmountBelowSwapLimits": "Сума нижче лімітів закрутки",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Сума нижче мінімального ліміту обміну {minLimit} сат. Для менших платежів розгляньте переказ коштів до гаманця Миттєвих Платежів.",
   "labelErrorNotFound": "Етикетка \"X7X\" не знайдено.",
   "@labelErrorNotFound": {
     "placeholders": {

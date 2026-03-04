@@ -3140,6 +3140,7 @@
   "payEmail": "电子邮件",
   "coldcardStep10": "• 在 but子上签署交易.",
   "sendErrorAmountBelowSwapLimits": "数额低于互换限额",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "金额低于兑换限额{minLimit}聪。如需进行小额支付，请考虑将资金转入即时支付钱包。",
   "labelErrorNotFound": "Label “{label}”没有发现.",
   "@labelErrorNotFound": {
     "placeholders": {

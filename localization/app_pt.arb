@@ -3119,6 +3119,7 @@
   "payEmail": "Email",
   "coldcardStep10": "Clique nos botões para assinar a transação no seu Coldcard.",
   "sendErrorAmountBelowSwapLimits": "O valor está abaixo dos limites de swap",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "O valor está abaixo do limite de swap de {minLimit} sats. Para pagamentos menores, considere transferir fundos para sua carteira de Pagamentos Instantâneos.",
   "labelErrorNotFound": "Label \"{label}\" não encontrado.",
   "@labelErrorNotFound": {
     "placeholders": {

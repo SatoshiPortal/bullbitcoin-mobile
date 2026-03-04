@@ -448,7 +448,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               );
                             },
                             error:
-                                balanceError != null && amountConfirmedClicked
+                                balanceError != null
                                 ? context
                                       .loc
                                       .sendErrorInsufficientBalanceForPayment
@@ -1915,15 +1915,16 @@ String _getSwapLimitsErrorMessage(
   BuildContext context,
   SwapLimitsException error,
 ) {
-  if (error.isBelowMinimum && error.minLimit != null) {
+  if (error.isBelowMinimum) {
+    if (error.suggestInstantPayments) {
+      return context.loc.sendErrorAmountBelowSwapLimitsBitcoin(
+        error.minLimit.toString(),
+      );
+    }
     return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
-  } else if (error.isAboveMaximum && error.maxLimit != null) {
-    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
-  } else if (error.message.contains('Balance too low')) {
-    return context.loc.sendErrorBalanceTooLowForMinimum;
-  } else if (error.message.contains('exceeds maximum')) {
-    return context.loc.sendErrorAmountExceedsMaximum;
-  } else {
-    return context.loc.sendErrorAmountBelowSwapLimits;
   }
+  if (error.isAboveMaximum) {
+    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
+  }
+  return context.loc.sendErrorAmountBelowSwapLimits;
 }

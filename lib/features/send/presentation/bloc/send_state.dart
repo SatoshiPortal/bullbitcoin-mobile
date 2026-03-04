@@ -469,10 +469,16 @@ class InvalidBitcoinStringException extends BullException {
 /// UI displays context-specific messages using sendErrorAmountBelowMinimum,
 /// sendErrorAmountAboveMaximum, sendErrorBalanceTooLowForMinimum, etc.
 class SwapLimitsException extends BullException {
-  SwapLimitsException(super.message, {this.minLimit, this.maxLimit});
+  SwapLimitsException(
+    super.message, {
+    this.minLimit,
+    this.maxLimit,
+    this.suggestInstantPayments = false,
+  });
 
   final int? minLimit;
   final int? maxLimit;
+  final bool suggestInstantPayments;
 
   bool get isBelowMinimum => minLimit != null;
   bool get isAboveMaximum => maxLimit != null;
