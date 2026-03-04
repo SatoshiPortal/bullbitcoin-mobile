@@ -271,6 +271,17 @@ class SendCubit extends Cubit<SendState> {
           invoice: paymentRequest.invoice,
           isTestnet: state.paymentRequest!.isTestnet,
         );
+        if (invoice.sats == 0) {
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              swapCreationException: SwapCreationException(
+                'Invoice must contain an amount',
+              ),
+            ),
+          );
+          return;
+        }
         if (invoice.magicBip21 != null) {
           final updatedRequest = await _detectBitcoinStringUsecase.execute(
             data: invoice.magicBip21!,
@@ -359,12 +370,13 @@ class SendCubit extends Cubit<SendState> {
         await loadSwapLimits();
 
         if (state.swapAmountBelowLimit) {
+          final swapMinimum = state.swapMinimum;
           if (!state.selectedWallet!.isLiquid) {
             emit(
               state.copyWith(
                 creatingSwap: false,
-                insufficientBalanceException: InsufficientBalanceException(
-                  'Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.',
+                swapLimitsException: SwapLimitsException(
+                  'Amount is below swap limit of ${swapMinimum} sats.',
                 ),
                 loadingBestWallet: false,
               ),
@@ -375,7 +387,7 @@ class SendCubit extends Cubit<SendState> {
               state.copyWith(
                 creatingSwap: false,
                 swapLimitsException: SwapLimitsException(
-                  'Amount is below swap limits',
+                  'Amount is below swap limits of ${swapMinimum} sats. To make smaller payments consider swapping funds into your Instant Payment wallet.',
                 ),
                 loadingBestWallet: false,
               ),
@@ -415,10 +427,17 @@ class SendCubit extends Cubit<SendState> {
           // updateSwapLockupFees();
           return;
         } catch (e) {
+          log.severe(
+            message: 'Failed to create swap',
+            error: e,
+            trace: StackTrace.current,
+          );
           emit(
             state.copyWith(
               creatingSwap: false,
-              swapCreationException: SwapCreationException(e.toString()),
+              swapCreationException: SwapCreationException(
+                'Something went wrong. Please try again.',
+              ),
               loadingBestWallet: false,
             ),
           );

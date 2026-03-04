@@ -339,6 +339,12 @@ abstract class SendState with _$SendState {
     return false;
   }
 
+  int get swapMinimum {
+    final min = selectedSwapLimits?.min ?? 0;
+    if (min != 0) return min;
+    return selectedWallet?.isLiquid == true ? 100 : 25000;
+  }
+
   bool get swapAmountAboveLimit {
     if (isLightning) {
       return selectedSwapLimits != null &&
