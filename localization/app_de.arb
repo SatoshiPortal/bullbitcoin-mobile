@@ -100,8 +100,8 @@
   "fundExchangeCanadaPostStep5": "5. Bezahlung mit Bargeld oder Debitkarte",
   "importQrDeviceKruxName": "Krux",
   "addressViewNoAddressesFound": "Keine Adressen gefunden",
-  "backupWalletErrorSaveBackup": "Sicherung konnte nicht gespeichert werden",
-  "exchangeReferralsTitle": "Empfehlungscodes",
+  "backupWalletErrorSaveBackup": "Die Sicherung konnte nicht gespeichert werden",
+  "exchangeReferralsTitle": "Empfehlungscode",
   "onboardingRecoverYourWallet": "Wallet wiederherstellen",
   "bitboxScreenTroubleshootingStep2": "Bitte stellen Sie sicher, dass Ihr Telefon die USB-Berechtigungen erlaubt hat.",
   "replaceByFeeErrorNoFeeRateSelected": "Bitte wählen Sie einen Gebührensatz aus",
@@ -127,7 +127,7 @@
   "bitboxActionPairDeviceProcessing": "Kopplung läuft",
   "exchangeCurrencyDropdownTitle": "Währung",
   "receiveServerNetworkFees": "Server-Netzwerkgebühren",
-  "importQrDeviceImporting": "Importiert…",
+  "importQrDeviceImporting": "Importiert...",
   "rbfFastest": "Schnellste",
   "buyConfirmExpressWithdrawal": "Express-Auszahlung bestätigen",
   "arkReceiveBoardingAddress": "BTC-Boarding-Adresse",
@@ -143,7 +143,7 @@
   "importWatchOnlyCopiedToClipboard": "In die Zwischenablage kopiert",
   "dcaLightningAddressInvalidError": "Bitte geben Sie eine gültige Lightning-Adresse ein",
   "ledgerButtonNeedHelp": "Brauchen Sie Hilfe?",
-  "backupInstruction4": "Erstellen Sie keine digitalen Kopien Ihrer Sicherung. Schreiben Sie sie am besten auf Papier oder gravieren Sie sie in Metall.",
+  "backupInstruction4": "Erstellen Sie keine digitalen Kopien Ihrer Sicherung. Schreiben Sie sie am besten auf Papier oder gravieren Sie sie in Metall ein.",
   "hwKrux": "Krux",
   "transactionFilterTransfer": "Transfer",
   "recoverbullSelectVaultImportSuccess": "Ihr Wallet-Backup wurde erfolgreich importiert.",
@@ -155,7 +155,7 @@
   "backupWalletHowToDecideVaultMoreInfo": "Weitere Informationen finden Sie auf Recoverybull.com.",
   "recoverbullGoBackEdit": "<< Zurück und bearbeiten",
   "importWatchOnlyWalletGuides": "Wallet-Anleitungen",
-  "receiveConfirming": "Bestätigung läuft… ({count}/{required})",
+  "receiveConfirming": "Bestätigung läuft... ({count}/{required})",
   "@receiveConfirming": {
     "placeholders": {
       "count": {
@@ -181,7 +181,7 @@
       }
     }
   },
-  "sendBroadcastingTransaction": "Transaktion wird übertragen…",
+  "sendBroadcastingTransaction": "Transaktion wird übertragen...",
   "pinCodeMinLengthError": "PIN muss mindestens {minLength} Ziffern lang sein",
   "@pinCodeMinLengthError": {
     "placeholders": {
@@ -320,7 +320,7 @@
   "receiveAddress": "Adresse",
   "broadcastSignedTxAmount": "Betrag",
   "hwJade": "Blockstream Jade",
-  "keystoneStep14": "Die Transaktion ist nun bereit zum Senden! Sobald Sie auf „Senden“ klicken, wird die Transaktion im Bitcoin-Netzwerk veröffentlicht und die Mittel werden überwiesen.",
+  "keystoneStep14": "Die Transaktion ist bereit zum Senden! Sobald Sie auf „Senden" klicken, wird sie im Bitcoin-Netzwerk veröffentlicht und die Mittel werden transferiert."
   "recoverbullErrorConnectionFailed": "Verbindung zum Ziel-Keyserver fehlgeschlagen. Bitte versuchen Sie es später erneut!",
   "testBackupDigitalCopy": "Digitale Kopie",
   "fundExchangeLabelMemo": "Memo",
