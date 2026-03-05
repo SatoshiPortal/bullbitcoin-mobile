@@ -1032,8 +1032,8 @@
   "pinCodeProcessing": "Verarbeitung läuft",
   "transactionDetailLabelRefunded": "Zurückerstattet",
   "dcaFrequencyHourly": "stündlich",
-  "swapValidationSelectFromWallet": "Bitte wählen Sie eine Wallet aus",
-  "sendSwapInitiated": "Swap wurde initiiert",
+  "swapValidationSelectFromWallet": "Bitte wählen Sie eine Wallet aus.",
+  "sendSwapInitiated": "Swap wurde initiiert.",
   "backupSettingsKeyWarningMessage": "Es ist äußerst wichtig, dass Sie den Sicherungsschlüssel **nicht** am selben Ort speichern wie die Sicherungsdatei. Bewahren Sie ihn immer getrennt auf separaten Geräten oder bei unterschiedlichen Cloud-Anbietern auf.",
   "recoverbullEnterToTest": "Bitte geben Sie Ihre {inputType} ein, um das Backup zu testen.",
   "@recoverbullEnterToTest": {
