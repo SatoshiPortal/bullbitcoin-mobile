@@ -59,7 +59,15 @@ ios-sqlite-update:
 
 docker-build:
 	@echo "🏗️ Building Docker image"
-	@ docker build -t bull-mobile .
+	@ docker build \
+		--build-arg VERSION=$(or $(VERSION),main) \
+		--build-arg MODE=$(or $(MODE),debug) \
+		--build-arg FORMAT=$(or $(FORMAT),apk) \
+		--build-arg SOURCE=$(or $(SOURCE),local) \
+		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
+		--build-arg ENV_SOURCE=$(or $(ENV_SOURCE),template) \
+		--build-arg FAKE_KEYSTORE=$(or $(FAKE_KEYSTORE),true) \
+		-t bull-mobile .
 
 MODE ?= debug
 FORMAT ?= apk
