@@ -11,5 +11,9 @@ sealed class FundExchangeEvent with _$FundExchangeEvent {
   const factory FundExchangeEvent.fundingDetailsRequested({
     required FundingMethod fundingMethod,
   }) = FundExchangeFundingDetailsRequested;
+  const factory FundExchangeEvent.scamWarningConsentSubmitted() =
+      FundExchangeScamWarningConsentSubmitted;
+  const factory FundExchangeEvent.scamWarningConsentNavigationHandled() =
+      FundExchangeScamWarningConsentNavigationHandled;
   const FundExchangeEvent._();
 }

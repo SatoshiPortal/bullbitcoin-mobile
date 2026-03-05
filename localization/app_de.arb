@@ -654,6 +654,7 @@
   "payCalculating": "Berechnung läuft…",
   "transactionDetailLabelTransferId": "Transfer-ID",
   "fundExchangeContinueButton": "Fortfahren",
+  "fundExchangeScamConsentError": "Ihre Zustimmung konnte nicht registriert werden. Bitte versuchen Sie es erneut.",
   "currencySettingsDefaultFiatCurrencyLabel": "Standard-Fiatwährung",
   "payRecipient": "Empfänger",
   "fundExchangeCrIbanUsdRecipientNameHelp": "Verwenden Sie bitte unseren offiziellen Firmennamen. Nutzen Sie nicht „Bull Bitcoin“.",

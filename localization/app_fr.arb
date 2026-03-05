@@ -850,6 +850,7 @@
   "fundExchangeWarningTactic8": "Ils vous pressent d'agir rapidement",
   "fundExchangeWarningConfirmation": "Je confirme que personne ne me demande d'acheter du Bitcoin.",
   "fundExchangeContinueButton": "Continuer",
+  "fundExchangeScamConsentError": "Échec de l'enregistrement de votre consentement. Veuillez réessayer.",
   "fundExchangeDoneButton": "Terminé",
   "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
   "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_det
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_scam_warning_consent_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -17,17 +18,24 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   FundExchangeBloc({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required GetExchangeFundingDetailsUsecase getExchangeFundingDetailsUsecase,
+    required RegisterScamWarningConsentUsecase registerScamWarningConsentUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _getExchangeFundingDetailsUsecase = getExchangeFundingDetailsUsecase,
+       _registerScamWarningConsentUsecase = registerScamWarningConsentUsecase,
        super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
     on<FundExchangeJurisdictionChanged>(_onJurisdictionChanged);
     on<FundExchangeNoCoercionConfirmed>(_onNoCoercionConfirmed);
     on<FundExchangeFundingDetailsRequested>(_onFundingDetailsRequested);
+    on<FundExchangeScamWarningConsentSubmitted>(_onScamWarningConsentSubmitted);
+    on<FundExchangeScamWarningConsentNavigationHandled>(
+      _onScamWarningConsentNavigationHandled,
+    );
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final GetExchangeFundingDetailsUsecase _getExchangeFundingDetailsUsecase;
+  final RegisterScamWarningConsentUsecase _registerScamWarningConsentUsecase;
 
   Future<void> _onStarted(
     FundExchangeStarted event,
@@ -109,5 +117,47 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         emit(state.copyWith(getExchangeFundingDetailsException: e));
       }
     }
+  }
+
+  Future<void> _onScamWarningConsentSubmitted(
+    FundExchangeScamWarningConsentSubmitted event,
+    Emitter<FundExchangeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isSubmittingScamWarningConsent: true,
+        scamWarningConsentError: null,
+      ),
+    );
+    try {
+      await _registerScamWarningConsentUsecase.execute();
+      final updatedSummary = await _getExchangeUserSummaryUsecase.execute();
+      emit(
+        state.copyWith(
+          isSubmittingScamWarningConsent: false,
+          scamWarningConsentSubmittedSuccessfully: true,
+          userSummary: updatedSummary,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isSubmittingScamWarningConsent: false,
+          scamWarningConsentError: e.toString(),
+        ),
+      );
+    }
+  }
+
+  void _onScamWarningConsentNavigationHandled(
+    FundExchangeScamWarningConsentNavigationHandled event,
+    Emitter<FundExchangeState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        scamWarningConsentSubmittedSuccessfully: false,
+        hasConfirmedNoCoercion: false,
+      ),
+    );
   }
 }

@@ -11,6 +11,9 @@ sealed class FundExchangeState with _$FundExchangeState {
     @Default(false) bool hasConfirmedNoCoercion,
     FundingDetails? fundingDetails,
     GetExchangeFundingDetailsException? getExchangeFundingDetailsException,
+    @Default(false) bool isSubmittingScamWarningConsent,
+    @Default(false) bool scamWarningConsentSubmittedSuccessfully,
+    String? scamWarningConsentError,
   }) = _FundExchangeState;
   const FundExchangeState._();
 

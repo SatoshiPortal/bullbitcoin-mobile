@@ -57,6 +57,27 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   }
 
   @override
+  Future<void> registerScamWarningConsent() async {
+    try {
+      final apiKey = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+      if (apiKey == null) {
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+      await _bullbitcoinApiDatasource.registerResponsibilityConsent(apiKey.key);
+    } catch (e) {
+      if (e is ApiKeyException) {
+        rethrow;
+      } else {
+        throw Exception('Failed to register scam warning consent: $e');
+      }
+    }
+  }
+
+  @override
   Future<void> saveUserPreference({
     String? language,
     String? currency,
