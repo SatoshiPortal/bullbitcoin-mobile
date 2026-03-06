@@ -339,32 +339,32 @@ sealed class SellState with _$SellState {
     );
   }
 
+  UserSummary? get _userSummary => whenOrNull(
+    amountInput: (userSummary, _) => userSummary,
+    walletSelection: (userSummary, _, _, _, _, _) => userSummary,
+    payment: (userSummary, _, _, _, _, _, _, _, _, _, _, _, _, _) => userSummary,
+  );
+
   /// Whether the user's KYC level permits transactions in [currency].
   /// Falls back to [fiatCurrency] when [currency] is null.
   bool isKycOk({FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? fiatCurrency;
-    return isFullyVerifiedKycLevel ||
-        effectiveCurrency == FiatCurrency.cad &&
-            (isLimitedKycLevel || isLightKycLevel);
+    return _userSummary?.isKycOk(effectiveCurrency) ?? false;
   }
 
   /// Whether [cadAmount] exceeds the per-transaction limit for the user's
   /// KYC level in [currency]. Falls back to [fiatCurrency] when null.
   bool isCadAmountExceeded(double cadAmount, {FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? fiatCurrency;
-    return !isFullyVerifiedKycLevel &&
-        effectiveCurrency == FiatCurrency.cad &&
-        ((isLimitedKycLevel &&
-                cadAmount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
-            (isLightKycLevel &&
-                cadAmount > ExchangeKycConstants.cadLightKycMaxAmount));
+    return _userSummary?.isCadAmountExceeded(cadAmount, effectiveCurrency) ??
+        false;
   }
 
   /// Returns true when the "Complete KYC" prompt should be shown instead of
   /// the normal action button.
   bool needsKycUpgrade(double cadAmount, {FiatCurrency? currency}) {
-    return !isKycOk(currency: currency) ||
-        isCadAmountExceeded(cadAmount, currency: currency);
+    final effectiveCurrency = currency ?? fiatCurrency;
+    return _userSummary?.needsKycUpgrade(cadAmount, effectiveCurrency) ?? true;
   }
 }
 

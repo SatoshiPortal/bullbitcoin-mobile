@@ -42,24 +42,18 @@ sealed class BuyState with _$BuyState {
 
   bool isKycOk({FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
-    return isFullyVerifiedKycLevel ||
-        effectiveCurrency == FiatCurrency.cad &&
-            (isLimitedKycLevel || isLightKycLevel);
+    return userSummary?.isKycOk(effectiveCurrency) ?? false;
   }
 
   bool isCadAmountExceeded(double cadAmount, {FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
-    return !isFullyVerifiedKycLevel &&
-        effectiveCurrency == FiatCurrency.cad &&
-        ((isLimitedKycLevel &&
-                cadAmount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
-            (isLightKycLevel &&
-                cadAmount > ExchangeKycConstants.cadLightKycMaxAmount));
+    return userSummary?.isCadAmountExceeded(cadAmount, effectiveCurrency) ??
+        false;
   }
 
   bool needsKycUpgrade(double cadAmount, {FiatCurrency? currency}) {
-    return !isKycOk(currency: currency) ||
-        isCadAmountExceeded(cadAmount, currency: currency);
+    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
+    return userSummary?.needsKycUpgrade(cadAmount, effectiveCurrency) ?? true;
   }
 
   double? get balance => balances[currencyInput];
