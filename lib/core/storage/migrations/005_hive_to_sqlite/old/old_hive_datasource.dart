@@ -1,5 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:hive/hive.dart' show Box, Hive, HiveAesCipher;
+import 'package:hive/hive.dart' show Box, Hive;
 import 'package:path_provider/path_provider.dart'
     show getApplicationDocumentsDirectory;
 
