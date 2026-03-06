@@ -98,19 +98,6 @@ class FundExchangeRouter {
                 return FundExchangeRoute.fundExchangeAccount.path;
               }
 
-              // If user has already consented, skip the warning screen.
-              final hasConsented = context
-                      .read<FundExchangeBloc>()
-                      .state
-                      .userSummary
-                      ?.hasConsentedScamWarning ??
-                  false;
-              if (hasConsented) {
-                return GoRouter.of(context).namedLocation(
-                  FundExchangeRoute.routeNameFor(fundingMethod),
-                );
-              }
-
               return null;
             },
             builder: (context, state) {
