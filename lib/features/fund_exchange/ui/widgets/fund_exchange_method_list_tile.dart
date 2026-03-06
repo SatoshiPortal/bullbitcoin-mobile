@@ -32,20 +32,11 @@ class FundExchangeMethodListTile extends StatelessWidget {
         ),
       ),
       onTap: () {
-        final hasConsented =
-            context.read<FundExchangeBloc>().state.userSummary
-                ?.hasConsentedScamWarning ??
-            false;
-
-        if (hasConsented) {
-          _navigateToFundingMethod(context, method);
-        } else {
-          // Reset checkbox state before showing the scam consent screen
-          context.read<FundExchangeBloc>().add(
-            const FundExchangeEvent.noCoercionConfirmed(false),
-          );
-          _navigateToWarningScreen(context, method);
-        }
+        // Reset checkbox state before showing the warning screen.
+        context.read<FundExchangeBloc>().add(
+          const FundExchangeEvent.noCoercionConfirmed(false),
+        );
+        _navigateToWarningScreen(context, method);
       },
       trailing: const Icon(Icons.arrow_forward),
     );
@@ -58,7 +49,4 @@ class FundExchangeMethodListTile extends StatelessWidget {
     );
   }
 
-  void _navigateToFundingMethod(BuildContext context, FundingMethod method) {
-    context.pushNamed(FundExchangeRoute.routeNameFor(method));
-  }
 }
