@@ -44,53 +44,21 @@ class FundExchangeMethodListTile extends StatelessWidget {
           context.read<FundExchangeBloc>().add(
             const FundExchangeEvent.noCoercionConfirmed(false),
           );
-          _navigateToScamConsentScreen(context, method);
+          _navigateToWarningScreen(context, method);
         }
       },
       trailing: const Icon(Icons.arrow_forward),
     );
   }
 
-  void _navigateToScamConsentScreen(
-    BuildContext context,
-    FundingMethod method,
-  ) {
+  void _navigateToWarningScreen(BuildContext context, FundingMethod method) {
     context.pushNamed(
-      FundExchangeRoute.fundExchangeScamConsent.name,
+      FundExchangeRoute.fundExchangeWarning.name,
       queryParameters: {'method': method.queryParam},
     );
   }
 
   void _navigateToFundingMethod(BuildContext context, FundingMethod method) {
-    switch (method) {
-      case FundingMethod.emailETransfer:
-        context.pushNamed(FundExchangeRoute.fundExchangeEmailETransfer.name);
-      case FundingMethod.bankTransferWire:
-        context.pushNamed(FundExchangeRoute.fundExchangeBankTransferWire.name);
-      case FundingMethod.onlineBillPayment:
-        context.pushNamed(
-          FundExchangeRoute.fundExchangeOnlineBillPayment.name,
-        );
-      case FundingMethod.canadaPost:
-        context.pushNamed(FundExchangeRoute.fundExchangeCanadaPost.name);
-      case FundingMethod.instantSepa:
-        context.pushNamed(FundExchangeRoute.fundExchangeInstantSepa.name);
-      case FundingMethod.regularSepa:
-        context.pushNamed(FundExchangeRoute.fundExchangeRegularSepa.name);
-      case FundingMethod.speiTransfer:
-        context.pushNamed(FundExchangeRoute.fundExchangeSpeiTransfer.name);
-      case FundingMethod.sinpe:
-        context.pushNamed(FundExchangeRoute.fundExchangeSinpe.name);
-      case FundingMethod.crIbanCrc:
-        context.pushNamed(
-          FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
-        );
-      case FundingMethod.crIbanUsd:
-        context.pushNamed(
-          FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
-        );
-      case FundingMethod.arsBankTransfer:
-        context.pushNamed(FundExchangeRoute.fundExchangeArsBankTransfer.name);
-    }
+    context.pushNamed(FundExchangeRoute.routeNameFor(method));
   }
 }

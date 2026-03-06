@@ -12,7 +12,6 @@ import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_email_
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_instant_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_online_bill_payment_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_regular_sepa_screen.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_scam_consent_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_warning_screen.dart';
@@ -23,7 +22,6 @@ import 'package:go_router/go_router.dart';
 enum FundExchangeRoute {
   fundExchangeAccount('/fund-exchange-account'),
   fundExchangeWarning('warning'),
-  fundExchangeScamConsent('scam-consent'),
   fundExchangeEmailETransfer('email-e-transfer'),
   fundExchangeBankTransferWire('bank-transfer-wire'),
   fundExchangeOnlineBillPayment('online-bill-payment'),
@@ -39,6 +37,22 @@ enum FundExchangeRoute {
   final String path;
 
   const FundExchangeRoute(this.path);
+
+  static String routeNameFor(FundingMethod method) {
+    return switch (method) {
+      FundingMethod.emailETransfer => fundExchangeEmailETransfer.name,
+      FundingMethod.bankTransferWire => fundExchangeBankTransferWire.name,
+      FundingMethod.onlineBillPayment => fundExchangeOnlineBillPayment.name,
+      FundingMethod.canadaPost => fundExchangeCanadaPost.name,
+      FundingMethod.instantSepa => fundExchangeInstantSepa.name,
+      FundingMethod.regularSepa => fundExchangeRegularSepa.name,
+      FundingMethod.speiTransfer => fundExchangeSpeiTransfer.name,
+      FundingMethod.sinpe => fundExchangeSinpe.name,
+      FundingMethod.crIbanCrc => fundExchangeCostaRicaIbanCrc.name,
+      FundingMethod.crIbanUsd => fundExchangeCostaRicaIbanUsd.name,
+      FundingMethod.arsBankTransfer => fundExchangeArsBankTransfer.name,
+    };
+  }
 }
 
 class FundExchangeRouter {
@@ -91,32 +105,6 @@ class FundExchangeRouter {
               final fundingMethod = FundingMethod.fromQueryParam(methodParam);
 
               return FundExchangeWarningScreen(fundingMethod: fundingMethod!);
-            },
-          ),
-          GoRoute(
-            name: FundExchangeRoute.fundExchangeScamConsent.name,
-            path: FundExchangeRoute.fundExchangeScamConsent.path,
-            redirect: (context, state) {
-              final methodParam = state.uri.queryParameters['method'];
-
-              if (methodParam == null) {
-                return FundExchangeRoute.fundExchangeAccount.path;
-              }
-
-              final fundingMethod = FundingMethod.fromQueryParam(methodParam);
-              if (fundingMethod == null) {
-                return FundExchangeRoute.fundExchangeAccount.path;
-              }
-
-              return null;
-            },
-            builder: (context, state) {
-              final methodParam = state.uri.queryParameters['method']!;
-              final fundingMethod = FundingMethod.fromQueryParam(methodParam)!;
-
-              return FundExchangeScamConsentScreen(
-                fundingMethod: fundingMethod,
-              );
             },
           ),
           // Added a route per funding method instead of one screen with a switch
