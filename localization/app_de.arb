@@ -1989,9 +1989,9 @@
       }
     }
   },
-  "torSettingsPortValidationInvalid": "Bitte geben Sie eine gültige Portnummer ein",
+  "torSettingsPortValidationInvalid": "Bitte geben Sie eine gültige Portnummer ein.",
   "sellBankTransfer": "Banküberweisung",
-  "importQrDeviceSeedsignerStep3": "Scannen Sie einen SeedQR oder geben Sie Ihren 12- oder 24-Wort-Seed ein",
+  "importQrDeviceSeedsignerStep3": "Scannen Sie einen SeedQR oder geben Sie Ihren 12- oder 24-Wort-Seed ein.",
   "replaceByFeeFastestTitle": "Schnellste",
   "transactionLabelBitcoinTransactionId": "Bitcoin-Transaktions-ID",
   "sellPayinAmount": "Zahlbetrag",
@@ -2000,13 +2000,13 @@
   "sellSendPaymentBelowMin": "Sie versuchen, weniger zu verkaufen, als mit dieser Wallet möglich ist.",
   "dcaWalletSelectionDescription": "Bitcoin-Käufe werden automatisch nach diesem Zeitplan platziert.",
   "sendTypeSend": "Senden",
-  "payFeeBumpSuccessful": "Gebührenerhöhung erfolgreich",
-  "importQrDeviceKruxStep1": "Drehen Sie Ihr Krux-Gerät",
+  "payFeeBumpSuccessful": "Gebührenerhöhung erfolgreich.",
+  "importQrDeviceKruxStep1": "Drehen Sie Ihr Krux-Gerät.",
   "transactionSwapProgressFundsClaimed": "Fonds beansprucht",
   "recoverbullSelectAppleIcloud": "Apple iCloud",
   "dcaAddressLightning": "Lightning-Adresse",
   "keystoneStep13": "Die Transaktion wird in die Bull Bitcoin-Wallet importiert.",
-  "receiveGenerationFailed": "{type} konnte nicht generiert werden",
+  "receiveGenerationFailed": "{type} konnte nicht generiert werden.",
   "@receiveGenerationFailed": {
     "placeholders": {
       "type": {
@@ -2018,7 +2018,7 @@
   "addressViewAddressesTitle": "Adressen",
   "withdrawRecipientsNoRecipients": "Keine Empfänger zum Abheben gefunden.",
   "transactionSwapProgressPaymentMade": "Zahlung durchgeführt",
-  "importQrDeviceSpecterStep4": "Folgen Sie den Anweisungen Ihrer gewählten Methode",
+  "importQrDeviceSpecterStep4": "Folgen Sie den Anweisungen Ihrer gewählten Methode.",
   "coreSwapsChainPending": "Transfer wurde noch nicht initialisiert.",
   "importWalletImportWatchOnly": "Watch-Only importieren",
   "coldcardStep9": "Sobald die Transaktion in Ihrer Coldcard importiert wurde, überprüfen Sie bitte Zieladresse und Betrag.",
@@ -2039,16 +2039,16 @@
   "testBackupPhysicalBackupTag": "Vertrauenslos (nehmen Sie sich Zeit)",
   "testBackupTitle": "Bitte Ihr Wallet-Backup testen",
   "coreSwapsLnSendFailed": "Swap fehlgeschlagen.",
-  "recoverbullErrorDecryptFailed": "Ihr Backup konnte nicht entschlüsselt werden",
+  "recoverbullErrorDecryptFailed": "Ihr Backup konnte nicht entschlüsselt werden.",
   "keystoneStep9": "Tippen Sie auf die Schaltflächen, um die Transaktion auf Ihrem Keystone zu signieren.",
   "totalFeesLabel": "Gesamtkosten",
   "payInProgressDescription": "Ihre Zahlung wurde eingeleitet und der Empfänger erhält die Mittel, sobald Ihre Transaktion mindestens 1 On-Chain-Bestätigung hat.",
-  "importQrDevicePassportStep10": "Wählen Sie in der BULL-Wallet „SegWit (BIP84)“ als Ableitungsoption",
+  "importQrDevicePassportStep10": "Wählen Sie in der BULL-Wallet „SegWit (BIP84)“ als Ableitungsoption.",
   "payHighPriority": "Hoch",
   "buyBitcoinPrice": "Bitcoin-Preis",
   "sendFrozenCoin": "Gefroren",
-  "importColdcardInstructionsStep4": "Überprüfen Sie, ob Ihre Firmware auf Version 1.3.4Q aktualisiert ist",
-  "lastBackupTestLabel": "Letzter Backup-Test: {date}",
+  "importColdcardInstructionsStep4": "Überprüfen Sie, ob Ihre Firmware auf Version 1.3.4Q aktualisiert ist.",
+  "lastBackupTestLabel": "Letzter Backup-Test: {date}.",
   "@lastBackupTestLabel": {
     "placeholders": {
       "date": {
@@ -2065,18 +2065,18 @@
   "connectHardwareWalletJade": "Blockstream Jade",
   "coreSwapsChainRefundable": "Transfer ist bereit zur Rückerstattung.",
   "buyInputCompleteKyc": "KYC abschließen",
-  "transactionFeesTotalDeducted": "Dies ist die Gesamtgebühr, die vom gesendeten Betrag abgezogen wird",
+  "transactionFeesTotalDeducted": "Dies ist die Gesamtgebühr, die vom gesendeten Betrag abgezogen wird.",
   "autoswapMaxFee": "Max. Transfergebühr",
   "sellReviewOrder": "Verkaufsauftrag überprüfen",
   "payDescription": "Beschreibung",
   "buySecureBitcoinWallet": "Sichere Bitcoin-Wallet",
   "sendEnterRelativeFee": "Relative Gebühr in sats/vB eingeben",
   "importQrDevicePassportStep1": "Gerät einschalten",
-  "fundExchangeMethodArsBankTransferSubtitle": "Senden Sie eine Banküberweisung von Ihrem Bankkonto",
+  "fundExchangeMethodArsBankTransferSubtitle": "Senden Sie eine Banküberweisung von Ihrem Bankkonto.",
   "transactionOrderLabelExchangeRate": "Wechselkurs",
   "backupSettingsScreenTitle": "Ihre Backup-Einstellungen",
   "fundExchangeBankTransferWireDescription": "Senden Sie eine Überweisung mit den untenstehenden Bull Bitcoin Bankdaten. Ihre Bank benötigt möglicherweise nur Teile dieser Informationen.",
-  "importQrDeviceKeystoneStep7": "Scannen Sie den QR-Code, der auf Ihrem Keystone angezeigt wird",
+  "importQrDeviceKeystoneStep7": "Scannen Sie den QR-Code, der auf Ihrem Keystone angezeigt wird.",
   "coldcardStep3": "Wählen Sie die Option „Scannen Sie jeden QR-Code“",
   "coldcardStep14": "Die Transaktion wird in die Bull Bitcoin Wallet importiert.",
   "pinCodeSettingsLabel": "PIN-Code",
@@ -2091,7 +2091,7 @@
     }
   },
   "importWalletJade": "Blockstream Jade",
-  "payInvalidInvoice": "Ungültige Rechnung",
+  "payInvalidInvoice": "Ungültige Rechnung.",
   "receiveTotalFee": "Gesamtkosten",
   "importQrDeviceButtonOpenCamera": "Kamera öffnen",
   "recoverbullFetchingVaultKey": "Ihr Backup-Schlüssel wird abgerufen...",
@@ -2100,9 +2100,9 @@
   "advancedOptionsTitle": "Erweiterte Optionen",
   "dcaConfirmOrderType": "Auftragstyp",
   "payPriceWillRefreshIn": "Preis wird aktualisiert in",
-  "recoverbullGoogleDriveErrorDeleteFailed": "Löschen aus Google Drive fehlgeschlagen",
+  "recoverbullGoogleDriveErrorDeleteFailed": "Löschen aus Google Drive fehlgeschlagen.",
   "broadcastSignedTxTo": "An",
-  "arkAboutDurationDays": "{days} Tage",
+  "arkAboutDurationDays": "{days} Tage.",
   "@arkAboutDurationDays": {
     "placeholders": {
       "days": {
@@ -2121,7 +2121,7 @@
       }
     }
   },
-  "bitboxActionImportWalletSuccess": "Wallet erfolgreich importiert",
+  "bitboxActionImportWalletSuccess": "Wallet erfolgreich importiert.",
   "nextButton": "Weiter",
   "ledgerSignButton": "Signieren starten",
   "dcaNetworkLiquid": "Liquid Network",
@@ -2129,7 +2129,7 @@
   "dcaCancelTitle": "Wiederkehrenden Bitcoin-Kauf beenden?",
   "payFromAnotherWallet": "Von einer anderen Bitcoin-Wallet bezahlen",
   "importMnemonicHasBalance": "Guthaben vorhanden",
-  "dcaLightningAddressEmptyError": "Bitte geben Sie eine Lightning-Adresse ein",
+  "dcaLightningAddressEmptyError": "Bitte geben Sie eine Lightning-Adresse ein.",
   "googleAppleCloudRecommendationText": "Sie möchten sicherstellen, dass Sie niemals den Zugriff auf Ihre Backup-Datei verlieren – auch wenn Sie Ihr Gerät verlieren.",
   "closeDialogButton": "Schließen",
   "jadeStep14": "Die Transaktion wird in die Bull Bitcoin-Wallet importiert.",
@@ -2153,7 +2153,7 @@
     }
   },
   "walletNetworkLiquidTestnet": "Liquid Testnet",
-  "electrumDeleteFailedError": "Benutzerdefinierten Server konnte nicht löschen{reason}",
+  "electrumDeleteFailedError": "Benutzerdefinierten Server konnte nicht löschen{reason}.",
   "@electrumDeleteFailedError": {
     "placeholders": {
       "reason": {
@@ -2176,7 +2176,7 @@
   "buySelfie": "Selfie mit Ausweis",
   "arkAboutSecretKey": "Geheimer Schlüssel",
   "sellMxnBalance": "MXN-Guthaben",
-  "fundExchangeWarningTactic4": "Sie werden gebeten, Bitcoin an eine fremde Adresse zu senden",
+  "fundExchangeWarningTactic4": "Sie werden gebeten, Bitcoin an eine fremde Adresse zu senden.",
   "fundExchangeSinpeDescription": "Colones-Transfer mit SINPE",
   "wordsDropdownSuffix": " Wörter",
   "arkTxTypeRedeem": "Einlösen",
@@ -2193,10 +2193,10 @@
   "dcaNetworkBitcoin": "Bitcoin-Netzwerk",
   "swapTransferRefundInProgressMessage": "Bei der Übertragung ist ein Fehler aufgetreten. Die Rückerstattung läuft gerade.",
   "importQrDevicePassportName": "Foundation Passport",
-  "fundExchangeMethodCanadaPostSubtitle": "Ideal, wenn Sie lieber persönlich bar oder per Debit bezahlen",
+  "fundExchangeMethodCanadaPostSubtitle": "Ideal, wenn Sie lieber persönlich bar oder per Debit bezahlen.",
   "importColdcardMultisigPrompt": "Für Multisig-Wallets scannen Sie den Wallet-Descriptor-QR-Code",
   "passphraseLabel": "Passphrase",
-  "recoverbullConfirmInput": "Bestätigen Sie Ihre {inputType}",
+  "recoverbullConfirmInput": "Bestätigen Sie Ihre {inputType}.",
   "@recoverbullConfirmInput": {
     "placeholders": {
       "inputType": {
