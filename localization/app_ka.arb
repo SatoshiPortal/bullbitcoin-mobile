@@ -206,5 +206,9 @@
     "torSettingsSaveButton": "შენახვა",
     "@torSettingsSaveButton": {
         "description": "Save button label for Tor port settings"
+    },
+    "electrumConfirm": "დადასტურებულია",
+    "@electrumConfirm": {
+        "description": "Confirm button label in advanced options"
     }
 }
