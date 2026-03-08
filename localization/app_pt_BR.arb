@@ -12345,5 +12345,92 @@
     "importWatchOnlyCancel": "Cancelar",
     "@importWatchOnlyCancel": {
         "description": "Button to cancel watch-only import"
+    },
+    "withdrawConfirmBankAccount": "Conta bancária",
+    "@withdrawConfirmBankAccount": {
+        "description": "Default label for bank account in confirmation screen"
+    },
+    "navigationTabWallet": "Carteira de carteira",
+    "@navigationTabWallet": {
+        "description": "Label for the Wallet tab in bottom navigation"
+    },
+    "withdrawSuccessOrderDetails": "Detalhes da ordem",
+    "@withdrawSuccessOrderDetails": {
+        "description": "Button label to view order details after withdrawal"
+    },
+    "withdrawSuccessTitle": "Iniciada retirada",
+    "@withdrawSuccessTitle": {
+        "description": "Title shown when withdrawal is successfully initiated"
+    },
+    "walletAutoTransferBlockButton": "Bloco",
+    "@walletAutoTransferBlockButton": {
+        "description": "Button to block auto-transfer until next execution"
+    },
+    "torSettingsInfoTitle": "Informação Importante",
+    "@torSettingsInfoTitle": {
+        "description": "Title for the Tor information card"
+    },
+    "withdrawOwnershipMyAccount": "Esta é a minha conta",
+    "@withdrawOwnershipMyAccount": {
+        "description": "Option indicating the account belongs to the user"
+    },
+    "withdrawOwnershipOtherAccount": "Esta é a conta de outra pessoa",
+    "@withdrawOwnershipOtherAccount": {
+        "description": "Option indicating the account belongs to someone else"
+    },
+    "walletAutoTransferBlockedTitle": "Transferência automática bloqueada",
+    "@walletAutoTransferBlockedTitle": {
+        "description": "Title for auto-swap fee warning when fees exceed threshold"
+    },
+    "withdrawOwnershipQuestion": "A quem pertence esta conta?",
+    "@withdrawOwnershipQuestion": {
+        "description": "Question asking about account ownership"
+    },
+    "buyOrderNotFoundError": "A ordem de compra não foi encontrada. Por favor, tente novamente.",
+    "@buyOrderNotFoundError": {
+        "description": "Error message for order not found during buy"
+    },
+    "navigationTabExchange": "Troca",
+    "@navigationTabExchange": {
+        "description": "Label for the Exchange tab in bottom navigation"
+    },
+    "walletAutoTransferBlockedMessage": "Tentando transferir {amount} BTC. A taxa atual é {currentFee}% do valor de transferência e o limite de taxa é definido para {thresholdFee}%",
+    "@walletAutoTransferBlockedMessage": {
+        "description": "Message explaining why auto-transfer was blocked",
+        "placeholders": {
+            "amount": {
+                "type": "String"
+            },
+            "currentFee": {
+                "type": "String"
+            },
+            "thresholdFee": {
+                "type": "String"
+            }
+        }
+    },
+    "buyBelowMinAmountError": "Você está tentando comprar abaixo da quantidade mínima.",
+    "@buyBelowMinAmountError": {
+        "description": "Error message for amount below minimum during buy"
+    },
+    "buyUnauthenticatedError": "Não és autenticado. Faça login para continuar.",
+    "@buyUnauthenticatedError": {
+        "description": "Error message for unauthenticated user during buy"
+    },
+    "walletAutoTransferAllowButton": "Permitir",
+    "@walletAutoTransferAllowButton": {
+        "description": "Button to allow auto-transfer despite high fees"
+    },
+    "buyAboveMaxAmountError": "Você está tentando comprar acima da quantidade máxima.",
+    "@buyAboveMaxAmountError": {
+        "description": "Error message for amount above maximum during buy"
+    },
+    "buyOrderAlreadyConfirmedError": "Esta ordem de compra já foi confirmada.",
+    "@buyOrderAlreadyConfirmedError": {
+        "description": "Error message for already confirmed buy order"
+    },
+    "buyInsufficientFundsError": "Fundos insuficientes em sua conta Bull Bitcoin para completar esta ordem de compra.",
+    "@buyInsufficientFundsError": {
+        "description": "Error message for insufficient funds during buy"
     }
 }
