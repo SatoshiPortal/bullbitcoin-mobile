@@ -3462,6 +3462,10 @@
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
   },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
+  },
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
     "description": "Payment method: Email E-Transfer (Canada)"

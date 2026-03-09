@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/frameworks/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
@@ -218,7 +218,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                         label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
                         onPressed: () => context.pushNamed(
-                          FundExchangeRoute.fundExchangeAccount.name,
+                          FundExchangeRoute.fundExchange.name,
                         ),
                         bgColor: context.appColors.secondaryFixed,
                         textColor: context.appColors.onSecondaryFixed,

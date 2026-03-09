@@ -1,0 +1,274 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
+import 'package:bb_mobile/features/fund_exchange/interface_adapters/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+
+class FundExchangeCopBankTransferInputScreen extends StatefulWidget {
+  const FundExchangeCopBankTransferInputScreen({super.key});
+
+  @override
+  State<FundExchangeCopBankTransferInputScreen> createState() =>
+      _FundExchangeCopBankTransferInputScreenState();
+}
+
+class _FundExchangeCopBankTransferInputScreenState
+    extends State<FundExchangeCopBankTransferInputScreen> {
+  final _formKey = GlobalKey<FormState>();
+  FundingInstitution? _selectedInstitution;
+  bool isLoadingFundingDetails = false;
+  late final TextEditingController _amountController;
+  late final StreamSubscription<FundExchangeState> _blocSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController = TextEditingController();
+    final bloc = context.read<FundExchangeBloc>();
+
+    _blocSubscription = bloc.stream.listen((state) {
+      if (state.isLoadingFundingDetails != isLoadingFundingDetails) {
+        setState(() {
+          isLoadingFundingDetails = state.isLoadingFundingDetails;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _blocSubscription.cancel();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState?.validate() ?? false) {
+      final amount = int.tryParse(
+        _amountController.text.replaceAll(RegExp(r'[^0-9]'), ''),
+      );
+      if (amount == null || amount <= 0) return;
+
+      context.read<FundExchangeBloc>().add(
+        FundExchangeEvent.fundingDetailsRequested(
+          fundingMethod: CopBankTransfer(
+            bankCode: _selectedInstitution!.code,
+            amountCop: amount,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<FundExchangeBloc>();
+    final userSummary = bloc.state.userSummary;
+    final institutions = bloc.state.fundingInstitutions ?? [];
+    final senderName = userSummary != null
+        ? '${userSummary.profile.firstName} ${userSummary.profile.lastName}'
+              .toUpperCase()
+        : '';
+
+    return Scaffold(
+      appBar: AppBar(title: Text(context.loc.fundExchangeBankTransfer)),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ScrollableColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'You will be redirected to an external page to make the payment.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const Gap(16.0),
+                Container(
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: context.appColors.tertiary.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border(
+                      left: BorderSide(
+                        color: context.appColors.tertiary,
+                        width: 4.0,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: context.appColors.onSurface,
+                      ),
+                      const Gap(8.0),
+                      Expanded(
+                        child: Text(
+                          'If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(24.0),
+                // Sender Name (read-only with copy)
+                Text(
+                  'Sender Name',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Gap(8.0),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    side: BorderSide(
+                      color: context.appColors.secondaryFixedDim,
+                    ),
+                  ),
+                  title: Text(senderName),
+                  trailing: TextButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: senderName));
+                    },
+                    icon: const Icon(Icons.copy, size: 16),
+                    label: const Text('Copy'),
+                  ),
+                ),
+                const Gap(24.0),
+                // Issuing Bank dropdown
+                Text(
+                  'Issuing Bank',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Gap(8.0),
+                DropdownButtonFormField<FundingInstitution>(
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: context.appColors.onSecondary,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.appColors.secondaryFixedDim,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.appColors.secondaryFixedDim,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                    ),
+                  ),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: context.appColors.secondary,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedInstitution = value;
+                    });
+                  },
+                  validator: (v) =>
+                      v == null ? 'Please select an issuing bank' : null,
+                  items: institutions.map((institution) {
+                    return DropdownMenuItem<FundingInstitution>(
+                      value: institution,
+                      child: Text(institution.name),
+                    );
+                  }).toList(),
+                ),
+                const Gap(24.0),
+                // Amount field
+                Text(
+                  'Amount',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: context.appColors.secondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Gap(8.0),
+                TextFormField(
+                  controller: _amountController,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: context.appColors.onSecondary,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.appColors.secondaryFixedDim,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.appColors.secondaryFixedDim,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        if (_amountController.text.isNotEmpty) {
+                          Clipboard.setData(
+                            ClipboardData(text: _amountController.text),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.content_paste, size: 20),
+                    ),
+                  ),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Please enter an amount';
+                    }
+                    final amount = int.tryParse(
+                      v.replaceAll(RegExp(r'[^0-9]'), ''),
+                    );
+                    if (amount == null || amount <= 0) {
+                      return 'Please enter a valid amount';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => _submitForm(),
+                ),
+                const Gap(32.0),
+                BBButton.big(
+                  label: 'Generate Payment Link',
+                  disabled: isLoadingFundingDetails,
+                  onPressed: _submitForm,
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
