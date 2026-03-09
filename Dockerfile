@@ -31,8 +31,6 @@ ENV HOME="/home/$APP_USER"
 ENV ANDROID_HOME=/opt/android-sdk
 # Rust, FVM, pub-cache, Android SDK tools
 ENV PATH="$HOME/.cargo/bin:$HOME/fvm/bin:$HOME/.pub-cache/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
-# Rust flags for reproducible builds (remap absolute paths)
-ENV RUSTFLAGS="--remap-path-prefix=$HOME/.cargo=/cargo --remap-path-prefix=/app=/build"
 
 # git: cloning the source repo when SOURCE=github
 # unzip: extracting Android SDK zip
@@ -128,7 +126,13 @@ RUN mkdir -p $HOME/.gradle && \
     echo "org.gradle.jvmargs=-Xmx${GRADLE_HEAP} -XX:+HeapDumpOnOutOfMemoryError" >> $HOME/.gradle/gradle.properties
 
 # Build the app
-RUN if [ "$FORMAT" = "aab" ]; then \
+# Rust flags for reproducible builds (remap absolute paths)
+RUN CARGO_ENCODED_RUSTFLAGS=$(printf '%s\037%s\037%s' \
+        "--remap-path-prefix=$HOME/.cargo=/cargo" \
+        "--remap-path-prefix=$HOME/.rustup=/rustup" \
+        "--remap-path-prefix=/app=/build") && \
+    export CARGO_ENCODED_RUSTFLAGS && \
+    if [ "$FORMAT" = "aab" ]; then \
         fvm flutter build appbundle --${MODE}; \
     else \
         fvm flutter build apk --${MODE}; \
