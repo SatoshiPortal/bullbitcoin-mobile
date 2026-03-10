@@ -2,26 +2,17 @@
 # ==============================================================================
 # Bull Bitcoin Mobile - Reproducible Build Verification Script
 # ==============================================================================
-#
-# Verifies that Bull Bitcoin Mobile builds are reproducible by:
-# 1. Building the app from source using the root Dockerfile
-# 2. Comparing the built APK/AAB against the official release
-# 3. Reporting whether the build is reproducible
-#
-# Usage: ./verify_build.sh --version <version> [--apk <path>]
-#
-# Paths:
-#   - GitHub APK: Downloads universal APK, builds APK, compares directly
-#   - Play Store: Uses split APKs from device, builds AAB, extracts splits, compares
-#
-# Requirements: Docker or Podman, 8GB+ RAM, 50GB+ disk space
-#
-# ==============================================================================
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Colors
+RED='\033[1;31m'
+GREEN='\033[1;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
 # Error handling
 on_error() {
@@ -34,12 +25,90 @@ on_error() {
 }
 trap 'on_error $LINENO' ERR
 
-# Colors
-RED='\033[1;31m'
-GREEN='\033[1;32m'
-YELLOW='\033[1;33m'
-CYAN='\033[1;36m'
-NC='\033[0m'
+# Helper: Run apktool in container
+containerApktool() {
+    local targetFolder="$1"
+    local app="$2"
+    local targetFolderParent=$(dirname "$targetFolder")
+    local targetFolderBase=$(basename "$targetFolder")
+    local appFolder=$(dirname "$app")
+    local appFile=$(basename "$app")
+
+    $CONTAINER_CMD run --rm \
+        -v "$targetFolderParent":/tfp \
+        -v "$appFolder":/af:ro \
+        $VERIFY_TOOLS_IMAGE \
+        sh -c "apktool d -f -o /tfp/$targetFolderBase /af/$appFile"
+}
+
+
+usage() {
+    cat <<'EOF'
+Usage: verify_build.sh --version <version> [OPTIONS]
+
+OPTIONS:
+    --version <version>   App version to build (required, e.g., 10.9.8)
+    --apk <path>          Path to official APK or directory with split APKs
+                          If omitted: downloads universal APK from GitHub
+                          If file: single APK comparison
+                          If directory: split APK comparison (Play Store path)
+    --cleanup             Remove workspace after completion
+    --yes                 Skip interactive prompts (for CI/automation)
+    --help                Show this help
+
+EXAMPLES:
+    # Verify against GitHub release
+    ./verify_build.sh --version 10.9.8
+
+    # Verify against Play Store (split APKs extracted from device)
+    ./verify_build.sh --version 10.9.8 --apk ~/bullbitcoin-splits/
+
+    # Verify against local APK file
+    ./verify_build.sh --version 10.9.8 --apk ./official.apk
+EOF
+}
+
+# Parse arguments
+appVersion=""
+apkPath=""
+shouldCleanup=false
+skipPrompts=false
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --version) appVersion="$2"; shift ;;
+        --apk) apkPath="$2"; shift ;;
+        --cleanup) shouldCleanup=true ;;
+        --yes) skipPrompts=true ;;
+        --help) usage; exit 0 ;;
+        *) echo "Unknown argument: $1"; usage; exit 1 ;;
+    esac
+    shift
+done
+
+if [[ -z "$appVersion" ]]; then
+    echo -e "${RED}Error: --version is required${NC}"
+    usage
+    exit 1
+fi
+
+# Check that the local repo is checked out at the correct tag
+expectedTag="v${appVersion}"
+localTag=$(git -C "$REPO_ROOT" tag --points-at HEAD 2>/dev/null | grep -x "$expectedTag" || true)
+if [[ -z "$localTag" ]]; then
+    currentRef=$(git -C "$REPO_ROOT" describe --tags --always 2>/dev/null || echo "unknown")
+    echo -e "${RED}Error: local repo is not at tag $expectedTag (currently at: $currentRef)${NC}"
+    echo "Run: git checkout $expectedTag"
+    exit 1
+fi
+
+# Check required tools (not universally pre-installed on all Linux systems)
+for tool in curl git; do
+    if ! command -v "$tool" &> /dev/null; then
+        echo -e "${RED}Error: $tool is not installed.${NC}"
+        exit 1
+    fi
+done
 
 # Detect container runtime
 if command -v podman &> /dev/null; then
@@ -57,94 +126,6 @@ fi
 VERIFY_TOOLS_IMAGE="bullbitcoin-verify-tools:latest"
 echo "Building verification tools container..."
 $CONTAINER_CMD build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
-
-# Helper: Run apktool in container
-containerApktool() {
-    local targetFolder="$1"
-    local app="$2"
-    local targetFolderParent=$(dirname "$targetFolder")
-    local targetFolderBase=$(basename "$targetFolder")
-    local appFolder=$(dirname "$app")
-    local appFile=$(basename "$app")
-
-    $CONTAINER_CMD run --rm --user root \
-        -v "$targetFolderParent":/tfp \
-        -v "$appFolder":/af:ro \
-        $VERIFY_TOOLS_IMAGE \
-        sh -c "apktool d -f -o /tfp/$targetFolderBase /af/$appFile"
-}
-
-# Helper: Get signer certificate SHA-256
-getSigner() {
-    local apkFile="$1"
-    local dir=$(dirname "$apkFile")
-    local base=$(basename "$apkFile")
-    $CONTAINER_CMD run --rm \
-        -v "$dir":/mnt:ro \
-        -w /mnt \
-        $VERIFY_TOOLS_IMAGE \
-        apksigner verify --print-certs "$base" 2>/dev/null | grep "Signer #1 certificate SHA-256" | awk '{print $6}'
-}
-
-# Helper: Check system memory
-check_memory() {
-    local available_mem_gb=$(free -g | awk '/^Mem:/ {print $7}')
-    local total_mem_gb=$(free -g | awk '/^Mem:/ {print $2}')
-    echo "Memory: ${available_mem_gb}GB available / ${total_mem_gb}GB total"
-    if [[ $available_mem_gb -lt 4 ]]; then
-        echo -e "${YELLOW}Warning: Low memory. Build may fail.${NC}"
-        read -p "Continue? (y/N): " -n 1 -r
-        echo
-        [[ ! $REPLY =~ ^[Yy]$ ]] && exit 1
-    fi
-}
-
-usage() {
-    cat <<'EOF'
-Usage: verify_build.sh --version <version> [OPTIONS]
-
-OPTIONS:
-    --version <version>   App version to build (required, e.g., 6.5.2)
-    --apk <path>          Path to official APK or directory with split APKs
-                          If omitted: downloads universal APK from GitHub
-                          If file: single APK comparison
-                          If directory: split APK comparison (Play Store path)
-    --cleanup             Remove workspace after completion
-    --help                Show this help
-
-EXAMPLES:
-    # Verify against GitHub release
-    ./verify_build.sh --version 6.5.2
-
-    # Verify against Play Store (split APKs extracted from device)
-    ./verify_build.sh --version 6.5.2 --apk ~/bullbitcoin-splits/
-
-    # Verify against local APK file
-    ./verify_build.sh --version 6.5.2 --apk ./official.apk
-EOF
-}
-
-# Parse arguments
-appVersion=""
-apkPath=""
-shouldCleanup=false
-
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        --version) appVersion="$2"; shift ;;
-        --apk) apkPath="$2"; shift ;;
-        --cleanup) shouldCleanup=true ;;
-        --help) usage; exit 0 ;;
-        *) echo "Unknown argument: $1"; usage; exit 1 ;;
-    esac
-    shift
-done
-
-if [[ -z "$appVersion" ]]; then
-    echo -e "${RED}Error: --version is required${NC}"
-    usage
-    exit 1
-fi
 
 # Determine verification mode
 verificationMode=""
@@ -186,7 +167,6 @@ appId="com.bullbitcoin.mobile"
 officialVersion="$appVersion"
 versionCode=""
 appHash=""
-signer=""
 
 if [[ "$verificationMode" == "device" ]]; then
     echo "Extracting metadata from base.apk..."
@@ -204,12 +184,10 @@ if [[ "$verificationMode" == "device" ]]; then
     fi
 
     appHash=$(sha256sum "$apkDir/base.apk" | awk '{print $1}')
-    signer=$(getSigner "$apkDir/base.apk")
 
     echo "App ID: $appId"
     echo "Version: $officialVersion ($versionCode)"
     echo "Hash: $appHash"
-    echo "Signer: $signer"
 fi
 
 # Generate device-spec.json for Play Store path
@@ -261,7 +239,7 @@ if [[ "$verificationMode" == "github" && -z "$apkDir" ]]; then
         exit 1
     fi
 
-    wget -q "$apkUrl" -O "$workDir/official.apk"
+    curl -sL "$apkUrl" -o "$workDir/official.apk"
     echo "Downloaded: $workDir/official.apk"
 
     # Extract metadata
@@ -272,15 +250,21 @@ if [[ "$verificationMode" == "github" && -z "$apkDir" ]]; then
     rm -rf "$tempDir"
 
     appHash=$(sha256sum "$workDir/official.apk" | awk '{print $1}')
-    signer=$(getSigner "$workDir/official.apk")
 fi
 
-echo ""
-check_memory
-echo ""
+available_mem_gb=$(free -g | awk '/^Mem:/ {print $7}')
+total_mem_gb=$(free -g | awk '/^Mem:/ {print $2}')
+echo "Memory: ${available_mem_gb}GB available / ${total_mem_gb}GB total"
+if [[ $available_mem_gb -lt 4 ]]; then
+    echo -e "${YELLOW}Warning: Low memory. Build may fail.${NC}"
+    if [[ "$skipPrompts" == false ]]; then
+        read -p "Continue? (y/N): " -n 1 -r
+        echo
+        [[ ! $REPLY =~ ^[Yy]$ ]] && exit 1
+    fi
+fi
 
 # Calculate Gradle heap based on available memory
-available_mem_gb=$(free -g | awk '/^Mem:/ {print $7}')
 if [[ $available_mem_gb -lt 6 ]]; then
     gradle_heap="2g"
 elif [[ $available_mem_gb -lt 10 ]]; then
@@ -297,42 +281,32 @@ echo "This may take 30-60 minutes..."
 buildFormat="apk"
 [[ "$verificationMode" == "device" ]] && buildFormat="aab"
 
-cd "$REPO_ROOT"
 $CONTAINER_CMD build \
     --network=host \
     --ulimit nofile=65536:65536 \
-    --build-arg VERSION="v${appVersion}" \
     --build-arg MODE=release \
     --build-arg FORMAT="$buildFormat" \
-    --build-arg SOURCE=github \
     --build-arg GRADLE_HEAP="$gradle_heap" \
     -t bullbitcoin-verify:v${appVersion} \
-    .
-
-if [[ $? -ne 0 ]]; then
-    echo -e "${RED}Build failed${NC}"
-    exit 1
-fi
+    "$REPO_ROOT"
 
 echo "Build complete"
 
 # Extract built artifact
 echo "Extracting built artifact..."
 container_name="bullbitcoin_extract_$$"
-containerId=$($CONTAINER_CMD create --name "$container_name" bullbitcoin-verify:v${appVersion})
+$CONTAINER_CMD create --name "$container_name" bullbitcoin-verify:v${appVersion} > /dev/null
 
 if [[ "$verificationMode" == "github" ]]; then
-    $CONTAINER_CMD cp "$containerId:/app/build/app/outputs/flutter-apk/app-release.apk" "$workDir/built.apk"
+    $CONTAINER_CMD cp "$container_name:/app/build/app/outputs/flutter-apk/app-release.apk" "$workDir/built.apk"
 else
-    $CONTAINER_CMD cp "$containerId:/app/build/app/outputs/bundle/release/app-release.aab" "$workDir/built.aab"
+    $CONTAINER_CMD cp "$container_name:/app/build/app/outputs/bundle/release/app-release.aab" "$workDir/built.aab"
 fi
 
-# Extract git info
-$CONTAINER_CMD run --rm bullbitcoin-verify:v${appVersion} sh -c "cd /app && git rev-parse HEAD" > "$workDir/commit.txt" 2>/dev/null || echo "unknown" > "$workDir/commit.txt"
-$CONTAINER_CMD rm -f "$containerId"
+$CONTAINER_CMD rm -f "$container_name" > /dev/null
 container_name=""
 
-commit=$(cat "$workDir/commit.txt")
+commit=$(git -C "$REPO_ROOT" rev-parse HEAD)
 echo "Built from commit: $commit"
 
 # Compare
@@ -349,8 +323,9 @@ if [[ "$verificationMode" == "github" ]]; then
     containerApktool "$workDir/built-decoded" "$workDir/built.apk"
 
     diff_output=$(diff -r "$workDir/official-decoded" "$workDir/built-decoded" 2>&1 | grep -v "META-INF" || true)
-    total_diffs=$(echo "$diff_output" | grep -c "^" || echo "0")
+    total_diffs=$(echo "$diff_output" | wc -l)
     [[ -z "$diff_output" ]] && total_diffs=0
+    [[ -n "$diff_output" ]] && echo "$diff_output" > "$workDir/diff.txt"
 else
     # Split APK comparison using bundletool
     echo "Extracting splits from AAB using bundletool..."
@@ -397,7 +372,7 @@ else
 
         split_diff=$(diff -r "$workDir/official-decoded/$name" "$workDir/built-decoded/$name" 2>&1 | grep -v "META-INF" || true)
         if [[ -n "$split_diff" ]]; then
-            count=$(echo "$split_diff" | grep -c "^" || echo "0")
+            count=$(echo "$split_diff" | wc -l)
             total_diffs=$((total_diffs + count))
             echo "$split_diff" > "$workDir/diff_${name}.txt"
             echo "  $name: $count differences"
@@ -416,7 +391,6 @@ echo "appId:          $appId"
 echo "apkVersionName: $officialVersion"
 echo "apkVersionCode: ${versionCode:-unknown}"
 echo "appHash:        $appHash"
-echo "signer:         ${signer:-unknown}"
 echo "commit:         $commit"
 echo ""
 
@@ -435,6 +409,30 @@ else
 fi
 
 echo "===== End Results ====="
+
+# Write results to file
+cat > "$workDir/RESULTS.md" <<EOF
+# Bull Bitcoin Mobile - Verification Results
+
+| Field          | Value |
+|----------------|-------|
+| date           | $(date -u +"%Y-%m-%dT%H:%M:%SZ") |
+| appId          | $appId |
+| versionName    | $officialVersion |
+| versionCode    | ${versionCode:-unknown} |
+| appHash        | $appHash |
+| commit         | $commit |
+| verdict        | $verdict |
+EOF
+
+if [[ $total_diffs -gt 0 ]]; then
+    echo "" >> "$workDir/RESULTS.md"
+    echo "## Differences (excluding META-INF)" >> "$workDir/RESULTS.md"
+    echo "" >> "$workDir/RESULTS.md"
+    echo "\`\`\`" >> "$workDir/RESULTS.md"
+    cat "$workDir"/diff*.txt >> "$workDir/RESULTS.md"
+    echo "\`\`\`" >> "$workDir/RESULTS.md"
+fi
 
 # Cleanup
 if [[ "$shouldCleanup" == true ]]; then
