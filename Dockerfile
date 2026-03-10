@@ -8,14 +8,10 @@
 FROM --platform=linux/amd64 ubuntu:24.04
 
 # Build arguments
-# VERSION: git branch or tag to clone when SOURCE=github
-ARG VERSION=main
 # MODE: flutter build mode: debug or release
 ARG MODE=debug
 # FORMAT: output format: apk or aab
 ARG FORMAT=apk
-# SOURCE: source of code: github or local
-ARG SOURCE=github
 # GRADLE_HEAP: JVM heap size for Gradle (e.g. 2g, 4g, 6g)
 ARG GRADLE_HEAP=4g
 # ENV_SOURCE: where to get .env: template (copy from .env.template) or local (use .env from source)
@@ -78,14 +74,7 @@ RUN mkdir -p ${ANDROID_HOME}/cmdline-tools && \
 # Install FVM (Flutter Version Manager)
 RUN curl -fsSL https://fvm.app/install.sh | bash
 
-# COPY always runs regardless of SOURCE, so we copy local files unconditionally.
-# If SOURCE=github, we discard them and clone instead.
-# TODO: see if a multi-stage build can avoid copying local files when SOURCE=github
 COPY --chown=$APP_USER:$APP_USER . /app/
-RUN if [ "$SOURCE" != "local" ]; then \
-        find /app -mindepth 1 -delete && \
-        git clone --branch ${VERSION} https://github.com/SatoshiPortal/bullbitcoin-mobile /app; \
-    fi
 
 WORKDIR /app
 
@@ -97,10 +86,8 @@ RUN fvm flutter pub get
 RUN fvm dart run build_runner build --delete-conflicting-outputs
 RUN fvm flutter gen-l10n
 
-# Use .env.template or the local .env depending on ENV_SOURCE
-RUN if [ "$ENV_SOURCE" = "local" ]; then \
-        cp /app/.env /app/.env; \
-    else \
+# Use .env.template unless ENV_SOURCE=local, in which case .env is already present
+RUN if [ "$ENV_SOURCE" != "local" ]; then \
         cp .env.template .env; \
     fi
 
