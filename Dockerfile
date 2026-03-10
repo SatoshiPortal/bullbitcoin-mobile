@@ -126,12 +126,14 @@ RUN mkdir -p $HOME/.gradle && \
     echo "org.gradle.jvmargs=-Xmx${GRADLE_HEAP} -XX:+HeapDumpOnOutOfMemoryError" >> $HOME/.gradle/gradle.properties
 
 # Build the app
-# Rust flags for reproducible builds (remap absolute paths)
-RUN CARGO_ENCODED_RUSTFLAGS=$(printf '%s\037%s\037%s' \
+# SOURCE_DATE_EPOCH: makes OpenSSL use a deterministic build timestamp instead of wall-clock time
+# CARGO_ENCODED_RUSTFLAGS: remaps absolute paths so they don't differ between machines
+RUN SOURCE_DATE_EPOCH=$(git -C /app log -1 --format=%ct) && \
+    CARGO_ENCODED_RUSTFLAGS=$(printf '%s\037%s\037%s' \
         "--remap-path-prefix=$HOME/.cargo=/cargo" \
         "--remap-path-prefix=$HOME/.rustup=/rustup" \
         "--remap-path-prefix=/app=/build") && \
-    export CARGO_ENCODED_RUSTFLAGS && \
+    export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS && \
     if [ "$FORMAT" = "aab" ]; then \
         fvm flutter build appbundle --${MODE}; \
     else \

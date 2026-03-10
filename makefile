@@ -74,7 +74,8 @@ FORMAT ?= apk
 
 build:
 	@echo "🔨 Building $(FORMAT) ($(MODE))"
-	@CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s\037%s' "--remap-path-prefix=$$HOME/.cargo=/cargo" "--remap-path-prefix=$$HOME/.rustup=/rustup" "--remap-path-prefix=$$(pwd)=/build") \
+	@SOURCE_DATE_EPOCH=$$(git log -1 --format=%ct) \
+		CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s\037%s' "--remap-path-prefix=$$HOME/.cargo=/cargo" "--remap-path-prefix=$$HOME/.rustup=/rustup" "--remap-path-prefix=$$(pwd)=/build") \
 		fvm flutter build $(if $(filter aab,$(FORMAT)),appbundle,apk) --$(MODE)
 
 test: unit-test integration-test
