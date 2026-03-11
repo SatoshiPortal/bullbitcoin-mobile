@@ -92,14 +92,18 @@ if [[ -z "$appVersion" ]]; then
     exit 1
 fi
 
-# Check that the local repo is checked out at the correct tag
-expectedTag="v${appVersion}"
-localTag=$(git -C "$REPO_ROOT" tag --points-at HEAD 2>/dev/null | grep -x "$expectedTag" || true)
-if [[ -z "$localTag" ]]; then
-    currentRef=$(git -C "$REPO_ROOT" describe --tags --always 2>/dev/null || echo "unknown")
-    echo -e "${RED}Error: local repo is not at tag $expectedTag (currently at: $currentRef)${NC}"
-    echo "Run: git checkout $expectedTag"
-    exit 1
+# When verifying a GitHub release, the repo must be at the matching tag so the
+# Docker build uses the same source (and thus the same SOURCE_DATE_EPOCH).
+# When --apk is provided the caller controls both APKs, so this check is skipped.
+if [[ -z "$apkPath" ]]; then
+    expectedTag="v${appVersion}"
+    localTag=$(git -C "$REPO_ROOT" tag --points-at HEAD 2>/dev/null | grep -x "$expectedTag" || true)
+    if [[ -z "$localTag" ]]; then
+        currentRef=$(git -C "$REPO_ROOT" describe --tags --always 2>/dev/null || echo "unknown")
+        echo -e "${RED}Error: local repo is not at tag $expectedTag (currently at: $currentRef)${NC}"
+        echo "Run: git checkout $expectedTag"
+        exit 1
+    fi
 fi
 
 # Check required tools (not universally pre-installed on all Linux systems)
