@@ -1507,6 +1507,11 @@ class SendSendingScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: const TopBar(title: 'Send'),
+        actions: [
+          CloseButton(
+            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
