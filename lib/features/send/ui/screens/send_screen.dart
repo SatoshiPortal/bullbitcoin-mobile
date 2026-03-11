@@ -859,6 +859,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
+    final isToSelf = context.select(
+      (SendCubit cubit) => cubit.state.isToSelf == true,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -913,6 +916,20 @@ class _OnchainSendInfoSection extends StatelessWidget {
             //   ),
             // ),
           ),
+          if (isToSelf) ...[
+            _divider(context),
+            InfoRow(
+              title: context.loc.sendSelfTransfer,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: Icon(
+                  Icons.check,
+                  color: context.appColors.secondary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
           _divider(context),
           InfoRow(
             title: context.loc.sendAmount,

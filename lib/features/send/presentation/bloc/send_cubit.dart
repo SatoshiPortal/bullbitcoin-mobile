@@ -1173,7 +1173,7 @@ class SendCubit extends Cubit<SendState> {
           );
         }
       } else {
-        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
+        final txPreparation = await _prepareBitcoinSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
@@ -1186,7 +1186,7 @@ class SendCubit extends Cubit<SendState> {
 
         if (state.chainSwap != null) {
           await _verifyChainSwapAmountSendUsecase.execute(
-            psbtOrPset: unsignedPsbtAndTxSize.unsignedPsbt,
+            psbtOrPset: txPreparation.unsignedPsbt,
             swap: state.chainSwap!,
             walletId: state.selectedWallet!.id,
           );
@@ -1195,14 +1195,15 @@ class SendCubit extends Cubit<SendState> {
         if (state.selectedWallet!.signsRemotely) {
           emit(
             state.copyWith(
-              unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
-              bitcoinTxSize: unsignedPsbtAndTxSize.txSize,
+              unsignedPsbt: txPreparation.unsignedPsbt,
+              bitcoinTxSize: txPreparation.txSize,
+              isToSelf: txPreparation.isToSelf,
               buildingTransaction: false,
             ),
           );
         } else {
           final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
-            psbt: unsignedPsbtAndTxSize.unsignedPsbt,
+            psbt: txPreparation.unsignedPsbt,
             walletId: state.selectedWallet!.id,
           );
           final bitcoinAbsoluteFeesSat =
@@ -1221,9 +1222,10 @@ class SendCubit extends Cubit<SendState> {
             );
             emit(
               state.copyWith(
-                unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+                unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                isToSelf: txPreparation.isToSelf,
                 chainSwap: updatedSwap as ChainSwap,
                 buildingTransaction: false,
               ),
@@ -1240,9 +1242,10 @@ class SendCubit extends Cubit<SendState> {
             );
             emit(
               state.copyWith(
-                unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+                unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                isToSelf: txPreparation.isToSelf,
                 lightningSwap: updatedSwap as LnSendSwap,
                 buildingTransaction: false,
               ),
@@ -1250,9 +1253,10 @@ class SendCubit extends Cubit<SendState> {
           } else {
             emit(
               state.copyWith(
-                unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+                unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                isToSelf: txPreparation.isToSelf,
                 buildingTransaction: false,
               ),
             );
@@ -1321,7 +1325,8 @@ class SendCubit extends Cubit<SendState> {
         );
       } else {
         final paymentRequest = state.paymentRequest;
-        if (paymentRequest != null &&
+        if (state.isToSelf != true &&
+            paymentRequest != null &&
             paymentRequest is Bip21PaymentRequest &&
             paymentRequest.pj.isNotEmpty) {
           final payjoinSender = await _sendWithPayjoinUsecase.execute(
@@ -1408,7 +1413,8 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(txId: txId));
       } else {
         final paymentRequest = state.paymentRequest;
-        if (paymentRequest != null &&
+        if (state.isToSelf != true &&
+            paymentRequest != null &&
             paymentRequest is Bip21PaymentRequest &&
             paymentRequest.pj.isNotEmpty) {
           emit(state.copyWith(broadcastingTransaction: false));

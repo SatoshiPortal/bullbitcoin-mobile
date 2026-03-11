@@ -2128,6 +2128,7 @@
   "sendReceiveNetworkFee": "Frais de réseau de réception",
   "sendServerNetworkFees": "Frais de réseau du serveur",
   "sendConfirmSend": "Confirmer l'envoi",
+  "sendSelfTransfer": "Auto-transfert",
   "sendSending": "Envoi en cours",
   "sendBroadcastingTransaction": "Diffusion de la transaction.",
   "sendSwapInProgressInvoice": "L'échange est en cours. La facture sera payée dans quelques secondes.",

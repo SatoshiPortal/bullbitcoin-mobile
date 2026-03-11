@@ -3741,6 +3741,7 @@
   "fundExchangeWarningTactic8": "他们正在敦促你迅速采取行动",
   "encryptedVaultStatusLabel": "加密违约",
   "sendConfirmSend": "Confirm Send",
+  "sendSelfTransfer": "自转账",
   "fundExchangeBankTransfer": "银行转账",
   "importQrDeviceButtonInstructions": "指示",
   "buyLevel3Limit": "3级限制:{amount}",
