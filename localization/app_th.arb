@@ -192,7 +192,7 @@
   "@paySinpeBeneficiario": {
     "description": "Label for beneficiary in SINPE details"
   },
-  "exchangeDcaAddressDisplay": "{addressLabel}: [X16]",
+  "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
   "@exchangeDcaAddressDisplay": {
     "description": "Format for displaying address label and address",
     "placeholders": {
@@ -254,7 +254,7 @@
   "@fundExchangeSinpeTitle": {
     "description": "Screen title for SINPE transfer (Costa Rica)"
   },
-  "payExpiresIn": "วันหมดอายุ [X11]",
+  "payExpiresIn": "Expires in {time}",
   "@payExpiresIn": {
     "description": "Label showing invoice expiration time",
     "placeholders": {
@@ -392,7 +392,7 @@
   "@sellSendPaymentTitle": {
     "description": "Title on sell payment screen"
   },
-  "recoverbullReenterConfirm": "กรุณาแจ้งข้อมูลของคุณ [X21].",
+  "recoverbullReenterConfirm": "Please re-enter your {inputType} to confirm.",
   "@recoverbullReenterConfirm": {
     "description": "Instruction to re-enter PIN or password for confirmation",
     "placeholders": {
@@ -461,7 +461,7 @@
   "@importWatchOnlyWalletGuides": {
     "description": "Button label for wallet documentation and guides"
   },
-  "receiveConfirming": "ยืนยัน ... (X15X] / [X23]",
+  "receiveConfirming": "Confirming... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
     "placeholders": {
@@ -514,7 +514,7 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "รหัสรหัสอย่างน้อย [X21]",
+  "pinCodeMinLengthError": "PIN must be at least {minLength} digits long",
   "@pinCodeMinLengthError": {
     "description": "Error message when PIN is too short",
     "placeholders": {
@@ -702,7 +702,7 @@
       }
     }
   },
-  "testBackupErrorLoadWallets": "กรอกกระเป๋าสตางค์: [X24]",
+  "testBackupErrorLoadWallets": "Failed to load wallets: {error}",
   "@testBackupErrorLoadWallets": {
     "description": "Error when loading wallets fails",
     "placeholders": {
@@ -731,7 +731,7 @@
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
   },
-  "payConfirmHighFee": "ค่าธรรมเนียมสําหรับการชําระเงินนี้ [X28] อ่านเพิ่มเติม?",
+  "payConfirmHighFee": "The fee for this payment is {percentage}% of the amount. Continue?",
   "@payConfirmHighFee": {
     "description": "Confirmation prompt when fee percentage is high",
     "placeholders": {
@@ -849,7 +849,7 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "เวลาของคุณ ([X14] วินาที) ต่ํากว่าค่าที่แนะนํา ([X75].",
+  "electrumTimeoutWarning": "Your timeout ({timeoutValue} seconds) is lower than the recommended value ({recommended} seconds) for this Stop Gap.",
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
@@ -1414,7 +1414,7 @@
   "@kruxStep14": {
     "description": "Krux instruction for scanning signed PSBT"
   },
-  "payAvailableBalance": "มี: [X11]",
+  "payAvailableBalance": "Available: {amount}",
   "@payAvailableBalance": {
     "description": "Label showing available wallet balance",
     "placeholders": {
@@ -1556,7 +1556,7 @@
   "@withdrawAboveMaxAmountError": {
     "description": "Error message for amount above maximum during withdraw"
   },
-  "psbtFlowScanDeviceQr": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บน [X64] การสแกน.",
+  "psbtFlowScanDeviceQr": "The Bull Bitcoin wallet will ask you to scan the QR code on the {device}. Scan it.",
   "@psbtFlowScanDeviceQr": {
     "description": "Instruction to scan QR code from hardware device",
     "placeholders": {
@@ -1918,7 +1918,7 @@
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
   },
-  "dcaSuccessMessageHourly": "คุณซื้อ [X13] ทุกวัน",
+  "dcaSuccessMessageHourly": "You will buy {amount} every hour",
   "@dcaSuccessMessageHourly": {
     "description": "Success message for hourly frequency",
     "placeholders": {
@@ -1951,7 +1951,7 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "เข้าสู่ระบบ [X14] อุปกรณ์",
+  "psbtFlowLoginToDevice": "Login to your {device} device",
   "@psbtFlowLoginToDevice": {
     "description": "Instruction to login to hardware device",
     "placeholders": {
@@ -2016,7 +2016,7 @@
   "@dcaAddressBitcoin": {
     "description": "Bitcoin address label"
   },
-  "sendErrorAmountBelowMinimum": "ปริมาณขั้นต่ําขั้นต่ํา: [X33] เบาะ",
+  "sendErrorAmountBelowMinimum": "Amount below minimum swap limit: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "description": "Error with specific minimum swap amount",
     "placeholders": {
@@ -2045,7 +2045,7 @@
   "@exchangeAmountInputValidationInsufficient": {
     "description": "Validation message when amount exceeds available balance"
   },
-  "psbtFlowReviewTransaction": "เมื่อการทําธุรกรรมนําเข้าใน [X41] ตรวจสอบที่อยู่และจํานวนเงิน.",
+  "psbtFlowReviewTransaction": "Once the transaction is imported in your {device}, review the destination address and the amount.",
   "@psbtFlowReviewTransaction": {
     "description": "Instruction to review transaction details on device",
     "placeholders": {
@@ -2448,7 +2448,7 @@
   "@payNoDetailsAvailable": {
     "description": "Message when recipient details not available"
   },
-  "allSeedViewOldWallets": "เหรียญเก่า ([X13]",
+  "allSeedViewOldWallets": "Old Wallets ({count})",
   "@allSeedViewOldWallets": {
     "description": "Section header for old wallets with count",
     "placeholders": {
@@ -2478,7 +2478,7 @@
   "@broadcastSignedTxBroadcast": {
     "description": "Button to broadcast signed transaction"
   },
-  "lastKnownEncryptedVault": "การเข้ารหัส Vault: [X28]",
+  "lastKnownEncryptedVault": "Last Known Encrypted Vault: {date}",
   "@lastKnownEncryptedVault": {
     "description": "Label showing last known encrypted vault date",
     "placeholders": {
@@ -2665,7 +2665,7 @@
   "@sendEstimatedDelivery10Minutes": {
     "description": "Estimated delivery time of approximately 10 minutes"
   },
-  "enterPinToContinueMessage": "ป้อน [X11] เพื่อดําเนินการต่อ",
+  "enterPinToContinueMessage": "Enter your {pinOrPassword} to continue",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
     "placeholders": {
@@ -2679,7 +2679,7 @@
   "@swapTransferFrom": {
     "description": "Label for source wallet dropdown"
   },
-  "errorSharingLogsMessage": "บันทึกข้อผิดพลาด: [X20]",
+  "errorSharingLogsMessage": "Error sharing logs: {error}",
   "@errorSharingLogsMessage": {
     "description": "Error message when log sharing fails",
     "placeholders": {
@@ -2749,7 +2749,7 @@
   "@payAmount": {
     "description": "Label for amount"
   },
-  "sellMaximumAmount": "ราคาสูงสุด: [X21]",
+  "sellMaximumAmount": "Maximum sell amount: {amount}",
   "@sellMaximumAmount": {
     "description": "Error for amount above maximum",
     "placeholders": {
@@ -2935,7 +2935,7 @@
   "@transactionLabelFromWallet": {
     "description": "Label for source wallet"
   },
-  "recoverbullErrorRateLimited": "อัตรา จํากัด โปรดลองอีกครั้งใน [X34]",
+  "recoverbullErrorRateLimited": "Rate limited. Please try again in {retryIn}",
   "@recoverbullErrorRateLimited": {
     "description": "Error message when rate limited by the server",
     "placeholders": {
@@ -2972,7 +2972,7 @@
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
   },
-  "recoverbullMemorizeWarning": "คุณต้องลอง [X23] ไปยังการเข้าถึงกระเป๋าสตางค์ของคุณ ต้องไม่เกิน 6 หลัก หากคุณสูญเสียนี้ [X116] คุณสามารถกู้คืนการสํารองข้อมูลของคุณ.",
+  "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
   "@recoverbullMemorizeWarning": {
     "description": "Warning message about memorizing PIN or password",
     "placeholders": {
@@ -3462,7 +3462,7 @@
   "@exchangeDcaCancelDialogConfirmButton": {
     "description": "Button label to confirm DCA deactivation"
   },
-  "electrumServerUrlHint": "{network} [X10] เซิร์ฟเวอร์",
+  "electrumServerUrlHint": "{network} {environment} Server URL",
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
@@ -3510,7 +3510,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "คุณซื้อ [X11]",
+  "buyYouBought": "You bought {amount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -3617,7 +3617,7 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "ค้นหาการสํารองข้อมูล: [X24]",
+  "testBackupErrorFailedToFetch": "Failed to fetch backup: {error}",
   "@testBackupErrorFailedToFetch": {
     "description": "Error when backup fetch fails",
     "placeholders": {
@@ -4135,7 +4135,7 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
-  "dcaBuyingMessage": "คุณซื้อ {amount} ทั้งหมด [X30] ผ่าน [X46] เป็นเงินในบัญชีของคุณ.",
+  "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
@@ -4199,7 +4199,7 @@
   "@buyKYCLevel1": {
     "description": "Basic verification tier"
   },
-  "sendErrorAmountAboveMaximum": "จํานวนเงินสูงสุดสูงสุด: [X33] นั่ง",
+  "sendErrorAmountAboveMaximum": "Amount above maximum swap limit: {maxLimit} sats",
   "@sendErrorAmountAboveMaximum": {
     "description": "Error with specific maximum swap amount",
     "placeholders": {
@@ -4240,7 +4240,7 @@
   "@swapTransferTo": {
     "description": "Label for destination wallet dropdown"
   },
-  "testBackupPinMessage": "การทดสอบเพื่อให้แน่ใจว่าคุณจดจําการสํารองข้อมูลของคุณ [X43]",
+  "testBackupPinMessage": "Test to make sure you remember your backup {pinOrPassword}",
   "@testBackupPinMessage": {
     "description": "Message prompting user to test backup PIN/password",
     "placeholders": {
@@ -4559,7 +4559,7 @@
   "@seedsignerStep3": {
     "description": "SeedSigner instruction step 3"
   },
-  "sellErrorLoadUtxos": "เก็บโหลด UTXOs: [X22]",
+  "sellErrorLoadUtxos": "Failed to load UTXOs: {error}",
   "@sellErrorLoadUtxos": {
     "description": "Error message when loading UTXOs fails",
     "placeholders": {
@@ -4755,7 +4755,7 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "เรียกคืนรหัส [X11]",
+  "transactionDetailRetrySwap": "Retry Swap {action}",
   "@transactionDetailRetrySwap": {
     "description": "Button label to retry a failed swap action",
     "placeholders": {
@@ -4792,7 +4792,7 @@
   "@importQrDeviceImport": {
     "description": "Button to confirm import from QR device"
   },
-  "importQrDeviceScanPrompt": "สแกนรหัส QR จาก [X27]",
+  "importQrDeviceScanPrompt": "Scan the QR code from your {deviceName}",
   "@importQrDeviceScanPrompt": {
     "description": "Instruction to scan QR from device",
     "placeholders": {
@@ -4938,7 +4938,7 @@
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
-  "recoverbullReenterRequired": "ป้อนของคุณ [X14]",
+  "recoverbullReenterRequired": "Re-enter your {inputType}",
   "@recoverbullReenterRequired": {
     "description": "Label for confirmation input field",
     "placeholders": {
@@ -4991,7 +4991,7 @@
   "@arkReceiveCopyAddress": {
     "description": "Copy address button label"
   },
-  "testBackupErrorWriteFailed": "เขียนที่จะจัดเก็บ: [X25]",
+  "testBackupErrorWriteFailed": "Write to storage failed: {error}",
   "@testBackupErrorWriteFailed": {
     "description": "Error when writing verification status to storage fails",
     "placeholders": {
@@ -5076,7 +5076,7 @@
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
   },
-  "psbtFlowSelectSeed": "เมื่อการทําธุรกรรมนําเข้าใน [X41] คุณควรเลือกเมล็ดพันธุ์ที่คุณต้องการลงชื่อเข้าใช้.",
+  "psbtFlowSelectSeed": "Once the transaction is imported in your {device}, you should select the seed you wish to sign with.",
   "@psbtFlowSelectSeed": {
     "description": "Instruction to select seed on device for signing",
     "placeholders": {
@@ -5125,7 +5125,7 @@
   "@sendSats": {
     "description": "Unit label for satoshis"
   },
-  "electrumInvalidTimeoutError": "ปริมาณเวลา: [X23]",
+  "electrumInvalidTimeoutError": "Invalid Timeout value: {value}",
   "@electrumInvalidTimeoutError": {
     "description": "Error message for invalid Timeout value from backend",
     "placeholders": {
@@ -5578,7 +5578,7 @@
   "@importColdcardInstructionsStep8": {
     "description": "ImportColdcardQ: Eighth instruction step"
   },
-  "dcaSuccessMessageMonthly": "คุณซื้อ [X13] ทุกวัน",
+  "dcaSuccessMessageMonthly": "You will buy {amount} every month",
   "@dcaSuccessMessageMonthly": {
     "description": "Success message for monthly frequency",
     "placeholders": {
@@ -5901,7 +5901,7 @@
   "@importQrDeviceSeedsignerStep6": {
     "description": "SeedSigner instruction step 6"
   },
-  "swapValidationMaximumAmount": "ปริมาณสูงสุด {amount} [X27]",
+  "swapValidationMaximumAmount": "Maximum amount is {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "description": "Validation error when amount exceeds maximum",
     "placeholders": {
@@ -5945,7 +5945,7 @@
   "@backupWalletHowToDecideBackupMoreInfo": {
     "description": "Link text to external resource"
   },
-  "walletAutoTransferBlockedMessage": "การโอนเงิน {amount} BTC ค่าธรรมเนียมปัจจุบันคือ {currentFee}% ของจํานวนเงินที่โอนและค่าธรรมเนียมที่กําหนดคือ [X121]",
+  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
   "@walletAutoTransferBlockedMessage": {
     "description": "Message explaining why auto-transfer was blocked",
     "placeholders": {
@@ -6520,7 +6520,7 @@
   "@psbtSignTransaction": {
     "description": "AppBar title for PSBT signing screen"
   },
-  "sellRemainingLimit": "รายการล่าสุด: [X17]",
+  "sellRemainingLimit": "Remaining today: {amount}",
   "@sellRemainingLimit": {
     "description": "Shows remaining daily limit",
     "placeholders": {
@@ -6625,7 +6625,7 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "dcaSuccessMessageDaily": "คุณซื้อ [X13] ทุกวัน",
+  "dcaSuccessMessageDaily": "You will buy {amount} every day",
   "@dcaSuccessMessageDaily": {
     "description": "Success message for daily frequency",
     "placeholders": {
@@ -6638,7 +6638,7 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "ค้นหาเซิร์ฟเวอร์ที่กําหนดเอง[X30]",
+  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails",
     "placeholders": {
@@ -6856,7 +6856,7 @@
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
   },
-  "pinValidationError": "รหัสรหัสอย่างน้อย [X21]",
+  "pinValidationError": "PIN must be at least {minLength} digits long",
   "@pinValidationError": {
     "description": "Error message when PIN is too short",
     "placeholders": {
@@ -7059,7 +7059,7 @@
   "@bitboxErrorInvalidMagicBytes": {
     "description": "Error when PSBT has invalid magic bytes"
   },
-  "sellErrorRecalculateFees": "ชดเชยค่าธรรมเนียม: [X28]",
+  "sellErrorRecalculateFees": "Failed to recalculate fees: {error}",
   "@sellErrorRecalculateFees": {
     "description": "Error message when fee recalculation fails",
     "placeholders": {
@@ -7146,7 +7146,7 @@
       }
     }
   },
-  "sellDailyLimit": "ราคาประจําวัน: [X13]",
+  "sellDailyLimit": "Daily limit: {amount}",
   "@sellDailyLimit": {
     "description": "Shows maximum daily sell amount",
     "placeholders": {
@@ -7425,7 +7425,7 @@
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
   },
-  "enterPinAgainMessage": "ป้อน [X11] อีกครั้งต่อไป.",
+  "enterPinAgainMessage": "Enter your {pinOrPassword} again to continue.",
   "@enterPinAgainMessage": {
     "description": "Message asking to re-enter PIN/password",
     "placeholders": {
@@ -7721,7 +7721,7 @@
   "@importQrDeviceKeystoneInstructionsTitle": {
     "description": "Title for Keystone setup instructions"
   },
-  "electrumSavePriorityFailedError": "ค้นหาเซิร์ฟเวอร์ที่สําคัญ [X30]",
+  "electrumSavePriorityFailedError": "Failed to save server priority{reason}",
   "@electrumSavePriorityFailedError": {
     "description": "Error message when saving server priority fails",
     "placeholders": {
@@ -7758,7 +7758,7 @@
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
-  "buyVerificationFailed": "ตรวจสอบข้อผิดพลาด: [X21]",
+  "buyVerificationFailed": "Verification failed: {reason}",
   "@buyVerificationFailed": {
     "description": "Error message with failure reason",
     "placeholders": {
@@ -7771,7 +7771,7 @@
   "@importWatchOnlyBuyDevice": {
     "description": "Button label to purchase a hardware wallet device"
   },
-  "sellMinimumAmount": "ราคาขั้นต่ํา: [X21]",
+  "sellMinimumAmount": "Minimum sell amount: {amount}",
   "@sellMinimumAmount": {
     "description": "Error for amount below minimum",
     "placeholders": {
@@ -8040,7 +8040,7 @@
   "@pinButtonRemove": {
     "description": "Button label to delete existing PIN"
   },
-  "urProgressLabel": "ความคืบหน้า: [X13] ชิ้นส่วน",
+  "urProgressLabel": "UR Progress: {parts} parts",
   "@urProgressLabel": {
     "description": "Progress message showing parts processed for multi-part UR codes",
     "placeholders": {
@@ -8261,7 +8261,7 @@
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
   },
-  "psbtFlowSignTransactionOnDevice": "คลิกที่ปุ่มไปยังการทําธุรกรรมใน [X50].",
+  "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the transaction on your {device}.",
   "@psbtFlowSignTransactionOnDevice": {
     "description": "Instruction to sign transaction on hardware device",
     "placeholders": {
@@ -8322,7 +8322,7 @@
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
-  "testBackupErrorTestFailed": "สํารองข้อมูล: [X23]",
+  "testBackupErrorTestFailed": "Failed to test backup: {error}",
   "@testBackupErrorTestFailed": {
     "description": "Generic error message for backup test failure",
     "placeholders": {
@@ -8598,7 +8598,7 @@
   "@backupWalletHowToDecideVaultCustomLocation": {
     "description": "Explanation of custom location benefits and risks"
   },
-  "exchangeFileUploadPartialSuccess": "{uploaded} ของ [X14] ไฟล์",
+  "exchangeFileUploadPartialSuccess": "{uploaded} of {total} files uploaded",
   "@exchangeFileUploadPartialSuccess": {
     "description": "Message when some files failed to upload",
     "placeholders": {
@@ -8853,7 +8853,7 @@
   "@autoswapRecipientWalletPlaceholder": {
     "description": "Dropdown placeholder text when no wallet is selected"
   },
-  "enterYourBackupPinTitle": "ใส่การสํารองข้อมูลของคุณ [X18]",
+  "enterYourBackupPinTitle": "Enter your backup {pinOrPassword}",
   "@enterYourBackupPinTitle": {
     "description": "Title for entering backup PIN or password",
     "placeholders": {
@@ -9129,7 +9129,7 @@
   "@bitboxCubitDeviceNotFound": {
     "description": "Error interpretation for device not found"
   },
-  "autoswapSaveError": "ตรวจสอบการตั้งค่า: [X25]",
+  "autoswapSaveError": "Failed to save settings: {error}",
   "@autoswapSaveError": {
     "description": "Error message when save fails",
     "placeholders": {
@@ -9150,7 +9150,7 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "เพิ่มเซิร์ฟเวอร์ที่กําหนดเอง[X27]",
+  "electrumAddFailedError": "Failed to add custom server{reason}",
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails",
     "placeholders": {
@@ -9240,7 +9240,7 @@
   "@kruxStep6": {
     "description": "Krux troubleshooting header"
   },
-  "autoswapMaximumFeeError": "ค่าธรรมเนียมสูงสุดคือ [X25]",
+  "autoswapMaximumFeeError": "Maximum fee threshold is {threshold}%",
   "@autoswapMaximumFeeError": {
     "description": "Validation error shown when fee threshold exceeds maximum",
     "placeholders": {
@@ -9361,7 +9361,7 @@
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
   },
-  "exchangeDcaSummaryMessage": "คุณซื้อ {amount} ทั้งหมด [X30] ผ่าน [X46] เป็นเงินในบัญชีของคุณ.",
+  "exchangeDcaSummaryMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
     "placeholders": {
@@ -9406,7 +9406,7 @@
   "@backupWalletLastBackupTest": {
     "description": "Label prefix for displaying timestamp of last physical backup test"
   },
-  "whatIsWordNumberPrompt": "คําพูดของชื่อ [X20]?",
+  "whatIsWordNumberPrompt": "What is word number {number}?",
   "@whatIsWordNumberPrompt": {
     "description": "Prompt asking for specific word number",
     "placeholders": {
@@ -9748,7 +9748,7 @@
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
-  "enterYourPinTitle": "ใส่ [X11]",
+  "enterYourPinTitle": "Enter your {pinOrPassword}",
   "@enterYourPinTitle": {
     "description": "Title for entering PIN or password",
     "placeholders": {
@@ -9945,7 +9945,7 @@
   "@backupWalletVaultProviderAppleICloud": {
     "description": "Name of Apple iCloud vault provider option"
   },
-  "swapValidationMinimumAmount": "ปริมาณขั้นต่ํา {amount} [X27]",
+  "swapValidationMinimumAmount": "Minimum amount is {amount} {currency}",
   "@swapValidationMinimumAmount": {
     "description": "Validation error when amount is below minimum",
     "placeholders": {
@@ -10073,7 +10073,7 @@
   "@transactionSwapInfoFailedExpired": {
     "description": "Additional info for failed or expired swaps"
   },
-  "memorizePasswordWarning": "คุณต้องลอง [X23] ไปยังการเข้าถึงกระเป๋าสตางค์ของคุณ ต้องไม่เกิน 6 หลัก หากคุณสูญเสียนี้ [X120] คุณสามารถกู้คืนการสํารองข้อมูลของคุณ.",
+  "memorizePasswordWarning": "You must memorize this {pinOrPassword} to recover access to your wallet. It must be at least 6 digits. If you lose this {pinOrPassword} you cannot recover your backup.",
   "@memorizePasswordWarning": {
     "description": "Warning about memorizing PIN/password",
     "placeholders": {
@@ -10246,7 +10246,7 @@
   "@notLoggedInTitle": {
     "description": "Title for not logged in state"
   },
-  "testBackupWhatIsWordNumber": "คําพูดของชื่อ [X20]?",
+  "testBackupWhatIsWordNumber": "What is word number {number}?",
   "@testBackupWhatIsWordNumber": {
     "description": "Quiz prompt asking for specific word number",
     "placeholders": {
@@ -10311,7 +10311,7 @@
   "@swapDoNotUninstallWarning": {
     "description": "Warning message during pending transfer"
   },
-  "testBackupErrorVerificationFailed": "ตรวจสอบข้อผิดพลาด: [X21]",
+  "testBackupErrorVerificationFailed": "Verification failed: {error}",
   "@testBackupErrorVerificationFailed": {
     "description": "Generic error message for verification failure",
     "placeholders": {
@@ -10348,7 +10348,7 @@
   "@allSeedViewSecurityWarningTitle": {
     "description": "Title for security warning dialog"
   },
-  "sendSwapFeeEstimate": "ค่าธรรมเนียมโดยประมาณ: [X20]",
+  "sendSwapFeeEstimate": "Estimated swap fee: {amount}",
   "@sendSwapFeeEstimate": {
     "description": "Estimated cost of swap",
     "placeholders": {
@@ -10377,7 +10377,7 @@
   "@exchangeAccountInfoVerificationLimitedVerification": {
     "description": "Status label for limited verification level"
   },
-  "addressViewErrorLoadingMoreAddresses": "ข้อผิดพลาดที่โหลดมากขึ้น: [X30]",
+  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
   "@addressViewErrorLoadingMoreAddresses": {
     "description": "Error message displayed when pagination of addresses fails",
     "placeholders": {
@@ -10515,7 +10515,7 @@
   "@backupWalletVaultProviderCustomLocation": {
     "description": "Name of custom location vault provider option"
   },
-  "addressViewErrorLoadingAddresses": "การโหลดข้อความ: [X25]",
+  "addressViewErrorLoadingAddresses": "Error loading addresses: {error}",
   "@addressViewErrorLoadingAddresses": {
     "description": "Error message displayed when addresses fail to load",
     "placeholders": {
@@ -10719,7 +10719,7 @@
   "@sellOrderNotFoundError": {
     "description": "Error message for order not found"
   },
-  "sellErrorPrepareTransaction": "จัดเตรียมการทําธุรกรรม: [X31]",
+  "sellErrorPrepareTransaction": "Failed to prepare transaction: {error}",
   "@sellErrorPrepareTransaction": {
     "description": "Error message when transaction preparation fails",
     "placeholders": {
@@ -10801,7 +10801,7 @@
   "@transactionNetworkLiquid": {
     "description": "Label for Liquid network transactions"
   },
-  "payEstimatedConfirmation": "ระยะเวลาโดยประมาณ: [X24]",
+  "payEstimatedConfirmation": "Estimated confirmation: {time}",
   "@payEstimatedConfirmation": {
     "description": "Estimated time until confirmation",
     "placeholders": {
@@ -10895,7 +10895,7 @@
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
   },
-  "recoverbullEnterInput": "ใส่ [X11]",
+  "recoverbullEnterInput": "Enter your {inputType}",
   "@recoverbullEnterInput": {
     "description": "Input field label prompting for PIN or password",
     "placeholders": {
@@ -11111,7 +11111,7 @@
   "@electrumSaveFailedError": {
     "description": "Error message when saving advanced options fails"
   },
-  "arkSettleTransactionCount": "ตั้งค่า {count} [X15]",
+  "arkSettleTransactionCount": "Settle {count} {transaction}",
   "@arkSettleTransactionCount": {
     "description": "Button label showing number of unsettled transactions",
     "placeholders": {
@@ -11163,7 +11163,7 @@
   "@exchangeDcaHideSettings": {
     "description": "Link text to hide DCA settings details"
   },
-  "appUnlockIncorrectPinError": "การแก้ไข PIN กรุณาลองอีกครั้ง \"X34X] [X51]",
+  "appUnlockIncorrectPinError": "Incorrect PIN. Please try again. ({failedAttempts} {attemptsWord})",
   "@appUnlockIncorrectPinError": {
     "description": "Error message shown when user enters incorrect PIN",
     "placeholders": {
@@ -11338,7 +11338,7 @@
   "@sellInProgress": {
     "description": "Message for sell in progress"
   },
-  "testBackupLastKnownVault": "การเข้ารหัส Vault: [X28]",
+  "testBackupLastKnownVault": "Last Known Encrypted Vault: {timestamp}",
   "@testBackupLastKnownVault": {
     "description": "Shows timestamp of last encrypted vault backup",
     "placeholders": {
@@ -11541,7 +11541,7 @@
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
   },
-  "sendSwapTimeEstimate": "ระยะเวลาโดยประมาณ: [X16]",
+  "sendSwapTimeEstimate": "Estimated time: {time}",
   "@sendSwapTimeEstimate": {
     "description": "Expected swap duration",
     "placeholders": {
@@ -11903,7 +11903,7 @@
   "@payTotal": {
     "description": "Label for total payment amount (amount + fee)"
   },
-  "autoswapSaveErrorMessage": "ตรวจสอบการตั้งค่า: [X25]",
+  "autoswapSaveErrorMessage": "Failed to save settings: {error}",
   "@autoswapSaveErrorMessage": {
     "description": "SnackBar error message when save fails",
     "placeholders": {

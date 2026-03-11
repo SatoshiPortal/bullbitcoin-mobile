@@ -127,7 +127,7 @@
       }
     }
   },
-  "arkAboutDurationMinutes": "(X0X) دقیقه",
+  "arkAboutDurationMinutes": "{minutes} minutes",
   "@arkAboutDurationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
@@ -145,7 +145,7 @@
       }
     }
   },
-  "arkAboutDurationHours": "(X0X) ساعت",
+  "arkAboutDurationHours": "{hours} hours",
   "@arkAboutDurationHours": {
     "description": "Duration format for plural hours",
     "placeholders": {
@@ -228,7 +228,7 @@
   "@arkContinueButton": {
     "description": "Continue button text used in ark send flow"
   },
-  "addressViewErrorLoadingAddresses": "آدرس های بارگذاری خطا (X25X)",
+  "addressViewErrorLoadingAddresses": "Error loading addresses: {error}",
   "@addressViewErrorLoadingAddresses": {
     "description": "Error message displayed when addresses fail to load",
     "placeholders": {
@@ -241,7 +241,7 @@
   "@addressViewNoAddressesFound": {
     "description": "Empty state message when no addresses are available"
   },
-  "addressViewErrorLoadingMoreAddresses": "خطای بارگذاری آدرس های بیشتر: (X30X)",
+  "addressViewErrorLoadingMoreAddresses": "Error loading more addresses: {error}",
   "@addressViewErrorLoadingMoreAddresses": {
     "description": "Error message displayed when pagination of addresses fails",
     "placeholders": {
@@ -359,7 +359,7 @@
       }
     }
   },
-  "ledgerActionFailedMessage": "(X0X) شکست خورد",
+  "ledgerActionFailedMessage": "{action} Failed",
   "@ledgerActionFailedMessage": {
     "description": "Error message when a Ledger action fails",
     "placeholders": {
@@ -852,7 +852,7 @@
   "@allSeedViewShowSeedsButton": {
     "description": "Button label to show seed phrases"
   },
-  "allSeedViewExistingWallets": "کیف پول های موجود (X18X)",
+  "allSeedViewExistingWallets": "Existing Wallets ({count})",
   "@allSeedViewExistingWallets": {
     "description": "Section header for existing wallets with count",
     "placeholders": {
@@ -862,7 +862,7 @@
       }
     }
   },
-  "allSeedViewOldWallets": "کیف پول های قدیمی (X13X)",
+  "allSeedViewOldWallets": "Old Wallets ({count})",
   "@allSeedViewOldWallets": {
     "description": "Section header for old wallets with count",
     "placeholders": {
@@ -978,7 +978,7 @@
   "@walletAutoTransferBlockedTitle": {
     "description": "Title for auto-swap fee warning when fees exceed threshold"
   },
-  "walletAutoTransferBlockedMessage": "تلاش برای انتقال (X23X) BTC هزینه فعلی (X52X)٪ از مبلغ انتقال است و آستانه هزینه به {thresholdFee}٪ تنظیم شده است",
+  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
   "@walletAutoTransferBlockedMessage": {
     "description": "Message explaining why auto-transfer was blocked",
     "placeholders": {
@@ -1258,7 +1258,7 @@
       }
     }
   },
-  "labelErrorUnsupportedType": "این نوع (X10X) پشتیبانی نمی شود",
+  "labelErrorUnsupportedType": "This type {type} is not supported",
   "@labelErrorUnsupportedType": {
     "description": "Error message when label type is not supported",
     "placeholders": {
@@ -1717,7 +1717,7 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "PIN باید حداقل (X21X) رقمی طولانی داشته باشد",
+  "pinCodeMinLengthError": "PIN must be at least {minLength} digits long",
   "@pinCodeMinLengthError": {
     "description": "Error message when PIN is too short",
     "placeholders": {
@@ -1803,7 +1803,7 @@
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
-  "dcaConfirmError": "چیزی اشتباه کرد: (X22X)",
+  "dcaConfirmError": "Something went wrong: {error}",
   "@dcaConfirmError": {
     "description": "DCA confirmation error message",
     "placeholders": {
@@ -1897,7 +1897,7 @@
   "@payPaymentPending": {
     "description": "Status message for in-flight payment"
   },
-  "payConfirmHighFee": "هزینه این پرداخت (X28X)٪ از مبلغ است. ادامه دهید؟?",
+  "payConfirmHighFee": "The fee for this payment is {percentage}% of the amount. Continue?",
   "@payConfirmHighFee": {
     "description": "Confirmation prompt when fee percentage is high",
     "placeholders": {
@@ -1970,7 +1970,7 @@
   "@walletAddressTypeConfidentialSegwit": {
     "description": "Address type for Liquid wallets"
   },
-  "transactionDetailRetryTransfer": "انتقال مجدد (X15X)",
+  "transactionDetailRetryTransfer": "Retry Transfer {action}",
   "@transactionDetailRetryTransfer": {
     "description": "Button label to retry a failed transfer action",
     "placeholders": {
@@ -2007,7 +2007,7 @@
   "@arkSessionDuration": {
     "description": "Label for session duration field"
   },
-  "electrumTimeoutWarning": "زمان بندی شما (X14X) ثانیه کمتر از مقدار توصیه شده (X75X) ثانیه برای این شکاف توقف است.",
+  "electrumTimeoutWarning": "Your timeout ({timeoutValue} seconds) is lower than the recommended value ({recommended} seconds) for this Stop Gap.",
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
@@ -2405,7 +2405,7 @@
   "@dcaCancelButton": {
     "description": "Cancel button in DCA dialog"
   },
-  "durationMinutes": "(X0X) دقیقه",
+  "durationMinutes": "{minutes} minutes",
   "@durationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
@@ -2672,7 +2672,7 @@
   "@sendErrorLiquidWalletRequired": {
     "description": "Error when wrong wallet type used for Liquid to Lightning swap"
   },
-  "arkDurationMinutes": "(X0X) دقیقه",
+  "arkDurationMinutes": "{minutes} minutes",
   "@arkDurationMinutes": {
     "description": "Duration format for plural minutes",
     "placeholders": {
@@ -2872,7 +2872,7 @@
   "@withdrawConfirmCard": {
     "description": "Field label for debit card"
   },
-  "dcaSuccessMessageHourly": "شما هر ساعت (X13X) خرید می کنید",
+  "dcaSuccessMessageHourly": "You will buy {amount} every hour",
   "@dcaSuccessMessageHourly": {
     "description": "Success message for hourly frequency",
     "placeholders": {
@@ -2901,7 +2901,7 @@
   "@fundExchangeMethodBankTransferWire": {
     "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
   },
-  "psbtFlowLoginToDevice": "ورود به دستگاه (X14X)",
+  "psbtFlowLoginToDevice": "Login to your {device} device",
   "@psbtFlowLoginToDevice": {
     "description": "Instruction to login to hardware device",
     "placeholders": {
@@ -3063,7 +3063,7 @@
   "@broadcastSignedTxDoneButton": {
     "description": "Button to finish after successful broadcast"
   },
-  "sendRecommendedFee": "توصیه می شود: (X13X)",
+  "sendRecommendedFee": "Recommended: {rate} sat/vB",
   "@sendRecommendedFee": {
     "description": "Suggested fee rate",
     "placeholders": {
@@ -3484,7 +3484,7 @@
   "@sendEstimatedDelivery10Minutes": {
     "description": "Estimated delivery time of approximately 10 minutes"
   },
-  "enterPinToContinueMessage": "وارد شوید (X11X)",
+  "enterPinToContinueMessage": "Enter your {pinOrPassword} to continue",
   "@enterPinToContinueMessage": {
     "description": "Message prompting user to enter PIN/password to continue",
     "placeholders": {
@@ -3531,7 +3531,7 @@
   "@settingsWalletBackupTitle": {
     "description": "Title for the wallet backup section in the settings menu"
   },
-  "transactionError": "خطا (X8X)",
+  "transactionError": "Error - {error}",
   "@transactionError": {
     "description": "Error message displayed when transaction loading fails",
     "placeholders": {
@@ -3857,7 +3857,7 @@
   "@paySelectActiveWallet": {
     "description": "Prompt to choose a wallet"
   },
-  "arkDurationHours": "(X0X) ساعت",
+  "arkDurationHours": "{hours} hours",
   "@arkDurationHours": {
     "description": "Duration format for plural hours",
     "placeholders": {
@@ -4172,7 +4172,7 @@
   "@buyVerifyIdentity": {
     "description": "Button to start KYC process"
   },
-  "electrumServerUrlHint": "{network} URL (X10X)",
+  "electrumServerUrlHint": "{network} {environment} Server URL",
   "@electrumServerUrlHint": {
     "description": "Hint text for server URL input",
     "placeholders": {
@@ -4216,7 +4216,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "خرید (X11X)",
+  "buyYouBought": "You bought {amount}",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -4266,7 +4266,7 @@
   "@walletArkExperimental": {
     "description": "Description for Ark wallet indicating experimental status"
   },
-  "electrumLoadFailedError": "عدم استفاده از سرورهای بارگذاری (X22X)",
+  "electrumLoadFailedError": "Failed to load servers{reason}",
   "@electrumLoadFailedError": {
     "description": "Error message when loading servers fails",
     "placeholders": {
@@ -4307,7 +4307,7 @@
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
-  "testBackupErrorFailedToFetch": "شکست در تهیه پشتیبان: (X24X)",
+  "testBackupErrorFailedToFetch": "Failed to fetch backup: {error}",
   "@testBackupErrorFailedToFetch": {
     "description": "Error when backup fetch fails",
     "placeholders": {
@@ -4940,7 +4940,7 @@
   "@arkBoardingConfirmed": {
     "description": "Label for confirmed boarding balance in Ark balance breakdown"
   },
-  "exchangeFileUploadInstructionsWithParams": "فایل های (X13X) را آپلود کنید. فرمت های مجاز: PDF، JPG، PNG، GIF، HEIC. حداکثر حجم فایل: 10MB در هر فایل.",
+  "exchangeFileUploadInstructionsWithParams": "Upload up to {maxFiles} files. Allowed formats: PDF, JPG, PNG, GIF, HEIC. Maximum file size: 10MB per file.",
   "@exchangeFileUploadInstructionsWithParams": {
     "description": "Instructions for file upload with parameters",
     "placeholders": {
@@ -5134,7 +5134,7 @@
       }
     }
   },
-  "electrumTimeoutTooHighError": "به نظر می رسد زمان بسیار بالا است. (حداکثر (X30X) ثانیه",
+  "electrumTimeoutTooHighError": "Timeout seems too high. (Max. {maxTimeout} seconds)",
   "@electrumTimeoutTooHighError": {
     "description": "Validation error for Timeout exceeding maximum",
     "placeholders": {
@@ -5279,7 +5279,7 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "transactionDetailRetrySwap": "Retry (X11X)",
+  "transactionDetailRetrySwap": "Retry Swap {action}",
   "@transactionDetailRetrySwap": {
     "description": "Button label to retry a failed swap action",
     "placeholders": {
@@ -5438,7 +5438,7 @@
   "@importColdcardButtonOpenCamera": {
     "description": "ImportColdcardQ: Button to open camera for QR scanning"
   },
-  "recoverbullReenterRequired": "دوباره وارد شوید (X14X)",
+  "recoverbullReenterRequired": "Re-enter your {inputType}",
   "@recoverbullReenterRequired": {
     "description": "Label for confirmation input field",
     "placeholders": {
@@ -5910,7 +5910,7 @@
   "@mempoolCustomServerAdd": {
     "description": "Button text to add custom mempool server"
   },
-  "sendHighFeeWarningDescription": "هزینه کلی (X13X)٪ از مبلغی است که شما ارسال می کنید",
+  "sendHighFeeWarningDescription": "Total fee is {feePercent}% of the amount you are sending",
   "@sendHighFeeWarningDescription": {
     "description": "Warning message showing fee as percentage of send amount",
     "placeholders": {
@@ -6200,7 +6200,7 @@
   "@arkTxPayment": {
     "description": "Transaction type label for Ark payment transactions"
   },
-  "swapValidationMaximumAmount": "حداکثر مقدار (X18X)",
+  "swapValidationMaximumAmount": "Maximum amount is {amount} {currency}",
   "@swapValidationMaximumAmount": {
     "description": "Validation error when amount exceeds maximum",
     "placeholders": {
@@ -6413,7 +6413,7 @@
   "@keystoneStep13": {
     "description": "Keystone instruction about import completion"
   },
-  "receiveGenerationFailed": "شکست در تولید (X19X)",
+  "receiveGenerationFailed": "Failed to generate {type}",
   "@receiveGenerationFailed": {
     "description": "Error when address/invoice generation fails",
     "placeholders": {
@@ -6798,7 +6798,7 @@
   "@receivePaymentInProgress": {
     "description": "Status message when a payment is being processed"
   },
-  "dcaSuccessMessageDaily": "شما هر روز (X13X) خرید می کنید",
+  "dcaSuccessMessageDaily": "You will buy {amount} every day",
   "@dcaSuccessMessageDaily": {
     "description": "Success message for daily frequency",
     "placeholders": {
@@ -6811,7 +6811,7 @@
   "@walletNetworkLiquidTestnet": {
     "description": "Network label for Liquid testnet"
   },
-  "electrumDeleteFailedError": "برای حذف سرور سفارشی (X30X)",
+  "electrumDeleteFailedError": "Failed to delete custom server{reason}",
   "@electrumDeleteFailedError": {
     "description": "Error message when deleting custom server fails",
     "placeholders": {
@@ -6940,7 +6940,7 @@
   "@passphraseLabel": {
     "description": "Label for optional passphrase input field"
   },
-  "recoverbullConfirmInput": "تایید (X8X)",
+  "recoverbullConfirmInput": "Confirm {inputType}",
   "@recoverbullConfirmInput": {
     "description": "Label to confirm input (PIN or password)",
     "placeholders": {
@@ -6993,7 +6993,7 @@
   "@transferFeeLabel": {
     "description": "Breakdown component showing Boltz transfer fee portion"
   },
-  "pinValidationError": "PIN باید حداقل (X21X) رقمی طولانی داشته باشد",
+  "pinValidationError": "PIN must be at least {minLength} digits long",
   "@pinValidationError": {
     "description": "Error message when PIN is too short",
     "placeholders": {
@@ -8017,7 +8017,7 @@
   "@sellSendPaymentPayinAmount": {
     "description": "Field label for payin amount"
   },
-  "psbtFlowTurnOnDevice": "روی دستگاه (X13X) خود کلیک کنید",
+  "psbtFlowTurnOnDevice": "Turn on your {device} device",
   "@psbtFlowTurnOnDevice": {
     "description": "Instruction to power on hardware device",
     "placeholders": {
@@ -8399,7 +8399,7 @@
   "@backupWalletHowToDecideVaultCustomLocation": {
     "description": "Explanation of custom location benefits and risks"
   },
-  "exchangeFileUploadPartialSuccess": "{uploaded} فایل های آپلود شده (X14X)",
+  "exchangeFileUploadPartialSuccess": "{uploaded} of {total} files uploaded",
   "@exchangeFileUploadPartialSuccess": {
     "description": "Message when some files failed to upload",
     "placeholders": {
@@ -8610,7 +8610,7 @@
   "@withdrawConfirmRecipientName": {
     "description": "Field label for recipient name"
   },
-  "enterYourBackupPinTitle": "نسخه پشتیبان خود را وارد کنید (X18X)",
+  "enterYourBackupPinTitle": "Enter your backup {pinOrPassword}",
   "@enterYourBackupPinTitle": {
     "description": "Title for entering backup PIN or password",
     "placeholders": {
@@ -8866,7 +8866,7 @@
   "@arkSettleButton": {
     "description": "Settle button label"
   },
-  "electrumAddFailedError": "برای اضافه کردن سرور سفارشی (X27X)",
+  "electrumAddFailedError": "Failed to add custom server{reason}",
   "@electrumAddFailedError": {
     "description": "Error message when adding custom server fails",
     "placeholders": {
@@ -9015,7 +9015,7 @@
   "@addressLabel": {
     "description": "Label for UTXO address in coin selection tile"
   },
-  "testBackupWalletTitle": "آزمون (X5X)",
+  "testBackupWalletTitle": "Test {walletName}",
   "@testBackupWalletTitle": {
     "description": "Dynamic AppBar title showing which wallet is being tested",
     "placeholders": {
@@ -9040,7 +9040,7 @@
   "@backupWalletLastBackupTest": {
     "description": "Label prefix for displaying timestamp of last physical backup test"
   },
-  "whatIsWordNumberPrompt": "عدد کلمه (X20X) چیست؟?",
+  "whatIsWordNumberPrompt": "What is word number {number}?",
   "@whatIsWordNumberPrompt": {
     "description": "Prompt asking for specific word number",
     "placeholders": {
@@ -9282,7 +9282,7 @@
   "@payPayeeAccountNumberHint": {
     "description": "Hint for account number input"
   },
-  "dcaConfirmationError": "چیزی اشتباه کرد: (X22X)",
+  "dcaConfirmationError": "Something went wrong: {error}",
   "@dcaConfirmationError": {
     "description": "Error message displayed when confirmation fails",
     "placeholders": {
@@ -9299,7 +9299,7 @@
   "@pinStatusSettingUpDescription": {
     "description": "Status screen description during PIN save/delete operations"
   },
-  "enterYourPinTitle": "وارد شوید (X11X)",
+  "enterYourPinTitle": "Enter your {pinOrPassword}",
   "@enterYourPinTitle": {
     "description": "Title for entering PIN or password",
     "placeholders": {
@@ -9476,7 +9476,7 @@
   "@backupWalletVaultProviderAppleICloud": {
     "description": "Name of Apple iCloud vault provider option"
   },
-  "swapValidationMinimumAmount": "حداقل مقدار (X18X)",
+  "swapValidationMinimumAmount": "Minimum amount is {amount} {currency}",
   "@swapValidationMinimumAmount": {
     "description": "Validation error when amount is below minimum",
     "placeholders": {
@@ -9584,7 +9584,7 @@
   "@backupWalletBestPracticesTitle": {
     "description": "AppBar title for physical backup checklist screen"
   },
-  "testWalletTitle": "آزمون (X5X)",
+  "testWalletTitle": "Test {walletName}",
   "@testWalletTitle": {
     "description": "Title for testing wallet backup",
     "placeholders": {
@@ -9626,7 +9626,7 @@
   "@payChannelBalanceLow": {
     "description": "Error when Lightning channel lacks sufficient outbound liquidity"
   },
-  "bitboxScreenActionFailed": "(X0X) شکست خورد",
+  "bitboxScreenActionFailed": "{action} Failed",
   "@bitboxScreenActionFailed": {
     "description": "Main text when action fails",
     "placeholders": {
@@ -9715,7 +9715,7 @@
   "@notLoggedInTitle": {
     "description": "Title for not logged in state"
   },
-  "testBackupWhatIsWordNumber": "عدد کلمه (X20X) چیست؟?",
+  "testBackupWhatIsWordNumber": "What is word number {number}?",
   "@testBackupWhatIsWordNumber": {
     "description": "Quiz prompt asking for specific word number",
     "placeholders": {
@@ -10247,7 +10247,7 @@
   "@recoverbullSelectGoogleDrive": {
     "description": "Name label for Google Drive backup provider option"
   },
-  "recoverbullEnterInput": "وارد شوید (X11X)",
+  "recoverbullEnterInput": "Enter your {inputType}",
   "@recoverbullEnterInput": {
     "description": "Input field label prompting for PIN or password",
     "placeholders": {
@@ -10482,7 +10482,7 @@
   "@importColdcardImporting": {
     "description": "Status while importing"
   },
-  "appUnlockIncorrectPinError": "PIN صحیح لطفا دوباره امتحان کنید. (X34X)",
+  "appUnlockIncorrectPinError": "Incorrect PIN. Please try again. ({failedAttempts} {attemptsWord})",
   "@appUnlockIncorrectPinError": {
     "description": "Error message shown when user enters incorrect PIN",
     "placeholders": {
@@ -10502,7 +10502,7 @@
   "@passportStep8": {
     "description": "Passport instruction for reviewing transaction"
   },
-  "importQrDeviceTitle": "اتصال (X8X)",
+  "importQrDeviceTitle": "Connect {deviceName}",
   "@importQrDeviceTitle": {
     "description": "AppBar title for QR device import",
     "placeholders": {
@@ -10568,7 +10568,7 @@
   "@sendDeviceConnected": {
     "description": "Status when hardware wallet is detected"
   },
-  "swapErrorAmountAboveMaximum": "مقدار بیشتر از مقدار مبادله: (X36X)",
+  "swapErrorAmountAboveMaximum": "Amount exceeds maximum swap amount: {max} sats",
   "@swapErrorAmountAboveMaximum": {
     "description": "Error shown when amount is above maximum",
     "placeholders": {
@@ -11042,7 +11042,7 @@
   "@dcaUseDefaultLightningAddress": {
     "description": "Checkbox label to use default Lightning address"
   },
-  "sellEstimatedArrival": "ورود تخمین زده شده (X19X)",
+  "sellEstimatedArrival": "Estimated arrival: {time}",
   "@sellEstimatedArrival": {
     "description": "Expected time to receive fiat",
     "placeholders": {
@@ -11667,7 +11667,7 @@
   "@autoswapRecipientWalletInfoText": {
     "description": "Help text explaining wallet selection"
   },
-  "chooseAccessPinTitle": "انتخاب دسترسی (X14X)",
+  "chooseAccessPinTitle": "Choose access {pinOrPassword}",
   "@chooseAccessPinTitle": {
     "description": "Title for choosing access PIN or password",
     "placeholders": {
@@ -11699,7 +11699,7 @@
       }
     }
   },
-  "psbtFlowReviewTransaction": "هنگامی که معامله در (X41X) شما وارد می شود، آدرس مقصد و مقدار را بررسی کنید.",
+  "psbtFlowReviewTransaction": "Once the transaction is imported in your {device}, review the destination address and the amount.",
   "@psbtFlowReviewTransaction": {
     "description": "Instruction to review transaction details on device",
     "placeholders": {
@@ -11868,7 +11868,7 @@
   "@importQrDevicePassportStep4": {
     "description": "Passport instruction step 4"
   },
-  "confirmAccessPinTitle": "تایید دسترسی (X15X)",
+  "confirmAccessPinTitle": "Confirm access {pinOrPassword}",
   "@confirmAccessPinTitle": {
     "description": "Title for confirming access PIN or password",
     "placeholders": {
@@ -11902,7 +11902,7 @@
   "@customLocationProvider": {
     "description": "Name of custom location provider"
   },
-  "psbtFlowSelectSeed": "هنگامی که معامله در (X41X) شما وارد می شود، باید بذری را انتخاب کنید که می خواهید آن را امضا کنید.",
+  "psbtFlowSelectSeed": "Once the transaction is imported in your {device}, you should select the seed you wish to sign with.",
   "@psbtFlowSelectSeed": {
     "description": "Instruction to select seed on device for signing",
     "placeholders": {
@@ -12147,7 +12147,7 @@
   "@transactionListToday": {
     "description": "Date label for today's transactions"
   },
-  "psbtFlowSignTransactionOnDevice": "روی دکمه ها کلیک کنید تا معامله را بر روی (X50X) خود امضا کنید.",
+  "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the transaction on your {device}.",
   "@psbtFlowSignTransactionOnDevice": {
     "description": "Instruction to sign transaction on hardware device",
     "placeholders": {
@@ -12168,7 +12168,7 @@
   "@fundExchangeETransferDescription": {
     "description": "Description of how E-Transfer works and timeframe"
   },
-  "autoswapMinimumThresholdErrorSats": "حداقل آستانه تعادل (X29X)",
+  "autoswapMinimumThresholdErrorSats": "Minimum balance threshold is {amount} sats",
   "@autoswapMinimumThresholdErrorSats": {
     "description": "Validation error shown when amount threshold is below minimum (sats display)",
     "placeholders": {
@@ -12193,7 +12193,7 @@
   "@arkNoTransactionsYet": {
     "description": "Empty state message shown when user has no transaction history"
   },
-  "autoswapMaximumFeeError": "حداکثر هزینه (X25X)٪",
+  "autoswapMaximumFeeError": "Maximum fee threshold is {threshold}%",
   "@autoswapMaximumFeeError": {
     "description": "Validation error shown when fee threshold exceeds maximum",
     "placeholders": {
@@ -12350,7 +12350,7 @@
       }
     }
   },
-  "autoswapMinimumThresholdErrorBtc": "حداقل آستانه تعادل (X29X) BTC",
+  "autoswapMinimumThresholdErrorBtc": "Minimum balance threshold is {amount} BTC",
   "@autoswapMinimumThresholdErrorBtc": {
     "description": "Validation error shown when amount threshold is below minimum (BTC display)",
     "placeholders": {

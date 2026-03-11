@@ -461,7 +461,7 @@
   "@importWatchOnlyWalletGuides": {
     "description": "Button label for wallet documentation and guides"
   },
-  "receiveConfirming": "Onaylama... ([X15X)",
+  "receiveConfirming": "Confirming... ({count}/{required})",
   "@receiveConfirming": {
     "description": "Shows confirmation progress",
     "placeholders": {
@@ -2964,7 +2964,7 @@
   "@networkFeeLabel": {
     "description": "Breakdown component showing network fee portion"
   },
-  "recoverbullMemorizeWarning": "Bunu (X23X) cüzdanınıza erişmek için ezberlemeniz gerekir. En az 6 basamak olmalıdır. Bunu kaybederseniz {inputType} yedeklemenizi kurtaramazsınız.",
+  "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
   "@recoverbullMemorizeWarning": {
     "description": "Warning message about memorizing PIN or password",
     "placeholders": {
@@ -4123,7 +4123,7 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
-  "dcaBuyingMessage": "Her {amount} hesabınızda para olduğu sürece [X46X) satın alırsınız.",
+  "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
@@ -7822,7 +7822,7 @@
   "@sendDustAmount": {
     "description": "Error for uneconomical amount"
   },
-  "allSeedViewExistingWallets": "Mevcut Cüzdanlar ([X18X)",
+  "allSeedViewExistingWallets": "Existing Wallets ({count})",
   "@allSeedViewExistingWallets": {
     "description": "Section header for existing wallets with count",
     "placeholders": {
@@ -8207,7 +8207,7 @@
   "@dcaSetRecurringBuyTitle": {
     "description": "AppBar title for the main DCA setup screen"
   },
-  "psbtFlowSignTransactionOnDevice": "İşlemi [X50X) imzalamak için düğmeleri tıklayın.",
+  "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the transaction on your {device}.",
   "@psbtFlowSignTransactionOnDevice": {
     "description": "Instruction to sign transaction on hardware device",
     "placeholders": {
@@ -9290,7 +9290,7 @@
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
   },
-  "exchangeDcaSummaryMessage": "Her {amount} hesabınızda para olduğu sürece [X46X) satın alırsınız.",
+  "exchangeDcaSummaryMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
     "placeholders": {
@@ -10002,7 +10002,7 @@
   "@transactionSwapInfoFailedExpired": {
     "description": "Additional info for failed or expired swaps"
   },
-  "memorizePasswordWarning": "Bunu (X23X) cüzdanınıza erişmek için ezberlemeniz gerekir. En az 6 basamak olmalıdır. Bunu kaybederseniz {pinOrPassword} yedeklemenizi kurtaramazsınız.",
+  "memorizePasswordWarning": "You must memorize this {pinOrPassword} to recover access to your wallet. It must be at least 6 digits. If you lose this {pinOrPassword} you cannot recover your backup.",
   "@memorizePasswordWarning": {
     "description": "Warning about memorizing PIN/password",
     "placeholders": {

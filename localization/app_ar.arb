@@ -821,7 +821,7 @@
   "@buyAboveMaxAmountError": {
     "description": "Error message for amount above maximum during buy"
   },
-  "electrumTimeoutWarning": "وقتك ([X14]ثواني) أقل من القيمة الموصى بها ({recommended} ثواني) لهذا التوقيف.",
+  "electrumTimeoutWarning": "Your timeout ({timeoutValue} seconds) is lower than the recommended value ({recommended} seconds) for this Stop Gap.",
   "@electrumTimeoutWarning": {
     "description": "Warning message when timeout is too low for the configured Stop Gap",
     "placeholders": {
@@ -9980,7 +9980,7 @@
   "@sellSwiftCode": {
     "description": "Label for international bank code"
   },
-  "receiveInvoiceExpiry": "تنتهي الفواتير في [X19]",
+  "receiveInvoiceExpiry": "Invoice expires in {time}",
   "@receiveInvoiceExpiry": {
     "description": "Shows expiration countdown",
     "placeholders": {
@@ -11293,7 +11293,7 @@
   "@dcaConfirmOrderTypeValue": {
     "description": "Order type value"
   },
-  "psbtFlowDeviceShowsQr": "الـ (X4X) ستريك رمزها الخاص بـ (كيو آر).",
+  "psbtFlowDeviceShowsQr": "The {device} will then show you its own QR code.",
   "@psbtFlowDeviceShowsQr": {
     "description": "Information that device will display QR code after signing",
     "placeholders": {

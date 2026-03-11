@@ -288,7 +288,7 @@
   "buyConfirmYouReceive": "Sie erhalten",
   "buyDocumentUpload": "Dokumente hochladen",
   "walletAddressTypeConfidentialSegwit": "Vertrauliche Segwit",
-  "transactionDetailRetryTransfer": "Übertragung wiederholen {Aktion}",
+  "transactionDetailRetryTransfer": "Übertragung wiederholen {action}",
   "@transactionDetailRetryTransfer": {
     "placeholders": {
       "action": {
@@ -902,7 +902,7 @@
   "walletTypeWatchSigner": "Watch-Signierer",
   "settingsWalletBackupTitle": "Wallet-Sicherung",
   "ledgerConnectingSubtext": "Sichere Verbindung aufbauen...",
-  "transactionError": "Fehler – {Fehler}",
+  "transactionError": "Fehler – {error}",
   "@transactionError": {
     "placeholders": {
       "error": {
@@ -1152,7 +1152,7 @@
   "testCompletedSuccessMessage": "Sie sind in der Lage, den Zugang zu einer verlorenen Bitcoin-Wallet zu erholen",
   "importWatchOnlyScanQR": "Scan QR",
   "selectAmountTitle": "Wählen Sie den Betrag",
-  "buyYouBought": "Du hast {Betrag} gekauft",
+  "buyYouBought": "Du hast {amount} gekauft",
   "@buyYouBought": {
     "placeholders": {
       "amount": {
@@ -1524,7 +1524,7 @@
   "swapProgressCompleted": "Transfer abgeschlossen",
   "keystoneStep2": "Klicken Sie auf Scan",
   "sendContinue": "Weiter",
-  "transactionDetailRetrySwap": "Wiederholen Sie den Austausch {Aktion}",
+  "transactionDetailRetrySwap": "Wiederholen Sie den Austausch {action}",
   "@transactionDetailRetrySwap": {
     "placeholders": {
       "action": {
@@ -4269,7 +4269,7 @@
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
   },
-  "exchangeStatisticsAsOf": "Stand: {Datum}",
+  "exchangeStatisticsAsOf": "Stand: {date}",
   "@exchangeStatisticsAsOf": {
     "description": "Label showing when statistics were last updated",
     "placeholders": {

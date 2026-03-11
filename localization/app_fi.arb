@@ -4278,7 +4278,7 @@
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
   },
-  "exchangeStatisticsAsOf": "[x6x]",
+  "exchangeStatisticsAsOf": "As of {date}",
   "@exchangeStatisticsAsOf": {
     "description": "Label showing when statistics were last updated",
     "placeholders": {

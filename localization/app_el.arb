@@ -3447,7 +3447,7 @@
   "@allSeedViewPassphraseLabel": {
     "description": "Label for passphrase display"
   },
-  "dcaBuyingMessage": "Αγοράζετε (X15X) κάθε {frequency} μέσω {network} εφόσον υπάρχουν κεφάλαια στο λογαριασμό σας.",
+  "dcaBuyingMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@dcaBuyingMessage": {
     "description": "DCA status message",
     "placeholders": {
@@ -4944,7 +4944,7 @@
   "@receiveRequestInboundLiquidity": {
     "description": "Button to open channel for receiving"
   },
-  "walletAutoTransferBlockedMessage": "Προσπάθεια μεταφοράς (X23X) BTC. Η τρέχουσα αμοιβή είναι {currentFee}% του ποσού μεταφοράς και το όριο χρέωσης καθορίζεται σε {thresholdFee}%",
+  "walletAutoTransferBlockedMessage": "Attempting to transfer {amount} BTC. Current fee is {currentFee}% of the transfer amount and the fee threshold is set to {thresholdFee}%",
   "@walletAutoTransferBlockedMessage": {
     "description": "Message explaining why auto-transfer was blocked",
     "placeholders": {
@@ -7749,7 +7749,7 @@
   "@walletDetailsSignerLabel": {
     "description": "Label for the signer field in wallet details"
   },
-  "exchangeDcaSummaryMessage": "Αγοράζετε (X15X) κάθε {frequency} μέσω {network} εφόσον υπάρχουν κεφάλαια στο λογαριασμό σας.",
+  "exchangeDcaSummaryMessage": "You are buying {amount} every {frequency} via {network} as long as there are funds in your account.",
   "@exchangeDcaSummaryMessage": {
     "description": "Summary message describing the DCA configuration",
     "placeholders": {
@@ -10528,7 +10528,7 @@
   "@dcaOrderTypeLabel": {
     "description": "Label for order type detail row"
   },
-  "dcaSuccessMessageHourly": "Θα αγοράσετε (X13X) κάθε ώρα",
+  "dcaSuccessMessageHourly": "You will buy {amount} every hour",
   "@dcaSuccessMessageHourly": {
     "description": "Success message for hourly frequency",
     "placeholders": {
@@ -10935,7 +10935,7 @@
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
   },
-  "testBackupPinMessage": "Προσπαθήστε να βεβαιωθείτε ότι θυμάστε το εφεδρικό σας (X43X)",
+  "testBackupPinMessage": "Test to make sure you remember your backup {pinOrPassword}",
   "@testBackupPinMessage": {
     "description": "Message prompting user to test backup PIN/password",
     "placeholders": {
@@ -11175,7 +11175,7 @@
   "@exchangeSupportChatInputHint": {
     "description": "Placeholder text for the message input field"
   },
-  "dcaSuccessMessageMonthly": "Θα αγοράσετε (X13X) κάθε μήνα",
+  "dcaSuccessMessageMonthly": "You will buy {amount} every month",
   "@dcaSuccessMessageMonthly": {
     "description": "Success message for monthly frequency",
     "placeholders": {
@@ -11780,7 +11780,7 @@
   "@recoverbullPIN": {
     "description": "Label for PIN input type"
   },
-  "dcaSuccessMessageWeekly": "Θα αγοράσετε (X13X) κάθε εβδομάδα",
+  "dcaSuccessMessageWeekly": "You will buy {amount} every week",
   "@dcaSuccessMessageWeekly": {
     "description": "Success message for weekly frequency",
     "placeholders": {
@@ -11793,7 +11793,7 @@
   "@autoswapRecipientWalletPlaceholder": {
     "description": "Dropdown placeholder text when no wallet is selected"
   },
-  "enterYourBackupPinTitle": "Εισάγετε το εφεδρικό σας (X18X)",
+  "enterYourBackupPinTitle": "Enter your backup {pinOrPassword}",
   "@enterYourBackupPinTitle": {
     "description": "Title for entering backup PIN or password",
     "placeholders": {
