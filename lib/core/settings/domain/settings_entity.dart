@@ -41,14 +41,25 @@ enum BitcoinUnit {
 
 enum Language {
   unitedStatesEnglish('en', 'US', 'English'),
-  franceFrench('fr', 'FR', 'Français'),
-  spanish('es', 'ES', 'Español'),
-  finnish('fi', 'FI', 'Suomi'),
-  ukrainian('uk', 'UA', 'Українська'),
-  russian('ru', 'RU', 'Русский'),
+  arabic('ar', null, 'العربية'),
+  bulgarian('bg', null, 'Български'),
+  bengali('bn', null, 'বাংলা'),
+  czech('cs', null, 'Čeština'),
   german('de', 'DE', 'Deutsch'),
+  greek('el', null, 'Ελληνικά'),
+  spanish('es', 'ES', 'Español'),
+  persian('fa', null, 'فارسی'),
+  finnish('fi', 'FI', 'Suomi'),
+  franceFrench('fr', 'FR', 'Français'),
+  hindi('hi', null, 'हिन्दी'),
   italian('it', 'IT', 'Italiano'),
+  korean('ko', null, '한국어'),
   portuguese('pt', 'PT', 'Português'),
+  brazilianPortuguese('pt', 'BR', 'Português (Brasil)'),
+  russian('ru', 'RU', 'Русский'),
+  thai('th', null, 'ภาษาไทย'),
+  turkish('tr', null, 'Türkçe'),
+  ukrainian('uk', 'UA', 'Українська'),
   simplifiedChinese('zh', 'CN', '简体中文');
 
   final String languageCode;
