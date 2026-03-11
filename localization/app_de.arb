@@ -3731,7 +3731,7 @@
   "exchangeAccountComingSoon": "Diese Funktion kommt bald.",
   "sellInProgress": "Verkauf läuft…",
   "testLastKnownVault": "Ihr letztes bekanntes verschlüsseltes Backup: {timestamp}",
-  "@testBackupLastKnownVault": {
+  "@testLastKnownVault": {
     "placeholders": {
       "timestamp": {
         "type": "String"
