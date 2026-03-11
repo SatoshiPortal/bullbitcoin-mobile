@@ -1798,6 +1798,17 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     $customConstraints: 'NOT NULL DEFAULT \'system\'',
     defaultValue: const CustomExpression('\'system\''),
   );
+  late final GeneratedColumn<int> isErrorReportingEnabled =
+      GeneratedColumn<int>(
+        'is_error_reporting_enabled',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints:
+            'NOT NULL DEFAULT 0 CHECK (is_error_reporting_enabled IN (0, 1))',
+        defaultValue: const CustomExpression('0'),
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1811,6 +1822,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     useTorProxy,
     torProxyPort,
     themeMode,
+    isErrorReportingEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1867,6 +1879,10 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         DriftSqlType.string,
         data['${effectivePrefix}theme_mode'],
       )!,
+      isErrorReportingEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_error_reporting_enabled'],
+      )!,
     );
   }
 
@@ -1891,6 +1907,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final int useTorProxy;
   final int torProxyPort;
   final String themeMode;
+  final int isErrorReportingEnabled;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1903,6 +1920,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.useTorProxy,
     required this.torProxyPort,
     required this.themeMode,
+    required this.isErrorReportingEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1918,6 +1936,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['use_tor_proxy'] = Variable<int>(useTorProxy);
     map['tor_proxy_port'] = Variable<int>(torProxyPort);
     map['theme_mode'] = Variable<String>(themeMode);
+    map['is_error_reporting_enabled'] = Variable<int>(isErrorReportingEnabled);
     return map;
   }
 
@@ -1934,6 +1953,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       useTorProxy: Value(useTorProxy),
       torProxyPort: Value(torProxyPort),
       themeMode: Value(themeMode),
+      isErrorReportingEnabled: Value(isErrorReportingEnabled),
     );
   }
 
@@ -1954,6 +1974,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       useTorProxy: serializer.fromJson<int>(json['useTorProxy']),
       torProxyPort: serializer.fromJson<int>(json['torProxyPort']),
       themeMode: serializer.fromJson<String>(json['themeMode']),
+      isErrorReportingEnabled: serializer.fromJson<int>(
+        json['isErrorReportingEnabled'],
+      ),
     );
   }
   @override
@@ -1971,6 +1994,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'useTorProxy': serializer.toJson<int>(useTorProxy),
       'torProxyPort': serializer.toJson<int>(torProxyPort),
       'themeMode': serializer.toJson<String>(themeMode),
+      'isErrorReportingEnabled': serializer.toJson<int>(
+        isErrorReportingEnabled,
+      ),
     };
   }
 
@@ -1986,6 +2012,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     int? useTorProxy,
     int? torProxyPort,
     String? themeMode,
+    int? isErrorReportingEnabled,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -1998,6 +2025,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     useTorProxy: useTorProxy ?? this.useTorProxy,
     torProxyPort: torProxyPort ?? this.torProxyPort,
     themeMode: themeMode ?? this.themeMode,
+    isErrorReportingEnabled:
+        isErrorReportingEnabled ?? this.isErrorReportingEnabled,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -2026,6 +2055,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ? data.torProxyPort.value
           : this.torProxyPort,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      isErrorReportingEnabled: data.isErrorReportingEnabled.present
+          ? data.isErrorReportingEnabled.value
+          : this.isErrorReportingEnabled,
     );
   }
 
@@ -2042,7 +2074,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
-          ..write('themeMode: $themeMode')
+          ..write('themeMode: $themeMode, ')
+          ..write('isErrorReportingEnabled: $isErrorReportingEnabled')
           ..write(')'))
         .toString();
   }
@@ -2060,6 +2093,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     useTorProxy,
     torProxyPort,
     themeMode,
+    isErrorReportingEnabled,
   );
   @override
   bool operator ==(Object other) =>
@@ -2075,7 +2109,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.isDevModeEnabled == this.isDevModeEnabled &&
           other.useTorProxy == this.useTorProxy &&
           other.torProxyPort == this.torProxyPort &&
-          other.themeMode == this.themeMode);
+          other.themeMode == this.themeMode &&
+          other.isErrorReportingEnabled == this.isErrorReportingEnabled);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2090,6 +2125,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<int> useTorProxy;
   final Value<int> torProxyPort;
   final Value<String> themeMode;
+  final Value<int> isErrorReportingEnabled;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2102,6 +2138,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.isErrorReportingEnabled = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2115,6 +2152,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.useTorProxy = const Value.absent(),
     this.torProxyPort = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.isErrorReportingEnabled = const Value.absent(),
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
@@ -2133,6 +2171,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<int>? useTorProxy,
     Expression<int>? torProxyPort,
     Expression<String>? themeMode,
+    Expression<int>? isErrorReportingEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2146,6 +2185,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (useTorProxy != null) 'use_tor_proxy': useTorProxy,
       if (torProxyPort != null) 'tor_proxy_port': torProxyPort,
       if (themeMode != null) 'theme_mode': themeMode,
+      if (isErrorReportingEnabled != null)
+        'is_error_reporting_enabled': isErrorReportingEnabled,
     });
   }
 
@@ -2161,6 +2202,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<int>? useTorProxy,
     Value<int>? torProxyPort,
     Value<String>? themeMode,
+    Value<int>? isErrorReportingEnabled,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2174,6 +2216,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       useTorProxy: useTorProxy ?? this.useTorProxy,
       torProxyPort: torProxyPort ?? this.torProxyPort,
       themeMode: themeMode ?? this.themeMode,
+      isErrorReportingEnabled:
+          isErrorReportingEnabled ?? this.isErrorReportingEnabled,
     );
   }
 
@@ -2213,6 +2257,11 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (themeMode.present) {
       map['theme_mode'] = Variable<String>(themeMode.value);
     }
+    if (isErrorReportingEnabled.present) {
+      map['is_error_reporting_enabled'] = Variable<int>(
+        isErrorReportingEnabled.value,
+      );
+    }
     return map;
   }
 
@@ -2229,7 +2278,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('isDevModeEnabled: $isDevModeEnabled, ')
           ..write('useTorProxy: $useTorProxy, ')
           ..write('torProxyPort: $torProxyPort, ')
-          ..write('themeMode: $themeMode')
+          ..write('themeMode: $themeMode, ')
+          ..write('isErrorReportingEnabled: $isErrorReportingEnabled')
           ..write(')'))
         .toString();
   }
@@ -4310,8 +4360,23 @@ class MempoolServers extends Table
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL CHECK (is_custom IN (0, 1))',
   );
+  late final GeneratedColumn<int> enableSsl = GeneratedColumn<int>(
+    'enable_ssl',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (enable_ssl IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
   @override
-  List<GeneratedColumn> get $columns => [url, isTestnet, isLiquid, isCustom];
+  List<GeneratedColumn> get $columns => [
+    url,
+    isTestnet,
+    isLiquid,
+    isCustom,
+    enableSsl,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -4339,6 +4404,10 @@ class MempoolServers extends Table
         DriftSqlType.int,
         data['${effectivePrefix}is_custom'],
       )!,
+      enableSsl: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}enable_ssl'],
+      )!,
     );
   }
 
@@ -4361,11 +4430,13 @@ class MempoolServersData extends DataClass
   final int isTestnet;
   final int isLiquid;
   final int isCustom;
+  final int enableSsl;
   const MempoolServersData({
     required this.url,
     required this.isTestnet,
     required this.isLiquid,
     required this.isCustom,
+    required this.enableSsl,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4374,6 +4445,7 @@ class MempoolServersData extends DataClass
     map['is_testnet'] = Variable<int>(isTestnet);
     map['is_liquid'] = Variable<int>(isLiquid);
     map['is_custom'] = Variable<int>(isCustom);
+    map['enable_ssl'] = Variable<int>(enableSsl);
     return map;
   }
 
@@ -4383,6 +4455,7 @@ class MempoolServersData extends DataClass
       isTestnet: Value(isTestnet),
       isLiquid: Value(isLiquid),
       isCustom: Value(isCustom),
+      enableSsl: Value(enableSsl),
     );
   }
 
@@ -4396,6 +4469,7 @@ class MempoolServersData extends DataClass
       isTestnet: serializer.fromJson<int>(json['isTestnet']),
       isLiquid: serializer.fromJson<int>(json['isLiquid']),
       isCustom: serializer.fromJson<int>(json['isCustom']),
+      enableSsl: serializer.fromJson<int>(json['enableSsl']),
     );
   }
   @override
@@ -4406,6 +4480,7 @@ class MempoolServersData extends DataClass
       'isTestnet': serializer.toJson<int>(isTestnet),
       'isLiquid': serializer.toJson<int>(isLiquid),
       'isCustom': serializer.toJson<int>(isCustom),
+      'enableSsl': serializer.toJson<int>(enableSsl),
     };
   }
 
@@ -4414,11 +4489,13 @@ class MempoolServersData extends DataClass
     int? isTestnet,
     int? isLiquid,
     int? isCustom,
+    int? enableSsl,
   }) => MempoolServersData(
     url: url ?? this.url,
     isTestnet: isTestnet ?? this.isTestnet,
     isLiquid: isLiquid ?? this.isLiquid,
     isCustom: isCustom ?? this.isCustom,
+    enableSsl: enableSsl ?? this.enableSsl,
   );
   MempoolServersData copyWithCompanion(MempoolServersCompanion data) {
     return MempoolServersData(
@@ -4426,6 +4503,7 @@ class MempoolServersData extends DataClass
       isTestnet: data.isTestnet.present ? data.isTestnet.value : this.isTestnet,
       isLiquid: data.isLiquid.present ? data.isLiquid.value : this.isLiquid,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
+      enableSsl: data.enableSsl.present ? data.enableSsl.value : this.enableSsl,
     );
   }
 
@@ -4435,13 +4513,15 @@ class MempoolServersData extends DataClass
           ..write('url: $url, ')
           ..write('isTestnet: $isTestnet, ')
           ..write('isLiquid: $isLiquid, ')
-          ..write('isCustom: $isCustom')
+          ..write('isCustom: $isCustom, ')
+          ..write('enableSsl: $enableSsl')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(url, isTestnet, isLiquid, isCustom);
+  int get hashCode =>
+      Object.hash(url, isTestnet, isLiquid, isCustom, enableSsl);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4449,7 +4529,8 @@ class MempoolServersData extends DataClass
           other.url == this.url &&
           other.isTestnet == this.isTestnet &&
           other.isLiquid == this.isLiquid &&
-          other.isCustom == this.isCustom);
+          other.isCustom == this.isCustom &&
+          other.enableSsl == this.enableSsl);
 }
 
 class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
@@ -4457,12 +4538,14 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
   final Value<int> isTestnet;
   final Value<int> isLiquid;
   final Value<int> isCustom;
+  final Value<int> enableSsl;
   final Value<int> rowid;
   const MempoolServersCompanion({
     this.url = const Value.absent(),
     this.isTestnet = const Value.absent(),
     this.isLiquid = const Value.absent(),
     this.isCustom = const Value.absent(),
+    this.enableSsl = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   MempoolServersCompanion.insert({
@@ -4470,6 +4553,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     required int isTestnet,
     required int isLiquid,
     required int isCustom,
+    this.enableSsl = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : url = Value(url),
        isTestnet = Value(isTestnet),
@@ -4480,6 +4564,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     Expression<int>? isTestnet,
     Expression<int>? isLiquid,
     Expression<int>? isCustom,
+    Expression<int>? enableSsl,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4487,6 +4572,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
       if (isTestnet != null) 'is_testnet': isTestnet,
       if (isLiquid != null) 'is_liquid': isLiquid,
       if (isCustom != null) 'is_custom': isCustom,
+      if (enableSsl != null) 'enable_ssl': enableSsl,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4496,6 +4582,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     Value<int>? isTestnet,
     Value<int>? isLiquid,
     Value<int>? isCustom,
+    Value<int>? enableSsl,
     Value<int>? rowid,
   }) {
     return MempoolServersCompanion(
@@ -4503,6 +4590,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
       isTestnet: isTestnet ?? this.isTestnet,
       isLiquid: isLiquid ?? this.isLiquid,
       isCustom: isCustom ?? this.isCustom,
+      enableSsl: enableSsl ?? this.enableSsl,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4522,6 +4610,9 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
     if (isCustom.present) {
       map['is_custom'] = Variable<int>(isCustom.value);
     }
+    if (enableSsl.present) {
+      map['enable_ssl'] = Variable<int>(enableSsl.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4535,6 +4626,7 @@ class MempoolServersCompanion extends UpdateCompanion<MempoolServersData> {
           ..write('isTestnet: $isTestnet, ')
           ..write('isLiquid: $isLiquid, ')
           ..write('isCustom: $isCustom, ')
+          ..write('enableSsl: $enableSsl, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();

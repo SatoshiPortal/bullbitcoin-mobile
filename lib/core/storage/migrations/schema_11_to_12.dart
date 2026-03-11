@@ -9,6 +9,15 @@ import 'package:drift/drift.dart';
 /// - Removes 'spendable' column
 /// - Changes primary key from composite (label, ref) to single (id)
 /// - Adds unique constraint on (label, reference)
+///
+/// Changes to autoSwap table:
+/// - Resets showWarning to true for all entries
+///
+/// Changes to settings table:
+/// - Adds 'is_error_reporting_enabled' column with default false
+///
+/// Changes to mempoolServers table:
+/// - Adds 'enable_ssl' column
 class Schema11To12 {
   static Future<void> migrate(Migrator m, Schema12 schema12) async {
     final schema11 = Schema11(database: m.database);
@@ -44,5 +53,20 @@ class Schema11To12 {
             }),
           );
     }
+
+    // Reset showWarning to true for all users so they see the warning
+    await m.database
+        .update(schema12.autoSwap)
+        .write(RawValuesInsertable({'show_warning': const Constant<int>(1)}));
+
+    // MempoolServers table: add enableSsl column
+    final mempoolServers = schema12.mempoolServers;
+    await m.addColumn(mempoolServers, mempoolServers.enableSsl);
+
+    // Settings table: add isErrorReportingEnabled column
+    await m.addColumn(
+      schema12.settings,
+      schema12.settings.isErrorReportingEnabled,
+    );
   }
 }

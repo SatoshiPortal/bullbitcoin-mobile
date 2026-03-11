@@ -4,10 +4,9 @@ import 'package:bb_mobile/features/exchange_settings/presentation/statistics_sta
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StatisticsCubit extends Cubit<StatisticsState> {
-  StatisticsCubit({
-    required GetOrderStatsUsecase getOrderStatsUsecase,
-  }) : _getOrderStatsUsecase = getOrderStatsUsecase,
-       super(const StatisticsState());
+  StatisticsCubit({required GetOrderStatsUsecase getOrderStatsUsecase})
+    : _getOrderStatsUsecase = getOrderStatsUsecase,
+      super(const StatisticsState());
 
   final GetOrderStatsUsecase _getOrderStatsUsecase;
 
@@ -17,19 +16,15 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     try {
       final stats = await _getOrderStatsUsecase.execute();
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          stats: stats,
-        ),
-      );
+      emit(state.copyWith(isLoading: false, stats: stats));
     } catch (e) {
-      log.severe('Failed to load statistics: $e');
+      log.severe(
+        message: 'Failed to load statistics',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
-        state.copyWith(
-          isLoading: false,
-          error: 'Failed to load statistics',
-        ),
+        state.copyWith(isLoading: false, error: 'Failed to load statistics'),
       );
     }
   }
@@ -38,4 +33,3 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     emit(state.copyWith(error: null));
   }
 }
-

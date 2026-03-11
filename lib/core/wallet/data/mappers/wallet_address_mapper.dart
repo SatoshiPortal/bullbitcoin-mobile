@@ -1,10 +1,11 @@
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class WalletAddressMapper {
   static WalletAddress toEntity(
     WalletAddressModel walletAddressModel, {
-    List<String> labels = const [],
+    List<Label> labels = const [],
   }) {
     return WalletAddress(
       walletId: walletAddressModel.walletId,

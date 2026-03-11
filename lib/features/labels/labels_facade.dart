@@ -1,46 +1,64 @@
-import 'package:bb_mobile/features/labels/domain/usecases/delete_label_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/fetch_distinct_labels_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/fetch_label_by_reference_usecase.dart';
-import 'package:bb_mobile/features/labels/domain/usecases/store_labels_usecase.dart';
-import 'label.dart';
+import 'package:bb_mobile/features/labels/adapters/label_mapper.dart';
+import 'package:bb_mobile/features/labels/application/store_label_application.dart';
+import 'package:bb_mobile/features/labels/application/usecases/trash_label_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
+import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/new_label.dart';
+import 'package:bb_mobile/features/labels/label.dart';
 
-export 'label.dart';
-export 'primitive/label_system.dart';
-export 'primitive/label_type.dart';
-export 'router.dart';
-export 'locator.dart';
+export 'package:bb_mobile/features/labels/label.dart';
+export 'package:bb_mobile/features/labels/new_label.dart';
+export 'package:bb_mobile/features/labels/domain/primitive/label_system.dart';
+export 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
+export 'package:bb_mobile/features/labels/router.dart';
+export 'package:bb_mobile/features/labels/locator.dart';
+export 'package:bb_mobile/features/labels/ui/page.dart';
+export 'package:bb_mobile/features/labels/ui/label_text.dart';
+export 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
+export 'package:bb_mobile/features/labels/ui/labels_widget.dart';
 
 class LabelsFacade {
   final FetchLabelByReferenceUsecase _fetchLabelByReferenceUsecase;
-  final FetchDistinctLabelsUsecase _fetchDistinctLabelsUsecase;
-  final StoreLabelsUsecase _storeLabelsUsecase;
-  final DeleteLabelUsecase _deleteLabelUsecase;
+  final FetchAllLabelsUsecase _fetchAllLabelsUsecase;
+  final StoreLabelUsecase _storeLabelsUsecase;
+  final TrashLabelUsecase _trashLabelUsecase;
 
   LabelsFacade({
     required FetchLabelByReferenceUsecase fetchLabelByReferenceUsecase,
-    required FetchDistinctLabelsUsecase fetchDistinctLabelsUsecase,
-    required StoreLabelsUsecase storeLabelsUsecase,
-    required DeleteLabelUsecase deleteLabelUsecase,
+    required FetchAllLabelsUsecase fetchAllLabelsUsecase,
+    required StoreLabelUsecase storeLabelsUsecase,
+    required TrashLabelUsecase trashLabelUsecase,
   }) : _fetchLabelByReferenceUsecase = fetchLabelByReferenceUsecase,
-       _fetchDistinctLabelsUsecase = fetchDistinctLabelsUsecase,
+       _fetchAllLabelsUsecase = fetchAllLabelsUsecase,
        _storeLabelsUsecase = storeLabelsUsecase,
-       _deleteLabelUsecase = deleteLabelUsecase;
+       _trashLabelUsecase = trashLabelUsecase;
 
-  Future<List<String>> fetchByReference(String reference) async {
-    return await _fetchLabelByReferenceUsecase.execute(reference);
+  Future<List<Label>> fetchByReference(String reference) async {
+    final labels = await _fetchLabelByReferenceUsecase.execute(reference);
+    return labels
+        .map((label) => LabelMapper.applicationLabelToLabel(label))
+        .toList();
   }
 
-  Future<Set<String>> fetch() async =>
-      await _fetchDistinctLabelsUsecase.execute();
-
-  Future<void> store(List<Label> labels) async {
-    final models = labels.map((label) => label.toModel()).toList();
-    await _storeLabelsUsecase.execute(models);
+  Future<List<Label>> fetchAll() async {
+    final labels = await _fetchAllLabelsUsecase.execute();
+    return labels
+        .map((label) => LabelMapper.applicationLabelToLabel(label))
+        .toList();
   }
 
-  Future<void> delete({
-    required String label,
-    required String reference,
-  }) async =>
-      await _deleteLabelUsecase.execute(label: label, reference: reference);
+  Future<Label> store(NewLabel label) async {
+    final storedLabel = await _storeLabelsUsecase.execute(
+      NewApplicationLabel(
+        type: label.type,
+        label: label.label,
+        reference: label.reference,
+        origin: label.origin,
+      ),
+    );
+    return LabelMapper.applicationLabelToLabel(storedLabel);
+  }
+
+  Future<void> trash(int id) async => await _trashLabelUsecase.execute(id);
 }

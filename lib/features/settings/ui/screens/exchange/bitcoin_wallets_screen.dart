@@ -98,8 +98,23 @@ class _ExchangeBitcoinWalletsScreenState
   Widget _buildBody(BuildContext context) {
     final state = context.watch<DefaultWalletsCubit>().state;
 
-    if (state.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+    return Column(
+      children: [
+        if (state.isLoading)
+          LinearProgressIndicator(
+            backgroundColor: context.appColors.surface,
+            color: context.appColors.primary,
+          ),
+        Expanded(
+          child: _buildContent(context, state),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(BuildContext context, DefaultWalletsState state) {
+    if (state.isLoading && state.loadError == null && state.defaultWallets == null) {
+      return const SizedBox.shrink();
     }
 
     if (state.loadError != null) {

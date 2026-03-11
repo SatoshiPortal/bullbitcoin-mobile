@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class WalletTransactionMapper {
   static WalletTransactionModel fromEntity(
@@ -40,7 +41,7 @@ class WalletTransactionMapper {
     required String walletId,
     required List<TransactionInput> inputs,
     required List<TransactionOutput> outputs,
-    List<String>? labels,
+    List<Label>? labels,
     required bool isRbf,
   }) {
     return WalletTransaction(
@@ -64,7 +65,7 @@ class WalletTransactionMapper {
             )
           : null,
       isToSelf: walletTransactionModel.isToSelf,
-      labels: labels ?? const [],
+      labels: labels ?? [],
       inputs: inputs,
       outputs: outputs,
       unblindedUrl: walletTransactionModel.unblindedUrl,

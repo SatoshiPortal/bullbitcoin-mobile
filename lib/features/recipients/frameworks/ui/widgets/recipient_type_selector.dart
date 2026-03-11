@@ -9,12 +9,12 @@ import 'package:gap/gap.dart';
 class RecipientTypeSelector extends StatelessWidget {
   const RecipientTypeSelector({
     super.key,
-    required this.selectedJurisdiction,
+    this.selectedJurisdiction,
     required this.selectedType,
     required this.onTypeSelected,
   });
 
-  final String selectedJurisdiction;
+  final String? selectedJurisdiction;
   final RecipientType? selectedType;
   final Function(RecipientType) onTypeSelected;
 
@@ -22,8 +22,9 @@ class RecipientTypeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the possible recipient types based on the selected jurisdiction
     final options = context.select(
-      (RecipientsBloc bloc) =>
-          bloc.state.recipientTypesForJurisdiction(selectedJurisdiction),
+      (RecipientsBloc bloc) => selectedJurisdiction == null
+          ? <RecipientType>{}
+          : bloc.state.recipientTypesForJurisdiction(selectedJurisdiction!),
     );
 
     if (selectedType == null) {

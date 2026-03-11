@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
@@ -30,19 +32,33 @@ class NewRecipientTab extends StatefulWidget {
 }
 
 class NewRecipientTabState extends State<NewRecipientTab> {
-  late String _selectedJurisdiction;
+  String? _selectedJurisdiction;
   RecipientType? _selectedRecipientType;
+  StreamSubscription<RecipientsState>? stateSubscription;
 
   @override
   void initState() {
     super.initState();
-    // TODO: Initialize with the user's default jurisdiction if available
-    _selectedJurisdiction = context
-        .read<RecipientsBloc>()
-        .state
-        .selectableRecipientTypes
-        .map((t) => t.jurisdictionCode)
-        .first;
+    final bloc = context.read<RecipientsBloc>();
+    _selectedJurisdiction = bloc.state.selectedJurisdiction;
+    if (_selectedJurisdiction == null) {
+      // Listen for state updates in case the tab is opened before
+      // the preferred jurisdiction is loaded
+      stateSubscription = bloc.stream.listen((state) {
+        if (state.selectedJurisdiction != null &&
+            _selectedJurisdiction == null) {
+          setState(() {
+            _selectedJurisdiction = state.selectedJurisdiction;
+          });
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    stateSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -95,9 +111,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
             hookError: widget.hookError,
           ),
           // EUROPE types
-          RecipientType.sepaEur => SepaEurForm(
-            hookError: widget.hookError,
-          ),
+          RecipientType.sepaEur => SepaEurForm(hookError: widget.hookError),
           // MEXICO types
           RecipientType.speiClabeMxn => SpeiClabeMxnForm(
             hookError: widget.hookError,

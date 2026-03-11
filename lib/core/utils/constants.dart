@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -47,11 +48,16 @@ class AssetConstants {
 }
 
 class PayjoinConstants {
-  static const List<String> ohttpRelayUrls = [
-    'https://ohttp.achow101.com',
-    'https://pj.bobspacebkk.com',
-    'https://ohttp.cakewallet.com',
-  ];
+  static List<String> get ohttpRelayUrls {
+    final list = [
+      'https://ohttp.achow101.com',
+      'https://pj.bobspacebkk.com',
+      'https://ohttp.cakewallet.com',
+    ];
+    list.shuffle(Random.secure());
+    return list;
+  }
+
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;
   static const defaultExpireAfterSec = 60 * 60 * 24; // 24 hours
@@ -101,6 +107,9 @@ class ApiServiceConstants {
   static String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
   static String googleDriveClientId =
       dotenv.env['GOOGLE_DRIVE_CLIENT_ID'] ?? '';
+
+  // Error reports
+  static String sentryDsn = dotenv.env['SENTRY_DSN'] ?? '';
 }
 
 class LocatorInstanceNameConstants {

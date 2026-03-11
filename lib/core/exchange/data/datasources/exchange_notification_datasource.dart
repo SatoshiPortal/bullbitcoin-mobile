@@ -62,11 +62,13 @@ class ExchangeNotificationDatasource {
     _isManuallyDisconnected = false;
 
     try {
-      // Verify API key exists
+      // Verify API key exists - don't attempt connection if not authenticated
       final apiKey = await _apiKeyDatasource.get(isTestnet: _isTestnet);
       if (apiKey == null || !apiKey.isActive) {
         _isConnecting = false;
-        throw Exception('API key not available for WebSocket connection');
+        _isManuallyDisconnected = true; // Prevent auto-reconnect loop
+        log.fine('WebSocket connection skipped: user not authenticated');
+        return;
       }
 
       // Build WebSocket URL
@@ -111,7 +113,11 @@ class ExchangeNotificationDatasource {
         _isManuallyDisconnected = true; // Prevent auto-reconnect
       }
 
-      log.severe('WebSocket connection failed: $e');
+      log.severe(
+        message: 'WebSocket connection failed',
+        error: e,
+        trace: StackTrace.current,
+      );
       _handleDisconnect();
       rethrow;
     }
@@ -147,7 +153,11 @@ class ExchangeNotificationDatasource {
   }
 
   void _handleError(dynamic error) {
-    log.severe('WebSocket error: $error');
+    log.severe(
+      message: 'WebSocket error',
+      error: error,
+      trace: StackTrace.current,
+    );
     _handleDisconnect();
   }
 

@@ -4,5 +4,6 @@ abstract class MempoolServerValidatorPort {
   Future<bool> validateServer({
     required String url,
     required MempoolServerNetwork network,
+    bool enableSsl = true,
   });
 }

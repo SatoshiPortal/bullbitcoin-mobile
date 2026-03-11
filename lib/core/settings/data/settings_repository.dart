@@ -35,6 +35,7 @@ class SettingsRepository implements domain.SettingsRepository {
     required bool useTorProxy,
     required int torProxyPort,
     AppThemeMode themeMode = AppThemeMode.system,
+    bool isErrorReportingEnabled = false,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -49,6 +50,7 @@ class SettingsRepository implements domain.SettingsRepository {
         useTorProxy: useTorProxy,
         torProxyPort: torProxyPort,
         themeMode: themeMode,
+        isErrorReportingEnabled: isErrorReportingEnabled,
       ),
     );
   }
@@ -68,6 +70,7 @@ class SettingsRepository implements domain.SettingsRepository {
       useTorProxy: s.useTorProxy,
       torProxyPort: s.torProxyPort,
       themeMode: s.themeMode,
+      isErrorReportingEnabled: s.isErrorReportingEnabled,
     );
   }
 
@@ -120,5 +123,10 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setThemeMode(AppThemeMode themeMode) async {
     await _settingsDatasource.setThemeMode(themeMode);
+  }
+
+  @override
+  Future<void> setErrorReportingEnabled(bool enabled) async {
+    await _settingsDatasource.setErrorReportingEnabled(enabled);
   }
 }

@@ -104,7 +104,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   );
                   return TransactionInputMapper.toEntity(
                     inputModel,
-                    labels: inputLabels,
+                    labels: inputLabels.map((label) => label.label).toList(),
                   );
                 }),
               ),
@@ -114,7 +114,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                     outputModel.labelRef,
                   );
                   final outputModelAddress = outputModel.address;
-                  final addressLabels = <String>[];
+                  final addressLabels = <Label>[];
                   if (outputModelAddress != null) {
                     final rows = await _labelsFacade.fetchByReference(
                       outputModelAddress,

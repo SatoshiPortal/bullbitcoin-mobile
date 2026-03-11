@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
+import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_status_indicator.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,11 +37,45 @@ class CustomServerCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        customServer!.url,
-                        style: context.font.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              customServer!.url,
+                              style: context.font.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: customServer!.enableSsl
+                                  ? context.appColors.success.withValues(alpha: 0.15)
+                                  : context.appColors.warning.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: customServer!.enableSsl
+                                    ? context.appColors.success.withValues(alpha: 0.3)
+                                    : context.appColors.warning.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Text(
+                              customServer!.enableSsl ? 'SSL' : 'No SSL',
+                              style: context.font.bodySmall?.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                color: customServer!.enableSsl
+                                    ? context.appColors.success
+                                    : context.appColors.warning,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -48,6 +83,24 @@ class CustomServerCard extends StatelessWidget {
                         style: context.font.bodySmall?.copyWith(
                           color: context.appColors.textMuted,
                         ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          MempoolServerStatusIndicator(status: customServer!.status),
+                          const SizedBox(width: 4),
+                          if (!customServer!.status.isChecking)
+                            GestureDetector(
+                              onTap: isProcessing
+                                  ? null
+                                  : () => context.read<MempoolSettingsCubit>().checkServerStatus(customServer!),
+                              child: Icon(
+                                Icons.refresh,
+                                size: 16,
+                                color: context.appColors.textMuted,
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
@@ -106,6 +159,7 @@ class CustomServerCard extends StatelessWidget {
         value: context.read<MempoolSettingsCubit>(),
         child: SetCustomServerBottomSheet(
           initialUrl: customServer!.url,
+          initialEnableSsl: customServer!.enableSsl,
         ),
       ),
     );
@@ -115,12 +169,29 @@ class CustomServerCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(context.loc.mempoolCustomServerDeleteTitle),
-        content: Text(context.loc.mempoolCustomServerDeleteMessage),
+        backgroundColor: context.appColors.surface,
+        title: Text(
+          context.loc.mempoolCustomServerDeleteTitle,
+          style: context.font.headlineSmall?.copyWith(
+            color: context.appColors.error,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          context.loc.mempoolCustomServerDeleteMessage,
+          style: context.font.bodyMedium?.copyWith(
+            color: context.appColors.onSurface,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: Text(context.loc.cancel),
+            child: Text(
+              context.loc.cancel,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.onSurface,
+              ),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -129,10 +200,14 @@ class CustomServerCard extends StatelessWidget {
             },
             child: Text(
               context.loc.delete,
-              style: TextStyle(color: context.appColors.error),
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.error,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
+        actionsAlignment: MainAxisAlignment.spaceBetween,
       ),
     );
   }

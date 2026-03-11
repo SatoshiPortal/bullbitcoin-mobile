@@ -3,6 +3,7 @@ part of 'recipients_bloc.dart';
 @freezed
 sealed class RecipientsState with _$RecipientsState {
   const factory RecipientsState({
+    String? preferredJurisdiction,
     @Default(false) bool isLoadingRecipients,
     Exception? failedToLoadRecipients,
     required RecipientFilterCriteria allowedRecipientFilters,
@@ -42,6 +43,23 @@ sealed class RecipientsState with _$RecipientsState {
 
   Set<String> get availableJurisdictions =>
       selectableRecipientTypes.map((type) => type.jurisdictionCode).toSet();
+
+  String? get selectedJurisdiction {
+    if (preferredJurisdiction != null) {
+      if (selectableRecipientTypes.any(
+        (t) => t.jurisdictionCode == preferredJurisdiction,
+      )) {
+        return preferredJurisdiction;
+      } else {
+        // Preferred jurisdiction is not available in the current filters
+        // so we fall back to the first available jurisdiction
+        return selectableRecipientTypes
+            .map((t) => t.jurisdictionCode)
+            .firstOrNull;
+      }
+    }
+    return null;
+  }
 
   Set<RecipientType> recipientTypesForJurisdiction(String jurisdiction) {
     return selectableRecipientTypes

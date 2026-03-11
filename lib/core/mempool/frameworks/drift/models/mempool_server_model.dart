@@ -7,12 +7,14 @@ class MempoolServerModel {
   final bool isTestnet;
   final bool isLiquid;
   final bool isCustom;
+  final bool enableSsl;
 
   MempoolServerModel({
     required this.url,
     required this.isTestnet,
     required this.isLiquid,
     required this.isCustom,
+    this.enableSsl = true,
   });
 
   factory MempoolServerModel.fromSqlite(MempoolServerRow row) {
@@ -21,6 +23,7 @@ class MempoolServerModel {
       isTestnet: row.isTestnet,
       isLiquid: row.isLiquid,
       isCustom: row.isCustom,
+      enableSsl: row.enableSsl,
     );
   }
 
@@ -30,6 +33,7 @@ class MempoolServerModel {
       isTestnet: isTestnet,
       isLiquid: isLiquid,
       isCustom: isCustom,
+      enableSsl: enableSsl,
     );
   }
 
@@ -39,6 +43,7 @@ class MempoolServerModel {
       isTestnet: entity.isTestnet,
       isLiquid: entity.isLiquid,
       isCustom: entity.isCustom,
+      enableSsl: entity.enableSsl,
     );
   }
 
@@ -52,6 +57,7 @@ class MempoolServerModel {
       url: url,
       network: network,
       isCustom: isCustom,
+      enableSsl: enableSsl,
     );
   }
 
@@ -63,13 +69,18 @@ class MempoolServerModel {
           url == other.url &&
           isTestnet == other.isTestnet &&
           isLiquid == other.isLiquid &&
-          isCustom == other.isCustom;
+          isCustom == other.isCustom &&
+          enableSsl == other.enableSsl;
 
   @override
   int get hashCode =>
-      url.hashCode ^ isTestnet.hashCode ^ isLiquid.hashCode ^ isCustom.hashCode;
+      url.hashCode ^
+      isTestnet.hashCode ^
+      isLiquid.hashCode ^
+      isCustom.hashCode ^
+      enableSsl.hashCode;
 
   @override
   String toString() =>
-      'MempoolServerModel(url: $url, isTestnet: $isTestnet, isLiquid: $isLiquid, isCustom: $isCustom)';
+      'MempoolServerModel(url: $url, isTestnet: $isTestnet, isLiquid: $isLiquid, isCustom: $isCustom, enableSsl: $enableSsl)';
 }

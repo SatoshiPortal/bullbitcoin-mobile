@@ -19,15 +19,20 @@ class GetSwapLimitsUsecase {
     bool updateLimitsAndFees = true,
   }) async {
     try {
-      final swapRepository =
-          isTestnet ? _testnetBoltzSwapRepository : _mainnetBoltzSwapRepository;
+      final swapRepository = isTestnet
+          ? _testnetBoltzSwapRepository
+          : _mainnetBoltzSwapRepository;
       if (updateLimitsAndFees) {
         await swapRepository.updateSwapLimitsAndFees(type);
       }
       final result = await swapRepository.getSwapLimitsAndFees(type);
       return result;
     } catch (e) {
-      log.severe('[GetSwapLimitsUsecase] Error getting swap limits: $e');
+      log.severe(
+        message: 'Error getting swap limits',
+        error: e,
+        trace: StackTrace.current,
+      );
       throw GetSwapLimitsException(e.toString());
     }
   }

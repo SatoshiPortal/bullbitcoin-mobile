@@ -560,6 +560,122 @@
   "@mempoolSettingsUseForFeeEstimationDescription": {
     "description": "Description for use for fee estimation toggle"
   },
+  "mempoolServerStatusOnline": "Online",
+  "@mempoolServerStatusOnline": {
+    "description": "Status label when mempool server is online"
+  },
+  "mempoolServerStatusOffline": "Offline",
+  "@mempoolServerStatusOffline": {
+    "description": "Status label when mempool server is offline"
+  },
+  "mempoolServerStatusChecking": "Checking...",
+  "@mempoolServerStatusChecking": {
+    "description": "Status label when checking mempool server status"
+  },
+  "mempoolServerStatusUnknown": "Unknown",
+  "@mempoolServerStatusUnknown": {
+    "description": "Status label when mempool server status is unknown"
+  },
+  "mempoolCustomServerSaveFailed": "Failed to save server",
+  "@mempoolCustomServerSaveFailed": {
+    "description": "Error message when saving custom mempool server fails"
+  },
+  "mempoolCustomServerInfoDescription": "Mempool servers are used for fee estimation and opening the block explorer when viewing transaction details.",
+  "@mempoolCustomServerInfoDescription": {
+    "description": "Info text explaining what mempool servers are used for"
+  },
+  "mempoolCustomServerUseSsl": "Use SSL",
+  "@mempoolCustomServerUseSsl": {
+    "description": "Label for SSL toggle in custom server settings"
+  },
+  "mempoolCustomServerSslAutoDetected": "(Auto-detected)",
+  "@mempoolCustomServerSslAutoDetected": {
+    "description": "Label shown when SSL setting was auto-detected"
+  },
+  "mempoolCustomServerSslHelpText": "For local (.local, private IPs) and Tor (.onion) servers, SSL is typically disabled. Public IPs and domains should use SSL.",
+  "@mempoolCustomServerSslHelpText": {
+    "description": "Help text explaining when to use SSL for mempool servers"
+  },
+  "mempoolErrorSameAsDefault": "This URL is the same as the default server. Please use a different URL.",
+  "@mempoolErrorSameAsDefault": {
+    "description": "Error when user tries to set a custom server URL that matches the default"
+  },
+  "mempoolErrorConnectionTimeout": "Connection timed out. The server may be slow or unreachable.",
+  "@mempoolErrorConnectionTimeout": {
+    "description": "Error when connection to mempool server times out"
+  },
+  "mempoolErrorHostNotFound": "Cannot find this server. Please check the URL and try again.",
+  "@mempoolErrorHostNotFound": {
+    "description": "Error when mempool server hostname cannot be resolved"
+  },
+  "mempoolErrorTorNotRunning": "Cannot reach .onion address. Make sure Tor/Orbot is running and try again.",
+  "@mempoolErrorTorNotRunning": {
+    "description": "Error when trying to reach a .onion address without Tor"
+  },
+  "mempoolErrorConnectionFailed": "Unable to connect to server. Check your network connection and try again.",
+  "@mempoolErrorConnectionFailed": {
+    "description": "Error when connection to mempool server fails"
+  },
+  "mempoolErrorNotMempoolServer": "This URL does not appear to be a mempool server. Please verify the address.",
+  "@mempoolErrorNotMempoolServer": {
+    "description": "Error when URL is not a valid mempool server"
+  },
+  "mempoolErrorServerUnavailable": "Server is unavailable. Please try again later.",
+  "@mempoolErrorServerUnavailable": {
+    "description": "Error when mempool server is unavailable (502/503)"
+  },
+  "mempoolErrorServerError": "Server encountered an error. Please try again later.",
+  "@mempoolErrorServerError": {
+    "description": "Error when mempool server returns 500 error"
+  },
+  "mempoolErrorInvalidResponse": "Server returned an invalid response.",
+  "@mempoolErrorInvalidResponse": {
+    "description": "Error when mempool server returns an invalid response"
+  },
+  "mempoolErrorUnexpected": "An unexpected error occurred",
+  "@mempoolErrorUnexpected": {
+    "description": "Generic unexpected error message"
+  },
+  "mempoolErrorSaveServerFailed": "Failed to save server: {error}",
+  "@mempoolErrorSaveServerFailed": {
+    "description": "Error when saving mempool server fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorLoadFailed": "Failed to load mempool server data: {error}",
+  "@mempoolErrorLoadFailed": {
+    "description": "Error when loading mempool server data fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorDeleteFailed": "Failed to delete custom server: {error}",
+  "@mempoolErrorDeleteFailed": {
+    "description": "Error when deleting custom mempool server fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
+  "mempoolErrorUpdateSettingsFailed": "Failed to update settings: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "description": "Error when updating mempool settings fails",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "description": "The error details"
+      }
+    }
+  },
   "bitcoinSettingsAutoTransferTitle": "Auto Transfer Settings",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
@@ -931,6 +1047,10 @@
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
   },
+  "exchangeStatisticsBuySellRatioDesc": "Percentage of total volume from buying vs selling",
+  "@exchangeStatisticsBuySellRatioDesc": {
+    "description": "Description for buy/sell ratio statistic"
+  },
   "exchangeStatisticsBuyStats": "Buy Statistics",
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
@@ -943,17 +1063,45 @@
   "@exchangeStatisticsVolume": {
     "description": "Label for volume statistic"
   },
+  "exchangeStatisticsBuyVolumeDesc": "Total amount spent buying bitcoin",
+  "@exchangeStatisticsBuyVolumeDesc": {
+    "description": "Description for buy volume statistic"
+  },
+  "exchangeStatisticsSellVolumeDesc": "Total amount received from selling bitcoin",
+  "@exchangeStatisticsSellVolumeDesc": {
+    "description": "Description for sell volume statistic"
+  },
   "exchangeStatisticsTradeCount": "Trade Count",
   "@exchangeStatisticsTradeCount": {
     "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsBuyTradeCountDesc": "Number of bitcoin purchase transactions",
+  "@exchangeStatisticsBuyTradeCountDesc": {
+    "description": "Description for buy trade count statistic"
+  },
+  "exchangeStatisticsSellTradeCountDesc": "Number of bitcoin sell transactions",
+  "@exchangeStatisticsSellTradeCountDesc": {
+    "description": "Description for sell trade count statistic"
   },
   "exchangeStatisticsAveragePrice": "Average Price",
   "@exchangeStatisticsAveragePrice": {
     "description": "Label for average price statistic"
   },
+  "exchangeStatisticsBuyAvgPriceDesc": "Average price paid per bitcoin when buying",
+  "@exchangeStatisticsBuyAvgPriceDesc": {
+    "description": "Description for buy average price statistic"
+  },
+  "exchangeStatisticsSellAvgPriceDesc": "Average price received per bitcoin when selling",
+  "@exchangeStatisticsSellAvgPriceDesc": {
+    "description": "Description for sell average price statistic"
+  },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
   "@exchangeStatisticsTotalVolume": {
     "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsTotalVolumeDesc": "Combined buy and sell volumes in fiat currencies",
+  "@exchangeStatisticsTotalVolumeDesc": {
+    "description": "Description for total trading volume statistic"
   },
   "exchangeStatisticsBillerStats": "Biller Statistics",
   "@exchangeStatisticsBillerStats": {
@@ -2489,6 +2637,30 @@
   "transactionFilterBuy": "Buy",
   "@transactionFilterBuy": {
     "description": "Filter option to show only buy orders"
+  },
+  "transactionFilterWithdraw": "Withdraw",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "Pay",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "Funding",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "Reward",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "Refund",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionFilterBalanceAdjustment": "Adjustment",
+  "@transactionFilterBalanceAdjustment": {
+    "description": "Filter option to show only balance adjustment orders"
   },
   "transactionNetworkLightning": "Lightning",
   "@transactionNetworkLightning": {
@@ -5036,31 +5208,31 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap is enabled",
+  "autoswapWarningCardTitle": "Autoswap is recommended",
   "@autoswapWarningCardTitle": {
     "description": "Title text shown on the autoswap warning card on home screen"
   },
-  "autoswapWarningCardSubtitle": "A swap will be triggered if your Instant Payments balance exceeds 0.02 BTC.",
+  "autoswapWarningCardSubtitle": "Click to learn more, disable or configure",
   "@autoswapWarningCardSubtitle": {
     "description": "Subtitle text shown on the autoswap warning card on home screen"
+  },
+  "autoswapActiveCardTitle": "Autoswap is active",
+  "@autoswapActiveCardTitle": {
+    "description": "Title text shown when autoswap is enabled and active"
   },
   "autoswapWarningDescription": "Autoswap ensures you don't accidentally keep too much money in the Instant Payment Wallet, which is not secure for long-term storage.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
   },
-  "autoswapWarningTitle": "Autoswap is enabled with the following settings:",
+  "autoswapWarningTitle": "Autoswap is enabled with the following settings",
   "@autoswapWarningTitle": {
     "description": "Title text in the autoswap warning bottom sheet"
   },
-  "autoswapWarningBaseBalance": "Target Balance 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
+  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered automatically. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
+  "autoswapWarningExplanationBold": "automatically",
+  "@autoswapWarningExplanationBold": {
+    "description": "The word 'automatically' to be displayed in bold"
   },
-  "autoswapWarningTriggerAmount": "Maximum Balance of 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
-  "autoswapWarningExplanation": "When your balance exceeds the maximum balance, a swap will be triggered. The target balance will be kept in your Instant Payments wallet and the remaining amount will be swapped into your Secure Bitcoin Wallet.",
   "@autoswapWarningExplanation": {
     "description": "Explanation text in the autoswap warning bottom sheet"
   },
@@ -5076,21 +5248,25 @@
   "@autoswapWarningOkButton": {
     "description": "OK button label in the autoswap warning bottom sheet"
   },
-  "autoswapInfoTitle": "Autoswap is active",
+  "autoswapInfoTitle": "Autoswap is recommended",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
-  "autoswapInfoDismissButton": "Got it, don't show again",
+  "autoswapInfoDismissButton": "YES, THANKS",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
-  "autoswapInfoSettingsButton": "Configure settings",
+  "autoswapInfoSettingsButton": "NO, I UNDERSTAND THE RISKS",
   "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
+    "description": "Secondary button to disable autoswap"
   },
-  "autoswapInfoRemindLater": "Remind me later",
+  "autoswapInfoRemindLater": "Configure Autoswap Settings",
   "@autoswapInfoRemindLater": {
-    "description": "Tertiary action to close sheet without dismissing"
+    "description": "Tertiary action to navigate to autoswap settings"
+  },
+  "autoswapInfoConsentMessage": "Autoswap is currently enabled but will not trigger until you consent. Would you like to keep it on?",
+  "@autoswapInfoConsentMessage": {
+    "description": "Consent message explaining autoswap status"
   },
   "autoswapLoadSettingsError": "Failed to load auto swap settings",
   "@autoswapLoadSettingsError": {
@@ -6024,6 +6200,14 @@
   "@shareLogsLabel": {
     "description": "List tile label to share application logs"
   },
+  "deleteLogsTitle": "Delete logs",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Logs deleted",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "viewLogsLabel": "View logs",
   "@viewLogsLabel": {
     "description": "List tile label to view logs inline or in viewer"
@@ -6875,6 +7059,10 @@
   "sendConfirmSend": "Confirm Send",
   "@sendConfirmSend": {
     "description": "Title for send confirmation screen"
+  },
+  "sendSelfTransfer": "Self-transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
   },
   "sendSending": "Sending",
   "@sendSending": {
@@ -11693,6 +11881,22 @@
   "@priceChartFetchingHistory": {
     "description": "Message shown while fetching price history when no local data is available"
   },
+  "priceChartFailedToLoad": "Failed to load price history",
+  "@priceChartFailedToLoad": {
+    "description": "Error message shown when price history fails to load"
+  },
+  "priceFailedToLoad": "Failed to load price",
+  "@priceFailedToLoad": {
+    "description": "Error message shown when bitcoin price fails to load"
+  },
+  "statusScreenTryAgain": "Try Again",
+  "@statusScreenTryAgain": {
+    "description": "Button text to retry after an error"
+  },
+  "statusScreenContinue": "Continue",
+  "@statusScreenContinue": {
+    "description": "Button text to proceed to next step"
+  },
   "exchangeLandingDisclaimerLegal": "Access to exchange services will be restricted to countries where Bull Bitcoin can legally operate and may require KYC.",
   "@exchangeLandingDisclaimerLegal": {
     "description": "Legal disclaimer about exchange service availability and KYC requirements"
@@ -12437,5 +12641,45 @@
   "logoutConfirmationLogout": "Logout",
   "@logoutConfirmationLogout": {
     "description": "Logout button label for logout confirmation"
+  },
+  "settingsErrorReportingTitle": "Error reporting",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Error Reporting Program",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Help us improve Bull Bitcoin by participating in our error reporting program. It directly helps us make Bull Bitcoin better for everyone.\n\nWhen enabled, we automatically send error reports when issues occur in the app. This data helps us understand what's happening for our users worldwide and prioritize fixes accordingly.\n\nWe do not share this information with any third parties. We use Sentry's open-source client with our own self-hosted backend server.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Accept",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Cancel",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Restart the app to apply this change",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "BACKUP YOUR WALLET NOW",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if you lose your phone, delete the app, or encounter a critical application or device related issue. There is no way to recover your wallet without a backup.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "YES",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "NO, I UNDERSTAND THE RISK",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

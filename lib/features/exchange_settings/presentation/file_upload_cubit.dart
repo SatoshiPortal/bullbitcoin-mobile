@@ -36,7 +36,11 @@ class FileUploadCubit extends Cubit<FileUploadState> {
         ),
       );
     } catch (e) {
-      log.severe('Error loading user data: $e');
+      log.severe(
+        message: 'Error loading user data',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
           isLoadingUser: false,
@@ -116,7 +120,11 @@ class FileUploadCubit extends Cubit<FileUploadState> {
         );
       }
     } catch (e) {
-      log.severe('Error picking/uploading file: $e');
+      log.severe(
+        message: 'Error picking/uploading file',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(state.copyWith(isUploading: false, error: 'Failed to upload file'));
     }
   }

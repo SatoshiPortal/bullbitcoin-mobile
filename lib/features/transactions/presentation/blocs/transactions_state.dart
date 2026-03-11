@@ -1,6 +1,20 @@
 part of 'transactions_cubit.dart';
 
-enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
+enum TransactionsFilter {
+  all,
+  send,
+  receive,
+  swap,
+  payjoin,
+  sell,
+  buy,
+  withdraw,
+  pay,
+  funding,
+  reward,
+  refund,
+  balanceAdjustment,
+}
 
 @freezed
 abstract class TransactionsState with _$TransactionsState {
@@ -19,6 +33,12 @@ abstract class TransactionsState with _$TransactionsState {
           TransactionsFilter.all,
           TransactionsFilter.sell,
           TransactionsFilter.buy,
+          TransactionsFilter.withdraw,
+          TransactionsFilter.pay,
+          TransactionsFilter.funding,
+          TransactionsFilter.reward,
+          TransactionsFilter.refund,
+          TransactionsFilter.balanceAdjustment,
         ]
       : TransactionsFilter.values;
 
@@ -168,6 +188,12 @@ abstract class TransactionsState with _$TransactionsState {
             tx.isPayjoin && !shouldFilterOutgoingChainSwap,
           TransactionsFilter.sell => tx.isSellOrder,
           TransactionsFilter.buy => tx.isBuyOrder,
+          TransactionsFilter.withdraw => tx.isWithdrawOrder,
+          TransactionsFilter.pay => tx.isPayOrder,
+          TransactionsFilter.funding => tx.isFundingOrder,
+          TransactionsFilter.reward => tx.isRewardOrder,
+          TransactionsFilter.refund => tx.isRefundOrder,
+          TransactionsFilter.balanceAdjustment => tx.isBalanceAdjustmentOrder,
         };
       }).toList();
 

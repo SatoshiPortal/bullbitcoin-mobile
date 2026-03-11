@@ -7,13 +7,25 @@ class InvalidMempoolUrlException implements Exception {
   String toString() => 'InvalidMempoolUrlException: $message';
 }
 
+enum MempoolValidationErrorType {
+  connectionTimeout,
+  hostNotFound,
+  torNotRunning,
+  connectionError,
+  notMempoolServer,
+  serverUnavailable,
+  serverError,
+  invalidResponse,
+  unexpected,
+}
+
 class MempoolServerValidationException implements Exception {
-  final String message;
+  final MempoolValidationErrorType errorType;
   final Object? cause;
 
-  MempoolServerValidationException(this.message, [this.cause]);
+  MempoolServerValidationException(this.errorType, [this.cause]);
 
   @override
   String toString() =>
-      'MempoolServerValidationException: $message${cause != null ? ' (cause: $cause)' : ''}';
+      'MempoolServerValidationException: $errorType${cause != null ? ' (cause: $cause)' : ''}';
 }

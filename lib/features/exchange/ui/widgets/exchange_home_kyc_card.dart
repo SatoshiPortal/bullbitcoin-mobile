@@ -22,7 +22,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      tileColor: context.appColors.secondary,
+      tileColor: context.appColors.secondaryFixed,
       leading: Column(
         mainAxisAlignment: .center,
         children: [
@@ -35,12 +35,16 @@ class ExchangeHomeKycCard extends StatelessWidget {
           if (isKycLight)
             Text(
               context.loc.exchangeKycLevelLight,
-              style: theme.textTheme.labelLarge?.copyWith(color: context.appColors.surfaceFixed),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: context.appColors.surfaceFixed,
+              ),
             ),
           if (isKycLimited)
             Text(
               context.loc.exchangeKycLevelLimited,
-              style: theme.textTheme.labelLarge?.copyWith(color: context.appColors.surfaceFixed),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: context.appColors.surfaceFixed,
+              ),
             ),
         ],
       ),
@@ -55,7 +59,7 @@ class ExchangeHomeKycCard extends StatelessWidget {
       subtitle: Text(
         context.loc.exchangeKycCardSubtitle,
         style: theme.textTheme.bodyMedium?.copyWith(
-          color: context.appColors.surface,
+          color: context.appColors.onPrimaryFixed,
           fontWeight: .w500,
         ),
       ),
@@ -63,7 +67,11 @@ class ExchangeHomeKycCard extends StatelessWidget {
       onTap: () async {
         await context.pushNamed(ExchangeRoute.exchangeKyc.name);
       },
-      trailing: Icon(Icons.arrow_forward, color: context.appColors.surfaceFixed, size: 24),
+      trailing: Icon(
+        Icons.arrow_forward,
+        color: context.appColors.surfaceFixed,
+        size: 24,
+      ),
     );
   }
 }

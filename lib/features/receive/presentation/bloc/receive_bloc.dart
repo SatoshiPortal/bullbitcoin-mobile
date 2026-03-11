@@ -211,7 +211,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           // The payjoin receiver is created, now we can watch it for updates
           _watchPayjoin(payjoin.id);
         } catch (e) {
-          log.severe('Payjoin receiver creation failed: $e');
+          log.severe(
+            message: 'Payjoin receiver creation failed',
+            error: e,
+            trace: StackTrace.current,
+          );
           error = e;
         }
 
@@ -600,7 +604,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         address: swap.receiveAddress!,
       );
     } catch (e) {
-      log.severe('Swap creation failed: $e');
+      log.severe(
+        message: 'Swap creation failed',
+        error: e,
+        trace: StackTrace.current,
+      );
       error = e;
       emit(state.copyWith(error: error, creatingSwap: false));
     }
@@ -632,22 +640,22 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (state.type) {
         case ReceiveType.bitcoin:
           if (state.bitcoinAddress == null) return;
-          await _labelsFacade.store([
-            Label.addr(
+          await _labelsFacade.store(
+            NewLabel.addr(
               address: state.bitcoinAddress!.address,
               origin: state.bitcoinAddress!.walletId,
               label: note,
             ),
-          ]);
+          );
         case ReceiveType.liquid:
           if (state.liquidAddress == null) return;
-          await _labelsFacade.store([
-            Label.addr(
+          await _labelsFacade.store(
+            NewLabel.addr(
               address: state.liquidAddress!.address,
               origin: state.liquidAddress!.walletId,
               label: note,
             ),
-          ]);
+          );
         case _:
           break;
       }
@@ -708,7 +716,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
               // The payjoin receiver is created, now we can watch it for updates
               _watchPayjoin(payjoin.id);
             } catch (e) {
-              log.severe('Payjoin receiver creation failed: $e');
+              log.severe(
+                message: 'Payjoin receiver creation failed',
+                error: e,
+                trace: StackTrace.current,
+              );
               error = e;
             }
           }

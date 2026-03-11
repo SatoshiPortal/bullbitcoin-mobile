@@ -21,16 +21,15 @@ class ConfirmWithdrawOrderUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeOrderRepository
-              : _mainnetExchangeOrderRepository;
+      final repo = isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
       final order = await repo.confirmWithdrawOrder(orderId);
       return order;
     } on WithdrawError {
       rethrow;
     } catch (e) {
-      log.severe('Error in CreateWithdrawalOrderUsecase: $e');
+      log.severe(error: e, trace: StackTrace.current);
       throw WithdrawError.unexpected(message: '$e');
     }
   }

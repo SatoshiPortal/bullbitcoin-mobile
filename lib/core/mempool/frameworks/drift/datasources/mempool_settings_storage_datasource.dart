@@ -18,7 +18,11 @@ class MempoolSettingsStorageDatasource {
         'Successfully stored/updated mempool settings: ${settings.network}',
       );
     } catch (e) {
-      log.severe('Failed to store/update mempool settings: $e');
+      log.severe(
+        message: 'Failed to store/update mempool settings',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }

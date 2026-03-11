@@ -26,18 +26,23 @@ class CheckForExistingDefaultWalletsUsecase {
 
     if (defaultWallets.isNotEmpty) {
       log.fine('FINE: found default wallet');
-      for (final wallet in defaultWallets) {
-        try {
-          await _seedRepository.get(wallet.masterFingerprint);
-          log.fine('FINE: Seed Found');
-        } catch (e) {
-          log.severe(
-            'Seed not found for default wallet with fingerprint: ${wallet.masterFingerprint}',
-            error: e,
-          );
-          rethrow;
-        }
-      }
+      // Check all seeds in parallel to avoid sequential keychain reads
+      // blocking the UI thread
+      await Future.wait(
+        defaultWallets.map((wallet) async {
+          try {
+            await _seedRepository.get(wallet.masterFingerprint);
+            log.fine('FINE: Seed Found');
+          } catch (e) {
+            log.severe(
+              message: 'Seed not found for default wallet ',
+              error: e,
+              trace: StackTrace.current,
+            );
+            rethrow;
+          }
+        }),
+      );
       return true;
     } else {
       log.fine('No default wallets found');

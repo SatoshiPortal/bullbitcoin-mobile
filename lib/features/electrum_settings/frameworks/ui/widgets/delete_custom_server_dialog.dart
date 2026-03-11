@@ -14,7 +14,7 @@ class DeleteCustomServerDialog {
       context: context,
       builder:
           (BuildContext dialogContext) => AlertDialog(
-            backgroundColor: context.appColors.onPrimary,
+            backgroundColor: context.appColors.surfaceContainer,
             title: Text(context.loc.electrumDeleteServerTitle),
             content: Column(
               mainAxisSize: .min,

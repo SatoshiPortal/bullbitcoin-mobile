@@ -19,10 +19,9 @@ class TabMenuVerticalButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color:
-            onTap != null
-                ? context.appColors.surface
-                : context.appColors.border,
+        color: onTap != null
+            ? context.appColors.surface
+            : context.appColors.border,
         borderRadius: BorderRadius.circular(2.76),
         border: Border.all(color: context.appColors.border, width: 0.69),
         boxShadow: [
@@ -39,7 +38,7 @@ class TabMenuVerticalButton extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              if (icon != null) icon!,
+              ...?icon != null ? [icon!] : null,
               const Gap(8),
               BBText(title, style: context.font.headlineLarge),
             ],

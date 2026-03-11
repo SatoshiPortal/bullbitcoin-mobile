@@ -296,7 +296,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<void> saveTransactionLabel(String label) async {
+  Future<void> saveTransactionLabel(NewLabel label) async {
     // TODO: Permit multiple labels && labels for payjoin txs, so not only wallet txs (for example set on the original tx)
     //  I think the entity should be changed to Transaction instead of WalletTransaction for that
     if (state.walletTransaction == null) return;
@@ -306,16 +306,19 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       return;
     }
 
-    final txLabel = Label.tx(
+    final txLabel = NewLabel.tx(
       transactionId: state.walletTransaction!.txId,
-      label: label,
+      label: label.label,
       origin: state.walletTransaction!.walletId,
     );
-    await _labelsFacade.store([txLabel]);
+    final storedLabel = await _labelsFacade.store(txLabel);
 
     final updatedWalletransaction = state.transaction?.walletTransaction
         ?.copyWith(
-          labels: [...?state.transaction?.walletTransaction?.labels, label],
+          labels: [
+            ...?state.transaction?.walletTransaction?.labels,
+            storedLabel,
+          ],
         );
     emit(
       state.copyWith(
@@ -346,15 +349,12 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<void> deleteTransactionNote(String note) async {
+  Future<void> deleteTransactionNote(Label note) async {
     final walletTransaction = state.walletTransaction;
     if (walletTransaction == null) return;
 
     try {
-      await _labelsFacade.delete(
-        label: note,
-        reference: walletTransaction.txId,
-      );
+      await _labelsFacade.trash(note.id);
 
       final updatedLabels = [...?state.transaction?.walletTransaction?.labels];
       updatedLabels.remove(note);
@@ -381,7 +381,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
   Future<Set<String>> fetchDistinctLabels() async {
     try {
-      return await _labelsFacade.fetch();
+      final labels = await _labelsFacade.fetchAll();
+      return labels.map((label) => label.label).toSet();
     } catch (e) {
       log.warning('Failed to fetch distinct labels: $e');
       emit(state.copyWith(err: e));

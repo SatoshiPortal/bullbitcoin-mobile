@@ -23,21 +23,22 @@ sealed class WalletState with _$WalletState {
     @Default(0) int arkBalanceSat,
     @Default(false) bool isArkWalletLoading,
     @Default(false) bool isArkWalletSetup,
+    @Default(false) bool backupWarningDismissed,
   }) = _WalletState;
   const WalletState._();
 
   bool get isSyncing => syncStatus.values.any((syncing) => syncing);
 
   Wallet? defaultLiquidWallet() => wallets.isEmpty
-          ? null
-          : wallets
-              .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
-              .firstOrNull;
+      ? null
+      : wallets
+            .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
+            .firstOrNull;
   Wallet? defaultBitcoinWallet() => wallets.isEmpty
-          ? null
-          : wallets
-              .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
-              .firstOrNull;
+      ? null
+      : wallets
+            .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
+            .firstOrNull;
 
   bool get noWalletsFound => noWalletsFoundException != null;
 
@@ -46,20 +47,35 @@ sealed class WalletState with _$WalletState {
     (previousValue, element) => previousValue + element.balanceSat.toInt(),
   );
 
-  bool showBackupWarning() {
+  bool hasNoBackup() {
     final defaultWallets = wallets.where((wallet) => wallet.isDefault);
     return defaultWallets.isNotEmpty &&
         defaultWallets.any(
           (wallet) =>
-              !wallet.isEncryptedVaultTested &&
-              !wallet.isPhysicalBackupTested &&
-              wallet.balanceSat > BigInt.from(0),
+              !wallet.isEncryptedVaultTested && !wallet.isPhysicalBackupTested,
         );
   }
 
+  bool showBackupWarning() {
+    return hasNoBackup() && !backupWarningDismissed;
+  }
+
   bool showAutoSwapDefaultEnabledWarning() {
+    if (autoSwapSettings == null ||
+        !autoSwapSettings!.enabled ||
+        !autoSwapSettings!.showWarning) {
+      return false;
+    }
+    final liquidWallet = defaultLiquidWallet();
+    if (liquidWallet == null) return false;
+    return autoSwapSettings!.passedRequiredBalance(
+      liquidWallet.balanceSat.toInt(),
+    );
+  }
+
+  bool showAutoSwapActiveStatus() {
     return autoSwapSettings != null &&
         autoSwapSettings!.enabled &&
-        autoSwapSettings!.showWarning;
+        !autoSwapSettings!.showWarning;
   }
 }

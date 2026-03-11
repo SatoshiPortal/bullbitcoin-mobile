@@ -105,7 +105,6 @@ class TransactionDetailsTable extends StatelessWidget {
           LabelsTableItem(
             title: context.loc.transactionNotesLabel,
             labels: labels,
-            reference: txId,
           ),
         if (walletLabel.isNotEmpty)
           DetailsTableItem(
@@ -136,7 +135,6 @@ class TransactionDetailsTable extends StatelessWidget {
           LabelsTableItem(
             title: context.loc.transactionDetailLabelAddressNotes,
             labels: addressLabels,
-            reference: toAddress,
           ),
         // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
         // to be able to use the CurrencyText widget instead of having to format the amount here.

@@ -17,7 +17,11 @@ class ElectrumServerStorageDatasource {
 
       log.fine('Successfully stored/updated server: ${server.url}');
     } catch (e) {
-      log.severe('Failed to store/update server: $e');
+      log.severe(
+        message: 'Failed to store/update server',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
@@ -37,17 +41,20 @@ class ElectrumServerStorageDatasource {
 
       log.fine('Successfully stored/updated ${servers.length} server(s)');
     } catch (e) {
-      log.severe('Failed to store/update multiple servers: $e');
+      log.severe(
+        message: 'Failed to store/update multiple servers',
+        error: e,
+        trace: StackTrace.current,
+      );
       rethrow;
     }
   }
 
   /// Fetch a server by its URL
   Future<ElectrumServerModel?> fetchByUrl(String url) async {
-    final row =
-        await _sqlite.managers.electrumServers
-            .filter((f) => f.url.equals(url))
-            .getSingleOrNull();
+    final row = await _sqlite.managers.electrumServers
+        .filter((f) => f.url.equals(url))
+        .getSingleOrNull();
 
     return row == null ? null : ElectrumServerModel.fromSqlite(row);
   }
@@ -73,8 +80,9 @@ class ElectrumServerStorageDatasource {
     }
 
     final rows = await query.get();
-    final servers =
-        rows.map((row) => ElectrumServerModel.fromSqlite(row)).toList();
+    final servers = rows
+        .map((row) => ElectrumServerModel.fromSqlite(row))
+        .toList();
 
     return servers;
   }
@@ -83,18 +91,18 @@ class ElectrumServerStorageDatasource {
   Future<List<ElectrumServerModel>> fetchDefaultServersByNetwork(
     ElectrumServerNetwork network,
   ) async {
-    final rows =
-        await _sqlite.managers.electrumServers
-            .filter(
-              (f) =>
-                  f.isLiquid(network.isLiquid) &
-                  f.isTestnet(network.isTestnet) &
-                  f.isCustom(false),
-            )
-            .get();
+    final rows = await _sqlite.managers.electrumServers
+        .filter(
+          (f) =>
+              f.isLiquid(network.isLiquid) &
+              f.isTestnet(network.isTestnet) &
+              f.isCustom(false),
+        )
+        .get();
 
-    final servers =
-        rows.map((row) => ElectrumServerModel.fromSqlite(row)).toList();
+    final servers = rows
+        .map((row) => ElectrumServerModel.fromSqlite(row))
+        .toList();
 
     return servers;
   }
@@ -103,18 +111,18 @@ class ElectrumServerStorageDatasource {
   Future<List<ElectrumServerModel>> fetchCustomServersByNetwork(
     ElectrumServerNetwork network,
   ) async {
-    final rows =
-        await _sqlite.managers.electrumServers
-            .filter(
-              (f) =>
-                  f.isLiquid(network.isLiquid) &
-                  f.isTestnet(network.isTestnet) &
-                  f.isCustom(true),
-            )
-            .get();
+    final rows = await _sqlite.managers.electrumServers
+        .filter(
+          (f) =>
+              f.isLiquid(network.isLiquid) &
+              f.isTestnet(network.isTestnet) &
+              f.isCustom(true),
+        )
+        .get();
 
-    final servers =
-        rows.map((row) => ElectrumServerModel.fromSqlite(row)).toList();
+    final servers = rows
+        .map((row) => ElectrumServerModel.fromSqlite(row))
+        .toList();
 
     return servers;
   }
@@ -122,15 +130,18 @@ class ElectrumServerStorageDatasource {
   /// Delete a specific server by URL
   Future<bool> deleteServer(String url) async {
     try {
-      final deleted =
-          await _sqlite.managers.electrumServers
-              .filter((f) => f.url.equals(url))
-              .delete();
+      final deleted = await _sqlite.managers.electrumServers
+          .filter((f) => f.url.equals(url))
+          .delete();
 
       log.fine('Deleted $deleted server(s) with URL: $url');
       return deleted > 0;
     } catch (e) {
-      log.severe('Failed to delete server: $e');
+      log.severe(
+        message: 'Failed to delete server',
+        error: e,
+        trace: StackTrace.current,
+      );
       return false;
     }
   }

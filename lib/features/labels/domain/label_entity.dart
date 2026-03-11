@@ -1,16 +1,16 @@
-import 'package:bb_mobile/features/labels/primitive/label_type.dart';
+import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bs58check/bs58check.dart' as base58;
 import 'package:convert/convert.dart';
 
 class LabelEntity {
-  final int? id;
+  final int id;
   final LabelType type;
   final String label;
   final String reference;
   final String? origin;
 
   LabelEntity({
-    this.id,
+    required this.id,
     required this.type,
     required this.label,
     required this.reference,

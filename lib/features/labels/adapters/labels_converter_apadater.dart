@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/labels/application/labels_converter_port.dart
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_entity.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
+import 'package:bb_mobile/features/labels/domain/new_label.dart';
 import 'package:bb_mobile/features/labels/frameworks/bip329_codec.dart';
 
 class LabelsConverterAdapter implements LabelsConverterPort {
@@ -10,10 +11,22 @@ class LabelsConverterAdapter implements LabelsConverterPort {
   LabelsConverterAdapter(this._bip329labelsCodec);
 
   @override
-  List<LabelEntity> convertFrom(FormattedLabels formattedLabels) {
+  List<NewLabel> convertFrom(FormattedLabels formattedLabels) {
     switch (formattedLabels) {
       case FormattedLabelsBIP329():
-        return _bip329labelsCodec.decode(formattedLabels.jsonl);
+        final newBip329Labels = _bip329labelsCodec.decode(
+          formattedLabels.jsonl,
+        );
+        return newBip329Labels
+            .map(
+              (newBip329Label) => NewLabel(
+                type: newBip329Label.type,
+                reference: newBip329Label.reference,
+                label: newBip329Label.label,
+                origin: newBip329Label.origin,
+              ),
+            )
+            .toList();
     }
   }
 

@@ -81,12 +81,12 @@ class CreateReceiveSwapUsecase {
       );
 
       if (description != null && description.isNotEmpty) {
-        final addressLabel = Label.addr(
+        final addressLabel = NewLabel.addr(
           address: claimAddress.address,
           label: description,
           origin: wallet.id,
         );
-        await _labelsFacade.store([addressLabel]);
+        await _labelsFacade.store(addressLabel);
       }
 
       switch (type) {
