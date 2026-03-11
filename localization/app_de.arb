@@ -514,7 +514,7 @@
   "receiveSendNetworkFee": "Netzwerkgebühr senden",
   "autoswapRecipientWalletInfoText": "Wählen Sie aus, welche Bitcoin-Wallet die überwiesenen Gelder erhalten soll (erforderlich)",
   "withdrawAboveMaxAmountError": "Sie versuchen, einen Betrag abzuheben, der über dem Höchstbetrag liegt.",
-  "psbtFlowScanDeviceQr": "Die Bull Bitcoin-Wallet fordert Sie auf, den QR-Code auf dem {Gerät} zu scannen. Scannen Sie ihn.",
+  "psbtFlowScanDeviceQr": "The Bull Bitcoin wallet will ask you to scan the QR code on the {device}. Scan it.",
   "@psbtFlowScanDeviceQr": {
     "placeholders": {
       "device": {
@@ -1467,14 +1467,6 @@
       }
     }
   },
-  "deleteLogsTitle": "Protokolle löschen",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
-  "logsDeletedMessage": "Protokolle gelöscht",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
   "payDecodingInvoice": "Abrechnung...",
   "importColdcardInstructionsStep5": "Wählen Sie \"Export Wallet\"",
   "electrumStopGapTooHighError": "Stop Gap scheint zu hoch. (Max. {maxStopGap}",
@@ -1759,15 +1751,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Fehler beim Export von Google Drive",
   "exchangeKycLevelLight": "Hell",
   "transactionLabelCreatedAt": "Erstellt am",
-  "bip329LabelsExportSuccessSingular": "1 Label exportiert",
-  "bip329LabelsExportSuccessPlural": "{count} Labels exportiert.",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Labels erfolgreich exportiert",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Die langsamste Option, kann jedoch über Online-Banking durchgeführt werden (3–4 Werktage).",
   "walletDeletionErrorWalletNotFound": "Die Wallet, die Sie löschen möchten, existiert nicht.",
   "payEnableRBF": "RBF aktivieren",
@@ -3696,7 +3680,6 @@
   "fundExchangeWarningTactic8": "Sie pressen Sie schnell",
   "encryptedVaultStatusLabel": "Verschlüsselter Tresor",
   "sendConfirmSend": "Bestätigen Sie",
-  "sendSelfTransfer": "Eigenüberweisung",
   "fundExchangeBankTransfer": "Banküberweisung",
   "importQrDeviceButtonInstructions": "Anweisungen",
   "buyLevel3Limit": "Ebene 3 Begrenzung: {amount}",
@@ -3734,7 +3717,7 @@
   "payPayee": "Zahlungsempfänger",
   "exchangeAccountComingSoon": "Diese Funktion ist bald verfügbar.",
   "sellInProgress": "Verkauf läuft...",
-  "testLastKnownVault": "Ihr letztes bekanntes verschlüsseltes Backup: {timestamp}",
+  "testBackupLastKnownVault": "Letzte bekannte Verschlüsselung Standard: {timestamp}",
   "@testBackupLastKnownVault": {
     "placeholders": {
       "timestamp": {
@@ -4144,89 +4127,23 @@
   "logoutConfirmationDescription": "Möchten Sie sich wirklich von Ihrem Bull Bitcoin-Konto abmelden? Sie müssen sich erneut anmelden, um auf die Funktionen der Börse zugreifen zu können.",
   "logoutConfirmationCancel": "Abbrechen",
   "logoutConfirmationLogout": "Abmelden",
-  "autoswapInfoTitle": "Titel für das untere Blatt mit Informationen zum automatischen Austausch",
-  "autoswapInfoDismissButton": "Primäre Schaltfläche zum dauerhaften Ausblenden der Autoswap-Informationen",
-  "autoswapInfoSettingsButton": "Sekundäre Taste zum Navigieren zu den Einstellungen für den automatischen Wechsel",
-  "autoswapInfoRemindLater": "Tertiäre Aktion zum Schließen des Blattes ohne Ablegen",
-  "autoswapInfoConsentMessage": "Autoswap ist derzeit aktiviert, wird aber erst ausgelöst, wenn Sie zustimmen. Möchten Sie es aktiviert lassen?",
-  "mempoolServerStatusOnline": "Online",
-  "mempoolServerStatusOffline": "Offline",
-  "mempoolServerStatusChecking": "Prüfen...",
-  "mempoolServerStatusUnknown": "Unbekannt",
-  "mempoolCustomServerSaveFailed": "Server konnte nicht gespeichert werden",
-  "mempoolCustomServerInfoDescription": "Mempool-Server werden für die Gebührenschätzung und zum Öffnen des Block-Explorers beim Anzeigen von Transaktionsdetails verwendet.",
-  "mempoolCustomServerUseSsl": "SSL verwenden",
-  "mempoolCustomServerSslAutoDetected": "(Automatisch erkannt)",
-  "mempoolCustomServerSslHelpText": "Für lokale (.local, private IPs) und Tor (.onion) Server ist SSL normalerweise deaktiviert. Öffentliche IPs und Domains sollten SSL verwenden.",
-  "mempoolErrorSameAsDefault": "Diese URL ist dieselbe wie der Standardserver. Bitte verwenden Sie eine andere URL.",
-  "mempoolErrorConnectionTimeout": "Verbindung ist abgelaufen. Der Server ist möglicherweise langsam oder nicht erreichbar.",
-  "mempoolErrorHostNotFound": "Server nicht gefunden. Bitte überprüfen Sie die URL und versuchen Sie es erneut.",
-  "mempoolErrorTorNotRunning": ".onion-Adresse nicht erreichbar. Stellen Sie sicher, dass Tor/Orbot läuft und versuchen Sie es erneut.",
-  "mempoolErrorConnectionFailed": "Verbindung zum Server nicht möglich. Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-  "mempoolErrorNotMempoolServer": "Diese URL scheint kein Mempool-Server zu sein. Bitte überprüfen Sie die Adresse.",
-  "mempoolErrorServerUnavailable": "Server nicht verfügbar. Bitte versuchen Sie es später erneut.",
-  "mempoolErrorServerError": "Server hat einen Fehler festgestellt. Bitte versuchen Sie es später erneut.",
-  "mempoolErrorInvalidResponse": "Server hat eine ungültige Antwort zurückgegeben.",
-  "mempoolErrorUnexpected": "Ein unerwarteter Fehler ist aufgetreten",
-  "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden: {error}",
-  "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden: {error}",
-  "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden: {error}",
-  "settingsErrorReportingTitle": "Fehlerberichte",
-  "@settingsErrorReportingTitle": {
-    "description": "Titel für die Fehlerberichterstattungseinstellung in den App-Einstellungen"
-  },
-  "errorReportingProgramTitle": "Fehlermeldungsprogramm",
-  "@errorReportingProgramTitle": {
-    "description": "Titel für das Erklärungsblatt zum Fehlerberichtsprogramm"
-  },
-  "errorReportingProgramDescription": "Helfen Sie uns, Bull Bitcoin zu verbessern, indem Sie an unserem Fehlermeldungsprogramm teilnehmen. Es hilft uns direkt, Bull Bitcoin für alle besser zu machen.\n\nWenn aktiviert, senden wir automatisch Fehlerberichte (Logs), wenn Probleme in der App auftreten. Diese Daten helfen uns zu verstehen, was für unsere Benutzer weltweit passiert, und Fixes entsprechend zu priorisieren.\n\nWir teilen diese Informationen nicht mit Dritten. Wir verwenden Sentrys Open-Source-Client mit unserem eigenen selbstgehosteten Backend-Server.",
-  "@errorReportingProgramDescription": {
-    "description": "Beschreibung des Fehlermeldungsprogramms"
-  },
-  "errorReportingAcceptButton": "Akzeptieren",
-  "@errorReportingAcceptButton": {
-    "description": "Schaltfläche zum Akzeptieren der Fehlerberichterstattung"
-  },
-  "errorReportingCancelButton": "Abbrechen",
-  "@errorReportingCancelButton": {
-    "description": "Schaltfläche zum Abbrechen der Fehlerberichterstattung"
-  },
-  "errorReportingRestartSnackbar": "Starten Sie bitte die App neu, um diese Änderung zu übernehmen",
-  "@errorReportingRestartSnackbar": {
-    "description": "Kurze Bestätigung, wenn die Einstellung zur Fehlerberichterstattung geändert wird"
-  },
-  "backupWarningTitle": "SICHERN SIE IHR WALLET JETZT",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Ohne ein Backup verlieren Sie den Zugang zu Ihren Bitcoin, wenn Sie Ihr Telefon verlieren, die App löschen oder ein kritisches anwendungs- oder gerätebezogenes Problem aufritt. Es gibt keine Möglichkeit, Ihr Wallet ohne ein Backup wiederherzustellen.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
-  "backupWarningBackupNow": "JA",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
-  "bip329LabelsExportSuccess": "Labels erfolgreich exportiert",
-  "testBackupLastKnownVault": "Letzte bekannte Verschlüsselung Standard: {timestamp}",
   "recipientsSearchHint": "Hinweistext für das Suchfeld für Empfänger",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
+  "autoswapInfoSettingsButton": "Sekundäre Taste zum Navigieren zu den Einstellungen für den automatischen Wechsel",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
+  "autoswapInfoRemindLater": "Tertiäre Aktion zum Schließen des Blattes ohne Ablegen",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
+  "autoswapInfoTitle": "Titel für das untere Blatt mit Informationen zum automatischen Austausch",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
+  "autoswapInfoDismissButton": "Primäre Schaltfläche zum dauerhaften Ausblenden der Autoswap-Informationen",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
@@ -4291,7 +4208,7 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "exchangeFileUploadUploadCount": "{count} {count, Plural, =1{Datei} andere{Dateien}} hochladen",
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -4397,7 +4314,7 @@
   "@exchangeStatisticsBillerStats": {
     "description": "Title for biller statistics section"
   },
-  "exchangeStatisticsCurrency": "Währung: {Währung}",
+  "exchangeStatisticsCurrency": "Currency: {currency}",
   "@exchangeStatisticsCurrency": {
     "description": "Label showing currency for biller stats",
     "placeholders": {

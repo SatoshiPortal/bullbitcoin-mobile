@@ -1,1 +1,3 @@
-{}
+{
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}"
+}

@@ -124,29 +124,6 @@
   "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
   "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
   "mempoolSettingsUseForFeeEstimationDescription": "When enabled, this server will be used for fee estimation. When disabled, Bull Bitcoin's mempool server will be used instead.",
-  "mempoolServerStatusOnline": "Verkossa",
-  "mempoolServerStatusOffline": "Ei verkossa",
-  "mempoolServerStatusChecking": "Tarkistetaan...",
-  "mempoolServerStatusUnknown": "Tuntematon",
-  "mempoolCustomServerSaveFailed": "Palvelimen tallennus epäonnistui",
-  "mempoolCustomServerInfoDescription": "Mempool-palvelimia käytetään maksuarviointiin ja lohkoselaimen avaamiseen transaktiotietoja tarkasteltaessa.",
-  "mempoolCustomServerUseSsl": "Käytä SSL:ää",
-  "mempoolCustomServerSslAutoDetected": "(Tunnistettu automaattisesti)",
-  "mempoolCustomServerSslHelpText": "Paikallisille (.local, yksityiset IP:t) ja Tor (.onion) -palvelimille SSL on yleensä pois käytöstä. Julkiset IP:t ja verkkotunnukset tulisi käyttää SSL:ää.",
-  "mempoolErrorSameAsDefault": "Tämä URL on sama kuin oletuspalvelin. Käytä eri URL-osoitetta.",
-  "mempoolErrorConnectionTimeout": "Yhteys aikakatkaistiin. Palvelin voi olla hidas tai tavoittamattomissa.",
-  "mempoolErrorHostNotFound": "Palvelinta ei löydy. Tarkista URL ja yritä uudelleen.",
-  "mempoolErrorTorNotRunning": ".onion-osoitetta ei voi tavoittaa. Varmista, että Tor/Orbot on käynnissä ja yritä uudelleen.",
-  "mempoolErrorConnectionFailed": "Palvelimeen ei voi yhdistää. Tarkista verkkoyhteys ja yritä uudelleen.",
-  "mempoolErrorNotMempoolServer": "Tämä URL ei vaikuta olevan mempool-palvelin. Tarkista osoite.",
-  "mempoolErrorServerUnavailable": "Palvelin ei ole käytettävissä. Yritä myöhemmin uudelleen.",
-  "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
-  "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
-  "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
-  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui: {error}",
-  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui: {error}",
-  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui: {error}",
   "bitcoinSettingsAutoTransferTitle": "Automaattinen swap",
   "bitcoinSettingsLegacySeedsTitle": "Vanhat siemenlauseet",
   "bitcoinSettingsImportWalletTitle": "Tuo lompakko",
@@ -1771,8 +1748,6 @@
   "urProcessingFailedMessage": "UR:n käsittely epäonnistui",
   "scanNfcButton": "Skannaa NFC",
   "shareLogsLabel": "Jaa lokitiedot",
-  "deleteLogsTitle": "Poista lokit",
-  "logsDeletedMessage": "Lokit poistettu",
   "viewLogsLabel": "Näytä lokitiedot",
   "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
   "@errorSharingLogsMessage": {
@@ -2078,7 +2053,6 @@
   "sendReceiveNetworkFee": "Vastaanoton verkkokulu",
   "sendServerNetworkFees": "Palvelimen verkkokulut",
   "sendConfirmSend": "Vahvista lähetys",
-  "sendSelfTransfer": "Siirto itselle",
   "sendSending": "Lähetetään",
   "sendBroadcastingTransaction": "Lähetetään transaktiota.",
   "sendSwapInProgressInvoice": "Swap on käynnissä. Lasku maksetaan muutamassa sekunnissa.",
@@ -3815,10 +3789,6 @@
   "exchangeFeatureCustomerSupport": "• Keskustele asiakastuen kanssa",
   "exchangeFeatureUnifiedHistory": "• Yhdistetty tapahtumahistoria",
   "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
-  "priceChartFailedToLoad": "Kurssihistorian lataus epäonnistui",
-  "priceFailedToLoad": "Kurssin lataus epäonnistui",
-  "statusScreenTryAgain": "Yritä uudelleen",
-  "statusScreenContinue": "Jatka",
   "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "exchangeLandingDisclaimerNotAvailable": "Kryptovaluuttapörssin palvelut eivät ole käytettävissä Bull Bitcoin -mobiilisovelluksessa.",
   "exchangeLoginButton": "Kirjaudu tai rekisteröidy",
@@ -4143,8 +4113,9 @@
   "autoswapBaseBalanceInfoText": "Pikaisen maksulompakon saldo palaa tähän tavoitesaldoon automaattisen swapin jälkeen.",
   "autoswapWarningDescription": "Autoswap varmistaa, ettei vahingossa pidä liikaa rahaa Pikaisen maksulompakon sisällä, mikä ei ole turvallista pitkäaikaiseen säilytykseen.",
   "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla:",
+  "autoswapWarningBaseBalance": "Tavoitesaldo 0,01 BTC",
+  "autoswapWarningTriggerAmount": "Maksimi-saldo 0,02 BTC",
   "autoswapWarningExplanation": "Kun saldosi ylittää maksimin saldon, käynnistyy swap. Tavoitesaldo pidetään Pikaisen maksulompakon sisällä ja jäljelle jäävä summa vaihdetaan Turvalliseen Bitcoin-lompakkoosi.",
-  "autoswapWarningExplanationBold": "automaattisesti",
   "autoswapWarningDontShowAgain": "Älä näytä tätä varoitusta uudelleen.",
   "autoswapWarningSettingsLink": "Vie minut autoswap-asetuksiin",
   "importQrDeviceKeystoneStep7": "Skannaa Keystonessa näkyvä QR-koodi",
@@ -4153,71 +4124,27 @@
   "autoswapTriggerAtBalanceInfoText": "Autoswap aktivoituu, kun saldosi ylittää tämän suurimman saldon.",
   "autoswapWarningCardTitle": "Autoswap on käytössä.",
   "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC.",
-  "autoswapActiveCardTitle": "Autoswap on aktiivinen",
   "logoutConfirmationTitle": "Vahvista uloskirjautuminen",
   "logoutConfirmationDescription": "Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.",
   "logoutConfirmationCancel": "Peruuta",
   "logoutConfirmationLogout": "Kirjaudu ulos",
-  "autoswapInfoTitle": "Autoswap on aktiivinen.",
-  "autoswapInfoDismissButton": "Selvä, älä näytä uudelleen.",
-  "autoswapInfoSettingsButton": "Muokkaa asetuksia.",
-  "autoswapInfoRemindLater": "Muistuta minua myöhemmin.",
-  "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?",
-  "settingsErrorReportingTitle": "Virheraportointi",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "Virheraportoinnin ohjelma",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescription": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.\n\nKun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista. Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.\n\nEmme jaa näitä tietoja kolmansien osapuolten kanssa. Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
-  "errorReportingAcceptButton": "Hyväksy",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "Peruuta",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
-  "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
-  "backupWarningBackupNow": "KYLLÄ",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
-  "autoswapWarningBaseBalance": "Tavoitesaldo 0,01 BTC",
-  "autoswapWarningTriggerAmount": "Maksimi-saldo 0,02 BTC",
   "recipientsSearchHint": "Etsi vastaanottajia nimen tai tunnisteen perusteella.",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
+  "autoswapInfoSettingsButton": "Muokkaa asetuksia.",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
+  "autoswapInfoRemindLater": "Muistuta minua myöhemmin.",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
+  "autoswapInfoTitle": "Autoswap on aktiivinen.",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
+  "autoswapInfoDismissButton": "Selvä, älä näytä uudelleen.",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
@@ -4290,7 +4217,7 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "exchangeFileUploadUploadCount": "Lataa {count} [Luettu, moniarvoinen, = 1 {Files}}",
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -4404,5 +4331,78 @@
         "type": "String"
       }
     }
+  },
+  "mempoolServerStatusOnline": "Verkossa",
+  "mempoolServerStatusOffline": "Ei verkossa",
+  "mempoolServerStatusChecking": "Tarkistetaan...",
+  "mempoolServerStatusUnknown": "Tuntematon",
+  "mempoolCustomServerSaveFailed": "Palvelimen tallennus epäonnistui",
+  "mempoolCustomServerInfoDescription": "Mempool-palvelimia käytetään maksuarviointiin ja lohkoselaimen avaamiseen transaktiotietoja tarkasteltaessa.",
+  "mempoolCustomServerUseSsl": "Käytä SSL:ää",
+  "mempoolCustomServerSslAutoDetected": "(Tunnistettu automaattisesti)",
+  "mempoolCustomServerSslHelpText": "Paikallisille (.local, yksityiset IP:t) ja Tor (.onion) -palvelimille SSL on yleensä pois käytöstä. Julkiset IP:t ja verkkotunnukset tulisi käyttää SSL:ää.",
+  "mempoolErrorSameAsDefault": "Tämä URL on sama kuin oletuspalvelin. Käytä eri URL-osoitetta.",
+  "mempoolErrorConnectionTimeout": "Yhteys aikakatkaistiin. Palvelin voi olla hidas tai tavoittamattomissa.",
+  "mempoolErrorHostNotFound": "Palvelinta ei löydy. Tarkista URL ja yritä uudelleen.",
+  "mempoolErrorTorNotRunning": ".onion-osoitetta ei voi tavoittaa. Varmista, että Tor/Orbot on käynnissä ja yritä uudelleen.",
+  "mempoolErrorConnectionFailed": "Palvelimeen ei voi yhdistää. Tarkista verkkoyhteys ja yritä uudelleen.",
+  "mempoolErrorNotMempoolServer": "Tämä URL ei vaikuta olevan mempool-palvelin. Tarkista osoite.",
+  "mempoolErrorServerUnavailable": "Palvelin ei ole käytettävissä. Yritä myöhemmin uudelleen.",
+  "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
+  "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
+  "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
+  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui: {error}",
+  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui: {error}",
+  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui: {error}",
+  "deleteLogsTitle": "Poista lokit",
+  "logsDeletedMessage": "Lokit poistettu",
+  "sendSelfTransfer": "Siirto itselle",
+  "priceChartFailedToLoad": "Kurssihistorian lataus epäonnistui",
+  "priceFailedToLoad": "Kurssin lataus epäonnistui",
+  "statusScreenTryAgain": "Yritä uudelleen",
+  "statusScreenContinue": "Jatka",
+  "autoswapWarningExplanationBold": "automaattisesti",
+  "autoswapActiveCardTitle": "Autoswap on aktiivinen",
+  "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?",
+  "settingsErrorReportingTitle": "Virheraportointi",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Virheraportoinnin ohjelma",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.\n\nKun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista. Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.\n\nEmme jaa näitä tietoja kolmansien osapuolten kanssa. Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Hyväksy",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Peruuta",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "KYLLÄ",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

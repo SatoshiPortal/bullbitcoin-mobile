@@ -1120,6 +1120,7 @@
   "doNotShareWarning": "NON CONDIVIDI CON NESSUNO",
   "torSettingsPortNumber": "Numero della porta",
   "payNameHint": "Inserisci il nome del destinatario",
+  "autoswapWarningTriggerAmount": "Saldo massimo di 0,02 BTC",
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "recoverbullErrorCheckStatusFailed": "Non è riuscito a controllare lo stato della volta",
   "pleaseWaitFetching": "Per favore, aspettate mentre prendiamo il vostro file di backup.",
@@ -1254,7 +1255,6 @@
   "walletNetworkBitcoin": "Rete Bitcoin",
   "electrumAdvancedOptions": "Opzioni avanzate",
   "autoswapWarningCardSubtitle": "Un swap verrà attivato se il saldo dei pagamenti istantanei supera 0,02 BTC.",
-  "autoswapActiveCardTitle": "Autoswap è attivo",
   "transactionStatusConfirmed": "Confermato",
   "dcaFrequencyDaily": "giorno",
   "transactionLabelSendAmount": "Inviare Importo",
@@ -1496,14 +1496,6 @@
       }
     }
   },
-  "deleteLogsTitle": "Elimina registri",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
-  "logsDeletedMessage": "Registri eliminati",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
   "payDecodingInvoice": "Decoding fattura...",
   "importColdcardInstructionsStep5": "Selezionare \"Export Wallet\"",
   "electrumStopGapTooHighError": "Stop Gap sembra troppo alto. {maxStopGap}",
@@ -1524,10 +1516,6 @@
   },
   "sellInstantPayments": "Pagamenti istantiani",
   "priceChartFetchingHistory": "Recuperare la cronologia dei prezzi...",
-  "priceChartFailedToLoad": "Impossibile caricare la cronologia dei prezzi",
-  "priceFailedToLoad": "Impossibile caricare il prezzo",
-  "statusScreenTryAgain": "Riprova",
-  "statusScreenContinue": "Continua",
   "sellDone": "Fatto",
   "payFromWallet": "Da Wallet",
   "dcaConfirmRecurringBuyTitle": "Confermare il Ricorso Comprare",
@@ -1667,7 +1655,6 @@
   "sellHowToPayInvoice": "Come vuoi pagare questa fattura?",
   "payUseCoinjoin": "Utilizzare CoinJoinin",
   "autoswapWarningExplanation": "Quando il tuo saldo supera il saldo massimo, verrà eseguito uno swap. Il saldo obiettivo sarà mantenuto nel tuo Portafoglio Pagamenti Istantanei e la parte rimanente verrà scambiata nel tuo Portafoglio Bitcoin Sicuro.",
-  "autoswapWarningExplanationBold": "automaticamente",
   "recoverbullVaultRecoveryTitle": "Ripristino del caveau",
   "passportStep14": "Ora è pronto a trasmettere! Non appena si fa clic sulla trasmissione, la transazione verrà pubblicata sulla rete Bitcoin e i fondi saranno inviati.",
   "settingsCurrencyTitle": "Valuta",
@@ -3195,6 +3182,7 @@
   "bitboxActionImportWalletButton": "Inizio Importazione",
   "fundExchangeLabelSwiftCode": "Codice SWIFT",
   "buyEnterBitcoinAddress": "Inserisci l'indirizzo bitcoin",
+  "autoswapWarningBaseBalance": "Saldo obiettivo 0,01 BTC",
   "transactionDetailLabelPayoutAmount": "Importo di pagamento",
   "importQrDeviceSpecterStep6": "Scegliere \"Single key\"",
   "importQrDeviceJadeStep10": "Basta!",
@@ -3741,7 +3729,6 @@
   "fundExchangeWarningTactic8": "Ti stanno pressando per agire rapidamente",
   "encryptedVaultStatusLabel": "Vault crittografato",
   "sendConfirmSend": "Conferma Invia",
-  "sendSelfTransfer": "Trasferimento a sé",
   "fundExchangeBankTransfer": "Trasferimento bancario",
   "importQrDeviceButtonInstructions": "Istruzioni",
   "buyLevel3Limit": "Limite di livello 3: {amount}",
@@ -4139,80 +4126,11 @@
   "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
   "logoutConfirmationCancel": "Annulla",
   "logoutConfirmationLogout": "Disconnetti",
-  "autoswapInfoTitle": "Autoswap è attivo",
-  "autoswapInfoDismissButton": "Capito, non mostrare più",
-  "autoswapInfoSettingsButton": "Configura le impostazioni",
-  "autoswapInfoRemindLater": "Ricordamelo più tardi",
-  "autoswapInfoConsentMessage": "Autoswap è attualmente abilitato ma non si attiverà finché non darai il tuo consenso. Vuoi tenerlo attivato?",
-  "mempoolServerStatusOnline": "Online",
-  "mempoolServerStatusOffline": "Offline",
-  "mempoolServerStatusChecking": "Verifica...",
-  "mempoolServerStatusUnknown": "Sconosciuto",
-  "mempoolCustomServerSaveFailed": "Impossibile salvare il server",
-  "mempoolCustomServerInfoDescription": "I server mempool vengono utilizzati per la stima delle commissioni e per aprire l'esploratore di blocchi quando si visualizzano i dettagli della transazione.",
-  "mempoolCustomServerUseSsl": "Usa SSL",
-  "mempoolCustomServerSslAutoDetected": "(Rilevato automaticamente)",
-  "mempoolCustomServerSslHelpText": "Per server locali (.local, IP privati) e Tor (.onion), SSL è solitamente disabilitato. Gli IP pubblici e i domini dovrebbero usare SSL.",
-  "mempoolErrorSameAsDefault": "Questo URL è lo stesso del server predefinito. Utilizza un URL diverso.",
-  "mempoolErrorConnectionTimeout": "Timeout della connessione. Il server potrebbe essere lento o non raggiungibile.",
-  "mempoolErrorHostNotFound": "Server non trovato. Controlla l'URL e riprova.",
-  "mempoolErrorTorNotRunning": "Impossibile raggiungere l'indirizzo .onion. Assicurati che Tor/Orbot sia in esecuzione e riprova.",
-  "mempoolErrorConnectionFailed": "Impossibile connettersi al server. Controlla la connessione di rete e riprova.",
-  "mempoolErrorNotMempoolServer": "Questo URL non sembra essere un server mempool. Verifica l'indirizzo.",
-  "mempoolErrorServerUnavailable": "Server non disponibile. Riprova più tardi.",
-  "mempoolErrorServerError": "Il server ha riscontrato un errore. Riprova più tardi.",
-  "mempoolErrorInvalidResponse": "Il server ha restituito una risposta non valida.",
-  "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
-  "mempoolErrorSaveServerFailed": "Impossibile salvare il server: {error}",
-  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool: {error}",
-  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}",
-  "settingsErrorReportingTitle": "Segnalazione errori",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "Programma di segnalazione errori",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescription": "Aiutaci a migliorare Bull Bitcoin partecipando al nostro programma di segnalazione errori. Ci aiuta direttamente a rendere Bull Bitcoin migliore per tutti.\n\nQuando abilitato, inviamo automaticamente rapporti di errori quando si verificano problemi nell'app. Questi dati ci aiutano a capire cosa sta accadendo per i nostri utenti in tutto il mondo e a dare priorità alle correzioni di conseguenza.\n\nNon condividiamo queste informazioni con terze parti. Utilizziamo il client open-source di Sentry con il nostro server backend auto-ospitato.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
-  "errorReportingAcceptButton": "Accetta",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "Annulla",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "Riavvia l'app per applicare questa modifica",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
-  "backupWarningTitle": "ESEGUI IL BACKUP DEL TUO PORTAFOGLIO ORA",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se perdi il telefono, elimini l'app o incontri un problema critico legato all'applicazione o al dispositivo. Non c'è modo di recuperare il portafoglio senza un backup.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
-  "backupWarningBackupNow": "SÌ",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "NO, CAPISCO IL RISCHIO",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
-  "autoswapWarningTriggerAmount": "Saldo massimo di 0,02 BTC",
-  "autoswapWarningBaseBalance": "Saldo obiettivo 0,01 BTC",
   "recipientsSearchHint": "Cerca destinatari per nome o etichetta",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
+  "autoswapInfoSettingsButton": "Configura le impostazioni",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
@@ -4220,12 +4138,15 @@
   "@importQrDeviceKeystoneStep10": {
     "description": "Keystone instruction step 10"
   },
+  "autoswapInfoRemindLater": "Ricordamelo più tardi",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
+  "autoswapInfoTitle": "Autoswap è attivo",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
+  "autoswapInfoDismissButton": "Capito, non mostrare più",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
@@ -4290,7 +4211,7 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "exchangeFileUploadUploadCount": "Carica {count} {conto, plurale, =1{File} altro{Files}}",
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -4412,5 +4333,84 @@
   "retry": "Reazione",
   "@retry": {
     "description": "Generic retry button label"
+  },
+  "autoswapActiveCardTitle": "Autoswap è attivo",
+  "deleteLogsTitle": "Elimina registri",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Registri eliminati",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "priceChartFailedToLoad": "Impossibile caricare la cronologia dei prezzi",
+  "priceFailedToLoad": "Impossibile caricare il prezzo",
+  "statusScreenTryAgain": "Riprova",
+  "statusScreenContinue": "Continua",
+  "autoswapWarningExplanationBold": "automaticamente",
+  "sendSelfTransfer": "Trasferimento a sé",
+  "autoswapInfoConsentMessage": "Autoswap è attualmente abilitato ma non si attiverà finché non darai il tuo consenso. Vuoi tenerlo attivato?",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Verifica...",
+  "mempoolServerStatusUnknown": "Sconosciuto",
+  "mempoolCustomServerSaveFailed": "Impossibile salvare il server",
+  "mempoolCustomServerInfoDescription": "I server mempool vengono utilizzati per la stima delle commissioni e per aprire l'esploratore di blocchi quando si visualizzano i dettagli della transazione.",
+  "mempoolCustomServerUseSsl": "Usa SSL",
+  "mempoolCustomServerSslAutoDetected": "(Rilevato automaticamente)",
+  "mempoolCustomServerSslHelpText": "Per server locali (.local, IP privati) e Tor (.onion), SSL è solitamente disabilitato. Gli IP pubblici e i domini dovrebbero usare SSL.",
+  "mempoolErrorSameAsDefault": "Questo URL è lo stesso del server predefinito. Utilizza un URL diverso.",
+  "mempoolErrorConnectionTimeout": "Timeout della connessione. Il server potrebbe essere lento o non raggiungibile.",
+  "mempoolErrorHostNotFound": "Server non trovato. Controlla l'URL e riprova.",
+  "mempoolErrorTorNotRunning": "Impossibile raggiungere l'indirizzo .onion. Assicurati che Tor/Orbot sia in esecuzione e riprova.",
+  "mempoolErrorConnectionFailed": "Impossibile connettersi al server. Controlla la connessione di rete e riprova.",
+  "mempoolErrorNotMempoolServer": "Questo URL non sembra essere un server mempool. Verifica l'indirizzo.",
+  "mempoolErrorServerUnavailable": "Server non disponibile. Riprova più tardi.",
+  "mempoolErrorServerError": "Il server ha riscontrato un errore. Riprova più tardi.",
+  "mempoolErrorInvalidResponse": "Il server ha restituito una risposta non valida.",
+  "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
+  "mempoolErrorSaveServerFailed": "Impossibile salvare il server: {error}",
+  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool: {error}",
+  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}",
+  "settingsErrorReportingTitle": "Segnalazione errori",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Programma di segnalazione errori",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Aiutaci a migliorare Bull Bitcoin partecipando al nostro programma di segnalazione errori. Ci aiuta direttamente a rendere Bull Bitcoin migliore per tutti.\n\nQuando abilitato, inviamo automaticamente rapporti di errori quando si verificano problemi nell'app. Questi dati ci aiutano a capire cosa sta accadendo per i nostri utenti in tutto il mondo e a dare priorità alle correzioni di conseguenza.\n\nNon condividiamo queste informazioni con terze parti. Utilizziamo il client open-source di Sentry con il nostro server backend auto-ospitato.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Accetta",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Annulla",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Riavvia l'app per applicare questa modifica",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "ESEGUI IL BACKUP DEL TUO PORTAFOGLIO ORA",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se perdi il telefono, elimini l'app o incontri un problema critico legato all'applicazione o al dispositivo. Non c'è modo di recuperare il portafoglio senza un backup.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "SÌ",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "NO, CAPISCO IL RISCHIO",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

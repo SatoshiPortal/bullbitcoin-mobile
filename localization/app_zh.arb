@@ -1120,6 +1120,7 @@
   "doNotShareWarning": "纽约总部",
   "torSettingsPortNumber": "港口数量",
   "payNameHint": "1. 输入者姓名",
+  "autoswapWarningTriggerAmount": "最大余额为 0.02 BTC",
   "legacySeedViewScreenTitle": "遗产种子",
   "recoverbullErrorCheckStatusFailed": "未能检查违约情况",
   "pleaseWaitFetching": "等到我们找回文件的时候.",
@@ -1254,7 +1255,6 @@
   "walletNetworkBitcoin": "联合国",
   "electrumAdvancedOptions": "A. 先进选择",
   "autoswapWarningCardSubtitle": "如果你的经常付款余额超过0.02BTC,则将启动交换.",
-  "autoswapActiveCardTitle": "自动交换已激活",
   "transactionStatusConfirmed": "1. 确认",
   "dcaFrequencyDaily": "日 本",
   "transactionLabelSendAmount": "数额",
@@ -1496,14 +1496,6 @@
       }
     }
   },
-  "deleteLogsTitle": "删除日志",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
-  "logsDeletedMessage": "日志已删除",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
   "payDecodingInvoice": "发票的下降......",
   "importColdcardInstructionsStep5": "选择“Export Wallet”",
   "electrumStopGapTooHighError": "消除差距似乎太高。 (Max. {maxStopGap}",
@@ -1524,10 +1516,6 @@
   },
   "sellInstantPayments": "经常付款",
   "priceChartFetchingHistory": "Fetching Price History...",
-  "priceChartFailedToLoad": "无法加载价格历史",
-  "priceFailedToLoad": "无法加载价格",
-  "statusScreenTryAgain": "重试",
-  "statusScreenContinue": "继续",
   "sellDone": "Done",
   "payFromWallet": "From Wallet",
   "dcaConfirmRecurringBuyTitle": "同意 1. 采购",
@@ -1667,7 +1655,6 @@
   "sellHowToPayInvoice": "你想支付这一发票如何?",
   "payUseCoinjoin": "十五、使用",
   "autoswapWarningExplanation": "当余额超过最大余额时，将触发自动换币。目标余额将保留在您的即时支付钱包中，剩余金额将被换到您的安全比特币钱包。",
-  "autoswapWarningExplanationBold": "自动",
   "recoverbullVaultRecoveryTitle": "2. 追回被盗资产",
   "passportStep14": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "settingsCurrencyTitle": "货币",
@@ -3196,6 +3183,7 @@
   "bitboxActionImportWalletButton": "进口",
   "fundExchangeLabelSwiftCode": "缩略语",
   "buyEnterBitcoinAddress": "轨道硬币地址",
+  "autoswapWarningBaseBalance": "目标余额 0.01 BTC",
   "transactionDetailLabelPayoutAmount": "薪酬数额",
   "importQrDeviceSpecterStep6": "选择“关键”",
   "importQrDeviceJadeStep10": "这!",
@@ -3741,7 +3729,6 @@
   "fundExchangeWarningTactic8": "他们正在敦促你迅速采取行动",
   "encryptedVaultStatusLabel": "加密违约",
   "sendConfirmSend": "Confirm Send",
-  "sendSelfTransfer": "自转账",
   "fundExchangeBankTransfer": "银行转账",
   "importQrDeviceButtonInstructions": "指示",
   "buyLevel3Limit": "3级限制:{amount}",
@@ -4139,76 +4126,6 @@
   "logoutConfirmationDescription": "您确定要退出您的Bull Bitcoin账户吗？您需要重新登录才能访问交易功能。",
   "logoutConfirmationCancel": "取消",
   "logoutConfirmationLogout": "退出",
-  "autoswapInfoTitle": "自动换币处于启用状态",
-  "autoswapInfoDismissButton": "知道了，以后不再显示",
-  "autoswapInfoSettingsButton": "配置设置",
-  "autoswapInfoRemindLater": "稍后提醒我",
-  "autoswapInfoConsentMessage": "自动交换目前已启用，但在您同意之前不会触发。您想保持启用吗？",
-  "mempoolServerStatusOnline": "在线",
-  "mempoolServerStatusOffline": "离线",
-  "mempoolServerStatusChecking": "检查中...",
-  "mempoolServerStatusUnknown": "未知",
-  "mempoolCustomServerSaveFailed": "保存服务器失败",
-  "mempoolCustomServerInfoDescription": "Mempool 服务器用于费用估算以及在查看交易详情时打开区块浏览器。",
-  "mempoolCustomServerUseSsl": "使用 SSL",
-  "mempoolCustomServerSslAutoDetected": "(自动检测)",
-  "mempoolCustomServerSslHelpText": "对于本地服务器（.local、私有 IP）和 Tor（.onion）服务器，SSL 通常是禁用的。公共 IP 和域名应使用 SSL。",
-  "mempoolErrorSameAsDefault": "此 URL 与默认服务器相同。请使用不同的 URL。",
-  "mempoolErrorConnectionTimeout": "连接超时。请检查服务器地址并重试。",
-  "mempoolErrorHostNotFound": "找不到服务器。请验证 URL 是否正确。",
-  "mempoolErrorTorNotRunning": "无法连接到 .onion 地址。请确保 Tor 正在运行。",
-  "mempoolErrorConnectionFailed": "无法连接到服务器。请检查您的网络连接。",
-  "mempoolErrorNotMempoolServer": "服务器响应，但似乎不是 Mempool 服务器。",
-  "mempoolErrorServerUnavailable": "服务器暂时不可用。请稍后重试。",
-  "mempoolErrorServerError": "服务器遇到错误。请稍后重试或尝试其他服务器。",
-  "mempoolErrorInvalidResponse": "服务器返回了意外的响应。",
-  "mempoolErrorUnexpected": "发生了意外错误",
-  "mempoolErrorSaveServerFailed": "保存服务器失败：{error}",
-  "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败：{error}",
-  "mempoolErrorDeleteFailed": "删除自定义服务器失败：{error}",
-  "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}",
-  "settingsErrorReportingTitle": "错误报告",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
-  "errorReportingProgramTitle": "错误报告计划",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
-  "errorReportingProgramDescription": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。\n\n启用后，当应用程序发生问题时，我们会自动发送错误报告。这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。\n\n我们不会与第三方分享此信息。我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
-  "errorReportingAcceptButton": "接受",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
-  "errorReportingCancelButton": "取消",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
-  "errorReportingRestartSnackbar": "重新启动应用程序以应用此更改",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
-  "backupWarningTitle": "立即备份您的钱包",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "如果没有备份，一旦您丢失手机、删除应用程序或遇到与应用程序或设备相关的严重问题，您将无法访问您的比特币。没有备份，就无法恢复您的钱包。",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
-  "backupWarningBackupNow": "是",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
-  "backupWarningBackupLater": "不，我了解风险",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
-  "autoswapWarningTriggerAmount": "最大余额为 0.02 BTC",
-  "autoswapWarningBaseBalance": "目标余额 0.01 BTC",
   "exchangeLandingLoginToUseSupport": "请登录或注册以使用支持聊天来处理兑换相关问题。",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
@@ -4217,15 +4134,19 @@
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
   },
+  "autoswapInfoSettingsButton": "配置设置",
   "@autoswapInfoSettingsButton": {
     "description": "Secondary button to navigate to autoswap settings"
   },
+  "autoswapInfoRemindLater": "稍后提醒我",
   "@autoswapInfoRemindLater": {
     "description": "Tertiary action to close sheet without dismissing"
   },
+  "autoswapInfoTitle": "自动换币处于启用状态",
   "@autoswapInfoTitle": {
     "description": "Title for autoswap information bottom sheet"
   },
+  "autoswapInfoDismissButton": "知道了，以后不再显示",
   "@autoswapInfoDismissButton": {
     "description": "Primary button to dismiss autoswap info permanently"
   },
@@ -4286,7 +4207,7 @@
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
-  "exchangeFileUploadUploadCount": "上传{count}{对面、复数、=1{File}",
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "@exchangeFileUploadUploadCount": {
     "description": "Button label showing number of files to upload",
     "placeholders": {
@@ -4412,5 +4333,84 @@
   "exchangeSettingsTransactionsTitle": "交易",
   "@exchangeSettingsTransactionsTitle": {
     "description": "Title for the transactions button in exchange settings"
+  },
+  "autoswapActiveCardTitle": "自动交换已激活",
+  "deleteLogsTitle": "删除日志",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "日志已删除",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "priceChartFailedToLoad": "无法加载价格历史",
+  "priceFailedToLoad": "无法加载价格",
+  "statusScreenTryAgain": "重试",
+  "statusScreenContinue": "继续",
+  "autoswapWarningExplanationBold": "自动",
+  "sendSelfTransfer": "自转账",
+  "autoswapInfoConsentMessage": "自动交换目前已启用，但在您同意之前不会触发。您想保持启用吗？",
+  "mempoolServerStatusOnline": "在线",
+  "mempoolServerStatusOffline": "离线",
+  "mempoolServerStatusChecking": "检查中...",
+  "mempoolServerStatusUnknown": "未知",
+  "mempoolCustomServerSaveFailed": "保存服务器失败",
+  "mempoolCustomServerInfoDescription": "Mempool 服务器用于费用估算以及在查看交易详情时打开区块浏览器。",
+  "mempoolCustomServerUseSsl": "使用 SSL",
+  "mempoolCustomServerSslAutoDetected": "(自动检测)",
+  "mempoolCustomServerSslHelpText": "对于本地服务器（.local、私有 IP）和 Tor（.onion）服务器，SSL 通常是禁用的。公共 IP 和域名应使用 SSL。",
+  "mempoolErrorSameAsDefault": "此 URL 与默认服务器相同。请使用不同的 URL。",
+  "mempoolErrorConnectionTimeout": "连接超时。请检查服务器地址并重试。",
+  "mempoolErrorHostNotFound": "找不到服务器。请验证 URL 是否正确。",
+  "mempoolErrorTorNotRunning": "无法连接到 .onion 地址。请确保 Tor 正在运行。",
+  "mempoolErrorConnectionFailed": "无法连接到服务器。请检查您的网络连接。",
+  "mempoolErrorNotMempoolServer": "服务器响应，但似乎不是 Mempool 服务器。",
+  "mempoolErrorServerUnavailable": "服务器暂时不可用。请稍后重试。",
+  "mempoolErrorServerError": "服务器遇到错误。请稍后重试或尝试其他服务器。",
+  "mempoolErrorInvalidResponse": "服务器返回了意外的响应。",
+  "mempoolErrorUnexpected": "发生了意外错误",
+  "mempoolErrorSaveServerFailed": "保存服务器失败：{error}",
+  "mempoolErrorLoadFailed": "加载 mempool 服务器数据失败：{error}",
+  "mempoolErrorDeleteFailed": "删除自定义服务器失败：{error}",
+  "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}",
+  "settingsErrorReportingTitle": "错误报告",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "错误报告计划",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。\n\n启用后，当应用程序发生问题时，我们会自动发送错误报告。这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。\n\n我们不会与第三方分享此信息。我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "接受",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "取消",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "重新启动应用程序以应用此更改",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "立即备份您的钱包",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "如果没有备份，一旦您丢失手机、删除应用程序或遇到与应用程序或设备相关的严重问题，您将无法访问您的比特币。没有备份，就无法恢复您的钱包。",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "是",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "不，我了解风险",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }
