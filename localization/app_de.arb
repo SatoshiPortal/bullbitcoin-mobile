@@ -615,7 +615,7 @@
       }
     }
   },
-  "swapTransferTitle": "Transfer",
+  "swapTransferTitle": "Transfer".,
   "testBackupSuccessTitle": "Test erfolgreich abgeschlossen!",
   "recoverbullSelectTakeYourTime": "Nehmen Sie sich Zeit",
   "sendConfirmCustomFee": "Benutzerdefinierte Gebühr bestätigen",
@@ -664,7 +664,7 @@
   "testBackupChooseVaultLocation": "Speicherort auswählen",
   "torSettingsInfoDescription": "• Tor-Proxy gilt nur für Bitcoin (nicht Liquid)\n• Standard-Orbot-Port: 9050\n• Stellen Sie sicher, dass Orbot läuft\n• Verbindung kann durch Tor deutlich langsamer sein",
   "dcaAddressBitcoin": "Bitcoin-Adresse",
-  "sendErrorAmountBelowMinimum": "Betrag unterhalb der Mindest-Swap-Grenze: {minLimit} Sats",
+  "sendErrorAmountBelowMinimum": "Betrag unterhalb der Mindest-Swap-Grenze: {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
     "placeholders": {
       "minLimit": {
@@ -760,7 +760,7 @@
   "payNoInvoiceData": "Keine Rechnungsdaten verfügbar",
   "recoverbullErrorInvalidCredentials": "Falsches Passwort für diese Sicherungsdatei",
   "paySinpeMonto": "Betrag",
-  "arkDurationSeconds": "{seconds} Sekunden",
+  "arkDurationSeconds": "{seconds} Sekunden.",
   "@arkDurationSeconds": {
     "placeholders": {
       "seconds": {
@@ -913,7 +913,7 @@
   "coreSwapsLnSendPending": "Swap wurde noch nicht initialisiert.",
   "recoverbullVaultCreatedSuccess": "Ihr Backup wurde erfolgreich erstellt",
   "payAmount": "Betrag",
-  "sellMaximumAmount": "Maximaler Verkaufsbetrag: {amount}",
+  "sellMaximumAmount": "Maximaler Verkaufsbetrag: {amount}.",
   "@sellMaximumAmount": {
     "placeholders": {
       "amount": {
@@ -1273,7 +1273,7 @@
   "payInvoiceTitle": "Rechnung bezahlen",
   "swapProgressGoHome": "Zur Startseite",
   "replaceByFeeSatsVbUnit": "sats/vB",
-  "fundExchangeCrIbanUsdDescription": "Senden Sie eine Banküberweisung von Ihrem Bankkonto mit den untenstehenden Daten ",
+  "fundExchangeCrIbanUsdDescription": "Senden Sie eine Banküberweisung von Ihrem Bankkonto mit den untenstehenden Daten.",
   "coreScreensSendAmountLabel": "Betrag",
   "backupSettingsRecoverBullSettings": "Recoverbull",
   "fundExchangeLabelBankAddress": "Bankadresse",
@@ -1760,7 +1760,7 @@
   "exchangeKycLevelLight": "Light",
   "transactionLabelCreatedAt": "Erstellt am",
   "bip329LabelsExportSuccessSingular": "1 Label exportiert",
-  "bip329LabelsExportSuccessPlural": "{count} Labels exportiert",
+  "bip329LabelsExportSuccessPlural": "{count} Labels exportiert.",
   "@bip329LabelsExportSuccessPlural": {
     "placeholders": {
       "count": {
@@ -2267,7 +2267,7 @@
       }
     }
   },
-  "bitboxScreenUnknownError": "Unbekannter Fehler aufgetreten",
+  "bitboxScreenUnknownError": "Unbekannter Fehler aufgetreten.",
   "electrumPrivacyNoticeTitle": "Datenschutzhinweis",
   "receiveLiquid": "Liquid",
   "payOpenChannelRequired": "Für diese Zahlung muss ein Kanal geöffnet werden",
@@ -2326,7 +2326,7 @@
       }
     }
   },
-  "recoverbullConnectionFailed": "Verbindung fehlgeschlagen",
+  "recoverbullConnectionFailed": "Verbindung fehlgeschlagen.",
   "transactionDetailLabelPayinMethod": "Zahlungsmethode",
   "sellCurrentRate": "Aktueller Kurs",
   "payAmountTooLow": "Betrag zu niedrig",
@@ -2660,7 +2660,7 @@
       }
     }
   },
-  "arkDurationHour": "{hours} Stunde",
+  "arkDurationHour": "{hours} Stunde.",
   "@arkDurationHour": {
     "placeholders": {
       "hours": {
@@ -3137,7 +3137,7 @@
   "swapTransferCompletedMessage": "Wow, Sie haben gewartet! Der Transfer ist erfolgreich abgeschlossen.",
   "encryptedVaultTag": "Einfach & schnell (ca. 1 Minute)",
   "electrumDelete": "Löschen",
-  "testBackupGoogleDrivePrivacyPart4": "nie ",
+  "testBackupGoogleDrivePrivacyPart4": "nie",
   "arkConfirmButton": "Bestätigen",
   "sendCoinControl": "Coin Control",
   "withdrawSuccessOrderDetails": "Bestelldetails",
@@ -3693,6 +3693,7 @@
   "fundExchangeWarningTactic8": "Sie drängen Sie zur Eile",
   "encryptedVaultStatusLabel": "Ihr verschlüsseltes Backup",
   "sendConfirmSend": "Senden bestätigen",
+  "sendSelfTransfer": "Eigenüberweisung",
   "fundExchangeBankTransfer": "Banküberweisung",
   "importQrDeviceButtonInstructions": "Anweisungen",
   "buyLevel3Limit": "Stufe 3 – Limit: {amount}",

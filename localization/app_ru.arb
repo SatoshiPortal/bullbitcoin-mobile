@@ -3739,6 +3739,7 @@
   "fundExchangeWarningTactic8": "Они заставляют вас действовать быстро",
   "encryptedVaultStatusLabel": "Зашифрованное хранилище",
   "sendConfirmSend": "Добавить",
+  "sendSelfTransfer": "Перевод себе",
   "fundExchangeBankTransfer": "Банковский перевод",
   "importQrDeviceButtonInstructions": "Инструкции",
   "buyLevel3Limit": "Предел уровня 3: {amount}",
