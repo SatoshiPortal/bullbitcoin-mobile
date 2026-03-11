@@ -86,8 +86,8 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-if [[ -z "$appVersion" ]]; then
-    echo -e "${RED}Error: --version is required${NC}"
+if [[ -z "$appVersion" && -z "$apkPath" ]]; then
+    echo -e "${RED}Error: --version is required when --apk is not provided${NC}"
     usage
     exit 1
 fi
@@ -154,6 +154,19 @@ elif [[ -d "$apkPath" ]]; then
 else
     echo -e "${RED}Error: $apkPath not found${NC}"
     exit 1
+fi
+
+# Extract version from APK when --version not provided
+if [[ -z "$appVersion" ]]; then
+    tempDir=$(mktemp -d)
+    containerApktool "$tempDir" "$apkDir/base.apk"
+    appVersion=$(grep 'versionName' "$tempDir/apktool.yml" | awk '{print $2}' | tr -d "'")
+    rm -rf "$tempDir"
+    if [[ -z "$appVersion" ]]; then
+        echo -e "${RED}Error: could not extract version from APK. Use --version to specify it.${NC}"
+        exit 1
+    fi
+    echo "Version (from APK): $appVersion"
 fi
 
 # Setup workspace
