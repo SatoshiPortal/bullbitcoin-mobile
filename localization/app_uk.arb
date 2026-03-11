@@ -3819,6 +3819,7 @@
   "autoswapSaveButton": "Зберегти",
   "importWatchOnlyDisclaimerDescription": "Переконайтеся, що шлях деривативації ви обираєтеся відповідати одному, який виготовив даний xpub, перевіривши першу адресу, отриману з гаманця перед використанням. Використання неправильного шляху може призвести до втрати коштів",
   "sendConfirmSend": "Підтвердження",
+  "sendSelfTransfer": "Переказ собі",
   "fundExchangeBankTransfer": "Банківський переказ",
   "importQrDeviceButtonInstructions": "Інструкції",
   "buyLevel3Limit": "Рівень 3 ліміт: {amount}",
