@@ -2,6 +2,9 @@
 
 All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
+## [X.X.X] - next release
+- **11 new languages exposed in the language selector**: 🇸🇦 Arabic, 🇧🇬 Bulgarian, 🇧🇩 Bengali, 🇨🇿 Czech, 🇬🇷 Greek, 🇮🇷 Persian, 🇮🇳 Hindi, 🇰🇷 Korean, 🇧🇷 Brazilian Portuguese, 🇹🇭 Thai, 🇹🇷 Turkish
+
 ## [6.6.0] - 2026-01-30
 
 ### New Features
