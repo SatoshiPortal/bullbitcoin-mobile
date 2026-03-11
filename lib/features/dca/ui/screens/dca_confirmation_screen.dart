@@ -24,18 +24,23 @@ class DcaConfirmationScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.dcaConfirmTitle)),
+      appBar: AppBar(
+        title: Text(context.loc.dcaConfirmTitle),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: FadingLinearProgress(
+            height: 3,
+            trigger: confirmationState.isConfirmingDca,
+            backgroundColor: context.appColors.surface,
+            foregroundColor: context.appColors.primary,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: ScrollableColumn(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           crossAxisAlignment: .start,
           children: [
-            FadingLinearProgress(
-              height: 3,
-              trigger: confirmationState.isConfirmingDca,
-              backgroundColor: context.appColors.onPrimary,
-              foregroundColor: context.appColors.primary,
-            ),
             const Gap(24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -56,7 +61,7 @@ class DcaConfirmationScreen extends StatelessWidget {
                   context.loc.dcaConfirmFrequencyMonthly,
               },
             ),
-            Divider(color: context.appColors.surface),
+            Divider(color: context.appColors.outline),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmAmount,
               value: FormatAmount.fiat(
@@ -64,19 +69,19 @@ class DcaConfirmationScreen extends StatelessWidget {
                 confirmationState.currency.code,
               ),
             ),
-            Divider(color: context.appColors.surface),
+            Divider(color: context.appColors.outline),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmPaymentMethod,
               value: context.loc.dcaConfirmPaymentBalance(
                 confirmationState.currency.code.toUpperCase(),
               ),
             ),
-            Divider(color: context.appColors.surface),
+            Divider(color: context.appColors.outline),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmOrderType,
               value: context.loc.dcaConfirmOrderTypeValue,
             ),
-            Divider(color: context.appColors.surface),
+            Divider(color: context.appColors.outline),
             DcaConfirmationDetailRow(
               label: context.loc.dcaConfirmNetwork,
               value: switch (confirmationState.network) {
@@ -86,7 +91,7 @@ class DcaConfirmationScreen extends StatelessWidget {
               },
             ),
             if (confirmationState.network == DcaNetwork.lightning) ...[
-              Divider(color: context.appColors.surface),
+              Divider(color: context.appColors.outline),
               DcaConfirmationDetailRow(
                 label: context.loc.dcaConfirmLightningAddress,
                 value: confirmationState.lightningAddress,
@@ -95,10 +100,12 @@ class DcaConfirmationScreen extends StatelessWidget {
             const Spacer(),
             if (confirmationState.error != null) ...[
               Text(
-                context.loc.dcaConfirmError(confirmationState.error!.toString()),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: context.appColors.error,
+                context.loc.dcaConfirmError(
+                  confirmationState.error!.toString(),
                 ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: context.appColors.error),
               ),
               const Gap(16),
             ],

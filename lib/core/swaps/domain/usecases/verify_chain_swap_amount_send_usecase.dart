@@ -22,19 +22,25 @@ class VerifyChainSwapAmountSendUsecase {
       );
 
       if (actualAmount != swap.paymentAmount) {
-        log.severe(
-          'Amount mismatch: expected ${swap.paymentAmount}, actual $actualAmount',
-        );
-        throw SwapCreationException(
+        final error = SwapCreationException(
           'Amount mismatch: expected ${swap.paymentAmount} sats, but transaction sends $actualAmount sats to swap address',
         );
+        log.severe(
+          message: 'Swap amount verification failed: Amount mismatch',
+          error: error,
+          trace: StackTrace.current,
+        );
+        throw error;
       }
     } catch (e) {
-      if (e is SwapCreationException) {
-        rethrow;
-      }
-      log.severe('Error verifying swap amount: $e');
-      throw SwapCreationException('Failed to verify swap amount: $e');
+      if (e is SwapCreationException) rethrow;
+      final error = SwapCreationException('Failed to verify swap amount: $e');
+      log.severe(
+        message: 'Failed to verify swap amount',
+        error: error,
+        trace: StackTrace.current,
+      );
+      throw error;
     }
   }
 }

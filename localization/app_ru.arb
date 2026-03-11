@@ -398,7 +398,7 @@
   "ledgerVerifyTitle": "Проверка Адреса на Ledger",
   "recoverbullSwitchToPassword": "Вместо этого выберите пароль",
   "exchangeDcaNetworkBitcoin": "Bitcoin Network",
-  "autoswapWarningTitle": "Autoswap включен со следующими настройками:",
+  "autoswapWarningTitle": "Autoswap включен со следующими настройками",
   "seedsignerStep1": "Включите устройство SeedSigner",
   "backupWalletHowToDecideBackupLosePhysical": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
   "transactionLabelStatus": "Статус",
@@ -496,6 +496,7 @@
   "paySelectRecipient": "Выберите получателя",
   "payNoActiveWallet": "Нет активного кошелька",
   "importQrDeviceKruxStep4": "Нажмите кнопку «открытая камера»",
+  "appStartupErrorMessage": "Приложение не удалось запустить. Попробуйте полностью остановить приложение и перезапустить. Если ошибка сохраняется, сообщите о проблеме в службу поддержки и поделитесь своими журналами.",
   "appStartupErrorMessageWithBackup": "Не удалось инициализировать. Удалите и переустановите, чтобы исправить.",
   "payPasteInvoice": "Счет-фактура",
   "labelErrorUnexpected": "Неожиданная ошибка: {message}",
@@ -1116,7 +1117,6 @@
   "doNotShareWarning": "НЕ С КЕМ БЫ ТО НИ БЫЛО",
   "torSettingsPortNumber": "Номер порта",
   "payNameHint": "Имя получателя",
-  "autoswapWarningTriggerAmount": "Сумма 0,02 BTC",
   "legacySeedViewScreenTitle": "Наследные семена",
   "recoverbullErrorCheckStatusFailed": "Не удалось проверить состояние хранилища",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
@@ -1250,7 +1250,8 @@
   "fundExchangeJurisdictionArgentina": "🇦🇷 Аргентина",
   "walletNetworkBitcoin": "Bitcoin Network",
   "electrumAdvancedOptions": "Дополнительные параметры",
-  "autoswapWarningCardSubtitle": "Свопа будет срабатывать, если ваш баланс Instant Payments превысит 0,02 BTC.",
+  "autoswapWarningCardSubtitle": "Нажмите, чтобы узнать больше, отключить или настроить",
+  "autoswapActiveCardTitle": "Autoswap активен",
   "transactionStatusConfirmed": "Подтверждено",
   "dcaFrequencyDaily": "день",
   "transactionLabelSendAmount": "Отправить",
@@ -1492,6 +1493,14 @@
       }
     }
   },
+  "deleteLogsTitle": "Удалить журналы",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Журналы удалены",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "Удаление счета-фактуры...",
   "importColdcardInstructionsStep5": "Выберите \"Export Wallet\"",
   "electrumStopGapTooHighError": "Стоп Гэп кажется слишком высоким. {maxStopGap}",
@@ -1512,6 +1521,10 @@
   },
   "sellInstantPayments": "Мгновенные платежи",
   "priceChartFetchingHistory": "Получение истории цен...",
+  "priceChartFailedToLoad": "Не удалось загрузить историю цен",
+  "priceFailedToLoad": "Не удалось загрузить цену",
+  "statusScreenTryAgain": "Попробовать снова",
+  "statusScreenContinue": "Продолжить",
   "sellDone": "Дон",
   "payFromWallet": "От Wallet",
   "dcaConfirmRecurringBuyTitle": "Подтверждение Купить",
@@ -1560,7 +1573,7 @@
   },
   "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
   "arkNoBalanceData": "Данные о балансе отсутствуют",
-  "autoswapWarningCardTitle": "Autoswap включен.",
+  "autoswapWarningCardTitle": "Autoswap рекомендуется",
   "coreSwapsChainCompletedSuccess": "Передача завершена успешно.",
   "physicalBackupRecommendation": "Физическая поддержка: ",
   "autoswapMaxBalance": "Макс Мгновенный баланс",
@@ -1650,7 +1663,8 @@
   "arkReceiveUnifiedAddress": "Единый адрес (BIP21)",
   "sellHowToPayInvoice": "Как вы хотите заплатить этот счет?",
   "payUseCoinjoin": "Использовать CoinJoin",
-  "autoswapWarningExplanation": "Когда ваш баланс превышает количество триггера, своп будет срабатывать. Базовая сумма будет храниться в вашем кошельке Instant Payments, а оставшаяся сумма будет заменена на ваш безопасный Bitcoin Wallet.",
+  "autoswapWarningExplanation": "Когда ваш баланс превышает максимальный баланс, своп будет запущен автоматически. Целевой баланс будет храниться в вашем кошельке Instant Payments, а оставшаяся сумма будет переведена в ваш Secure Bitcoin Wallet.",
+  "autoswapWarningExplanationBold": "автоматически",
   "recoverbullVaultRecoveryTitle": "Восстановление хранилища",
   "passportStep14": "Теперь он готов к трансляции! Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin и средства будут отправлены.",
   "settingsCurrencyTitle": "Валюта",
@@ -1779,15 +1793,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Не удалось экспортировать хранилище из Google Drive",
   "exchangeKycLevelLight": "Свет",
   "transactionLabelCreatedAt": "Создано",
-  "bip329LabelsExportSuccessSingular": "1 метка экспортирована",
-  "bip329LabelsExportSuccessPlural": "{count} меток экспортировано",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Метки успешно экспортированы",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "Самый простой вариант, но его можно сделать с помощью онлайн-банкинга (3-4 рабочих дня)",
   "walletDeletionErrorWalletNotFound": "Кошелек, который вы пытаетесь удалить, не существует.",
   "payEnableRBF": "Включить RBF",
@@ -3187,7 +3193,6 @@
   "bitboxActionImportWalletButton": "Начало",
   "fundExchangeLabelSwiftCode": "Код SWIFT",
   "buyEnterBitcoinAddress": "Введите адрес биткойна",
-  "autoswapWarningBaseBalance": "Базовый баланс 0,01 BTC",
   "transactionDetailLabelPayoutAmount": "Сумма выплат",
   "importQrDeviceSpecterStep6": "Выберите \"Сингл ключ\"",
   "importQrDeviceJadeStep10": "Вот так!",
@@ -3515,7 +3520,7 @@
   "payViewTransaction": "Просмотр транзакции",
   "transactionLabelToWallet": "Кошелек",
   "exchangeFileUploadInstructions": "Если вам нужно отправить любые другие документы, загрузите их здесь.",
-  "ledgerInstructionsAndroidDual": "Убедитесь, что вы Ledger разблокирован с открытым приложением Bitcoin и включен Bluetooth, или подключает устройство через USB.",
+  "ledgerInstructionsAndroidDual": "Убедитесь, что вы Ledger разблокирован с открытым приложением Bitcoin и включен Bluetooth.",
   "arkSendRecipientLabel": "Адрес получателя",
   "defaultWalletsLabel": "По умолчанию",
   "jadeStep9": "После того, как транзакция будет импортирована в ваш Джейд, рассмотрите адрес назначения и сумму.",
@@ -4125,5 +4130,78 @@
   "fundExchangeCrIbanUsdLabelRecipientName": "Имя получателя",
   "ledgerSignTitle": "Подписание",
   "importWatchOnlyCancel": "Отмена",
-  "arkAboutTitle": "О проекте"
+  "arkAboutTitle": "О проекте",
+  "logoutConfirmationTitle": "Подтвердить выход",
+  "logoutConfirmationDescription": "Вы уверены, что хотите выйти из своей учетной записи Bull Bitcoin? Вам нужно будет снова войти в систему, чтобы получить доступ к функциям обмена.",
+  "logoutConfirmationCancel": "Отмена",
+  "logoutConfirmationLogout": "Выйти",
+  "autoswapInfoTitle": "Autoswap рекомендуется",
+  "autoswapInfoDismissButton": "ДА, СПАСИБО",
+  "autoswapInfoSettingsButton": "НЕТ, Я ПОНИМАЮ РИСКИ",
+  "autoswapInfoRemindLater": "Настроить Autoswap",
+  "autoswapInfoConsentMessage": "Autoswap в настоящее время включен, но не сработает, пока вы не дадите согласие. Хотите оставить его включенным?",
+  "mempoolServerStatusOnline": "В сети",
+  "mempoolServerStatusOffline": "Не в сети",
+  "mempoolServerStatusChecking": "Проверка...",
+  "mempoolServerStatusUnknown": "Неизвестно",
+  "mempoolCustomServerSaveFailed": "Не удалось сохранить сервер",
+  "mempoolCustomServerInfoDescription": "Серверы mempool используются для оценки комиссий и открытия обозревателя блоков при просмотре деталей транзакции.",
+  "mempoolCustomServerUseSsl": "Использовать SSL",
+  "mempoolCustomServerSslAutoDetected": "(Определено автоматически)",
+  "mempoolCustomServerSslHelpText": "Для локальных (.local, частные IP) и Tor (.onion) серверов SSL обычно отключен. Публичные IP и домены должны использовать SSL.",
+  "mempoolErrorSameAsDefault": "Этот URL совпадает с сервером по умолчанию. Пожалуйста, используйте другой URL.",
+  "mempoolErrorConnectionTimeout": "Время соединения истекло. Сервер может быть медленным или недоступным.",
+  "mempoolErrorHostNotFound": "Сервер не найден. Проверьте URL и попробуйте снова.",
+  "mempoolErrorTorNotRunning": "Не удается достичь .onion адрес. Убедитесь, что Tor/Orbot запущен, и попробуйте снова.",
+  "mempoolErrorConnectionFailed": "Не удалось подключиться к серверу. Проверьте сетевое соединение и попробуйте снова.",
+  "mempoolErrorNotMempoolServer": "Этот URL не является сервером mempool. Проверьте адрес.",
+  "mempoolErrorServerUnavailable": "Сервер недоступен. Попробуйте позже.",
+  "mempoolErrorServerError": "На сервере произошла ошибка. Попробуйте позже.",
+  "mempoolErrorInvalidResponse": "Сервер вернул неверный ответ.",
+  "mempoolErrorUnexpected": "Произошла непредвиденная ошибка",
+  "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер: {error}",
+  "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool: {error}",
+  "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}"
+,
+  "settingsErrorReportingTitle": "Отчет об ошибках",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Программа отчета об ошибках",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Помогите нам улучшить Bull Bitcoin, участвуя в программе отчета об ошибках. Это напрямую помогает нам сделать Bull Bitcoin лучше для всех.\n\nКогда эта функция включена, мы автоматически отправляем отчеты об ошибках при возникновении проблем в приложении. Эти данные помогают нам понять, что происходит с нашими пользователями по всему миру, и соответственно расставить приоритеты исправлений.\n\nМы не делимся этой информацией с третьми сторонами. Мы используем клиент с открытым исходным кодом Sentry с нашим собственным самостоятельно размещенным серверным сервером.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Принять",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Отмена",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Перезапустите приложение, чтобы применить это изменение",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ КОШЕЛЬКА СЕЙЧАС",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если потеряете телефон, удалите приложение или столкнётесь с критической проблемой приложения или устройства. Без резервной копии восстановить кошелёк невозможно.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "ДА",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "НЕТ, Я ПОНИМАЮ РИСК",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
+  }
 }

@@ -5,6 +5,7 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
   const factory BitcoinPriceState({
     @Default(false) bool loadingPrice,
     Object? error,
+    @Default(false) bool startupFailed,
     //
     List<String>? availableCurrencies,
     String? currency,

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/labeled_text_input.dart';
+import 'package:bb_mobile/features/labels/ui/labeled_text_input.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';

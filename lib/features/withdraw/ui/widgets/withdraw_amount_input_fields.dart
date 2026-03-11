@@ -10,12 +10,12 @@ class WithdrawAmountInputFields extends StatelessWidget {
   const WithdrawAmountInputFields({
     super.key,
     required this.amountController,
-    required this.fiatCurrency,
+    this.fiatCurrency,
     required this.onFiatCurrencyChanged,
   });
 
   final TextEditingController amountController;
-  final FiatCurrency fiatCurrency;
+  final FiatCurrency? fiatCurrency;
   final void Function(FiatCurrency fiatCurrency) onFiatCurrencyChanged;
 
   @override
@@ -40,16 +40,15 @@ class WithdrawAmountInputFields extends StatelessWidget {
           isLoading: isLoading,
           amountController: amountController,
           fiatCurrency: fiatCurrency,
-          fiatBalance:
-              balances
-                  ?.where((b) => b.currencyCode == fiatCurrency.code)
-                  .firstOrNull,
+          fiatBalance: balances
+              ?.where((b) => b.currencyCode == fiatCurrency?.code)
+              .firstOrNull,
         ),
         const Gap(16.0),
         ExchangeAmountCurrencyDropdown(
           isLoading: isLoading,
           initialCurrency: fiatCurrency,
-          selectedCurrency: fiatCurrency.code,
+          selectedCurrency: fiatCurrency?.code,
           onCurrencyChanged: (String currencyCode) {
             final newFiatCurrency = FiatCurrency.fromCode(currencyCode);
             onFiatCurrencyChanged(newFiatCurrency);

@@ -57,8 +57,9 @@ PODS:
     - Flutter
   - flutter_nfc_kit (3.6.0):
     - Flutter
-  - flutter_secure_storage (6.0.0):
+  - flutter_secure_storage_darwin (10.0.0):
     - Flutter
+    - FlutterMacOS
   - flutter_zxing (0.0.1):
     - Flutter
   - google_sign_in_ios (0.0.1):
@@ -110,6 +111,11 @@ PODS:
   - SDWebImage (5.21.5):
     - SDWebImage/Core (= 5.21.5)
   - SDWebImage/Core (5.21.5)
+  - Sentry/HybridSDK (8.56.2)
+  - sentry_flutter (9.10.0):
+    - Flutter
+    - FlutterMacOS
+    - Sentry/HybridSDK (= 8.56.2)
   - share_plus (0.0.1):
     - Flutter
   - sqlite3 (3.51.1):
@@ -163,7 +169,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_nfc_kit (from `.symlinks/plugins/flutter_nfc_kit/ios`)
-  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - flutter_secure_storage_darwin (from `.symlinks/plugins/flutter_secure_storage_darwin/darwin`)
   - flutter_zxing (from `.symlinks/plugins/flutter_zxing/ios`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -174,6 +180,7 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - payjoin_flutter (from `.symlinks/plugins/payjoin_flutter/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+  - sentry_flutter (from `.symlinks/plugins/sentry_flutter/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/darwin`)
   - tor (from `.symlinks/plugins/tor/ios`)
@@ -196,6 +203,7 @@ SPEC REPOS:
     - PromisesObjC
     - ScreenProtectorKit
     - SDWebImage
+    - Sentry
     - sqlite3
     - SwiftyGif
 
@@ -218,8 +226,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   flutter_nfc_kit:
     :path: ".symlinks/plugins/flutter_nfc_kit/ios"
-  flutter_secure_storage:
-    :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  flutter_secure_storage_darwin:
+    :path: ".symlinks/plugins/flutter_secure_storage_darwin/darwin"
   flutter_zxing:
     :path: ".symlinks/plugins/flutter_zxing/ios"
   google_sign_in_ios:
@@ -240,6 +248,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/payjoin_flutter/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
+  sentry_flutter:
+    :path: ".symlinks/plugins/sentry_flutter/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
   sqlite3_flutter_libs:
@@ -271,7 +281,7 @@ SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
   flutter_nfc_kit: e1b71583eafd2c9650bc86844a7f2d185fb414f6
-  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
+  flutter_secure_storage_darwin: acdb3f316ed05a3e68f856e0353b133eec373a23
   flutter_zxing: e8bcc43bd3056c70c271b732ed94e7a16fd62f93
   google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
   GoogleSignIn: ce8c89bb9b37fb624b92e7514cc67335d1e277e4
@@ -289,6 +299,8 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
   SDWebImage: e9c98383c7572d713c1a0d7dd2783b10599b9838
+  Sentry: b53951377b78e21a734f5dc8318e333dbfc682d7
+  sentry_flutter: da39d10e3f2f3e060eebc9d7ecea027d34443d66
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   sqlite3: 8d708bc63e9f4ce48f0ad9d6269e478c5ced1d9b
   sqlite3_flutter_libs: d13b8b3003f18f596e542bcb9482d105577eff41

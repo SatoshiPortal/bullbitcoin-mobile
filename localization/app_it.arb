@@ -399,7 +399,7 @@
   "ledgerVerifyTitle": "Verifica l'indirizzo su Ledger",
   "recoverbullSwitchToPassword": "Scegli invece una password",
   "exchangeDcaNetworkBitcoin": "Rete Bitcoin",
-  "autoswapWarningTitle": "Autoswap è abilitata con le seguenti impostazioni:",
+  "autoswapWarningTitle": "Autoswap è abilitata con le seguenti impostazioni",
   "seedsignerStep1": "Accendere il dispositivo SeedSigner",
   "backupWalletHowToDecideBackupLosePhysical": "Uno dei modi più comuni che le persone perdono il loro Bitcoin è perché perdono il backup fisico. Chiunque trovi il tuo backup fisico sarà in grado di prendere tutto il tuo Bitcoin. Se siete molto sicuri che si può nascondere bene e non perdere mai, è una buona opzione.",
   "transactionLabelStatus": "Stato",
@@ -498,6 +498,7 @@
   "paySelectRecipient": "Seleziona il destinatario",
   "payNoActiveWallet": "Nessun portafoglio attivo",
   "importQrDeviceKruxStep4": "Fare clic sul pulsante \"open camera\"",
+  "appStartupErrorMessage": "Impossibile avviare l'app. Prova a fermare completamente l'app e riavviare. Se l'errore persiste, segnala il problema al supporto e condividi i tuoi log.",
   "appStartupErrorMessageWithBackup": "Impossibile inizializzare. Elimina e reinstalla per risolvere.",
   "payPasteInvoice": "Fatturato",
   "labelErrorUnexpected": "Errore inaspettato: {message}",
@@ -1119,7 +1120,6 @@
   "doNotShareWarning": "NON CONDIVIDI CON NESSUNO",
   "torSettingsPortNumber": "Numero della porta",
   "payNameHint": "Inserisci il nome del destinatario",
-  "autoswapWarningTriggerAmount": "Trigger Quantità di 0.02 BTC",
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "recoverbullErrorCheckStatusFailed": "Non è riuscito a controllare lo stato della volta",
   "pleaseWaitFetching": "Per favore, aspettate mentre prendiamo il vostro file di backup.",
@@ -1253,7 +1253,8 @@
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
   "walletNetworkBitcoin": "Rete Bitcoin",
   "electrumAdvancedOptions": "Opzioni avanzate",
-  "autoswapWarningCardSubtitle": "Un swap verrà attivato se il saldo dei pagamenti istantanei supera 0,02 BTC.",
+  "autoswapWarningCardSubtitle": "Clicca per saperne di più, disattivare o configurare",
+  "autoswapActiveCardTitle": "Autoswap è attivo",
   "transactionStatusConfirmed": "Confermato",
   "dcaFrequencyDaily": "giorno",
   "transactionLabelSendAmount": "Inviare Importo",
@@ -1495,6 +1496,14 @@
       }
     }
   },
+  "deleteLogsTitle": "Elimina registri",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Registri eliminati",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
   "payDecodingInvoice": "Decoding fattura...",
   "importColdcardInstructionsStep5": "Selezionare \"Export Wallet\"",
   "electrumStopGapTooHighError": "Stop Gap sembra troppo alto. {maxStopGap}",
@@ -1515,6 +1524,10 @@
   },
   "sellInstantPayments": "Pagamenti istantiani",
   "priceChartFetchingHistory": "Recuperare la cronologia dei prezzi...",
+  "priceChartFailedToLoad": "Impossibile caricare la cronologia dei prezzi",
+  "priceFailedToLoad": "Impossibile caricare il prezzo",
+  "statusScreenTryAgain": "Riprova",
+  "statusScreenContinue": "Continua",
   "sellDone": "Fatto",
   "payFromWallet": "Da Wallet",
   "dcaConfirmRecurringBuyTitle": "Confermare il Ricorso Comprare",
@@ -1563,7 +1576,7 @@
   },
   "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
   "arkNoBalanceData": "Nessun dato di bilancio disponibile",
-  "autoswapWarningCardTitle": "Autoswap è abilitato.",
+  "autoswapWarningCardTitle": "Autoswap è consigliato",
   "coreSwapsChainCompletedSuccess": "Il trasferimento è completato con successo.",
   "physicalBackupRecommendation": "Backup fisico: ",
   "autoswapMaxBalance": "Bilanciamento Max Instant Wallet",
@@ -1653,7 +1666,8 @@
   "arkReceiveUnifiedAddress": "Indirizzo unificato (BIP21)",
   "sellHowToPayInvoice": "Come vuoi pagare questa fattura?",
   "payUseCoinjoin": "Utilizzare CoinJoinin",
-  "autoswapWarningExplanation": "Quando il saldo supera l'importo del trigger, verrà attivato uno swap. L'importo di base verrà mantenuto nel portafoglio pagamenti istantanei e l'importo rimanente verrà scambiato nel vostro portafoglio Bitcoin sicuro.",
+  "autoswapWarningExplanation": "Quando il saldo supera il saldo massimo, verrà attivato automaticamente uno swap. Il saldo target verrà mantenuto nel portafoglio pagamenti istantanei e l'importo rimanente verrà scambiato nel vostro portafoglio Bitcoin sicuro.",
+  "autoswapWarningExplanationBold": "automaticamente",
   "recoverbullVaultRecoveryTitle": "Ripristino del caveau",
   "passportStep14": "Ora è pronto a trasmettere! Non appena si fa clic sulla trasmissione, la transazione verrà pubblicata sulla rete Bitcoin e i fondi saranno inviati.",
   "settingsCurrencyTitle": "Valuta",
@@ -1782,15 +1796,7 @@
   "recoverbullGoogleDriveErrorExportFailed": "Non ha esportato il caveau da Google Drive",
   "exchangeKycLevelLight": "Luce",
   "transactionLabelCreatedAt": "Creato a",
-  "bip329LabelsExportSuccessSingular": "1 etichetta esportata",
-  "bip329LabelsExportSuccessPlural": "{count} etichette esportate",
-  "@bip329LabelsExportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
+  "bip329LabelsExportSuccess": "Etichette esportate con successo",
   "fundExchangeMethodOnlineBillPaymentSubtitle": "L'opzione più lenta, ma può essere fatto tramite online banking (3-4 giorni lavorativi)",
   "walletDeletionErrorWalletNotFound": "Il portafoglio che stai cercando di eliminare non esiste.",
   "payEnableRBF": "Abilitare RBF",
@@ -3189,7 +3195,6 @@
   "bitboxActionImportWalletButton": "Inizio Importazione",
   "fundExchangeLabelSwiftCode": "Codice SWIFT",
   "buyEnterBitcoinAddress": "Inserisci l'indirizzo bitcoin",
-  "autoswapWarningBaseBalance": "Bilancio di base 0.01",
   "transactionDetailLabelPayoutAmount": "Importo di pagamento",
   "importQrDeviceSpecterStep6": "Scegliere \"Single key\"",
   "importQrDeviceJadeStep10": "Basta!",
@@ -3517,7 +3522,7 @@
   "payViewTransaction": "Visualizza la Transazione",
   "transactionLabelToWallet": "Portafoglio",
   "exchangeFileUploadInstructions": "Se avete bisogno di inviare altri documenti, caricarli qui.",
-  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth, o collegare il dispositivo tramite USB.",
+  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth.",
   "arkSendRecipientLabel": "Indirizzo del destinatario",
   "defaultWalletsLabel": "Portafogli di default",
   "jadeStep9": "Una volta che la transazione viene importata nel tuo Jade, rivedere l'indirizzo di destinazione e l'importo.",
@@ -4128,5 +4133,78 @@
   "ledgerSignTitle": "Transazione dei segni",
   "importWatchOnlyCancel": "Annulla",
   "arkAboutTitle": "Informazioni",
-  "exchangeSettingsSecuritySettingsTitle": "Impostazioni di sicurezza"
+  "exchangeSettingsSecuritySettingsTitle": "Impostazioni di sicurezza",
+  "logoutConfirmationTitle": "Conferma disconnessione",
+  "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
+  "logoutConfirmationCancel": "Annulla",
+  "logoutConfirmationLogout": "Disconnetti",
+  "autoswapInfoTitle": "Autoswap è consigliato",
+  "autoswapInfoDismissButton": "SÌ, GRAZIE",
+  "autoswapInfoSettingsButton": "NO, CAPISCO I RISCHI",
+  "autoswapInfoRemindLater": "Configura Autoswap",
+  "autoswapInfoConsentMessage": "Autoswap è attualmente abilitato ma non si attiverà finché non darai il tuo consenso. Vuoi tenerlo attivato?",
+  "mempoolServerStatusOnline": "Online",
+  "mempoolServerStatusOffline": "Offline",
+  "mempoolServerStatusChecking": "Verifica...",
+  "mempoolServerStatusUnknown": "Sconosciuto",
+  "mempoolCustomServerSaveFailed": "Impossibile salvare il server",
+  "mempoolCustomServerInfoDescription": "I server mempool vengono utilizzati per la stima delle commissioni e per aprire l'esploratore di blocchi quando si visualizzano i dettagli della transazione.",
+  "mempoolCustomServerUseSsl": "Usa SSL",
+  "mempoolCustomServerSslAutoDetected": "(Rilevato automaticamente)",
+  "mempoolCustomServerSslHelpText": "Per server locali (.local, IP privati) e Tor (.onion), SSL è solitamente disabilitato. Gli IP pubblici e i domini dovrebbero usare SSL.",
+  "mempoolErrorSameAsDefault": "Questo URL è lo stesso del server predefinito. Utilizza un URL diverso.",
+  "mempoolErrorConnectionTimeout": "Timeout della connessione. Il server potrebbe essere lento o non raggiungibile.",
+  "mempoolErrorHostNotFound": "Server non trovato. Controlla l'URL e riprova.",
+  "mempoolErrorTorNotRunning": "Impossibile raggiungere l'indirizzo .onion. Assicurati che Tor/Orbot sia in esecuzione e riprova.",
+  "mempoolErrorConnectionFailed": "Impossibile connettersi al server. Controlla la connessione di rete e riprova.",
+  "mempoolErrorNotMempoolServer": "Questo URL non sembra essere un server mempool. Verifica l'indirizzo.",
+  "mempoolErrorServerUnavailable": "Server non disponibile. Riprova più tardi.",
+  "mempoolErrorServerError": "Il server ha riscontrato un errore. Riprova più tardi.",
+  "mempoolErrorInvalidResponse": "Il server ha restituito una risposta non valida.",
+  "mempoolErrorUnexpected": "Si è verificato un errore imprevisto",
+  "mempoolErrorSaveServerFailed": "Impossibile salvare il server: {error}",
+  "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool: {error}",
+  "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}"
+,
+  "settingsErrorReportingTitle": "Segnalazione errori",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "Programma di segnalazione errori",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "Aiutaci a migliorare Bull Bitcoin partecipando al nostro programma di segnalazione errori. Ci aiuta direttamente a rendere Bull Bitcoin migliore per tutti.\n\nQuando abilitato, inviamo automaticamente rapporti di errori quando si verificano problemi nell'app. Questi dati ci aiutano a capire cosa sta accadendo per i nostri utenti in tutto il mondo e a dare priorità alle correzioni di conseguenza.\n\nNon condividiamo queste informazioni con terze parti. Utilizziamo il client open-source di Sentry con il nostro server backend auto-ospitato.",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "Accetta",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "Annulla",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "Riavvia l'app per applicare questa modifica",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "ESEGUI IL BACKUP DEL TUO PORTAFOGLIO ORA",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se perdi il telefono, elimini l'app o incontri un problema critico legato all'applicazione o al dispositivo. Non c'è modo di recuperare il portafoglio senza un backup.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "SÌ",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "NO, CAPISCO IL RISCHIO",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -14,6 +13,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
@@ -29,6 +30,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
 class SwapsLocator {
@@ -92,9 +94,8 @@ class SwapsLocator {
     locator.registerLazySingleton<SwapWatcherService>(
       () => SwapWatcherService(
         boltzRepo: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         walletAddressRepository: locator<WalletAddressRepository>(),
         settingsRepository: locator<SettingsRepository>(),
@@ -113,9 +114,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -127,9 +127,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -150,9 +149,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),
@@ -165,9 +163,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),
@@ -188,9 +185,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -201,9 +197,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -214,9 +209,32 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetRepository: locator<BoltzSwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+    locator.registerFactory<DisableAutoswapWarningUsecase>(
+      () => DisableAutoswapWarningUsecase(
+        mainnetRepository: locator<BoltzSwapRepository>(
           instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetRepository: locator<BoltzSwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+    locator.registerFactory<DisableAutoswapUsecase>(
+      () => DisableAutoswapUsecase(
+        mainnetRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetRepository: locator<BoltzSwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -227,16 +245,15 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
         walletRepository: locator<WalletRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
         blockchainPort: locator<BlockchainPort>(),
         seedRepository: locator<SeedRepository>(),
         walletTxRepository: locator<WalletTransactionRepository>(),
-        labelRepository: locator<LabelRepository>(),
+        labelsFacade: locator<LabelsFacade>(),
       ),
     );
     locator.registerFactory<CreateChainSwapUsecase>(
@@ -248,9 +265,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -263,9 +279,8 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

@@ -2,16 +2,18 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_bank_acount_type_view_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_bank_institutions_view_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_document_type_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_bank_account_type.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_bank_institution.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cop_document_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class BankAccountCopForm extends StatefulWidget {
-  const BankAccountCopForm({super.key});
+  const BankAccountCopForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   BankAccountCopFormState createState() => BankAccountCopFormState();
@@ -23,10 +25,10 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
   final FocusNode _documentIdFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
-  CopBankInstitutionsViewModel? _institutionNumber;
-  CopBankAcountTypeViewModel _accountType = CopBankAcountTypeViewModel.savings;
+  CopBankInstitution? _institutionNumber;
+  CopBankAccountType _accountType = CopBankAccountType.savings;
   String _accountNumber = '';
-  CopDocumentTypeViewModel _documentType = CopDocumentTypeViewModel.cc;
+  CopDocumentType _documentType = CopDocumentType.cc;
   String _documentId = '';
   String _name = '';
   String _label = '';
@@ -87,7 +89,7 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButtonFormField<CopBankInstitutionsViewModel?>(
+              child: DropdownButtonFormField<CopBankInstitution?>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 borderRadius: BorderRadius.circular(4.0),
@@ -105,15 +107,15 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
                 validator: (v) =>
                     (v == null) ? "Please select a bank institution" : null,
                 items: [
-                  const DropdownMenuItem<CopBankInstitutionsViewModel?>(
+                  const DropdownMenuItem<CopBankInstitution?>(
                     value: null,
                     child: Text('Select Bank Institution'),
                   ),
-                  ...CopBankInstitutionsViewModel.values.map((institution) {
-                    return DropdownMenuItem<CopBankInstitutionsViewModel>(
+                  ...CopBankInstitution.values.map((institution) {
+                    return DropdownMenuItem<CopBankInstitution>(
                       value: institution,
                       child: Text(switch (institution) {
-                        CopBankInstitutionsViewModel.bancolombia =>
+                        CopBankInstitution.bancolombia =>
                           'Bancolombia (${institution.code})',
                       }),
                     );
@@ -140,7 +142,7 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<CopBankAcountTypeViewModel>(
+              child: DropdownButton<CopBankAccountType>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
@@ -157,12 +159,12 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
                   });
                 },
                 items: [
-                  ...CopBankAcountTypeViewModel.values.map((type) {
-                    return DropdownMenuItem<CopBankAcountTypeViewModel>(
+                  ...CopBankAccountType.values.map((type) {
+                    return DropdownMenuItem<CopBankAccountType>(
                       value: type,
                       child: Text(switch (type) {
-                        CopBankAcountTypeViewModel.savings => 'Savings',
-                        CopBankAcountTypeViewModel.checking => 'Checking',
+                        CopBankAccountType.savings => 'Savings',
+                        CopBankAccountType.checking => 'Checking',
                       }),
                     );
                   }),
@@ -204,7 +206,7 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: DropdownButton<CopDocumentTypeViewModel>(
+              child: DropdownButton<CopDocumentType>(
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
@@ -221,17 +223,17 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
                   });
                 },
                 items: [
-                  ...CopDocumentTypeViewModel.values.map((type) {
-                    return DropdownMenuItem<CopDocumentTypeViewModel>(
+                  ...CopDocumentType.values.map((type) {
+                    return DropdownMenuItem<CopDocumentType>(
                       value: type,
                       child: Text(switch (type) {
-                        CopDocumentTypeViewModel.cc => 'Cédula de Ciudadanía',
-                        CopDocumentTypeViewModel.ce => 'Cédula de Extranjería',
-                        CopDocumentTypeViewModel.nit =>
+                        CopDocumentType.cc => 'Cédula de Ciudadanía',
+                        CopDocumentType.ce => 'Cédula de Extranjería',
+                        CopDocumentType.nit =>
                           'Número de Identificación Tributaria',
-                        CopDocumentTypeViewModel.passport => 'Passport',
-                        CopDocumentTypeViewModel.ti => 'Tarjeta de Identidad',
-                        CopDocumentTypeViewModel.registroCivil =>
+                        CopDocumentType.passport => 'Passport',
+                        CopDocumentType.ti => 'Tarjeta de Identidad',
+                        CopDocumentType.registroCivil =>
                           'Registro Civil',
                       }),
                     );
@@ -243,13 +245,13 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           const Gap(12.0),
           BBTextFormField(
             labelText: switch (_documentType) {
-              CopDocumentTypeViewModel.cc => 'Cédula de Ciudadanía',
-              CopDocumentTypeViewModel.ce => 'Cédula de Extranjería',
-              CopDocumentTypeViewModel.nit =>
+              CopDocumentType.cc => 'Cédula de Ciudadanía',
+              CopDocumentType.ce => 'Cédula de Extranjería',
+              CopDocumentType.nit =>
                 'Número de Identificación Tributaria',
-              CopDocumentTypeViewModel.passport => 'Passport',
-              CopDocumentTypeViewModel.ti => 'Tarjeta de Identidad',
-              CopDocumentTypeViewModel.registroCivil => 'Registro Civil',
+              CopDocumentType.passport => 'Passport',
+              CopDocumentType.ti => 'Tarjeta de Identidad',
+              CopDocumentType.registroCivil => 'Registro Civil',
             },
             hintText: 'Enter document number',
             focusNode: _documentIdFocusNode,
@@ -295,7 +297,10 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
             },
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

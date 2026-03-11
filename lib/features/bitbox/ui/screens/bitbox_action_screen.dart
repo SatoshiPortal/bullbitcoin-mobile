@@ -56,11 +56,10 @@ class BitBoxActionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => BitBoxOperationCubit(
-            scanBitBoxDevicesUsecase: locator<ScanBitBoxDevicesUsecase>(),
-            connectBitBoxDeviceUsecase: locator<ConnectBitBoxDeviceUsecase>(),
-          ),
+      create: (context) => BitBoxOperationCubit(
+        scanBitBoxDevicesUsecase: locator<ScanBitBoxDevicesUsecase>(),
+        connectBitBoxDeviceUsecase: locator<ConnectBitBoxDeviceUsecase>(),
+      ),
       child: _BitBoxActionView(action: action, parameters: parameters),
     );
   }
@@ -458,7 +457,11 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
         );
       });
     } catch (e) {
-      log.severe('BitBox import with pairing failed');
+      log.severe(
+        message: 'BitBox import with pairing failed',
+        error: e,
+        trace: StackTrace.current,
+      );
     }
   }
 
@@ -496,7 +499,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
                       children: [
                         Expanded(
                           child: BBText(
-                            _getScriptTypeDisplayName(context, _selectedScriptType),
+                            _getScriptTypeDisplayName(
+                              context,
+                              _selectedScriptType,
+                            ),
                             style: context.font.bodyLarge?.copyWith(
                               fontWeight: .w500,
                             ),
@@ -519,7 +525,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     );
   }
 
-  String _getScriptTypeDisplayName(BuildContext context, ScriptType scriptType) {
+  String _getScriptTypeDisplayName(
+    BuildContext context,
+    ScriptType scriptType,
+  ) {
     switch (scriptType) {
       case ScriptType.bip84:
         return context.loc.bitboxScreenSegwitBip84;
@@ -642,7 +651,10 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
     );
   }
 
-  String _getMainTextForState(BuildContext context, BitBoxOperationState state) {
+  String _getMainTextForState(
+    BuildContext context,
+    BitBoxOperationState state,
+  ) {
     switch (state.status) {
       case BitBoxOperationStatus.initial:
         return context.loc.bitboxScreenConnectDevice;
@@ -661,7 +673,9 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       case BitBoxOperationStatus.success:
         return widget.action.toSuccessText(context);
       case BitBoxOperationStatus.error:
-        return context.loc.bitboxScreenActionFailed(widget.action.toTitle(context));
+        return context.loc.bitboxScreenActionFailed(
+          widget.action.toTitle(context),
+        );
     }
   }
 
@@ -684,7 +698,8 @@ class _BitBoxActionViewState extends State<_BitBoxActionView> {
       case BitBoxOperationStatus.success:
         return widget.action.toSuccessSubText(context);
       case BitBoxOperationStatus.error:
-        return state.error?.toTranslated(context) ?? context.loc.bitboxScreenUnknownError;
+        return state.error?.toTranslated(context) ??
+            context.loc.bitboxScreenUnknownError;
     }
   }
 }

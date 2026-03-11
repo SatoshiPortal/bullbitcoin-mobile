@@ -8,7 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class BankTransferCadForm extends StatefulWidget {
-  const BankTransferCadForm({super.key});
+  const BankTransferCadForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   BankTransferCadFormState createState() => BankTransferCadFormState();
@@ -209,7 +211,10 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
             ),
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

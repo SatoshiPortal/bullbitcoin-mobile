@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
+import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_status_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MempoolServerItem extends StatelessWidget {
   const MempoolServerItem({
@@ -94,6 +97,26 @@ class MempoolServerItem extends StatelessWidget {
                             alpha: 0.6,
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          MempoolServerStatusIndicator(status: server.status),
+                          const SizedBox(width: 4),
+                          if (!server.status.isChecking)
+                            GestureDetector(
+                              onTap: isProcessing
+                                  ? null
+                                  : () => context
+                                      .read<MempoolSettingsCubit>()
+                                      .checkServerStatus(server),
+                              child: Icon(
+                                Icons.refresh,
+                                size: 16,
+                                color: context.appColors.textMuted,
+                              ),
+                            ),
+                        ],
                       ),
                       if (disabled) ...[
                         const SizedBox(height: 4),

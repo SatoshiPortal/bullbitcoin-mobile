@@ -11,7 +11,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/features/pay/domain/create_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/domain/refresh_pay_order_usecase.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 
@@ -54,9 +53,8 @@ class PayLocator {
   }
 
   static void registerBlocs(GetIt locator) {
-    locator.registerFactoryParam<PayBloc, RecipientViewModel, void>(
-      (recipient, _) => PayBloc(
-        recipient: recipient,
+    locator.registerFactory<PayBloc>(
+      () => PayBloc(
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         placePayOrderUsecase: locator<PlacePayOrderUsecase>(),
         refreshPayOrderUsecase: locator<RefreshPayOrderUsecase>(),

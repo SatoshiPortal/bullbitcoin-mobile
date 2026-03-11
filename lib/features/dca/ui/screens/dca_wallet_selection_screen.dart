@@ -29,8 +29,10 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
   @override
   void initState() {
     super.initState();
-    _defaultLightningAddress =
-        context.read<DcaBloc>().state.defaultLightningAddress;
+    _defaultLightningAddress = context
+        .read<DcaBloc>()
+        .state
+        .defaultLightningAddress;
   }
 
   @override
@@ -57,11 +59,9 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                 const Gap(24),
                 FormField<DcaNetwork>(
                   initialValue: _selectedNetwork,
-                  validator:
-                      (val) =>
-                          val == null
-                              ? context.loc.dcaNetworkValidationError
-                              : null,
+                  validator: (val) => val == null
+                      ? context.loc.dcaNetworkValidationError
+                      : null,
                   builder: (field) {
                     return DcaWalletRadioList(
                       selectedWallet: field.value,
@@ -85,17 +85,15 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                     controller: _lightningAddressController,
                     textAlignVertical: TextAlignVertical.center,
                     style: context.font.headlineSmall?.copyWith(
-                      color:
-                          _useDefaultLightningAddress
-                              ? context.appColors.surfaceContainer
-                              : context.appColors.secondary,
+                      color: _useDefaultLightningAddress
+                          ? context.appColors.surfaceContainer
+                          : context.appColors.onSecondary,
                     ),
                     enabled: !_useDefaultLightningAddress,
                     decoration: InputDecoration(
-                      fillColor:
-                          _useDefaultLightningAddress
-                              ? context.appColors.secondaryFixedDim
-                              : context.appColors.onPrimary,
+                      fillColor: _useDefaultLightningAddress
+                          ? context.appColors.secondaryFixedDim
+                          : context.appColors.onPrimary,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -112,8 +110,9 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                       disabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                         borderSide: BorderSide(
-                          color: context.appColors.secondaryFixedDim
-                              .withValues(alpha: 0.5),
+                          color: context.appColors.secondaryFixedDim.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -122,24 +121,22 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           Icons.paste,
-                          color:
-                              _useDefaultLightningAddress
-                                  ? context.appColors.surfaceContainer
-                                  : context.appColors.secondary,
+                          color: _useDefaultLightningAddress
+                              ? context.appColors.surfaceContainer
+                              : context.appColors.onSecondary,
                         ),
-                        onPressed:
-                            _useDefaultLightningAddress
-                                ? null
-                                : () {
-                                  Clipboard.getData(Clipboard.kTextPlain).then((
-                                    value,
-                                  ) {
-                                    if (value?.text != null) {
-                                      _lightningAddressController.text =
-                                          value!.text!;
-                                    }
-                                  });
-                                },
+                        onPressed: _useDefaultLightningAddress
+                            ? null
+                            : () {
+                                Clipboard.getData(Clipboard.kTextPlain).then((
+                                  value,
+                                ) {
+                                  if (value?.text != null) {
+                                    _lightningAddressController.text =
+                                        value!.text!;
+                                  }
+                                });
+                              },
                       ),
                     ),
                     validator: (value) {
@@ -169,13 +166,15 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                               _defaultLightningAddress!;
                         }
                       },
-                      tileColor: context.appColors.overlay.withValues(alpha: 0.04),
+                      tileColor: context.appColors.overlay.withValues(
+                        alpha: 0.04,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                     ),
                 ],
-                const Spacer(),
+                const Gap(32),
                 BBButton.big(
                   label: context.loc.dcaWalletSelectionContinueButton,
                   onPressed: () {
@@ -183,8 +182,8 @@ class _DcaWalletSelectionScreenState extends State<DcaWalletSelectionScreen> {
                       context.read<DcaBloc>().add(
                         DcaEvent.walletSelected(
                           network: _selectedNetwork!,
-                          lightningAddress:
-                              _lightningAddressController.text.trim(),
+                          lightningAddress: _lightningAddressController.text
+                              .trim(),
                           useDefaultLightningAddress:
                               _useDefaultLightningAddress,
                         ),

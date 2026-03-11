@@ -101,7 +101,7 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
           ),
 
-        if (labels.isNotEmpty)
+        if (labels.isNotEmpty && txId != null)
           LabelsTableItem(
             title: context.loc.transactionNotesLabel,
             labels: labels,
@@ -131,7 +131,7 @@ class TransactionDetailsTable extends StatelessWidget {
             displayValue: StringFormatting.truncateMiddle(toAddress),
             copyValue: toAddress,
           ),
-        if (addressLabels.isNotEmpty)
+        if (addressLabels.isNotEmpty && toAddress != null)
           LabelsTableItem(
             title: context.loc.transactionDetailLabelAddressNotes,
             labels: addressLabels,

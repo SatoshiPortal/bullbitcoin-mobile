@@ -484,7 +484,8 @@ class WalletRepository {
           return;
         } catch (e, stackTrace) {
           log.severe(
-            'sync wallet error: ${wallet.id} with electrum server: ${electrumServer.url}',
+            message:
+                'sync wallet error with electrum server: ${electrumServer.url}',
             error: e,
             trace: stackTrace,
           );

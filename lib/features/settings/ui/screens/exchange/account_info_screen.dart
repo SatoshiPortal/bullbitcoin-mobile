@@ -15,71 +15,77 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
     final state = context.select((ExchangeCubit cubit) => cubit.state);
     final userSummary = state.userSummary;
 
-    if (state.isFetchingUserSummary) {
-      return Scaffold(
-        backgroundColor: context.appColors.background,
-        appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
-        body: const Center(child: CircularProgressIndicator()),
-      );
+    return Scaffold(
+      backgroundColor: context.appColors.background,
+      appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
+      body: Column(
+        children: [
+          if (state.isFetchingUserSummary)
+            LinearProgressIndicator(
+              backgroundColor: context.appColors.surface,
+              color: context.appColors.primary,
+            ),
+          Expanded(
+            child: _buildContent(context, state.isFetchingUserSummary, userSummary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, bool isLoading, UserSummary? userSummary) {
+    if (isLoading && userSummary == null) {
+      return const SizedBox.shrink();
     }
 
     if (userSummary == null) {
-      return Scaffold(
-        backgroundColor: context.appColors.background,
-        appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
-
-        body: Center(
-          child: BBText(
-            context.loc.exchangeAccountInfoLoadErrorMessage,
-            style: context.font.bodyMedium,
-          ),
+      return Center(
+        child: BBText(
+          context.loc.exchangeAccountInfoLoadErrorMessage,
+          style: context.font.bodyMedium,
         ),
       );
     }
 
-    return Scaffold(
-      backgroundColor: context.appColors.background,
-      appBar: AppBar(title: Text(context.loc.exchangeAccountInfoTitle)),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              const SizedBox(height: 12),
-              _buildInfoField(
-                context,
-                context.loc.exchangeAccountInfoUserNumberLabel,
-                userSummary.userNumber.toString(),
-                isCopyable: true,
-                copiedMessage: context.loc.exchangeAccountInfoUserNumberCopiedMessage,
-              ),
-              const SizedBox(height: 32),
-              _buildInfoField(
-                context,
-                context.loc.exchangeAccountInfoVerificationLevelLabel,
-                _getVerificationLevel(context, userSummary),
-              ),
-              const SizedBox(height: 32),
-              _buildInfoField(
-                context,
-                context.loc.exchangeAccountInfoEmailLabel,
-                userSummary.email,
-              ),
-              const SizedBox(height: 32),
-              _buildInfoField(
-                context,
-                context.loc.exchangeAccountInfoFirstNameLabel,
-                userSummary.profile.firstName,
-              ),
-              const SizedBox(height: 32),
-              _buildInfoField(
-                context,
-                context.loc.exchangeAccountInfoLastNameLabel,
-                userSummary.profile.lastName,
-              ),
-            ],
-          ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 12),
+            _buildInfoField(
+              context,
+              context.loc.exchangeAccountInfoUserNumberLabel,
+              userSummary.userNumber.toString(),
+              isCopyable: true,
+              copiedMessage: context.loc.exchangeAccountInfoUserNumberCopiedMessage,
+            ),
+            const SizedBox(height: 32),
+            _buildInfoField(
+              context,
+              context.loc.exchangeAccountInfoVerificationLevelLabel,
+              _getVerificationLevel(context, userSummary),
+            ),
+            const SizedBox(height: 32),
+            _buildInfoField(
+              context,
+              context.loc.exchangeAccountInfoEmailLabel,
+              userSummary.email,
+            ),
+            const SizedBox(height: 32),
+            _buildInfoField(
+              context,
+              context.loc.exchangeAccountInfoFirstNameLabel,
+              userSummary.profile.firstName,
+            ),
+            const SizedBox(height: 32),
+            _buildInfoField(
+              context,
+              context.loc.exchangeAccountInfoLastNameLabel,
+              userSummary.profile.lastName,
+            ),
+          ],
         ),
       ),
     );

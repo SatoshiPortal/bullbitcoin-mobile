@@ -29,6 +29,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
+import 'package:bb_mobile/core/tor/infrastructure/services/tor_connectivity_service.dart';
 import 'package:bb_mobile/core/tor/interface_adapters/adapters/tor_config_adapter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -69,7 +70,10 @@ class RecoverbullLocator {
     );
 
     locator.registerLazySingleton<TorConfigPort>(
-      () => TorConfigAdapter(settingsRepository: locator<SettingsRepository>()),
+      () => TorConfigAdapter(
+        settingsRepository: locator<SettingsRepository>(),
+        torConnectivityService: locator<TorConnectivityService>(),
+      ),
     );
 
     locator.registerSingletonWithDependencies<RecoverBullRepository>(

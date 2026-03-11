@@ -10,7 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class SinpeMovilCrcForm extends StatefulWidget {
-  const SinpeMovilCrcForm({super.key});
+  const SinpeMovilCrcForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   SinpeMovilCrcFormState createState() => SinpeMovilCrcFormState();
@@ -156,7 +158,10 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             },
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

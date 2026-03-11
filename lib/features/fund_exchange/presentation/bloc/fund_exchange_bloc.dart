@@ -35,8 +35,29 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   ) async {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
+      // Map preffered currency to jurisdiction
+      final currency = summary.currency;
+      FundingJurisdiction jurisdiction;
+      switch (currency) {
+        case 'CAD':
+          jurisdiction = FundingJurisdiction.canada;
+        case 'EUR':
+          jurisdiction = FundingJurisdiction.europe;
+        case 'MXN':
+          jurisdiction = FundingJurisdiction.mexico;
+        case 'CRC':
+          jurisdiction = FundingJurisdiction.costaRica;
+        case 'ARS':
+          jurisdiction = FundingJurisdiction.argentina;
+        //case 'USD':
+        //  jurisdiction = FundingJurisdiction.unitedStates;
+        //case 'COP':
+        //  jurisdiction = FundingJurisdiction.colombia;
+        default:
+          jurisdiction = FundingJurisdiction.canada;
+      }
 
-      emit(state.copyWith(userSummary: summary));
+      emit(state.copyWith(userSummary: summary, jurisdiction: jurisdiction));
     } on ApiKeyException catch (e) {
       emit(state.copyWith(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {

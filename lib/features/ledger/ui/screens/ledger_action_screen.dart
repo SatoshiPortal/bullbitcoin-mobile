@@ -56,12 +56,11 @@ class LedgerActionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => LedgerOperationCubit(
-            scanLedgerDevicesUsecase: locator<ScanLedgerDevicesUsecase>(),
-            connectLedgerDeviceUsecase: locator<ConnectLedgerDeviceUsecase>(),
-            requestedDeviceType: parameters?.requestedDeviceType,
-          ),
+      create: (context) => LedgerOperationCubit(
+        scanLedgerDevicesUsecase: locator<ScanLedgerDevicesUsecase>(),
+        connectLedgerDeviceUsecase: locator<ConnectLedgerDeviceUsecase>(),
+        requestedDeviceType: parameters?.requestedDeviceType,
+      ),
       child: _LedgerActionView(action: action, parameters: parameters),
     );
   }
@@ -175,10 +174,6 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
           if (widget.parameters?.requestedDeviceType == null ||
               widget.parameters!.requestedDeviceType!.supportsBluetooth)
             Icon(Icons.bluetooth, size: 60, color: context.appColors.primary),
-          if (!Platform.isIOS) ...[
-            const Gap(16),
-            Icon(Icons.usb, size: 60, color: context.appColors.primary),
-          ],
         ],
       );
     }
@@ -448,7 +443,7 @@ class _LedgerActionViewState extends State<_LedgerActionView> {
         return Platform.isIOS
             ? context.loc.ledgerInstructionsIos
             : (widget.parameters?.requestedDeviceType != null &&
-                !widget.parameters!.requestedDeviceType!.supportsBluetooth)
+                  !widget.parameters!.requestedDeviceType!.supportsBluetooth)
             ? context.loc.ledgerInstructionsAndroidUsb
             : context.loc.ledgerInstructionsAndroidDual;
       case LedgerOperationStatus.scanning:

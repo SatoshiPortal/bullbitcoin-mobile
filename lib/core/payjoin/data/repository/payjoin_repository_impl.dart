@@ -325,7 +325,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       return completedModel.toEntity();
     } catch (e) {
-      log.severe('Error broadcasting original transaction: $e');
+      log.severe(
+        message: 'Error broadcasting original transaction',
+        error: e,
+        trace: StackTrace.current,
+      );
       return null;
     }
   }
@@ -347,7 +351,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       final unspentUtxos = await _bdkWallet.getUtxos(wallet: wallet);
       result = await _proposePayjoin(model, wallet, unspentUtxos);
     } catch (e) {
-      log.severe('Error processing payjoin request: $e');
+      log.severe(
+        message: 'Error processing payjoin request',
+        error: e,
+        trace: StackTrace.current,
+      );
       result =
           (await tryBroadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
     }
@@ -383,7 +391,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         'Payjoin proposal broadcasted: ${payjoin.id} with txId: ${result.txId}',
       );
     } catch (e) {
-      log.severe('Error broadcasting payjoin proposal: $e');
+      log.severe(
+        message: 'Error broadcasting payjoin proposal',
+        error: e,
+        trace: StackTrace.current,
+      );
       // TODO: Handle this, maybe by sending the original transaction instead
     }
 

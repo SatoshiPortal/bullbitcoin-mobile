@@ -99,6 +99,7 @@ abstract class SettingsEntity with _$SettingsEntity {
     @Default(false) bool useTorProxy,
     @Default(9050) int torProxyPort,
     @Default(AppThemeMode.system) AppThemeMode themeMode,
+    @Default(false) bool isErrorReportingEnabled,
   }) = _SettingsEntity;
   const SettingsEntity._();
 }

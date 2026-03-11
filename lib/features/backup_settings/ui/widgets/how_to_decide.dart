@@ -13,7 +13,7 @@ class HowToDecideBackupOption extends StatelessWidget {
       heightFactor: 0.75,
       child: Container(
         decoration: BoxDecoration(
-          color: context.appColors.onPrimary,
+          color: context.appColors.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         padding: const EdgeInsets.symmetric(vertical: 30),
@@ -36,7 +36,7 @@ class HowToDecideBackupOption extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                     child: Icon(
                       Icons.close,
-                      color: context.appColors.secondary,
+                      color: context.appColors.onSurface,
                     ),
                   ),
                 ],
@@ -73,19 +73,17 @@ class HowToDecideBackupOption extends StatelessWidget {
                           style: context.font.bodyMedium,
                           children: [
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideBackupPhysicalRecommendation,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideBackupPhysicalRecommendation,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideBackupPhysicalRecommendationText,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideBackupPhysicalRecommendationText,
                               style: context.font.labelMedium,
                             ),
                           ],
@@ -97,19 +95,17 @@ class HowToDecideBackupOption extends StatelessWidget {
                           style: context.font.bodyMedium,
                           children: [
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideBackupEncryptedRecommendation,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideBackupEncryptedRecommendation,
                               style: context.font.labelMedium?.copyWith(
                                 fontWeight: .bold,
                               ),
                             ),
                             TextSpan(
-                              text:
-                                  context
-                                      .loc
-                                      .backupWalletHowToDecideBackupEncryptedRecommendationText,
+                              text: context
+                                  .loc
+                                  .backupWalletHowToDecideBackupEncryptedRecommendationText,
                               style: context.font.labelMedium,
                             ),
                           ],

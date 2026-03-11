@@ -8,7 +8,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class SepaEurForm extends StatefulWidget {
-  const SepaEurForm({super.key});
+  const SepaEurForm({super.key, this.hookError});
+
+  final String? hookError;
 
   @override
   SepaEurFormState createState() => SepaEurFormState();
@@ -222,7 +224,10 @@ class SepaEurFormState extends State<SepaEurForm> {
             ),
           ),
           const Gap(24.0),
-          RecipientFormContinueButton(onPressed: _submitForm),
+          RecipientFormContinueButton(
+            onPressed: _submitForm,
+            hookError: widget.hookError,
+          ),
         ],
       ),
     );

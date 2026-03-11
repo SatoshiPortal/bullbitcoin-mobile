@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
@@ -7,7 +8,7 @@ import 'package:bb_mobile/features/recipients/application/usecases/get_recipient
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/cad_biller_view_model.dart';
-import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_filters_view_model.dart';
+import 'package:bb_mobile/features/recipients/interface_adapters/presenters/recipient_filter_criteria.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,9 +20,10 @@ part 'recipients_bloc.freezed.dart';
 
 class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   RecipientsBloc({
-    AllowedRecipientFiltersViewModel? allowedRecipientFilters,
-    Future<void>? Function(RecipientViewModel recipient)?
+    RecipientFilterCriteria? allowedRecipientFilters,
+    Future<void>? Function(RecipientViewModel recipient, {required bool isNew})?
     onRecipientSelectedHook,
+    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required AddRecipientUsecase addRecipientUsecase,
     required GetRecipientsUsecase getRecipientsUsecase,
     required CheckSinpeUsecase checkSinpeUsecase,
@@ -31,11 +33,11 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
        _getRecipientsUsecase = getRecipientsUsecase,
        _checkSinpeUsecase = checkSinpeUsecase,
        _listCadBillersUsecase = listCadBillersUsecase,
+       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        super(
          RecipientsState(
            allowedRecipientFilters:
-               allowedRecipientFilters ??
-               const AllowedRecipientFiltersViewModel(),
+               allowedRecipientFilters ?? const RecipientFilterCriteria(),
          ),
        ) {
     on<RecipientsStarted>(_onStarted);
@@ -47,12 +49,16 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
   }
 
   static const pageSize = 50;
-  final Future<void>? Function(RecipientViewModel recipient)?
+  final Future<void>? Function(
+    RecipientViewModel recipient, {
+    required bool isNew,
+  })?
   _onRecipientSelectedHook;
   final AddRecipientUsecase _addRecipientUsecase;
   final GetRecipientsUsecase _getRecipientsUsecase;
   final CheckSinpeUsecase _checkSinpeUsecase;
   final ListCadBillersUsecase _listCadBillersUsecase;
+  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
 
   Future<void> _onStarted(
     RecipientsStarted event,
@@ -76,24 +82,24 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       emit(
         state.copyWith(
           totalRecipients: result.totalRecipients,
-          recipients:
-              result.recipients
-                  .map((recipient) {
-                    // Wrap each transformation in try/catch so a single malformed element
-                    // doesn't fail the entire list. Nulls are filtered out with the
-                    // whereType.
-                    try {
-                      return RecipientViewModel.fromDto(recipient);
-                    } catch (err, stackTrace) {
-                      log.severe(
-                        'Error transforming recipient to view model: $err',
-                        trace: stackTrace,
-                      );
-                      return null;
-                    }
-                  })
-                  .whereType<RecipientViewModel>()
-                  .toList(),
+          recipients: result.recipients
+              .map((recipient) {
+                // Wrap each transformation in try/catch so a single malformed element
+                // doesn't fail the entire list. Nulls are filtered out with the
+                // whereType.
+                try {
+                  return RecipientViewModel.fromDto(recipient);
+                } catch (err, stackTrace) {
+                  log.severe(
+                    message: 'Error transforming recipient to view model',
+                    error: err,
+                    trace: stackTrace,
+                  );
+                  return null;
+                }
+              })
+              .whereType<RecipientViewModel>()
+              .toList(),
         ),
       );
     } catch (e) {
@@ -104,6 +110,41 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       );
     } finally {
       emit(state.copyWith(isLoadingRecipients: false));
+    }
+
+    String preferredJurisdictionCode = 'CA'; // Default to Canada
+    try {
+      log.info('Loading exchange user summary');
+      final summary = await _getExchangeUserSummaryUsecase.execute();
+      log.fine('Loaded exchange user summary: $summary');
+      final preferredCurrency = summary.currency;
+
+      // Set default jurisdiction based on user summary
+      switch (preferredCurrency) {
+        case 'EUR':
+          preferredJurisdictionCode = 'EU';
+        case 'MXN':
+          preferredJurisdictionCode = 'MX';
+        case 'CRC':
+          preferredJurisdictionCode = 'CR';
+        case 'ARS':
+          preferredJurisdictionCode = 'AR';
+        case 'COP':
+          preferredJurisdictionCode = 'CO';
+        //case 'USD':
+        //  preferredJurisdictionCode = 'US';
+        default:
+          preferredJurisdictionCode = 'CA';
+      }
+    } catch (e) {
+      log.severe(
+        message: 'Failed to load exchange user summary',
+        error: e,
+        trace: StackTrace.current,
+      );
+      // We don't emit an error state here since we have a default value
+    } finally {
+      emit(state.copyWith(preferredJurisdiction: preferredJurisdictionCode));
     }
   }
 
@@ -144,7 +185,8 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
                 return RecipientViewModel.fromDto(recipient);
               } catch (err, stackTrace) {
                 log.severe(
-                  'Error transforming recipient to view model: $err',
+                  message: 'Error transforming recipient to view model',
+                  error: err,
                   trace: stackTrace,
                 );
                 return null;
@@ -170,13 +212,7 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsAdded event,
     Emitter<RecipientsState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        isAddingRecipient: true,
-        selectedRecipient: null,
-        failedToAddRecipient: null,
-      ),
-    );
+    emit(state.copyWith(isAddingRecipient: true, failedToAddRecipient: null));
     try {
       log.info('Trying to add recipient: ${event.recipient}');
       final result = await _addRecipientUsecase.execute(
@@ -187,8 +223,10 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       );
       final addedRecipient = RecipientViewModel.fromDto(result.recipient);
 
-      // Select the newly added recipient
-      add(RecipientsEvent.selected(addedRecipient));
+      // Call the selection hook for the newly added recipient
+      if (_onRecipientSelectedHook != null) {
+        await _onRecipientSelectedHook(addedRecipient, isNew: true);
+      }
     } catch (e) {
       emit(
         state.copyWith(
@@ -248,24 +286,24 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
       log.fine('Found ${result.billers.length} CAD billers');
       emit(
         state.copyWith(
-          cadBillers:
-              result.billers
-                  .map((biller) {
-                    // Wrap each transformation in try/catch so a single malformed element
-                    // doesn't fail the entire list. Nulls are filtered out with the
-                    // whereType.
-                    try {
-                      return CadBillerViewModel.fromDto(biller);
-                    } catch (err, stackTrace) {
-                      log.severe(
-                        'Error transforming biller to view model: $err',
-                        trace: stackTrace,
-                      );
-                      return null;
-                    }
-                  })
-                  .whereType<CadBillerViewModel>()
-                  .toList(),
+          cadBillers: result.billers
+              .map((biller) {
+                // Wrap each transformation in try/catch so a single malformed element
+                // doesn't fail the entire list. Nulls are filtered out with the
+                // whereType.
+                try {
+                  return CadBillerViewModel.fromDto(biller);
+                } catch (err, stackTrace) {
+                  log.severe(
+                    message: 'Error transforming biller to view model',
+                    error: err,
+                    trace: stackTrace,
+                  );
+                  return null;
+                }
+              })
+              .whereType<CadBillerViewModel>()
+              .toList(),
         ),
       );
     } catch (e) {
@@ -285,32 +323,25 @@ class RecipientsBloc extends Bloc<RecipientsEvent, RecipientsState> {
     RecipientsSelected event,
     Emitter<RecipientsState> emit,
   ) async {
-    // Clear any previously selected recipient before setting the new one
-    // to ensure we can listen to changes properly.
-    emit(
-      state.copyWith(
-        selectedRecipient: null,
-        isHandlingSelectedRecipient: true,
-        failedToHandleSelectedRecipient: null,
-      ),
-    );
+    emit(state.copyWith(failedToSelectRecipient: null));
     try {
       log.info('Recipient selected: ${event.recipient}');
       if (_onRecipientSelectedHook != null) {
-        await _onRecipientSelectedHook(event.recipient);
+        await _onRecipientSelectedHook(event.recipient, isNew: false);
       }
-      emit(state.copyWith(selectedRecipient: event.recipient));
     } catch (e) {
-      log.severe('Error in recipient selection logging: $e');
+      log.severe(
+        message: 'Error in recipient selection logging',
+        error: e,
+        trace: StackTrace.current,
+      );
       emit(
         state.copyWith(
-          failedToHandleSelectedRecipient: Exception(
+          failedToSelectRecipient: Exception(
             'Error when selecting recipient: $e',
           ),
         ),
       );
-    } finally {
-      emit(state.copyWith(isHandlingSelectedRecipient: false));
     }
   }
 }

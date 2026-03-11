@@ -51,6 +51,35 @@ class PriceChartWidget extends StatelessWidget {
         final rates = state.prices;
         final hasNoLocalData = rates.isEmpty;
 
+        if (state.error != null && hasNoLocalData) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                BBText(
+                  context.loc.priceChartFailedToLoad,
+                  style: context.font.bodyLarge?.copyWith(
+                    color: context.appColors.onPrimary,
+                  ),
+                ),
+                const Gap(16),
+                IconButton(
+                  onPressed: () {
+                    context.read<PriceChartCubit>().loadPriceHistory(
+                      currency: state.currency,
+                    );
+                  },
+                  icon: Icon(
+                    Icons.refresh,
+                    color: context.appColors.onPrimary,
+                    size: 32,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
         if (state.isLoading || hasNoLocalData) {
           if (state.isLoading) {
             return Center(

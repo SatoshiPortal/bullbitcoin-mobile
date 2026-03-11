@@ -96,8 +96,18 @@ class _DcaListTileState extends State<DcaListTile> {
                   builder: (BuildContext dialogContext) {
                     return AlertDialog(
                       backgroundColor: context.appColors.surfaceFixed,
-                      title: Text(context.loc.exchangeDcaCancelDialogTitle),
-                      content: Text(context.loc.exchangeDcaCancelDialogMessage),
+                      title: Text(
+                        context.loc.exchangeDcaCancelDialogTitle,
+                        style: TextStyle(
+                          color: context.appColors.onSurfaceFixed,
+                        ),
+                      ),
+                      content: Text(
+                        context.loc.exchangeDcaCancelDialogMessage,
+                        style: TextStyle(
+                          color: context.appColors.onSurfaceFixed,
+                        ),
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () {
@@ -125,13 +135,12 @@ class _DcaListTileState extends State<DcaListTile> {
           ),
         ],
       ),
-      subtitle:
-          widget.hasDcaActive && _showSettings
-              ? Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: _buildDcaContent(widget.dca!, context),
-              )
-              : null,
+      subtitle: widget.hasDcaActive && _showSettings
+          ? Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: _buildDcaContent(widget.dca!, context),
+            )
+          : null,
     );
   }
 }

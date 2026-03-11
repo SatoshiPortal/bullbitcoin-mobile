@@ -1,30 +1,17 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ExchangeTransactionsScreen extends StatelessWidget {
   const ExchangeTransactionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.appColors.surfaceFixed,
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: context.loc.exchangeTransactionsTitle,
-          onBack: () => context.pop(),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(child: Text(context.loc.exchangeTransactionsComingSoon)),
-        ),
-      ),
+    return BlocProvider<TransactionsCubit>(
+      create: (context) => locator<TransactionsCubit>(param2: true)..loadTxs(),
+      child: const TransactionsScreen(),
     );
   }
 }
