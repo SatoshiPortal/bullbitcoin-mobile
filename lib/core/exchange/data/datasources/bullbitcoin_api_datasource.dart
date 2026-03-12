@@ -3,8 +3,6 @@ import 'dart:math' show pow;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
@@ -271,29 +269,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       throw Exception('Failed to refresh order summary');
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
-  }
-
-  Future<FundingDetailsModel> getFundingDetails({
-    required String apiKey,
-    required FundingDetailsRequestParamsModel fundingDetailsRequestParams,
-  }) async {
-    final resp = await _http.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'getFundingDetails',
-        'params': fundingDetailsRequestParams.toJson(),
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to get funding details');
-    }
-
-    return FundingDetailsModel.fromJson(
-      resp.data['result']['element'] as Map<String, dynamic>,
-    );
   }
 
   Future<void> saveUserPreference({
