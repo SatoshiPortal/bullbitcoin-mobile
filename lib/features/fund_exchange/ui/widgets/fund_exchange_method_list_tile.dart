@@ -40,10 +40,6 @@ class FundExchangeMethodListTile extends StatelessWidget {
         if (hasConsented) {
           context.pushNamed(FundExchangeRoute.routeNameFor(method));
         } else {
-          // Reset checkbox state before showing the warning screen.
-          context.read<FundExchangeBloc>().add(
-            const FundExchangeEvent.noCoercionConfirmed(false),
-          );
           _navigateToWarningScreen(context, method);
         }
       },

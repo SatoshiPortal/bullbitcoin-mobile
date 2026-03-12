@@ -25,12 +25,8 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
        super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
     on<FundExchangeJurisdictionChanged>(_onJurisdictionChanged);
-    on<FundExchangeNoCoercionConfirmed>(_onNoCoercionConfirmed);
     on<FundExchangeFundingDetailsRequested>(_onFundingDetailsRequested);
     on<FundExchangeScamWarningConsentSubmitted>(_onScamWarningConsentSubmitted);
-    on<FundExchangeScamWarningConsentNavigationHandled>(
-      _onScamWarningConsentNavigationHandled,
-    );
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -82,13 +78,6 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     emit(state.copyWith(jurisdiction: event.jurisdiction));
   }
 
-  void _onNoCoercionConfirmed(
-    FundExchangeNoCoercionConfirmed event,
-    Emitter<FundExchangeState> emit,
-  ) {
-    emit(state.copyWith(hasConfirmedNoCoercion: event.confirmed));
-  }
-
   Future<void> _onFundingDetailsRequested(
     FundExchangeFundingDetailsRequested event,
     Emitter<FundExchangeState> emit,
@@ -135,7 +124,6 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
       emit(
         state.copyWith(
           isSubmittingScamWarningConsent: false,
-          scamWarningConsentSubmittedSuccessfully: true,
           userSummary: updatedSummary,
         ),
       );
@@ -149,15 +137,4 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     }
   }
 
-  void _onScamWarningConsentNavigationHandled(
-    FundExchangeScamWarningConsentNavigationHandled event,
-    Emitter<FundExchangeState> emit,
-  ) {
-    emit(
-      state.copyWith(
-        scamWarningConsentSubmittedSuccessfully: false,
-        hasConfirmedNoCoercion: false,
-      ),
-    );
-  }
 }

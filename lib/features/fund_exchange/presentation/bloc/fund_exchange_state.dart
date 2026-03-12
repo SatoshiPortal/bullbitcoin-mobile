@@ -8,11 +8,9 @@ sealed class FundExchangeState with _$FundExchangeState {
     ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
     @Default(FundingJurisdiction.canada) FundingJurisdiction jurisdiction,
-    @Default(false) bool hasConfirmedNoCoercion,
     FundingDetails? fundingDetails,
     GetExchangeFundingDetailsException? getExchangeFundingDetailsException,
     @Default(false) bool isSubmittingScamWarningConsent,
-    @Default(false) bool scamWarningConsentSubmittedSuccessfully,
     String? scamWarningConsentError,
   }) = _FundExchangeState;
   const FundExchangeState._();

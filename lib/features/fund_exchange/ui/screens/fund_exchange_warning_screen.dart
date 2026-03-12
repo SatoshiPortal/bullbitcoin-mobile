@@ -11,30 +11,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class FundExchangeWarningScreen extends StatelessWidget {
+class FundExchangeWarningScreen extends StatefulWidget {
   const FundExchangeWarningScreen({super.key, required this.fundingMethod});
 
   final FundingMethod fundingMethod;
+
+  @override
+  State<FundExchangeWarningScreen> createState() =>
+      _FundExchangeWarningScreenState();
+}
+
+class _FundExchangeWarningScreenState
+    extends State<FundExchangeWarningScreen> {
+  bool _hasConfirmedNoCoercion = false;
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<FundExchangeBloc, FundExchangeState>(
       listenWhen:
           (previous, current) =>
-              !previous.scamWarningConsentSubmittedSuccessfully &&
-              current.scamWarningConsentSubmittedSuccessfully,
+              previous.userSummary?.hasConsentedScamWarning == false &&
+              current.userSummary?.hasConsentedScamWarning == true,
       listener: (context, state) {
-        context.read<FundExchangeBloc>().add(
-          const FundExchangeEvent.scamWarningConsentNavigationHandled(),
-        );
         // Use pushReplacementNamed to not go back to the warning screen
         context.pushReplacementNamed(
-          FundExchangeRoute.routeNameFor(fundingMethod),
+          FundExchangeRoute.routeNameFor(widget.fundingMethod),
         );
       },
       builder: (context, state) {
         final theme = Theme.of(context);
-        final hasConfirmedNoCoercion = state.hasConfirmedNoCoercion;
         final isLoading = state.isSubmittingScamWarningConsent;
         final error = state.scamWarningConsentError;
 
@@ -79,16 +84,14 @@ class FundExchangeWarningScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    value: hasConfirmedNoCoercion,
+                    value: _hasConfirmedNoCoercion,
                     onChanged:
                         isLoading
                             ? null
                             : (value) {
-                              context.read<FundExchangeBloc>().add(
-                                FundExchangeEvent.noCoercionConfirmed(
-                                  value ?? false,
-                                ),
-                              );
+                              setState(() {
+                                _hasConfirmedNoCoercion = value ?? false;
+                              });
                             },
                     title: BBText(
                       context.loc.fundExchangeWarningConfirmation,
@@ -115,7 +118,7 @@ class FundExchangeWarningScreen extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: BBButton.big(
                 label: context.loc.fundExchangeContinueButton,
-                disabled: !hasConfirmedNoCoercion || isLoading,
+                disabled: !_hasConfirmedNoCoercion || isLoading,
                 onPressed: () {
                   context.read<FundExchangeBloc>().add(
                     const FundExchangeEvent.scamWarningConsentSubmitted(),
