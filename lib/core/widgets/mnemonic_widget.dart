@@ -189,7 +189,13 @@ class MnemonicWord extends StatefulWidget {
 }
 
 class MnemonicWordState extends State<MnemonicWord> {
-  late final _controller = TextEditingController(text: widget.word);
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = widget.word;
+  }
 
   String get displayIndex {
     final displayIndex = widget.index + 1;
