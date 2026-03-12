@@ -189,7 +189,7 @@ class MnemonicWord extends StatefulWidget {
 }
 
 class MnemonicWordState extends State<MnemonicWord> {
-  final _controller = TextEditingController();
+  late final _controller = TextEditingController(text: widget.word);
 
   String get displayIndex {
     final displayIndex = widget.index + 1;
@@ -197,9 +197,22 @@ class MnemonicWordState extends State<MnemonicWord> {
   }
 
   @override
+  void didUpdateWidget(MnemonicWord oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.word != widget.word && _controller.text != widget.word) {
+      _controller.text = widget.word;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isValidWord = widget.language.isValid(widget.word);
-    _controller.text = widget.word;
 
     return Container(
       padding: const EdgeInsets.all(3),
@@ -362,7 +375,9 @@ class _MnemonicSentenceWidgetState extends State<MnemonicSentenceWidget> {
       (word) => word.startsWith(widget.words[_focusedDisplayIndex]),
     );
 
-    if (widget.allowAutoFillWords && hints.length == 1) {
+    if (widget.allowAutoFillWords &&
+        hints.length == 1 &&
+        hints.first != widget.words[_focusedDisplayIndex]) {
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => _onHintTap(hints.first),
       );
