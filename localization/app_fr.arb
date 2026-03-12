@@ -2140,6 +2140,7 @@
   "sendErrorConfirmationFailed": "Échec de la confirmation",
   "sendErrorInsufficientBalanceForSwap": "Solde insuffisant pour payer cet échange via Liquid et hors des limites d'échange pour payer via Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "Le montant est inférieur aux limites d'échange",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Pensez à alimenter Paiements Instantanés pour effectuer des paiements plus petits.",
   "sendErrorAmountAboveSwapLimits": "Le montant est supérieur aux limites d'échange",
   "sendErrorAmountBelowMinimum": "Montant inférieur à la limite d'échange minimale : {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {

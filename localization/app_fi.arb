@@ -2090,6 +2090,7 @@
   "sendErrorConfirmationFailed": "Vahvistus epäonnistui",
   "sendErrorInsufficientBalanceForSwap": "Saldo ei riitä maksamaan tätä vaihtoa Liquidin kautta eikä se ole swap-rajoissa maksamiseen Bitcoinin kautta.",
   "sendErrorAmountBelowSwapLimits": "Määrä on swap-rajojen alapuolella",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Harkitse Pikamaksun rahoittamista pienempiä maksuja varten.",
   "sendErrorAmountAboveSwapLimits": "Määrä ylittää swap-rajat",
   "sendErrorAmountBelowMinimum": "Määrä alle minimirajan: {minLimit} sat",
   "@sendErrorAmountBelowMinimum": {

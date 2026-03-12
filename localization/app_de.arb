@@ -3082,9 +3082,10 @@
   "jadeStep3": "Wählen Sie \"Scan QR\" Option",
   "dcaSetupFundAccount": "Ihr Konto finanzieren",
   "payEmail": "E-Mail",
-  "coldcardStep10": "Klicken Sie auf die Schaltflächen, um die Transaktion auf Ihrer Coldcard zu unterzeichnen.",
-  "sendErrorAmountBelowSwapLimits": "Betrag unter Swap-Grenze",
-  "labelErrorNotFound": "Bezeichnung „{label}“ nicht gefunden.",
+  "coldcardStep10": "Tippen Sie auf die Schaltflächen, um die Transaktion auf Ihrer Coldcard zu signieren.",
+  "sendErrorAmountBelowSwapLimits": "Betrag unterhalb der Swap-Grenze",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Erwägen Sie, Sofortzahlungen aufzuladen, um kleinere Zahlungen zu tätigen.",
+  "labelErrorNotFound": "Label „{label}“ nicht gefunden.",
   "@labelErrorNotFound": {
     "placeholders": {
       "label": {

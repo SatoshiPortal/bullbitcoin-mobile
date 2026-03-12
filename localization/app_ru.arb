@@ -3124,6 +3124,7 @@
   "payEmail": "Email",
   "coldcardStep10": "Нажмите на кнопки, чтобы подписать транзакцию на вашем Coldcard.",
   "sendErrorAmountBelowSwapLimits": "Сумма ниже лимитов на свопы",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Рассмотрите пополнение Мгновенных Платежей для меньших платежей.",
   "labelErrorNotFound": "Лейбл «{label}» не найден.",
   "@labelErrorNotFound": {
     "placeholders": {

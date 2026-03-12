@@ -7189,6 +7189,10 @@
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
   },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Consider funding Instant Payments to make smaller payments.",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
+  },
   "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
   "@sendErrorAmountAboveSwapLimits": {
     "description": "Error when amount exceeds maximum swap limit"
