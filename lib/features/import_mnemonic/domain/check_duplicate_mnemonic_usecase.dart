@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 
 class CheckDuplicateMnemonicUsecase {
   final SeedRepository _seedRepository;
@@ -7,7 +7,7 @@ class CheckDuplicateMnemonicUsecase {
   CheckDuplicateMnemonicUsecase({required SeedRepository seedRepository})
     : _seedRepository = seedRepository;
 
-  Future<void> call({
+  Future<void> execute({
     required List<String> mnemonicWords,
     String passphrase = '',
   }) async {

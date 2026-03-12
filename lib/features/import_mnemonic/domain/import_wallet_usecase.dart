@@ -1,20 +1,24 @@
-import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 
 class ImportWalletUsecase {
+  final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
   final SeedRepository _seedRepository;
   final SettingsRepository _settingsRepository;
   final WalletRepository _wallet;
 
   ImportWalletUsecase({
+    required CheckDuplicateMnemonicUsecase checkDuplicateMnemonicUsecase,
     required SeedRepository seedRepository,
     required SettingsRepository settingsRepository,
     required WalletRepository walletRepository,
-  }) : _seedRepository = seedRepository,
+  }) : _checkDuplicateMnemonicUsecase = checkDuplicateMnemonicUsecase,
+       _seedRepository = seedRepository,
        _settingsRepository = settingsRepository,
        _wallet = walletRepository;
 
@@ -25,15 +29,11 @@ class ImportWalletUsecase {
     String? label,
   }) async {
     try {
-      final fingerprint = _seedRepository.fingerprintFor(
+      await _checkDuplicateMnemonicUsecase.execute(
         mnemonicWords: mnemonicWords,
         passphrase: passphrase,
       );
-      if (await _seedRepository.exists(fingerprint)) {
-        throw DuplicateMnemonicException();
-      }
 
-      // Get the current environment to determine the network
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final bitcoinNetwork = environment.isMainnet
@@ -58,15 +58,8 @@ class ImportWalletUsecase {
 
       return wallet;
     } catch (e) {
+      if (e is DuplicateMnemonicException) rethrow;
       throw ImportWalletException(e.toString());
     }
   }
-}
-
-class ImportWalletException extends BullException {
-  ImportWalletException(super.message);
-}
-
-class DuplicateMnemonicException extends ImportWalletException {
-  DuplicateMnemonicException() : super('');
 }
