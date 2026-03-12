@@ -42,6 +42,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/usecases/register_scam_warning_consent_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
@@ -418,6 +419,18 @@ class ExchangeLocator {
         ),
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RegisterScamWarningConsentUsecase>(
+      () => RegisterScamWarningConsentUsecase(
+        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'mainnetExchangeUserRepository',
+        ),
+        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'testnetExchangeUserRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),

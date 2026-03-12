@@ -3438,6 +3438,10 @@
   "@fundExchangeContinueButton": {
     "description": "Button label to continue from warning screen to payment method details"
   },
+  "fundExchangeScamConsentError": "Failed to register your consent. Please try again.",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
   "fundExchangeDoneButton": "Done",
   "@fundExchangeDoneButton": {
     "description": "Button label to finish and exit the funding flow"

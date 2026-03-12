@@ -153,4 +153,5 @@ sealed class UserSummary with _$UserSummary {
   bool get isFullyVerifiedKycLevel => groups.contains('KYC_IDENTITY_VERIFIED');
   bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
+  bool get hasConsentedScamWarning => groups.contains('CONSENT_SCAM_WARNING');
 }

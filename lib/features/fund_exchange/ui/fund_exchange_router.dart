@@ -37,6 +37,22 @@ enum FundExchangeRoute {
   final String path;
 
   const FundExchangeRoute(this.path);
+
+  static String routeNameFor(FundingMethod method) {
+    return switch (method) {
+      FundingMethod.emailETransfer => fundExchangeEmailETransfer.name,
+      FundingMethod.bankTransferWire => fundExchangeBankTransferWire.name,
+      FundingMethod.onlineBillPayment => fundExchangeOnlineBillPayment.name,
+      FundingMethod.canadaPost => fundExchangeCanadaPost.name,
+      FundingMethod.instantSepa => fundExchangeInstantSepa.name,
+      FundingMethod.regularSepa => fundExchangeRegularSepa.name,
+      FundingMethod.speiTransfer => fundExchangeSpeiTransfer.name,
+      FundingMethod.sinpe => fundExchangeSinpe.name,
+      FundingMethod.crIbanCrc => fundExchangeCostaRicaIbanCrc.name,
+      FundingMethod.crIbanUsd => fundExchangeCostaRicaIbanUsd.name,
+      FundingMethod.arsBankTransfer => fundExchangeArsBankTransfer.name,
+    };
+  }
 }
 
 class FundExchangeRouter {

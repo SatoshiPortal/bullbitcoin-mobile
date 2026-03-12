@@ -667,6 +667,7 @@
   "payCalculating": "计算......",
   "transactionDetailLabelTransferId": "转账证明",
   "fundExchangeContinueButton": "继续",
+  "fundExchangeScamConsentError": "无法注册您的同意。请再试一次。",
   "currencySettingsDefaultFiatCurrencyLabel": "2. 违约货币",
   "payRecipient": "受援国",
   "fundExchangeCrIbanUsdRecipientNameHelp": "利用我们的正式公司名称。 不要使用“Bul>.",

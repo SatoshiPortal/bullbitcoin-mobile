@@ -667,6 +667,7 @@
   "payCalculating": "Calcolo...",
   "transactionDetailLabelTransferId": "ID trasferimento",
   "fundExchangeContinueButton": "Continua",
+  "fundExchangeScamConsentError": "Impossibile registrare il tuo consenso. Per favore riprova.",
   "currencySettingsDefaultFiatCurrencyLabel": "Moneta di fiat predefinito",
   "payRecipient": "Recipiente",
   "fundExchangeCrIbanUsdRecipientNameHelp": "Usa il nostro nome ufficiale. Non usare \"Bull Bitcoin\".",
