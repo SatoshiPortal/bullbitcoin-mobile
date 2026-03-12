@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -31,7 +31,7 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
 
       emit(state.copyWith(isLoading: true, error: null));
 
-      await _checkDuplicateMnemonicUsecase(
+      await _checkDuplicateMnemonicUsecase.execute(
         mnemonicWords: mnemonic.words,
         passphrase: mnemonic.passphrase,
       );
@@ -98,6 +98,8 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
         scriptType: state.scriptType,
       );
       emit(state.copyWith(wallet: wallet, isLoading: false));
+    } on DuplicateMnemonicException catch (e) {
+      emit(state.copyWith(error: e, isLoading: false));
     } catch (e) {
       emit(
         state.copyWith(

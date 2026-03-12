@@ -11,3 +11,11 @@ class MnemonicIsNullError extends ImportMnemonicError {
 class EmptyMnemonicLabelError extends ImportMnemonicError {
   EmptyMnemonicLabelError() : super('A label is required to import a mnemonic');
 }
+
+class ImportWalletException extends BullException {
+  ImportWalletException(super.message);
+}
+
+class DuplicateMnemonicException extends ImportWalletException {
+  DuplicateMnemonicException() : super('');
+}
