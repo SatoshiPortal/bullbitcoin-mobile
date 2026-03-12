@@ -198,5 +198,6 @@
   "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "২৪ ঘণ্টার মধ্যে আপনার অ্যাপ খুলে আপনার সোয়াপ সম্পন্ন করুন।",
-  "appStartupErrorMessage": "অ্যাপ চালু হতে ব্যর্থ হয়েছে। অ্যাপ সম্পূর্ণভাবে বন্ধ করে পুনরায় চালু করার চেষ্টা করুন। যদি সমস্যা থেকে যায়, সাপোর্টের সাথে যোগাযোগ করুন এবং আপনার লগ শেয়ার করুন।"
+  "appStartupErrorMessage": "অ্যাপ চালু হতে ব্যর্থ হয়েছে। অ্যাপ সম্পূর্ণভাবে বন্ধ করে পুনরায় চালু করার চেষ্টা করুন। যদি সমস্যা থেকে যায়, সাপোর্টের সাথে যোগাযোগ করুন এবং আপনার লগ শেয়ার করুন।",
+  "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান"
 }

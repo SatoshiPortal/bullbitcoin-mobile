@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -26,13 +27,16 @@ class MnemonicPage extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
-      body: BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
+      body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
           if (state.error != null) {
+            final message = state.error is DuplicateMnemonicException
+                ? context.loc.importMnemonicDuplicateError
+                : state.error!.toString();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: BBText(
-                  state.error!.toString(),
+                  message,
                   style: context.font.bodyMedium,
                   color: context.appColors.error,
                 ),
@@ -40,21 +44,36 @@ class MnemonicPage extends StatelessWidget {
             );
           }
         },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: .stretch,
-              children: [
-                MnemonicWidget(
-                  initialLength: bip39.MnemonicLength.words12,
-                  onSubmit: context.read<ImportMnemonicCubit>().updateMnemonic,
-                  submitLabel: context.loc.importMnemonicContinue,
+        builder: (context, state) {
+          return Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      MnemonicWidget(
+                        initialLength: bip39.MnemonicLength.words12,
+                        onSubmit: context
+                            .read<ImportMnemonicCubit>()
+                            .updateMnemonic,
+                        submitLabel: context.loc.importMnemonicContinue,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
+              if (state.isLoading)
+                const Positioned.fill(
+                  child: ColoredBox(
+                    color: Colors.black38,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
     );
   }

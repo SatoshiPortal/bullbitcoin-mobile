@@ -25,13 +25,20 @@ class ImportWalletUsecase {
     String? label,
   }) async {
     try {
+      final fingerprint = _seedRepository.fingerprintFor(
+        mnemonicWords: mnemonicWords,
+        passphrase: passphrase,
+      );
+      if (await _seedRepository.exists(fingerprint)) {
+        throw DuplicateMnemonicException();
+      }
+
       // Get the current environment to determine the network
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final bitcoinNetwork =
-          environment.isMainnet
-              ? Network.bitcoinMainnet
-              : Network.bitcoinTestnet;
+      final bitcoinNetwork = environment.isMainnet
+          ? Network.bitcoinMainnet
+          : Network.bitcoinTestnet;
 
       final seed = await _seedRepository.createFromMnemonic(
         mnemonicWords: mnemonicWords,
@@ -58,4 +65,8 @@ class ImportWalletUsecase {
 
 class ImportWalletException extends BullException {
   ImportWalletException(super.message);
+}
+
+class DuplicateMnemonicException extends ImportWalletException {
+  DuplicateMnemonicException() : super('');
 }

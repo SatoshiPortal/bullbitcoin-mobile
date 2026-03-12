@@ -9592,5 +9592,6 @@
   "legacyStorageRiskAckButtonHasBackup": "Разбирам риска",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Отворете приложението в рамките на 24 часа, за да завършите вашия суап.",
-  "appStartupErrorMessage": "Приложението не успя да стартира. Опитайте да го затворите напълно и да го рестартирате. Ако грешката продължи, свържете се с поддръжка и споделете логовете си."
+  "appStartupErrorMessage": "Приложението не успя да стартира. Опитайте да го затворите напълно и да го рестартирате. Ако грешката продължи, свържете се с поддръжка и споделете логовете си.",
+  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува"
 }

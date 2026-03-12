@@ -4601,5 +4601,6 @@
   "legacyStorageHasBackupImportantBody": "Si prega di non saltare questo processo a meno che non sia assolutamente necessario utilizzare il portafoglio con urgenza o si stia aspettando il completamento di uno swap.",
   "legacyStorageRiskAckButtonHasBackup": "Capisco il rischio",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Apri l'app entro 24 ore per completare il tuo swap."
+  "transactionSwapOpenWithin24Hours": "Apri l'app entro 24 ore per completare il tuo swap.",
+  "importMnemonicDuplicateError": "Questo mnemonic esiste già"
 }

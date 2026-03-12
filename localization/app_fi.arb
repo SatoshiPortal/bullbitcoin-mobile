@@ -4593,5 +4593,6 @@
   "legacyStorageHasBackupImportantBody": "Älä ohita tätä prosessia, ellet ehdottomasti tarvitse lompakkoa kiireellisesti tai odota swapin valmistumista.",
   "legacyStorageRiskAckButtonHasBackup": "Ymmärrän riskin",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapin."
+  "transactionSwapOpenWithin24Hours": "Avaa sovellus 24 tunnin kuluessa viimeistelläksesi swapin.",
+  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa"
 }

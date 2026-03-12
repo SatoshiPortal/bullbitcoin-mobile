@@ -411,5 +411,6 @@
   "legacyStorageRiskAckButtonHasBackup": "მესმის რისკი",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "გახსენით აპი 24 საათის განმავლობაში, რათა დაასრულოთ თქვენი სვოპი.",
-  "appStartupErrorMessage": "აპის გაშვება ვერ მოხერხდა. სცადეთ მისი სრულად დახურვა და თავიდან გაშვება. თუ შეცდომა გაგრძელდა, დაუკავშირდით მხარდაჭერას და გააზიარეთ ლოგები."
+  "appStartupErrorMessage": "აპის გაშვება ვერ მოხერხდა. სცადეთ მისი სრულად დახურვა და თავიდან გაშვება. თუ შეცდომა გაგრძელდა, დაუკავშირდით მხარდაჭერას და გააზიარეთ ლოგები.",
+  "importMnemonicDuplicateError": "ეს მნემონიკი უკვე არსებობს"
 }
