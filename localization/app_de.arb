@@ -1469,7 +1469,7 @@
   },
   "payDecodingInvoice": "Abrechnung...",
   "importColdcardInstructionsStep5": "Wählen Sie \"Export Wallet\"",
-  "electrumStopGapTooHighError": "Stop Gap scheint zu hoch. (Max. {maxStopGap}",
+  "electrumStopGapTooHighError": "Stop Gap scheint zu hoch. {Max. {maxStopGap}",
   "@electrumStopGapTooHighError": {
     "placeholders": {
       "maxStopGap": {
