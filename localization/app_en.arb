@@ -7060,6 +7060,10 @@
   "@sendConfirmSend": {
     "description": "Title for send confirmation screen"
   },
+  "sendSelfTransfer": "Self-transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
   "sendSending": "Sending",
   "@sendSending": {
     "description": "Title shown while transaction is being sent"

@@ -397,7 +397,7 @@
   "ledgerVerifyTitle": "Verificar endereço no Ledger",
   "recoverbullSwitchToPassword": "Escolha uma senha em vez",
   "exchangeDcaNetworkBitcoin": "Rede de Bitcoin",
-  "autoswapWarningTitle": "O Autoswap está habilitado com as seguintes configurações",
+  "autoswapWarningTitle": "O Autoswap está habilitado com as seguintes configurações:",
   "seedsignerStep1": "Ligue o dispositivo SeedSigner",
   "backupWalletHowToDecideBackupLosePhysical": "Uma das maneiras mais comuns que as pessoas perdem seu Bitcoin é porque eles perdem o backup físico. Qualquer pessoa que encontrar seu backup físico será capaz de tomar todo o seu Bitcoin. Se você está muito confiante de que você pode escondê-lo bem e nunca perdê-lo, é uma boa opção.",
   "transactionLabelStatus": "Estado",
@@ -1117,6 +1117,7 @@
   "doNotShareWarning": "NÃO COMPLEMENTAR COM NINGUÉM",
   "torSettingsPortNumber": "Número de porta",
   "payNameHint": "Digite o nome do destinatário",
+  "autoswapWarningTriggerAmount": "Classificação de 0,02 BTC",
   "legacySeedViewScreenTitle": "Sementes Legacy",
   "recoverbullErrorCheckStatusFailed": "Falhado para verificar o status do vault",
   "pleaseWaitFetching": "Por favor, espere enquanto buscamos seu arquivo de backup.",
@@ -1250,8 +1251,7 @@
   "fundExchangeJurisdictionArgentina": "Argentina",
   "walletNetworkBitcoin": "Rede de Bitcoin",
   "electrumAdvancedOptions": "Opções avançadas",
-  "autoswapWarningCardSubtitle": "Clique para saber mais, desativar ou configurar",
-  "autoswapActiveCardTitle": "Autoswap está ativo",
+  "autoswapWarningCardSubtitle": "Uma troca será acionada se o saldo dos pagamentos instantâneos exceder 0,02 BTC.",
   "transactionStatusConfirmed": "Confirmado",
   "dcaFrequencyDaily": "dia",
   "transactionLabelSendAmount": "Enviar valor",
@@ -1493,14 +1493,6 @@
       }
     }
   },
-  "deleteLogsTitle": "Excluir registros",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
-  "logsDeletedMessage": "Registros excluídos",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
   "payDecodingInvoice": "Fatura decodificação...",
   "importColdcardInstructionsStep5": "Selecione \"Export Wallet\"",
   "electrumStopGapTooHighError": "Pare Gap parece muito alto. (Max. {maxStopGap})",
@@ -1521,10 +1513,6 @@
   },
   "sellInstantPayments": "Pagamentos imediatos",
   "priceChartFetchingHistory": "Fetching Price History...",
-  "priceChartFailedToLoad": "Falha ao carregar histórico de preços",
-  "priceFailedToLoad": "Falha ao carregar preço",
-  "statusScreenTryAgain": "Tentar novamente",
-  "statusScreenContinue": "Continuar",
   "sellDone": "Feito",
   "payFromWallet": "Da carteira",
   "dcaConfirmRecurringBuyTitle": "Confirmação Comprar",
@@ -1538,7 +1526,7 @@
   "coreSwapsStatusPending": "Pendente",
   "electrumDragToReorder": "(Long pressione para arrastar e mudar prioridade)",
   "keystoneStep4": "Se você tiver problemas de digitalização:",
-  "autoswapTriggerAtBalanceInfoText": "Autoswap irá disparar quando o seu equilíbrio vai acima desta quantidade.",
+  "autoswapTriggerAtBalanceInfoText": "A troca automática será acionada quando o seu saldo ultrapassar este saldo máximo.",
   "exchangeLandingDisclaimerNotAvailable": "Os serviços de câmbio de criptomoeda não estão disponíveis na aplicação móvel Bull Bitcoin.",
   "sendCustomFeeRate": "Taxa de taxa personalizada",
   "ledgerHelpTitle": "Resolução de problemas do Ledger",
@@ -1573,7 +1561,7 @@
   },
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
   "arkNoBalanceData": "Sem dados de equilíbrio disponíveis",
-  "autoswapWarningCardTitle": "Autoswap é recomendado",
+  "autoswapWarningCardTitle": "O Autoswap está ativado.",
   "coreSwapsChainCompletedSuccess": "A transferência é concluída com sucesso.",
   "physicalBackupRecommendation": "Backup físico: ",
   "autoswapMaxBalance": "Max equilíbrio de carteira instantânea",
@@ -1663,8 +1651,7 @@
   "arkReceiveUnifiedAddress": "Endereço unificado (BIP21)",
   "sellHowToPayInvoice": "Como você quer pagar esta fatura?",
   "payUseCoinjoin": "Use CoinJoin",
-  "autoswapWarningExplanation": "Quando o seu saldo exceder o saldo máximo, uma troca será acionada automaticamente. O saldo alvo será mantido em sua carteira de pagamentos instantâneos e o valor restante será trocado em sua carteira de Bitcoin seguro.",
-  "autoswapWarningExplanationBold": "automaticamente",
+  "autoswapWarningExplanation": "Quando o seu saldo exceder a quantidade do gatilho, uma troca será acionada. A quantidade de base será mantida em sua carteira de pagamentos instantâneos e a quantidade restante será trocada em sua carteira de Bitcoin seguro.",
   "recoverbullVaultRecoveryTitle": "Recuperação do vault do Recoverbull",
   "passportStep14": "Agora está pronto para transmitir! Assim que você clicar em transmissão, a transação será publicada na rede Bitcoin e os fundos serão enviados.",
   "settingsCurrencyTitle": "Moeda",
@@ -3174,6 +3161,7 @@
   "bitboxActionImportWalletButton": "Importação de início",
   "fundExchangeLabelSwiftCode": "Código SWIFT",
   "buyEnterBitcoinAddress": "Digite o endereço bitcoin",
+  "autoswapWarningBaseBalance": "Equilíbrio base 0.01 BTC",
   "transactionDetailLabelPayoutAmount": "Quantidade de pagamento",
   "importQrDeviceSpecterStep6": "Escolha \"Chave única\"",
   "importQrDeviceJadeStep10": "É isso!",
@@ -3499,7 +3487,7 @@
   "payViewTransaction": "Ver Transação",
   "transactionLabelToWallet": "Para a carteira",
   "exchangeFileUploadInstructions": "Se você precisar enviar outros documentos, envie-os aqui.",
-  "ledgerInstructionsAndroidDual": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado.",
+  "ledgerInstructionsAndroidDual": "Certifique-se de que Ledger é desbloqueado com o aplicativo Bitcoin aberto e Bluetooth habilitado, ou conectar o dispositivo via USB.",
   "arkSendRecipientLabel": "Endereço do destinatário",
   "defaultWalletsLabel": "Carteiras padrão",
   "jadeStep9": "Uma vez que a transação é importada em seu Jade, revise o endereço de destino e o valor.",
@@ -4107,10 +4095,316 @@
   "logoutConfirmationDescription": "Tem certeza de que deseja sair da sua conta Bull Bitcoin? Você precisará fazer login novamente para acessar os recursos de câmbio.",
   "logoutConfirmationCancel": "Cancelar",
   "logoutConfirmationLogout": "Sair",
-  "autoswapInfoTitle": "Autoswap é recomendado",
-  "autoswapInfoDismissButton": "SIM, OBRIGADO",
-  "autoswapInfoSettingsButton": "NÃO, EU ENTENDO OS RISCOS",
-  "autoswapInfoRemindLater": "Configurar Autoswap",
+  "withdrawOwnershipQuestion": "De quem é esta conta?",
+  "@withdrawOwnershipQuestion": {
+    "description": "Question asking about account ownership"
+  },
+  "torSettingsInfoDescription": "• O proxy Tor se aplica apenas ao Bitcoin (não ao Liquid)\n• A porta padrão do Orbot é 9050\n• Certifique-se de que o Orbot esteja em execução antes de ativar\n• A conexão pode ser mais lenta ao usar o Tor",
+  "@torSettingsInfoDescription": {
+    "description": "Information about Tor proxy usage"
+  },
+  "torSettingsDescUnknown": "Não foi possível determinar o status do Tor. Verifique se o Orbot está instalado e em execução.",
+  "@torSettingsDescUnknown": {
+    "description": "Description when Tor status is unknown"
+  },
+  "torSettingsDescConnecting": "Estabelecendo conexão com o Tor",
+  "@torSettingsDescConnecting": {
+    "description": "Description when Tor is connecting"
+  },
+  "withdrawOwnershipMyAccount": "Esta é a minha conta",
+  "@withdrawOwnershipMyAccount": {
+    "description": "Option indicating the account belongs to the user"
+  },
+  "torSettingsStatusUnknown": "Status Desconhecido",
+  "@torSettingsStatusUnknown": {
+    "description": "Status title when Tor status is unknown"
+  },
+  "withdrawSuccessOrderDetails": "Detalhes do pedido",
+  "@withdrawSuccessOrderDetails": {
+    "description": "Button label to view order details after withdrawal"
+  },
+  "withdrawSuccessTitle": "Saque Iniciado",
+  "@withdrawSuccessTitle": {
+    "description": "Title shown when withdrawal is successfully initiated"
+  },
+  "torSettingsInfoTitle": "Informação Importante",
+  "@torSettingsInfoTitle": {
+    "description": "Title for the Tor information card"
+  },
+  "withdrawConfirmBankAccount": "Conta bancária",
+  "@withdrawConfirmBankAccount": {
+    "description": "Default label for bank account in confirmation screen"
+  },
+  "torSettingsDescConnected": "O Proxy Tor está em execução e pronto",
+  "@torSettingsDescConnected": {
+    "description": "Description when Tor is connected"
+  },
+  "torSettingsDescDisconnected": "O proxy do Tor não está em execução",
+  "@torSettingsDescDisconnected": {
+    "description": "Description when Tor is disconnected"
+  },
+  "withdrawOwnershipOtherAccount": "Esta é a conta de outra pessoa.",
+  "@withdrawOwnershipOtherAccount": {
+    "description": "Option indicating the account belongs to someone else"
+  },
+  "recipientsSearchHint": "Pesquise os destinatários pelo nome ou rótulo.",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
+  "autoswapInfoSettingsButton": "Configurar configurações.",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "autoswapInfoRemindLater": "Lembre-me mais tarde.",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
+  },
+  "walletAutoTransferBlockedMessage": "Tentando transferir {amount} BTC. A taxa atual é {currentFee}% do valor da transferência e o limite de taxa está definido para {thresholdFee}%.",
+  "@walletAutoTransferBlockedMessage": {
+    "description": "Message explaining why auto-transfer was blocked",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currentFee": {
+        "type": "String"
+      },
+      "thresholdFee": {
+        "type": "String"
+      }
+    }
+  },
+  "autoswapInfoTitle": "Autoswap está ativo.",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "walletAutoTransferAllowButton": "Permitir",
+  "@walletAutoTransferAllowButton": {
+    "description": "Button to allow auto-transfer despite high fees"
+  },
+  "navigationTabExchange": "Troca",
+  "@navigationTabExchange": {
+    "description": "Label for the Exchange tab in bottom navigation"
+  },
+  "navigationTabWallet": "Carteira",
+  "@navigationTabWallet": {
+    "description": "Label for the Wallet tab in bottom navigation"
+  },
+  "autoswapInfoDismissButton": "Entendi, não mostrar novamente.",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "buyUnauthenticatedError": "Você não está autenticado. Por favor, faça login para continuar.",
+  "@buyUnauthenticatedError": {
+    "description": "Error message for unauthenticated user during buy"
+  },
+  "walletAutoTransferBlockedTitle": "Transferência automática bloqueada.",
+  "@walletAutoTransferBlockedTitle": {
+    "description": "Title for auto-swap fee warning when fees exceed threshold"
+  },
+  "walletAutoTransferBlockButton": "Bloquear",
+  "@walletAutoTransferBlockButton": {
+    "description": "Button to block auto-transfer until next execution"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Carregar até {maxFiles} arquivos. Formatos permitidos: PDF, JPG, PNG, GIF, HEIC. Tamanho máximo do arquivo: 10MB por arquivo.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "Sem arquivos selecionados",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Toque em \"Selecionar arquivos\" para escolher documentos",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Selecione arquivos",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Adicionar mais arquivos",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Carregando...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Limpar tudo",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "Todos os arquivos enviados com sucesso",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{uploaded} de arquivos {total} enviados",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Pronto",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "Em revisão",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Aceito",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Rejeitado - Toque para re-upload",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "Os seus documentos estão em análise. Você não pode carregar mais arquivos até que a revisão esteja concluída.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Os seus documentos foram aceites. Não são necessários uploads adicionais.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Estatísticas",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "Sem estatísticas disponíveis",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "A partir de {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Estatísticas da ordem",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Relação de compra/venda",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Comprar Estatísticas",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Estatísticas de venda",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Volume",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Contagem de comércio",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Preço médio",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Volume de negociação total",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Estatísticas de Biller",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Moeda: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsTotalAmount": "Montante total",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Repito",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "exchangeSettingsRecipientsTitle": "Os participantes",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transações",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Notificações de e-mail",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Receba notificações por e-mail para pedidos e atualizações de conta",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeFileUploadDocumentsTitle": "Carregar documentos",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeFileUploadSuccess": "Arquivo carregado com sucesso",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Endereço da carteira salvo com sucesso",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Definir endereços de carteira padrão para retiradas automáticas de Bitcoin.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "autoswapActiveCardTitle": "Autoswap está ativo",
+  "deleteLogsTitle": "Excluir registros",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Registros excluídos",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "priceChartFailedToLoad": "Falha ao carregar histórico de preços",
+  "priceFailedToLoad": "Falha ao carregar preço",
+  "statusScreenTryAgain": "Tentar novamente",
+  "statusScreenContinue": "Continuar",
+  "autoswapWarningExplanationBold": "automaticamente",
+  "sendSelfTransfer": "Autotransferência",
   "autoswapInfoConsentMessage": "O Autoswap está atualmente ativado, mas não será acionado até que você consinta. Gostaria de mantê-lo ativado?",
   "mempoolServerStatusOnline": "Online",
   "mempoolServerStatusOffline": "Offline",
@@ -4134,8 +4428,7 @@
   "mempoolErrorSaveServerFailed": "Falha ao salvar o servidor: {error}",
   "mempoolErrorLoadFailed": "Falha ao carregar os dados do servidor mempool: {error}",
   "mempoolErrorDeleteFailed": "Falha ao excluir o servidor personalizado: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}"
-,
+  "mempoolErrorUpdateSettingsFailed": "Falha ao atualizar as configurações: {error}",
   "settingsErrorReportingTitle": "Relatório de erros",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"

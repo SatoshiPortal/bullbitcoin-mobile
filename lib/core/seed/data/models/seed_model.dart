@@ -50,17 +50,20 @@ sealed class SeedModel with _$SeedModel {
   }
 
   Seed toEntity() {
+    // Compute bytes and fingerprint once to avoid redundant PBKDF2 derivations
+    final seedBytes = Uint8List.fromList(bytes);
+    final fingerprint = Bip32Keys.fromSeed(seedBytes).fingerprint.toHexString();
     return switch (this) {
-      BytesSeedModel(:final bytes) => Seed.bytes(
-        bytes: Uint8List.fromList(bytes),
-        masterFingerprint: masterFingerprint,
+      BytesSeedModel() => Seed.bytes(
+        bytes: seedBytes,
+        masterFingerprint: fingerprint,
       ),
       MnemonicSeedModel(:final mnemonicWords, :final passphrase) =>
         Seed.mnemonic(
           mnemonicWords: mnemonicWords,
           passphrase: passphrase,
-          bytes: Uint8List.fromList(bytes),
-          masterFingerprint: masterFingerprint,
+          bytes: seedBytes,
+          masterFingerprint: fingerprint,
         ),
     };
   }
