@@ -48,7 +48,9 @@ class SeedRepository {
   Future<Seed> get(String fingerprint) async {
     try {
       final model = await _source.get(fingerprint);
-      return model.toEntity();
+      // Run toEntity() in isolate to avoid blocking UI with PBKDF2 + bip32
+      final entity = await compute(_toEntityInIsolate, model);
+      return entity;
     } catch (e, stackTrace) {
       log.info(
         'Failed to get seed with fingerprint $fingerprint: $e',
@@ -58,6 +60,9 @@ class SeedRepository {
       rethrow;
     }
   }
+
+  @pragma('vm:entry-point')
+  static Seed _toEntityInIsolate(SeedModel model) => model.toEntity();
 
   Future<bool> exists(String fingerprint) async {
     try {

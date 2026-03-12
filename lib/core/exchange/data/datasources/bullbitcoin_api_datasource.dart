@@ -79,6 +79,32 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
   }
 
+  Future<void> registerResponsibilityConsent(String apiKey) async {
+    try {
+      final resp = await _http.post(
+        _usersPath,
+        data: {
+          'id': 1,
+          'jsonrpc': '2.0',
+          'method': 'registerResponsibilityConsent',
+          'params': {},
+        },
+        options: Options(headers: {'X-API-Key': apiKey}),
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        throw 'Unable to register scam warning consent';
+      }
+
+      final result = resp.data['result'] as Map<String, dynamic>?;
+      if (result == null || result['success'] != true) {
+        throw 'Unexpected response from registerResponsibilityConsent';
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<UserSummaryModel?> getUserSummary(String apiKey) async {
     try {
       final resp = await _http.post(

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -47,11 +48,16 @@ class AssetConstants {
 }
 
 class PayjoinConstants {
-  static const List<String> ohttpRelayUrls = [
-    'https://ohttp.achow101.com',
-    'https://pj.bobspacebkk.com',
-    'https://ohttp.cakewallet.com',
-  ];
+  static List<String> get ohttpRelayUrls {
+    final list = [
+      'https://ohttp.achow101.com',
+      'https://pj.bobspacebkk.com',
+      'https://ohttp.cakewallet.com',
+    ];
+    list.shuffle(Random.secure());
+    return list;
+  }
+
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;
   static const defaultExpireAfterSec = 60 * 60 * 24; // 24 hours
