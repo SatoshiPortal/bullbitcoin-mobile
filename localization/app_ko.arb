@@ -12436,5 +12436,6 @@
   "importWatchOnlyCancel": "이름 *",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  }
+  },
+  "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다"
 }

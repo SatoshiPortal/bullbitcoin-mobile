@@ -12153,5 +12153,6 @@
   "importWatchOnlyCancel": "বাতিল",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  }
+  },
+  "importMnemonicDuplicateError": "এই নেমোনিক ইতিমধ্যে বিদ্যমান"
 }

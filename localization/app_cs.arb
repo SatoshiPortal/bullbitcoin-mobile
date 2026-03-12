@@ -12436,5 +12436,6 @@
   "importMnemonicContinue": "Pokračovat",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
-  }
+  },
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje"
 }

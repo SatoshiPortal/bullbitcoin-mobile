@@ -1,3 +1,4 @@
 {
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}"
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի"
 }

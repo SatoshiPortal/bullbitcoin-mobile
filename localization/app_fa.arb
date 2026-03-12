@@ -12436,5 +12436,6 @@
   "transactionSwapDescLnReceiveClaimable": "معامله در زنجیره تایید شده است. ما در حال حاضر ادعا می کنیم که وجوه برای تکمیل مبادله شما.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
-  }
+  },
+  "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد"
 }

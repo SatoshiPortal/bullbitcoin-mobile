@@ -4412,5 +4412,6 @@
   "backupWarningBackupLater": "NO, CAPISCO IL RISCHIO",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
-  }
+  },
+  "importMnemonicDuplicateError": "Questo mnemonic esiste già"
 }

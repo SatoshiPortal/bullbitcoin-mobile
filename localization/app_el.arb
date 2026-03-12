@@ -12436,5 +12436,6 @@
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
-  }
+  },
+  "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη"
 }

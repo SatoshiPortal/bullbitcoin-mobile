@@ -4412,5 +4412,6 @@
   "backupWarningBackupLater": "不，我了解风险",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
-  }
+  },
+  "importMnemonicDuplicateError": "该助记词已存在"
 }

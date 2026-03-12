@@ -4409,5 +4409,6 @@
   "backupWarningBackupLater": "НІ, Я РОЗУМІЮ РИЗИК",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
-  }
+  },
+  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує"
 }

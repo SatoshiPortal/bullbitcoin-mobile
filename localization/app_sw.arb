@@ -19,5 +19,6 @@
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}"
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "importMnemonicDuplicateError": "Msemo huu tayari upo"
 }

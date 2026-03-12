@@ -12436,5 +12436,6 @@
   "importWatchOnlyCancel": "रद्द करना",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  }
+  },
+  "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है"
 }
