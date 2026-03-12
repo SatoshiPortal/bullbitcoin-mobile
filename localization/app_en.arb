@@ -7076,6 +7076,10 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
+  "sendCoordinatingPayjoinTransaction": "Coordinating a Payjoin transaction.",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
+  },
   "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
