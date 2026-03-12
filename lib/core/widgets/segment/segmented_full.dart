@@ -85,3 +85,4 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
     );
   }
 }
+

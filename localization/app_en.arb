@@ -7060,6 +7060,10 @@
   "@sendConfirmSend": {
     "description": "Title for send confirmation screen"
   },
+  "sendSelfTransfer": "Self-transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
   "sendSending": "Sending",
   "@sendSending": {
     "description": "Title shown while transaction is being sent"
@@ -7184,6 +7188,10 @@
   "sendErrorAmountBelowSwapLimits": "Amount is below swap limits",
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Consider funding Instant Payments to make smaller payments.",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
   "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
   "@sendErrorAmountAboveSwapLimits": {
