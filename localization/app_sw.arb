@@ -1,0 +1,23 @@
+{
+  "languageSettingsLabel": "| Lugha |",
+  "@languageSettingsLabel": {
+    "description": "The label for the button to access the language settings"
+  },
+  "languageSettingsScreenTitle": "| Lugha |",
+  "@languageSettingsScreenTitle": {
+    "description": "The title of the language settings screen"
+  },
+  "settingsLanguageTitle": "| Lugha |",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "arkAboutTitle": "Kuhusu",
+  "@arkAboutTitle": {
+    "description": "AppBar title for Ark about screen"
+  },
+  "ledgerHelpTitle": "Troubleshooting",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}"
+}
