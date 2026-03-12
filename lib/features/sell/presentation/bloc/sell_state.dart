@@ -352,19 +352,18 @@ sealed class SellState with _$SellState {
     return _userSummary?.isKycOk(effectiveCurrency) ?? false;
   }
 
-  /// Whether [cadAmount] exceeds the per-transaction limit for the user's
+  /// Whether [amount] exceeds the per-transaction limit for the user's
   /// KYC level in [currency]. Falls back to [fiatCurrency] when null.
-  bool isCadAmountExceeded(double cadAmount, {FiatCurrency? currency}) {
+  bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? fiatCurrency;
-    return _userSummary?.isCadAmountExceeded(cadAmount, effectiveCurrency) ??
-        false;
+    return _userSummary?.isAmountExceeded(amount, effectiveCurrency) ?? false;
   }
 
   /// Returns true when the "Complete KYC" prompt should be shown instead of
   /// the normal action button.
-  bool needsKycUpgrade(double cadAmount, {FiatCurrency? currency}) {
+  bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? fiatCurrency;
-    return _userSummary?.needsKycUpgrade(cadAmount, effectiveCurrency) ?? true;
+    return _userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
   }
 }
 
