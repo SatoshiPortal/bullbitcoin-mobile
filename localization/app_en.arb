@@ -3438,6 +3438,10 @@
   "@fundExchangeContinueButton": {
     "description": "Button label to continue from warning screen to payment method details"
   },
+  "fundExchangeScamConsentError": "Failed to register your consent. Please try again.",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
   "fundExchangeDoneButton": "Done",
   "@fundExchangeDoneButton": {
     "description": "Button label to finish and exit the funding flow"
@@ -7071,6 +7075,10 @@
   "sendBroadcastingTransaction": "Broadcasting the transaction.",
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendCoordinatingPayjoinTransaction": "Coordinating a Payjoin transaction.",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
   },
   "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
   "@sendSwapInProgressInvoice": {

@@ -717,6 +717,7 @@
   "fundExchangeWarningTactic7": "Не хвилюйтеся про це попередження",
   "fundExchangeWarningConfirmation": "Я підтверджу, що я не зажадав купити Біткойн іншим.",
   "fundExchangeContinueButton": "Продовжити",
+  "fundExchangeScamConsentError": "Не вдалося зареєструвати вашу згоду. Будь ласка, спробуйте ще раз.",
   "fundExchangeDoneButton": "Сонце",
   "fundExchangeJurisdictionCanada": "Українська",
   "fundExchangeJurisdictionEurope": "浜у 涓 蹇",

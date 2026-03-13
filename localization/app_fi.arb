@@ -789,6 +789,7 @@
   "fundExchangeWarningTactic8": "He painostavat sinua toimimaan nopeasti",
   "fundExchangeWarningConfirmation": "Vahvistan, että kukaan ei pakota minua ostamaan Bitcoinia.",
   "fundExchangeContinueButton": "Jatka",
+  "fundExchangeScamConsentError": "Suostumuksesi rekisteröinti epäonnistui. Ole hyvä ja yritä uudelleen.",
   "fundExchangeDoneButton": "Valmis",
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
   "fundExchangeJurisdictionEurope": "🇪🇺 Eurooppa (SEPA)",

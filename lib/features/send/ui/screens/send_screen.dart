@@ -1519,12 +1519,20 @@ class SendSendingScreen extends StatelessWidget {
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
     );
+    final isPayjoin = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender != null,
+    );
 
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: const TopBar(title: 'Send'),
+        actions: [
+          CloseButton(
+            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -1537,7 +1545,7 @@ class SendSendingScreen extends StatelessWidget {
                 height: 123,
                 image: AssetImage(Assets.animations.cubesLoading.path),
               ),
-              if (!isLnSwap) ...[
+              if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
                 BBText(
                   context.loc.sendSending,
@@ -1572,6 +1580,20 @@ class SendSendingScreen extends StatelessWidget {
                     maxLines: 4,
                     textAlign: .center,
                   ),
+              ],
+              if (isPayjoin) ...[
+                const Gap(8),
+                BBText(
+                  context.loc.sendSending,
+                  style: context.font.headlineLarge,
+                ),
+                const Gap(8),
+                BBText(
+                  context.loc.sendCoordinatingPayjoinTransaction,
+                  style: context.font.bodyMedium,
+                  maxLines: 4,
+                  textAlign: TextAlign.center,
+                ),
               ],
             ],
           ),
