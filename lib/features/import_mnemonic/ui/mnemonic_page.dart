@@ -65,10 +65,14 @@ class MnemonicPage extends StatelessWidget {
                 ),
               ),
               if (state.isLoading)
-                const Positioned.fill(
+                Positioned.fill(
                   child: ColoredBox(
-                    color: Colors.black38,
-                    child: Center(child: CircularProgressIndicator()),
+                    color: context.appColors.overlay,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: context.appColors.primary,
+                      ),
+                    ),
                   ),
                 ),
             ],
