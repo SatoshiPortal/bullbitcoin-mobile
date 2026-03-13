@@ -12432,5 +12432,6 @@
   "buyInsufficientFundsError": "Fundos insuficientes em sua conta Bull Bitcoin para completar esta ordem de compra.",
   "@buyInsufficientFundsError": {
     "description": "Error message for insufficient funds during buy"
-  }
+  },
+  "importMnemonicDuplicateError": "Esta mnemônica já existe"
 }

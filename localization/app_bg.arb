@@ -9434,5 +9434,6 @@
   "importWatchOnlyCancel": "Отказ",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
-  }
+  },
+  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува"
 }

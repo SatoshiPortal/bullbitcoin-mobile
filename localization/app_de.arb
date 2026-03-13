@@ -4332,5 +4332,6 @@
   "retry": "Wiederholen",
   "@retry": {
     "description": "Generic retry button label"
-  }
+  },
+  "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits"
 }

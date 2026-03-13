@@ -4406,5 +4406,6 @@
   "backupWarningBackupLater": "NO, ENTIENDO EL RIESGO",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
-  }
+  },
+  "importMnemonicDuplicateError": "Esta frase mnemónica ya existe"
 }

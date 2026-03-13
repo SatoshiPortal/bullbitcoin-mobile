@@ -211,5 +211,6 @@
   "@electrumConfirm": {
     "description": "Confirm button label in advanced options"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}"
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "importMnemonicDuplicateError": "ეს მნემონიკი უკვე არსებობს"
 }

@@ -4406,5 +4406,6 @@
   "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
-  }
+  },
+  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa"
 }

@@ -12436,5 +12436,6 @@
   "buyUpgradeKYC": "KYC Seviyesini Yükselt",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
-  }
+  },
+  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut"
 }

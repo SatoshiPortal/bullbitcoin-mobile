@@ -12436,5 +12436,6 @@
   "exchangeSettingsSecuritySettingsTitle": "การตั้งค่าความปลอดภัย",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
-  }
+  },
+  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว"
 }

@@ -4403,5 +4403,6 @@
   "backupWarningBackupLater": "NON, JE COMPRENDS LE RISQUE",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
-  }
+  },
+  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà"
 }
