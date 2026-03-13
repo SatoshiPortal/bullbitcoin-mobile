@@ -17,5 +17,5 @@ class ImportWalletException extends BullException {
 }
 
 class DuplicateMnemonicException extends ImportWalletException {
-  DuplicateMnemonicException() : super('');
+  DuplicateMnemonicException() : super('Mnemonic already exists');
 }
