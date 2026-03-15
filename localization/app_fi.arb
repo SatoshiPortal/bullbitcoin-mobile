@@ -103,50 +103,27 @@
   "walletDetailsCopyButton": "Kopioi",
   "bitcoinSettingsWalletsTitle": "Lompakot",
   "bitcoinSettingsElectrumServerTitle": "Electrum-palvelimet",
-  "mempoolSettingsTitle": "Mempool-palvelin",
-  "mempoolSettingsDescription": "Määritä mukautetut mempool-palvelimet eri verkoille. Jokainen verkko voi käyttää omaa palvelintaan lohkoselaimeen ja maksuarvioihin.",
-  "mempoolSettingsDefaultServer": "Oletuspalvelin",
-  "mempoolSettingsCustomServer": "Mukautettu palvelin",
+  "mempoolSettingsTitle": "Mempool Server",
+  "mempoolSettingsDescription": "Configure custom mempool servers for different networks. Each network can use its own server for block explorer and fee estimation.",
+  "mempoolSettingsDefaultServer": "Default Server",
+  "mempoolSettingsCustomServer": "Custom Server",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
-  "mempoolCustomServerAdd": "Lisää mukautettu palvelin",
-  "mempoolCustomServerEdit": "Muokkaa",
-  "mempoolCustomServerDelete": "Poista",
-  "mempoolCustomServerLabel": "MUKAUTETTU",
-  "mempoolServerNotUsed": "Ei käytössä (mukautettu palvelin aktiivinen)",
-  "mempoolCustomServerDeleteTitle": "Poista mukautettu palvelin?",
-  "mempoolCustomServerDeleteMessage": "Haluatko varmasti poistaa tämän mukautetun mempool-palvelimen? Oletuspalvelinta käytetään sen sijaan.",
-  "mempoolCustomServerUrl": "Palvelimen URL",
-  "mempoolCustomServerUrlEmpty": "Anna palvelimen URL",
-  "mempoolCustomServerSaveSuccess": "Mukautettu palvelin tallennettu onnistuneesti",
-  "mempoolCustomServerBottomSheetDescription": "Anna mukautetun mempool-palvelimesi URL. Palvelin tarkistetaan ennen tallennusta.",
-  "mempoolSettingsUseForFeeEstimation": "Käytä maksuarviointiin",
-  "mempoolSettingsUseForFeeEstimationDescription": "Kun käytössä, tätä palvelinta käytetään maksuarviointiin. Kun pois käytöstä, käytetään Bull Bitcoinin mempool-palvelinta.",
-  "mempoolServerStatusOnline": "Verkossa",
-  "mempoolServerStatusOffline": "Ei verkossa",
-  "mempoolServerStatusChecking": "Tarkistetaan...",
-  "mempoolServerStatusUnknown": "Tuntematon",
-  "mempoolCustomServerSaveFailed": "Palvelimen tallennus epäonnistui",
-  "mempoolCustomServerInfoDescription": "Mempool-palvelimia käytetään maksuarviointiin ja lohkoselaimen avaamiseen transaktiotietoja tarkasteltaessa.",
-  "mempoolCustomServerUseSsl": "Käytä SSL:ää",
-  "mempoolCustomServerSslAutoDetected": "(Tunnistettu automaattisesti)",
-  "mempoolCustomServerSslHelpText": "Paikallisille (.local, yksityiset IP:t) ja Tor (.onion) -palvelimille SSL on yleensä pois käytöstä. Julkiset IP:t ja verkkotunnukset tulisi käyttää SSL:ää.",
-  "mempoolErrorSameAsDefault": "Tämä URL on sama kuin oletuspalvelin. Käytä eri URL-osoitetta.",
-  "mempoolErrorConnectionTimeout": "Yhteys aikakatkaistiin. Palvelin voi olla hidas tai tavoittamattomissa.",
-  "mempoolErrorHostNotFound": "Palvelinta ei löydy. Tarkista URL ja yritä uudelleen.",
-  "mempoolErrorTorNotRunning": ".onion-osoitetta ei voi tavoittaa. Varmista, että Tor/Orbot on käynnissä ja yritä uudelleen.",
-  "mempoolErrorConnectionFailed": "Palvelimeen ei voi yhdistää. Tarkista verkkoyhteys ja yritä uudelleen.",
-  "mempoolErrorNotMempoolServer": "Tämä URL ei vaikuta olevan mempool-palvelin. Tarkista osoite.",
-  "mempoolErrorServerUnavailable": "Palvelin ei ole käytettävissä. Yritä myöhemmin uudelleen.",
-  "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
-  "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
-  "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
-  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui: {error}",
-  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui: {error}",
-  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui: {error}",
+  "mempoolCustomServerAdd": "Add Custom Server",
+  "mempoolCustomServerEdit": "Edit",
+  "mempoolCustomServerDelete": "Delete",
+  "mempoolCustomServerLabel": "CUSTOM",
+  "mempoolServerNotUsed": "Not used (custom server active)",
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "mempoolCustomServerDeleteMessage": "Are you sure you want to delete this custom mempool server? The default server will be used instead.",
+  "mempoolCustomServerUrl": "Server URL",
+  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
+  "mempoolCustomServerSaveSuccess": "Custom server saved successfully",
+  "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
+  "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
+  "mempoolSettingsUseForFeeEstimationDescription": "When enabled, this server will be used for fee estimation. When disabled, Bull Bitcoin's mempool server will be used instead.",
   "bitcoinSettingsAutoTransferTitle": "Automaattinen swap",
   "bitcoinSettingsLegacySeedsTitle": "Vanhat siemenlauseet",
   "bitcoinSettingsImportWalletTitle": "Tuo lompakko",
@@ -222,7 +199,7 @@
   "addressCardCopiedMessage": "Osoite kopioitu leikepöydälle",
   "addressCardIndexLabel": "Tunniste: ",
   "addressCardBalanceLabel": "Saldo: ",
-  "onboardingRecoverYourWallet": "Recover your wallet",
+  "onboardingRecoverYourWallet": "Palauta lompakkosi",
   "onboardingEncryptedVault": "Salattu holvi",
   "onboardingEncryptedVaultDescription": "Palauta varmuuskopio pilvestä PIN-koodillasi.",
   "onboardingPhysicalBackup": "Fyysinen varmuuskopio",
@@ -812,6 +789,7 @@
   "fundExchangeWarningTactic8": "He painostavat sinua toimimaan nopeasti",
   "fundExchangeWarningConfirmation": "Vahvistan, että kukaan ei pakota minua ostamaan Bitcoinia.",
   "fundExchangeContinueButton": "Jatka",
+  "fundExchangeScamConsentError": "Suostumuksesi rekisteröinti epäonnistui. Ole hyvä ja yritä uudelleen.",
   "fundExchangeDoneButton": "Valmis",
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
   "fundExchangeJurisdictionEurope": "🇪🇺 Eurooppa (SEPA)",
@@ -1006,14 +984,14 @@
   },
   "defaultWalletsLabel": "Oletuslompakot",
   "confirmButton": "Vahvista",
-  "recoveryPhraseTitle": "Kirjoita siemenlauseen\nsanat järjestyksessä",
+  "recoveryPhraseTitle": "Tallenna siemenlauseen\nsanat oikeassa järjestyksessä",
   "storeItSafelyMessage": "Säilytä se turvallisessa paikassa.",
   "doNotShareWarning": "ÄLÄ JAA KENENKÄÄN KANSSA",
   "transcribeLabel": "Kirjoita ylös",
   "digitalCopyLabel": "Digitaalinen kopio",
   "screenshotLabel": "Näyttökuva",
   "nextButton": "Seuraava",
-  "tapWordsInOrderTitle": "Napauta palautussanoja \noikeassa järjestyksessä",
+  "tapWordsInOrderTitle": "Valitset siemenlauseen\nsanat oikeassa järjestyksessä",
   "whatIsWordNumberPrompt": "Mikä on sana numero {number}?",
   "@whatIsWordNumberPrompt": {
     "placeholders": {
@@ -1466,7 +1444,7 @@
       }
     }
   },
-  "autoswapTriggerBalanceError": "Aloitussaldon on oltava vähintään saldo x2",
+  "autoswapTriggerBalanceError": "Maksimi-saldo on oltava vähintään kaksi kertaa tavoitesaldo.",
   "arkNoTransactionsYet": "Ei vielä transaktioita.",
   "arkToday": "Tänään",
   "arkYesterday": "Eilen",
@@ -1771,8 +1749,6 @@
   "urProcessingFailedMessage": "UR:n käsittely epäonnistui",
   "scanNfcButton": "Skannaa NFC",
   "shareLogsLabel": "Jaa lokitiedot",
-  "deleteLogsTitle": "Poista lokit",
-  "logsDeletedMessage": "Lokit poistettu",
   "viewLogsLabel": "Näytä lokitiedot",
   "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
   "@errorSharingLogsMessage": {
@@ -2115,6 +2091,7 @@
   "sendErrorConfirmationFailed": "Vahvistus epäonnistui",
   "sendErrorInsufficientBalanceForSwap": "Saldo ei riitä maksamaan tätä vaihtoa Liquidin kautta eikä se ole swap-rajoissa maksamiseen Bitcoinin kautta.",
   "sendErrorAmountBelowSwapLimits": "Määrä on swap-rajojen alapuolella",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Harkitse Pikamaksun rahoittamista pienempiä maksuja varten.",
   "sendErrorAmountAboveSwapLimits": "Määrä ylittää swap-rajat",
   "sendErrorAmountBelowMinimum": "Määrä alle minimirajan: {minLimit} sat",
   "@sendErrorAmountBelowMinimum": {
@@ -2430,7 +2407,7 @@
   },
   "testBackupDefaultWallets": "Oletuslompakot",
   "testBackupConfirm": "Vahvista",
-  "testBackupWriteDownPhrase": "Kirjoita palautuslausekkeesi\noikeassa järjestyksessä",
+  "testBackupWriteDownPhrase": "Kirjoita siemenlauseen\nsanat oikeassa järjestyksessä",
   "testBackupStoreItSafe": "Säilytä se turvallisessa paikassa.",
   "testBackupLastBackupTest": "Viimeisin varmuuskopiointitesti: {timestamp}",
   "@testBackupLastBackupTest": {
@@ -2445,7 +2422,7 @@
   "testBackupDigitalCopy": "Digitaalinen kopio",
   "testBackupScreenshot": "Näyttökuva",
   "testBackupNext": "Seuraava",
-  "testBackupTapWordsInOrder": "Napauta palautussanoja \noikeassa järjestyksessä",
+  "testBackupTapWordsInOrder": "Napauta siemenlauseen\nsanat oikeassa järjestyksessä",
   "testBackupWhatIsWordNumber": "Mikä on sana numero {number}?",
   "@testBackupWhatIsWordNumber": {
     "placeholders": {
@@ -2714,7 +2691,7 @@
   "recoverbullSwitchToPIN": "Valitse PIN sen sijaan",
   "recoverbullTestBackupDescription": "Testataan nyt varmuuskopiosi varmistaaksemme, että kaikki tehtiin oikein.",
   "recoverbullTestCompletedTitle": "Testi suoritettu onnistuneesti!",
-  "recoverbullTestRecovery": "Testaa palautus",
+  "recoverbullTestRecovery": "Palautuksen testaus",
   "recoverbullTestSuccessDescription": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
   "recoverbullTorNetwork": "Tor-verkko",
   "recoverbullTransactions": "Transaktioita: {count}",
@@ -2729,7 +2706,7 @@
   "recoverbullVaultImportedSuccess": "Holvisi tuotiin onnistuneesti",
   "recoverbullVaultKey": "Holviavain",
   "recoverbullVaultKeyInput": "Holviavain",
-  "recoverbullVaultRecovery": "Holvin palautus",
+  "recoverbullVaultRecovery": "Palauta Holvi",
   "recoverbullVaultSelected": "Holvi valittu",
   "recoverbullWaiting": "Odotetaan",
   "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
@@ -2742,7 +2719,7 @@
       }
     }
   },
-  "recoverbullRecoveryTransactionsLabel": "Transaktiot: {count}",
+  "recoverbullRecoveryTransactionsLabel": "Transaktioita: {count}",
   "@recoverbullRecoveryTransactionsLabel": {
     "placeholders": {
       "count": {
@@ -3768,7 +3745,7 @@
   },
   "ledgerInstructionsIos": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä.",
   "ledgerInstructionsAndroidUsb": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja liitä laite USB-kaapelilla.",
-  "ledgerInstructionsAndroidDual": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä.",
+  "ledgerInstructionsAndroidDual": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä tai liitä laite USB-kaapelilla.",
   "ledgerScanningMessage": "Etsitään lähellä olevia Ledger-laitteita...",
   "ledgerConnectingSubtext": "Muodostetaan suojattua yhteyttä...",
   "ledgerErrorUnknown": "Tuntematon virhe",
@@ -3814,10 +3791,6 @@
   "exchangeFeatureCustomerSupport": "• Keskustele asiakastuen kanssa",
   "exchangeFeatureUnifiedHistory": "• Yhdistetty tapahtumahistoria",
   "priceChartFetchingHistory": "Haetaan kurssihistoriaa...",
-  "priceChartFailedToLoad": "Kurssihistorian lataus epäonnistui",
-  "priceFailedToLoad": "Kurssin lataus epäonnistui",
-  "statusScreenTryAgain": "Yritä uudelleen",
-  "statusScreenContinue": "Jatka",
   "exchangeLandingDisclaimerLegal": "Pääsy pörssipalveluihin rajoitetaan maihin, joissa Bull Bitcoin voi toimia laillisesti. Käyttö voi edellyttää KYC-tunnistautumista.",
   "exchangeLandingDisclaimerNotAvailable": "Kryptovaluuttapörssin palvelut eivät ole käytettävissä Bull Bitcoin -mobiilisovelluksessa.",
   "exchangeLoginButton": "Kirjaudu tai rekisteröidy",
@@ -4139,30 +4112,261 @@
   "coreSwapsChainCompletedRefunded": "Siirto on palautettu.",
   "coreSwapsChainCompletedSuccess": "Siirto on suoritettu onnistuneesti.",
   "coreSwapsChainFailedRefunding": "Siirto palautetaan pian.",
-  "autoswapBaseBalanceInfoText": "Pikalompakon saldo palaa tähän saldoon autoswapin jälkeen.",
-  "autoswapWarningDescription": "Autoswap varmistaa, että välittömien maksujen ja turvallisen Bitcoin-lompakon välillä on hyvä tasapaino.",
-  "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla",
-  "autoswapWarningExplanation": "Kun saldosi ylittää enimmäissaldon, vaihto käynnistyy automaattisesti. Tavoitesaldo säilytetään Instant Payments -lompakossasi ja jäljellä oleva summa vaihdetaan Secure Bitcoin -lompakkoosi.",
-  "autoswapWarningExplanationBold": "automaattisesti",
+  "autoswapBaseBalanceInfoText": "Pikaisen maksulompakon saldo palaa tähän tavoitesaldoon automaattisen swapin jälkeen.",
+  "autoswapWarningDescription": "Autoswap varmistaa, ettei vahingossa pidä liikaa rahaa Pikaisen maksulompakon sisällä, mikä ei ole turvallista pitkäaikaiseen säilytykseen.",
+  "autoswapWarningTitle": "Autoswap on käytössä seuraavilla asetuksilla:",
+  "autoswapWarningBaseBalance": "Tavoitesaldo 0,01 BTC",
+  "autoswapWarningTriggerAmount": "Maksimi-saldo 0,02 BTC",
+  "autoswapWarningExplanation": "Kun saldosi ylittää maksimin saldon, käynnistyy swap. Tavoitesaldo pidetään Pikaisen maksulompakon sisällä ja jäljelle jäävä summa vaihdetaan Turvalliseen Bitcoin-lompakkoosi.",
   "autoswapWarningDontShowAgain": "Älä näytä tätä varoitusta uudelleen.",
   "autoswapWarningSettingsLink": "Vie minut autoswap-asetuksiin",
   "importQrDeviceKeystoneStep7": "Skannaa Keystonessa näkyvä QR-koodi",
   "importQrDeviceKeystoneStep8": "Valitse BULL-lompakossa haluamasi johdannaistyyppi. Jos et ole varma, valitse \"Segwit (BIP84)\"",
   "bitcoinSettingsMempoolServerTitle": "Mempool-palvelimen asetukset",
-  "autoswapTriggerAtBalanceInfoText": "Autoswap käynnistyy, kun saldo ylittää tämän summan.",
-  "autoswapWarningCardTitle": "Autoswap on suositeltava",
-  "autoswapWarningCardSubtitle": "Napsauta saadaksesi lisätietoja, poistaaksesi käytöstä tai määrittääksesi",
-  "autoswapActiveCardTitle": "Autoswap on aktiivinen",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap aktivoituu, kun saldosi ylittää tämän suurimman saldon.",
+  "autoswapWarningCardTitle": "Autoswap on käytössä.",
+  "autoswapWarningCardSubtitle": "Swap käynnistyy, jos välittömien maksujen saldo ylittää 0,02 BTC.",
   "logoutConfirmationTitle": "Vahvista uloskirjautuminen",
   "logoutConfirmationDescription": "Oletko varma, että haluat kirjautua ulos Bull Bitcoin -tilistäsi? Sinun on kirjauduttava sisään uudelleen päästäksesi vaihto-ominaisuuksiin.",
   "logoutConfirmationCancel": "Peruuta",
   "logoutConfirmationLogout": "Kirjaudu ulos",
-  "autoswapInfoTitle": "Autoswap on suositeltava",
-  "autoswapInfoDismissButton": "KYLLÄ, KIITOS",
-  "autoswapInfoSettingsButton": "EI, YMMÄRRÄN RISKIT",
-  "autoswapInfoRemindLater": "Määritä Autoswap-asetukset",
-  "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?"
-,
+  "recipientsSearchHint": "Etsi vastaanottajia nimen tai tunnisteen perusteella.",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
+  "autoswapInfoSettingsButton": "Muokkaa asetuksia.",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "autoswapInfoRemindLater": "Muistuta minua myöhemmin.",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
+  },
+  "autoswapInfoTitle": "Autoswap on aktiivinen.",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "autoswapInfoDismissButton": "Selvä, älä näytä uudelleen.",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "exchangeSettingsRecipientsTitle": "Vastaanottajat",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transaktiot",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
+  "exchangeFileUploadDocumentsTitle": "Lataa asiakirjat",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeStatisticsTotalAmount": "Kokonaismäärä",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Yritä uudelleen",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "exchangeFileUploadSuccess": "Tiedosto ladattu onnistuneesti",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Sähköpostiilmoitukset",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Saat sähköposti-ilmoituksia tilauksista ja tilipäivityksistä",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet-osoite tallennettu onnistuneesti",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Aseta oletuslompakko-osoitteet automaattisille Bitcoin-poistoille.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Lataa {maxFiles}-tiedostot. Sallittuja muotoja: PDF, JPG, PNG, GIF, HEIC. Maksimitiedostokoko: 10 Mt per tiedosto.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "Ei tiedostoja valittu",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Napauta \"Valitse Tiedostot\" valita asiakirjat",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Valitse tiedostot",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Lisää tiedostoja",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Lataaminen...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Selkeä kaikki",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "Kaikki tiedostot ladattu onnistuneesti",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{uploaded} tiedostot ladattu",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Valmiina",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "Review",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Hyväksytty",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Hylätty - Tap to re-upload",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "Asiakirjat ovat parhaillaan tarkastelussa. Et voi ladata lisää tiedostoja, kunnes arvostelu on valmis.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Asiakirjat on hyväksytty. Ylimääräisiä latauksia ei tarvita.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Tilastot",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "Ei tilastoja saatavilla",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "As of {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Tilaa tilastot",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Osta/myyntisuhde",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Osta tilastoja",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Myy tilastoja",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Volume",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Kauppa Count",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Keskimääräinen hinta",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Total Trading Volume",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Billerin tilastot",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Valuutta: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolServerStatusOnline": "Verkossa",
+  "mempoolServerStatusOffline": "Ei verkossa",
+  "mempoolServerStatusChecking": "Tarkistetaan...",
+  "mempoolServerStatusUnknown": "Tuntematon",
+  "mempoolCustomServerSaveFailed": "Palvelimen tallennus epäonnistui",
+  "mempoolCustomServerInfoDescription": "Mempool-palvelimia käytetään maksuarviointiin ja lohkoselaimen avaamiseen transaktiotietoja tarkasteltaessa.",
+  "mempoolCustomServerUseSsl": "Käytä SSL:ää",
+  "mempoolCustomServerSslAutoDetected": "(Tunnistettu automaattisesti)",
+  "mempoolCustomServerSslHelpText": "Paikallisille (.local, yksityiset IP:t) ja Tor (.onion) -palvelimille SSL on yleensä pois käytöstä. Julkiset IP:t ja verkkotunnukset tulisi käyttää SSL:ää.",
+  "mempoolErrorSameAsDefault": "Tämä URL on sama kuin oletuspalvelin. Käytä eri URL-osoitetta.",
+  "mempoolErrorConnectionTimeout": "Yhteys aikakatkaistiin. Palvelin voi olla hidas tai tavoittamattomissa.",
+  "mempoolErrorHostNotFound": "Palvelinta ei löydy. Tarkista URL ja yritä uudelleen.",
+  "mempoolErrorTorNotRunning": ".onion-osoitetta ei voi tavoittaa. Varmista, että Tor/Orbot on käynnissä ja yritä uudelleen.",
+  "mempoolErrorConnectionFailed": "Palvelimeen ei voi yhdistää. Tarkista verkkoyhteys ja yritä uudelleen.",
+  "mempoolErrorNotMempoolServer": "Tämä URL ei vaikuta olevan mempool-palvelin. Tarkista osoite.",
+  "mempoolErrorServerUnavailable": "Palvelin ei ole käytettävissä. Yritä myöhemmin uudelleen.",
+  "mempoolErrorServerError": "Palvelimella tapahtui virhe. Yritä myöhemmin uudelleen.",
+  "mempoolErrorInvalidResponse": "Palvelin palautti virheellisen vastauksen.",
+  "mempoolErrorUnexpected": "Tapahtui odottamaton virhe",
+  "mempoolErrorSaveServerFailed": "Palvelimen tallennus epäonnistui: {error}",
+  "mempoolErrorLoadFailed": "Mempool-palvelimen tietojen lataus epäonnistui: {error}",
+  "mempoolErrorDeleteFailed": "Mukautetun palvelimen poisto epäonnistui: {error}",
+  "mempoolErrorUpdateSettingsFailed": "Asetusten päivitys epäonnistui: {error}",
+  "deleteLogsTitle": "Poista lokit",
+  "logsDeletedMessage": "Lokit poistettu",
+  "sendSelfTransfer": "Siirto itselle",
+  "priceChartFailedToLoad": "Kurssihistorian lataus epäonnistui",
+  "priceFailedToLoad": "Kurssin lataus epäonnistui",
+  "statusScreenTryAgain": "Yritä uudelleen",
+  "statusScreenContinue": "Jatka",
+  "autoswapWarningExplanationBold": "automaattisesti",
+  "autoswapActiveCardTitle": "Autoswap on aktiivinen",
+  "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?",
   "settingsErrorReportingTitle": "Virheraportointi",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4186,5 +4390,21 @@
   "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "KYLLÄ",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

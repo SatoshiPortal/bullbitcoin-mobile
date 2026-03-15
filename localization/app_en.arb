@@ -3438,6 +3438,10 @@
   "@fundExchangeContinueButton": {
     "description": "Button label to continue from warning screen to payment method details"
   },
+  "fundExchangeScamConsentError": "Failed to register your consent. Please try again.",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
   "fundExchangeDoneButton": "Done",
   "@fundExchangeDoneButton": {
     "description": "Button label to finish and exit the funding flow"
@@ -7060,6 +7064,10 @@
   "@sendConfirmSend": {
     "description": "Title for send confirmation screen"
   },
+  "sendSelfTransfer": "Self-transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
   "sendSending": "Sending",
   "@sendSending": {
     "description": "Title shown while transaction is being sent"
@@ -7067,6 +7075,10 @@
   "sendBroadcastingTransaction": "Broadcasting the transaction.",
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendCoordinatingPayjoinTransaction": "Coordinating a Payjoin transaction.",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
   },
   "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
   "@sendSwapInProgressInvoice": {
@@ -7184,6 +7196,10 @@
   "sendErrorAmountBelowSwapLimits": "Amount is below swap limits",
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Consider funding Instant Payments to make smaller payments.",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
   "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
   "@sendErrorAmountAboveSwapLimits": {
@@ -12661,5 +12677,21 @@
   "errorReportingRestartSnackbar": "Restart the app to apply this change",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "BACKUP YOUR WALLET NOW",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if you lose your phone, delete the app, or encounter a critical application or device related issue. There is no way to recover your wallet without a backup.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "YES",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "NO, I UNDERSTAND THE RISK",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

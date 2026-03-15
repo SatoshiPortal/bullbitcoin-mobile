@@ -123,7 +123,7 @@ sealed class PaymentRequest with _$PaymentRequest {
 
       throw 'Invalid payment request';
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      log.warning('Invalid payment request', error: e);
       rethrow;
     }
   }

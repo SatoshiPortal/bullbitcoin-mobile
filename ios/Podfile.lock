@@ -282,8 +282,8 @@ SPEC CHECKSUMS:
   image_picker_ios: 4f2f91b01abdb52842a8e277617df877e40f905b
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   lwk: 22e06bc5664247d6b2dac91cfe209b63b70dd580
-  no_screenshot: e91f3e7a771bf761b087c575028bb1b24a7ca33d
-  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
+  no_screenshot: 6d183496405a3ab709a67a54e5cd0f639e94729e
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47

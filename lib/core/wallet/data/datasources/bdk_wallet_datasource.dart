@@ -140,6 +140,21 @@ class BdkWalletDatasource {
     return isMine;
   }
 
+  Future<bool> isAddressMine(
+    String address, {
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final bdkAddress = bdk.Address(
+      address: address,
+      network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+    );
+    final script = bdkAddress.scriptPubkey();
+    final isMine = bdkWallet.isMine(script: script);
+
+    return isMine;
+  }
+
   Future<String> buildPsbt({
     required String address,
     required NetworkFee networkFee,

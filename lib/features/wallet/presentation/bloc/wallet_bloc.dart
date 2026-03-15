@@ -87,6 +87,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<RefreshArkWalletBalance>(_onRefreshArkWalletBalance);
     on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
     on<DisableAutoSwap>(_onDisableAutoSwap);
+    on<DismissBackupWarning>(_onDismissBackupWarning);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -484,11 +485,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
-      log.severe(
-        message: '[WalletBloc] Failed to execute auto swap',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (e is AutoSwapDisabledException) {
+        log.fine('[WalletBloc] Auto swap skipped: ${e.message}');
+      } else {
+        log.severe(
+          message: '[WalletBloc] Failed to execute auto swap',
+          error: e,
+          trace: StackTrace.current,
+        );
+      }
     }
   }
 
@@ -624,5 +629,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         trace: StackTrace.current,
       );
     }
+  }
+
+  void _onDismissBackupWarning(
+    DismissBackupWarning event,
+    Emitter<WalletState> emit,
+  ) {
+    emit(state.copyWith(backupWarningDismissed: true));
   }
 }
