@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:lwk/lwk.dart' as lwk;
 
 class DescriptorDerivation {
@@ -9,37 +9,36 @@ class DescriptorDerivation {
     required bool isTestnet,
     bool isInternalKeychain = false,
   }) async {
-    final secretKey = await bdk.DescriptorSecretKey.fromString(xprv);
+    final secretKey = bdk.DescriptorSecretKey.fromString(privateKey: xprv);
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-    final keychain =
-        isInternalKeychain
-            ? bdk.KeychainKind.internalChain
-            : bdk.KeychainKind.externalChain;
+    final keychain = isInternalKeychain
+        ? bdk.KeychainKind.internal
+        : bdk.KeychainKind.external_;
     bdk.Descriptor descriptor;
 
     switch (scriptType) {
       case ScriptType.bip84:
-        descriptor = await bdk.Descriptor.newBip84(
+        descriptor = bdk.Descriptor.newBip84(
           secretKey: secretKey,
+          keychainKind: keychain,
           network: network,
-          keychain: keychain,
         );
       case ScriptType.bip49:
-        descriptor = await bdk.Descriptor.newBip49(
+        descriptor = bdk.Descriptor.newBip49(
           secretKey: secretKey,
+          keychainKind: keychain,
           network: network,
-          keychain: keychain,
         );
       case ScriptType.bip44:
-        descriptor = await bdk.Descriptor.newBip44(
+        descriptor = bdk.Descriptor.newBip44(
           secretKey: secretKey,
+          keychainKind: keychain,
           network: network,
-          keychain: keychain,
         );
     }
 
     // `asString` returns the public descriptor.
-    return descriptor.asString();
+    return descriptor.toString();
   }
 
   static Future<String> derivePublicLiquidDescriptorFromMnemonic(
@@ -47,11 +46,11 @@ class DescriptorDerivation {
     required ScriptType scriptType,
     required bool isTestnet,
   }) async {
-    final lwk.Descriptor confidentialDescriptor = await lwk
-        .Descriptor.newConfidential(
-      network: isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
-      mnemonic: mnemonic,
-    );
+    final lwk.Descriptor confidentialDescriptor =
+        await lwk.Descriptor.newConfidential(
+          network: isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
+          mnemonic: mnemonic,
+        );
 
     return confidentialDescriptor.ctDescriptor;
   }
@@ -63,45 +62,44 @@ class DescriptorDerivation {
     required bool isTestnet,
     bool isInternalKeychain = false,
   }) async {
-    final publicKey = await bdk.DescriptorPublicKey.fromString(xpub);
+    final publicKey = bdk.DescriptorPublicKey.fromString(publicKey: xpub);
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-    final keychain =
-        isInternalKeychain
-            ? bdk.KeychainKind.internalChain
-            : bdk.KeychainKind.externalChain;
+    final keychain = isInternalKeychain
+        ? bdk.KeychainKind.internal
+        : bdk.KeychainKind.external_;
 
-    await bdk.Descriptor.newBip84Public(
+    bdk.Descriptor.newBip84Public(
       publicKey: publicKey,
-      fingerPrint: fingerprint,
+      fingerprint: fingerprint,
+      keychainKind: keychain,
       network: network,
-      keychain: keychain,
     );
     bdk.Descriptor descriptor;
 
     switch (scriptType) {
       case ScriptType.bip84:
-        descriptor = await bdk.Descriptor.newBip84Public(
+        descriptor = bdk.Descriptor.newBip84Public(
           publicKey: publicKey,
-          fingerPrint: fingerprint,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
           network: network,
-          keychain: keychain,
         );
       case ScriptType.bip49:
-        descriptor = await bdk.Descriptor.newBip49Public(
+        descriptor = bdk.Descriptor.newBip49Public(
           publicKey: publicKey,
-          fingerPrint: fingerprint,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
           network: network,
-          keychain: keychain,
         );
       case ScriptType.bip44:
-        descriptor = await bdk.Descriptor.newBip44Public(
+        descriptor = bdk.Descriptor.newBip44Public(
           publicKey: publicKey,
-          fingerPrint: fingerprint,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
           network: network,
-          keychain: keychain,
         );
     }
 
-    return descriptor.asString();
+    return descriptor.toString();
   }
 }

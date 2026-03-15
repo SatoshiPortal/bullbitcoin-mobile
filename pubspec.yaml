@@ -8,10 +8,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  bdk_flutter:
+  bdk_dart:
     git:
-      url: https://github.com/SatoshiPortal/bdk-flutter
-      ref: 3024b3452b4b0e5982d737f82ff461024a881ae7
+      url: https://github.com/bitcoindevkit/bdk-dart
+      ref: 6dfdddbfa6da8fbfa82d796c2564fbeec899232e
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
