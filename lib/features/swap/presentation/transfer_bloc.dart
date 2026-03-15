@@ -242,23 +242,29 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       return;
     }
 
-    if (newFromWallet.isLiquid == newToWallet.isLiquid) {
-      if (newFromWallet.isLiquid) {
-        return;
-      }
-    } else {
-      final isFromWalletChanged = newFromWallet != state.fromWallet;
-      if (isFromWalletChanged && newFromWallet.isLiquid) {
-        final bitcoinWallets = state.wallets.where((w) => !w.isLiquid).toList();
-        if (bitcoinWallets.isNotEmpty) {
-          newToWallet = bitcoinWallets.first;
+    final isSwap = newFromWallet.id == state.toWallet?.id &&
+        newToWallet.id == state.fromWallet?.id;
+
+    if (!isSwap) {
+      if (newFromWallet.isLiquid == newToWallet.isLiquid) {
+        if (newFromWallet.isLiquid) {
+          return;
         }
-      } else if (!isFromWalletChanged && newToWallet.isLiquid) {
-        final bitcoinWallets = state.wallets
-            .where((w) => !w.isLiquid && w.signsLocally)
-            .toList();
-        if (bitcoinWallets.isNotEmpty) {
-          newFromWallet = bitcoinWallets.first;
+      } else {
+        final isFromWalletChanged = newFromWallet != state.fromWallet;
+        if (isFromWalletChanged && newFromWallet.isLiquid) {
+          final bitcoinWallets =
+              state.wallets.where((w) => !w.isLiquid).toList();
+          if (bitcoinWallets.isNotEmpty) {
+            newToWallet = bitcoinWallets.first;
+          }
+        } else if (!isFromWalletChanged && newToWallet.isLiquid) {
+          final bitcoinWallets = state.wallets
+              .where((w) => !w.isLiquid && w.signsLocally)
+              .toList();
+          if (bitcoinWallets.isNotEmpty) {
+            newFromWallet = bitcoinWallets.first;
+          }
         }
       }
     }
