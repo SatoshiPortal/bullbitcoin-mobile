@@ -11,9 +11,9 @@ class BdkBitcoinBlockchainDatasource {
     required ElectrumServer electrumServer,
   }) async {
     final blockchain = await createBlockchainFromElectrumServer(electrumServer);
-    final psbt = bdk.Psbt(finalizedPsbt);
+    final psbt = bdk.Psbt(psbtBase64: finalizedPsbt);
     final tx = psbt.extractTx();
-    final txId = blockchain.transactionBroadcast(tx);
+    final txId = blockchain.transactionBroadcast(tx: tx);
     return txId.toString();
   }
 
@@ -22,8 +22,8 @@ class BdkBitcoinBlockchainDatasource {
     required ElectrumServer electrumServer,
   }) async {
     final blockchain = await createBlockchainFromElectrumServer(electrumServer);
-    final tx = bdk.Transaction(transaction);
-    final txId = blockchain.transactionBroadcast(tx);
+    final tx = bdk.Transaction(transactionBytes: transaction);
+    final txId = blockchain.transactionBroadcast(tx: tx);
     return txId.toString();
   }
 
@@ -31,11 +31,13 @@ class BdkBitcoinBlockchainDatasource {
     ElectrumServer electrumServer,
   ) async {
     final blockchain = bdk.ElectrumClient(
-      electrumServer.url,
+      url: electrumServer.url,
       // Only set the socks5 if it's not empty,
       //  otherwise bdk will throw an error
       // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
-      electrumServer.socks5?.isNotEmpty == true ? electrumServer.socks5 : null,
+      socks5: electrumServer.socks5?.isNotEmpty == true
+          ? electrumServer.socks5
+          : null,
     );
 
     return blockchain;

@@ -89,7 +89,7 @@ class Bbqr {
   static Future<List<String>> splitPsbt(String psbt) async {
     try {
       // check if the PSBT is valid, will throw if not
-      final parsedPsbt = bdk.Psbt(psbt);
+      final parsedPsbt = bdk.Psbt(psbtBase64: psbt);
       final validPstb = parsedPsbt.serialize();
       final psbtBytes = base64.decode(validPstb);
 

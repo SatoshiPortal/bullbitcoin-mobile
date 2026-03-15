@@ -94,8 +94,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: b9684537813cfb81794cd7c99e63a0dd7b4c091e
+      ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
+      resolved-ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
       url: "https://github.com/bitcoindevkit/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"

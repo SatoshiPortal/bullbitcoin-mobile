@@ -34,13 +34,13 @@ class TheDirtyUsecase {
           : bdk.Network.bitcoin;
 
       final bdkMnemonic = bdk.Mnemonic.fromEntropy(
-        Uint8List.fromList(mnemonic.entropy),
+        entropy: Uint8List.fromList(mnemonic.entropy),
       );
 
       final descriptorSecretKey = bdk.DescriptorSecretKey(
-        bdkNetwork,
-        bdkMnemonic,
-        mnemonic.passphrase,
+        network: bdkNetwork,
+        mnemonic: bdkMnemonic,
+        password: mnemonic.passphrase,
       );
 
       bdk.Descriptor? external;
@@ -49,45 +49,45 @@ class TheDirtyUsecase {
       switch (scriptType) {
         case ScriptType.bip84:
           external = bdk.Descriptor.newBip84(
-            descriptorSecretKey,
-            bdk.KeychainKind.external_,
-            bdkNetwork,
+            secretKey: descriptorSecretKey,
+            keychainKind: bdk.KeychainKind.external_,
+            network: bdkNetwork,
           );
           internal = bdk.Descriptor.newBip84(
-            descriptorSecretKey,
-            bdk.KeychainKind.internal,
-            bdkNetwork,
+            secretKey: descriptorSecretKey,
+            keychainKind: bdk.KeychainKind.internal,
+            network: bdkNetwork,
           );
         case ScriptType.bip49:
           external = bdk.Descriptor.newBip49(
-            descriptorSecretKey,
-            bdk.KeychainKind.external_,
-            bdkNetwork,
+            secretKey: descriptorSecretKey,
+            keychainKind: bdk.KeychainKind.external_,
+            network: bdkNetwork,
           );
           internal = bdk.Descriptor.newBip49(
-            descriptorSecretKey,
-            bdk.KeychainKind.internal,
-            bdkNetwork,
+            secretKey: descriptorSecretKey,
+            keychainKind: bdk.KeychainKind.internal,
+            network: bdkNetwork,
           );
         case ScriptType.bip44:
           external = bdk.Descriptor.newBip44(
-            descriptorSecretKey,
-            bdk.KeychainKind.external_,
-            bdkNetwork,
+            secretKey: descriptorSecretKey,
+            keychainKind: bdk.KeychainKind.external_,
+            network: bdkNetwork,
           );
           internal = bdk.Descriptor.newBip44(
-            descriptorSecretKey,
-            bdk.KeychainKind.internal,
-            bdkNetwork,
+            secretKey: descriptorSecretKey,
+            keychainKind: bdk.KeychainKind.internal,
+            network: bdkNetwork,
           );
       }
 
       final wallet = bdk.Wallet(
-        external,
-        internal,
-        bdkNetwork,
-        bdk.Persister.newInMemory(),
-        0,
+        descriptor: external,
+        changeDescriptor: internal,
+        network: bdkNetwork,
+        persister: bdk.Persister.newInMemory(),
+        lookahead: 0,
       );
 
       final electrumServers = await _electrumServerPort.getElectrumServers(
@@ -114,12 +114,12 @@ class TheDirtyUsecase {
 
           final fullScanRequest = wallet.startFullScan().build();
           final scanUpdate = blockchain.fullScan(
-            fullScanRequest,
-            electrumServer.stopGap,
-            20,
-            true,
+            request: fullScanRequest,
+            stopGap: electrumServer.stopGap,
+            batchSize: 20,
+            fetchPrevTxouts: true,
           );
-          wallet.applyUpdate(scanUpdate);
+          wallet.applyUpdate(update: scanUpdate);
           break; // Exit the loop if sync is successful
         } catch (e) {
           log.warning('Failed to sync with ${electrumServers[i].url}: $e');

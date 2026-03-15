@@ -41,10 +41,10 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
 
           // Seedsigner doesn't return the original input data, so here we try to add inputs data from the unsigned tx
 
-          final psbt = bdk.Psbt(state.unsignedPsbt!);
-          final signedPsbt = bdk.Psbt(payload);
+          final psbt = bdk.Psbt(psbtBase64: state.unsignedPsbt!);
+          final signedPsbt = bdk.Psbt(psbtBase64: payload);
 
-          final tx = psbt.combine(signedPsbt);
+          final tx = psbt.combine(other: signedPsbt);
 
           // TODO: Check if we can't just do tx.finalize() here to get the finalized psbt
           final finalPsbt = Psbt.deserialize(tx.extractTx().serialize());

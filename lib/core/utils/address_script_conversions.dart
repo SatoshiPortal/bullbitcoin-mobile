@@ -9,8 +9,8 @@ class AddressScriptConversions {
   }) async {
     try {
       final address = bdk.Address.fromScript(
-        bdk.Script(scriptPubkey),
-        isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        script: bdk.Script(rawOutputScript: scriptPubkey),
+        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
       );
 
       return address.toString();

@@ -29,8 +29,14 @@ class BdkFacade {
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
 
-    final external = bdk.Descriptor(walletModel.externalDescriptor, network);
-    final internal = bdk.Descriptor(walletModel.internalDescriptor, network);
+    final external = bdk.Descriptor(
+      descriptor: walletModel.externalDescriptor,
+      network: network,
+    );
+    final internal = bdk.Descriptor(
+      descriptor: walletModel.internalDescriptor,
+      network: network,
+    );
 
     // Get the database path based on the wallet's id for uniqueness and in hex
     // to ensure it's a valid filename
@@ -38,12 +44,23 @@ class BdkFacade {
     final dbFile = File(dbPath);
 
     try {
-      final dbPersister = bdk.Persister.newSqlite(dbPath);
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
 
       // Use load if database (wallet) exists, otherwise create new
       final wallet = await dbFile.exists()
-          ? bdk.Wallet.load(external, internal, dbPersister, _lookahead)
-          : bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+          ? bdk.Wallet.load(
+              descriptor: external,
+              changeDescriptor: internal,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            )
+          : bdk.Wallet(
+              descriptor: external,
+              changeDescriptor: internal,
+              network: network,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            );
 
       return wallet;
     } catch (e) {
@@ -51,8 +68,14 @@ class BdkFacade {
       if (await dbFile.exists()) {
         await dbFile.delete();
       }
-      final dbPersister = bdk.Persister.newSqlite(dbPath);
-      return bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
+      return bdk.Wallet(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: network,
+        persister: dbPersister,
+        lookahead: _lookahead,
+      );
     }
   }
 
@@ -65,11 +88,11 @@ class BdkFacade {
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
 
-    final bdkMnemonic = bdk.Mnemonic.fromString(walletModel.mnemonic);
+    final bdkMnemonic = bdk.Mnemonic.fromString(mnemonic: walletModel.mnemonic);
     final secretKey = bdk.DescriptorSecretKey(
-      network,
-      bdkMnemonic,
-      walletModel.passphrase,
+      network: network,
+      mnemonic: bdkMnemonic,
+      password: walletModel.passphrase,
     );
 
     bdk.Descriptor? external;
@@ -78,36 +101,36 @@ class BdkFacade {
     switch (walletModel.scriptType) {
       case ScriptType.bip84:
         external = bdk.Descriptor.newBip84(
-          secretKey,
-          bdk.KeychainKind.external_,
-          network,
+          secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.external_,
+          network: network,
         );
         internal = bdk.Descriptor.newBip84(
-          secretKey,
-          bdk.KeychainKind.internal,
-          network,
+          secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.internal,
+          network: network,
         );
       case ScriptType.bip49:
         external = bdk.Descriptor.newBip49(
-          secretKey,
-          bdk.KeychainKind.external_,
-          network,
+          secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.external_,
+          network: network,
         );
         internal = bdk.Descriptor.newBip49(
-          secretKey,
-          bdk.KeychainKind.internal,
-          network,
+          secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.internal,
+          network: network,
         );
       case ScriptType.bip44:
         external = bdk.Descriptor.newBip44(
-          secretKey,
-          bdk.KeychainKind.external_,
-          network,
+          secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.external_,
+          network: network,
         );
         internal = bdk.Descriptor.newBip44(
-          secretKey,
-          bdk.KeychainKind.internal,
-          network,
+          secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.internal,
+          network: network,
         );
     }
 
@@ -116,12 +139,23 @@ class BdkFacade {
     final dbFile = File(dbPath);
 
     try {
-      final dbPersister = bdk.Persister.newSqlite(dbPath);
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
 
       // Use load if database exists, otherwise create new
       final wallet = await dbFile.exists()
-          ? bdk.Wallet.load(external, internal, dbPersister, _lookahead)
-          : bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+          ? bdk.Wallet.load(
+              descriptor: external,
+              changeDescriptor: internal,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            )
+          : bdk.Wallet(
+              descriptor: external,
+              changeDescriptor: internal,
+              network: network,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            );
 
       return wallet;
     } catch (e) {
@@ -129,8 +163,14 @@ class BdkFacade {
       if (await dbFile.exists()) {
         await dbFile.delete();
       }
-      final dbPersister = bdk.Persister.newSqlite(dbPath);
-      return bdk.Wallet(external, internal, network, dbPersister, _lookahead);
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
+      return bdk.Wallet(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: network,
+        persister: dbPersister,
+        lookahead: _lookahead,
+      );
     }
   }
 
@@ -140,8 +180,8 @@ class BdkFacade {
     String walletIdHex,
   ) async {
     final dbPath = await _getDbPath(walletIdHex);
-    final persister = bdk.Persister.newSqlite(dbPath);
-    bdkWallet.persist(persister);
+    final persister = bdk.Persister.newSqlite(path: dbPath);
+    bdkWallet.persist(persister: persister);
   }
 
   static Future<String> _getDbPath(String walletIdHex) async {

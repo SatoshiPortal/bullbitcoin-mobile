@@ -324,7 +324,7 @@ extension PsbtSigner on PsbtV2 {
     }
     while (_readKeyPair(globalMap, bufferReader)) {}
 
-    final bdkPsbt = bdk.Psbt(base64.encode(psbt));
+    final bdkPsbt = bdk.Psbt(psbtBase64: base64.encode(psbt));
     final tx = bdkPsbt.extractTx();
 
     setGlobalInputCount(tx.input().length);

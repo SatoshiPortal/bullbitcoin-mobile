@@ -6,7 +6,7 @@ class MnemonicGenerator {
 
   List<String> generate() {
     try {
-      final mnemonic = bdk.Mnemonic(bdk.WordCount.words12);
+      final mnemonic = bdk.Mnemonic(wordCount: bdk.WordCount.words12);
 
       final mnemonicWords = mnemonic.toString().split(' ');
       return mnemonicWords;

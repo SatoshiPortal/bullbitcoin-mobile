@@ -29,7 +29,7 @@ class BitcoinTx {
   });
 
   static Future<BitcoinTx> fromBytes(List<int> bytes) async {
-    final bdkTx = bdk.Transaction(Uint8List.fromList(bytes));
+    final bdkTx = bdk.Transaction(transactionBytes: Uint8List.fromList(bytes));
 
     final txid = bdkTx.computeTxid().toString();
     final version = bdkTx.version();
@@ -58,7 +58,7 @@ class BitcoinTx {
   }
 
   static Future<BitcoinTx> fromPsbt(String psbtBase64) async {
-    final psbt = bdk.Psbt(psbtBase64);
+    final psbt = bdk.Psbt(psbtBase64: psbtBase64);
     final txBytes = psbt.extractTx().serialize();
     return fromBytes(txBytes);
   }
@@ -88,8 +88,10 @@ class BitcoinTx {
     for (final output in vout) {
       final scriptPubkey = output.scriptPubKey;
       final outputAddress = bdk.Address.fromScript(
-        bdk.Script(Uint8List.fromList(scriptPubkey.bytes)),
-        isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        script: bdk.Script(
+          rawOutputScript: Uint8List.fromList(scriptPubkey.bytes),
+        ),
+        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
       );
       if (outputAddress.toString() == address) {
         totalAmount += output.value.toInt();

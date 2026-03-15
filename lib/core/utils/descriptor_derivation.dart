@@ -9,7 +9,7 @@ class DescriptorDerivation {
     required bool isTestnet,
     bool isInternalKeychain = false,
   }) async {
-    final secretKey = bdk.DescriptorSecretKey.fromString(xprv);
+    final secretKey = bdk.DescriptorSecretKey.fromString(privateKey: xprv);
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
     final keychain = isInternalKeychain
         ? bdk.KeychainKind.internal
@@ -18,11 +18,23 @@ class DescriptorDerivation {
 
     switch (scriptType) {
       case ScriptType.bip84:
-        descriptor = bdk.Descriptor.newBip84(secretKey, keychain, network);
+        descriptor = bdk.Descriptor.newBip84(
+          secretKey: secretKey,
+          keychainKind: keychain,
+          network: network,
+        );
       case ScriptType.bip49:
-        descriptor = bdk.Descriptor.newBip49(secretKey, keychain, network);
+        descriptor = bdk.Descriptor.newBip49(
+          secretKey: secretKey,
+          keychainKind: keychain,
+          network: network,
+        );
       case ScriptType.bip44:
-        descriptor = bdk.Descriptor.newBip44(secretKey, keychain, network);
+        descriptor = bdk.Descriptor.newBip44(
+          secretKey: secretKey,
+          keychainKind: keychain,
+          network: network,
+        );
     }
 
     // `asString` returns the public descriptor.
@@ -50,36 +62,41 @@ class DescriptorDerivation {
     required bool isTestnet,
     bool isInternalKeychain = false,
   }) async {
-    final publicKey = bdk.DescriptorPublicKey.fromString(xpub);
+    final publicKey = bdk.DescriptorPublicKey.fromString(publicKey: xpub);
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
     final keychain = isInternalKeychain
         ? bdk.KeychainKind.internal
         : bdk.KeychainKind.external_;
 
-    bdk.Descriptor.newBip84Public(publicKey, fingerprint, keychain, network);
+    bdk.Descriptor.newBip84Public(
+      publicKey: publicKey,
+      fingerprint: fingerprint,
+      keychainKind: keychain,
+      network: network,
+    );
     bdk.Descriptor descriptor;
 
     switch (scriptType) {
       case ScriptType.bip84:
         descriptor = bdk.Descriptor.newBip84Public(
-          publicKey,
-          fingerprint,
-          keychain,
-          network,
+          publicKey: publicKey,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
+          network: network,
         );
       case ScriptType.bip49:
         descriptor = bdk.Descriptor.newBip49Public(
-          publicKey,
-          fingerprint,
-          keychain,
-          network,
+          publicKey: publicKey,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
+          network: network,
         );
       case ScriptType.bip44:
         descriptor = bdk.Descriptor.newBip44Public(
-          publicKey,
-          fingerprint,
-          keychain,
-          network,
+          publicKey: publicKey,
+          fingerprint: fingerprint,
+          keychainKind: keychain,
+          network: network,
         );
     }
 

@@ -134,8 +134,8 @@ class BdkWalletDatasource {
     required WalletModel wallet,
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
-    final script = bdk.Script(scriptBytes);
-    final isMine = bdkWallet.isMine(script);
+    final script = bdk.Script(rawOutputScript: scriptBytes);
+    final isMine = bdkWallet.isMine(script: script);
 
     return isMine;
   }
@@ -155,51 +155,57 @@ class BdkWalletDatasource {
 
     // Get the scriptPubkey from the address
     final bdkAddress = bdk.Address(
-      address,
-      wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      address: address,
+      network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
     );
     final script = bdkAddress.scriptPubkey();
 
     // Check if the transaction is a drain transaction
     if (drain == true) {
-      txBuilder = bdk.TxBuilder().drainWallet().drainTo(script);
+      txBuilder = bdk.TxBuilder().drainWallet().drainTo(script: script);
     } else {
       if (amountSat == null) {
         throw ArgumentError('amountSat is required');
       }
       txBuilder = bdk.TxBuilder().addRecipient(
-        script,
-        bdk.Amount.fromSat(amountSat),
+        script: script,
+        amount: bdk.Amount.fromSat(satoshi: amountSat),
       );
     }
 
     if (selected != null && selected.isNotEmpty) {
       final selectableOutPoints = selected
           .map(
-            (utxo) => bdk.OutPoint(bdk.Txid.fromString(utxo.txId), utxo.vout),
+            (utxo) => bdk.OutPoint(
+              txid: bdk.Txid.fromString(hex: utxo.txId),
+              vout: utxo.vout,
+            ),
           )
           .toList();
-      txBuilder.addUtxos(selectableOutPoints);
+      txBuilder.addUtxos(outpoints: selectableOutPoints);
     }
 
     // bdk_dart always has RBF (nSequence = 0xFFFFFFFD) enabled by default,
     // so we set the sequence to 0xFFFFFFFE if replaceByFee is explicitly set to false to disable RBF.
-    if (!replaceByFee) txBuilder.setExactSequence(0xFFFFFFFE);
+    if (!replaceByFee) txBuilder.setExactSequence(nsequence: 0xFFFFFFFE);
 
     if (networkFee.isAbsolute) {
       txBuilder = txBuilder.feeAbsolute(
-        bdk.Amount.fromSat(networkFee.value.toInt()),
+        feeAmount: bdk.Amount.fromSat(satoshi: networkFee.value.toInt()),
       );
     } else {
       txBuilder = txBuilder.feeRate(
-        bdk.FeeRate.fromSatPerVb(networkFee.value.round()),
+        feeRate: bdk.FeeRate.fromSatPerVb(satVb: networkFee.value.round()),
       );
     }
 
     // Make sure utxos that are unspendable are not used
     final unspendableOutPoints = unspendable
         ?.map(
-          (input) => bdk.OutPoint(bdk.Txid.fromString(input.txId), input.vout),
+          (input) => bdk.OutPoint(
+            txid: bdk.Txid.fromString(hex: input.txId),
+            vout: input.vout,
+          ),
         )
         .toList();
 
@@ -217,23 +223,23 @@ class BdkWalletDatasource {
         throw NoSpendableUtxoException('All unspents are unspendable');
       }
 
-      txBuilder = txBuilder.unspendable(unspendableOutPoints);
+      txBuilder = txBuilder.unspendable(unspendable: unspendableOutPoints);
     }
 
     // Finish the transaction building process
-    final psbt = txBuilder.finish(bdkWallet);
+    final psbt = txBuilder.finish(wallet: bdkWallet);
 
     return psbt.serialize();
   }
 
   Future<int> decodeTxSize(String psbtString) async {
-    final psbt = bdk.Psbt(psbtString);
+    final psbt = bdk.Psbt(psbtBase64: psbtString);
     final size = psbt.extractTx().vsize();
     return size.toInt();
   }
 
   Future<int> getFeeAmount(String psbtString) async {
-    final psbt = bdk.Psbt(psbtString);
+    final psbt = bdk.Psbt(psbtBase64: psbtString);
     final fee = psbt.fee();
     return fee;
   }
@@ -243,15 +249,15 @@ class BdkWalletDatasource {
     String address, {
     required bool isTestnet,
   }) async {
-    final psbt = bdk.Psbt(psbtString);
+    final psbt = bdk.Psbt(psbtBase64: psbtString);
     final tx = psbt.extractTx();
     final outputs = tx.output();
     int totalAmount = 0;
     for (final output in outputs) {
       final scriptPubkey = output.scriptPubkey;
       final outputAddress = bdk.Address.fromScript(
-        bdk.Script(scriptPubkey.toBytes()),
-        isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+        script: bdk.Script(rawOutputScript: scriptPubkey.toBytes()),
+        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
       );
       if (outputAddress.toString() == address) {
         totalAmount += output.value.toSat();
@@ -265,12 +271,19 @@ class BdkWalletDatasource {
     String unsignedPsbt, {
     required PrivateBdkWalletModel wallet,
   }) async {
-    final psbt = bdk.Psbt(unsignedPsbt);
+    final psbt = bdk.Psbt(psbtBase64: unsignedPsbt);
     final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
 
     final isFinalized = bdkWallet.sign(
-      psbt,
-      bdk.SignOptions(true, null, true, true, false, true),
+      psbt: psbt,
+      signOptions: bdk.SignOptions(
+        trustWitnessUtxo: true,
+        assumeHeight: null,
+        allowAllSighashes: true,
+        tryFinalize: true,
+        signWithTapInternalKey: false,
+        allowGrinding: true,
+      ),
     );
     if (!isFinalized) {
       log.info('Signed PSBT is not finalized');
@@ -377,10 +390,10 @@ class BdkWalletDatasource {
             inputModels.every((input) => input.isOwn) &&
             outputModels.every((output) => output.isOwn);
 
-        final sentAndReceived = bdkWallet.sentAndReceived(tx.transaction);
+        final sentAndReceived = bdkWallet.sentAndReceived(tx: tx.transaction);
         final received = sentAndReceived.received.toSat();
         final sent = sentAndReceived.sent.toSat();
-        final fee = bdkWallet.calculateFee(tx.transaction).toSat();
+        final fee = bdkWallet.calculateFee(tx: tx.transaction).toSat();
         final chainPosition = tx.chainPosition;
         int? confirmationTime;
         if (chainPosition is bdk.ConfirmedChainPosition) {
@@ -428,7 +441,9 @@ class BdkWalletDatasource {
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final addressInfo = bdkWallet.revealNextAddress(
-      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
+      keychain: isChange
+          ? bdk.KeychainKind.internal
+          : bdk.KeychainKind.external_,
     );
 
     // Persist the revealed address to avoid address reuse
@@ -476,7 +491,9 @@ class BdkWalletDatasource {
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final nextAddress = bdkWallet.revealNextAddress(
-      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
+      keychain: isChange
+          ? bdk.KeychainKind.internal
+          : bdk.KeychainKind.external_,
     );
 
     final index =
@@ -493,8 +510,10 @@ class BdkWalletDatasource {
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final addressInfo = bdkWallet.peekAddress(
-      isChange ? bdk.KeychainKind.internal : bdk.KeychainKind.external_,
-      index,
+      keychain: isChange
+          ? bdk.KeychainKind.internal
+          : bdk.KeychainKind.external_,
+      index: index,
     );
 
     final address = addressInfo.address.toString();
@@ -595,10 +614,10 @@ class BdkWalletDatasource {
   }) async {
     final bdkWallet = await BdkFacade.createWallet(wallet);
     final tx = bdk.BumpFeeTxBuilder(
-      bdk.Txid.fromString(txid),
-      bdk.FeeRate.fromSatPerVb(feeRate.round()),
+      txid: bdk.Txid.fromString(hex: txid),
+      feeRate: bdk.FeeRate.fromSatPerVb(satVb: feeRate.round()),
     );
-    final psbt = tx.finish(bdkWallet);
+    final psbt = tx.finish(wallet: bdkWallet);
     return psbt.serialize();
   }
 
@@ -649,21 +668,25 @@ Future<void> _performFullScan(_SyncParams params) async {
 
   final bdkWallet = await BdkFacade.createWallet(wallet);
   final blockchain = bdk.ElectrumClient(
-    params.electrumUrl,
+    url: params.electrumUrl,
     // Only set the socks5 if it's not empty,
     //  otherwise bdk will throw an error
     // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
-    params.electrumSocks5?.isNotEmpty == true ? params.electrumSocks5 : null,
+    socks5: params.electrumSocks5?.isNotEmpty == true
+        ? params.electrumSocks5
+        : null,
   );
   final scanRequest = bdkWallet.startFullScan().build();
   final update = blockchain.fullScan(
-    scanRequest,
-    params.electrumStopGap,
-    20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
-    true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
+    request: scanRequest,
+    stopGap: params.electrumStopGap,
+    batchSize:
+        20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
+    fetchPrevTxouts:
+        true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
   );
   // Apply update to the wallet in memory
-  bdkWallet.applyUpdate(update);
+  bdkWallet.applyUpdate(update: update);
   // Persist the updated wallet to the database
   await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
 }

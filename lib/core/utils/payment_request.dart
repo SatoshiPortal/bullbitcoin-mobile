@@ -137,7 +137,10 @@ sealed class PaymentRequest with _$PaymentRequest {
 
     if (!tryTestnetFirst) {
       try {
-        final address = bdk.Address(data, bdk.Network.bitcoin);
+        final address = bdk.Address(
+          address: data,
+          network: bdk.Network.bitcoin,
+        );
         return PaymentRequest.bitcoin(
           address: address.toString(),
           isTestnet: false,
@@ -146,7 +149,7 @@ sealed class PaymentRequest with _$PaymentRequest {
     }
 
     try {
-      final address = bdk.Address(data, bdk.Network.testnet);
+      final address = bdk.Address(address: data, network: bdk.Network.testnet);
       return PaymentRequest.bitcoin(
         address: address.toString(),
         isTestnet: true,
@@ -173,13 +176,13 @@ sealed class PaymentRequest with _$PaymentRequest {
             address.startsWith('3') ||
             address.startsWith('bc1')) {
           network = Network.bitcoinMainnet;
-          bdk.Address(address, bdk.Network.bitcoin);
+          bdk.Address(address: address, network: bdk.Network.bitcoin);
         } else if (address.startsWith('2') ||
             address.startsWith('m') ||
             address.startsWith('n') ||
             address.startsWith('tb1')) {
           network = Network.bitcoinTestnet;
-          bdk.Address(address, bdk.Network.testnet);
+          bdk.Address(address: address, network: bdk.Network.testnet);
         } else {
           network = await _validateBitcoinAddress(address);
         }
@@ -226,11 +229,11 @@ sealed class PaymentRequest with _$PaymentRequest {
 
   static Future<Network> _validateBitcoinAddress(String address) async {
     try {
-      bdk.Address(address, bdk.Network.bitcoin);
+      bdk.Address(address: address, network: bdk.Network.bitcoin);
       return Network.bitcoinMainnet;
     } catch (_) {
       try {
-        bdk.Address(address, bdk.Network.testnet);
+        bdk.Address(address: address, network: bdk.Network.testnet);
         return Network.bitcoinTestnet;
       } catch (e) {
         throw 'Invalid bitcoin address';
@@ -302,7 +305,7 @@ sealed class PaymentRequest with _$PaymentRequest {
 
   static Future<PaymentRequest?> _tryParsePsbt(String psbtBase64) async {
     try {
-      final psbt = bdk.Psbt(psbtBase64);
+      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
       return PaymentRequest.psbt(psbt: psbt.toString());
     } catch (e) {
       log.warning(e.toString());

@@ -37,7 +37,12 @@ abstract class OldAddress with _$OldAddress {
   List<bdk.OutPoint> getUnspentUtxosOutpoints(List<OldUTXO> utxos) {
     return utxos
         .where((ut) => ut.address.address == address)
-        .map((e) => bdk.OutPoint(bdk.Txid.fromString(e.txid), e.txIndex))
+        .map(
+          (e) => bdk.OutPoint(
+            txid: bdk.Txid.fromString(hex: e.txid),
+            vout: e.txIndex,
+          ),
+        )
         .toList();
     // return utxos?.where((tx) => !tx.isSpent).map((tx) => tx.outpoint).toList() ?? [];
   }
@@ -87,7 +92,10 @@ abstract class OldUTXO with _$OldUTXO {
   }
 
   bdk.OutPoint getUtxosOutpoints() {
-    return bdk.OutPoint(bdk.Txid.fromString(txid), txIndex);
+    return bdk.OutPoint(
+      txid: bdk.Txid.fromString(hex: txid),
+      vout: txIndex,
+    );
   }
 }
 

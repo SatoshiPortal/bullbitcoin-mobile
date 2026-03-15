@@ -11,7 +11,7 @@ dependencies:
   bdk_dart:
     git:
       url: https://github.com/bitcoindevkit/bdk-dart
-      ref: main
+      ref: 6dfdddbfa6da8fbfa82d796c2564fbeec899232e
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
