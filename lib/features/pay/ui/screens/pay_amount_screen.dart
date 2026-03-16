@@ -21,15 +21,25 @@ class PayAmountScreen extends StatefulWidget {
 class _PayAmountScreenState extends State<PayAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
+  bool _needsKycUpgrade = false;
 
   @override
   void initState() {
     super.initState();
+
     _amountController.addListener(_onAmountChanged);
   }
 
   void _onAmountChanged() {
-    setState(() {});
+    final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
+    final newValue = context.read<PayBloc>().state.needsKycUpgrade(
+      enteredAmount,
+    );
+    if (newValue != _needsKycUpgrade) {
+      setState(() {
+        _needsKycUpgrade = newValue;
+      });
+    }
   }
 
   @override
@@ -41,11 +51,11 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
+    // final enteredAmount = double.tryParse(_amountController.text) ?? 0.0;
     final currency = context.select((PayBloc bloc) => bloc.state.currency);
-    final needsKycUpgrade = context.select(
-      (PayBloc bloc) => bloc.state.needsKycUpgrade(enteredAmount),
-    );
+    // final needsKycUpgrade = context.select(
+    //   (PayBloc bloc) => bloc.state.needsKycUpgrade(enteredAmount),
+    // );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Pay')),
@@ -61,7 +71,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                 fiatCurrency: currency,
               ),
               const Spacer(),
-              if (needsKycUpgrade) ...[
+              if (_needsKycUpgrade) ...[
                 InfoCard(
                   title: context.loc.buyInputKycPending,
                   description: context.loc.buyInputKycMessage,
