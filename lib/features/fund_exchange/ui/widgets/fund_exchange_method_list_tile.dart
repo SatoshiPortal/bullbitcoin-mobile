@@ -32,11 +32,16 @@ class FundExchangeMethodListTile extends StatelessWidget {
         ),
       ),
       onTap: () {
-        // Reset the checkbox value when showing the warning screen again
-        context.read<FundExchangeBloc>().add(
-          const FundExchangeEvent.noCoercionConfirmed(false),
-        );
-        _navigateToWarningScreen(context, method);
+        final hasConsented =
+            context.read<FundExchangeBloc>().state.userSummary
+                ?.hasConsentedScamWarning ??
+            false;
+
+        if (hasConsented) {
+          context.pushNamed(FundExchangeRoute.routeNameFor(method));
+        } else {
+          _navigateToWarningScreen(context, method);
+        }
       },
       trailing: const Icon(Icons.arrow_forward),
     );
@@ -48,4 +53,5 @@ class FundExchangeMethodListTile extends StatelessWidget {
       queryParameters: {'method': method.queryParam},
     );
   }
+
 }

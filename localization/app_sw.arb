@@ -1,0 +1,35 @@
+{
+  "languageSettingsLabel": "| Lugha |",
+  "@languageSettingsLabel": {
+    "description": "The label for the button to access the language settings"
+  },
+  "languageSettingsScreenTitle": "| Lugha |",
+  "@languageSettingsScreenTitle": {
+    "description": "The title of the language settings screen"
+  },
+  "settingsLanguageTitle": "| Lugha |",
+  "@settingsLanguageTitle": {
+    "description": "Title for the language selection in app settings"
+  },
+  "arkAboutTitle": "Kuhusu",
+  "@arkAboutTitle": {
+    "description": "AppBar title for Ark about screen"
+  },
+  "ledgerHelpTitle": "Troubleshooting",
+  "@ledgerHelpTitle": {
+    "description": "Title for Ledger troubleshooting help modal"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "appInitErrorTitle": "Programu haikuweza kuanza",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Hitilafu ilitokea wakati wa kuanza. Tafadhali anzisha upya programu. Ikiwa tatizo linabaki, shiriki kumbukumbu zako na wasiliana na msaada.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Shiriki kumbukumbu",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  }
+}

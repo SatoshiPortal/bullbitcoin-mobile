@@ -399,7 +399,7 @@
   "ledgerVerifyTitle": "Verifica l'indirizzo su Ledger",
   "recoverbullSwitchToPassword": "Scegli invece una password",
   "exchangeDcaNetworkBitcoin": "Rete Bitcoin",
-  "autoswapWarningTitle": "Autoswap è abilitata con le seguenti impostazioni",
+  "autoswapWarningTitle": "Autoswap è abilitata con le seguenti impostazioni:",
   "seedsignerStep1": "Accendere il dispositivo SeedSigner",
   "backupWalletHowToDecideBackupLosePhysical": "Uno dei modi più comuni che le persone perdono il loro Bitcoin è perché perdono il backup fisico. Chiunque trovi il tuo backup fisico sarà in grado di prendere tutto il tuo Bitcoin. Se siete molto sicuri che si può nascondere bene e non perdere mai, è una buona opzione.",
   "transactionLabelStatus": "Stato",
@@ -667,6 +667,7 @@
   "payCalculating": "Calcolo...",
   "transactionDetailLabelTransferId": "ID trasferimento",
   "fundExchangeContinueButton": "Continua",
+  "fundExchangeScamConsentError": "Impossibile registrare il tuo consenso. Per favore riprova.",
   "currencySettingsDefaultFiatCurrencyLabel": "Moneta di fiat predefinito",
   "payRecipient": "Recipiente",
   "fundExchangeCrIbanUsdRecipientNameHelp": "Usa il nostro nome ufficiale. Non usare \"Bull Bitcoin\".",
@@ -1120,6 +1121,7 @@
   "doNotShareWarning": "NON CONDIVIDI CON NESSUNO",
   "torSettingsPortNumber": "Numero della porta",
   "payNameHint": "Inserisci il nome del destinatario",
+  "autoswapWarningTriggerAmount": "Saldo massimo di 0,02 BTC",
   "legacySeedViewScreenTitle": "Legacy Seeds",
   "recoverbullErrorCheckStatusFailed": "Non è riuscito a controllare lo stato della volta",
   "pleaseWaitFetching": "Per favore, aspettate mentre prendiamo il vostro file di backup.",
@@ -1184,7 +1186,7 @@
   },
   "routeErrorMessage": "Pagina non trovata",
   "connectHardwareWalletPassport": "Passaporto della Fondazione",
-  "autoswapTriggerBalanceError": "L'equilibrio del trigger deve essere almeno 2x il saldo di base",
+  "autoswapTriggerBalanceError": "Il saldo massimo deve essere almeno il doppio del saldo obiettivo",
   "receiveEnterHere": "Entra qui...",
   "receiveNetworkFee": "Costo di rete",
   "payLiquidFee": "Costo liquido",
@@ -1253,8 +1255,7 @@
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
   "walletNetworkBitcoin": "Rete Bitcoin",
   "electrumAdvancedOptions": "Opzioni avanzate",
-  "autoswapWarningCardSubtitle": "Clicca per saperne di più, disattivare o configurare",
-  "autoswapActiveCardTitle": "Autoswap è attivo",
+  "autoswapWarningCardSubtitle": "Un swap verrà attivato se il saldo dei pagamenti istantanei supera 0,02 BTC.",
   "transactionStatusConfirmed": "Confermato",
   "dcaFrequencyDaily": "giorno",
   "transactionLabelSendAmount": "Inviare Importo",
@@ -1496,14 +1497,6 @@
       }
     }
   },
-  "deleteLogsTitle": "Elimina registri",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
-  "logsDeletedMessage": "Registri eliminati",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
   "payDecodingInvoice": "Decoding fattura...",
   "importColdcardInstructionsStep5": "Selezionare \"Export Wallet\"",
   "electrumStopGapTooHighError": "Stop Gap sembra troppo alto. {maxStopGap}",
@@ -1524,10 +1517,6 @@
   },
   "sellInstantPayments": "Pagamenti istantiani",
   "priceChartFetchingHistory": "Recuperare la cronologia dei prezzi...",
-  "priceChartFailedToLoad": "Impossibile caricare la cronologia dei prezzi",
-  "priceFailedToLoad": "Impossibile caricare il prezzo",
-  "statusScreenTryAgain": "Riprova",
-  "statusScreenContinue": "Continua",
   "sellDone": "Fatto",
   "payFromWallet": "Da Wallet",
   "dcaConfirmRecurringBuyTitle": "Confermare il Ricorso Comprare",
@@ -1541,7 +1530,7 @@
   "coreSwapsStatusPending": "Finanziamenti",
   "electrumDragToReorder": "(Premitura lunga per trascinare e cambiare la priorità)",
   "keystoneStep4": "Se hai problemi di scansione:",
-  "autoswapTriggerAtBalanceInfoText": "Autoswap si attiva quando il saldo supera questa quantità.",
+  "autoswapTriggerAtBalanceInfoText": "Autoswap si attiva quando il tuo saldo supera questo saldo massimo.",
   "exchangeLandingDisclaimerNotAvailable": "I servizi di cambio criptovaluta non sono disponibili nell'applicazione mobile Bull Bitcoin.",
   "sendCustomFeeRate": "Tariffa doganale",
   "ledgerHelpTitle": "Risoluzione dei problemi Ledger",
@@ -1576,7 +1565,7 @@
   },
   "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
   "arkNoBalanceData": "Nessun dato di bilancio disponibile",
-  "autoswapWarningCardTitle": "Autoswap è consigliato",
+  "autoswapWarningCardTitle": "Autoswap è attivo",
   "coreSwapsChainCompletedSuccess": "Il trasferimento è completato con successo.",
   "physicalBackupRecommendation": "Backup fisico: ",
   "autoswapMaxBalance": "Bilanciamento Max Instant Wallet",
@@ -1666,8 +1655,7 @@
   "arkReceiveUnifiedAddress": "Indirizzo unificato (BIP21)",
   "sellHowToPayInvoice": "Come vuoi pagare questa fattura?",
   "payUseCoinjoin": "Utilizzare CoinJoinin",
-  "autoswapWarningExplanation": "Quando il saldo supera il saldo massimo, verrà attivato automaticamente uno swap. Il saldo target verrà mantenuto nel portafoglio pagamenti istantanei e l'importo rimanente verrà scambiato nel vostro portafoglio Bitcoin sicuro.",
-  "autoswapWarningExplanationBold": "automaticamente",
+  "autoswapWarningExplanation": "Quando il tuo saldo supera il saldo massimo, verrà eseguito uno swap. Il saldo obiettivo sarà mantenuto nel tuo Portafoglio Pagamenti Istantanei e la parte rimanente verrà scambiata nel tuo Portafoglio Bitcoin Sicuro.",
   "recoverbullVaultRecoveryTitle": "Ripristino del caveau",
   "passportStep14": "Ora è pronto a trasmettere! Non appena si fa clic sulla trasmissione, la transazione verrà pubblicata sulla rete Bitcoin e i fondi saranno inviati.",
   "settingsCurrencyTitle": "Valuta",
@@ -2414,7 +2402,7 @@
   "dcaConfirmFrequencyDaily": "Ogni giorno",
   "buyConfirmPurchase": "Conferma l'acquisto",
   "transactionLabelNetworkFee": "Costo di rete",
-  "importQrDeviceKeystoneStep9": "Setup è completo",
+  "importQrDeviceKeystoneStep9": "Inserisci un'etichetta per il tuo portafoglio Keystone e tocca \"Importa\"",
   "tapWordsInOrderTitle": "Toccare le parole di recupero in\nordine giusto",
   "payEnterAmountTitle": "Inserire l'importo",
   "transactionOrderLabelPayinMethod": "Metodo di pagamento",
@@ -2569,7 +2557,7 @@
   "sendNetworkFeesLabel": "Inviare quote di rete",
   "electrumUnknownError": "Si è verificato un errore",
   "payWhichWallet": "Da quale portafogli vuoi pagare?",
-  "autoswapBaseBalanceInfoText": "Il saldo del portafoglio di pagamento istantaneo tornerà a questo saldo dopo un'autoswap.",
+  "autoswapBaseBalanceInfoText": "Il saldo del tuo Portafoglio Pagamenti Istantanei tornerà a questo saldo obiettivo dopo un autoswap.",
   "recoverbullSelectDecryptVault": "Decrypt vault",
   "buyUpgradeKYC": "Aggiornamento KYC Livello",
   "transactionOrderLabelOrderType": "Tipo d'ordine",
@@ -2859,7 +2847,7 @@
   "keystoneStep12": "Il portafoglio Bull Bitcoin ti chiederà di scansionare il codice QR sulla Keystone. Scansione.",
   "ledgerErrorRejectedByUser": "La transazione è stata respinta dall'utente sul dispositivo Ledger.",
   "payFeeRate": "Tasso di tariffa",
-  "autoswapWarningDescription": "Autoswap assicura che un buon equilibrio sia mantenuto tra i pagamenti istantanei e Secure Bitcoin Wallet.",
+  "autoswapWarningDescription": "Autoswap garantisce che tu non tenga accidentalmente troppo denaro nel Portafoglio Pagamenti Istantanei, che non è sicuro per l'uso a lungo termine.",
   "fundExchangeSinpeAddedToBalance": "Una volta che il pagamento viene inviato, verrà aggiunto al saldo del tuo account.",
   "durationMinute": "{minutes} minuto",
   "@durationMinute": {
@@ -3139,6 +3127,7 @@
   "payEmail": "Email",
   "coldcardStep10": "Fare clic sui pulsanti per firmare la transazione sulla Coldcard.",
   "sendErrorAmountBelowSwapLimits": "L'importo è inferiore ai limiti di swap",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Considera di finanziare Pagamenti Istantanei per effettuare pagamenti più piccoli.",
   "labelErrorNotFound": "Etichetta \"{label}\" non trovata.",
   "@labelErrorNotFound": {
     "placeholders": {
@@ -3195,6 +3184,7 @@
   "bitboxActionImportWalletButton": "Inizio Importazione",
   "fundExchangeLabelSwiftCode": "Codice SWIFT",
   "buyEnterBitcoinAddress": "Inserisci l'indirizzo bitcoin",
+  "autoswapWarningBaseBalance": "Saldo obiettivo 0,01 BTC",
   "transactionDetailLabelPayoutAmount": "Importo di pagamento",
   "importQrDeviceSpecterStep6": "Scegliere \"Single key\"",
   "importQrDeviceJadeStep10": "Basta!",
@@ -3223,7 +3213,7 @@
   "swapFromLabel": "Da",
   "fundExchangeCrIbanCrcDescription": "Invia un bonifico bancario dal tuo conto bancario utilizzando i dettagli qui sotto ",
   "settingsDevModeWarningTitle": "Modalità Dev",
-  "importQrDeviceKeystoneStep4": "Selezionare Connetti il software Wallet",
+  "importQrDeviceKeystoneStep4": "Tocca \"Connetti Portafoglio Software\"",
   "bitcoinSettingsAutoTransferTitle": "Impostazioni di trasferimento automatico",
   "rbfOriginalTransaction": "Transazione originale",
   "payViewRecipient": "Visualizza il destinatario",
@@ -3522,7 +3512,7 @@
   "payViewTransaction": "Visualizza la Transazione",
   "transactionLabelToWallet": "Portafoglio",
   "exchangeFileUploadInstructions": "Se avete bisogno di inviare altri documenti, caricarli qui.",
-  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth.",
+  "ledgerInstructionsAndroidDual": "Assicurarsi che il Ledger è sbloccato con l'applicazione Bitcoin aperta e abilitata Bluetooth, o collegare il dispositivo tramite USB.",
   "arkSendRecipientLabel": "Indirizzo del destinatario",
   "defaultWalletsLabel": "Portafogli di default",
   "jadeStep9": "Una volta che la transazione viene importata nel tuo Jade, rivedere l'indirizzo di destinazione e l'importo.",
@@ -3550,7 +3540,7 @@
   "coreSwapsLnReceiveCompleted": "Swap è completato.",
   "backupWalletErrorGoogleDriveSave": "Non riuscito a salvare Google Drive",
   "settingsTorSettingsTitle": "Impostazioni Tor",
-  "importQrDeviceKeystoneStep2": "Inserisci il tuo PIN",
+  "importQrDeviceKeystoneStep2": "Sbloccalo inserendo il PIN",
   "receiveBitcoinTransactionWillTakeTime": "La transazione Bitcoin richiederà un po 'per confermare.",
   "sellOrderNotFoundError": "L'ordine di vendita non è stato trovato. Per favore riprovate.",
   "sellErrorPrepareTransaction": "Non è riuscito a preparare la transazione: {error}",
@@ -3828,7 +3818,7 @@
   "arkServerUrl": "URL del server",
   "importMnemonicSelectType": "Selezionare un tipo di portafoglio da importare",
   "fundExchangeMethodArsBankTransfer": "Trasferimento bancario",
-  "importQrDeviceKeystoneStep1": "Potenza sul dispositivo Keystone",
+  "importQrDeviceKeystoneStep1": "Accendi il tuo Keystone",
   "arkDurationDays": "{days} giorni",
   "@arkDurationDays": {
     "placeholders": {
@@ -4138,10 +4128,229 @@
   "logoutConfirmationDescription": "Sei sicuro di voler disconnetterti dal tuo account Bull Bitcoin? Dovrai accedere nuovamente per accedere alle funzionalità di scambio.",
   "logoutConfirmationCancel": "Annulla",
   "logoutConfirmationLogout": "Disconnetti",
-  "autoswapInfoTitle": "Autoswap è consigliato",
-  "autoswapInfoDismissButton": "SÌ, GRAZIE",
-  "autoswapInfoSettingsButton": "NO, CAPISCO I RISCHI",
-  "autoswapInfoRemindLater": "Configura Autoswap",
+  "recipientsSearchHint": "Cerca destinatari per nome o etichetta",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
+  "autoswapInfoSettingsButton": "Configura le impostazioni",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "importQrDeviceKeystoneStep10": "Il tuo Keystone è ora collegato e pronto all'uso con BULL Wallet.",
+  "@importQrDeviceKeystoneStep10": {
+    "description": "Keystone instruction step 10"
+  },
+  "autoswapInfoRemindLater": "Ricordamelo più tardi",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
+  },
+  "autoswapInfoTitle": "Autoswap è attivo",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "autoswapInfoDismissButton": "Capito, non mostrare più",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "exchangeSettingsRecipientsTitle": "Recipienti",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transazioni",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
+  "exchangeFileUploadSuccess": "File caricato con successo",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Notifiche e-mail",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Ricevi notifiche e-mail per ordini e aggiornamenti account",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Indirizzo del portafoglio salvato con successo",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Impostare gli indirizzi di portafoglio predefinito per i prelievi automatici Bitcoin.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeFileUploadDocumentsTitle": "Documenti di caricamento",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Caricare fino a {maxFiles} file. Formati consentiti: PDF, JPG, PNG, GIF, HEIC. Dimensione massima del file: 10MB per file.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "Nessun file selezionato",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Tocca \"Seleziona file\" per scegliere i documenti",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Selezionare i file",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Aggiungi altri file",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Caricamento...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Cancella tutto",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "Tutti i file caricati con successo",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{uploaded} di {total} file caricati",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Pronti",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "Rassegna",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Accettato",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Reietto - Tocca per ricaricare",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "I vostri documenti sono attualmente in fase di revisione. Non è possibile caricare più file finché la recensione non è completa.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "I suoi documenti sono stati accettati. Non sono necessari ulteriori upload.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Statistiche",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "Nessuna statistica disponibile",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "A partire da {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Statistiche dell'ordine",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Acquisto/vendita",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Comprare Statistiche",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Sell Statistiche",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Volume",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Contesto commerciale",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Prezzo medio",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Volume di trading totale",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Statistiche di Biller",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Valuta: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsTotalAmount": "Importo totale",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Reazione",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "autoswapActiveCardTitle": "Autoswap è attivo",
+  "deleteLogsTitle": "Elimina registri",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Registri eliminati",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "priceChartFailedToLoad": "Impossibile caricare la cronologia dei prezzi",
+  "priceFailedToLoad": "Impossibile caricare il prezzo",
+  "statusScreenTryAgain": "Riprova",
+  "statusScreenContinue": "Continua",
+  "autoswapWarningExplanationBold": "automaticamente",
+  "sendSelfTransfer": "Trasferimento a sé",
   "autoswapInfoConsentMessage": "Autoswap è attualmente abilitato ma non si attiverà finché non darai il tuo consenso. Vuoi tenerlo attivato?",
   "mempoolServerStatusOnline": "Online",
   "mempoolServerStatusOffline": "Offline",
@@ -4165,8 +4374,7 @@
   "mempoolErrorSaveServerFailed": "Impossibile salvare il server: {error}",
   "mempoolErrorLoadFailed": "Impossibile caricare i dati del server mempool: {error}",
   "mempoolErrorDeleteFailed": "Impossibile eliminare il server personalizzato: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}"
-,
+  "mempoolErrorUpdateSettingsFailed": "Impossibile aggiornare le impostazioni: {error}",
   "settingsErrorReportingTitle": "Segnalazione errori",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4190,6 +4398,18 @@
   "errorReportingRestartSnackbar": "Riavvia l'app per applicare questa modifica",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "Impossibile avviare l'app",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Si è verificato un errore durante l'avvio. Riavvia l'app. Se il problema persiste, condividi i tuoi log e contatta il supporto.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Condividi i log",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "ESEGUI IL BACKUP DEL TUO PORTAFOGLIO ORA",
   "@backupWarningTitle": {

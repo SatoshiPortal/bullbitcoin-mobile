@@ -1,0 +1,15 @@
+{
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "appInitErrorTitle": "Ứng dụng không thể khởi động",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Đã xảy ra lỗi trong quá trình khởi động. Vui lòng khởi động lại ứng dụng. Nếu sự cố vẫn tiếp diễn, hãy chia sẻ nhật ký của bạn và liên hệ với bộ phận hỗ trợ.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Chia sẻ nhật ký",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  }
+}

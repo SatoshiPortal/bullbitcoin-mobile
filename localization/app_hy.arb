@@ -1,0 +1,15 @@
+{
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Գործարկման ժամանակ սխալ է տեղի ունեցել: Խնդրում ենք վերագործարկել հավելվածը: Եթե խնդիրը շարունակվում է, կիսվեք ձեր մատյաններով և կապ հաստատեք աջակցության հետ:",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Կիսվել մատյաններով",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  }
+}

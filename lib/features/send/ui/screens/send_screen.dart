@@ -448,7 +448,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               );
                             },
                             error:
-                                balanceError != null && amountConfirmedClicked
+                                balanceError != null
                                 ? context
                                       .loc
                                       .sendErrorInsufficientBalanceForPayment
@@ -466,6 +466,17 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             readOnly: _isMax,
                             isMax: _isMax,
                           ),
+                          if (swapLimitsError?.suggestInstantPayments == true)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: BBText(
+                                context.loc.sendErrorAmountBelowSwapLimitsBitcoin,
+                                style: context.font.bodySmall,
+                                color: context.appColors.error,
+                                maxLines: 3,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           const Gap(48),
                           Divider(
                             height: 1,
@@ -660,24 +671,12 @@ class _SendError extends StatelessWidget {
     if (buildError != null) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            BBText(
-              context.loc.sendErrorBuildFailed,
-              style: context.font.bodyLarge,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-            const Gap(8),
-            BBText(
-              buildError.message,
-              style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
-          ],
+        child: BBText(
+          context.loc.sendErrorBuildFailed,
+          style: context.font.bodyLarge,
+          color: context.appColors.error,
+          maxLines: 5,
+          textAlign: .center,
         ),
       );
     }
@@ -693,14 +692,16 @@ class _SendError extends StatelessWidget {
               maxLines: 5,
               textAlign: .center,
             ),
-            const Gap(8),
-            BBText(
-              confirmError.message,
-              style: context.font.bodyMedium,
-              color: context.appColors.error,
-              maxLines: 5,
-              textAlign: .center,
-            ),
+            if (confirmError.isBroadcastFailure) ...[
+              const Gap(8),
+              BBText(
+                context.loc.sendErrorBroadcastFailed,
+                style: context.font.bodyMedium,
+                color: context.appColors.error,
+                maxLines: 5,
+                textAlign: .center,
+              ),
+            ],
           ],
         ),
       );
@@ -859,6 +860,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final formattedAbsoluteFees = context.select(
       (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
+    final isToSelf = context.select(
+      (SendCubit cubit) => cubit.state.isToSelf == true,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -913,6 +917,20 @@ class _OnchainSendInfoSection extends StatelessWidget {
             //   ),
             // ),
           ),
+          if (isToSelf) ...[
+            _divider(context),
+            InfoRow(
+              title: context.loc.sendSelfTransfer,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: Icon(
+                  Icons.check,
+                  color: context.appColors.secondary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
           _divider(context),
           InfoRow(
             title: context.loc.sendAmount,
@@ -1501,12 +1519,20 @@ class SendSendingScreen extends StatelessWidget {
     final isLiquid = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
     );
+    final isPayjoin = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender != null,
+    );
 
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: const TopBar(title: 'Send'),
+        actions: [
+          CloseButton(
+            onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -1519,7 +1545,7 @@ class SendSendingScreen extends StatelessWidget {
                 height: 123,
                 image: AssetImage(Assets.animations.cubesLoading.path),
               ),
-              if (!isLnSwap) ...[
+              if (!isLnSwap && !isPayjoin) ...[
                 const Gap(8),
                 BBText(
                   context.loc.sendSending,
@@ -1554,6 +1580,20 @@ class SendSendingScreen extends StatelessWidget {
                     maxLines: 4,
                     textAlign: .center,
                   ),
+              ],
+              if (isPayjoin) ...[
+                const Gap(8),
+                BBText(
+                  context.loc.sendSending,
+                  style: context.font.headlineLarge,
+                ),
+                const Gap(8),
+                BBText(
+                  context.loc.sendCoordinatingPayjoinTransaction,
+                  style: context.font.bodyMedium,
+                  maxLines: 4,
+                  textAlign: TextAlign.center,
+                ),
               ],
             ],
           ),
@@ -1915,15 +1955,11 @@ String _getSwapLimitsErrorMessage(
   BuildContext context,
   SwapLimitsException error,
 ) {
-  if (error.isBelowMinimum && error.minLimit != null) {
+  if (error.isBelowMinimum) {
     return context.loc.sendErrorAmountBelowMinimum(error.minLimit.toString());
-  } else if (error.isAboveMaximum && error.maxLimit != null) {
-    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
-  } else if (error.message.contains('Balance too low')) {
-    return context.loc.sendErrorBalanceTooLowForMinimum;
-  } else if (error.message.contains('exceeds maximum')) {
-    return context.loc.sendErrorAmountExceedsMaximum;
-  } else {
-    return context.loc.sendErrorAmountBelowSwapLimits;
   }
+  if (error.isAboveMaximum) {
+    return context.loc.sendErrorAmountAboveMaximum(error.maxLimit.toString());
+  }
+  return context.loc.sendErrorAmountBelowSwapLimits;
 }
