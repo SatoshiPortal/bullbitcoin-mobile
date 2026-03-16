@@ -4454,6 +4454,18 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
+  "appInitErrorTitle": "Falha ao iniciar o aplicativo",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Ocorreu um erro durante a inicialização. Por favor, reinicie o aplicativo. Se o problema persistir, compartilhe seus registros e entre em contato com o suporte.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Compartilhar registros",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
   "backupWarningTitle": "FAÇA BACKUP DA SUA CARTEIRA AGORA",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"

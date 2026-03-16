@@ -12153,5 +12153,17 @@
   "importWatchOnlyCancel": "বাতিল",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
+  },
+  "appInitErrorTitle": "অ্যাপটি চালু হয়নি",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "চালু হওয়ার সময় একটি ত্রুটি ঘটেছে। দয়া করে অ্যাপটি পুনরায় চালু করুন। সমস্যা অব্যাহত থাকলে, আপনার লগ শেয়ার করুন এবং সহায়তায় যোগাযোগ করুন।",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "লগ শেয়ার করুন",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

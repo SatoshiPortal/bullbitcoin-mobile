@@ -12436,5 +12436,17 @@
   "exchangeSettingsSecuritySettingsTitle": "การตั้งค่าความปลอดภัย",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
+  },
+  "appInitErrorTitle": "แอปเริ่มต้นล้มเหลว",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "เกิดข้อผิดพลาดระหว่างการเริ่มต้น กรุณาเริ่มต้นแอปใหม่ หากปัญหายังคงมีอยู่ โปรดแชร์บันทึกของคุณและติดต่อฝ่ายสนับสนุน",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "แชร์บันทึก",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

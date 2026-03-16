@@ -4388,6 +4388,18 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
+  "appInitErrorTitle": "Impossible de démarrer l'application",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Une erreur s'est produite au démarrage. Veuillez redémarrer l'application. Si le problème persiste, partagez vos journaux et contactez le support.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Partager les journaux",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
   "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"

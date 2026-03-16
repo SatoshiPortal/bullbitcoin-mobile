@@ -12436,5 +12436,17 @@
   "importWatchOnlyCancel": "रद्द करना",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
+  },
+  "appInitErrorTitle": "ऐप शुरू नहीं हो सका",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "स्टार्टअप के दौरान एक त्रुटि हुई। कृपया ऐप को पुनः शुरू करें। यदि समस्या बनी रहती है, तो अपने लॉग साझा करें और सहायता से संपर्क करें।",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "लॉग साझा करें",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }
