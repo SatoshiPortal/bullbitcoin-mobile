@@ -1894,7 +1894,7 @@
   "@sellPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "sellInstantPayments": "Instant payments",
+  "sellInstantPayments": "Instant Payments",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
@@ -2343,7 +2343,7 @@
   "@payPayFromWallet": {
     "description": "Label for wallet used for payment"
   },
-  "payInstantPayments": "Instant payments",
+  "payInstantPayments": "Instant Payments",
   "@payInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
@@ -2572,7 +2572,7 @@
       }
     }
   },
-  "transactionDetailTitle": "Transaction details",
+  "transactionDetailTitle": "Transaction Details",
   "@transactionDetailTitle": {
     "description": "Title for transaction details screen"
   },
@@ -3114,7 +3114,7 @@
   "@transactionLabelReceiveAmount": {
     "description": "Label for receive amount in swap details"
   },
-  "transactionLabelSendNetworkFees": "Send Network fees",
+  "transactionLabelSendNetworkFees": "Send Network Fees",
   "@transactionLabelSendNetworkFees": {
     "description": "Label for send network fees in swap details"
   },
@@ -3230,13 +3230,21 @@
   "@transactionDetailLabelPayoutStatus": {
     "description": "Label for payout status"
   },
-  "transactionDetailLabelCreatedAt": "Created at",
+  "transactionDetailLabelCreatedAt": "Created At",
   "@transactionDetailLabelCreatedAt": {
     "description": "Label for creation time"
   },
-  "transactionDetailLabelCompletedAt": "Completed at",
+  "transactionDetailLabelCompletedAt": "Completed At",
   "@transactionDetailLabelCompletedAt": {
     "description": "Label for completion time"
+  },
+  "transactionDetailSectionSwap": "Swap",
+  "@transactionDetailSectionSwap": {
+    "description": "Section header for swap details"
+  },
+  "transactionDetailSectionTransfer": "Transfer",
+  "@transactionDetailSectionTransfer": {
+    "description": "Section header for transfer details"
   },
   "transactionDetailLabelTransferId": "Transfer ID",
   "@transactionDetailLabelTransferId": {
@@ -3246,11 +3254,11 @@
   "@transactionDetailLabelSwapId": {
     "description": "Label for swap ID"
   },
-  "transactionDetailLabelTransferStatus": "Transfer status",
+  "transactionDetailLabelTransferStatus": "Transfer Status",
   "@transactionDetailLabelTransferStatus": {
     "description": "Label for transfer status"
   },
-  "transactionDetailLabelSwapStatus": "Swap status",
+  "transactionDetailLabelSwapStatus": "Swap Status",
   "@transactionDetailLabelSwapStatus": {
     "description": "Label for swap status"
   },
@@ -3258,19 +3266,19 @@
   "@transactionDetailLabelRefunded": {
     "description": "Label for refunded status"
   },
-  "transactionDetailLabelLiquidTxId": "Liquid transaction ID",
+  "transactionDetailLabelLiquidTxId": "Liquid Transaction ID",
   "@transactionDetailLabelLiquidTxId": {
     "description": "Label for Liquid transaction ID"
   },
-  "transactionDetailLabelBitcoinTxId": "Bitcoin transaction ID",
+  "transactionDetailLabelBitcoinTxId": "Bitcoin Transaction ID",
   "@transactionDetailLabelBitcoinTxId": {
     "description": "Label for Bitcoin transaction ID"
   },
-  "transactionDetailLabelTransferFees": "Transfer fees",
+  "transactionDetailLabelTransferFees": "Transfer Fees",
   "@transactionDetailLabelTransferFees": {
     "description": "Label for transfer fees"
   },
-  "transactionDetailLabelSwapFees": "Swap fees",
+  "transactionDetailLabelSwapFees": "Swap Fees",
   "@transactionDetailLabelSwapFees": {
     "description": "Label for swap fees"
   },
@@ -3302,7 +3310,7 @@
   "@globalDefaultBitcoinWalletLabel": {
     "description": "Default label for Bitcoin wallets when used as the default wallet"
   },
-  "globalDefaultLiquidWalletLabel": "Instant payments",
+  "globalDefaultLiquidWalletLabel": "Instant Payments",
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
   },
@@ -3366,7 +3374,7 @@
   "@walletButtonSend": {
     "description": "Button label to send funds"
   },
-  "walletArkInstantPayments": "Ark Instant payments",
+  "walletArkInstantPayments": "Ark Instant Payments",
   "@walletArkInstantPayments": {
     "description": "Title for Ark wallet card"
   },
@@ -10833,7 +10841,7 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "sellSendPaymentInstantPayments": "Instant payments",
+  "sellSendPaymentInstantPayments": "Instant Payments",
   "@sellSendPaymentInstantPayments": {
     "description": "Instant payments wallet label"
   },

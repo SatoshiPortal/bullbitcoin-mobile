@@ -67,126 +67,244 @@ class TransactionDetailsTable extends StatelessWidget {
     final swapCounterpartTxId = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
+
+    final swapCounterpartIsLiquid = counterpartWallet?.isLiquid == true;
+    final liquidTxId = swap != null
+        ? (isLiquid
+              ? txId
+              : (swapCounterpartIsLiquid ? swapCounterpartTxId : null))
+        : null;
+    final bitcoinTxId = swap != null
+        ? (!isLiquid
+              ? txId
+              : (swapCounterpartIsLiquid ? null : swapCounterpartTxId))
+        : null;
+
+    final liquidItems = swap == null
+        ? <Widget>[]
+        : <Widget>[
+            if (liquidTxId != null)
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelLiquidTxId,
+                displayValue: StringFormatting.truncateMiddle(liquidTxId),
+                copyValue: liquidTxId,
+                displayWidget: GestureDetector(
+                  onTap: () async {
+                    final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+                    final unblindedUrl = liquidTxId == txId
+                        ? (walletTransaction?.unblindedUrl ?? 'tx/$liquidTxId')
+                        : 'tx/$liquidTxId';
+                    final mempoolUrl = await mempoolUrlBuilder.liquidTxidUrl(
+                      unblindedUrl,
+                      isTestnet: isTestnet,
+                    );
+                    await launchUrl(Uri.parse(mempoolUrl));
+                  },
+                  child: Text(
+                    StringFormatting.truncateMiddle(liquidTxId),
+                    style: TextStyle(color: context.appColors.primary),
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+              ),
+            if (isLiquid && walletLabel.isNotEmpty)
+              DetailsTableItem(
+                label: transaction?.isIncoming == true
+                    ? context.loc.transactionDetailLabelToWallet
+                    : context.loc.transactionDetailLabelFromWallet,
+                displayValue: walletLabel,
+              ),
+            if (!isLiquid && counterpartWalletLabel.isNotEmpty)
+              DetailsTableItem(
+                label: transaction?.isOutgoing == true
+                    ? context.loc.transactionDetailLabelToWallet
+                    : context.loc.transactionDetailLabelFromWallet,
+                displayValue: counterpartWalletLabel,
+              ),
+            if (isLiquid && walletTransaction != null) ...[
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelStatus,
+                displayValue: walletTransaction.status.displayName(context),
+              ),
+              if (walletTransaction.confirmationTime != null)
+                DetailsTableItem(
+                  label: context.loc.transactionDetailLabelConfirmationTime,
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(walletTransaction.confirmationTime!),
+                ),
+            ],
+          ];
+
+    final bitcoinItems = swap == null
+        ? <Widget>[]
+        : <Widget>[
+            if (bitcoinTxId != null)
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelBitcoinTxId,
+                displayValue: StringFormatting.truncateMiddle(bitcoinTxId),
+                copyValue: bitcoinTxId,
+                displayWidget: GestureDetector(
+                  onTap: () async {
+                    final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+                    final mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
+                      bitcoinTxId,
+                      isTestnet: isTestnet,
+                    );
+                    await launchUrl(Uri.parse(mempoolUrl));
+                  },
+                  child: Text(
+                    StringFormatting.truncateMiddle(bitcoinTxId),
+                    style: TextStyle(color: context.appColors.primary),
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+              ),
+            if (!isLiquid && walletLabel.isNotEmpty)
+              DetailsTableItem(
+                label: transaction?.isIncoming == true
+                    ? context.loc.transactionDetailLabelToWallet
+                    : context.loc.transactionDetailLabelFromWallet,
+                displayValue: walletLabel,
+              ),
+            if (isLiquid && counterpartWalletLabel.isNotEmpty)
+              DetailsTableItem(
+                label: transaction?.isOutgoing == true
+                    ? context.loc.transactionDetailLabelToWallet
+                    : context.loc.transactionDetailLabelFromWallet,
+                displayValue: counterpartWalletLabel,
+              ),
+            if (!isLiquid && walletTransaction != null) ...[
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelStatus,
+                displayValue: walletTransaction.status.displayName(context),
+              ),
+              if (walletTransaction.confirmationTime != null)
+                DetailsTableItem(
+                  label: context.loc.transactionDetailLabelConfirmationTime,
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(walletTransaction.confirmationTime!),
+                ),
+            ],
+          ];
+
     return DetailsTable(
       items: [
-        if (txId != null)
-          DetailsTableItem(
-            label: context.loc.transactionDetailLabelTransactionId,
-            displayValue: StringFormatting.truncateMiddle(txId),
-            copyValue: txId,
-            displayWidget: GestureDetector(
-              onTap: () async {
-                final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+        if (swap == null) ...[
+          if (txId != null)
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelTransactionId,
+              displayValue: StringFormatting.truncateMiddle(txId),
+              copyValue: txId,
+              displayWidget: GestureDetector(
+                onTap: () async {
+                  final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
 
-                final String mempoolUrl;
-                if (isLiquid) {
-                  mempoolUrl = await mempoolUrlBuilder.liquidTxidUrl(
-                    transaction?.walletTransaction?.unblindedUrl ?? '',
-                    isTestnet: isTestnet,
-                  );
-                } else {
-                  mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
-                    txId,
-                    isTestnet: isTestnet,
-                  );
-                }
+                  final String mempoolUrl;
+                  if (isLiquid) {
+                    mempoolUrl = await mempoolUrlBuilder.liquidTxidUrl(
+                      transaction?.walletTransaction?.unblindedUrl ?? '',
+                      isTestnet: isTestnet,
+                    );
+                  } else {
+                    mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
+                      txId,
+                      isTestnet: isTestnet,
+                    );
+                  }
 
-                await launchUrl(Uri.parse(mempoolUrl));
-              },
-              child: Text(
-                StringFormatting.truncateMiddle(txId),
-                style: TextStyle(color: context.appColors.primary),
-                textAlign: TextAlign.end,
+                  await launchUrl(Uri.parse(mempoolUrl));
+                },
+                child: Text(
+                  StringFormatting.truncateMiddle(txId),
+                  style: TextStyle(color: context.appColors.primary),
+                  textAlign: TextAlign.end,
+                ),
               ),
             ),
-          ),
-
-        if (labels.isNotEmpty && txId != null)
-          LabelsTableItem(
-            title: context.loc.transactionNotesLabel,
-            labels: labels,
-          ),
-        if (walletLabel.isNotEmpty)
-          DetailsTableItem(
-            label: transaction?.isIncoming == true
-                ? context.loc.transactionDetailLabelToWallet
-                : context.loc.transactionDetailLabelFromWallet,
-            displayValue: walletLabel,
-          ),
-        if (counterpartWalletLabel.isNotEmpty)
-          DetailsTableItem(
-            label: transaction?.isOutgoing == true
-                ? context.loc.transactionDetailLabelToWallet
-                : context.loc.transactionDetailLabelFromWallet,
-            displayValue: counterpartWalletLabel,
-          ),
-        if (toAddress != null)
-          DetailsTableItem(
-            label:
-                swap != null &&
-                    swap.receiveAddress != null &&
-                    swap.receiveAddress!.isNotEmpty
-                ? context.loc.transactionDetailLabelRecipientAddress
-                : context.loc.transactionDetailLabelAddress,
-            displayValue: StringFormatting.truncateMiddle(toAddress),
-            copyValue: toAddress,
-          ),
-        if (addressLabels.isNotEmpty && toAddress != null)
-          LabelsTableItem(
-            title: context.loc.transactionDetailLabelAddressNotes,
-            labels: addressLabels,
-          ),
-        // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
-        // to be able to use the CurrencyText widget instead of having to format the amount here.
-        if (!isOrder)
-          DetailsTableItem(
-            label: transaction?.isIncoming == true
-                ? context.loc.transactionDetailLabelAmountReceived
-                : context.loc.transactionDetailLabelAmountSent,
-            displayValue: bitcoinUnit == BitcoinUnit.sats
-                ? FormatAmount.sats(
-                    transaction?.isIncoming == true
-                        ? amountReceived
-                        : amountSent,
-                  ).toUpperCase()
-                : FormatAmount.btc(
-                    ConvertAmount.satsToBtc(
+          if (labels.isNotEmpty && txId != null)
+            LabelsTableItem(
+              title: context.loc.transactionNotesLabel,
+              labels: labels,
+            ),
+          if (walletLabel.isNotEmpty)
+            DetailsTableItem(
+              label: transaction?.isIncoming == true
+                  ? context.loc.transactionDetailLabelToWallet
+                  : context.loc.transactionDetailLabelFromWallet,
+              displayValue: walletLabel,
+            ),
+          if (counterpartWalletLabel.isNotEmpty)
+            DetailsTableItem(
+              label: transaction?.isOutgoing == true
+                  ? context.loc.transactionDetailLabelToWallet
+                  : context.loc.transactionDetailLabelFromWallet,
+              displayValue: counterpartWalletLabel,
+            ),
+          if (toAddress != null)
+            DetailsTableItem(
+              label: context.loc.transactionDetailLabelAddress,
+              displayValue: StringFormatting.truncateMiddle(toAddress),
+              copyValue: toAddress,
+            ),
+          if (addressLabels.isNotEmpty && toAddress != null)
+            LabelsTableItem(
+              title: context.loc.transactionDetailLabelAddressNotes,
+              labels: addressLabels,
+            ),
+          // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
+          // to be able to use the CurrencyText widget instead of having to format the amount here.
+          if (!isOrder)
+            DetailsTableItem(
+              label: transaction?.isIncoming == true
+                  ? context.loc.transactionDetailLabelAmountReceived
+                  : context.loc.transactionDetailLabelAmountSent,
+              displayValue: bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(
                       transaction?.isIncoming == true
                           ? amountReceived
                           : amountSent,
-                    ),
-                  ).toUpperCase(),
-          ),
-        if (walletTransaction != null) ...[
-          if (walletTransaction.isToSelf == true)
-            DetailsTableItem(
-              label: context.loc.transactionDetailLabelAmountReceived,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(amountReceived).toUpperCase()
+                    ).toUpperCase()
                   : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountReceived),
+                      ConvertAmount.satsToBtc(
+                        transaction?.isIncoming == true
+                            ? amountReceived
+                            : amountSent,
+                      ),
                     ).toUpperCase(),
             ),
-          if (transaction?.isOutgoing == true && swap == null)
+          if (walletTransaction != null) ...[
+            if (walletTransaction.isToSelf == true)
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelAmountReceived,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountReceived).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountReceived),
+                      ).toUpperCase(),
+              ),
+            if (transaction?.isOutgoing == true)
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelTransactionFee,
+                displayValue: bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(txFee ?? 0).toUpperCase()
+                    : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(txFee ?? 0),
+                      ).toUpperCase(),
+              ),
             DetailsTableItem(
-              label: context.loc.transactionDetailLabelTransactionFee,
-              displayValue: bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(txFee ?? 0).toUpperCase()
-                  : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(txFee ?? 0),
-                    ).toUpperCase(),
+              label: context.loc.transactionDetailLabelStatus,
+              displayValue: walletTransaction.status.displayName(context),
             ),
-          DetailsTableItem(
-            label: context.loc.transactionDetailLabelStatus,
-            displayValue: walletTransaction.status.displayName(context),
-          ),
-          if (walletTransaction.confirmationTime != null)
-            DetailsTableItem(
-              label: context.loc.transactionDetailLabelConfirmationTime,
-              displayValue: DateFormat(
-                'MMM d, y, h:mm a',
-              ).format(walletTransaction.confirmationTime!),
-            ),
+            if (walletTransaction.confirmationTime != null)
+              DetailsTableItem(
+                label: context.loc.transactionDetailLabelConfirmationTime,
+                displayValue: DateFormat(
+                  'MMM d, y, h:mm a',
+                ).format(walletTransaction.confirmationTime!),
+              ),
+          ],
         ],
         // Order info
         if (transaction?.isOrder == true) ...[
@@ -715,6 +833,12 @@ class TransactionDetailsTable extends StatelessWidget {
         ],
         // Transfer info
         if (swap != null) ...[
+          _sectionHeader(
+            context,
+            swap.isChainSwap
+                ? context.loc.transactionDetailSectionTransfer
+                : context.loc.transactionDetailSectionSwap,
+          ),
           DetailsTableItem(
             label: swap.isChainSwap
                 ? context.loc.transactionDetailLabelTransferId
@@ -752,24 +876,55 @@ class TransactionDetailsTable extends StatelessWidget {
               ),
               copyValue: swap.preimage,
             ),
-          if (swapCounterpartTxId != null)
+          if (labels.isNotEmpty)
+            LabelsTableItem(
+              title: context.loc.transactionNotesLabel,
+              labels: labels,
+            ),
+          if (toAddress != null)
             DetailsTableItem(
-              label: counterpartWallet?.isLiquid == true
-                  ? context.loc.transactionDetailLabelLiquidTxId
-                  : context.loc.transactionDetailLabelBitcoinTxId,
-              displayValue: StringFormatting.truncateMiddle(
-                swapCounterpartTxId,
+              label:
+                  swap.receiveAddress != null && swap.receiveAddress!.isNotEmpty
+                  ? context.loc.transactionDetailLabelRecipientAddress
+                  : context.loc.transactionDetailLabelAddress,
+              displayValue: StringFormatting.truncateMiddle(toAddress),
+              copyValue: toAddress,
+              displayWidget: GestureDetector(
+                onTap: () async {
+                  final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
+                  final String mempoolUrl;
+                  final addressIsLiquid = swap.isChainSwap ? !isLiquid : false;
+                  if (addressIsLiquid) {
+                    mempoolUrl = await mempoolUrlBuilder.liquidAddressUrl(
+                      toAddress,
+                      isTestnet: isTestnet,
+                    );
+                  } else {
+                    mempoolUrl = await mempoolUrlBuilder.bitcoinAddressUrl(
+                      toAddress,
+                      isTestnet: isTestnet,
+                    );
+                  }
+                  await launchUrl(Uri.parse(mempoolUrl));
+                },
+                child: Text(
+                  StringFormatting.truncateMiddle(toAddress),
+                  style: TextStyle(color: context.appColors.primary),
+                  textAlign: TextAlign.end,
+                ),
               ),
-              copyValue: swapCounterpartTxId,
+            ),
+          if (addressLabels.isNotEmpty && toAddress != null)
+            LabelsTableItem(
+              title: context.loc.transactionDetailLabelAddressNotes,
+              labels: addressLabels,
             ),
           if (swap.fees != null) ...[
             if (swap.isChainSwap) ...[
               DetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
                 displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(
-                        (swap as ChainSwap).paymentAmount,
-                      ).toUpperCase()
+                    ? FormatAmount.sats((swap as ChainSwap).paymentAmount)
                     : FormatAmount.btc(
                         ConvertAmount.satsToBtc(
                           (swap as ChainSwap).paymentAmount,
@@ -780,7 +935,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
+                      ? FormatAmount.sats(swap.receieveAmount!)
                       : FormatAmount.btc(
                           ConvertAmount.satsToBtc(swap.receieveAmount!),
                         ).toUpperCase(),
@@ -789,7 +944,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.fees!.lockupFee!).toUpperCase()
+                      ? FormatAmount.sats(swap.fees!.lockupFee!)
                       : FormatAmount.btc(
                           ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
                         ).toUpperCase(),
@@ -798,9 +953,7 @@ class TransactionDetailsTable extends StatelessWidget {
               DetailsTableItem(
                 label: context.loc.transactionLabelSendAmount,
                 displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(
-                        (swap as LnSendSwap).paymentAmount,
-                      ).toUpperCase()
+                    ? FormatAmount.sats((swap as LnSendSwap).paymentAmount)
                     : FormatAmount.btc(
                         ConvertAmount.satsToBtc(
                           (swap as LnSendSwap).paymentAmount,
@@ -811,7 +964,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
+                      ? FormatAmount.sats(swap.receieveAmount!)
                       : FormatAmount.btc(
                           ConvertAmount.satsToBtc(swap.receieveAmount!),
                         ).toUpperCase(),
@@ -820,7 +973,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendNetworkFees,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.fees!.lockupFee!).toUpperCase()
+                      ? FormatAmount.sats(swap.fees!.lockupFee!)
                       : FormatAmount.btc(
                           ConvertAmount.satsToBtc(swap.fees!.lockupFee!),
                         ).toUpperCase(),
@@ -830,7 +983,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionLabelSendAmount,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.sendAmount!).toUpperCase()
+                      ? FormatAmount.sats(swap.sendAmount!)
                       : FormatAmount.btc(
                           ConvertAmount.satsToBtc(swap.sendAmount!),
                         ).toUpperCase(),
@@ -839,7 +992,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionLabelReceiveAmount,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(swap.receieveAmount!).toUpperCase()
+                      ? FormatAmount.sats(swap.receieveAmount!)
                       : FormatAmount.btc(
                           ConvertAmount.satsToBtc(swap.receieveAmount!),
                         ).toUpperCase(),
@@ -856,7 +1009,7 @@ class TransactionDetailsTable extends StatelessWidget {
                       swap.isLnReceiveSwap
                           ? swap.fees!.totalFees(swap.amountSat)
                           : swap.fees!.totalFeesMinusLockup(swap.amountSat),
-                    ).toUpperCase()
+                    )
                   : FormatAmount.btc(
                       ConvertAmount.satsToBtc(
                         swap.isLnReceiveSwap
@@ -874,7 +1027,7 @@ class TransactionDetailsTable extends StatelessWidget {
                           ? context.loc.transactionFeesDeductedFrom
                           : context.loc.transactionFeesTotalDeducted,
                       style: context.font.labelSmall,
-                      color: context.appColors.surfaceContainer,
+                      color: context.appColors.onSurfaceVariant,
                     ),
                   ),
                   if (swap.isLnReceiveSwap && swap.fees!.lockupFee != null)
@@ -917,6 +1070,14 @@ class TransactionDetailsTable extends StatelessWidget {
                 'MMM d, y, h:mm a',
               ).format(swap.completionTime!),
             ),
+          if (liquidItems.isNotEmpty) ...[
+            _sectionHeader(context, context.loc.transactionNetworkLiquid),
+            ...liquidItems,
+          ],
+          if (bitcoinItems.isNotEmpty) ...[
+            _sectionHeader(context, context.loc.transactionNetworkBitcoin),
+            ...bitcoinItems,
+          ],
         ],
         if (payjoin != null) ...[
           DetailsTableItem(
@@ -942,6 +1103,19 @@ class TransactionDetailsTable extends StatelessWidget {
   }
 }
 
+Widget _sectionHeader(BuildContext context, String title) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 6),
+    child: Text(
+      title,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: context.appColors.onSurfaceVariant,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  );
+}
+
 Widget _feeRow(BuildContext context, String label, int amt) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -950,14 +1124,14 @@ Widget _feeRow(BuildContext context, String label, int amt) {
         BBText(
           label,
           style: context.font.bodySmall,
-          color: context.appColors.surfaceContainer,
+          color: context.appColors.onSurfaceVariant,
         ),
         const Spacer(),
         CurrencyText(
           amt,
           showFiat: false,
           style: context.font.bodySmall,
-          color: context.appColors.surfaceContainer,
+          color: context.appColors.onSurfaceVariant,
         ),
       ],
     ),
