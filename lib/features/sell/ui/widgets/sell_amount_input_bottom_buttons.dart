@@ -62,6 +62,10 @@ class _SellAmountInputBottomButtonsState
       oldWidget.amountController.removeListener(_onAmountChanged);
       widget.amountController.addListener(_onAmountChanged);
     }
+    if (oldWidget.isFiatCurrencyInput != widget.isFiatCurrencyInput ||
+        oldWidget.fiatCurrency != widget.fiatCurrency) {
+      _onAmountChanged();
+    }
   }
 
   @override
