@@ -12436,5 +12436,17 @@
   "autoswapRecipientWalletRequired": "*",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
+  },
+  "appInitErrorTitle": "Αποτυχία εκκίνησης εφαρμογής",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Παρουσιάστηκε σφάλμα κατά την εκκίνηση. Επανεκκινήστε την εφαρμογή. Αν το πρόβλημα παραμένει, μοιραστείτε τα αρχεία καταγραφής και επικοινωνήστε με την υποστήριξη.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Κοινοποίηση αρχείων καταγραφής",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

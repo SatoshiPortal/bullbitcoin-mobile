@@ -95,9 +95,8 @@ PODS:
   - integration_test (0.0.1):
     - Flutter
   - lwk (0.1.5)
-  - "no_screenshot (0.0.1+4)":
+  - no_screenshot (0.3.2-beta.3):
     - Flutter
-    - ScreenProtectorKit (~> 1.3.1)
   - package_info_plus (0.4.5):
     - Flutter
   - payjoin_flutter (0.20.0)
@@ -109,7 +108,7 @@ PODS:
     - SDWebImage/Core (= 5.21.7)
   - SDWebImage/Core (5.21.7)
   - Sentry/HybridSDK (8.56.2)
-  - sentry_flutter (9.10.0):
+  - sentry_flutter (9.14.0):
     - Flutter
     - FlutterMacOS
     - Sentry/HybridSDK (= 8.56.2)
@@ -197,7 +196,6 @@ SPEC REPOS:
     - GTMAppAuth
     - GTMSessionFetcher
     - PromisesObjC
-    - ScreenProtectorKit
     - SDWebImage
     - Sentry
     - sqlite3
@@ -285,7 +283,7 @@ SPEC CHECKSUMS:
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
   lwk: 22e06bc5664247d6b2dac91cfe209b63b70dd580
-  no_screenshot: 6d183496405a3ab709a67a54e5cd0f639e94729e
+  no_screenshot: 5e345998c43ffcad5d6834f249590483fcc037bd
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
@@ -293,13 +291,13 @@ SPEC CHECKSUMS:
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   Sentry: b53951377b78e21a734f5dc8318e333dbfc682d7
-  sentry_flutter: da39d10e3f2f3e060eebc9d7ecea027d34443d66
+  sentry_flutter: 841fa2fe08dc72eb95e2320b76e3f751f3400cf5
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   sqlite3: 8d708bc63e9f4ce48f0ad9d6269e478c5ced1d9b
   sqlite3_flutter_libs: d13b8b3003f18f596e542bcb9482d105577eff41
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   tor: 767208930250ef7be241963b75568c55c0a81890
-  universal_ble: ff19787898040d721109c6324472e5dd4bc86adc
+  universal_ble: 45519b2aeafe62761e2c6309f8927edb5288b914
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   webview_cookie_manager: d63a76cabdf42a7ea3d92768ac67d4853a1367f8
   webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d

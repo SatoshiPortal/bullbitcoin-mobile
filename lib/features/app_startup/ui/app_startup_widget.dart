@@ -136,9 +136,17 @@ class AppStartupFailureScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              Text(
+                'Contact support at app.bullbitcoin.com/support',
+                style: context.font.bodySmall?.copyWith(
+                  color: context.appColors.secondary.withValues(alpha: 0.7),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
               BBButton.big(
                 onPressed: () {
-                  final url = Uri.parse(SettingsConstants.telegramSupportLink);
+                  final url = Uri.parse(SettingsConstants.webSupportLink);
                   // ignore: deprecated_member_use
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 },

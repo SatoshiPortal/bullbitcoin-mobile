@@ -12436,5 +12436,17 @@
   "importWatchOnlyCancel": "이름 *",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
+  },
+  "appInitErrorTitle": "앱 시작 실패",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "시작 중 오류가 발생했습니다. 앱을 재시작해 주세요. 문제가 지속되면 로그를 공유하고 지원팀에 문의하세요.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "로그 공유",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

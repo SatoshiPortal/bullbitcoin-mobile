@@ -12436,5 +12436,17 @@
   "buyUpgradeKYC": "KYC Seviyesini Yükselt",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
+  },
+  "appInitErrorTitle": "Uygulama başlatılamadı",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Başlatma sırasında bir hata oluştu. Lütfen uygulamayı yeniden başlatın. Sorun devam ederse günlüklerinizi paylaşın ve destekle iletişime geçin.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Günlükleri paylaş",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

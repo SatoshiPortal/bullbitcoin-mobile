@@ -12436,5 +12436,17 @@
   "autoswapRecipientWalletRequired": "♪",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
+  },
+  "appInitErrorTitle": "فشل تشغيل التطبيق",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "حدث خطأ أثناء بدء التشغيل. يرجى إعادة تشغيل التطبيق. إذا استمر المشكل، شارك سجلاتك وتواصل مع الدعم.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "مشاركة السجلات",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

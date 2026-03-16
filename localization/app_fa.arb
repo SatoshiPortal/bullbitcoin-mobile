@@ -12436,5 +12436,17 @@
   "transactionSwapDescLnReceiveClaimable": "معامله در زنجیره تایید شده است. ما در حال حاضر ادعا می کنیم که وجوه برای تکمیل مبادله شما.",
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
+  },
+  "appInitErrorTitle": "برنامه راه‌اندازی نشد",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "خطایی در هنگام راه‌اندازی رخ داد. لطفاً برنامه را مجدداً راه‌اندازی کنید. اگر مشکل ادامه دارد، گزارش‌های خود را به اشتراک بگذارید و با پشتیبانی تماس بگیرید.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "اشتراک‌گذاری گزارش‌ها",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }
