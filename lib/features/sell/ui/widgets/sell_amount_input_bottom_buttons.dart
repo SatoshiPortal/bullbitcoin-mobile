@@ -32,6 +32,8 @@ class SellAmountInputBottomButtons extends StatefulWidget {
 
 class _SellAmountInputBottomButtonsState
     extends State<SellAmountInputBottomButtons> {
+  bool _needsKycUpgrade = false;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +41,18 @@ class _SellAmountInputBottomButtonsState
   }
 
   void _onAmountChanged() {
-    setState(() {});
+    final cadAmount = widget.isFiatCurrencyInput
+        ? double.tryParse(widget.amountController.text) ?? 0.0
+        : 0.0;
+    final newValue = context.read<SellBloc>().state.needsKycUpgrade(
+      cadAmount,
+      currency: widget.fiatCurrency,
+    );
+    if (newValue != _needsKycUpgrade) {
+      setState(() {
+        _needsKycUpgrade = newValue;
+      });
+    }
   }
 
   @override
@@ -59,22 +72,13 @@ class _SellAmountInputBottomButtonsState
 
   @override
   Widget build(BuildContext context) {
-    // Only apply the fiat amount limit when the user is typing in fiat mode.
-    final cadAmount = widget.isFiatCurrencyInput
-        ? double.tryParse(widget.amountController.text) ?? 0.0
-        : 0.0;
-
     final isLoading = context.select(
       (SellBloc bloc) => bloc.state is SellInitialState,
-    );
-    final needsKycUpgrade = context.select(
-      (SellBloc bloc) =>
-          bloc.state.needsKycUpgrade(cadAmount, currency: widget.fiatCurrency),
     );
 
     if (isLoading) {
       return const LoadingLineContent(height: 48);
-    } else if (needsKycUpgrade) {
+    } else if (_needsKycUpgrade) {
       return Column(
         children: [
           InfoCard(
