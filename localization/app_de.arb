@@ -4129,84 +4129,208 @@
   "logoutConfirmationDescription": "Möchten Sie sich wirklich von Ihrem Bull Bitcoin-Konto abmelden? Sie müssen sich erneut anmelden, um auf die Funktionen der Börse zugreifen zu können.",
   "logoutConfirmationCancel": "Abbrechen",
   "logoutConfirmationLogout": "Abmelden",
-  "autoswapInfoTitle": "Autoswap wird empfohlen",
-  "autoswapInfoDismissButton": "JA, DANKE",
-  "autoswapInfoSettingsButton": "NEIN, ICH VERSTEHE DIE RISIKEN",
-  "autoswapInfoRemindLater": "Bitte Autoswap-Einstellungen konfigurieren",
-  "autoswapInfoConsentMessage": "Autoswap ist derzeit aktiviert, wird aber erst ausgelöst, wenn Sie zustimmen. Möchten Sie es aktiviert lassen?",
-  "mempoolServerStatusOnline": "Online",
-  "mempoolServerStatusOffline": "Offline",
-  "mempoolServerStatusChecking": "Prüfen...",
-  "mempoolServerStatusUnknown": "Unbekannt",
-  "mempoolCustomServerSaveFailed": "Server konnte nicht gespeichert werden",
-  "mempoolCustomServerInfoDescription": "Mempool-Server werden für die Gebührenschätzung und zum Öffnen des Block-Explorers beim Anzeigen von Transaktionsdetails verwendet.",
-  "mempoolCustomServerUseSsl": "SSL verwenden",
-  "mempoolCustomServerSslAutoDetected": "(Automatisch erkannt)",
-  "mempoolCustomServerSslHelpText": "Für lokale (.local, private IPs) und Tor (.onion) Server ist SSL normalerweise deaktiviert. Öffentliche IPs und Domains sollten SSL verwenden.",
-  "mempoolErrorSameAsDefault": "Diese URL ist dieselbe wie der Standardserver. Bitte verwenden Sie eine andere URL.",
-  "mempoolErrorConnectionTimeout": "Verbindung ist abgelaufen. Der Server ist möglicherweise langsam oder nicht erreichbar.",
-  "mempoolErrorHostNotFound": "Server nicht gefunden. Bitte überprüfen Sie die URL und versuchen Sie es erneut.",
-  "mempoolErrorTorNotRunning": ".onion-Adresse nicht erreichbar. Stellen Sie sicher, dass Tor/Orbot läuft und versuchen Sie es erneut.",
-  "mempoolErrorConnectionFailed": "Verbindung zum Server nicht möglich. Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es erneut.",
-  "mempoolErrorNotMempoolServer": "Diese URL scheint kein Mempool-Server zu sein. Bitte überprüfen Sie die Adresse.",
-  "mempoolErrorServerUnavailable": "Server nicht verfügbar. Bitte versuchen Sie es später erneut.",
-  "mempoolErrorServerError": "Server hat einen Fehler festgestellt. Bitte versuchen Sie es später erneut.",
-  "mempoolErrorInvalidResponse": "Server hat eine ungültige Antwort zurückgegeben.",
-  "mempoolErrorUnexpected": "Ein unerwarteter Fehler ist aufgetreten",
-  "mempoolErrorSaveServerFailed": "Server konnte nicht gespeichert werden: {error}",
-  "mempoolErrorLoadFailed": "Mempool-Serverdaten konnten nicht geladen werden: {error}",
-  "mempoolErrorDeleteFailed": "Benutzerdefinierter Server konnte nicht gelöscht werden: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Einstellungen konnten nicht aktualisiert werden: {error}",
-  "settingsErrorReportingTitle": "Fehlerberichte",
-  "@settingsErrorReportingTitle": {
-    "description": "Titel für die Fehlerberichterstattungseinstellung in den App-Einstellungen"
+  "recipientsSearchHint": "Hinweistext für das Suchfeld für Empfänger",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
   },
-  "errorReportingProgramTitle": "Fehlermeldungsprogramm",
-  "@errorReportingProgramTitle": {
-    "description": "Titel für das Erklärungsblatt zum Fehlerberichtsprogramm"
+  "autoswapInfoSettingsButton": "Sekundäre Taste zum Navigieren zu den Einstellungen für den automatischen Wechsel",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
   },
-  "errorReportingProgramDescription": "Helfen Sie uns, Bull Bitcoin zu verbessern, indem Sie an unserem Fehlermeldungsprogramm teilnehmen. Es hilft uns direkt, Bull Bitcoin für alle besser zu machen.\n\nWenn aktiviert, senden wir automatisch Fehlerberichte (Logs), wenn Probleme in der App auftreten. Diese Daten helfen uns zu verstehen, was für unsere Benutzer weltweit passiert, und Fixes entsprechend zu priorisieren.\n\nWir teilen diese Informationen nicht mit Dritten. Wir verwenden Sentrys Open-Source-Client mit unserem eigenen selbstgehosteten Backend-Server.",
-  "@errorReportingProgramDescription": {
-    "description": "Beschreibung des Fehlermeldungsprogramms"
+  "autoswapInfoRemindLater": "Tertiäre Aktion zum Schließen des Blattes ohne Ablegen",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
   },
-  "errorReportingAcceptButton": "Akzeptieren",
-  "@errorReportingAcceptButton": {
-    "description": "Schaltfläche zum Akzeptieren der Fehlerberichterstattung"
+  "autoswapInfoTitle": "Titel für das untere Blatt mit Informationen zum automatischen Austausch",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
   },
-  "errorReportingCancelButton": "Abbrechen",
-  "@errorReportingCancelButton": {
-    "description": "Schaltfläche zum Abbrechen der Fehlerberichterstattung"
+  "autoswapInfoDismissButton": "Primäre Schaltfläche zum dauerhaften Ausblenden der Autoswap-Informationen",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
   },
-  "errorReportingRestartSnackbar": "Starten Sie bitte die App neu, um diese Änderung zu übernehmen",
-  "@errorReportingRestartSnackbar": {
-    "description": "Kurze Bestätigung, wenn die Einstellung zur Fehlerberichterstattung geändert wird"
+  "exchangeSettingsRecipientsTitle": "Empfänger",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
   },
-  "appInitErrorTitle": "App konnte nicht gestartet werden",
-  "@appInitErrorTitle": {
-    "description": "Title shown on the fatal init error screen in main.dart"
+  "exchangeSettingsTransactionsTitle": "Überweisungen",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
   },
-  "appInitErrorMessage": "Beim Start ist ein Fehler aufgetreten. Bitte starte die App neu. Wenn das Problem weiterhin besteht, teile deine Protokolle und kontaktiere den Support.",
-  "@appInitErrorMessage": {
-    "description": "Body text on the fatal init error screen in main.dart"
+  "exchangeFileUploadSuccess": "Datei erfolgreich hochgeladen",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
   },
-  "appInitErrorShareLogsButton": "Protokolle teilen",
-  "@appInitErrorShareLogsButton": {
-    "description": "Button label to share logs on the fatal init error screen"
+  "exchangeAppSettingsEmailNotificationsLabel": "E-Mail-Benachrichtigungen",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
   },
-  "backupWarningTitle": "SICHERN SIE IHR WALLET JETZT",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
+  "exchangeAppSettingsEmailNotificationsDescription": "Erhalten Sie E-Mail-Benachrichtigungen zu Bestellungen und Kontoaktualisierungen.",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
   },
-  "backupWarningDescription": "Ohne ein Backup verlieren Sie den Zugang zu Ihren Bitcoin, wenn Sie Ihr Telefon verlieren, die App löschen oder ein kritisches anwendungs- oder gerätebezogenes Problem aufritt. Es gibt keine Möglichkeit, Ihr Wallet ohne ein Backup wiederherzustellen.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
+  "exchangeBitcoinWalletsSaveSuccess": "Wallet-Adresse erfolgreich gespeichert",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
   },
-  "backupWarningBackupNow": "JA",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
+  "exchangeBitcoinWalletsDescription": "Legen Sie Standard-Wallet-Adressen für automatische Bitcoin-Überweisungen fest.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
   },
-  "backupWarningBackupLater": "NEIN, ICH VERSTEHE DAS RISIKO",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
+  "exchangeFileUploadDocumentsTitle": "Dokumente hochladen",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Bis zu {maxFiles} Dateien hochladen. Zulässige Formate: PDF, JPG, PNG, GIF, HEIC. Maximale Dateigröße: 10 MB pro Datei.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "Keine Dateien ausgewählt",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Auf „Dateien auswählen“ tippen, um Dokumente auszuwählen.",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Dateien auswählen",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Weitere Dateien hinzufügen",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Lade hoch...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Alles löschen",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "Alle Dateien wurden erfolgreich hochgeladen.",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{hochgeladen} von {insgesamt} Dateien hochgeladen",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Bereit",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "In Bearbeitung",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Angenommen",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Abgelehnt – Zum erneuten Hochladen antippen",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "Ihre Dokumente werden derzeit geprüft. Sie können keine weiteren Dateien hochladen, bis die Prüfung abgeschlossen ist.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Ihre Dokumente wurden akzeptiert. Es sind keine weiteren Uploads erforderlich.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Statistiken",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "Keine Statistiken verfügbar",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "Stand: {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Statistiken der Bestellungen",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Kauf-/Verkaufsverhältnis",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Kauf-Statistiken",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Verkaufs-Statistiken",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Volumen",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Handelsvolumen",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Durchschnittspreis",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Gesamtes Handelsvolumen",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Käuferstatistiken",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Currency: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsTotalAmount": "Gesamtbetrag",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Wiederholen",
+  "@retry": {
+    "description": "Generic retry button label"
   }
 }
