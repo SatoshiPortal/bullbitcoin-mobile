@@ -49,4 +49,26 @@ class MempoolUrlBuilder {
     );
     return '${server.fullUrl}/address/$address';
   }
+
+  Future<String> bitcoinAddressUrl(
+    String address, {
+    required bool isTestnet,
+  }) async {
+    final server = await _getActiveMempoolServerUsecase.execute(
+      isTestnet: isTestnet,
+      isLiquid: false,
+    );
+    return '${server.fullUrl}/address/$address';
+  }
+
+  Future<String> liquidAddressUrl(
+    String address, {
+    required bool isTestnet,
+  }) async {
+    final server = await _getActiveMempoolServerUsecase.execute(
+      isTestnet: isTestnet,
+      isLiquid: true,
+    );
+    return '${server.fullUrl}/address/$address';
+  }
 }
