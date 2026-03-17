@@ -5,15 +5,11 @@ class SwapCreationException extends BullException {
 }
 
 class InsufficientBalanceException extends BullException {
-  InsufficientBalanceException([
-    super.message = 'sendErrorInsufficientBalanceForPayment',
-  ]);
+  InsufficientBalanceException(super.message);
 }
 
 class InvalidBitcoinStringException extends BullException {
-  InvalidBitcoinStringException([
-    super.message = 'sendErrorInvalidAddressOrInvoice',
-  ]);
+  InvalidBitcoinStringException(super.message);
 }
 
 class SwapLimitsException extends BullException {

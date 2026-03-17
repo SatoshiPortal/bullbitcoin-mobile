@@ -182,10 +182,7 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.confirm) {
       emit(
-        state.copyWith(
-          step: SendStep.amount,
-          buildTransactionException: null,
-        ),
+        state.copyWith(step: SendStep.amount, buildTransactionException: null),
       );
     }
   }
