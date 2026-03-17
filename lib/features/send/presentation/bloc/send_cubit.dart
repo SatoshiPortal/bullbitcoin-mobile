@@ -277,7 +277,7 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              swapCreationException: AmountlessInvoiceException(),
+              swapCreationException: AmountlessInvoiceException('Invoice has no amount'),
             ),
           );
           return;

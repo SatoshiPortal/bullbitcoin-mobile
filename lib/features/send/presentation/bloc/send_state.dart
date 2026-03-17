@@ -453,7 +453,7 @@ class SwapCreationException extends BullException {
 }
 
 class AmountlessInvoiceException extends SwapCreationException {
-  AmountlessInvoiceException() : super('Invoice must contain an amount');
+  AmountlessInvoiceException(super.message);
 }
 
 class InsufficientBalanceException extends BullException {
