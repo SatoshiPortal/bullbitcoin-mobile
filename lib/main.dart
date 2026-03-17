@@ -109,34 +109,49 @@ Future main() async {
   // Incase we error in the zoneGuarded block, we need to share logs on the error page.
   await Bull.initLogs();
 
-  await runZonedGuarded(
-    () async {
-      // Initialize the background tasks before anything else
-      await Workmanager().initialize(backgroundTasksHandler);
-      await Workmanager().cancelAll();
+  // Startup phase: errors here show the AppInitErrorScreen since the app
+  // cannot function without successful initialization.
+  try {
+    await Workmanager().initialize(backgroundTasksHandler);
+    await Workmanager().cancelAll();
 
-      await Bull.init();
+    await Bull.init();
 
-      await Workmanager().registerPeriodicTask(
-        BackgroundTask.logsPrune.id,
-        BackgroundTask.logsPrune.name,
-        frequency: const Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-          requiresBatteryNotLow: true,
-          requiresStorageNotLow: false,
-          requiresDeviceIdle: false,
-          requiresCharging: false,
-        ),
-      );
+    await Workmanager().registerPeriodicTask(
+      BackgroundTask.logsPrune.id,
+      BackgroundTask.logsPrune.name,
+      frequency: const Duration(minutes: 15),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+        requiresBatteryNotLow: true,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        requiresCharging: false,
+      ),
+    );
+  } catch (error, stackTrace) {
+    log.severe(error: error, trace: stackTrace);
+    runApp(AppInitErrorScreen(error: error));
+    return;
+  }
 
-      runApp(const BullBitcoinWalletApp());
-    },
-    (error, stackTrace) async {
-      log.severe(error: error, trace: stackTrace);
-      runApp(AppInitErrorScreen(error: error));
-    },
-  );
+  FlutterError.onError = (details) {
+    log.severe(
+      message: 'Global Unhandled Error',
+      error: details.exception,
+      trace: details.stack ?? StackTrace.current,
+    );
+  };
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    log.severe(
+      message: 'Global Unhandled Error',
+      error: error,
+      trace: stackTrace,
+    );
+    return true;
+  };
+
+  runApp(const BullBitcoinWalletApp());
 }
 
 class BullBitcoinWalletApp extends StatefulWidget {
