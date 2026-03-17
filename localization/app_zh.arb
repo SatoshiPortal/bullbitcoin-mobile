@@ -1564,6 +1564,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "未能制造 s.",
+  "sendErrorInvoiceMustContainAmount": "发票必须包含金额",
   "arkNoBalanceData": "无结余数据",
   "autoswapWarningCardTitle": "自动换币已启用",
   "coreSwapsChainCompletedSuccess": "移交工作顺利完成.",

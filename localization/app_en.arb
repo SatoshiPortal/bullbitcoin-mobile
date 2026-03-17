@@ -7173,6 +7173,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
   "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"

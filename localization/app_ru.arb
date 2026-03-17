@@ -1561,6 +1561,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
+  "sendErrorInvoiceMustContainAmount": "Счёт должен содержать сумму",
   "arkNoBalanceData": "Данные о балансе отсутствуют",
   "autoswapWarningCardTitle": "Автообмен включен",
   "coreSwapsChainCompletedSuccess": "Передача завершена успешно.",

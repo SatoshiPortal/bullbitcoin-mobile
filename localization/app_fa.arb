@@ -5289,6 +5289,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "شکست برای ایجاد مبادله.",
+  "sendErrorInvoiceMustContainAmount": "فاکتور باید حاوی مبلغ باشد",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },

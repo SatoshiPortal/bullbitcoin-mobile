@@ -450,7 +450,10 @@ extension SendStateFeePercent on SendState {
 
 class SwapCreationException extends BullException {
   SwapCreationException(super.message);
-  String get displayMessage => 'Failed to create swap.';
+}
+
+class AmountlessInvoiceException extends SwapCreationException {
+  AmountlessInvoiceException() : super('Invoice must contain an amount');
 }
 
 class InsufficientBalanceException extends BullException {

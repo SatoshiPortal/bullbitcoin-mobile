@@ -4745,6 +4745,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Takas oluşturmak için başarısız oldu.",
+  "sendErrorInvoiceMustContainAmount": "Fatura bir miktar içermelidir",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
