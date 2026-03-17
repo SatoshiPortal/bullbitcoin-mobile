@@ -266,6 +266,42 @@ sealed class SellState with _$SellState {
     );
   }
 
+  bool get isLightKycLevel {
+    return when(
+      initial: (apiKeyException, getUserSummaryException) => false,
+      amountInput: (userSummary, bitcoinUnit) => userSummary.isLightKycLevel,
+      walletSelection:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            isCreatingSellOrder,
+            error,
+          ) => userSummary.isLightKycLevel,
+      payment:
+          (
+            userSummary,
+            bitcoinUnit,
+            orderAmount,
+            fiatCurrency,
+            selectedWallet,
+            sellOrder,
+            isConfirmingPayment,
+            isPolling,
+            error,
+            absoluteFees,
+            _,
+            _,
+            _,
+            _,
+          ) => userSummary.isLightKycLevel,
+      success:
+          (bitcoinUnit, sellOrder) =>
+              true, // Success state implies KYC was sufficient
+    );
+  }
+
   bool get isFullyVerifiedKycLevel {
     return when(
       initial: (apiKeyException, getUserSummaryException) => false,
@@ -301,6 +337,33 @@ sealed class SellState with _$SellState {
           (bitcoinUnit, sellOrder) =>
               true, // Success state implies KYC was sufficient
     );
+  }
+
+  UserSummary? get _userSummary => whenOrNull(
+    amountInput: (userSummary, _) => userSummary,
+    walletSelection: (userSummary, _, _, _, _, _) => userSummary,
+    payment: (userSummary, _, _, _, _, _, _, _, _, _, _, _, _, _) => userSummary,
+  );
+
+  /// Whether the user's KYC level permits transactions in [currency].
+  /// Falls back to [fiatCurrency] when [currency] is null.
+  bool isKycOk({FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? fiatCurrency;
+    return _userSummary?.isKycOk(effectiveCurrency) ?? false;
+  }
+
+  /// Whether [amount] exceeds the per-transaction limit for the user's
+  /// KYC level in [currency]. Falls back to [fiatCurrency] when null.
+  bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? fiatCurrency;
+    return _userSummary?.isAmountExceeded(amount, effectiveCurrency) ?? false;
+  }
+
+  /// Returns true when the "Complete KYC" prompt should be shown instead of
+  /// the normal action button.
+  bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? fiatCurrency;
+    return _userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
   }
 }
 

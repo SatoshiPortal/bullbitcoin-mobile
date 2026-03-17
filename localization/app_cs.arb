@@ -12436,5 +12436,17 @@
   "importMnemonicContinue": "Pokračovat",
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
+  },
+  "appInitErrorTitle": "Aplikaci se nepodařilo spustit",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Při spuštění došlo k chybě. Restartujte prosím aplikaci. Pokud problém přetrvává, sdílejte protokoly a kontaktujte podporu.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Sdílet protokoly",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

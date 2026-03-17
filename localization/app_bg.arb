@@ -9434,5 +9434,17 @@
   "importWatchOnlyCancel": "Отказ",
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
+  },
+  "appInitErrorTitle": "Приложението не успя да стартира",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Възникна грешка при стартиране. Моля, рестартирайте приложението. Ако проблемът продължава, споделете логовете си и се свържете с поддръжката.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Споделяне на логове",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   }
 }

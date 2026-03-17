@@ -4396,6 +4396,18 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
+  "appInitErrorTitle": "Не вдалося запустити додаток",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Під час запуску виникла помилка. Будь ласка, перезапустіть додаток. Якщо проблема не зникне, поділіться журналами та зверніться до служби підтримки.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Поділитися журналами",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
   "backupWarningTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ГАМАНЦЯ ЗАРАЗ",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"

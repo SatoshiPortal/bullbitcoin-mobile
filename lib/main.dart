@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -37,7 +38,6 @@ import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
-    await initLogs();
     await initFlutterRustBridgeDependencies();
 
     // The Locator setup might depend on the initialization of the libraries above
@@ -104,37 +104,37 @@ class Bull {
 }
 
 Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Should be initialized outside zone guarded
+  // Incase we error in the zoneGuarded block, we need to share logs on the error page.
+  await Bull.initLogs();
+
   await runZonedGuarded(
     () async {
-      WidgetsFlutterBinding.ensureInitialized();
-
       // Initialize the background tasks before anything else
       await Workmanager().initialize(backgroundTasksHandler);
       await Workmanager().cancelAll();
 
       await Bull.init();
 
-      int delay = 0;
-      for (final task in BackgroundTask.values) {
-        await Workmanager().registerPeriodicTask(
-          task.id,
-          task.name,
-          frequency: Duration(minutes: 15 + delay),
-          constraints: Constraints(
-            networkType: NetworkType.connected,
-            requiresBatteryNotLow: true,
-            requiresStorageNotLow: false,
-            requiresDeviceIdle: false,
-            requiresCharging: false,
-          ),
-        );
-        delay++;
-      }
+      await Workmanager().registerPeriodicTask(
+        BackgroundTask.logsPrune.id,
+        BackgroundTask.logsPrune.name,
+        frequency: const Duration(minutes: 15),
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+          requiresBatteryNotLow: true,
+          requiresStorageNotLow: false,
+          requiresDeviceIdle: false,
+          requiresCharging: false,
+        ),
+      );
 
       runApp(const BullBitcoinWalletApp());
     },
     (error, stackTrace) async {
       log.severe(error: error, trace: stackTrace);
+      runApp(AppInitErrorScreen(error: error));
     },
   );
 }

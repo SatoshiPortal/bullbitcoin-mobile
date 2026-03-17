@@ -4391,6 +4391,18 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
+  "appInitErrorTitle": "Sovelluksen käynnistys epäonnistui",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Käynnistyksen aikana tapahtui virhe. Käynnistä sovellus uudelleen. Jos ongelma jatkuu, jaa lokitiedostosi ja ota yhteyttä tukeen.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Jaa lokit",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
   "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
