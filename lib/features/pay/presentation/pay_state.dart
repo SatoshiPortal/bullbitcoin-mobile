@@ -48,6 +48,28 @@ sealed class PayState with _$PayState {
     );
   }
 
+  bool get isFullyVerifiedKycLevel =>
+      userSummary?.isFullyVerifiedKycLevel == true;
+
+  bool get isLimitedKycLevel => userSummary?.isLimitedKycLevel == true;
+
+  bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
+
+  bool isKycOk({FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency;
+    return userSummary?.isKycOk(effectiveCurrency) ?? false;
+  }
+
+  bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency;
+    return userSummary?.isAmountExceeded(amount, effectiveCurrency) ?? false;
+  }
+
+  bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency;
+    return userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
+  }
+
   FiatCurrency get currency {
     return when(
       recipientSelection: (userSummary, _, _) => userSummary != null

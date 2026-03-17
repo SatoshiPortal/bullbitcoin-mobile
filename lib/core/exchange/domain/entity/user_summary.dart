@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -154,4 +155,26 @@ sealed class UserSummary with _$UserSummary {
   bool get isLightKycLevel => groups.contains('KYC_LIGHT_VERIFICATION');
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
   bool get hasConsentedScamWarning => groups.contains('CONSENT_SCAM_WARNING');
+
+  /// Whether the user's KYC level permits transactions in [currency].
+  bool isKycOk(FiatCurrency currency) {
+    return isFullyVerifiedKycLevel ||
+        currency == FiatCurrency.cad && (isLimitedKycLevel || isLightKycLevel);
+  }
+
+  /// Whether [amount] exceeds the per-transaction limit for the user's
+  /// KYC level in [currency]. Currently only CAD limits are enforced.
+  bool isAmountExceeded(double amount, FiatCurrency currency) {
+    return !isFullyVerifiedKycLevel &&
+        currency == FiatCurrency.cad &&
+        ((isLimitedKycLevel &&
+                amount > ExchangeKycConstants.cadLimitedKycMaxAmount) ||
+            (isLightKycLevel &&
+                amount > ExchangeKycConstants.cadLightKycMaxAmount));
+  }
+
+  /// Returns true when the user needs to upgrade KYC to proceed.
+  bool needsKycUpgrade(double amount, FiatCurrency currency) {
+    return !isKycOk(currency) || isAmountExceeded(amount, currency);
+  }
 }
