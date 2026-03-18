@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
-import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
+import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
@@ -9,7 +8,6 @@ import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_done_b
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class FundExchangeCanadaPostScreen extends StatelessWidget {
   const FundExchangeCanadaPostScreen({super.key});
@@ -73,22 +71,10 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                         textAlign: .center,
                       ),
                       const Gap(8.0),
-                      if (details?.code == null)
-                        const LoadingBoxContent(height: 250.0, width: 250.0)
-                      else
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: context.appColors.background,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: QrImageView(
-                            size: 250,
-                            data: details!.code,
-                            // ignore: deprecated_member_use
-                            foregroundColor: context.appColors.secondary,
-                          ),
-                        ),
+                      QrDisplayWidget(
+                        data: details?.code ?? '',
+                        size: 250,
+                      ),
                       const Gap(24.0),
                     ],
                   ),
@@ -101,5 +87,4 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
       bottomNavigationBar: const FundExchangeDoneBottomNavigationBar(),
     );
   }
-
 }

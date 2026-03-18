@@ -141,50 +141,27 @@
   "walletDetailsCopyButton": "Copier",
   "bitcoinSettingsWalletsTitle": "Portefeuilles",
   "bitcoinSettingsElectrumServerTitle": "Paramètres du serveur Electrum",
-  "mempoolSettingsTitle": "Serveur Mempool",
-  "mempoolSettingsDescription": "Configurez des serveurs mempool personnalisés pour différents réseaux. Chaque réseau peut utiliser son propre serveur pour l'explorateur de blocs et l'estimation des frais.",
-  "mempoolSettingsDefaultServer": "Serveur par défaut",
-  "mempoolSettingsCustomServer": "Serveur personnalisé",
+  "mempoolSettingsTitle": "Mempool Server",
+  "mempoolSettingsDescription": "Configure custom mempool servers for different networks. Each network can use its own server for block explorer and fee estimation.",
+  "mempoolSettingsDefaultServer": "Default Server",
+  "mempoolSettingsCustomServer": "Custom Server",
   "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "mempoolNetworkLiquidTestnet": "Liquid Testnet",
-  "mempoolCustomServerAdd": "Ajouter un serveur personnalisé",
-  "mempoolCustomServerEdit": "Modifier",
-  "mempoolCustomServerDelete": "Supprimer",
-  "mempoolCustomServerLabel": "PERSONNALISÉ",
-  "mempoolServerNotUsed": "Non utilisé (serveur personnalisé actif)",
-  "mempoolCustomServerDeleteTitle": "Supprimer le serveur personnalisé ?",
-  "mempoolCustomServerDeleteMessage": "Êtes-vous sûr de vouloir supprimer ce serveur mempool personnalisé ? Le serveur par défaut sera utilisé à la place.",
-  "mempoolCustomServerUrl": "URL du serveur",
-  "mempoolCustomServerUrlEmpty": "Veuillez entrer une URL de serveur",
-  "mempoolCustomServerSaveSuccess": "Serveur personnalisé enregistré avec succès",
-  "mempoolCustomServerBottomSheetDescription": "Entrez l'URL de votre serveur mempool personnalisé. Le serveur sera validé avant l'enregistrement.",
-  "mempoolSettingsUseForFeeEstimation": "Utiliser pour l'estimation des frais",
-  "mempoolSettingsUseForFeeEstimationDescription": "Lorsqu'il est activé, ce serveur sera utilisé pour l'estimation des frais. Lorsqu'il est désactivé, le serveur mempool de Bull Bitcoin sera utilisé à la place.",
-  "mempoolServerStatusOnline": "En ligne",
-  "mempoolServerStatusOffline": "Hors ligne",
-  "mempoolServerStatusChecking": "Vérification...",
-  "mempoolServerStatusUnknown": "Inconnu",
-  "mempoolCustomServerSaveFailed": "Échec de l'enregistrement du serveur",
-  "mempoolCustomServerInfoDescription": "Les serveurs mempool sont utilisés pour l'estimation des frais et pour ouvrir l'explorateur de blocs lors de l'affichage des détails de transaction.",
-  "mempoolCustomServerUseSsl": "Utiliser SSL",
-  "mempoolCustomServerSslAutoDetected": "(Détecté automatiquement)",
-  "mempoolCustomServerSslHelpText": "Pour les serveurs locaux (.local, IPs privées) et Tor (.onion), SSL est généralement désactivé. Les IPs publiques et les domaines devraient utiliser SSL.",
-  "mempoolErrorSameAsDefault": "Cette URL est identique au serveur par défaut. Veuillez utiliser une URL différente.",
-  "mempoolErrorConnectionTimeout": "Délai de connexion dépassé. Le serveur peut être lent ou inaccessible.",
-  "mempoolErrorHostNotFound": "Serveur introuvable. Veuillez vérifier l'URL et réessayer.",
-  "mempoolErrorTorNotRunning": "Impossible d'atteindre l'adresse .onion. Assurez-vous que Tor/Orbot est en cours d'exécution et réessayez.",
-  "mempoolErrorConnectionFailed": "Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez.",
-  "mempoolErrorNotMempoolServer": "Cette URL ne semble pas être un serveur mempool. Veuillez vérifier l'adresse.",
-  "mempoolErrorServerUnavailable": "Serveur indisponible. Veuillez réessayer plus tard.",
-  "mempoolErrorServerError": "Le serveur a rencontré une erreur. Veuillez réessayer plus tard.",
-  "mempoolErrorInvalidResponse": "Le serveur a renvoyé une réponse invalide.",
-  "mempoolErrorUnexpected": "Une erreur inattendue s'est produite",
-  "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur : {error}",
-  "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool : {error}",
-  "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé : {error}",
-  "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres : {error}",
+  "mempoolCustomServerAdd": "Add Custom Server",
+  "mempoolCustomServerEdit": "Edit",
+  "mempoolCustomServerDelete": "Delete",
+  "mempoolCustomServerLabel": "CUSTOM",
+  "mempoolServerNotUsed": "Not used (custom server active)",
+  "mempoolCustomServerDeleteTitle": "Delete Custom Server?",
+  "mempoolCustomServerDeleteMessage": "Are you sure you want to delete this custom mempool server? The default server will be used instead.",
+  "mempoolCustomServerUrl": "Server URL",
+  "mempoolCustomServerUrlEmpty": "Please enter a server URL",
+  "mempoolCustomServerSaveSuccess": "Custom server saved successfully",
+  "mempoolCustomServerBottomSheetDescription": "Enter the URL of your custom mempool server. The server will be validated before saving.",
+  "mempoolSettingsUseForFeeEstimation": "Use for Fee Estimation",
+  "mempoolSettingsUseForFeeEstimationDescription": "When enabled, this server will be used for fee estimation. When disabled, Bull Bitcoin's mempool server will be used instead.",
   "bitcoinSettingsAutoTransferTitle": "Paramètres de transfert automatique",
   "bitcoinSettingsLegacySeedsTitle": "Phrases de récupération héritées",
   "bitcoinSettingsImportWalletTitle": "Importer un portefeuille",
@@ -850,6 +827,7 @@
   "fundExchangeWarningTactic8": "Ils vous pressent d'agir rapidement",
   "fundExchangeWarningConfirmation": "Je confirme que personne ne me demande d'acheter du Bitcoin.",
   "fundExchangeContinueButton": "Continuer",
+  "fundExchangeScamConsentError": "Échec de l'enregistrement de votre consentement. Veuillez réessayer.",
   "fundExchangeDoneButton": "Terminé",
   "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
   "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",
@@ -1456,8 +1434,8 @@
   "autoswapEnableToggleLabel": "Activer le Transfert Automatique",
   "autoswapMaxBalanceLabel": "Solde Maximum du Portefeuille Instantané",
   "autoswapMaxBalanceInfoText": "Lorsque le solde du portefeuille dépasse le double de ce montant, le transfert automatique se déclenchera pour réduire le solde à ce niveau",
-  "autoswapBaseBalanceInfoText": "Le solde de votre portefeuille de paiements instantanés reviendra à ce solde après un échange automatique.",
-  "autoswapTriggerAtBalanceInfoText": "L'échange automatique se déclenchera lorsque votre solde dépasse ce montant.",
+  "autoswapBaseBalanceInfoText": "Le solde de votre portefeuille de paiement instantané reviendra à ce solde cible après un échange automatique.",
+  "autoswapTriggerAtBalanceInfoText": "L'échange automatique se déclenchera lorsque votre solde dépassera ce solde maximal.",
   "autoswapMaxFeeLabel": "Frais de Transfert Maximum",
   "autoswapMaxFeeInfoText": "Si les frais de transfert totaux dépassent le pourcentage défini, le transfert automatique sera bloqué",
   "autoswapRecipientWalletLabel": "Portefeuille Bitcoin Destinataire",
@@ -1478,13 +1456,13 @@
       }
     }
   },
-  "autoswapWarningCardTitle": "Autoswap est recommandé",
-  "autoswapWarningCardSubtitle": "Cliquez pour en savoir plus, désactiver ou configurer",
-  "autoswapActiveCardTitle": "Autoswap est actif",
-  "autoswapWarningDescription": "Le transfert automatique garantit qu'un bon équilibre est maintenu entre votre portefeuille de paiements instantanés et votre portefeuille Bitcoin sécurisé.",
-  "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants",
-  "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximum, un échange sera déclenché automatiquement. Le solde cible sera conservé dans votre portefeuille de paiements instantanés et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
-  "autoswapWarningExplanationBold": "automatiquement",
+  "autoswapWarningCardTitle": "L'échange automatique est activé.",
+  "autoswapWarningCardSubtitle": "Un échange sera déclenché si le solde de votre portefeuille de paiements instantanés dépasse 0,02 BTC.",
+  "autoswapWarningDescription": "L'échange automatique vous empêche de garder trop d'argent dans le portefeuille de paiement instantané, ce qui n'est pas sûr pour le stockage à long terme.",
+  "autoswapWarningTitle": "Le transfert automatique est activé avec les paramètres suivants :",
+  "autoswapWarningBaseBalance": "Solde cible 0,01 BTC",
+  "autoswapWarningTriggerAmount": "Solde maximal de 0,02 BTC",
+  "autoswapWarningExplanation": "Lorsque votre solde dépasse le solde maximal, un échange sera déclenché. Le solde cible sera conservé dans votre portefeuille de paiement instantané et le montant restant sera échangé dans votre portefeuille Bitcoin sécurisé.",
   "autoswapWarningDontShowAgain": "Ne plus afficher cet avertissement.",
   "autoswapWarningSettingsLink": "Me conduire aux paramètres de transfert automatique",
   "autoswapWarningOkButton": "OK",
@@ -1516,7 +1494,7 @@
       }
     }
   },
-  "autoswapTriggerBalanceError": "Le solde de déclenchement doit être au moins 2x le solde de base",
+  "autoswapTriggerBalanceError": "Le solde maximal doit être au moins égal à 2 fois le solde cible",
   "arkNoTransactionsYet": "Aucune transaction pour le moment.",
   "arkToday": "Aujourd'hui",
   "arkYesterday": "Hier",
@@ -1821,8 +1799,6 @@
   "urProcessingFailedMessage": "Échec du traitement UR",
   "scanNfcButton": "Scanner NFC",
   "shareLogsLabel": "Partager les journaux",
-  "deleteLogsTitle": "Supprimer les journaux",
-  "logsDeletedMessage": "Journaux supprimés",
   "viewLogsLabel": "Voir les journaux",
   "errorSharingLogsMessage": "Erreur lors du partage des journaux : {error}",
   "@errorSharingLogsMessage": {
@@ -2159,12 +2135,14 @@
   "sendEnterRelativeFee": "Entrer les frais relatifs en sats/vB",
   "sendErrorArkExperimentalOnly": "Les demandes de paiement ARK ne sont disponibles que depuis la fonctionnalité expérimentale Ark.",
   "sendErrorSwapCreationFailed": "Échec de la création de l'échange.",
+  "sendErrorInvoiceMustContainAmount": "La facture doit contenir un montant",
   "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
   "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
   "sendErrorBuildFailed": "Échec de la construction",
   "sendErrorConfirmationFailed": "Échec de la confirmation",
   "sendErrorInsufficientBalanceForSwap": "Solde insuffisant pour payer cet échange via Liquid et hors des limites d'échange pour payer via Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "Le montant est inférieur aux limites d'échange",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Pensez à alimenter Paiements Instantanés pour effectuer des paiements plus petits.",
   "sendErrorAmountAboveSwapLimits": "Le montant est supérieur aux limites d'échange",
   "sendErrorAmountBelowMinimum": "Montant inférieur à la limite d'échange minimale : {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
@@ -3822,7 +3800,7 @@
   },
   "ledgerInstructionsIos": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé.",
   "ledgerInstructionsAndroidUsb": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et connectez-le via USB.",
-  "ledgerInstructionsAndroidDual": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé.",
+  "ledgerInstructionsAndroidDual": "Assurez-vous que votre Ledger est déverrouillé avec l'application Bitcoin ouverte et Bluetooth activé, ou connectez l'appareil via USB.",
   "ledgerScanningMessage": "Recherche d'appareils Ledger à proximité...",
   "ledgerConnectingSubtext": "Établissement d'une connexion sécurisée...",
   "ledgerErrorUnknown": "Erreur inconnue",
@@ -3868,10 +3846,6 @@
   "exchangeFeatureCustomerSupport": "• Discutez avec le support client",
   "exchangeFeatureUnifiedHistory": "• Historique des transactions unifié",
   "priceChartFetchingHistory": "Récupération de l'historique des prix...",
-  "priceChartFailedToLoad": "Échec du chargement de l'historique des prix",
-  "priceFailedToLoad": "Échec du chargement du prix",
-  "statusScreenTryAgain": "Réessayer",
-  "statusScreenContinue": "Continuer",
   "exchangeLandingDisclaimerLegal": "L'accès aux services d'échange sera limité aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
   "exchangeLandingDisclaimerNotAvailable": "Les services d'échange de cryptomonnaies ne sont pas disponibles dans l'application mobile Bull Bitcoin.",
   "exchangeLoginButton": "Se connecter ou s'inscrire",
@@ -4158,12 +4132,239 @@
   "logoutConfirmationDescription": "Êtes-vous sûr de vouloir vous déconnecter de votre compte Bull Bitcoin? Vous devrez vous reconnecter pour accéder aux fonctionnalités d'échange.",
   "logoutConfirmationCancel": "Annuler",
   "logoutConfirmationLogout": "Déconnexion",
-  "autoswapInfoTitle": "Autoswap est recommandé",
-  "autoswapInfoDismissButton": "OUI, MERCI",
-  "autoswapInfoSettingsButton": "NON, JE COMPRENDS LES RISQUES",
-  "autoswapInfoRemindLater": "Configurer Autoswap",
-  "autoswapInfoConsentMessage": "Autoswap est actuellement activé mais ne se déclenchera pas tant que vous n'aurez pas donné votre consentement. Souhaitez-vous le garder activé?"
-,
+  "autoswapInfoSettingsButton": "Configurer les paramètres",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "autoswapInfoRemindLater": "Rappelez-moi plus tard",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
+  },
+  "autoswapInfoTitle": "L'échange automatique est actif.",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "autoswapInfoDismissButton": "Compris, ne plus afficher.",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "exchangeSettingsRecipientsTitle": "Destinataires",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Transactions",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
+  "exchangeFileUploadDocumentsTitle": "Téléverser les documents",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeStatisticsTotalAmount": "Montant Total",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Réessayer",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "exchangeFileUploadSuccess": "Fichier téléchargé avec succès",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Notifications par courriel",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Recevoir des notifications par courriel pour les commandes et les mises à jour de compte",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Adresse de portefeuille enregistré avec succès",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Définir les adresses de portefeuille par défaut pour les retraits automatiques Bitcoin.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Téléchargez jusqu'aux fichiers {maxFiles}. Formats autorisés: PDF, JPG, PNG, GIF, HEIC. Taille maximale du fichier : 10 Mo par fichier.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "Aucun fichier sélectionné",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Appuyez sur \"Sélectionner les fichiers\" pour choisir les documents",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Sélectionnez les fichiers",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Ajouter plus de fichiers",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Chargement...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Tout effacer",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "Tous les fichiers téléchargés avec succès",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{uploaded} des fichiers {total} téléchargés",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Prêt",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "In Review",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Acceptée",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Rejected - Tap to re-upload",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "Vos documents sont en cours d'examen. Vous ne pouvez pas télécharger plus de fichiers jusqu'à ce que l'examen soit terminé.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Vos documents ont été acceptés. Aucun téléchargement supplémentaire n'est nécessaire.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Statistiques",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "Pas de statistiques disponibles",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "À partir de {date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Statistiques des ordres",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Acheter/Sell Ratio",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Acheter des statistiques",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Statistiques de vente",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Volume",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Trade Count",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Prix moyen",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Total Trading Volume",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Statistiques Biller",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Devise : {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolServerStatusOnline": "En ligne",
+  "mempoolServerStatusOffline": "Hors ligne",
+  "mempoolServerStatusChecking": "Vérification...",
+  "mempoolServerStatusUnknown": "Inconnu",
+  "mempoolCustomServerSaveFailed": "Échec de l'enregistrement du serveur",
+  "mempoolCustomServerInfoDescription": "Les serveurs mempool sont utilisés pour l'estimation des frais et pour ouvrir l'explorateur de blocs lors de l'affichage des détails de transaction.",
+  "mempoolCustomServerUseSsl": "Utiliser SSL",
+  "mempoolCustomServerSslAutoDetected": "(Détecté automatiquement)",
+  "mempoolCustomServerSslHelpText": "Pour les serveurs locaux (.local, IPs privées) et Tor (.onion), SSL est généralement désactivé. Les IPs publiques et les domaines devraient utiliser SSL.",
+  "mempoolErrorSameAsDefault": "Cette URL est identique au serveur par défaut. Veuillez utiliser une URL différente.",
+  "mempoolErrorConnectionTimeout": "Délai de connexion dépassé. Le serveur peut être lent ou inaccessible.",
+  "mempoolErrorHostNotFound": "Serveur introuvable. Veuillez vérifier l'URL et réessayer.",
+  "mempoolErrorTorNotRunning": "Impossible d'atteindre l'adresse .onion. Assurez-vous que Tor/Orbot est en cours d'exécution et réessayez.",
+  "mempoolErrorConnectionFailed": "Impossible de se connecter au serveur. Vérifiez votre connexion réseau et réessayez.",
+  "mempoolErrorNotMempoolServer": "Cette URL ne semble pas être un serveur mempool. Veuillez vérifier l'adresse.",
+  "mempoolErrorServerUnavailable": "Serveur indisponible. Veuillez réessayer plus tard.",
+  "mempoolErrorServerError": "Le serveur a rencontré une erreur. Veuillez réessayer plus tard.",
+  "mempoolErrorInvalidResponse": "Le serveur a renvoyé une réponse invalide.",
+  "mempoolErrorUnexpected": "Une erreur inattendue s'est produite",
+  "mempoolErrorSaveServerFailed": "Échec de l'enregistrement du serveur : {error}",
+  "mempoolErrorLoadFailed": "Échec du chargement des données du serveur mempool : {error}",
+  "mempoolErrorDeleteFailed": "Échec de la suppression du serveur personnalisé : {error}",
+  "mempoolErrorUpdateSettingsFailed": "Échec de la mise à jour des paramètres : {error}",
+  "autoswapActiveCardTitle": "Autoswap est actif",
+  "autoswapWarningExplanationBold": "automatiquement",
+  "deleteLogsTitle": "Supprimer les journaux",
+  "logsDeletedMessage": "Journaux supprimés",
+  "sendSelfTransfer": "Auto-transfert",
+  "priceChartFailedToLoad": "Échec du chargement de l'historique des prix",
+  "priceFailedToLoad": "Échec du chargement du prix",
+  "statusScreenTryAgain": "Réessayer",
+  "statusScreenContinue": "Continuer",
+  "autoswapInfoConsentMessage": "Autoswap est actuellement activé mais ne se déclenchera pas tant que vous n'aurez pas donné votre consentement. Souhaitez-vous le garder activé?",
   "settingsErrorReportingTitle": "Signalement d'erreurs",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4187,5 +4388,33 @@
   "errorReportingRestartSnackbar": "Relancez l'application pour appliquer ce changement",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "Impossible de démarrer l'application",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Une erreur s'est produite au démarrage. Veuillez redémarrer l'application. Si le problème persiste, partagez vos journaux et contactez le support.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Partager les journaux",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si vous perdez votre téléphone, supprimez l'application, ou si vous rencontrez un problème critique lié à l'application ou à l'appareil. Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "OUI",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "NON, JE COMPRENDS LE RISQUE",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }

@@ -1,0 +1,18 @@
+{
+  "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "আৰম্ভণিৰ সময়ত এটা ত্ৰুটি ঘটিছে। অনুগ্ৰহ কৰি এপটো পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, আপোনাৰ লগ শ্বেয়াৰ কৰক আৰু সহায়ৰ সৈতে যোগাযোগ কৰক।",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "লগ শ্বেয়াৰ কৰক",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  }
+}

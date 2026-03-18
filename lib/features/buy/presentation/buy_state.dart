@@ -36,6 +36,25 @@ sealed class BuyState with _$BuyState {
   bool get isFullyVerifiedKycLevel =>
       userSummary?.isFullyVerifiedKycLevel == true;
 
+  bool get isLimitedKycLevel => userSummary?.isLimitedKycLevel == true;
+
+  bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
+
+  bool isKycOk({FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
+    return userSummary?.isKycOk(effectiveCurrency) ?? false;
+  }
+
+  bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
+    return userSummary?.isAmountExceeded(amount, effectiveCurrency) ?? false;
+  }
+
+  bool needsKycUpgrade(double amount, {FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
+    return userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
+  }
+
   double? get balance => balances[currencyInput];
 
   int? get maxAmountSat =>

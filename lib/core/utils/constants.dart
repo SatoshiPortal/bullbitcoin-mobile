@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -11,6 +12,7 @@ class Device {
 
 class SettingsConstants {
   static const telegramSupportLink = 'https://t.me/+gUHV3ZcQ-_RmZDdh';
+  static const webSupportLink = 'https://app.bullbitcoin.com/support';
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
   static const termsAndConditionsLink = 'https://wallet.bullbitcoin.com/terms';
@@ -47,11 +49,16 @@ class AssetConstants {
 }
 
 class PayjoinConstants {
-  static const List<String> ohttpRelayUrls = [
-    'https://ohttp.achow101.com',
-    'https://pj.bobspacebkk.com',
-    'https://ohttp.cakewallet.com',
-  ];
+  static List<String> get ohttpRelayUrls {
+    final list = [
+      'https://ohttp.achow101.com',
+      'https://pj.bobspacebkk.com',
+      'https://ohttp.cakewallet.com',
+    ];
+    list.shuffle(Random.secure());
+    return list;
+  }
+
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;
   static const defaultExpireAfterSec = 60 * 60 * 24; // 24 hours
@@ -133,6 +140,14 @@ class LocatorInstanceNameConstants {
 class LabelConstants {
   static const separator = '␟';
   static const labelKeyPrefix = 'label';
+}
+
+class ExchangeKycConstants {
+  /// Maximum CAD transaction amount for Limited Identity Verification users.
+  static const double cadLimitedKycMaxAmount = 999.0;
+
+  /// Maximum CAD transaction amount for Canada Light Verification users.
+  static const double cadLightKycMaxAmount = 3000.0;
 }
 
 class CountryConstants {

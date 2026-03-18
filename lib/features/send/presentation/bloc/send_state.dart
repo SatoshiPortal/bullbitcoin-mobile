@@ -67,6 +67,7 @@ abstract class SendState with _$SendState {
     PaymentRequest? paymentRequest,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
+    bool? isToSelf,
     @Default('') String amount,
     int? confirmedAmountSat,
     BitcoinUnit? bitcoinUnit,
@@ -339,6 +340,12 @@ abstract class SendState with _$SendState {
     return false;
   }
 
+  int get swapMinimum {
+    final min = selectedSwapLimits?.min ?? 0;
+    if (min != 0) return min;
+    return selectedWallet?.isLiquid == true ? 100 : 25000;
+  }
+
   bool get swapAmountAboveLimit {
     if (isLightning) {
       return selectedSwapLimits != null &&
@@ -443,7 +450,10 @@ extension SendStateFeePercent on SendState {
 
 class SwapCreationException extends BullException {
   SwapCreationException(super.message);
-  String get displayMessage => 'Failed to create swap.';
+}
+
+class AmountlessInvoiceException extends SwapCreationException {
+  AmountlessInvoiceException(super.message);
 }
 
 class InsufficientBalanceException extends BullException {
@@ -463,10 +473,16 @@ class InvalidBitcoinStringException extends BullException {
 /// UI displays context-specific messages using sendErrorAmountBelowMinimum,
 /// sendErrorAmountAboveMaximum, sendErrorBalanceTooLowForMinimum, etc.
 class SwapLimitsException extends BullException {
-  SwapLimitsException(super.message, {this.minLimit, this.maxLimit});
+  SwapLimitsException(
+    super.message, {
+    this.minLimit,
+    this.maxLimit,
+    this.suggestInstantPayments = false,
+  });
 
   final int? minLimit;
   final int? maxLimit;
+  final bool suggestInstantPayments;
 
   bool get isBelowMinimum => minLimit != null;
   bool get isAboveMaximum => maxLimit != null;
@@ -483,5 +499,7 @@ class BuildTransactionException extends BullException {
 /// Stored in SendState and displayed by UI using sendErrorConfirmationFailed.
 /// The message parameter is for debugging/logging only.
 class ConfirmTransactionException extends BullException {
-  ConfirmTransactionException(super.message);
+  ConfirmTransactionException(super.message, {this.isBroadcastFailure = false});
+
+  final bool isBroadcastFailure;
 }

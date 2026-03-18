@@ -119,7 +119,6 @@ class ExchangeNotificationDatasource {
         trace: StackTrace.current,
       );
       _handleDisconnect();
-      rethrow;
     }
   }
 

@@ -1,0 +1,231 @@
+{
+  "transactionNoteAddTitle": "შენიშვნის დამატება",
+  "@transactionNoteAddTitle": {
+    "description": "Title for add note dialog"
+  },
+  "transactionNoteEditTitle": "შენიშვნის ჩასწორება",
+  "@transactionNoteEditTitle": {
+    "description": "Title for edit note dialog"
+  },
+  "transactionNoteHint": "შენიშვნა",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNoteSaveButton": "შენახვა",
+  "@transactionNoteSaveButton": {
+    "description": "Button label to save a note"
+  },
+  "transactionNoteUpdateButton": "განახლება",
+  "@transactionNoteUpdateButton": {
+    "description": "Button label to update a note"
+  },
+  "transactionPayjoinNoProposal": "არ მიგიღიათ payjoin შეთავაზება მიმღებისგან?",
+  "@transactionPayjoinNoProposal": {
+    "description": "Message displayed when payjoin proposal is not received"
+  },
+  "transactionPayjoinSendWithout": "გაგზავნა payjoin-ის გარეშე",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionSwapProgressInitiated": "ინიცირებულია",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionSwapProgressPaymentMade": "გადახდა\nშესრულებულია",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "transactionSwapProgressFundsClaimed": "თანხა\nდაბრუნებულია",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "transactionSwapProgressBroadcasted": "ტრანსლაცია",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionSwapProgressInvoicePaid": "ინვოისი\nგადახდილია",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionSwapProgressConfirmed": "დადასტურებულია",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionSwapProgressClaim": "გამოთხოვა",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "დასრულებულია",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInProgress": "მიმდინარეობს",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapStatusTransferStatus": "გადაცემის სტატუსი",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionSwapStatusSwapStatus": "მიმოცვლის სტატუსი",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionSwapDescLnReceivePending": "თქვენი მიმოცვლა ინიცირებულია. ჩვენ ველოდებით გადახდის მიღებას Lightning Network-ზე.",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "coreSwapsStatusInProgress": "მიმდინარეობს",
+  "@coreSwapsStatusInProgress": {
+    "description": "Display name for in-progress swap status (paid, claimable, refundable, canCoop)"
+  },
+  "coreSwapsStatusCompleted": "დასრულებულია",
+  "@coreSwapsStatusCompleted": {
+    "description": "Display name for completed swap status"
+  },
+  "coreSwapsActionClaim": "გამოთხოვა",
+  "@coreSwapsActionClaim": {
+    "description": "Action label for claiming a swap"
+  },
+  "coreWalletTransactionStatusConfirmed": "დადასტურებულია",
+  "@coreWalletTransactionStatusConfirmed": {
+    "description": "Display name for confirmed wallet transaction status"
+  },
+  "exchangeAppSettingsSaveButton": "შენახვა",
+  "@exchangeAppSettingsSaveButton": {
+    "description": "Button label for saving exchange app settings"
+  },
+  "receiveNote": "შენიშვნა",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "receiveSave": "შენახვა",
+  "@receiveSave": {
+    "description": "Button label for saving receive details"
+  },
+  "receiveNoteLabel": "შენიშვნა",
+  "@receiveNoteLabel": {
+    "description": "Label for the note field in receive"
+  },
+  "receiveNotePlaceholder": "შენიშვნა",
+  "@receiveNotePlaceholder": {
+    "description": "Placeholder text for note input field"
+  },
+  "transactionDetailAddNote": "შენიშვნის დამატება",
+  "@transactionDetailAddNote": {
+    "description": "Button label to add a note to a transaction"
+  },
+  "transactionStatusInProgress": "მიმდინარეობს",
+  "@transactionStatusInProgress": {
+    "description": "Status label for transactions in progress"
+  },
+  "transactionStatusConfirmed": "დადასტურებულია",
+  "@transactionStatusConfirmed": {
+    "description": "Status label for confirmed transactions"
+  },
+  "transactionLabelTransferStatus": "გადაცემის სტატუსი",
+  "@transactionLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "transactionLabelSwapStatus": "მიმოცვლის სტატუსი",
+  "@transactionLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionLabelCompletedAt": "დასრულებულია",
+  "@transactionLabelCompletedAt": {
+    "description": "Label for completion timestamp"
+  },
+  "transactionPayjoinStatusCompleted": "დასრულებულია",
+  "@transactionPayjoinStatusCompleted": {
+    "description": "Payjoin status: completed"
+  },
+  "transactionDetailLabelCompletedAt": "დასრულებულია",
+  "@transactionDetailLabelCompletedAt": {
+    "description": "Label for completion time"
+  },
+  "transactionDetailLabelTransferStatus": "გადაცემის სტატუსი",
+  "@transactionDetailLabelTransferStatus": {
+    "description": "Label for transfer status"
+  },
+  "transactionDetailLabelSwapStatus": "მიმოცვლის სტატუსი",
+  "@transactionDetailLabelSwapStatus": {
+    "description": "Label for swap status"
+  },
+  "transactionDetailLabelPayjoinCompleted": "დასრულებულია",
+  "@transactionDetailLabelPayjoinCompleted": {
+    "description": "Payjoin completed status"
+  },
+  "walletBalanceUnconfirmedIncoming": "მიმდინარეობს",
+  "@walletBalanceUnconfirmedIncoming": {
+    "description": "Label for unconfirmed incoming balance"
+  },
+  "autoswapSaveButton": "შენახვა",
+  "@autoswapSaveButton": {
+    "description": "Save button label at bottom of settings sheet"
+  },
+  "arkStatusConfirmed": "დადასტურებულია",
+  "@arkStatusConfirmed": {
+    "description": "Status label for confirmed boarding transactions"
+  },
+  "arkConfirmed": "დადასტურებულია",
+  "@arkConfirmed": {
+    "description": "Label for confirmed balance in breakdown"
+  },
+  "replaceByFeeBroadcastButton": "ტრანსლაცია",
+  "@replaceByFeeBroadcastButton": {
+    "description": "Button to broadcast the replacement transaction"
+  },
+  "sendInvoicePaid": "ინვოისი გადახდილია",
+  "@sendInvoicePaid": {
+    "description": "Title when Lightning invoice payment succeeds"
+  },
+  "receiveConfirmed": "დადასტურებულია",
+  "@receiveConfirmed": {
+    "description": "Status when fully confirmed"
+  },
+  "rbfBroadcast": "ტრანსლაცია",
+  "@rbfBroadcast": {
+    "description": "Button text to broadcast the bumped transaction"
+  },
+  "broadcastSignedTxBroadcast": "ტრანსლაცია",
+  "@broadcastSignedTxBroadcast": {
+    "description": "Button to broadcast signed transaction"
+  },
+  "autoswapSave": "შენახვა",
+  "@autoswapSave": {
+    "description": "Save button label"
+  },
+  "electrumPrivacyNoticeSave": "შენახვა",
+  "@electrumPrivacyNoticeSave": {
+    "description": "Save button in privacy notice dialog"
+  },
+  "save": "შენახვა",
+  "@save": {
+    "description": "Generic save button label"
+  },
+  "torSettingsSaveButton": "შენახვა",
+  "@torSettingsSaveButton": {
+    "description": "Save button label for Tor port settings"
+  },
+  "electrumConfirm": "დადასტურებულია",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "appInitErrorTitle": "აპლიკაციის გაშვება ვერ მოხერხდა",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "გაშვებისას მოხდა შეცდომა. გთხოვთ, გადატვირთოთ აპლიკაცია. თუ პრობლემა გრძელდება, გაუზიარეთ თქვენი ჩანაწერები და დაუკავშირდით მხარდაჭერას.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "ჩანაწერების გაზიარება",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "sendErrorInvoiceMustContainAmount": "ინვოისი უნდა შეიცავდეს თანხას",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  }
+}
