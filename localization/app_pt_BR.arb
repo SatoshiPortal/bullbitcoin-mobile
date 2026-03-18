@@ -4128,6 +4128,7 @@
     "description": "Label showing source wallet"
   },
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },

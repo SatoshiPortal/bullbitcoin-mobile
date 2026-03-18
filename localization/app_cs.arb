@@ -4818,6 +4818,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
+  "sendErrorInvoiceMustContainAmount": "Faktura musí obsahovat částku",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },

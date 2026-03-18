@@ -4506,6 +4506,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
   "arkNoBalanceData": "لا توجد بيانات عن الرصيد",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

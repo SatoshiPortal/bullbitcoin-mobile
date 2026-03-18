@@ -2213,6 +2213,7 @@
   "swapProgressCompleted": "Трансфер завершено",
   "keystoneStep2": "Натисніть сканування",
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
+  "sendErrorInvoiceMustContainAmount": "Рахунок повинен містити суму",
   "arkNoBalanceData": "Немає даних балансу",
   "autoswapWarningCardTitle": "Автообмін увімкнено.",
   "autoswapMaxBalance": "Max Миттєвий баланс гаманця",

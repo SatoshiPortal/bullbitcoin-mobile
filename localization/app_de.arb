@@ -1534,6 +1534,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Versäumt, Swap zu erstellen.",
+  "sendErrorInvoiceMustContainAmount": "Die Rechnung muss einen Betrag enthalten",
   "arkNoBalanceData": "Keine Bilanzdaten verfügbar",
   "autoswapWarningCardTitle": "Autoswap ist aktiviert",
   "coreSwapsChainCompletedSuccess": "Die Überweisung war erfolgreich.",

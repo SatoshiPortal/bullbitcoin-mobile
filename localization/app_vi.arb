@@ -11,5 +11,9 @@
   "appInitErrorShareLogsButton": "Chia sẻ nhật ký",
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
+  },
+  "sendErrorInvoiceMustContainAmount": "Hóa đơn phải chứa số tiền",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
   }
 }

@@ -2085,6 +2085,7 @@
   "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
   "sendErrorArkExperimentalOnly": "ARK-maksupyyntöjä on saatavilla vain kokeellisesta Ark-ominaisuudesta.",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
+  "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
   "sendErrorInsufficientBalanceForPayment": "Saldo ei riitä tämän maksun kattamiseen",
   "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
   "sendErrorBuildFailed": "Rakentaminen epäonnistui",

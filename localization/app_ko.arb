@@ -4765,6 +4765,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "스왑을 생성하는 실패.",
+  "sendErrorInvoiceMustContainAmount": "인보이스에는 금액이 포함되어야 합니다",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },

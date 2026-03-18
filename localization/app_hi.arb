@@ -4765,6 +4765,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "स्वैप बनाने में विफल रहा।।",
+  "sendErrorInvoiceMustContainAmount": "इनवॉइस में एक राशि होनी चाहिए",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
