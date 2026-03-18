@@ -31,5 +31,9 @@
   "appInitErrorShareLogsButton": "Shiriki kumbukumbu",
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
+  },
+  "sendErrorInvoiceMustContainAmount": "Ankara lazima iwe na kiasi",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
   }
 }

@@ -1533,13 +1533,14 @@
       }
     }
   },
-  "sendErrorSwapCreationFailed": "Fehler beim Erstellen des Swaps",
-  "arkNoBalanceData": "Keine Saldodaten verfügbar",
-  "autoswapWarningCardTitle": "Auto-Transfer ist aktiviert",
-  "coreSwapsChainCompletedSuccess": "Die Überweisung war erfolgreich",
-  "physicalBackupRecommendation": "Physische Sicherung:",
-  "autoswapMaxBalance": "Maximaler Sofortzahlungs-Saldo",
-  "importQrDeviceImport": "Importieren",
+  "sendErrorSwapCreationFailed": "Versäumt, Swap zu erstellen.",
+  "sendErrorInvoiceMustContainAmount": "Die Rechnung muss einen Betrag enthalten",
+  "arkNoBalanceData": "Keine Bilanzdaten verfügbar",
+  "autoswapWarningCardTitle": "Autoswap ist aktiviert",
+  "coreSwapsChainCompletedSuccess": "Die Überweisung war erfolgreich.",
+  "physicalBackupRecommendation": "Physikalische Sicherung: ",
+  "autoswapMaxBalance": "Maximaler Sofort-Guthabenstand",
+  "importQrDeviceImport": "Einfuhr",
   "importQrDeviceScanPrompt": "Scannen Sie den QR-Code von Ihrem {deviceName}",
   "@importQrDeviceScanPrompt": {
     "placeholders": {

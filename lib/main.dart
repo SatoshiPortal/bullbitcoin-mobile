@@ -38,13 +38,13 @@ import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
+    await initLogs();
     await initFlutterRustBridgeDependencies();
-
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator();
-
     await initErrorReporting();
+    await initWorkmanager();
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
@@ -70,6 +70,22 @@ class Bull {
   static Future<void> initLocator() async {
     await AppLocator.setup(locator, SqliteDatabase());
     Bloc.observer = AppBlocObserver();
+  }
+
+  static Future<void> initWorkmanager() async {
+    await Workmanager().initialize(backgroundTasksHandler);
+    await Workmanager().cancelAll();
+    await Workmanager().registerPeriodicTask(
+      BackgroundTask.logsPrune.id,
+      BackgroundTask.logsPrune.name,
+      frequency: const Duration(minutes: 15),
+      constraints: Constraints(
+        requiresBatteryNotLow: true,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        requiresCharging: false,
+      ),
+    );
   }
 
   static Future<void> initErrorReporting() async {
@@ -104,37 +120,24 @@ class Bull {
 }
 
 Future main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Should be initialized outside zone guarded
-  // Incase we error in the zoneGuarded block, we need to share logs on the error page.
-  await Bull.initLogs();
-
   await runZonedGuarded(
     () async {
-      // Initialize the background tasks before anything else
-      await Workmanager().initialize(backgroundTasksHandler);
-      await Workmanager().cancelAll();
-
-      await Bull.init();
-
-      await Workmanager().registerPeriodicTask(
-        BackgroundTask.logsPrune.id,
-        BackgroundTask.logsPrune.name,
-        frequency: const Duration(minutes: 15),
-        constraints: Constraints(
-          networkType: NetworkType.connected,
-          requiresBatteryNotLow: true,
-          requiresStorageNotLow: false,
-          requiresDeviceIdle: false,
-          requiresCharging: false,
-        ),
-      );
-
+      try {
+        WidgetsFlutterBinding.ensureInitialized();
+        await Bull.init();
+      } catch (error, stackTrace) {
+        log.severe(error: error, trace: stackTrace);
+        runApp(AppInitErrorScreen(error: error));
+        return;
+      }
       runApp(const BullBitcoinWalletApp());
     },
-    (error, stackTrace) async {
-      log.severe(error: error, trace: stackTrace);
-      runApp(AppInitErrorScreen(error: error));
+    (error, stackTrace) {
+      log.severe(
+        message: 'Global Unhandled Error',
+        error: error,
+        trace: stackTrace,
+      );
     },
   );
 }

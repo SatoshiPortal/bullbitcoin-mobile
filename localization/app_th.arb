@@ -4765,6 +4765,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "จัดเรียงเพื่อสร้างการเชื่อมต่อ.",
+  "sendErrorInvoiceMustContainAmount": "ใบแจ้งหนี้ต้องมีจำนวนเงิน",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },

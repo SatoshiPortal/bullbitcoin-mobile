@@ -3807,6 +3807,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Не успях да създам размяна",
+  "sendErrorInvoiceMustContainAmount": "Фактурата трябва да съдържа сума",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },

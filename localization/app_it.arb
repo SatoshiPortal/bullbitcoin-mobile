@@ -1564,6 +1564,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
+  "sendErrorInvoiceMustContainAmount": "La fattura deve contenere un importo",
   "arkNoBalanceData": "Nessun dato di bilancio disponibile",
   "autoswapWarningCardTitle": "Autoswap è attivo",
   "coreSwapsChainCompletedSuccess": "Il trasferimento è completato con successo.",

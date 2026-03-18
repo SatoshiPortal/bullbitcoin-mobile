@@ -2135,6 +2135,7 @@
   "sendEnterRelativeFee": "Entrer les frais relatifs en sats/vB",
   "sendErrorArkExperimentalOnly": "Les demandes de paiement ARK ne sont disponibles que depuis la fonctionnalité expérimentale Ark.",
   "sendErrorSwapCreationFailed": "Échec de la création de l'échange.",
+  "sendErrorInvoiceMustContainAmount": "La facture doit contenir un montant",
   "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
   "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
   "sendErrorBuildFailed": "Échec de la construction",

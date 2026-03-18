@@ -4661,6 +4661,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "বদল তৈরি করতে ব্যর্থ হয়েছে।",
+  "sendErrorInvoiceMustContainAmount": "চালানে একটি পরিমাণ থাকতে হবে",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
