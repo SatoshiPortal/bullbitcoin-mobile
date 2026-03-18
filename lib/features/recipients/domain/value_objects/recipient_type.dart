@@ -17,7 +17,7 @@ enum RecipientType {
   sinpeIbanCrc('SINPE_IBAN_CRC'),
   sinpeMovilCrc('SINPE_MOVIL_CRC'),
   // ARGENTINA
-  cbuCvuArgentina('CBU_CVU_ARGENTINA'),
+  cbuCvuArgentina('BANK_TRANSFER_ARS'),
   // Colombia
   pseColombia('PSE_COLOMBIA_COP'),
   nequiColombia('NEQUI_COLOMBIA_COP');
