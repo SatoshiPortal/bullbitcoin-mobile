@@ -286,22 +286,22 @@ class SinpeMovilCrcFormDataModel extends RecipientFormDataModel {
 // ARGENTINA
 // ══════════════════════════════════════════════════════════════════════════════
 
-class CbuCvuArgentinaFormDataModel extends RecipientFormDataModel {
-  final String cbuCvu;
+class BankAccountArgentinaFormDataModel extends RecipientFormDataModel {
+  final String claveUniform;
   final String name;
 
-  const CbuCvuArgentinaFormDataModel({
-    required this.cbuCvu,
+  const BankAccountArgentinaFormDataModel({
+    required this.claveUniform,
     required this.name,
     super.label,
-  }) : super(type: RecipientType.cbuCvuArgentina);
+  }) : super(type: RecipientType.bankAccountArgentina);
 
   @override
   RecipientDetailsDto toDto() {
     return RecipientDetailsDto(
       recipientType: type,
       label: label,
-      cbuCvu: cbuCvu,
+      claveUniform: claveUniform,
       name: name,
     );
   }

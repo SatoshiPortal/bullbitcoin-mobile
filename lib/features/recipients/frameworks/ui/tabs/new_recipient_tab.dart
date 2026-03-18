@@ -135,7 +135,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
             hookError: widget.hookError,
           ),
           // ARGENTINA types
-          RecipientType.cbuCvuArgentina => CbuCvuArgentinaForm(
+          RecipientType.bankAccountArgentina => BankAccountArgentinaForm(
             hookError: widget.hookError,
           ),
           // TODO: Colombia types

@@ -106,7 +106,6 @@ class BillPaymentCadDetails extends RecipientDetails {
     if (payeeAccountNumber.trim().isEmpty) {
       throw ArgumentError('Payee account number cannot be empty');
     }
-
     return BillPaymentCadDetails._(
       label: label,
       isDefault: isDefault,
@@ -502,45 +501,45 @@ class SinpeMovilCrcDetails extends RecipientDetails {
   RecipientType get type => RecipientType.sinpeMovilCrc;
 }
 
-// ── CBU/CVU (Argentina)
+// ── Bank Account (Argentina)
 @immutable
-class CbuCvuArgentinaDetails extends RecipientDetails {
-  final String cbuCvu;
+class BankAccountArgentinaDetails extends RecipientDetails {
+  final String claveUniform;
   final String name;
 
-  const CbuCvuArgentinaDetails._({
+  const BankAccountArgentinaDetails._({
     super.label,
     super.isDefault = false,
     super.isOwner,
-    required this.cbuCvu,
+    required this.claveUniform,
     required this.name,
   });
 
-  factory CbuCvuArgentinaDetails.create({
+  factory BankAccountArgentinaDetails.create({
     String? label,
     bool isDefault = false,
     bool? isOwner,
-    required String cbuCvu,
+    required String claveUniform,
     required String name,
   }) {
-    if (cbuCvu.trim().isEmpty) {
+    if (claveUniform.trim().isEmpty) {
       throw ArgumentError('CBU/CVU cannot be empty');
     }
     if (name.trim().isEmpty) {
       throw ArgumentError('Name cannot be empty');
     }
 
-    return CbuCvuArgentinaDetails._(
+    return BankAccountArgentinaDetails._(
       label: label,
       isDefault: isDefault,
       isOwner: isOwner,
-      cbuCvu: cbuCvu.trim(),
+      claveUniform: claveUniform.trim(),
       name: name.trim(),
     );
   }
 
   @override
-  RecipientType get type => RecipientType.cbuCvuArgentina;
+  RecipientType get type => RecipientType.bankAccountArgentina;
 }
 
 // ── PSE (Colombia)
