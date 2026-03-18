@@ -50,6 +50,10 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     }
 
     try {
+      if (fundingMethod is CopBankTransfer) {
+        final result = resp.data['result'] as String;
+        return CopBankTransferFundingDetails(paymentLink: result);
+      }
       final element = resp.data['result']['element'] as Map<String, dynamic>;
       return GetFundingDetailsResponseModel.fromJson(
         element,
