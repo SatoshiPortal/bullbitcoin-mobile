@@ -17,7 +17,9 @@ import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/all_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/app_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/app_settings/log_settings_screen.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/bitcoin_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/bitcoin/swap_rescue_tools_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_details_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallet_options_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/bitcoin/wallets_list_screen.dart';
@@ -75,7 +77,8 @@ enum SettingsRoute {
   bitcoinSettings('bitcoin-settings'),
   appSettings('app-settings'),
   theme('theme'),
-  autoswapSettings('autoswap-settings');
+  autoswapSettings('autoswap-settings'),
+  swapRescueTools('swap-rescue-tools');
 
   final String path;
 
@@ -173,6 +176,16 @@ class SettingsRouter {
         name: SettingsRoute.bitcoinSettings.name,
         path: SettingsRoute.bitcoinSettings.path,
         builder: (context, state) => const BitcoinSettingsScreen(),
+        routes: [
+          GoRoute(
+            name: SettingsRoute.swapRescueTools.name,
+            path: SettingsRoute.swapRescueTools.path,
+            builder: (context, state) => BlocProvider(
+              create: (_) => locator<SwapRescueCubit>(),
+              child: const SwapRescueToolsScreen(),
+            ),
+          ),
+        ],
       ),
       GoRoute(
         name: SettingsRoute.appSettings.name,

@@ -2,6 +2,10 @@ import 'package:bb_mobile/core/ark/usecases/revoke_ark_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_error_reporting_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
@@ -12,6 +16,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_theme_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/swap_rescue_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 class SettingsLocator {
@@ -60,6 +65,23 @@ class SettingsLocator {
 
     locator.registerFactory<SetErrorReportingUsecase>(
       () => SetErrorReportingUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    // Swap rescue cubit
+    locator.registerFactory<SwapRescueCubit>(
+      () => SwapRescueCubit(
+        getSwapsUsecase: locator<GetSwapsUsecase>(),
+        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
+        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );

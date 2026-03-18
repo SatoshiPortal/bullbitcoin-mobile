@@ -12705,5 +12705,152 @@
   "backupWarningBackupLater": "NO, I UNDERSTAND THE RISK",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
+  },
+  "swapRescueToolsTitle": "Swap Rescue Tools",
+  "@swapRescueToolsTitle": {
+    "description": "Title for the swap rescue tools screen"
+  },
+  "swapRescueToolsNoSwaps": "No swaps",
+  "@swapRescueToolsNoSwaps": {
+    "description": "Empty state message when there are no swaps"
+  },
+  "swapRescueToolsTypeLnToBtc": "LN → BTC",
+  "@swapRescueToolsTypeLnToBtc": {
+    "description": "Swap type label: Lightning to Bitcoin"
+  },
+  "swapRescueToolsTypeLnToLbtc": "LN → L-BTC",
+  "@swapRescueToolsTypeLnToLbtc": {
+    "description": "Swap type label: Lightning to Liquid Bitcoin"
+  },
+  "swapRescueToolsTypeLbtcToLn": "L-BTC → LN",
+  "@swapRescueToolsTypeLbtcToLn": {
+    "description": "Swap type label: Liquid Bitcoin to Lightning"
+  },
+  "swapRescueToolsTypeBtcToLn": "BTC → LN",
+  "@swapRescueToolsTypeBtcToLn": {
+    "description": "Swap type label: Bitcoin to Lightning"
+  },
+  "swapRescueToolsTypeLbtcToBtc": "L-BTC → BTC",
+  "@swapRescueToolsTypeLbtcToBtc": {
+    "description": "Swap type label: Liquid Bitcoin to Bitcoin"
+  },
+  "swapRescueToolsTypeBtcToLbtc": "BTC → L-BTC",
+  "@swapRescueToolsTypeBtcToLbtc": {
+    "description": "Swap type label: Bitcoin to Liquid Bitcoin"
+  },
+  "swapRescueToolsSwapActionsTitle": "Swap Actions",
+  "@swapRescueToolsSwapActionsTitle": {
+    "description": "Title for the swap actions bottom sheet"
+  },
+  "swapRescueToolsIdLabel": "ID",
+  "@swapRescueToolsIdLabel": {
+    "description": "Label for swap ID field"
+  },
+  "swapRescueToolsStatusLabel": "Status",
+  "@swapRescueToolsStatusLabel": {
+    "description": "Label for swap status field"
+  },
+  "swapRescueToolsClaimAddressLabel": "Claim Address",
+  "@swapRescueToolsClaimAddressLabel": {
+    "description": "Label for swap claim address field"
+  },
+  "swapRescueToolsRefundAddressLabel": "Refund Address",
+  "@swapRescueToolsRefundAddressLabel": {
+    "description": "Label for swap refund address field"
+  },
+  "swapRescueToolsAddressNotSet": "Not set",
+  "@swapRescueToolsAddressNotSet": {
+    "description": "Placeholder when a swap address has not been set"
+  },
+  "swapRescueToolsMarkCompleted": "Mark as Completed",
+  "@swapRescueToolsMarkCompleted": {
+    "description": "Action to force a swap status to completed"
+  },
+  "swapRescueToolsMarkCompletedSubtitle": "Force the swap status to completed",
+  "@swapRescueToolsMarkCompletedSubtitle": {
+    "description": "Subtitle for the mark as completed action"
+  },
+  "swapRescueToolsMarkCompletedDialogTitle": "Mark as Completed?",
+  "@swapRescueToolsMarkCompletedDialogTitle": {
+    "description": "Confirmation dialog title for marking a swap as completed"
+  },
+  "swapRescueToolsMarkCompletedDialogContent": "This will force the swap status to completed. Only do this if you are sure the swap has been settled.",
+  "@swapRescueToolsMarkCompletedDialogContent": {
+    "description": "Confirmation dialog body for marking a swap as completed"
+  },
+  "swapRescueToolsUpdateClaimAddress": "Update Claim Address",
+  "@swapRescueToolsUpdateClaimAddress": {
+    "description": "Action to update the claim address of a swap"
+  },
+  "swapRescueToolsUpdateClaimAddressSubtitle": "Select a wallet to generate a new claim address",
+  "@swapRescueToolsUpdateClaimAddressSubtitle": {
+    "description": "Subtitle for the update claim address action"
+  },
+  "swapRescueToolsUpdateRefundAddress": "Update Refund Address",
+  "@swapRescueToolsUpdateRefundAddress": {
+    "description": "Action to update the refund address of a swap"
+  },
+  "swapRescueToolsUpdateRefundAddressSubtitle": "Select a wallet to generate a new refund address",
+  "@swapRescueToolsUpdateRefundAddressSubtitle": {
+    "description": "Subtitle for the update refund address action"
+  },
+  "swapRescueToolsSelectWallet": "Select {network} Wallet",
+  "@swapRescueToolsSelectWallet": {
+    "description": "Title for wallet selection sheet, network is Bitcoin or Liquid",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      }
+    }
+  },
+  "swapRescueToolsSelectWalletDescription": "An address will be generated from the selected wallet and set as the {addressType} address.",
+  "@swapRescueToolsSelectWalletDescription": {
+    "description": "Description in wallet selection sheet",
+    "placeholders": {
+      "addressType": {
+        "type": "String"
+      }
+    }
+  },
+  "swapRescueToolsNoWalletsFound": "No {network} wallets found",
+  "@swapRescueToolsNoWalletsFound": {
+    "description": "Empty state when no wallets match the swap network",
+    "placeholders": {
+      "network": {
+        "type": "String"
+      }
+    }
+  },
+  "swapRescueToolsNetworkBitcoin": "Bitcoin",
+  "@swapRescueToolsNetworkBitcoin": {
+    "description": "Bitcoin network name used in swap rescue wallet selection"
+  },
+  "swapRescueToolsNetworkLiquid": "Liquid",
+  "@swapRescueToolsNetworkLiquid": {
+    "description": "Liquid network name used in swap rescue wallet selection"
+  },
+  "swapRescueToolsAddressTypeClaim": "claim",
+  "@swapRescueToolsAddressTypeClaim": {
+    "description": "Lowercase claim label used in wallet selection description sentence"
+  },
+  "swapRescueToolsAddressTypeRefund": "refund",
+  "@swapRescueToolsAddressTypeRefund": {
+    "description": "Lowercase refund label used in wallet selection description sentence"
+  },
+  "swapRescueToolsStatusPaid": "Paid",
+  "@swapRescueToolsStatusPaid": {
+    "description": "Swap status badge label: paid"
+  },
+  "swapRescueToolsStatusClaimable": "Claimable",
+  "@swapRescueToolsStatusClaimable": {
+    "description": "Swap status badge label: claimable"
+  },
+  "swapRescueToolsStatusRefundable": "Refundable",
+  "@swapRescueToolsStatusRefundable": {
+    "description": "Swap status badge label: refundable"
+  },
+  "swapRescueToolsStatusCanCoop": "Can Coop",
+  "@swapRescueToolsStatusCanCoop": {
+    "description": "Swap status badge label: can cooperatively close"
   }
 }

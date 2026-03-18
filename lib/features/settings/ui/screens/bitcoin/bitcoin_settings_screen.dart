@@ -93,6 +93,17 @@ class BitcoinSettingsScreen extends StatelessWidget {
                   ),
                 if (isSuperuser)
                   SettingsEntryItem(
+                    icon: Icons.build_outlined,
+                    title: context.loc.swapRescueToolsTitle,
+                    isSuperUser: true,
+                    onTap: () {
+                      context.pushNamed(
+                        SettingsRoute.swapRescueTools.name,
+                      );
+                    },
+                  ),
+                if (isSuperuser)
+                  SettingsEntryItem(
                     icon: Icons.science,
                     title: context.loc.bitcoinSettingsTestnetModeTitle,
                     isSuperUser: true,
