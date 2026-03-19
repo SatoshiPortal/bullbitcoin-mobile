@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
@@ -79,7 +80,18 @@ class _FundExchangeCopBankTransferInputScreenState
         : '';
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.fundExchangeBankTransfer)),
+      appBar: AppBar(
+        title: Text(context.loc.fundExchangeBankTransfer),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child: FadingLinearProgress(
+            height: 3,
+            trigger: isLoadingFundingDetails,
+            backgroundColor: context.appColors.surface,
+            foregroundColor: context.appColors.primary,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -88,11 +100,6 @@ class _FundExchangeCopBankTransferInputScreenState
             child: ScrollableColumn(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'You will be redirected to an external page to make the payment.',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                const Gap(16.0),
                 Container(
                   padding: const EdgeInsets.all(12.0),
                   decoration: BoxDecoration(
@@ -116,7 +123,7 @@ class _FundExchangeCopBankTransferInputScreenState
                       const Gap(8.0),
                       Expanded(
                         child: Text(
-                          'If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.',
+                          context.loc.fundExchangeCopDailyLimitWarning,
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
@@ -126,7 +133,7 @@ class _FundExchangeCopBankTransferInputScreenState
                 const Gap(24.0),
                 // Sender Name (read-only with copy)
                 Text(
-                  'Sender Name',
+                  context.loc.fundExchangeCopSenderName,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: context.appColors.secondary,
                     fontWeight: FontWeight.w500,
@@ -146,13 +153,13 @@ class _FundExchangeCopBankTransferInputScreenState
                       Clipboard.setData(ClipboardData(text: senderName));
                     },
                     icon: const Icon(Icons.copy, size: 16),
-                    label: const Text('Copy'),
+                    label: Text(context.loc.fundExchangeCopCopy),
                   ),
                 ),
                 const Gap(24.0),
                 // Issuing Bank dropdown
                 Text(
-                  'Issuing Bank',
+                  context.loc.fundExchangeCopIssuingBank,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: context.appColors.secondary,
                     fontWeight: FontWeight.w500,
@@ -189,8 +196,9 @@ class _FundExchangeCopBankTransferInputScreenState
                       _selectedInstitution = value;
                     });
                   },
-                  validator: (v) =>
-                      v == null ? 'Please select an issuing bank' : null,
+                  validator: (v) => v == null
+                      ? context.loc.fundExchangeCopSelectBankError
+                      : null,
                   items: institutions.map((institution) {
                     return DropdownMenuItem<FundingInstitution>(
                       value: institution,
@@ -201,7 +209,7 @@ class _FundExchangeCopBankTransferInputScreenState
                 const Gap(24.0),
                 // Amount field
                 Text(
-                  'Amount',
+                  context.loc.fundExchangeCopAmount,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: context.appColors.secondary,
                     fontWeight: FontWeight.w500,
@@ -244,13 +252,13 @@ class _FundExchangeCopBankTransferInputScreenState
                   ),
                   validator: (v) {
                     if (v == null || v.trim().isEmpty) {
-                      return 'Please enter an amount';
+                      return context.loc.fundExchangeCopEnterAmountError;
                     }
                     final amount = int.tryParse(
                       v.replaceAll(RegExp(r'[^0-9]'), ''),
                     );
                     if (amount == null || amount <= 0) {
-                      return 'Please enter a valid amount';
+                      return context.loc.fundExchangeCopValidAmountError;
                     }
                     return null;
                   },
@@ -258,7 +266,7 @@ class _FundExchangeCopBankTransferInputScreenState
                 ),
                 const Gap(32.0),
                 BBButton.big(
-                  label: 'Generate Payment Link',
+                  label: context.loc.fundExchangeCopGeneratePaymentLink,
                   disabled: isLoadingFundingDetails,
                   onPressed: _submitForm,
                   bgColor: context.appColors.primary,
