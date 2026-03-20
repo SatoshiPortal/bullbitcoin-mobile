@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check build
 
 fvm-check: 
 	@echo "🔍 Checking FVM"
@@ -59,8 +59,22 @@ ios-sqlite-update:
 
 docker-build:
 	@echo "🏗️ Building Docker image"
-	@ docker build -t bull-mobile .
+	@ docker build \
+		--build-arg MODE=$(or $(MODE),debug) \
+		--build-arg FORMAT=$(or $(FORMAT),apk) \
+		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
+		--build-arg ENV_SOURCE=$(or $(ENV_SOURCE),template) \
+		--build-arg FAKE_KEYSTORE=$(or $(FAKE_KEYSTORE),true) \
+		-t bull-mobile .
 
+MODE ?= debug
+FORMAT ?= apk
+
+build:
+	@echo "🔨 Building $(FORMAT) ($(MODE))"
+	@SOURCE_DATE_EPOCH=$$(git log -1 --format=%ct) \
+		CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s\037%s' "--remap-path-prefix=$$HOME/.cargo=/cargo" "--remap-path-prefix=$$HOME/.rustup=/rustup" "--remap-path-prefix=$$(pwd)=/build") \
+		fvm flutter build $(if $(filter aab,$(FORMAT)),appbundle,apk) --$(MODE)
 
 test: unit-test integration-test
 
