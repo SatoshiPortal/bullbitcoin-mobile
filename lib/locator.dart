@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/ark/locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/features/dlc/dlc_locator.dart';
 import 'package:bb_mobile/core/status/status_locator.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/features/address_view/address_view_locator.dart';
@@ -105,5 +106,6 @@ class AppLocator {
     RecipientsLocator.setup(locator);
     BitBoxLocator.setup(locator);
     ArkCoreLocator.setup(locator);
+    DlcLocator.setup(locator);
   }
 }
