@@ -55,12 +55,12 @@ class CreateChainSwapUsecase {
 
       final btcElectrumUrl =
           bitcoinWallet.network.isTestnet
-              ? ApiServiceConstants.bbElectrumTestUrl
+              ? ApiServiceConstants.publicElectrumTestUrl
               : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl =
           liquidWallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
+              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
               : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
