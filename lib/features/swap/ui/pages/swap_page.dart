@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -146,15 +147,49 @@ class SwapPageState extends State<SwapPage> {
                   ),
                   const Gap(12),
                   const SwapFromWalletDropdown(),
-                  const Gap(12),
                   BlocSelector<TransferBloc, TransferState, bool>(
                     selector: (state) => state.sendToExternal,
                     builder: (context, sendToExternal) {
                       if (sendToExternal) {
-                        return const SwapExternalAddressInput();
-                      } else {
-                        return const SwapToWalletDropdown();
+                        return const Column(
+                          children: [Gap(12), SwapExternalAddressInput()],
+                        );
                       }
+                      return BlocSelector<
+                        TransferBloc,
+                        TransferState,
+                        (Wallet?, Wallet?)
+                      >(
+                        selector: (state) => (state.fromWallet, state.toWallet),
+                        builder: (context, wallets) {
+                          final (fromWallet, toWallet) = wallets;
+                          return Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.swap_vert,
+                                    color: context.appColors.primary,
+                                  ),
+                                  onPressed:
+                                      fromWallet != null && toWallet != null
+                                      ? () {
+                                          context.read<TransferBloc>().add(
+                                            TransferEvent.walletsChanged(
+                                              fromWallet: toWallet,
+                                              toWallet: fromWallet,
+                                            ),
+                                          );
+                                        }
+                                      : null,
+                                ),
+                              ),
+                              const SwapToWalletDropdown(),
+                            ],
+                          );
+                        },
+                      );
                     },
                   ),
                   const Gap(12),
@@ -185,7 +220,9 @@ class SwapPageState extends State<SwapPage> {
                     },
                   ),
                   BlocSelector<TransferBloc, TransferState, bool>(
-                    selector: (state) => state.shouldShowAdvancedOptions && !state.isSameChainTransfer,
+                    selector: (state) =>
+                        state.shouldShowAdvancedOptions &&
+                        !state.isSameChainTransfer,
                     builder: (context, showReceiveExactAmount) {
                       if (!showReceiveExactAmount) {
                         return const SizedBox.shrink();
@@ -201,7 +238,9 @@ class SwapPageState extends State<SwapPage> {
                                 builder: (context, receiveExactAmount) {
                                   return Text(
                                     receiveExactAmount
-                                        ? context.loc.swapReceiveExactAmountLabel
+                                        ? context
+                                              .loc
+                                              .swapReceiveExactAmountLabel
                                         : context.loc.swapSubtractFeesLabel,
                                     style: context.font.bodyLarge,
                                   );
@@ -214,7 +253,9 @@ class SwapPageState extends State<SwapPage> {
                                     value: receiveExactAmount,
                                     onChanged: (value) {
                                       context.read<TransferBloc>().add(
-                                        TransferEvent.receiveExactAmountToggled(value),
+                                        TransferEvent.receiveExactAmountToggled(
+                                          value,
+                                        ),
                                       );
                                     },
                                   );

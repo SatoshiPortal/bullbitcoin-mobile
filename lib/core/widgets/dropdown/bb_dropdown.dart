@@ -43,6 +43,7 @@ class BBDropdown<T> extends StatelessWidget {
             items: items.map((item) {
               return DropdownMenuItem<T>(
                 value: item.value,
+                enabled: item.enabled,
                 child: Container(
                   width: double.infinity,
                   alignment: Alignment.centerLeft,
