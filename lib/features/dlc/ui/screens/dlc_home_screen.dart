@@ -47,6 +47,13 @@ class DlcHomeScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _DlcMenuCard(
+            icon: Icons.handshake_outlined,
+            title: 'My Contracts',
+            subtitle: 'View active and closed DLC contracts',
+            onTap: () => context.push(DlcRoute.contracts.path),
+          ),
+          const SizedBox(height: 12),
+          _DlcMenuCard(
             icon: Icons.add_circle_outline,
             title: 'Place Order',
             subtitle: 'Enter a new call or put option',

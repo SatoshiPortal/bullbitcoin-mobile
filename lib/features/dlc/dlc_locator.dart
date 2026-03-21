@@ -1,14 +1,20 @@
 import 'package:bb_mobile/core/dlc/data/datasources/dlc_api_datasource.dart';
 import 'package:bb_mobile/core/dlc/data/repositories/dlc_repository_impl.dart';
 import 'package:bb_mobile/core/dlc/domain/repositories/dlc_repository.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/accept_offer_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/cancel_dlc_order_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/check_dlc_connection_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/get_contract_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/get_contracts_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_my_orders_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_orderbook_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/place_dlc_order_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/submit_signed_cets_usecase.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/connection/dlc_connection_cubit.dart';
+import 'package:bb_mobile/features/dlc/presentation/bloc/contracts/dlc_contracts_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/my_orders/dlc_my_orders_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/orderbook/dlc_orderbook_cubit.dart';
+import 'package:bb_mobile/features/dlc/presentation/bloc/place_order/dlc_place_order_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -67,6 +73,26 @@ class DlcLocator {
         dlcRepository: locator<DlcRepository>(),
       ),
     );
+    locator.registerFactory<GetContractsUsecase>(
+      () => GetContractsUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
+    locator.registerFactory<GetContractUsecase>(
+      () => GetContractUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
+    locator.registerFactory<AcceptOfferUsecase>(
+      () => AcceptOfferUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
+    locator.registerFactory<SubmitSignedCetsUsecase>(
+      () => SubmitSignedCetsUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
   }
 
   static void _registerBlocs(GetIt locator) {
@@ -84,6 +110,21 @@ class DlcLocator {
       () => DlcMyOrdersCubit(
         getMyOrdersUsecase: locator<GetMyOrdersUsecase>(),
         cancelDlcOrderUsecase: locator<CancelDlcOrderUsecase>(),
+      ),
+    );
+    locator.registerFactory<DlcPlaceOrderCubit>(
+      () => DlcPlaceOrderCubit(
+        placeDlcOrderUsecase: locator<PlaceDlcOrderUsecase>(),
+      ),
+    );
+    // DlcContractsCubit is a lazy singleton so the contracts list and detail
+    // screens share the same instance (preserving selectedContract state).
+    locator.registerLazySingleton<DlcContractsCubit>(
+      () => DlcContractsCubit(
+        getContractsUsecase: locator<GetContractsUsecase>(),
+        getContractUsecase: locator<GetContractUsecase>(),
+        acceptOfferUsecase: locator<AcceptOfferUsecase>(),
+        submitSignedCetsUsecase: locator<SubmitSignedCetsUsecase>(),
       ),
     );
   }
