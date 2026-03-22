@@ -3333,10 +3333,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "0.02 BTC का अधिकतम शेष",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "विरासत के बीज",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -9716,10 +9712,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "टारगेट बैलेंस 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "Payout राशि",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -12522,5 +12514,97 @@
   "transactionFilterFunding": "फंडिंग",
   "transactionFilterReward": "पुरस्कार",
   "transactionFilterRefund": "वापसी",
-  "transactionFilterBalanceAdjustment": "समायोजन"
+  "transactionFilterBalanceAdjustment": "समायोजन",
+  "fundExchangeScamConsentError": "आपकी सहमति दर्ज करने में विफल। कृपया पुनः प्रयास करें।",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
+  "autoswapActiveCardTitle": "Autoswap सक्रिय है",
+  "@autoswapActiveCardTitle": {
+    "description": "Title text shown when autoswap is enabled and active"
+  },
+  "autoswapWarningExplanationBold": "स्वचालित रूप से",
+  "@autoswapWarningExplanationBold": {
+    "description": "The word 'automatically' to be displayed in bold"
+  },
+  "autoswapInfoConsentMessage": "Autoswap वर्तमान में सक्षम है लेकिन आपकी सहमति मिलने तक यह शुरू नहीं होगा। क्या आप इसे चालू रखना चाहते हैं?",
+  "@autoswapInfoConsentMessage": {
+    "description": "Consent message explaining autoswap status"
+  },
+  "deleteLogsTitle": "लॉग्स हटाएं",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "लॉग्स हटा दिए गए",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "sendSelfTransfer": "स्व-स्थानांतरण",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
+  "sendCoordinatingPayjoinTransaction": "Payjoin लेनदेन समन्वयित किया जा रहा है।",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "छोटे भुगतान करने के लिए Instant Payments को फ़ंड करने पर विचार करें।",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
+  },
+  "priceChartFailedToLoad": "मूल्य इतिहास लोड करने में विफल",
+  "@priceChartFailedToLoad": {
+    "description": "Error message shown when price history fails to load"
+  },
+  "priceFailedToLoad": "मूल्य लोड करने में विफल",
+  "@priceFailedToLoad": {
+    "description": "Error message shown when bitcoin price fails to load"
+  },
+  "statusScreenTryAgain": "पुनः प्रयास करें",
+  "@statusScreenTryAgain": {
+    "description": "Button text to retry after an error"
+  },
+  "statusScreenContinue": "जारी रखें",
+  "@statusScreenContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "settingsErrorReportingTitle": "त्रुटि रिपोर्टिंग",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "त्रुटि रिपोर्टिंग कार्यक्रम",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "हमारे त्रुटि रिपोर्टिंग कार्यक्रम में भाग लेकर Bull Bitcoin को बेहतर बनाने में हमारी मदद करें। इससे सीधे हमें सभी के लिए Bull Bitcoin को बेहतर बनाने में सहायता मिलती है।\n\nसक्षम होने पर, ऐप में कोई समस्या आने पर हम स्वचालित रूप से त्रुटि रिपोर्ट भेजते हैं। यह डेटा हमें दुनिया भर के हमारे उपयोगकर्ताओं के लिए क्या हो रहा है यह समझने और उसी के अनुसार सुधारों को प्राथमिकता देने में मदद करता है।\n\nहम यह जानकारी किसी तृतीय पक्ष के साथ साझा नहीं करते। हम Sentry के ओपन-सोर्स क्लाइंट का उपयोग अपने स्वयं के सेल्फ-होस्टेड बैकएंड सर्वर के साथ करते हैं।",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "स्वीकार करें",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "रद्द करें",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "यह परिवर्तन लागू करने के लिए ऐप पुनः प्रारंभ करें",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "अभी अपना वॉलेट बैकअप करें",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "बैकअप के बिना, यदि आप अपना फ़ोन खो देते हैं, ऐप हटा देते हैं, या किसी गंभीर ऐप अथवा डिवाइस संबंधित समस्या का सामना करते हैं, तो आप अपने Bitcoin तक पहुंच खो देंगे। बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "हाँ",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "नहीं, मैं जोखिम समझता/समझती हूँ",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
+  }
 }

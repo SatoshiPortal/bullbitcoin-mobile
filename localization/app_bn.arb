@@ -3264,10 +3264,6 @@
   "@payNameHint": {
     "description": "Hint for name input"
   },
-  "autoswapWarningTriggerAmount": "সর্বোচ্চ ব্যালেন্স 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
-  },
   "legacySeedViewScreenTitle": "পুরোনো সিডসমূহ",
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
@@ -9486,10 +9482,6 @@
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
   },
-  "autoswapWarningBaseBalance": "লক্ষ্য ব্যালেন্স 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
-  },
   "transactionDetailLabelPayoutAmount": "পাওআউট পরিমাণ",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
@@ -12217,5 +12209,404 @@
   "exchangeStatisticsSellTradeCountDesc": "Bitcoin বিক্রির লেনদেনের সংখ্যা",
   "exchangeStatisticsBuyAvgPriceDesc": "কেনার সময় প্রতি Bitcoin-এ গড় পরিশোধিত মূল্য",
   "exchangeStatisticsSellAvgPriceDesc": "বিক্রির সময় প্রতি Bitcoin-এ গড় প্রাপ্ত মূল্য",
-  "exchangeStatisticsTotalVolumeDesc": "ফিয়াট মুদ্রায় মোট ক্রয় ও বিক্রয় ভলিউম"
+  "exchangeStatisticsTotalVolumeDesc": "ফিয়াট মুদ্রায় মোট ক্রয় ও বিক্রয় ভলিউম",
+  "transactionFilterWithdraw": "উত্তোলন",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "পরিশোধ",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "ফান্ডিং",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "পুরস্কার",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "ফেরত",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionFilterBalanceAdjustment": "সমন্বয়",
+  "@transactionFilterBalanceAdjustment": {
+    "description": "Filter option to show only balance adjustment orders"
+  },
+  "transactionNoteHint": "নোট",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNoteSaveButton": "সংরক্ষণ করুন",
+  "@transactionNoteSaveButton": {
+    "description": "Button label to save a note"
+  },
+  "transactionNoteUpdateButton": "আপডেট করুন",
+  "@transactionNoteUpdateButton": {
+    "description": "Button label to update a note"
+  },
+  "transactionPayjoinNoProposal": "রিসিভার থেকে পেজয়েন প্রস্তাব পাচ্ছেন না?",
+  "@transactionPayjoinNoProposal": {
+    "description": "Message displayed when payjoin proposal is not received"
+  },
+  "transactionPayjoinSendWithout": "পেজয়েন ছাড়া পাঠান",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionSwapProgressInitiated": "শুরু হয়েছে",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionSwapProgressPaymentMade": "পেমেন্ট\nসম্পন্ন",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "transactionSwapProgressFundsClaimed": "তহবিল\nদাবি করা হয়েছে",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "transactionSwapProgressBroadcasted": "প্রচারিত",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionSwapProgressInvoicePaid": "চালান\nপরিশোধিত",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionSwapProgressConfirmed": "নিশ্চিত হয়েছে",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionSwapProgressClaim": "দাবি",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "সম্পন্ন",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInProgress": "চলমান",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapStatusTransferStatus": "ট্রান্সফার স্ট্যাটাস",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionSwapStatusSwapStatus": "সোয়াপ স্ট্যাটাস",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionSwapDescLnReceivePending": "আপনার সোয়াপ শুরু হয়েছে। আমরা লাইটনিং নেটওয়ার্কে পেমেন্ট পাওয়ার অপেক্ষায় আছি।",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionSwapDescLnReceivePaid": "পেমেন্ট পাওয়া গেছে! আমরা এখন আপনার ওয়ালেটে অন-চেইন ট্রানজেকশন প্রচার করছি।",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "অন-চেইন ট্রানজেকশন নিশ্চিত হয়েছে। আমরা এখন আপনার সোয়াপ সম্পন্ন করতে তহবিল দাবি করছি।",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveCompleted": "আপনার সোয়াপ সফলভাবে সম্পন্ন হয়েছে! তহবিল এখন আপনার ওয়ালেটে পাওয়া উচিত।",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "fundExchangeScamConsentError": "আপনার সম্মতি নিবন্ধন করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
+  "autoswapActiveCardTitle": "অটোসোয়াপ সক্রিয় আছে",
+  "@autoswapActiveCardTitle": {
+    "description": "Title text shown when autoswap is enabled and active"
+  },
+  "autoswapWarningExplanationBold": "স্বয়ংক্রিয়ভাবে",
+  "@autoswapWarningExplanationBold": {
+    "description": "The word 'automatically' to be displayed in bold"
+  },
+  "autoswapInfoConsentMessage": "অটোসোয়াপ বর্তমানে সক্রিয় কিন্তু আপনার সম্মতি না পাওয়া পর্যন্ত চালু হবে না। এটি চালু রাখতে চান?",
+  "@autoswapInfoConsentMessage": {
+    "description": "Consent message explaining autoswap status"
+  },
+  "deleteLogsTitle": "লগ মুছুন",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "লগ মুছে ফেলা হয়েছে",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "sendSelfTransfer": "নিজের কাছে ট্রান্সফার",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
+  "sendCoordinatingPayjoinTransaction": "পেজয়েন ট্রানজেকশন সমন্বয় করা হচ্ছে।",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "ছোট পেমেন্ট করতে ইনস্ট্যান্ট পেমেন্টে ফান্ড করার কথা বিবেচনা করুন।",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
+  },
+  "importWatchOnlyRequired": "প্রয়োজনীয়",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyImport": "আমদানি করুন",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyExtendedPublicKey": "বর্ধিত পাবলিক কী",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyDisclaimerTitle": "ডেরিভেশন পাথ সতর্কতা",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyDisclaimerDescription": "ব্যবহারের আগে ওয়ালেট থেকে প্রাপ্ত প্রথম ঠিকানা যাচাই করে নিশ্চিত করুন যে আপনার বেছে নেওয়া ডেরিভেশন পাথ প্রদত্ত xpub তৈরি করেছে। ভুল পাথ ব্যবহার করলে তহবিল হারানো হতে পারে।",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "bip85Title": "BIP85 নির্ধারণবাদী এনট্রপি",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85ExperimentalWarning": "পরীক্ষামূলক \nআপনার ডেরিভেশন পাথগুলি ম্যানুয়ালি ব্যাকআপ করুন",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "bip85NextMnemonic": "পরবর্তী মনেমনিক",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85NextHex": "পরবর্তী HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "bip85Mnemonic": "মনেমনিক",
+  "@bip85Mnemonic": {
+    "description": "Label for mnemonic type entropy"
+  },
+  "bip85Hex": "HEX",
+  "@bip85Hex": {
+    "description": "Label for hex type entropy"
+  },
+  "bip85Index": "ইনডেক্স: {index}",
+  "@bip85Index": {
+    "description": "Shows derivation index",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "bip329LabelsTitle": "BIP329 লেবেল",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 লেবেল আমদানি/রপ্তানি",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsDescription": "BIP329 স্ট্যান্ডার্ড ফরম্যাট ব্যবহার করে ওয়ালেট লেবেল আমদানি বা রপ্তানি করুন।",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "bip329LabelsImportButton": "লেবেল আমদানি করুন",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportButton": "লেবেল রপ্তানি করুন",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsExportSuccess": "লেবেল সফলভাবে রপ্তানি হয়েছে",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "bip329LabelsImportSuccessSingular": "১টি লেবেল আমদানি হয়েছে",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "bip329LabelsImportSuccessPlural": "{count}টি লেবেল আমদানি হয়েছে",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "টাইমআউট অনেক বেশি মনে হচ্ছে। (সর্বোচ্চ {maxTimeout} সেকেন্ড)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumRetryCountEmptyError": "পুনরায় চেষ্টার সংখ্যা খালি রাখা যাবে না",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "electrumRetryCountNegativeError": "পুনরায় চেষ্টার সংখ্যা নেতিবাচক হতে পারবে না",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumTimeoutWarning": "আপনার টাইমআউট ({timeoutValue} সেকেন্ড) এই স্টপ গ্যাপের জন্য প্রস্তাবিত মানের ({recommended} সেকেন্ড) চেয়ে কম।",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidStopGapError": "অবৈধ স্টপ গ্যাপ মান: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "অবৈধ টাইমআউট মান: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidRetryError": "অবৈধ পুনরায় চেষ্টার সংখ্যা মান: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSaveFailedError": "উন্নত বিকল্পগুলি সংরক্ষণ করতে ব্যর্থ হয়েছে",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumUnknownError": "একটি ত্রুটি ঘটেছে",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumReset": "রিসেট",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumConfirm": "নিশ্চিত করুন",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumDeleteServerTitle": "কাস্টম সার্ভার মুছুন",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "electrumDeletePrivacyNotice": "গোপনীয়তা বিজ্ঞপ্তি:\n\nআপনার নিজের নোড ব্যবহার করলে নিশ্চিত হয় যে কোনো তৃতীয় পক্ষ আপনার আইপি ঠিকানা আপনার ট্রানজেকশনের সাথে সংযুক্ত করতে পারবে না। আপনার শেষ কাস্টম সার্ভার মুছলে, আপনি একটি BullBitcoin সার্ভারের সাথে সংযুক্ত হবেন।\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDeleteConfirmation": "আপনি কি সত্যিই এই সার্ভারটি মুছতে চান?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumCancel": "বাতিল",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "electrumDelete": "মুছুন",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "electrumDefaultServers": "ডিফল্ট সার্ভার",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "electrumDefaultServersInfo": "আপনার গোপনীয়তা রক্ষা করতে, কাস্টম সার্ভার কনফিগার থাকলে ডিফল্ট সার্ভার ব্যবহার করা হয় না।",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumCustomServers": "কাস্টম সার্ভার",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumDragToReorder": "(দীর্ঘ চাপ দিয়ে টেনে অগ্রাধিকার পরিবর্তন করুন)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "priceChartFailedToLoad": "মূল্য ইতিহাস লোড করতে ব্যর্থ হয়েছে",
+  "@priceChartFailedToLoad": {
+    "description": "Error message shown when price history fails to load"
+  },
+  "priceFailedToLoad": "মূল্য লোড করতে ব্যর্থ হয়েছে",
+  "@priceFailedToLoad": {
+    "description": "Error message shown when bitcoin price fails to load"
+  },
+  "statusScreenTryAgain": "আবার চেষ্টা করুন",
+  "@statusScreenTryAgain": {
+    "description": "Button text to retry after an error"
+  },
+  "statusScreenContinue": "চালিয়ে যান",
+  "@statusScreenContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "settingsErrorReportingTitle": "ত্রুটি রিপোর্টিং",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "ত্রুটি রিপোর্টিং প্রোগ্রাম",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "আমাদের ত্রুটি রিপোর্টিং প্রোগ্রামে অংশ নিয়ে Bull Bitcoin উন্নত করতে সাহায্য করুন। এটি সরাসরি আমাদের সবার জন্য Bull Bitcoin আরও ভালো করতে সাহায্য করে।\n\nসক্রিয় থাকলে, অ্যাপে সমস্যা হলে আমরা স্বয়ংক্রিয়ভাবে ত্রুটি রিপোর্ট পাঠাই। এই তথ্য বিশ্বজুড়ে আমাদের ব্যবহারকারীদের জন্য কী ঘটছে তা বুঝতে এবং সেই অনুযায়ী সমাধান করতে সাহায্য করে।\n\nআমরা এই তথ্য কোনো তৃতীয় পক্ষের সাথে শেয়ার করি না। আমরা আমাদের নিজস্ব সেলফ-হোস্টেড ব্যাকএন্ড সার্ভারের সাথে Sentry-র ওপেন-সোর্স ক্লায়েন্ট ব্যবহার করি।",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "গ্রহণ করুন",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "বাতিল",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "এই পরিবর্তন প্রয়োগ করতে অ্যাপটি পুনরায় চালু করুন",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "ব্যাকআপ ছাড়া, আপনার ফোন হারালে, অ্যাপ মুছলে বা কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যায় আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন। ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "হ্যাঁ",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "না, আমি ঝুঁকি বুঝি",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
+  }
 }
