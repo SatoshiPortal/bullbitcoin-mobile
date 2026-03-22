@@ -1,9 +1,10 @@
 {
-  "settingsTelegramLabel": "## টেলিগ্রাম",
+  "@@locale": "bn",
+  "settingsTelegramLabel": "Telegram",
   "@settingsTelegramLabel": {
     "description": "Label for the Telegram link in settings"
   },
-  "exchangeSettingsSecuritySettingsTitle": "নিরাপত্তা বিষয়ক সেটিংস",
+  "exchangeSettingsSecuritySettingsTitle": "নিরাপত্তা সেটিংস",
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
   },
@@ -43,7 +44,7 @@
   "@importColdcardInstructionsStep10": {
     "description": "ImportColdcardQ: Final instruction step"
   },
-  "buyPayoutWillBeSentIn": "আপনার পাওআউট পাঠানো হবে ",
+  "buyPayoutWillBeSentIn": "আপনার পেআউট পাঠানো হবে ",
   "@buyPayoutWillBeSentIn": {
     "description": "Text before countdown timer for payout"
   },
@@ -172,7 +173,7 @@
   "@sellAdvancedOptions": {
     "description": "Title for advanced options bottom sheet"
   },
-  "exchangeFileUploadSuccess": "ফাইলটি সফলভাবে আপলোড করা হয়েছে",
+  "exchangeFileUploadSuccess": "ফাইল সফলভাবে আপলোড হয়েছে",
   "@exchangeFileUploadSuccess": {
     "description": "Success message when file is uploaded successfully"
   },
@@ -238,7 +239,7 @@
   "@transactionLabelPreimage": {
     "description": "Label for preimage in Lightning swap details"
   },
-  "coreSwapsChainCanCoop": "ট্রান্সফার শীঘ্রই সম্পন্ন হবে।",
+  "coreSwapsChainCanCoop": "ট্রান্সফার এখনই সম্পন্ন হবে।",
   "@coreSwapsChainCanCoop": {
     "description": "Status message for chain swap that can complete cooperatively"
   },
@@ -299,7 +300,7 @@
   "@backupWalletErrorSaveBackup": {
     "description": "Error when backup save operation fails"
   },
-  "exchangeReferralsTitle": "রেফারালসমূহ",
+  "exchangeReferralsTitle": "রেফারেল কোডসমূহ",
   "@exchangeReferralsTitle": {
     "description": "Title for the referral codes section"
   },
@@ -323,7 +324,7 @@
   "@coreScreensTransferFeeLabel": {
     "description": "Label for transfer fee field"
   },
-  "onboardingEncryptedVaultDescription": "PIN ব্যবহার করে ক্লাউড থেকে আপনার ব্যাকআপ পুনরুদ্ধার করুন।",
+  "onboardingEncryptedVaultDescription": "আপনার PIN ব্যবহার করে ক্লাউডের মাধ্যমে আপনার ব্যাকআপ পুনরুদ্ধার করুন।",
   "@onboardingEncryptedVaultDescription": {
     "description": "Description for the encrypted vault recovery option in onboarding"
   },
@@ -348,7 +349,7 @@
   "@kruxStep7": {
     "description": "Krux troubleshooting tip 1"
   },
-  "exchangeStatisticsBuySellRatio": "ক্রয়/বিক্রয় অনুপাত",
+  "exchangeStatisticsBuySellRatio": "ক্রয়/বিক্রয় অনুপাত",
   "@exchangeStatisticsBuySellRatio": {
     "description": "Label for buy/sell ratio statistic"
   },
@@ -388,7 +389,7 @@
   "@rbfFastest": {
     "description": "Label for fastest fee option"
   },
-  "buyConfirmExpressWithdrawal": "এক্সপ্রেস উত্তোলন নিশ্চিত করুন",
+  "buyConfirmExpressWithdrawal": "এক্সপ্রেস উইথড্রয়াল নিশ্চিত করুন",
   "@buyConfirmExpressWithdrawal": {
     "description": "Title for express withdrawal confirmation screen"
   },
@@ -437,7 +438,7 @@
   "@recoverbullSelectVaultImportSuccess": {
     "description": "Success message shown on vault selected page"
   },
-  "mempoolServerNotUsed": "ব্যবহৃত নয় (কাস্টম সার্ভার সক্রিয়)",
+  "mempoolServerNotUsed": "ব্যবহার হচ্ছে না (কাস্টম সার্ভার সক্রিয়)",
   "@mempoolServerNotUsed": {
     "description": "Label shown when default server is not used because custom server is active"
   },
@@ -509,7 +510,7 @@
   "@transactionNetworkLightning": {
     "description": "Label for Lightning network transactions"
   },
-  "paySecurityQuestionLength": "{count}/৪০ অক্ষর",
+  "paySecurityQuestionLength": "{count}/40 অক্ষর",
   "@paySecurityQuestionLength": {
     "description": "Character count for security question",
     "placeholders": {
@@ -522,9 +523,8 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
-  "pinCodeMinLengthError": "পিন অন্তত {minLength} অঙ্ক দীর্ঘ হতে হবে",
+  "pinCodeMinLengthError": "PIN কমপক্ষে {minLength} সংখ্যা দীর্ঘ হতে হবে",
   "@pinCodeMinLengthError": {
-    "description": "Error message when PIN is too short",
     "placeholders": {
       "minLength": {
         "type": "String"
@@ -580,7 +580,7 @@
   "@buyFundYourAccount": {
     "description": "Button to fund exchange account"
   },
-  "sellReplaceByFeeActivated": "ফি দ্বারা প্রতিস্থাপন সক্রিয় হয়েছে",
+  "sellReplaceByFeeActivated": "রিপ্লেস-বাই-ফি সক্রিয়",
   "@sellReplaceByFeeActivated": {
     "description": "Label for RBF toggle"
   },
@@ -665,7 +665,7 @@
   "@jadeStep8": {
     "description": "Jade troubleshooting tip 3"
   },
-  "payNotLoggedIn": "লগ ইন করা হয়নি",
+  "payNotLoggedIn": "লগ ইন করা নেই",
   "@payNotLoggedIn": {
     "description": "Title for not logged in card"
   },
@@ -697,7 +697,7 @@
   "@sendEstimatedDeliveryHoursToDays": {
     "description": "Estimated delivery time ranging from hours to days"
   },
-  "coreWalletTransactionStatusPending": "প্রক্রিয়াধীন",
+  "coreWalletTransactionStatusPending": "মুলতুবি",
   "@coreWalletTransactionStatusPending": {
     "description": "Display name for pending wallet transaction status"
   },
@@ -776,11 +776,11 @@
   "@sendVerifyOnDevice": {
     "description": "Instruction to check hardware wallet screen"
   },
-  "sendAmountRequested": "চাওয়া পরিমাণ: ",
+  "sendAmountRequested": "অনুরোধকৃত পরিমাণ: ",
   "@sendAmountRequested": {
     "description": "Label for the requested amount in a payment request"
   },
-  "exchangeTransactionsTitle": "লেনদেন",
+  "exchangeTransactionsTitle": "লেনদেনসমূহ",
   "@exchangeTransactionsTitle": {
     "description": "Title for the transactions section in exchange"
   },
@@ -825,7 +825,7 @@
   "@sendTransferFeeDescription": {
     "description": "Explanation of what the transfer fee represents"
   },
-  "bitcoinSettingsWalletsTitle": "ওয়ালেটসমূহ",
+  "bitcoinSettingsWalletsTitle": "ওয়ালেটসমূহ",
   "@bitcoinSettingsWalletsTitle": {
     "description": "Title for the wallets section in Bitcoin settings"
   },
@@ -865,7 +865,7 @@
   "@ledgerErrorUnknownOccurred": {
     "description": "Error message when an unknown error occurs during Ledger operation"
   },
-  "receiveAddress": "প্রাপ্য ঠিকানা",
+  "receiveAddress": "গ্রহণের ঠিকানা",
   "@receiveAddress": {
     "description": "Label for generated address"
   },
@@ -903,7 +903,6 @@
   },
   "exchangeStatisticsCurrency": "মুদ্রা: {currency}",
   "@exchangeStatisticsCurrency": {
-    "description": "Label showing currency for biller stats",
     "placeholders": {
       "currency": {
         "type": "String"
@@ -924,7 +923,7 @@
       }
     }
   },
-  "coreSwapsLnSendExpired": "সোয়াপ মেয়াদ শেষ হয়েছে।",
+  "coreSwapsLnSendExpired": "Swap মেয়াদোত্তীর্ণ",
   "@coreSwapsLnSendExpired": {
     "description": "Status message for expired Lightning send swap"
   },
@@ -940,7 +939,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "এই অ্যাপে বেশিরভাগ অনুবাদ এআই-ব্যবহার করে তৈরি এবং সেগুলোতেই ভুল থাকতে পারে। আপনি যদি কোনো ভুল দেখতে পান বা অনুবাদ উন্নত করতে চান, তাহলে আমাদের কমিউনিটি অনুবাদ প্ল্যাটফর্মের মাধ্যমে অংশগ্রহণ করতে পারেন।",
+  "translationWarningDescription": "এই অ্যাপের বেশিরভাগ অনুবাদ AI দ্বারা তৈরি এবং এতে ভুল থাকতে পারে। আপনি যদি কোনো ভুল লক্ষ্য করেন বা অনুবাদ উন্নত করতে চান, তাহলে আমাদের কমিউনিটি অনুবাদ প্ল্যাটফর্মে অবদান রাখতে পারেন।",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
@@ -952,7 +951,7 @@
   "@transactionLabelConfirmationTime": {
     "description": "Label for transaction confirmation timestamp"
   },
-  "languageSettingsScreenTitle": "ভাষা।",
+  "languageSettingsScreenTitle": "ভাষা",
   "@languageSettingsScreenTitle": {
     "description": "The title of the language settings screen"
   },
@@ -988,7 +987,7 @@
   "@jadeStep7": {
     "description": "Jade troubleshooting tip 2"
   },
-  "sendCouldNotBuildTransaction": "লেনদেন তৈরি করা সম্ভব নয়",
+  "sendCouldNotBuildTransaction": "লেনদেন তৈরি করা সম্ভব হয়নি",
   "@sendCouldNotBuildTransaction": {
     "description": "Error message when a transaction cannot be built"
   },
@@ -1008,7 +1007,7 @@
   "@ledgerHelpStep3": {
     "description": "Third troubleshooting step for Ledger connection issues"
   },
-  "coreSwapsChainFailedRefunding": "ট্রান্সফারটি শীঘ্রই ফেরত দেওয়া হবে।",
+  "coreSwapsChainFailedRefunding": "ট্রান্সফার শীঘ্রই ফেরত দেওয়া হবে।",
   "@coreSwapsChainFailedRefunding": {
     "description": "Status message for failed chain swap that will be refunded"
   },
@@ -1036,7 +1035,7 @@
   "@transactionStatusPaymentRefunded": {
     "description": "Status label for refunded payments"
   },
-  "pinCodeSecurityPinTitle": "নিরাপত্তা পিন",
+  "pinCodeSecurityPinTitle": "নিরাপত্তা PIN",
   "@pinCodeSecurityPinTitle": {
     "description": "AppBar title for PIN settings screen"
   },
@@ -1096,7 +1095,7 @@
   "@receiveShareInvoice": {
     "description": "Button to share invoice"
   },
-  "buyCantBuyMoreThan": "আপনি এত বেশি ক্রয় করতে পারবেন না",
+  "buyCantBuyMoreThan": "আপনি এর চেয়ে বেশি কিনতে পারবেন না",
   "@buyCantBuyMoreThan": {
     "description": "Error message for amount above maximum"
   },
@@ -1180,7 +1179,7 @@
   "@sendSendAmount": {
     "description": "Label for amount being sent in swap"
   },
-  "sendSelectedUtxosInsufficient": "নির্বাচিত UTXO-গুলো প্রয়োজনীয় পরিমাণ কভার করতে পারে না",
+  "sendSelectedUtxosInsufficient": "নির্বাচিত UTXO প্রয়োজনীয় পরিমাণ কভার করে না",
   "@sendSelectedUtxosInsufficient": {
     "description": "Error message when selected UTXOs don't cover the required amount"
   },
@@ -1236,15 +1235,15 @@
   "@fundExchangeETransferLabelEmail": {
     "description": "Label for E-transfer recipient email"
   },
-  "pinCodeCreateButton": "পিন তৈরি করুন",
+  "pinCodeCreateButton": "PIN তৈরি করুন",
   "@pinCodeCreateButton": {
     "description": "Button label to create a new PIN"
   },
-  "bitcoinSettingsTestnetModeTitle": "টেস্টনেট মোড",
+  "bitcoinSettingsTestnetModeTitle": "Testnet মোড",
   "@bitcoinSettingsTestnetModeTitle": {
     "description": "Title for the testnet mode toggle in Bitcoin settings"
   },
-  "buyTitle": "বিটকয়েন কিনুন",
+  "buyTitle": "Bitcoin কিনুন",
   "@buyTitle": {
     "description": "Screen title for buying Bitcoin"
   },
@@ -1264,7 +1263,7 @@
   "@payRequiresSwap": {
     "description": "Info message when payment needs submarine swap"
   },
-  "exchangeSecurityManage2FAPasswordLabel": "দুই-স্তরের প্রমাণীকরণ ও পাসওয়ার্ড পরিচালনা",
+  "exchangeSecurityManage2FAPasswordLabel": "2FA এবং পাসওয়ার্ড পরিচালনা করুন",
   "@exchangeSecurityManage2FAPasswordLabel": {
     "description": "Label for managing 2FA and password in exchange security settings"
   },
@@ -1297,7 +1296,7 @@
   "@fundExchangeOnlineBillPaymentHelpBillerName": {
     "description": "Help text for biller name field"
   },
-  "payPayoutMethod": "পাওআউট পদ্ধতি",
+  "payPayoutMethod": "পেআউট পদ্ধতি",
   "@payPayoutMethod": {
     "description": "Label for payout method section"
   },
@@ -1309,7 +1308,7 @@
   "@sendErrorSwapFeesNotLoaded": {
     "description": "Error when swap fee information is unavailable"
   },
-  "walletDetailsCopyButton": "কপি",
+  "walletDetailsCopyButton": "কপি করুন",
   "@walletDetailsCopyButton": {
     "description": "Button label for copying wallet details to clipboard"
   },
@@ -1335,7 +1334,6 @@
   },
   "durationMinutes": "{minutes} মিনিট",
   "@durationMinutes": {
-    "description": "Duration format for plural minutes",
     "placeholders": {
       "minutes": {
         "type": "String"
@@ -1374,7 +1372,7 @@
   "@receiveNotePlaceholder": {
     "description": "Placeholder text for note input field"
   },
-  "sendChange": "বাকি",
+  "sendChange": "চেঞ্জ",
   "@sendChange": {
     "description": "Label for change output in a transaction"
   },
@@ -1427,7 +1425,7 @@
   "@payMemo": {
     "description": "Label for optional payment note"
   },
-  "languageSettingsLabel": "ভাষা।",
+  "languageSettingsLabel": "ভাষা",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
@@ -1435,7 +1433,7 @@
   "@fundExchangeMethodCrIbanCrc": {
     "description": "Payment method: Costa Rica IBAN in Colones"
   },
-  "walletDeletionFailedTitle": "মুছে ফেলতে ব্যর্থ হয়েছে",
+  "walletDeletionFailedTitle": "মোছা ব্যর্থ হয়েছে",
   "@walletDeletionFailedTitle": {
     "description": "Title for the wallet deletion failed dialog"
   },
@@ -1536,7 +1534,7 @@
   "@testBackupDefaultWallets": {
     "description": "Label shown when testing the default wallets"
   },
-  "receiveSendNetworkFee": "পাঠানোর নেটওয়ার্ক ফি",
+  "receiveSendNetworkFee": "সেন্ড নেটওয়ার্ক ফি",
   "@receiveSendNetworkFee": {
     "description": "Label for the network fee on the sending network in a swap transaction"
   },
@@ -1658,7 +1656,7 @@
   "@payCorporateNameHint": {
     "description": "Hint for corporate name input"
   },
-  "sellExternalWallet": "বহিরাগত ওয়ালেট",
+  "sellExternalWallet": "বাহ্যিক ওয়ালেট",
   "@sellExternalWallet": {
     "description": "Option for external wallet"
   },
@@ -1719,7 +1717,7 @@
   "@payInvalidState": {
     "description": "Error message for invalid state"
   },
-  "receiveWaitForPayjoin": "PayJoin লেনদেনটি সম্পূর্ণ করতে প্রেরকের জন্য অপেক্ষা করুন",
+  "receiveWaitForPayjoin": "প্রেরককে payjoin লেনদেন সম্পন্ন করার জন্য অপেক্ষা করুন",
   "@receiveWaitForPayjoin": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
@@ -1783,7 +1781,7 @@
   "@psbtFlowNoPartsToDisplay": {
     "description": "Message when there are no QR code parts to show"
   },
-  "addressCardCopiedMessage": "ঠিকানা ক্লিপবোর্ডে কপি হয়েছে",
+  "addressCardCopiedMessage": "ঠিকানা ক্লিপবোর্ডে কপি করা হয়েছে",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
   },
@@ -1791,15 +1789,15 @@
   "@totalFeeLabel": {
     "description": "Label for expandable total fee breakdown in swap"
   },
-  "mempoolCustomServerBottomSheetDescription": "আপনার কাস্টম মেমপুল সার্ভারের URL দিন। সংরক্ষণ করার আগে সার্ভারটি যাচাই করা হবে।",
+  "mempoolCustomServerBottomSheetDescription": "আপনার কাস্টম Mempool সার্ভারের URL প্রবেশ করুন। সংরক্ষণের আগে সার্ভার যাচাই করা হবে।",
   "@mempoolCustomServerBottomSheetDescription": {
     "description": "Description in bottom sheet for adding/editing custom server"
   },
-  "sellBelowMinAmountError": "আপনি এই ওয়ালেট থেকে বিক্রি করার ন্যূনতম পরিমাণের নিচে বিক্রি করার চেষ্টা করছেন।",
+  "sellBelowMinAmountError": "আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বনিম্ন পরিমাণের কম বিক্রি করার চেষ্টা করছেন।",
   "@sellBelowMinAmountError": {
     "description": "Error message for amount below minimum"
   },
-  "buyAwaitingConfirmation": "নিশ্চিতকরণের জন্য অপেক্ষা করছে ",
+  "buyAwaitingConfirmation": "নিশ্চিতকরণের অপেক্ষায় ",
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
   },
@@ -1869,7 +1867,7 @@
   "@coreScreensTotalFeesLabel": {
     "description": "Label for total fees field"
   },
-  "mempoolSettingsDescription": "বিভিন্ন নেটওয়ার্কের জন্য কাস্টম মেমপুল সার্ভার কনফিগার করুন। প্রতিটি নেটওয়ার্ক ব্লক এক্সপ্লোরার এবং ফি নির্ধারণের জন্য নিজস্ব সার্ভার ব্যবহার করতে পারে।",
+  "mempoolSettingsDescription": "বিভিন্ন নেটওয়ার্কের জন্য কাস্টম Mempool সার্ভার কনফিগার করুন। প্রতিটি নেটওয়ার্ক ব্লক এক্সপ্লোরার এবং ফি অনুমানের জন্য নিজস্ব সার্ভার ব্যবহার করতে পারে।",
   "@mempoolSettingsDescription": {
     "description": "Description text for mempool settings screen"
   },
@@ -1877,7 +1875,7 @@
   "@exchangeHomeDeposit": {
     "description": "Deposit button label"
   },
-  "sendFrom": "থেকে",
+  "sendFrom": "প্রেরক",
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
   },
@@ -1955,7 +1953,7 @@
   "@fundExchangeContinueButton": {
     "description": "Button label to continue from warning screen to payment method details"
   },
-  "currencySettingsDefaultFiatCurrencyLabel": "ডিফল্ট ফিয়াট মুদ্রা",
+  "currencySettingsDefaultFiatCurrencyLabel": "ডিফল্ট ফিয়াট মুদ্রা",
   "@currencySettingsDefaultFiatCurrencyLabel": {
     "description": "Label for the default fiat currency setting"
   },
@@ -2077,7 +2075,7 @@
   "@bitboxCubitOperationTimeout": {
     "description": "Error interpretation for timeout"
   },
-  "receivePaymentReceived": "পেমেন্ট গ্রহণ করা হয়েছে!",
+  "receivePaymentReceived": "পেমেন্ট প্রাপ্ত হয়েছে!",
   "@receivePaymentReceived": {
     "description": "Success message after receiving payment"
   },
@@ -2154,7 +2152,7 @@
   "@backupWalletBackupButton": {
     "description": "Button text to proceed with physical backup"
   },
-  "mempoolSettingsTitle": "মেমপুল সার্ভার",
+  "mempoolSettingsTitle": "Mempool সার্ভার",
   "@mempoolSettingsTitle": {
     "description": "Title for mempool settings screen"
   },
@@ -2231,7 +2229,7 @@
   "@arkSetupEnable": {
     "description": "Button to enable Ark"
   },
-  "walletDeletionErrorDefaultWallet": "আপনি ডিফল্ট ওয়ালেট মুছে ফেলতে পারবেন না",
+  "walletDeletionErrorDefaultWallet": "আপনি একটি ডিফল্ট ওয়ালেট মুছতে পারবেন না।",
   "@walletDeletionErrorDefaultWallet": {
     "description": "Error message when attempting to delete a default wallet"
   },
@@ -2243,7 +2241,7 @@
   "@payFeeBreakdown": {
     "description": "Section header for detailed fee information"
   },
-  "coreSwapsLnSendPaid": "আপনার পেমেন্ট নিশ্চিত হওয়ার পরে চালানটি পরিশোধ হবে।",
+  "coreSwapsLnSendPaid": "আপনার পেমেন্ট নিশ্চিত হওয়ার পরে ইনভয়েস পরিশোধ হবে।",
   "@coreSwapsLnSendPaid": {
     "description": "Status message for paid Lightning send swap"
   },
@@ -2259,7 +2257,7 @@
   "@transactionLabelSwapStatus": {
     "description": "Label for swap status"
   },
-  "walletDeletionConfirmationCancelButton": "বাতিল",
+  "walletDeletionConfirmationCancelButton": "বাতিল করুন",
   "@walletDeletionConfirmationCancelButton": {
     "description": "Cancel button label in wallet deletion confirmation dialog"
   },
@@ -2275,7 +2273,7 @@
   "@recoverbullRecoveryErrorWalletMismatch": {
     "description": "Error when different default wallet already exists"
   },
-  "payNoRecipientsFound": "পে করার জন্য কোন প্রাপক পাওয়া যায়নি।",
+  "payNoRecipientsFound": "পরিশোধ করার জন্য কোনো প্রাপক পাওয়া যায়নি।",
   "@payNoRecipientsFound": {
     "description": "Message when no recipients found"
   },
@@ -2300,7 +2298,7 @@
       }
     }
   },
-  "receiveCopyOrScanAddressOnly": "ঠিকানা কপি করুন অথবা কেবল ঠিকানাটি স্ক্যান করুন",
+  "receiveCopyOrScanAddressOnly": "শুধুমাত্র ঠিকানা কপি বা স্ক্যান করুন",
   "@receiveCopyOrScanAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
@@ -2367,7 +2365,7 @@
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
   },
-  "payBillerName": "বিলারের নাম",
+  "payBillerName": "বিলার নাম",
   "@payBillerName": {
     "description": "Label for biller name field"
   },
@@ -2375,7 +2373,7 @@
   "@sendErrorBitcoinWalletRequired": {
     "description": "Error when wrong wallet type used for Bitcoin to Lightning swap"
   },
-  "pinCodeManageTitle": "আপনার নিরাপত্তা পিন পরিচালনা করুন",
+  "pinCodeManageTitle": "আপনার নিরাপত্তা PIN পরিচালনা করুন",
   "@pinCodeManageTitle": {
     "description": "Header title for PIN management section"
   },
@@ -2395,7 +2393,7 @@
   "@exchangeDcaCancelDialogCancelButton": {
     "description": "Button label to cancel the DCA cancellation dialog"
   },
-  "sellOrderAlreadyConfirmedError": "এই বিক্রি অর্ডারটি ইতোমধ্যেই নিশ্চিত করা হয়েছে।",
+  "sellOrderAlreadyConfirmedError": "এই বিক্রয় অর্ডারটি ইতিমধ্যে নিশ্চিত করা হয়েছে।",
   "@sellOrderAlreadyConfirmedError": {
     "description": "Error message for already confirmed order"
   },
@@ -2544,11 +2542,11 @@
       }
     }
   },
-  "settingsGithubLabel": "গিটহাব",
+  "settingsGithubLabel": "Github",
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
-  "exchangeStatisticsOrderStats": "==WEBLATE_PART==\nঅর্ডারের পরিসংখ্যান",
+  "exchangeStatisticsOrderStats": "অর্ডার পরিসংখ্যান",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
   },
@@ -2576,7 +2574,7 @@
   "@buyEnterAmount": {
     "description": "Label for amount input field in buy flow"
   },
-  "sellShowQrCode": "QR কোড দেখান",
+  "sellShowQrCode": "QR code দেখুন",
   "@sellShowQrCode": {
     "description": "Button to show QR code"
   },
@@ -2588,7 +2586,7 @@
   "@walletOptionsWalletDetailsTitle": {
     "description": "Title for the wallet details screen"
   },
-  "sellSecureBitcoinWallet": "নিরাপদ বিটকয়েন ওয়ালেট",
+  "sellSecureBitcoinWallet": "নিরাপদ Bitcoin ওয়ালেট",
   "@sellSecureBitcoinWallet": {
     "description": "Display text for secure Bitcoin wallet"
   },
@@ -2624,7 +2622,7 @@
   "@connectHardwareWalletDescription": {
     "description": "Description text on connect hardware wallet page"
   },
-  "sendEstimatedDelivery10Minutes": "১০ মিনিট",
+  "sendEstimatedDelivery10Minutes": "10 মিনিট",
   "@sendEstimatedDelivery10Minutes": {
     "description": "Estimated delivery time of approximately 10 minutes"
   },
@@ -2655,7 +2653,7 @@
   "@payShowQrCode": {
     "description": "Button to show QR code"
   },
-  "onboardingRecoverWalletButtonLabel": "ওয়ালেট পুনরুদ্ধার করুন।",
+  "onboardingRecoverWalletButtonLabel": "ওয়ালেট পুনরুদ্ধার করুন",
   "@onboardingRecoverWalletButtonLabel": {
     "description": "The label for the button to recover a wallet from the onboarding screen"
   },
@@ -2679,7 +2677,7 @@
   "@walletTypeWatchSigner": {
     "description": "Wallet type label for watch-signer wallets"
   },
-  "settingsWalletBackupTitle": "ওয়ালেট ব্যাকআপ।",
+  "settingsWalletBackupTitle": "ওয়ালেট ব্যাকআপ",
   "@settingsWalletBackupTitle": {
     "description": "Title for the wallet backup section in the settings menu"
   },
@@ -2700,7 +2698,7 @@
   "@electrumPrivacyNoticeCancel": {
     "description": "Cancel button in privacy notice dialog"
   },
-  "coreSwapsLnSendPending": "সোয়াপটি এখনও শুরু হয়নি।",
+  "coreSwapsLnSendPending": "Swap এখনো শুরু হয়নি।",
   "@coreSwapsLnSendPending": {
     "description": "Status message for pending Lightning send swap"
   },
@@ -2725,7 +2723,7 @@
   "@sellViewDetailsButton": {
     "description": "Button text to view order details"
   },
-  "exchangeSettingsTransactionsTitle": "লেনদেন",
+  "exchangeSettingsTransactionsTitle": "লেনদেনসমূহ",
   "@exchangeSettingsTransactionsTitle": {
     "description": "Title for the transactions button in exchange settings"
   },
@@ -2761,7 +2759,7 @@
   "@broadcastSignedTxPageTitle": {
     "description": "Page title for broadcast signed transaction screen"
   },
-  "sendInsufficientBalance": "পর্যাপ্ত ব্যালেন্স নেই",
+  "sendInsufficientBalance": "অপর্যাপ্ত ব্যালেন্স",
   "@sendInsufficientBalance": {
     "description": "Error message when the wallet has insufficient balance to send"
   },
@@ -2781,7 +2779,7 @@
   "@importQrDeviceError": {
     "description": "Error message when import fails"
   },
-  "onboardingSplashDescription": "স্ব-রক্ষিত বিটকয়েন ওয়ালেট এবং কেবল বিটকয়েন-এক্সচেঞ্জ সেবা।",
+  "onboardingSplashDescription": "সার্বভৌম সেলফ-কাস্টডি Bitcoin ওয়ালেট এবং শুধুমাত্র Bitcoin এক্সচেঞ্জ সেবা।",
   "@onboardingSplashDescription": {
     "description": "Description of the app displayed in onboarding splash screen"
   },
@@ -2793,7 +2791,7 @@
   "@fundExchangeCrIbanCrcDescriptionEnd": {
     "description": "End of description for CR IBAN CRC transfer"
   },
-  "payAccount": "হিসাব",
+  "payAccount": "অ্যাকাউন্ট",
   "@payAccount": {
     "description": "Label for account details"
   },
@@ -2801,7 +2799,7 @@
   "@testBackupGoogleDrivePrivacyPart2": {
     "description": "Second part (emphasized) of privacy message"
   },
-  "buyCompleteKyc": "KYC সম্পূর্ণ করুন",
+  "buyCompleteKyc": "KYC সম্পন্ন করুন",
   "@buyCompleteKyc": {
     "description": "Button to complete KYC verification"
   },
@@ -2833,7 +2831,7 @@
   "@payTotalAmount": {
     "description": "Label for sum of all payment amounts"
   },
-  "exchangeLegacyTransactionsTitle": "পুরোনো লেনদেন",
+  "exchangeLegacyTransactionsTitle": "লেগাসি লেনদেনসমূহ",
   "@exchangeLegacyTransactionsTitle": {
     "description": "Title for the legacy transactions section in exchange"
   },
@@ -2849,7 +2847,7 @@
   "@recoverWalletButton": {
     "description": "Button label to recover wallet"
   },
-  "mempoolCustomServerDeleteMessage": "আপনি কি নিশ্চিত আপনি এই কাস্টম মেমপুল সার্ভারটি মুছে ফেলতে চান? ডিফল্ট সার্ভারটি ব্যবহার করা হবে।",
+  "mempoolCustomServerDeleteMessage": "আপনি কি নিশ্চিতভাবে এই কাস্টম Mempool সার্ভার মুছতে চান? পরিবর্তে ডিফল্ট সার্ভার ব্যবহার করা হবে।",
   "@mempoolCustomServerDeleteMessage": {
     "description": "Message for delete custom server confirmation dialog"
   },
@@ -2857,7 +2855,7 @@
   "@coldcardStep6": {
     "description": "Coldcard troubleshooting tip 1"
   },
-  "exchangeAppSettingsValidationWarning": "সংরক্ষণ করার আগে অনুগ্রহ করে ভাষা ও মুদ্রার পছন্দ দুটো সেট করুন।",
+  "exchangeAppSettingsValidationWarning": "সংরক্ষণের আগে অনুগ্রহ করে ভাষা এবং মুদ্রা উভয় পছন্দ নির্ধারণ করুন।",
   "@exchangeAppSettingsValidationWarning": {
     "description": "Warning message when language and currency preferences are not both set"
   },
@@ -2865,7 +2863,7 @@
   "@sellCashPickup": {
     "description": "Option for in-person cash"
   },
-  "coreSwapsLnReceivePaid": "প্রেরক চালানটি পরিশোধ করেছে।",
+  "coreSwapsLnReceivePaid": "প্রেরক ইনভয়েস পরিশোধ করেছেন।",
   "@coreSwapsLnReceivePaid": {
     "description": "Status message for paid Lightning receive swap"
   },
@@ -2898,7 +2896,7 @@
   "@autoswapAlwaysBlock": {
     "description": "Toggle label for always block high fees"
   },
-  "walletDeletionConfirmationTitle": "ওয়ালেট মুছে ফেলুন",
+  "walletDeletionConfirmationTitle": "ওয়ালেট মুছুন",
   "@walletDeletionConfirmationTitle": {
     "description": "Title for the wallet deletion confirmation dialog"
   },
@@ -2906,7 +2904,7 @@
   "@sendNetworkFees": {
     "description": "Label for network transaction fees"
   },
-  "mempoolNetworkBitcoinMainnet": "Bitcoin প্রধান নেট",
+  "mempoolNetworkBitcoinMainnet": "Bitcoin Mainnet",
   "@mempoolNetworkBitcoinMainnet": {
     "description": "Label for Bitcoin Mainnet network"
   },
@@ -2927,7 +2925,7 @@
       }
     }
   },
-  "exchangeFileUploadDocumentsTitle": "নথিপত্র আপলোড করুন",
+  "exchangeFileUploadDocumentsTitle": "নথি আপলোড করুন",
   "@exchangeFileUploadDocumentsTitle": {
     "description": "Title for the upload documents section"
   },
@@ -3004,7 +3002,7 @@
   "@importQrDeviceJadeStep3": {
     "description": "Jade instruction step 3"
   },
-  "paySecurityQuestionLengthError": "১০-৪০ অক্ষর হতে হবে",
+  "paySecurityQuestionLengthError": "অবশ্যই 10-40 অক্ষর হতে হবে",
   "@paySecurityQuestionLengthError": {
     "description": "Error for invalid security question length"
   },
@@ -3041,7 +3039,7 @@
   "@transcribeLabel": {
     "description": "Label indicating user should transcribe the words"
   },
-  "pinCodeProcessing": "প্রক্রিয়াকরণ চলছে",
+  "pinCodeProcessing": "প্রক্রিয়াকরণ",
   "@pinCodeProcessing": {
     "description": "Status screen title while processing PIN changes"
   },
@@ -3082,7 +3080,7 @@
   "@fundExchangeHelpBeneficiaryName": {
     "description": "Help text for beneficiary name field"
   },
-  "payRecipientType": "প্রাপক ধরন",
+  "payRecipientType": "প্রাপকের ধরন",
   "@payRecipientType": {
     "description": "Label for recipient type"
   },
@@ -3110,7 +3108,7 @@
   "@onboardingEncryptedVault": {
     "description": "Title for the encrypted vault recovery option in onboarding"
   },
-  "exchangeAccountInfoTitle": "হিসাবের তথ্য",
+  "exchangeAccountInfoTitle": "অ্যাকাউন্ট তথ্য",
   "@exchangeAccountInfoTitle": {
     "description": "Title for the account information section"
   },
@@ -3118,7 +3116,7 @@
   "@exchangeDcaActivateTitle": {
     "description": "Title shown when DCA is inactive and can be activated"
   },
-  "buyConfirmationTime": "নিশ্চিতকরণ সময়",
+  "buyConfirmationTime": "নিশ্চিতকরণের সময়",
   "@buyConfirmationTime": {
     "description": "Label for estimated confirmation time"
   },
@@ -3194,7 +3192,7 @@
   "@exchangeFeatureCustomerSupport": {
     "description": "Feature bullet point describing customer support chat feature"
   },
-  "sellPleasePayInvoice": "এই চালানটি পরিশোধ করুন",
+  "sellPleasePayInvoice": "অনুগ্রহ করে এই ইনভয়েস পরিশোধ করুন",
   "@sellPleasePayInvoice": {
     "description": "Title for receive payment screen"
   },
@@ -3210,7 +3208,7 @@
   "@coreScreensAmountLabel": {
     "description": "Label for amount field"
   },
-  "receiveSwapId": "বদল আইডি",
+  "receiveSwapId": "Swap ID",
   "@receiveSwapId": {
     "description": "Label for the swap identifier in a receive transaction"
   },
@@ -3218,11 +3216,11 @@
   "@transactionLabelCompletedAt": {
     "description": "Label for completion timestamp"
   },
-  "pinCodeCreateTitle": "নতুন পিন তৈরি করুন",
+  "pinCodeCreateTitle": "নতুন PIN তৈরি করুন",
   "@pinCodeCreateTitle": {
     "description": "Title for creating a new PIN code"
   },
-  "exchangeBitcoinWalletsDescription": "স্বয়ংক্রিয় বিটকয়েন উত্তোলনের জন্য ডিফল্ট ওয়ালেট ঠিকানাগুলো নির্ধারণ করুন",
+  "exchangeBitcoinWalletsDescription": "স্বয়ংক্রিয় Bitcoin উত্তোলনের জন্য ডিফল্ট ওয়ালেট ঠিকানা নির্ধারণ করুন।",
   "@exchangeBitcoinWalletsDescription": {
     "description": "Description text on the default bitcoin wallets screen"
   },
@@ -3265,10 +3263,6 @@
   "payNameHint": "প্রাপকের নাম লিখুন",
   "@payNameHint": {
     "description": "Hint for name input"
-  },
-  "autoswapWarningTriggerAmount": "সর্বোচ্চ ব্যালেন্স 0.02 BTC",
-  "@autoswapWarningTriggerAmount": {
-    "description": "Maximum balance text shown in the autoswap warning bottom sheet"
   },
   "legacySeedViewScreenTitle": "পুরোনো সিডসমূহ",
   "@legacySeedViewScreenTitle": {
@@ -3358,11 +3352,11 @@
   "@sellSendPaymentPayFromWallet": {
     "description": "Field label for source wallet"
   },
-  "settingsServicesStatusTitle": "সার্ভিসের অবস্থা",
+  "settingsServicesStatusTitle": "সেবার স্ট্যাটাস",
   "@settingsServicesStatusTitle": {
     "description": "Title for the services status section in the settings menu"
   },
-  "sellPriceWillRefreshIn": "দাম আপডেট হবে ",
+  "sellPriceWillRefreshIn": "মূল্য রিফ্রেশ হবে ",
   "@sellPriceWillRefreshIn": {
     "description": "Text before countdown timer for price refresh"
   },
@@ -3407,7 +3401,7 @@
   "@payEmailHint": {
     "description": "Hint for email input"
   },
-  "exchangeFileUploadNoFilesSelected": "কোনো ফাইল নির্বাচন করা হয়নি।",
+  "exchangeFileUploadNoFilesSelected": "কোনো ফাইল নির্বাচন করা হয়নি",
   "@exchangeFileUploadNoFilesSelected": {
     "description": "Message when no files are selected for upload"
   },
@@ -3439,7 +3433,7 @@
   "@selectAmountTitle": {
     "description": "Title for manual coin selection bottom sheet"
   },
-  "buyYouBought": "আপনি {amount} ক্রয় করেছেন",
+  "buyYouBought": "আপনি {amount} কিনেছেন",
   "@buyYouBought": {
     "description": "Success message with amount bought",
     "placeholders": {
@@ -3460,7 +3454,7 @@
   "@autoswapTriggerBalanceError": {
     "description": "Validation error shown when maximum balance is less than 2x the target balance"
   },
-  "receiveEnterHere": "এখানে লিখুন..।",
+  "receiveEnterHere": "এখানে লিখুন...",
   "@receiveEnterHere": {
     "description": "Placeholder text for input fields in receive"
   },
@@ -3482,7 +3476,6 @@
   },
   "durationSeconds": "{seconds} সেকেন্ড",
   "@durationSeconds": {
-    "description": "Duration format for seconds",
     "placeholders": {
       "seconds": {
         "type": "String"
@@ -3514,7 +3507,7 @@
   "@ledgerVerifyAddressLabel": {
     "description": "Label for the address being verified on Ledger"
   },
-  "exchangeAppSettingsEmailNotificationsLabel": "ইমেল বিজ্ঞপ্তি",
+  "exchangeAppSettingsEmailNotificationsLabel": "ইমেইল নোটিফিকেশন",
   "@exchangeAppSettingsEmailNotificationsLabel": {
     "description": "Label for email notifications toggle in exchange app settings"
   },
@@ -3526,7 +3519,7 @@
   "@backupSettingsTested": {
     "description": "Status text shown when backup has been tested"
   },
-  "receiveLiquidConfirmationMessage": "কয়েক সেকেন্ডে এটি নিশ্চিত হবে",
+  "receiveLiquidConfirmationMessage": "এটি কয়েক সেকেন্ডের মধ্যে নিশ্চিত হয়ে যাবে",
   "@receiveLiquidConfirmationMessage": {
     "description": "Message indicating quick confirmation time for Liquid transactions"
   },
@@ -3542,7 +3535,7 @@
   "@exchangeAuthOk": {
     "description": "OK button in error dialog"
   },
-  "settingsSecurityPinTitle": "নিরাপত্তা পিন",
+  "settingsSecurityPinTitle": "নিরাপত্তা PIN",
   "@settingsSecurityPinTitle": {
     "description": "Title for the security PIN section in the settings menu"
   },
@@ -3724,7 +3717,7 @@
   "@importWatchOnlyFingerprint": {
     "description": "Label for wallet fingerprint field"
   },
-  "exchangeBitcoinWalletsEnterAddressHint": "ঠিকানা লিখুন",
+  "exchangeBitcoinWalletsEnterAddressHint": "ঠিকানা প্রবেশ করুন",
   "@exchangeBitcoinWalletsEnterAddressHint": {
     "description": "Hint text for entering an address in exchange Bitcoin wallets"
   },
@@ -3784,7 +3777,7 @@
   "@transactionSwapDescChainExpired": {
     "description": "Description for expired chain swap"
   },
-  "payValidating": "যাচাই হচ্ছে..।",
+  "payValidating": "যাচাই করা হচ্ছে...",
   "@payValidating": {
     "description": "Text shown while validating SINPE"
   },
@@ -3792,7 +3785,7 @@
   "@sendDone": {
     "description": "Button label for completing the send flow"
   },
-  "exchangeBitcoinWalletsTitle": "ডিফল্ট বিটকয়েন ওয়ালেটগুলো",
+  "exchangeBitcoinWalletsTitle": "ডিফল্ট Bitcoin ওয়ালেটসমূহ",
   "@exchangeBitcoinWalletsTitle": {
     "description": "Title for the default Bitcoin wallets section in exchange"
   },
@@ -3804,11 +3797,11 @@
   "@transactionLabelSwapStatusRefunded": {
     "description": "Status label for refunded swaps"
   },
-  "receiveLightningInvoice": "লাইটনিং চালান",
+  "receiveLightningInvoice": "Lightning ইনভয়েস",
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "pinCodeContinue": "চালিয়ে যান",
+  "pinCodeContinue": "অব্যাহত রাখুন",
   "@pinCodeContinue": {
     "description": "Button label to continue with PIN entry"
   },
@@ -3848,7 +3841,7 @@
   "@backupWalletGoogleDrivePrivacyMessage5": {
     "description": "Fifth part of privacy message"
   },
-  "settingsDevModeUnderstandButton": "আমি বুঝেছি",
+  "settingsDevModeUnderstandButton": "আমি বুঝলাম",
   "@settingsDevModeUnderstandButton": {
     "description": "Button label to acknowledge developer mode warning"
   },
@@ -3928,11 +3921,11 @@
   "@receiveLightningNetwork": {
     "description": "Lightning Network option"
   },
-  "receiveVerifyAddressError": "ঠিকানা যাচাই করা যাচ্ছে না: ওয়ালেট বা ঠিকানার তথ্য অনুপস্থিত",
+  "receiveVerifyAddressError": "ঠিকানা যাচাই করা সম্ভব হয়নি: ওয়ালেট বা ঠিকানার তথ্য নেই",
   "@receiveVerifyAddressError": {
     "description": "Error message when address verification is not possible"
   },
-  "exchangeFileUploadSelectFilesHint": "নথি বাছাই করতে 'ফাইল নির্বাচন করুন' ট্যাপ করুন।",
+  "exchangeFileUploadSelectFilesHint": "নথি বেছে নিতে \"ফাইল নির্বাচন করুন\" ট্যাপ করুন",
   "@exchangeFileUploadSelectFilesHint": {
     "description": "Hint text for selecting files"
   },
@@ -3948,7 +3941,7 @@
   "@bitboxErrorConnectionFailed": {
     "description": "Error when connection to BitBox device fails"
   },
-  "exchangeFileUploadDocumentTitle": "যেকোনো নথিপত্র আপলোড করুন",
+  "exchangeFileUploadDocumentTitle": "যেকোনো নথি আপলোড করুন",
   "@exchangeFileUploadDocumentTitle": {
     "description": "Title for uploading documents in exchange"
   },
@@ -3972,7 +3965,7 @@
   "@withdrawUnauthenticatedError": {
     "description": "Error message for unauthenticated user during withdraw"
   },
-  "sellBitcoinAmount": "বিটকয়েন পরিমাণ",
+  "sellBitcoinAmount": "Bitcoin পরিমাণ",
   "@sellBitcoinAmount": {
     "description": "Label for Bitcoin amount"
   },
@@ -4083,7 +4076,7 @@
   "@importQrDeviceSpecterStep3": {
     "description": "Specter instruction step 3"
   },
-  "payPayeeAccountNumber": "প্রাপকের অ্যাকাউন্ট নম্বর",
+  "payPayeeAccountNumber": "পেয়ি অ্যাকাউন্ট নম্বর",
   "@payPayeeAccountNumber": {
     "description": "Label for payee account number"
   },
@@ -4104,7 +4097,7 @@
   "@recoverbullSelectCustomLocationError": {
     "description": "Error when file selection from custom location fails"
   },
-  "mempoolCustomServerDeleteTitle": "কাস্টম সার্ভার মুছে ফেলবেন?",
+  "mempoolCustomServerDeleteTitle": "কাস্টম সার্ভার মুছবেন?",
   "@mempoolCustomServerDeleteTitle": {
     "description": "Title for delete custom server confirmation dialog"
   },
@@ -4125,7 +4118,7 @@
       }
     }
   },
-  "coreSwapsLnSendCompletedSuccess": "সোয়াপ সফলভাবে সম্পন্ন হয়েছে।",
+  "coreSwapsLnSendCompletedSuccess": "Swap সফলভাবে সম্পন্ন হয়েছে।",
   "@coreSwapsLnSendCompletedSuccess": {
     "description": "Status message for successfully completed Lightning send swap"
   },
@@ -4141,7 +4134,7 @@
   "@visitRecoverBullMessage": {
     "description": "Message with link to more information"
   },
-  "payMyFiatRecipients": "আমার ফিয়াট প্রাপকগণ",
+  "payMyFiatRecipients": "আমার ফিয়াট প্রাপকগণ",
   "@payMyFiatRecipients": {
     "description": "Tab label for saved recipients"
   },
@@ -4167,7 +4160,7 @@
       }
     }
   },
-  "bitcoinSettingsMempoolServerTitle": "মেমপুল সার্ভার সেটিংস",
+  "bitcoinSettingsMempoolServerTitle": "Mempool সার্ভার সেটিংস",
   "@bitcoinSettingsMempoolServerTitle": {
     "description": "Title for the Mempool server settings section in Bitcoin settings"
   },
@@ -4195,11 +4188,11 @@
   "@transactionOrderLabelPayoutMethod": {
     "description": "Label for order payout method"
   },
-  "buyShouldBuyAtLeast": "কমপক্ষে কিনুন",
+  "buyShouldBuyAtLeast": "আপনাকে অন্তত এটুকু কিনতে হবে",
   "@buyShouldBuyAtLeast": {
     "description": "Error message for amount below minimum"
   },
-  "pinCodeCreateDescription": "আপনার পিন আপনার ওয়ালেট ও সেটিংসে অ্যাক্সেস সুরক্ষিত রাখে। স্মরণীয় রাখুন।",
+  "pinCodeCreateDescription": "আপনার PIN আপনার ওয়ালেট এবং সেটিংসে প্রবেশ সুরক্ষিত করে। এটি মনে রাখার মতো রাখুন।",
   "@pinCodeCreateDescription": {
     "description": "Description explaining the purpose of the PIN code"
   },
@@ -4227,7 +4220,7 @@
   "@backupIdLabel": {
     "description": "Label for backup ID"
   },
-  "sellBalanceWillBeCredited": "আপনার লেনদেনটি ব্লকচেইনে ১টি নিশ্চিতকরণ পাওয়ার পরে আপনার অ্যাকাউন্টে ব্যালেন্স ক্রেডিট হবে।",
+  "sellBalanceWillBeCredited": "আপনার লেনদেন অনচেইনে 1টি নিশ্চিতকরণ পাওয়ার পর আপনার অ্যাকাউন্ট ব্যালেন্স জমা হবে।",
   "@sellBalanceWillBeCredited": {
     "description": "Information about balance crediting"
   },
@@ -4271,7 +4264,7 @@
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
   },
-  "exchangeAccountSettingsTitle": "বিনিময় অ্যাকাউন্টের সেটিংস",
+  "exchangeAccountSettingsTitle": "এক্সচেঞ্জ অ্যাকাউন্ট সেটিংস",
   "@exchangeAccountSettingsTitle": {
     "description": "Title for the exchange account settings screen"
   },
@@ -4279,9 +4272,8 @@
   "@arkBoardingConfirmed": {
     "description": "Label for confirmed boarding balance in Ark balance breakdown"
   },
-  "exchangeFileUploadInstructionsWithParams": "আপলোড করুন সর্বোচ্চ {maxFiles}টি ফাইল। অনুমোদিত ফরম্যাট: PDF, JPG, PNG, GIF, HEIC। প্রতি ফাইলের সর্বোচ্চ আকার: 10MB।",
+  "exchangeFileUploadInstructionsWithParams": "সর্বোচ্চ {maxFiles}টি ফাইল আপলোড করুন। অনুমোদিত ফরম্যাট: PDF, JPG, PNG, GIF, HEIC। সর্বোচ্চ ফাইল আকার: প্রতি ফাইল 10MB।",
   "@exchangeFileUploadInstructionsWithParams": {
-    "description": "Instructions for file upload with parameters",
     "placeholders": {
       "maxFiles": {
         "type": "int"
@@ -4348,11 +4340,11 @@
   "@payBroadcastingTransaction": {
     "description": "Status message while broadcasting to network"
   },
-  "exchangeFileUploadAllSuccess": "সব ফাইল সফলভাবে আপলোড হয়েছে।",
+  "exchangeFileUploadAllSuccess": "সব ফাইল সফলভাবে আপলোড হয়েছে",
   "@exchangeFileUploadAllSuccess": {
     "description": "Success message when all files are uploaded"
   },
-  "fiatCurrencySettingsLabel": "ফিয়াট মুদ্রা।",
+  "fiatCurrencySettingsLabel": "ফিয়াট মুদ্রা",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
   },
@@ -4388,7 +4380,7 @@
   "@swapConfirmTransferTitle": {
     "description": "AppBar title on the confirmation page"
   },
-  "payTransitNumberHint": "শাখা নম্বর লিখুন",
+  "payTransitNumberHint": "ট্রানজিট নম্বর লিখুন",
   "@payTransitNumberHint": {
     "description": "Hint for transit number input"
   },
@@ -4404,11 +4396,11 @@
   "@exchangeAccountInfoVerificationLevelLabel": {
     "description": "Label for verification level field in account information"
   },
-  "walletDetailsDerivationPathLabel": "ডেরাইভেশন পথ",
+  "walletDetailsDerivationPathLabel": "ডেরিভেশন পাথ",
   "@walletDetailsDerivationPathLabel": {
     "description": "Label for the derivation path field in wallet details"
   },
-  "exchangeBitcoinWalletsBitcoinAddressLabel": "বিটকয়েন ঠিকানা",
+  "exchangeBitcoinWalletsBitcoinAddressLabel": "Bitcoin ঠিকানা",
   "@exchangeBitcoinWalletsBitcoinAddressLabel": {
     "description": "Label for Bitcoin address field in exchange Bitcoin wallets"
   },
@@ -4440,11 +4432,11 @@
   "@sendInitiatingSwap": {
     "description": "Loading message during swap setup"
   },
-  "sellLightningNetwork": "লাইটনিং নেটওয়ার্ক",
+  "sellLightningNetwork": "Lightning Network",
   "@sellLightningNetwork": {
     "description": "Option for Lightning Network payment"
   },
-  "buySelectWallet": "ওয়ালেট নির্বাচন করুন",
+  "buySelectWallet": "ওয়ালেট নির্বাচন করুন",
   "@buySelectWallet": {
     "description": "Label for wallet selection dropdown"
   },
@@ -4460,7 +4452,7 @@
   "@swapValidationSelectToWallet": {
     "description": "Validation error when no destination wallet selected"
   },
-  "receiveWaitForSenderToFinish": "PayJoin লেনদেনটি সম্পূর্ণ করতে প্রেরকের জন্য অপেক্ষা করুন",
+  "receiveWaitForSenderToFinish": "প্রেরককে payjoin লেনদেন সম্পন্ন করার জন্য অপেক্ষা করুন",
   "@receiveWaitForSenderToFinish": {
     "description": "Instructions to wait for the sender during a payjoin transaction"
   },
@@ -4499,7 +4491,7 @@
       }
     }
   },
-  "sellInstantPayments": "তাত্ক্ষণিক লেনদেন",
+  "sellInstantPayments": "তাৎক্ষণিক পেমেন্ট",
   "@sellInstantPayments": {
     "description": "Display text for instant payment wallet"
   },
@@ -4547,7 +4539,7 @@
   "@sellSendPaymentContinue": {
     "description": "Continue button on sell payment"
   },
-  "coreSwapsStatusPending": "প্রক্রিয়াধীন",
+  "coreSwapsStatusPending": "মুলতুবি",
   "@coreSwapsStatusPending": {
     "description": "Display name for pending swap status"
   },
@@ -4627,7 +4619,7 @@
   "@psbtFlowMoveBack": {
     "description": "Troubleshooting tip to adjust scanning distance"
   },
-  "exchangeReferralsContactSupportMessage": "আমাদের রেফারাল প্রোগ্রাম সম্পর্কে জানতে সমর্থনের সাথে যোগাযোগ করুন",
+  "exchangeReferralsContactSupportMessage": "আমাদের রেফারেল প্রোগ্রাম সম্পর্কে জানতে সাপোর্টে যোগাযোগ করুন",
   "@exchangeReferralsContactSupportMessage": {
     "description": "Message prompting users to contact support about the referral program"
   },
@@ -4635,7 +4627,7 @@
   "@sellSendPaymentEurBalance": {
     "description": "EUR balance payout method"
   },
-  "exchangeAccountTitle": "বিনিময় অ্যাকাউন্ট",
+  "exchangeAccountTitle": "এক্সচেঞ্জ অ্যাকাউন্ট",
   "@exchangeAccountTitle": {
     "description": "Title for the exchange account section"
   },
@@ -4702,7 +4694,7 @@
   "@fundExchangeCostaRicaMethodSinpeTitle": {
     "description": "Payment method title for SINPE Móvil in method list"
   },
-  "sellBitcoinOnChain": "চেইন-ভিত্তিক বিটকয়েন",
+  "sellBitcoinOnChain": "Bitcoin অন-চেইন",
   "@sellBitcoinOnChain": {
     "description": "Option for Bitcoin on-chain payment"
   },
@@ -4710,7 +4702,7 @@
   "@fundExchangeLabelCedulaJuridica": {
     "description": "Label for Cédula Jurídica (Costa Rica business ID number)"
   },
-  "exchangeRecipientsComingSoon": "প্রাপকগণ - শীঘ্রই আসছে",
+  "exchangeRecipientsComingSoon": "প্রাপকসমূহ - শীঘ্রই আসছে",
   "@exchangeRecipientsComingSoon": {
     "description": "Message indicating that the recipients feature is coming soon"
   },
@@ -4718,7 +4710,7 @@
   "@ledgerWalletTypeLabel": {
     "description": "Label for wallet type/script type selection"
   },
-  "exchangeFileUploadInReviewMessage": "আপনার নথি বর্তমানে পর্যালোচনাধীন। পর্যালোচনা সম্পূর্ণ না হওয়া পর্যন্ত আপনি আরও ফাইল আপলোড করতে পারবেন না।",
+  "exchangeFileUploadInReviewMessage": "আপনার নথি বর্তমানে পর্যালোচনাধীন। পর্যালোচনা সম্পন্ন না হওয়া পর্যন্ত আর ফাইল আপলোড করা যাবে না।",
   "@exchangeFileUploadInReviewMessage": {
     "description": "Message shown when documents are under review"
   },
@@ -4738,7 +4730,7 @@
   "@importMnemonicNestedSegwit": {
     "description": "Label for Nested Segwit (BIP49) wallet type"
   },
-  "sendReplaceByFeeActivated": "ফি দ্বারা প্রতিস্থাপন সক্রিয় হয়েছে",
+  "sendReplaceByFeeActivated": "Replace-by-fee সক্রিয় হয়েছে",
   "@sendReplaceByFeeActivated": {
     "description": "Message indicating that replace-by-fee (RBF) is activated"
   },
@@ -4746,7 +4738,7 @@
   "@psbtFlowScanQrOption": {
     "description": "Instruction to select scan QR menu option"
   },
-  "coreSwapsLnReceiveFailed": "সোয়াপ ব্যর্থ হয়েছে।",
+  "coreSwapsLnReceiveFailed": "Swap ব্যর্থ হয়েছে।",
   "@coreSwapsLnReceiveFailed": {
     "description": "Status message for failed Lightning receive swap"
   },
@@ -4790,7 +4782,7 @@
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
-  "walletDetailsSignerDeviceNotSupported": "সমর্থিত নয়",
+  "walletDetailsSignerDeviceNotSupported": "সমর্থিত নয়",
   "@walletDetailsSignerDeviceNotSupported": {
     "description": "Message displayed when a signer device is not supported"
   },
@@ -4802,7 +4794,7 @@
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
   },
-  "mempoolNetworkLiquidMainnet": "লিকুইড প্রধান নেট",
+  "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "@mempoolNetworkLiquidMainnet": {
     "description": "Label for Liquid Mainnet network"
   },
@@ -4831,7 +4823,7 @@
   "@payFeePriority": {
     "description": "Label for fee priority selection"
   },
-  "buyInsufficientBalanceDescription": "এই অর্ডার তৈরি করতে আপনার পর্যাপ্ত ব্যালান্স নেই",
+  "buyInsufficientBalanceDescription": "এই অর্ডার তৈরি করতে আপনার পর্যাপ্ত ব্যালেন্স নেই।",
   "@buyInsufficientBalanceDescription": {
     "description": "Description for insufficient balance error"
   },
@@ -4847,7 +4839,7 @@
   "@keystoneStep6": {
     "description": "Keystone troubleshooting tip 2"
   },
-  "walletDeletionErrorGeneric": "ওয়ালেটটি মুছে ফেলতে ব্যর্থ হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "walletDeletionErrorGeneric": "ওয়ালেট মুছে ফেলতে ব্যর্থ হয়েছে, অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@walletDeletionErrorGeneric": {
     "description": "Generic error message when wallet deletion fails"
   },
@@ -4855,7 +4847,7 @@
   "@fundExchangeLabelTransferCode": {
     "description": "Label for transfer code field"
   },
-  "sellNoInvoiceData": "চালান তথ্য উপলব্ধ নয়",
+  "sellNoInvoiceData": "কোনো ইনভয়েস ডেটা পাওয়া যায়নি",
   "@sellNoInvoiceData": {
     "description": "Message when no invoice data available"
   },
@@ -4904,7 +4896,7 @@
   "@arkSendAmountTitle": {
     "description": "Title for the ark send amount page"
   },
-  "translationWarningTitle": "এআই-উৎপাদিত অনুবাদ",
+  "translationWarningTitle": "AI-জেনারেটেড অনুবাদ",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
   },
@@ -4920,7 +4912,7 @@
   "@arkReceiveUnifiedAddress": {
     "description": "Label for unified BIP21 address"
   },
-  "sellHowToPayInvoice": "এই চালানটি আপনি কীভাবে পরিশোধ করতে চান?",
+  "sellHowToPayInvoice": "আপনি কীভাবে এই ইনভয়েস পরিশোধ করতে চান?",
   "@sellHowToPayInvoice": {
     "description": "Question for payment method selection"
   },
@@ -4952,7 +4944,7 @@
   "@sendSwapDetails": {
     "description": "Section header for swap information"
   },
-  "onboardingPhysicalBackupDescription": "১২টি শব্দের মাধ্যমে আপনার ওয়ালেট পুনরুদ্ধার করুন।",
+  "onboardingPhysicalBackupDescription": "12টি শব্দের মাধ্যমে আপনার ওয়ালেট পুনরুদ্ধার করুন।",
   "@onboardingPhysicalBackupDescription": {
     "description": "Description for the physical backup recovery option in onboarding"
   },
@@ -4969,7 +4961,7 @@
   "@pinStatusLoading": {
     "description": "Status screen title during initialization"
   },
-  "payTitle": "পরিশোধ",
+  "payTitle": "পরিশোধ করুন",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -5001,7 +4993,7 @@
   "@arkSendSuccessMessage": {
     "description": "Success message shown after Ark send transaction completes"
   },
-  "sendSats": "সাটস",
+  "sendSats": "sats",
   "@sendSats": {
     "description": "Unit label for satoshis"
   },
@@ -5033,7 +5025,7 @@
   "@fundExchangeSpeiTitle": {
     "description": "Screen title for SPEI transfer (Mexico)"
   },
-  "receivePaymentNormally": "পেমেন্ট সাধারণভাবে গ্রহণ করুন",
+  "receivePaymentNormally": "স্বাভাবিকভাবে পেমেন্ট গ্রহণ করুন",
   "@receivePaymentNormally": {
     "description": "Option to receive payment without payjoin if it fails"
   },
@@ -5147,7 +5139,7 @@
   "@testBackupGoogleDrivePermission": {
     "description": "Progress screen description explaining Google Drive permission request"
   },
-  "testnetModeSettingsLabel": "টেস্টনেট মোড।",
+  "testnetModeSettingsLabel": "Testnet মোড",
   "@testnetModeSettingsLabel": {
     "description": "The label for the testnet mode settings"
   },
@@ -5167,11 +5159,11 @@
   "@systemLabelPayjoin": {
     "description": "System label for payjoin transactions"
   },
-  "onboardingScreenTitle": "স্বাগতম।",
+  "onboardingScreenTitle": "স্বাগতম",
   "@onboardingScreenTitle": {
     "description": "The title of the onboarding screen"
   },
-  "pinCodeConfirmTitle": "নতুন পিন নিশ্চিত করুন",
+  "pinCodeConfirmTitle": "নতুন PIN নিশ্চিত করুন",
   "@pinCodeConfirmTitle": {
     "description": "Title for confirming the new PIN code"
   },
@@ -5204,7 +5196,7 @@
   "@transactionTitle": {
     "description": "Title for the transactions screen"
   },
-  "sellQrCode": "QR কোড",
+  "sellQrCode": "QR Code",
   "@sellQrCode": {
     "description": "Title for QR code bottom sheet"
   },
@@ -5276,7 +5268,7 @@
   "@ledgerScanningMessage": {
     "description": "Message shown while scanning for Ledger devices"
   },
-  "sellInsufficientBalanceError": "নির্বাচিত ওয়ালেটে এই বিক্রি আদেশটি সম্পূর্ণ করার জন্য পর্যাপ্ত ব্যালেন্স নেই।",
+  "sellInsufficientBalanceError": "এই বিক্রয় অর্ডার সম্পন্ন করতে নির্বাচিত ওয়ালেটে পর্যাপ্ত ব্যালেন্স নেই।",
   "@sellInsufficientBalanceError": {
     "description": "Error message for insufficient balance"
   },
@@ -5308,7 +5300,7 @@
   "@mempoolSettingsDefaultServer": {
     "description": "Label for default mempool server section"
   },
-  "sendPasteAddressOrInvoice": "একটি পেমেন্ট ঠিকানা বা চালান পেস্ট করুন",
+  "sendPasteAddressOrInvoice": "একটি পেমেন্ট ঠিকানা বা ইনভয়েস পেস্ট করুন",
   "@sendPasteAddressOrInvoice": {
     "description": "Placeholder text for the payment address or invoice input field"
   },
@@ -5316,7 +5308,7 @@
   "@swapToLabel": {
     "description": "Label for destination wallet dropdown or address input"
   },
-  "payLoadingRecipients": "প্রাপক লোড হচ্ছে..।",
+  "payLoadingRecipients": "প্রাপকগণ লোড হচ্ছে...",
   "@payLoadingRecipients": {
     "description": "Message while loading recipients"
   },
@@ -5344,7 +5336,7 @@
   "@fundExchangeMethodOnlineBillPaymentSubtitle": {
     "description": "Subtitle for Online Bill Payment method"
   },
-  "walletDeletionErrorWalletNotFound": "যে ওয়ালেটটি আপনি মুছে ফেলতে চান তা বিদ্যমান নয়।",
+  "walletDeletionErrorWalletNotFound": "আপনি যে ওয়ালেট মুছতে চাইছেন তা বিদ্যমান নেই।",
   "@walletDeletionErrorWalletNotFound": {
     "description": "Error message when the wallet to delete cannot be found"
   },
@@ -5356,7 +5348,7 @@
   "@transactionDetailLabelFromWallet": {
     "description": "Label for source wallet"
   },
-  "settingsLanguageTitle": "ভাষা।",
+  "settingsLanguageTitle": "ভাষা",
   "@settingsLanguageTitle": {
     "description": "Title for the language selection in app settings"
   },
@@ -5364,7 +5356,7 @@
   "@importQrDeviceInvalidQR": {
     "description": "Error for invalid QR code format"
   },
-  "exchangeAppSettingsSaveSuccessMessage": "সেটিংস সফলভাবে সংরক্ষণ হয়েছে।",
+  "exchangeAppSettingsSaveSuccessMessage": "সেটিংস সফলভাবে সংরক্ষিত হয়েছে",
   "@exchangeAppSettingsSaveSuccessMessage": {
     "description": "Success message displayed when exchange app settings are saved"
   },
@@ -5505,7 +5497,7 @@
   "@transactionSwapDescChainCompleted": {
     "description": "Description for completed chain swap"
   },
-  "coreSwapsLnSendRefundable": "ফেরতের জন্য সোয়াপ প্রস্তুত।",
+  "coreSwapsLnSendRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
   "@coreSwapsLnSendRefundable": {
     "description": "Status message for refundable Lightning send swap"
   },
@@ -5541,7 +5533,7 @@
   "@fundExchangeFundAccount": {
     "description": "Main heading on funding screen"
   },
-  "electrumServerSettingsLabel": "ইলেকট্রাম সার্ভার (Bitcoin নোড)।",
+  "electrumServerSettingsLabel": "Electrum সার্ভার (Bitcoin নোড)",
   "@electrumServerSettingsLabel": {
     "description": "The label for the button to access the electrum server settings"
   },
@@ -5553,7 +5545,7 @@
   "@statusCheckOnline": {
     "description": "Status text when a service is online"
   },
-  "buyPayoutMethod": "পাওআউট পদ্ধতি",
+  "buyPayoutMethod": "পেআউট পদ্ধতি",
   "@buyPayoutMethod": {
     "description": "Label for payout method"
   },
@@ -5594,7 +5586,7 @@
   "@walletTypeLiquidLightningNetwork": {
     "description": "Wallet type label for Liquid and Lightning network"
   },
-  "sendFeePriority": "শুল্কার অগ্রাধিকার",
+  "sendFeePriority": "ফি অগ্রাধিকার",
   "@sendFeePriority": {
     "description": "Label for selecting fee priority level"
   },
@@ -5611,7 +5603,7 @@
       }
     }
   },
-  "exchangeSettingsReferralsTitle": "রেফারালসমূহ",
+  "exchangeSettingsReferralsTitle": "রেফারেলসমূহ",
   "@exchangeSettingsReferralsTitle": {
     "description": "Title for the referrals section in exchange settings"
   },
@@ -5660,7 +5652,7 @@
   "@keystoneStep5": {
     "description": "Keystone troubleshooting tip 1"
   },
-  "sendSelectCoinsManually": "কয়েনগুলো নিজে থেকে নির্বাচন করুন",
+  "sendSelectCoinsManually": "কয়েন ম্যানুয়ালি নির্বাচন করুন",
   "@sendSelectCoinsManually": {
     "description": "Label for manually selecting coins (UTXOs) in the send flow"
   },
@@ -5716,7 +5708,7 @@
   "@psbtFlowColdcardTitle": {
     "description": "Title for Coldcard Q device signing instructions"
   },
-  "sendRelativeFees": "অনুপাতভিত্তিক ফি",
+  "sendRelativeFees": "আপেক্ষিক ফি",
   "@sendRelativeFees": {
     "description": "Label for relative fee display mode (sats per vByte)"
   },
@@ -5724,7 +5716,7 @@
   "@payToAddress": {
     "description": "Label showing destination address"
   },
-  "sellCopyInvoice": "চালানটি অনুলিপি করুন",
+  "sellCopyInvoice": "ইনভয়েস কপি করুন",
   "@sellCopyInvoice": {
     "description": "Button to copy invoice"
   },
@@ -5772,7 +5764,7 @@
   "@backupWalletErrorFileSystemPath": {
     "description": "Error when file system path selection fails"
   },
-  "coreSwapsLnSendCanCoop": "সোয়াপটি মুহূর্তের মধ্যে সম্পন্ন হবে।",
+  "coreSwapsLnSendCanCoop": "Swap এখনই সম্পন্ন হবে।",
   "@coreSwapsLnSendCanCoop": {
     "description": "Status message for Lightning send swap that can complete cooperatively"
   },
@@ -5867,7 +5859,7 @@
   "@appleICloudProvider": {
     "description": "Name of Apple iCloud provider"
   },
-  "exchangeAccountInfoVerificationNotVerified": "যাচাইকরণ হয়নি",
+  "exchangeAccountInfoVerificationNotVerified": "যাচাই করা হয়নি",
   "@exchangeAccountInfoVerificationNotVerified": {
     "description": "Status label for not verified verification level"
   },
@@ -5903,7 +5895,7 @@
   "@payReplaceByFee": {
     "description": "Label for RBF feature"
   },
-  "coreSwapsLnReceiveClaimable": "দাবির জন্য সোয়াপ প্রস্তুত।",
+  "coreSwapsLnReceiveClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
   "@coreSwapsLnReceiveClaimable": {
     "description": "Status message for claimable Lightning receive swap"
   },
@@ -5915,11 +5907,11 @@
   "@fundExchangeJurisdictionEurope": {
     "description": "Dropdown option for Europe SEPA jurisdiction"
   },
-  "settingsExchangeSettingsTitle": "এক্সচেঞ্জ সেটিংস।",
+  "settingsExchangeSettingsTitle": "এক্সচেঞ্জ সেটিংস",
   "@settingsExchangeSettingsTitle": {
     "description": "Title for the exchange settings section in the settings menu"
   },
-  "sellFeePriority": "শুল্কার অগ্রাধিকার",
+  "sellFeePriority": "ফি অগ্রাধিকার",
   "@sellFeePriority": {
     "description": "Label for fee priority selection"
   },
@@ -5968,7 +5960,7 @@
   "@transactionLabelBitcoinTransactionId": {
     "description": "Label for Bitcoin network transaction ID"
   },
-  "sellPayinAmount": "পে-ইন পরিমাণ",
+  "sellPayinAmount": "পেইন পরিমাণ",
   "@sellPayinAmount": {
     "description": "Label for amount user pays in"
   },
@@ -6021,11 +6013,11 @@
       }
     }
   },
-  "coreSwapsLnReceiveCanCoop": "সোয়াপটি মুহূর্তের মধ্যে সম্পন্ন হবে।",
+  "coreSwapsLnReceiveCanCoop": "Swap এখনই সম্পন্ন হবে।",
   "@coreSwapsLnReceiveCanCoop": {
     "description": "Status message for Lightning receive swap that can complete cooperatively"
   },
-  "addressViewAddressesTitle": "ঠিকানাগুলো",
+  "addressViewAddressesTitle": "ঠিকানাসমূহ",
   "@addressViewAddressesTitle": {
     "description": "Title for the addresses section in wallet options"
   },
@@ -6037,7 +6029,7 @@
   "@importQrDeviceSpecterStep4": {
     "description": "Specter instruction step 4"
   },
-  "coreSwapsChainPending": "ট্রান্সফার এখনও শুরু হয়নি।",
+  "coreSwapsChainPending": "ট্রান্সফার এখনো শুরু হয়নি।",
   "@coreSwapsChainPending": {
     "description": "Status message for pending chain swap"
   },
@@ -6073,13 +6065,12 @@
   "@receiveSave": {
     "description": "Button label for saving receive details"
   },
-  "mempoolNetworkBitcoinTestnet": "Bitcoin টেস্টনেট",
+  "mempoolNetworkBitcoinTestnet": "Bitcoin Testnet",
   "@mempoolNetworkBitcoinTestnet": {
     "description": "Label for Bitcoin Testnet network"
   },
-  "exchangeStatisticsAsOf": "{date} অনুযায়ী",
+  "exchangeStatisticsAsOf": "{date} পর্যন্ত",
   "@exchangeStatisticsAsOf": {
-    "description": "Label showing when statistics were last updated",
     "placeholders": {
       "date": {
         "type": "String"
@@ -6098,7 +6089,7 @@
   "@passportStep2": {
     "description": "Passport instruction step 2"
   },
-  "pinCodeRemoveButton": "নিরাপত্তা পিন মুছে ফেলুন",
+  "pinCodeRemoveButton": "নিরাপত্তা PIN সরান",
   "@pinCodeRemoveButton": {
     "description": "Button label to remove the security PIN"
   },
@@ -6130,7 +6121,7 @@
   "@testBackupTitle": {
     "description": "AppBar title for main backup options screen"
   },
-  "coreSwapsLnSendFailed": "সোয়াপ ব্যর্থ হয়েছে।",
+  "coreSwapsLnSendFailed": "Swap ব্যর্থ হয়েছে।",
   "@coreSwapsLnSendFailed": {
     "description": "Status message for failed Lightning send swap"
   },
@@ -6158,7 +6149,7 @@
   "@payHighPriority": {
     "description": "High fee priority option"
   },
-  "buyBitcoinPrice": "বিটকয়েন মূল্য",
+  "buyBitcoinPrice": "Bitcoin মূল্য",
   "@buyBitcoinPrice": {
     "description": "Label for Bitcoin exchange rate"
   },
@@ -6180,11 +6171,11 @@
       }
     }
   },
-  "sendBroadcastTransaction": "লেনদেন প্রচার করুন",
+  "sendBroadcastTransaction": "লেনদেন ব্রডকাস্ট করুন",
   "@sendBroadcastTransaction": {
     "description": "Button label for broadcasting a transaction to the network"
   },
-  "receiveBitcoinConfirmationMessage": "বিটকয়েন লেনদেনটি নিশ্চিত হতে কিছু সময় লাগবে।",
+  "receiveBitcoinConfirmationMessage": "Bitcoin লেনদেন নিশ্চিত হতে কিছুটা সময় লাগবে।",
   "@receiveBitcoinConfirmationMessage": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
@@ -6228,7 +6219,7 @@
   "@payDescription": {
     "description": "Label for payment description/memo field"
   },
-  "buySecureBitcoinWallet": "নিরাপদ বিটকয়েন ওয়ালেট",
+  "buySecureBitcoinWallet": "নিরাপদ Bitcoin ওয়ালেট",
   "@buySecureBitcoinWallet": {
     "description": "Label for secure Bitcoin wallet"
   },
@@ -6248,7 +6239,7 @@
   "@transactionOrderLabelExchangeRate": {
     "description": "Label for order exchange rate"
   },
-  "backupSettingsScreenTitle": "ব্যাকআপ সেটিংস।",
+  "backupSettingsScreenTitle": "ব্যাকআপ সেটিংস",
   "@backupSettingsScreenTitle": {
     "description": "AppBar title for backup settings screen"
   },
@@ -6268,15 +6259,15 @@
   "@coldcardStep14": {
     "description": "Coldcard instruction about import completion"
   },
-  "pinCodeSettingsLabel": "পিন কোড।",
+  "pinCodeSettingsLabel": "PIN কোড",
   "@pinCodeSettingsLabel": {
     "description": "The label for the button to access the PIN code settings"
   },
-  "exchangeStatisticsTradeCount": "ট্রেড সংখ্যা",
+  "exchangeStatisticsTradeCount": "ট্রেডের সংখ্যা",
   "@exchangeStatisticsTradeCount": {
     "description": "Label for trade count statistic"
   },
-  "buyExternalBitcoinWallet": "বহিরাগত বিটকয়েন ওয়ালেট",
+  "buyExternalBitcoinWallet": "বাহ্যিক Bitcoin ওয়ালেট",
   "@buyExternalBitcoinWallet": {
     "description": "Label for external wallet option"
   },
@@ -6486,7 +6477,7 @@
       }
     }
   },
-  "receiveBoltzSwapFee": "Boltz বদল ফি",
+  "receiveBoltzSwapFee": "Boltz Swap ফি",
   "@receiveBoltzSwapFee": {
     "description": "Label for the Boltz swap service fee in a receive transaction"
   },
@@ -6554,7 +6545,7 @@
   "@arkTxTypeRedeem": {
     "description": "Transaction type label for redeem transactions"
   },
-  "receiveVerifyAddressOnLedger": "লেজারে ঠিকানা যাচাই করুন",
+  "receiveVerifyAddressOnLedger": "Ledger-এ ঠিকানা যাচাই করুন",
   "@receiveVerifyAddressOnLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
@@ -6570,7 +6561,7 @@
   "@backupSettingsKeyWarningBold": {
     "description": "Bold warning message in backup key warning modal"
   },
-  "settingsArkTitle": "আর্ক",
+  "settingsArkTitle": "Ark",
   "@settingsArkTitle": {
     "description": "Title for the Ark protocol section in Bitcoin settings"
   },
@@ -6602,7 +6593,7 @@
   "@swapTransferRefundInProgressMessage": {
     "description": "Message during refund process"
   },
-  "exchangeSettingsRecipientsTitle": "প্রাপকগণ",
+  "exchangeSettingsRecipientsTitle": "প্রাপকসমূহ",
   "@exchangeSettingsRecipientsTitle": {
     "description": "Title for the recipients button in exchange settings"
   },
@@ -6659,11 +6650,11 @@
   "@testBackupNext": {
     "description": "Button to proceed to verification quiz"
   },
-  "payBillerSearchHint": "বিলারের নামের প্রথম ৩ অক্ষর লিখুন",
+  "payBillerSearchHint": "বিলার নামের প্রথম 3টি অক্ষর লিখুন",
   "@payBillerSearchHint": {
     "description": "Hint for biller search field"
   },
-  "coreSwapsLnSendCompletedRefunded": "সোয়াপ ফেরত দেওয়া হয়েছে।",
+  "coreSwapsLnSendCompletedRefunded": "Swap ফেরত দেওয়া হয়েছে।",
   "@coreSwapsLnSendCompletedRefunded": {
     "description": "Status message for Lightning send swap completed via refund"
   },
@@ -6692,7 +6683,7 @@
       }
     }
   },
-  "buyConfirmationTimeValue": "~১০ মিনিট",
+  "buyConfirmationTimeValue": "~10 মিনিট",
   "@buyConfirmationTimeValue": {
     "description": "Value for estimated confirmation time"
   },
@@ -6709,7 +6700,7 @@
       }
     }
   },
-  "exchangeFileUploadUploading": "আপলোড হচ্ছে..।",
+  "exchangeFileUploadUploading": "আপলোড হচ্ছে...",
   "@exchangeFileUploadUploading": {
     "description": "Loading text while uploading files"
   },
@@ -6761,7 +6752,7 @@
   "@receiveAwaitingPayment": {
     "description": "Status while waiting for payment"
   },
-  "onboardingRecover": "পুনরুদ্ধার",
+  "onboardingRecover": "পুনরুদ্ধার করুন",
   "@onboardingRecover": {
     "description": "Button label for recovering a wallet in onboarding"
   },
@@ -6781,7 +6772,7 @@
   "@payDecodeFailed": {
     "description": "Error when invoice parsing fails"
   },
-  "sendAbsoluteFees": "স্থির ফি",
+  "sendAbsoluteFees": "নিরঙ্কুশ ফি",
   "@sendAbsoluteFees": {
     "description": "Label for absolute fee display mode (total sats)"
   },
@@ -6826,7 +6817,7 @@
   "@electrumPrivacyNoticeTitle": {
     "description": "Title for privacy notice bottom sheet"
   },
-  "receiveLiquid": "লিকুইড নেটওয়ার্ক",
+  "receiveLiquid": "Liquid",
   "@receiveLiquid": {
     "description": "Label for receiving Bitcoin via Liquid Network"
   },
@@ -6858,7 +6849,7 @@
   "@psbtFlowTransactionImported": {
     "description": "Confirmation that transaction was imported successfully"
   },
-  "translationWarningDismissButton": "বুঝেছি",
+  "translationWarningDismissButton": "বুঝলাম",
   "@translationWarningDismissButton": {
     "description": "Button to dismiss the translation warning"
   },
@@ -6908,7 +6899,7 @@
   "@payInvoiceExpired": {
     "description": "Error message when Lightning invoice has expired"
   },
-  "payWhoAreYouPaying": "আপনি কার জন্য অর্থ প্রদান করছেন?",
+  "payWhoAreYouPaying": "আপনি কাকে পরিশোধ করছেন?",
   "@payWhoAreYouPaying": {
     "description": "Question prompting user to select recipient"
   },
@@ -6956,7 +6947,7 @@
   "@electrumMainnet": {
     "description": "Mainnet environment label"
   },
-  "buyThatWasFast": "এটি খুব দ্রুত ছিল, তাই না?",
+  "buyThatWasFast": "এটা দ্রুত ছিল, তাই না?",
   "@buyThatWasFast": {
     "description": "Additional success message for accelerated transaction"
   },
@@ -6998,7 +6989,7 @@
   "@payAmountTooLow": {
     "description": "Error when payment amount is below minimum allowed"
   },
-  "onboardingCreateWalletButtonLabel": "ওয়ালেট তৈরি করুন।",
+  "onboardingCreateWalletButtonLabel": "ওয়ালেট তৈরি করুন",
   "@onboardingCreateWalletButtonLabel": {
     "description": "The label for the button to create a wallet from the onboarding screen"
   },
@@ -7022,7 +7013,7 @@
   "@dcaFrequencyValidationError": {
     "description": "Form validation error when no frequency is selected"
   },
-  "walletsListTitle": "ওয়ালেটের তথ্য",
+  "walletsListTitle": "ওয়ালেট বিবরণ",
   "@walletsListTitle": {
     "description": "Title for the wallet details list screen"
   },
@@ -7038,7 +7029,7 @@
   "@recoverbullVaultSelected": {
     "description": "Screen title after vault has been selected"
   },
-  "receiveTransferFee": "হস্তান্তর ফি",
+  "receiveTransferFee": "ট্রান্সফার ফি",
   "@receiveTransferFee": {
     "description": "Label for the transfer fee in a receive transaction"
   },
@@ -7098,7 +7089,7 @@
   "@backupWalletGoogleDriveSignInTitle": {
     "description": "Loading screen title when initiating Google Drive backup"
   },
-  "sendEstimatedDelivery10to30Minutes": "১০–৩০ মিনিট",
+  "sendEstimatedDelivery10to30Minutes": "10-30 মিনিট",
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
@@ -7110,16 +7101,15 @@
   "@testBackupBackupId": {
     "description": "Label for backup ID field"
   },
-  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "exchangeFileUploadUploadCount": "{count}টি {count, plural, =1{ফাইল} other{ফাইল}} আপলোড করুন",
   "@exchangeFileUploadUploadCount": {
-    "description": "Button label showing number of files to upload",
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
   },
-  "walletDeletionErrorOngoingSwaps": "চলমান সোয়াপসহ ওয়ালেট মুছে ফেলতে পারবেন না",
+  "walletDeletionErrorOngoingSwaps": "চলমান swap-সহ একটি ওয়ালেট মুছতে পারবেন না।",
   "@walletDeletionErrorOngoingSwaps": {
     "description": "Error message when attempting to delete a wallet with ongoing swaps"
   },
@@ -7172,7 +7162,7 @@
   "@backupWalletVaultProviderQuickEasy": {
     "description": "Tag for Google Drive and iCloud providers"
   },
-  "sellPayoutAmount": "পাওআউট পরিমাণ",
+  "sellPayoutAmount": "পেআউট পরিমাণ",
   "@sellPayoutAmount": {
     "description": "Label for amount user receives"
   },
@@ -7180,7 +7170,7 @@
   "@dcaConfirmFrequencyDaily": {
     "description": "Daily frequency label"
   },
-  "buyConfirmPurchase": "ক্রয় নিশ্চিত করুন",
+  "buyConfirmPurchase": "ক্রয় নিশ্চিত করুন",
   "@buyConfirmPurchase": {
     "description": "Button to confirm purchase"
   },
@@ -7208,11 +7198,11 @@
   "@buyInputMaxAmountError": {
     "description": "Maximum amount error message"
   },
-  "walletDetailsDeletingMessage": "ওয়ালেট মুছে ফেলা হচ্ছে..।",
+  "walletDetailsDeletingMessage": "ওয়ালেট মুছে ফেলা হচ্ছে...",
   "@walletDetailsDeletingMessage": {
     "description": "Message displayed while a wallet is being deleted"
   },
-  "receiveUnableToVerifyAddress": "ঠিকানা যাচাই করা যাচ্ছে না: ওয়ালেট বা ঠিকানার তথ্য অনুপস্থিত",
+  "receiveUnableToVerifyAddress": "ঠিকানা যাচাই করা সম্ভব হয়নি: ওয়ালেট বা ঠিকানার তথ্য নেই",
   "@receiveUnableToVerifyAddress": {
     "description": "Error message when address verification is not possible"
   },
@@ -7228,7 +7218,7 @@
   "@exportVaultButton": {
     "description": "Button label to export vault"
   },
-  "coreSwapsChainPaid": "ট্রান্সফার প্রদানকারীর পেমেন্ট নিশ্চিত হওয়ার জন্য অপেক্ষা করা হচ্ছে। সম্পূর্ণ হতে কিছু সময় লাগতে পারে।",
+  "coreSwapsChainPaid": "ট্রান্সফার প্রদানকারীর পেমেন্ট নিশ্চিতের জন্য অপেক্ষা করা হচ্ছে। এটি সম্পন্ন হতে কিছু সময় লাগতে পারে।",
   "@coreSwapsChainPaid": {
     "description": "Status message for paid chain swap"
   },
@@ -7248,7 +7238,7 @@
   "@withdrawRecipientsContinue": {
     "description": "Continue button on recipients screen"
   },
-  "exchangeStatisticsSellStats": "বিক্রয় পরিসংখ্যান",
+  "exchangeStatisticsSellStats": "বিক্রয় পরিসংখ্যান",
   "@exchangeStatisticsSellStats": {
     "description": "Title for sell statistics section"
   },
@@ -7294,7 +7284,7 @@
   "@transactionSwapDescLnSendPaid": {
     "description": "Description for paid Lightning send swap"
   },
-  "exchangeFileUploadAddMoreFiles": "আরও ফাইল যোগ করুন",
+  "exchangeFileUploadAddMoreFiles": "আরো ফাইল যোগ করুন",
   "@exchangeFileUploadAddMoreFiles": {
     "description": "Button label to add more files"
   },
@@ -7334,7 +7324,7 @@
   "@buyPhotoID": {
     "description": "Type of document required"
   },
-  "exchangeSettingsAccountInformationTitle": "হিসাব তথ্য",
+  "exchangeSettingsAccountInformationTitle": "অ্যাকাউন্ট তথ্য",
   "@exchangeSettingsAccountInformationTitle": {
     "description": "Title for the account information section in exchange settings"
   },
@@ -7375,7 +7365,7 @@
       }
     }
   },
-  "payTransitNumber": "শাখা নম্বর",
+  "payTransitNumber": "ট্রানজিট নম্বর",
   "@payTransitNumber": {
     "description": "Label for transit number"
   },
@@ -7427,7 +7417,7 @@
   "@transactionDetailLabelSendNetworkFee": {
     "description": "Label for send network fee"
   },
-  "sendSlowPaymentWarningDescription": "বিটকয়েন সোয়াপ নিশ্চিত হতে সময় লাগবে।",
+  "sendSlowPaymentWarningDescription": "Bitcoin swap নিশ্চিত হতে সময় লাগবে।",
   "@sendSlowPaymentWarningDescription": {
     "description": "Description for slow payment warning"
   },
@@ -7451,11 +7441,11 @@
   "@physicalBackupStatusLabel": {
     "description": "Status label for physical backup"
   },
-  "exchangeSettingsLogOutTitle": "প্রস্থান করুন",
+  "exchangeSettingsLogOutTitle": "লগ আউট",
   "@exchangeSettingsLogOutTitle": {
     "description": "Title for the log out option in exchange settings"
   },
-  "addressCardBalanceLabel": "ব্যালান্স: ",
+  "addressCardBalanceLabel": "ব্যালেন্স: ",
   "@addressCardBalanceLabel": {
     "description": "Label for the balance field in address card"
   },
@@ -7573,7 +7563,7 @@
   "@bitboxActionSignTransactionSuccess": {
     "description": "Success text for sign transaction"
   },
-  "exchangeStatisticsBuyStats": "ক্রয় পরিসংখ্যান",
+  "exchangeStatisticsBuyStats": "ক্রয় পরিসংখ্যান",
   "@exchangeStatisticsBuyStats": {
     "description": "Title for buy statistics section"
   },
@@ -7725,7 +7715,7 @@
   "@ledgerInstructionsAndroidUsb": {
     "description": "Connection instructions for Android devices (USB only)"
   },
-  "onboardingOwnYourMoney": "নিজের অর্থ নিজে নিয়ন্ত্রণ করুন",
+  "onboardingOwnYourMoney": "আপনার অর্থের মালিক হন",
   "@onboardingOwnYourMoney": {
     "description": "Tagline displayed in onboarding splash screen"
   },
@@ -7778,7 +7768,7 @@
   "@bitboxScreenTryAgainButton": {
     "description": "Button to retry failed action"
   },
-  "exchangeStatisticsNoData": "কোনো পরিসংখ্যান উপলব্ধ নয়",
+  "exchangeStatisticsNoData": "কোনো পরিসংখ্যান নেই",
   "@exchangeStatisticsNoData": {
     "description": "Message when no statistics are available"
   },
@@ -7839,7 +7829,7 @@
   "@bitboxActionUnlockDeviceSuccess": {
     "description": "Success text for unlock device"
   },
-  "receivePayjoinInProgress": "PayJoin প্রক্রিয়াধীন",
+  "receivePayjoinInProgress": "Payjoin প্রক্রিয়াধীন",
   "@receivePayjoinInProgress": {
     "description": "Status message when a payjoin transaction is in progress"
   },
@@ -7909,15 +7899,15 @@
   "@bitboxErrorOperationTimeout": {
     "description": "Error when BitBox operation times out"
   },
-  "receiveLightning": "লাইটনিং নেটওয়ার্ক",
+  "receiveLightning": "Lightning",
   "@receiveLightning": {
     "description": "Label for receiving Bitcoin via Lightning Network"
   },
-  "sendRecipientAddressOrInvoice": "প্রাপকের ঠিকানা বা চালান",
+  "sendRecipientAddressOrInvoice": "প্রাপকের ঠিকানা বা ইনভয়েস",
   "@sendRecipientAddressOrInvoice": {
     "description": "Label for the recipient address or invoice input field"
   },
-  "mempoolCustomServerUrlEmpty": "একটি সার্ভার URL লিখুন",
+  "mempoolCustomServerUrlEmpty": "অনুগ্রহ করে একটি সার্ভার URL প্রবেশ করুন",
   "@mempoolCustomServerUrlEmpty": {
     "description": "Error message when server URL is empty"
   },
@@ -7929,7 +7919,7 @@
   "@payBitcoinAddress": {
     "description": "Label indicating payment destination is on-chain address"
   },
-  "buyInsufficientBalanceTitle": "পর্যাপ্ত ব্যালেন্স নেই",
+  "buyInsufficientBalanceTitle": "অপর্যাপ্ত ব্যালেন্স",
   "@buyInsufficientBalanceTitle": {
     "description": "Title for insufficient balance error"
   },
@@ -7986,7 +7976,7 @@
   "@seedsignerStep2": {
     "description": "SeedSigner instruction step 2"
   },
-  "addressCardIndexLabel": "সূচি: ",
+  "addressCardIndexLabel": "সূচক: ",
   "@addressCardIndexLabel": {
     "description": "Label for the address index field in address card"
   },
@@ -8044,7 +8034,7 @@
   "@cancel": {
     "description": "Generic cancel button label"
   },
-  "walletDetailsWalletFingerprintLabel": "ওয়ালেট ফিঙ্গারপ্রিন্ট",
+  "walletDetailsWalletFingerprintLabel": "ওয়ালেট ফিঙ্গারপ্রিন্ট",
   "@walletDetailsWalletFingerprintLabel": {
     "description": "Label for the wallet fingerprint field in wallet details"
   },
@@ -8085,7 +8075,7 @@
   "@transactionStatusPending": {
     "description": "Status label for pending transactions"
   },
-  "settingsSuperuserModeDisabledMessage": "সুপারইউজার মোড নিষ্ক্রিয়।",
+  "settingsSuperuserModeDisabledMessage": "Superuser মোড নিষ্ক্রিয় করা হয়েছে।",
   "@settingsSuperuserModeDisabledMessage": {
     "description": "Message shown when superuser mode is disabled"
   },
@@ -8093,7 +8083,7 @@
   "@bitboxCubitConnectionFailed": {
     "description": "Error interpretation for connection failure"
   },
-  "settingsTermsOfServiceTitle": "সেবা শর্তাবলী",
+  "settingsTermsOfServiceTitle": "সেবার শর্তাবলী",
   "@settingsTermsOfServiceTitle": {
     "description": "Title for the terms of service section in the settings menu"
   },
@@ -8105,7 +8095,7 @@
   "@importWalletKeystone": {
     "description": "Button label for Keystone hardware wallet"
   },
-  "payNewRecipients": "নতুন প্রাপকগণ",
+  "payNewRecipients": "নতুন প্রাপক",
   "@payNewRecipients": {
     "description": "Tab label for new recipients"
   },
@@ -8129,7 +8119,7 @@
   "@backupWalletChooseVaultLocationTitle": {
     "description": "AppBar title for choosing encrypted vault provider screen"
   },
-  "receiveCopyAddressOnly": "ঠিকানা কপি করুন অথবা কেবল ঠিকানাটি স্ক্যান করুন",
+  "receiveCopyAddressOnly": "শুধুমাত্র ঠিকানা কপি বা স্ক্যান করুন",
   "@receiveCopyAddressOnly": {
     "description": "Option to copy or scan only the address without amount or other details"
   },
@@ -8183,7 +8173,7 @@
   "@keystoneStep7": {
     "description": "Keystone troubleshooting tip 3"
   },
-  "coreSwapsChainExpired": "ট্রান্সফার মেয়াদ শেষ হয়েছে।",
+  "coreSwapsChainExpired": "ট্রান্সফার মেয়াদোত্তীর্ণ",
   "@coreSwapsChainExpired": {
     "description": "Status message for expired chain swap"
   },
@@ -8265,7 +8255,7 @@
   "@electrumProtocolError": {
     "description": "Validation error when protocol is included in server URL"
   },
-  "receivePayjoinFailQuestion": "আশা করার মতো সময় নেই, নাকি PayJoin প্রেরকের দিক থেকে ব্যর্থ হয়েছে?",
+  "receivePayjoinFailQuestion": "অপেক্ষা করার সময় নেই বা প্রেরকের পক্ষে payjoin ব্যর্থ হয়েছে?",
   "@receivePayjoinFailQuestion": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
@@ -8277,7 +8267,7 @@
   "@importQrDeviceSeedsignerStep1": {
     "description": "SeedSigner instruction step 1"
   },
-  "exchangeRecipientsTitle": "প্রাপকগণ",
+  "exchangeRecipientsTitle": "প্রাপকসমূহ",
   "@exchangeRecipientsTitle": {
     "description": "Title for the recipients section in exchange"
   },
@@ -8309,7 +8299,7 @@
   "@importQrDeviceJadeStep1": {
     "description": "Jade instruction step 1"
   },
-  "payNotLoggedInDescription": "আপনি লগ ইন করেননি। পেমেন্ট বৈশিষ্ট্যটি ব্যবহার করতে চাইলে অনুগ্রহ করে লগ ইন করুন।",
+  "payNotLoggedInDescription": "আপনি লগ ইন করেননি। পে ফিচার ব্যবহার চালিয়ে যেতে অনুগ্রহ করে লগ ইন করুন।",
   "@payNotLoggedInDescription": {
     "description": "Description for not logged in state"
   },
@@ -8373,7 +8363,7 @@
   "@addressViewCopyAddress": {
     "description": "Button to copy address to clipboard"
   },
-  "receiveBitcoin": "বিটকয়েন",
+  "receiveBitcoin": "Bitcoin",
   "@receiveBitcoin": {
     "description": "Label for receiving Bitcoin on the base layer"
   },
@@ -8389,7 +8379,7 @@
   "@fundExchangeCrIbanCrcRecipientNameHelp": {
     "description": "Help text for recipient name field explaining to use corporate name"
   },
-  "receiveVerifyAddressLedger": "লেজারে ঠিকানা যাচাই করুন",
+  "receiveVerifyAddressLedger": "Ledger-এ ঠিকানা যাচাই করুন",
   "@receiveVerifyAddressLedger": {
     "description": "Button label for verifying an address on a Ledger hardware wallet"
   },
@@ -8405,9 +8395,8 @@
   "@backupWalletHowToDecideVaultCustomLocation": {
     "description": "Explanation of custom location benefits and risks"
   },
-  "exchangeFileUploadPartialSuccess": "{uploaded} এর মধ্যে {total} ফাইল আপলোড হয়েছে",
+  "exchangeFileUploadPartialSuccess": "{total}টির মধ্যে {uploaded}টি ফাইল আপলোড হয়েছে",
   "@exchangeFileUploadPartialSuccess": {
-    "description": "Message when some files failed to upload",
     "placeholders": {
       "uploaded": {
         "type": "int"
@@ -8417,7 +8406,7 @@
       }
     }
   },
-  "exchangeLegacyTransactionsComingSoon": "পুরোনো লেনদেন - শীঘ্রই আসছে",
+  "exchangeLegacyTransactionsComingSoon": "লেগাসি লেনদেনসমূহ - শীঘ্রই আসছে",
   "@exchangeLegacyTransactionsComingSoon": {
     "description": "Message indicating that the legacy transactions feature is coming soon"
   },
@@ -8482,7 +8471,7 @@
   "@importMnemonicLegacy": {
     "description": "Label for Legacy (BIP44) wallet type"
   },
-  "settingsDevModeWarningMessage": "এই মোডটি ঝুঁকিপূর্ণ। এটি সক্রিয় করলে আপনি বুঝবেন যে আপনি অর্থ হারাতে পারেন",
+  "settingsDevModeWarningMessage": "এই মোডটি ঝুঁকিপূর্ণ। এটি সক্রিয় করে আপনি স্বীকার করছেন যে আপনি অর্থ হারাতে পারেন",
   "@settingsDevModeWarningMessage": {
     "description": "Warning message displayed when enabling developer mode"
   },
@@ -8520,7 +8509,6 @@
   },
   "durationMinute": "{minutes} মিনিট",
   "@durationMinute": {
-    "description": "Duration format for singular minute",
     "placeholders": {
       "minutes": {
         "type": "String"
@@ -8531,7 +8519,7 @@
   "@recoverbullErrorDecryptedVaultNotSet": {
     "description": "Error when attempting operation without decrypted vault"
   },
-  "pinCodeMismatchError": "পিনগুলো মেলেনি",
+  "pinCodeMismatchError": "PIN মেলে না",
   "@pinCodeMismatchError": {
     "description": "Error message when PIN confirmation doesn't match"
   },
@@ -8543,7 +8531,7 @@
   "@recoverbullGoogleDriveErrorGeneric": {
     "description": "Generic error message for unknown errors"
   },
-  "sellUnauthenticatedError": "আপনি প্রমাণীকরণ করা নন। চালিয়ে যেতে অনুগ্রহ করে লগইন করুন।",
+  "sellUnauthenticatedError": "আপনি প্রমাণীকৃত নন। অনুগ্রহ করে চালিয়ে যেতে লগ ইন করুন।",
   "@sellUnauthenticatedError": {
     "description": "Error message for unauthenticated user"
   },
@@ -8607,7 +8595,7 @@
   "@swapProgressCompletedMessage": {
     "description": "Completed transfer message"
   },
-  "sellCalculating": "গণনা হচ্ছে..।",
+  "sellCalculating": "গণনা করা হচ্ছে...",
   "@sellCalculating": {
     "description": "Text shown while calculating fees"
   },
@@ -8631,7 +8619,7 @@
   "@payPhoneNumberHint": {
     "description": "Hint for phone number input"
   },
-  "exchangeTransactionsComingSoon": "লেনদেন - শীঘ্রই আসছে",
+  "exchangeTransactionsComingSoon": "লেনদেনসমূহ - শীঘ্রই আসছে",
   "@exchangeTransactionsComingSoon": {
     "description": "Message indicating that the transactions feature is coming soon"
   },
@@ -8678,11 +8666,11 @@
   "@importQrDeviceSpecterStep11": {
     "description": "Specter instruction step 11"
   },
-  "mempoolSettingsUseForFeeEstimationDescription": "সক্রিয় থাকলে, এই সার্ভারটি ফি মূল্যায়নের জন্য ব্যবহার হবে। নিষ্ক্রিয় থাকলে Bull Bitcoin-এর মেমপুল সার্ভারটি এর বদলে ব্যবহার করা হবে।",
+  "mempoolSettingsUseForFeeEstimationDescription": "সক্রিয় থাকলে, এই সার্ভার ফি অনুমানের জন্য ব্যবহার করা হবে। নিষ্ক্রিয় থাকলে, Bull Bitcoin-এর Mempool সার্ভার ব্যবহার করা হবে।",
   "@mempoolSettingsUseForFeeEstimationDescription": {
     "description": "Description for use for fee estimation toggle"
   },
-  "sendCustomFee": "নিজস্ব ফি",
+  "sendCustomFee": "কাস্টম ফি",
   "@sendCustomFee": {
     "description": "Label for setting a custom transaction fee"
   },
@@ -8767,7 +8755,7 @@
       }
     }
   },
-  "buyKycPendingTitle": "KYC ID যাচাই প্রক্রিয়াধীন",
+  "buyKycPendingTitle": "KYC পরিচয় যাচাই মুলতুবি",
   "@buyKycPendingTitle": {
     "description": "Title for KYC verification required card"
   },
@@ -8779,11 +8767,11 @@
   "@sellSendPaymentSecureWallet": {
     "description": "Secure wallet label"
   },
-  "coreSwapsLnReceiveRefundable": "ফেরতের জন্য সোয়াপ প্রস্তুত।",
+  "coreSwapsLnReceiveRefundable": "Swap ফেরত দেওয়ার জন্য প্রস্তুত।",
   "@coreSwapsLnReceiveRefundable": {
     "description": "Status message for refundable Lightning receive swap"
   },
-  "bitcoinSettingsElectrumServerTitle": "ইলেকট্রাম সার্ভার সেটিংস",
+  "bitcoinSettingsElectrumServerTitle": "Electrum সার্ভার সেটিংস",
   "@bitcoinSettingsElectrumServerTitle": {
     "description": "Title for the Electrum server settings section in Bitcoin settings"
   },
@@ -8835,7 +8823,7 @@
   "@howToDecideVaultLocationText1": {
     "description": "First paragraph explaining vault location decision"
   },
-  "receiveFeeExplanation": "এই ফি পাঠানো পরিমাণ থেকে কাটা হবে",
+  "receiveFeeExplanation": "এই ফি প্রেরিত পরিমাণ থেকে কেটে নেওয়া হবে",
   "@receiveFeeExplanation": {
     "description": "Explanation that fees are deducted from the sent amount"
   },
@@ -8872,11 +8860,11 @@
   "@sendConfirmSwap": {
     "description": "Button to proceed with swap"
   },
-  "exchangeLogoutComingSoon": "প্রস্থান করুন - শীঘ্রই আসছে",
+  "exchangeLogoutComingSoon": "লগ আউট - শীঘ্রই আসছে",
   "@exchangeLogoutComingSoon": {
     "description": "Message indicating that the log out feature is coming soon"
   },
-  "exchangeStatisticsTotalVolume": "মোট ট্রেড ভলিউম",
+  "exchangeStatisticsTotalVolume": "মোট ট্রেডিং ভলিউম",
   "@exchangeStatisticsTotalVolume": {
     "description": "Label for total trading volume statistic"
   },
@@ -9007,11 +8995,11 @@
   "@torSettingsStatusConnecting": {
     "description": "Status title when Tor is connecting"
   },
-  "receiveSwapID": "বদল আইডি",
+  "receiveSwapID": "Swap ID",
   "@receiveSwapID": {
     "description": "Label for the swap identifier in a receive transaction"
   },
-  "settingsBitcoinSettingsTitle": "বিটকয়েন সেটিংস",
+  "settingsBitcoinSettingsTitle": "Bitcoin সেটিংস",
   "@settingsBitcoinSettingsTitle": {
     "description": "Title for the Bitcoin settings section in the settings menu"
   },
@@ -9019,7 +9007,7 @@
   "@backupWalletHowToDecideBackupModalTitle": {
     "description": "Modal title for backup method comparison help"
   },
-  "backupSettingsLabel": "ওয়ালেট ব্যাকআপ।",
+  "backupSettingsLabel": "ওয়ালেট ব্যাকআপ",
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
   },
@@ -9035,7 +9023,7 @@
   "@sellInteracEmail": {
     "description": "Label for email to receive Interac payment"
   },
-  "coreSwapsActionClose": "বন্ধ",
+  "coreSwapsActionClose": "বন্ধ করুন",
   "@coreSwapsActionClose": {
     "description": "Action label for closing a swap cooperatively"
   },
@@ -9116,7 +9104,7 @@
   "@sendInvoicePaid": {
     "description": "Title when Lightning invoice payment succeeds"
   },
-  "buyKycPendingDescription": "প্রথমে ID যাচাই সম্পন্ন করুন",
+  "buyKycPendingDescription": "আপনাকে প্রথমে পরিচয় যাচাই সম্পন্ন করতে হবে",
   "@buyKycPendingDescription": {
     "description": "Description for KYC verification required"
   },
@@ -9140,7 +9128,7 @@
   "@swapContinueButton": {
     "description": "Button to proceed from amount page to confirmation"
   },
-  "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন প্রচার করুন",
+  "bitcoinSettingsBroadcastTransactionTitle": "লেনদেন ব্রডকাস্ট করুন",
   "@bitcoinSettingsBroadcastTransactionTitle": {
     "description": "Title for the broadcast transaction option in Bitcoin settings"
   },
@@ -9197,7 +9185,7 @@
   "@withdrawRecipientsTitle": {
     "description": "AppBar title for recipients screen"
   },
-  "sellPayoutRecipient": "পাওআউট প্রাপক",
+  "sellPayoutRecipient": "পেআউট প্রাপক",
   "@sellPayoutRecipient": {
     "description": "Label for payout recipient"
   },
@@ -9247,7 +9235,7 @@
   "@testBackupGoogleDrivePrivacyPart3": {
     "description": "Third part of privacy message"
   },
-  "logSettingsErrorLoadingMessage": "লগ লোড় করতে ত্রুটি: ",
+  "logSettingsErrorLoadingMessage": "লগ লোড করতে ত্রুটি: ",
   "@logSettingsErrorLoadingMessage": {
     "description": "Error message displayed when logs fail to load"
   },
@@ -9283,7 +9271,7 @@
   "@payInstitutionNumberHint": {
     "description": "Hint for institution number input"
   },
-  "sendSlowPaymentWarning": "মন্থর লেনদেন সতর্কতা",
+  "sendSlowPaymentWarning": "ধীর পেমেন্ট সতর্কতা",
   "@sendSlowPaymentWarning": {
     "description": "Warning title for slow payment confirmation"
   },
@@ -9398,7 +9386,7 @@
   "@addressViewChangeType": {
     "description": "Address type label for internal/change addresses"
   },
-  "walletDeletionConfirmationDeleteButton": "মুছে ফেলুন",
+  "walletDeletionConfirmationDeleteButton": "মুছুন",
   "@walletDeletionConfirmationDeleteButton": {
     "description": "Delete button label in wallet deletion confirmation dialog"
   },
@@ -9490,13 +9478,9 @@
   "@fundExchangeLabelSwiftCode": {
     "description": "Label for SWIFT code field"
   },
-  "buyEnterBitcoinAddress": "বিটকোন ঠিকানা লিখুন",
+  "buyEnterBitcoinAddress": "Bitcoin ঠিকানা লিখুন",
   "@buyEnterBitcoinAddress": {
     "description": "Label for bitcoin address input field"
-  },
-  "autoswapWarningBaseBalance": "লক্ষ্য ব্যালেন্স 0.01 BTC",
-  "@autoswapWarningBaseBalance": {
-    "description": "Target balance text shown in the autoswap warning bottom sheet"
   },
   "transactionDetailLabelPayoutAmount": "পাওআউট পরিমাণ",
   "@transactionDetailLabelPayoutAmount": {
@@ -9545,7 +9529,7 @@
       }
     }
   },
-  "onboardingPhysicalBackup": "শারীরিক ব্যাকআপ",
+  "onboardingPhysicalBackup": "ফিজিক্যাল ব্যাকআপ",
   "@onboardingPhysicalBackup": {
     "description": "Title for the physical backup recovery option in onboarding"
   },
@@ -9565,7 +9549,7 @@
   "@importQrDeviceKeystoneStep4": {
     "description": "Keystone instruction step 4"
   },
-  "bitcoinSettingsAutoTransferTitle": "স্বয়ংক্রিয় স্থানান্তর সেটিংস",
+  "bitcoinSettingsAutoTransferTitle": "অটো ট্রান্সফার সেটিংস",
   "@bitcoinSettingsAutoTransferTitle": {
     "description": "Title for the auto transfer settings section in Bitcoin settings"
   },
@@ -9593,7 +9577,7 @@
   "@recoverbullRecoveryErrorWalletExists": {
     "description": "Error when attempting to restore vault that already exists"
   },
-  "payBillerNameValue": "নির্বাচিত বিলারের নাম",
+  "payBillerNameValue": "নির্বাচিত বিলার নাম",
   "@payBillerNameValue": {
     "description": "Placeholder for biller name"
   },
@@ -9621,11 +9605,11 @@
   "@paySelectWallet": {
     "description": "Label for wallet selection dropdown in payment"
   },
-  "pinCodeChangeButton": "পিন পরিবর্তন করুন",
+  "pinCodeChangeButton": "PIN পরিবর্তন করুন",
   "@pinCodeChangeButton": {
     "description": "Button label to change existing PIN"
   },
-  "paySecurityQuestionHint": "নিরাপত্তা প্রশ্ন লিখুন (১০-৪০ অক্ষর)",
+  "paySecurityQuestionHint": "নিরাপত্তা প্রশ্ন লিখুন (10-40 অক্ষর)",
   "@paySecurityQuestionHint": {
     "description": "Hint for security question input"
   },
@@ -9653,7 +9637,7 @@
   "@recoverbullGotIt": {
     "description": "Button text to acknowledge and dismiss message"
   },
-  "sendAdvancedOptions": "উন্নত বিকল্প",
+  "sendAdvancedOptions": "উন্নত বিকল্পসমূহ",
   "@sendAdvancedOptions": {
     "description": "Section header for advanced sending features"
   },
@@ -9670,7 +9654,7 @@
   "@autoswapAutoSaveError": {
     "description": "Error message when auto-save on disable fails"
   },
-  "exchangeAccountInfoVerificationLightVerification": "হালকা যাচাইকরণ",
+  "exchangeAccountInfoVerificationLightVerification": "লাইট যাচাইকরণ",
   "@exchangeAccountInfoVerificationLightVerification": {
     "description": "Status label for light verification level"
   },
@@ -9694,7 +9678,7 @@
   "@arkCollaborativeRedeem": {
     "description": "Bottom sheet title for collaborative redeem for BTC address sends"
   },
-  "pinCodeCheckingStatus": "পিন অবস্থা যাচাই করা হচ্ছে",
+  "pinCodeCheckingStatus": "PIN স্ট্যাটাস যাচাই করা হচ্ছে",
   "@pinCodeCheckingStatus": {
     "description": "Status screen description while checking PIN status"
   },
@@ -9708,7 +9692,7 @@
       }
     }
   },
-  "coreSwapsLnSendFailedRefunding": "সোয়াপটি শীঘ্রই ফেরত দেওয়া হবে।",
+  "coreSwapsLnSendFailedRefunding": "Swap শীঘ্রই ফেরত দেওয়া হবে।",
   "@coreSwapsLnSendFailedRefunding": {
     "description": "Status message for failed Lightning send swap that will be refunded"
   },
@@ -9716,7 +9700,7 @@
   "@dcaWalletTypeLightning": {
     "description": "Radio button option for Lightning wallet"
   },
-  "exchangeBitcoinWalletsSaveSuccess": "ওয়ালেট ঠিকানা সফলভাবে সংরক্ষণ করা হয়েছে",
+  "exchangeBitcoinWalletsSaveSuccess": "ওয়ালেট ঠিকানা সফলভাবে সংরক্ষিত হয়েছে",
   "@exchangeBitcoinWalletsSaveSuccess": {
     "description": "Success message when wallet address is saved"
   },
@@ -9776,7 +9760,7 @@
   "@transactionLabelTransactionId": {
     "description": "Label for transaction ID field"
   },
-  "buyNetworkFeeExplanation": "Bitcoin নেটওয়ার্ক ফি আপনি যে পরিমাণ পাবেন সেটি থেকে কাটা হবে এবং Bitcoin খনি শ্রমিকরা এটি সংগ্রহ করবে।",
+  "buyNetworkFeeExplanation": "Bitcoin নেটওয়ার্ক ফি আপনি যে পরিমাণ পাবেন তা থেকে কেটে নেওয়া হবে এবং Bitcoin মাইনারদের দ্বারা সংগ্রহ করা হবে",
   "@buyNetworkFeeExplanation": {
     "description": "Explanation of network fees for express withdrawal"
   },
@@ -9828,7 +9812,7 @@
   "@payLowPriority": {
     "description": "Low fee priority option"
   },
-  "coreSwapsLnReceivePending": "সোয়াপটি এখনও শুরু হয়নি।",
+  "coreSwapsLnReceivePending": "Swap এখনো শুরু হয়নি।",
   "@coreSwapsLnReceivePending": {
     "description": "Status message for pending Lightning receive swap"
   },
@@ -9836,7 +9820,7 @@
   "@arkSendConfirmMessage": {
     "description": "Message displayed on send confirmation page"
   },
-  "bitcoinSettingsLegacySeedsTitle": "পুরোনো সিডসমূহ",
+  "bitcoinSettingsLegacySeedsTitle": "লেগাসি সিডসমূহ",
   "@bitcoinSettingsLegacySeedsTitle": {
     "description": "Title for the legacy seeds section in Bitcoin settings"
   },
@@ -9880,7 +9864,7 @@
       }
     }
   },
-  "exchangeBitcoinWalletsLiquidAddressLabel": "লিকুইড ঠিকানা",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid ঠিকানা",
   "@exchangeBitcoinWalletsLiquidAddressLabel": {
     "description": "Label for Liquid address field in exchange Bitcoin wallets"
   },
@@ -9888,7 +9872,7 @@
   "@backupWalletSuccessTestButton": {
     "description": "Button text to proceed to backup testing"
   },
-  "pinCodeSettingUp": "আপনার পিন কোড সেট আপ করা হচ্ছে",
+  "pinCodeSettingUp": "আপনার PIN কোড সেট আপ করা হচ্ছে",
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
@@ -9904,7 +9888,7 @@
   "@fundExchangeCostaRicaMethodIbanCrcSubtitle": {
     "description": "Subtitle description for IBAN CRC payment method"
   },
-  "receiveNoTimeToWait": "আশা করার মতো সময় নেই, নাকি PayJoin প্রেরকের দিক থেকে ব্যর্থ হয়েছে?",
+  "receiveNoTimeToWait": "অপেক্ষা করার সময় নেই বা প্রেরকের পক্ষে payjoin ব্যর্থ হয়েছে?",
   "@receiveNoTimeToWait": {
     "description": "Question prompting user if they want to proceed without payjoin"
   },
@@ -9929,7 +9913,7 @@
   "@dcaSetupScheduleMessage": {
     "description": "DCA schedule explanation"
   },
-  "coreSwapsStatusExpired": "মেয়াদ শেষ",
+  "coreSwapsStatusExpired": "মেয়াদোত্তীর্ণ",
   "@coreSwapsStatusExpired": {
     "description": "Display name for expired swap status"
   },
@@ -9981,11 +9965,11 @@
   "@arkArkAddress": {
     "description": "Label for the Ark address field"
   },
-  "payRecipientName": "প্রাপক নাম",
+  "payRecipientName": "প্রাপকের নাম",
   "@payRecipientName": {
     "description": "Label for recipient name"
   },
-  "exchangeBitcoinWalletsLightningAddressLabel": "লাইটনিং (LN ঠিকানা)",
+  "exchangeBitcoinWalletsLightningAddressLabel": "Lightning (LN ঠিকানা)",
   "@exchangeBitcoinWalletsLightningAddressLabel": {
     "description": "Label for Lightning address field in exchange Bitcoin wallets"
   },
@@ -10066,11 +10050,11 @@
   "@bitboxActionSignTransactionProcessingSubtext": {
     "description": "Processing subtext for sign transaction"
   },
-  "sellConfirmPayment": "পরিশোধ নিশ্চিত করুন",
+  "sellConfirmPayment": "পেমেন্ট নিশ্চিত করুন",
   "@sellConfirmPayment": {
     "description": "Screen title for payment confirmation"
   },
-  "sellSelectCoinsManually": "কয়েনগুলো নিজে থেকে নির্বাচন করুন",
+  "sellSelectCoinsManually": "ম্যানুয়ালি কয়েন নির্বাচন করুন",
   "@sellSelectCoinsManually": {
     "description": "Option to manually select UTXOs"
   },
@@ -10136,7 +10120,7 @@
       }
     }
   },
-  "coreSwapsLnReceiveExpired": "সোয়াপ মেয়াদ শেষ হয়েছে।",
+  "coreSwapsLnReceiveExpired": "Swap মেয়াদোত্তীর্ণ।",
   "@coreSwapsLnReceiveExpired": {
     "description": "Status message for expired Lightning receive swap"
   },
@@ -10266,7 +10250,7 @@
   "@exchangeAppSettingsPreferredLanguageLabel": {
     "description": "Label for preferred language setting in exchange app settings"
   },
-  "walletDeletionConfirmationMessage": "আপনি কি নিশ্চিত এই ওয়ালেটটি মুছে ফেলতে চান?",
+  "walletDeletionConfirmationMessage": "আপনি কি নিশ্চিতভাবে এই ওয়ালেট মুছতে চান?",
   "@walletDeletionConfirmationMessage": {
     "description": "Message in the wallet deletion confirmation dialog"
   },
@@ -10274,11 +10258,11 @@
   "@rbfTitle": {
     "description": "AppBar title for Replace-By-Fee screen"
   },
-  "sellAboveMaxAmountError": "আপনি এই ওয়ালেট থেকে বিক্রি করা সর্বোচ্চ পরিমাণের বেশি বিক্রি করার চেষ্টা করছেন।",
+  "sellAboveMaxAmountError": "আপনি এই ওয়ালেটের সাথে বিক্রয়যোগ্য সর্বোচ্চ পরিমাণের বেশি বিক্রি করার চেষ্টা করছেন।",
   "@sellAboveMaxAmountError": {
     "description": "Error message for amount above maximum"
   },
-  "settingsSuperuserModeUnlockedMessage": "সুপারইউজার মোড আনলক হয়েছে!",
+  "settingsSuperuserModeUnlockedMessage": "Superuser মোড আনলক করা হয়েছে!",
   "@settingsSuperuserModeUnlockedMessage": {
     "description": "Message shown when superuser mode is enabled"
   },
@@ -10332,7 +10316,7 @@
       }
     }
   },
-  "buyViewDetails": "বিস্তারিত দেখুন",
+  "buyViewDetails": "বিবরণ দেখুন",
   "@buyViewDetails": {
     "description": "Button to view order details"
   },
@@ -10377,7 +10361,7 @@
   "@fundExchangeWarningTactic2": {
     "description": "Second scammer tactic warning"
   },
-  "sellLiquidNetwork": "লিকুইড নেটওয়ার্ক",
+  "sellLiquidNetwork": "Liquid Network",
   "@sellLiquidNetwork": {
     "description": "Option for Liquid Network payment"
   },
@@ -10389,7 +10373,7 @@
   "@transactionLabelToWallet": {
     "description": "Label for destination wallet"
   },
-  "exchangeFileUploadInstructions": "আপনি যদি অন্য কোনো নথি পাঠাতে চান, সেগুলো এখানে আপলোড করুন।",
+  "exchangeFileUploadInstructions": "আপনার যদি অন্য কোনো নথি পাঠাতে হয়, এখানে আপলোড করুন।",
   "@exchangeFileUploadInstructions": {
     "description": "Instructions for uploading documents in exchange"
   },
@@ -10470,7 +10454,7 @@
   "@dcaConfirmLightningAddress": {
     "description": "Field label for Lightning address"
   },
-  "coreSwapsLnReceiveCompleted": "সোয়াপ সম্পন্ন হয়েছে।",
+  "coreSwapsLnReceiveCompleted": "Swap সম্পন্ন হয়েছে।",
   "@coreSwapsLnReceiveCompleted": {
     "description": "Status message for completed Lightning receive swap"
   },
@@ -10478,7 +10462,7 @@
   "@backupWalletErrorGoogleDriveSave": {
     "description": "Error when saving to Google Drive fails"
   },
-  "settingsTorSettingsTitle": "টর সেটিংস",
+  "settingsTorSettingsTitle": "Tor সেটিংস",
   "@settingsTorSettingsTitle": {
     "description": "Title for the Tor settings section in app settings"
   },
@@ -10486,11 +10470,11 @@
   "@importQrDeviceKeystoneStep2": {
     "description": "Keystone instruction step 2"
   },
-  "receiveBitcoinTransactionWillTakeTime": "বিটকয়েন লেনদেনটি নিশ্চিত হতে কিছু সময় লাগবে।",
+  "receiveBitcoinTransactionWillTakeTime": "Bitcoin লেনদেন নিশ্চিত হতে কিছুটা সময় লাগবে।",
   "@receiveBitcoinTransactionWillTakeTime": {
     "description": "Information message about Bitcoin transaction confirmation time"
   },
-  "sellOrderNotFoundError": "বিক্রি আদেশটি খুঁজে পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
+  "sellOrderNotFoundError": "বিক্রয় অর্ডারটি পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   "@sellOrderNotFoundError": {
     "description": "Error message for order not found"
   },
@@ -10524,7 +10508,7 @@
   "@bitboxCubitInvalidResponse": {
     "description": "Error interpretation for invalid response"
   },
-  "settingsScreenTitle": "সেটিংস।",
+  "settingsScreenTitle": "সেটিংস",
   "@settingsScreenTitle": {
     "description": "The title of the settings screen"
   },
@@ -10544,7 +10528,7 @@
   "@fundExchangeHelpTransferCode": {
     "description": "Help text for transfer code field"
   },
-  "mempoolCustomServerEdit": "সম্পাদনা",
+  "mempoolCustomServerEdit": "সম্পাদনা করুন",
   "@mempoolCustomServerEdit": {
     "description": "Button text to edit custom mempool server"
   },
@@ -10617,7 +10601,7 @@
   "@transactionSwapDescChainPaid": {
     "description": "Description for paid chain swap"
   },
-  "mempoolSettingsUseForFeeEstimation": "ফি মূল্যায়নের জন্য ব্যবহার করুন",
+  "mempoolSettingsUseForFeeEstimation": "ফি অনুমানের জন্য ব্যবহার করুন",
   "@mempoolSettingsUseForFeeEstimation": {
     "description": "Label for use for fee estimation toggle"
   },
@@ -10625,7 +10609,7 @@
   "@buyPaymentMethod": {
     "description": "Label for payment method dropdown"
   },
-  "coreSwapsStatusCompleted": "সমাপ্ত",
+  "coreSwapsStatusCompleted": "সম্পন্ন",
   "@coreSwapsStatusCompleted": {
     "description": "Display name for completed swap status"
   },
@@ -10662,7 +10646,7 @@
   "@electrumInvalidNumberError": {
     "description": "Validation error for non-numeric input"
   },
-  "coreWalletTransactionStatusConfirmed": "নিশ্চিত।",
+  "coreWalletTransactionStatusConfirmed": "নিশ্চিত",
   "@coreWalletTransactionStatusConfirmed": {
     "description": "Display name for confirmed wallet transaction status"
   },
@@ -10691,7 +10675,7 @@
   "@fundExchangeLabelIbanUsdOnly": {
     "description": "Label for IBAN field - US Dollars only"
   },
-  "payRecipientDetails": "প্রাপকের বিস্তারিত",
+  "payRecipientDetails": "প্রাপকের বিবরণ",
   "@payRecipientDetails": {
     "description": "Label for recipient details"
   },
@@ -10728,7 +10712,7 @@
   "@jadeStep12": {
     "description": "Jade instruction to return to app"
   },
-  "payFilterByType": "প্রকার অনুযায়ী ফিল্টার করুন\n==WEBLATE_PART==",
+  "payFilterByType": "ধরন অনুযায়ী ফিল্টার করুন",
   "@payFilterByType": {
     "description": "Label for type filter dropdown"
   },
@@ -10830,7 +10814,7 @@
       }
     }
   },
-  "exchangeAppSettingsEmailNotificationsDescription": "অর্ডার ও অ্যাকাউন্ট আপডেটগুলোর জন্য ইমেল বিজ্ঞপ্তি পান",
+  "exchangeAppSettingsEmailNotificationsDescription": "অর্ডার এবং অ্যাকাউন্ট আপডেটের জন্য ইমেইল নোটিফিকেশন পান",
   "@exchangeAppSettingsEmailNotificationsDescription": {
     "description": "Description for email notifications toggle in exchange app settings"
   },
@@ -10838,7 +10822,7 @@
   "@backupWalletInstructionLoseBackup": {
     "description": "Warning instruction about losing backup"
   },
-  "payIsCorporateAccount": "==WEBLATE_PART==\nএটি কি কর্পোরেট অ্যাকাউন্ট?",
+  "payIsCorporateAccount": "এটি কি একটি কর্পোরেট অ্যাকাউন্ট?",
   "@payIsCorporateAccount": {
     "description": "Question for corporate account checkbox"
   },
@@ -10854,7 +10838,7 @@
   "@swapTransferPendingTitle": {
     "description": "Title during pending swap status"
   },
-  "mempoolCustomServerSaveSuccess": "কাস্টম সার্ভার সফলভাবে সংরক্ষিত",
+  "mempoolCustomServerSaveSuccess": "কাস্টম সার্ভার সফলভাবে সংরক্ষিত হয়েছে",
   "@mempoolCustomServerSaveSuccess": {
     "description": "Success message when custom server is saved"
   },
@@ -10906,7 +10890,7 @@
   "@payClabe": {
     "description": "Label for CLABE field"
   },
-  "mempoolCustomServerDelete": "মুছে ফেলুন",
+  "mempoolCustomServerDelete": "মুছুন",
   "@mempoolCustomServerDelete": {
     "description": "Button text to delete custom mempool server"
   },
@@ -10914,7 +10898,7 @@
   "@optionalPassphraseHint": {
     "description": "Placeholder hint for passphrase field"
   },
-  "exchangeFileUploadClearAll": "সব মুছে ফেলুন",
+  "exchangeFileUploadClearAll": "সব মুছুন",
   "@exchangeFileUploadClearAll": {
     "description": "Button label to clear all files"
   },
@@ -11085,11 +11069,11 @@
   "@payPayee": {
     "description": "Label for payee details"
   },
-  "exchangeAccountComingSoon": "এই বৈশিষ্ট্যটি শীঘ্রই আসছে।",
+  "exchangeAccountComingSoon": "এই ফিচার শীঘ্রই আসছে।",
   "@exchangeAccountComingSoon": {
     "description": "Message indicating that a feature is coming soon"
   },
-  "sellInProgress": "বিক্রি চলছে..।",
+  "sellInProgress": "বিক্রয় চলছে...",
   "@sellInProgress": {
     "description": "Message for sell in progress"
   },
@@ -11130,7 +11114,7 @@
   "@transactionFilterSend": {
     "description": "Filter option to show only sent transactions"
   },
-  "exchangeFileUploadAcceptedMessage": "আপনার নথি গ্রহণ করা হয়েছে। অতিরিক্ত আপলোডের প্রয়োজন নেই।",
+  "exchangeFileUploadAcceptedMessage": "আপনার নথি গৃহীত হয়েছে। আর আপলোডের প্রয়োজন নেই।",
   "@exchangeFileUploadAcceptedMessage": {
     "description": "Message shown when documents have been accepted"
   },
@@ -11142,7 +11126,7 @@
   "@importMnemonicSyncMessage": {
     "description": "Message explaining wallet type syncing process"
   },
-  "coreSwapsLnSendClaimable": "দাবির জন্য সোয়াপ প্রস্তুত।",
+  "coreSwapsLnSendClaimable": "Swap দাবি করার জন্য প্রস্তুত।",
   "@coreSwapsLnSendClaimable": {
     "description": "Status message for claimable Lightning send swap"
   },
@@ -11251,7 +11235,7 @@
       }
     }
   },
-  "bitcoinSettingsBip85EntropiesTitle": "BIP85 নির্ধারিত এন্ট্রপি",
+  "bitcoinSettingsBip85EntropiesTitle": "BIP85 ডিটারমিনিস্টিক এন্ট্রপি",
   "@bitcoinSettingsBip85EntropiesTitle": {
     "description": "Title for the BIP85 deterministic entropies section in Bitcoin settings"
   },
@@ -11316,7 +11300,7 @@
   "@recoverbullFetchVaultKey": {
     "description": "Screen title for vault key fetch screen"
   },
-  "coreSwapsActionClaim": "দাবি",
+  "coreSwapsActionClaim": "দাবি করুন",
   "@coreSwapsActionClaim": {
     "description": "Action label for claiming a swap"
   },
@@ -11397,7 +11381,7 @@
   "@dcaNetworkLabel": {
     "description": "Label for network detail row"
   },
-  "sendScanBitcoinQRCode": "বিটকয়েন বা লাইটনিং QR কোড স্ক্যান করুন এবং বিটকয়েন দিয়ে পরিশোধ করুন।",
+  "sendScanBitcoinQRCode": "Bitcoin দিয়ে পেমেন্ট করতে যেকোনো Bitcoin বা Lightning QR code স্ক্যান করুন।",
   "@sendScanBitcoinQRCode": {
     "description": "Instructions for scanning a QR code to make a Bitcoin payment"
   },
@@ -11478,7 +11462,7 @@
   "@payAdvancedSettings": {
     "description": "Button for advanced settings"
   },
-  "walletDetailsPubkeyLabel": "পাবলিক কী",
+  "walletDetailsPubkeyLabel": "Pubkey",
   "@walletDetailsPubkeyLabel": {
     "description": "Label for the public key field in wallet details"
   },
@@ -11486,7 +11470,7 @@
   "@arkAboutBoardingExitDelay": {
     "description": "Field label for boarding exit delay"
   },
-  "receiveConfirmedInFewSeconds": "কয়েক সেকেন্ডে এটি নিশ্চিত হবে",
+  "receiveConfirmedInFewSeconds": "এটি কয়েক সেকেন্ডের মধ্যে নিশ্চিত হয়ে যাবে",
   "@receiveConfirmedInFewSeconds": {
     "description": "Message indicating quick confirmation time for Lightning transactions"
   },
@@ -11662,7 +11646,7 @@
   "@sellKYCPending": {
     "description": "Message when verification in progress"
   },
-  "buyGetConfirmedFaster": "এটি দ্রুত নিশ্চিত করুন",
+  "buyGetConfirmedFaster": "দ্রুত নিশ্চিত করুন",
   "@buyGetConfirmedFaster": {
     "description": "Subtitle for acceleration option"
   },
@@ -11751,7 +11735,7 @@
   "@recoverbullSelectRecoverWallet": {
     "description": "AppBar title for initial provider selection screen"
   },
-  "receivePayjoinActivated": "Payjoin সক্রিয়",
+  "receivePayjoinActivated": "Payjoin সক্রিয় হয়েছে",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
   },
@@ -11858,7 +11842,7 @@
   "@electrumPrivacyNoticeContent2": {
     "description": "Second paragraph of privacy notice"
   },
-  "exchangeAccountInfoVerificationIdentityVerified": "পরিচয় যাচাই করা হয়েছে",
+  "exchangeAccountInfoVerificationIdentityVerified": "পরিচয় যাচাইকৃত",
   "@exchangeAccountInfoVerificationIdentityVerified": {
     "description": "Status label for identity verified verification level"
   },
@@ -11930,7 +11914,7 @@
   "@recoverbullCreatingVault": {
     "description": "Screen title while vault is being created"
   },
-  "walletsListNoWalletsMessage": "কোনো ওয়ালেট পাওয়া যায়নি",
+  "walletsListNoWalletsMessage": "কোনো ওয়ালেট পাওয়া যায়নি",
   "@walletsListNoWalletsMessage": {
     "description": "Message displayed when no wallets are found"
   },
@@ -11962,11 +11946,11 @@
   "@arkAboutServerPubkey": {
     "description": "Field label for server pubkey"
   },
-  "receiveReceiveAmount": "প্রাপ্ত পরিমাণ",
+  "receiveReceiveAmount": "গ্রহণের পরিমাণ",
   "@receiveReceiveAmount": {
     "description": "Label for the amount that will be received after fees"
   },
-  "exchangeReferralsApplyToJoinMessage": "এখানে প্রোগ্রামে যোগদানের জন্য আবেদন করুন",
+  "exchangeReferralsApplyToJoinMessage": "এখানে প্রোগ্রামে যোগ দিতে আবেদন করুন",
   "@exchangeReferralsApplyToJoinMessage": {
     "description": "Message with link to apply for the referral program"
   },
@@ -11994,7 +11978,7 @@
   "@seedsignerStep4": {
     "description": "SeedSigner troubleshooting header"
   },
-  "mempoolNetworkLiquidTestnet": "লিকুইড টেস্টনেট",
+  "mempoolNetworkLiquidTestnet": "Liquid Testnet",
   "@mempoolNetworkLiquidTestnet": {
     "description": "Label for Liquid Testnet network"
   },
@@ -12026,7 +12010,7 @@
   "@recoverbullRecoverBullServer": {
     "description": "Label for RecoverBull server connection status"
   },
-  "satsBitcoinUnitSettingsLabel": "ডিসপ্লে ইউনিট: সাটস।",
+  "satsBitcoinUnitSettingsLabel": "sats-এ প্রদর্শন করুন",
   "@satsBitcoinUnitSettingsLabel": {
     "description": "The label to switch the Bitcoin unit to sats in settings"
   },
@@ -12054,7 +12038,7 @@
   "@exchangeReferralsJoinMissionTitle": {
     "description": "Title encouraging users to join the referral mission"
   },
-  "exchangeSettingsLogInTitle": "প্রবেশ করুন",
+  "exchangeSettingsLogInTitle": "লগ ইন",
   "@exchangeSettingsLogInTitle": {
     "description": "Title for the log in option in exchange settings"
   },
@@ -12166,5 +12150,463 @@
   "appInitErrorShareLogsButton": "লগ শেয়ার করুন",
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
+  },
+  "mempoolServerStatusOnline": "অনলাইন",
+  "mempoolServerStatusOffline": "অফলাইন",
+  "mempoolServerStatusChecking": "যাচাই করা হচ্ছে...",
+  "mempoolServerStatusUnknown": "অজানা",
+  "mempoolCustomServerSaveFailed": "সার্ভার সংরক্ষণ ব্যর্থ হয়েছে",
+  "mempoolCustomServerInfoDescription": "Mempool সার্ভার ফি অনুমান এবং লেনদেন বিবরণ দেখার সময় ব্লক এক্সপ্লোরার খোলার জন্য ব্যবহার করা হয়।",
+  "mempoolCustomServerUseSsl": "SSL ব্যবহার করুন",
+  "mempoolCustomServerSslAutoDetected": "(স্বয়ংক্রিয়ভাবে সনাক্ত করা হয়েছে)",
+  "mempoolCustomServerSslHelpText": "লোকাল (.local, প্রাইভেট IP) এবং Tor (.onion) সার্ভারের জন্য SSL সাধারণত নিষ্ক্রিয় থাকে। পাবলিক IP এবং ডোমেইনে SSL ব্যবহার করা উচিত।",
+  "mempoolErrorSameAsDefault": "এই URL ডিফল্ট সার্ভারের মতো। অনুগ্রহ করে একটি ভিন্ন URL ব্যবহার করুন।",
+  "mempoolErrorConnectionTimeout": "সংযোগের সময় শেষ হয়ে গেছে। সার্ভার ধীর বা অপ্রাপ্য হতে পারে।",
+  "mempoolErrorHostNotFound": "এই সার্ভার খুঁজে পাওয়া যাচ্ছে না। অনুগ্রহ করে URL যাচাই করুন এবং আবার চেষ্টা করুন।",
+  "mempoolErrorTorNotRunning": ".onion ঠিকানায় পৌঁছানো যাচ্ছে না। নিশ্চিত করুন Tor/Orbot চালু আছে এবং আবার চেষ্টা করুন।",
+  "mempoolErrorConnectionFailed": "সার্ভারে সংযোগ করা যাচ্ছে না। আপনার নেটওয়ার্ক সংযোগ যাচাই করুন এবং আবার চেষ্টা করুন।",
+  "mempoolErrorNotMempoolServer": "এই URL একটি Mempool সার্ভার বলে মনে হচ্ছে না। অনুগ্রহ করে ঠিকানা যাচাই করুন।",
+  "mempoolErrorServerUnavailable": "সার্ভার অনুপলব্ধ। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+  "mempoolErrorServerError": "সার্ভারে ত্রুটি ঘটেছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+  "mempoolErrorInvalidResponse": "সার্ভার একটি অবৈধ প্রতিক্রিয়া দিয়েছে।",
+  "mempoolErrorUnexpected": "একটি অপ্রত্যাশিত ত্রুটি ঘটেছে",
+  "mempoolErrorSaveServerFailed": "সার্ভার সংরক্ষণ ব্যর্থ হয়েছে: {error}",
+  "@mempoolErrorSaveServerFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolErrorLoadFailed": "Mempool সার্ভার ডেটা লোড ব্যর্থ হয়েছে: {error}",
+  "@mempoolErrorLoadFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolErrorDeleteFailed": "কাস্টম সার্ভার মুছে ফেলতে ব্যর্থ হয়েছে: {error}",
+  "@mempoolErrorDeleteFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "mempoolErrorUpdateSettingsFailed": "সেটিংস আপডেট ব্যর্থ হয়েছে: {error}",
+  "@mempoolErrorUpdateSettingsFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsBuySellRatioDesc": "ক্রয় বনাম বিক্রয় থেকে মোট ভলিউমের শতাংশ",
+  "exchangeStatisticsBuyVolumeDesc": "Bitcoin কেনায় মোট ব্যয়িত পরিমাণ",
+  "exchangeStatisticsSellVolumeDesc": "Bitcoin বিক্রয় থেকে মোট প্রাপ্ত পরিমাণ",
+  "exchangeStatisticsBuyTradeCountDesc": "Bitcoin কেনার লেনদেনের সংখ্যা",
+  "exchangeStatisticsSellTradeCountDesc": "Bitcoin বিক্রির লেনদেনের সংখ্যা",
+  "exchangeStatisticsBuyAvgPriceDesc": "কেনার সময় প্রতি Bitcoin-এ গড় পরিশোধিত মূল্য",
+  "exchangeStatisticsSellAvgPriceDesc": "বিক্রির সময় প্রতি Bitcoin-এ গড় প্রাপ্ত মূল্য",
+  "exchangeStatisticsTotalVolumeDesc": "ফিয়াট মুদ্রায় মোট ক্রয় ও বিক্রয় ভলিউম",
+  "transactionFilterWithdraw": "উত্তোলন",
+  "@transactionFilterWithdraw": {
+    "description": "Filter option to show only withdraw orders"
+  },
+  "transactionFilterPay": "পরিশোধ",
+  "@transactionFilterPay": {
+    "description": "Filter option to show only fiat payment orders"
+  },
+  "transactionFilterFunding": "ফান্ডিং",
+  "@transactionFilterFunding": {
+    "description": "Filter option to show only funding orders"
+  },
+  "transactionFilterReward": "পুরস্কার",
+  "@transactionFilterReward": {
+    "description": "Filter option to show only reward orders"
+  },
+  "transactionFilterRefund": "ফেরত",
+  "@transactionFilterRefund": {
+    "description": "Filter option to show only refund orders"
+  },
+  "transactionFilterBalanceAdjustment": "সমন্বয়",
+  "@transactionFilterBalanceAdjustment": {
+    "description": "Filter option to show only balance adjustment orders"
+  },
+  "transactionNoteHint": "নোট",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "transactionNoteSaveButton": "সংরক্ষণ করুন",
+  "@transactionNoteSaveButton": {
+    "description": "Button label to save a note"
+  },
+  "transactionNoteUpdateButton": "আপডেট করুন",
+  "@transactionNoteUpdateButton": {
+    "description": "Button label to update a note"
+  },
+  "transactionPayjoinNoProposal": "রিসিভার থেকে পেজয়েন প্রস্তাব পাচ্ছেন না?",
+  "@transactionPayjoinNoProposal": {
+    "description": "Message displayed when payjoin proposal is not received"
+  },
+  "transactionPayjoinSendWithout": "পেজয়েন ছাড়া পাঠান",
+  "@transactionPayjoinSendWithout": {
+    "description": "Button label to send transaction without payjoin"
+  },
+  "transactionSwapProgressInitiated": "শুরু হয়েছে",
+  "@transactionSwapProgressInitiated": {
+    "description": "Swap progress step: initiated"
+  },
+  "transactionSwapProgressPaymentMade": "পেমেন্ট\nসম্পন্ন",
+  "@transactionSwapProgressPaymentMade": {
+    "description": "Swap progress step: payment made"
+  },
+  "transactionSwapProgressFundsClaimed": "তহবিল\nদাবি করা হয়েছে",
+  "@transactionSwapProgressFundsClaimed": {
+    "description": "Swap progress step: funds claimed"
+  },
+  "transactionSwapProgressBroadcasted": "প্রচারিত",
+  "@transactionSwapProgressBroadcasted": {
+    "description": "Swap progress step: transaction broadcasted"
+  },
+  "transactionSwapProgressInvoicePaid": "চালান\nপরিশোধিত",
+  "@transactionSwapProgressInvoicePaid": {
+    "description": "Swap progress step: Lightning invoice paid"
+  },
+  "transactionSwapProgressConfirmed": "নিশ্চিত হয়েছে",
+  "@transactionSwapProgressConfirmed": {
+    "description": "Swap progress step: confirmed"
+  },
+  "transactionSwapProgressClaim": "দাবি",
+  "@transactionSwapProgressClaim": {
+    "description": "Swap progress step: claim"
+  },
+  "transactionSwapProgressCompleted": "সম্পন্ন",
+  "@transactionSwapProgressCompleted": {
+    "description": "Swap progress step: completed"
+  },
+  "transactionSwapProgressInProgress": "চলমান",
+  "@transactionSwapProgressInProgress": {
+    "description": "Generic swap progress step: in progress"
+  },
+  "transactionSwapStatusTransferStatus": "ট্রান্সফার স্ট্যাটাস",
+  "@transactionSwapStatusTransferStatus": {
+    "description": "Header for transfer status section"
+  },
+  "transactionSwapStatusSwapStatus": "সোয়াপ স্ট্যাটাস",
+  "@transactionSwapStatusSwapStatus": {
+    "description": "Header for swap status section"
+  },
+  "transactionSwapDescLnReceivePending": "আপনার সোয়াপ শুরু হয়েছে। আমরা লাইটনিং নেটওয়ার্কে পেমেন্ট পাওয়ার অপেক্ষায় আছি।",
+  "@transactionSwapDescLnReceivePending": {
+    "description": "Description for pending Lightning receive swap"
+  },
+  "transactionSwapDescLnReceivePaid": "পেমেন্ট পাওয়া গেছে! আমরা এখন আপনার ওয়ালেটে অন-চেইন ট্রানজেকশন প্রচার করছি।",
+  "@transactionSwapDescLnReceivePaid": {
+    "description": "Description for paid Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveClaimable": "অন-চেইন ট্রানজেকশন নিশ্চিত হয়েছে। আমরা এখন আপনার সোয়াপ সম্পন্ন করতে তহবিল দাবি করছি।",
+  "@transactionSwapDescLnReceiveClaimable": {
+    "description": "Description for claimable Lightning receive swap"
+  },
+  "transactionSwapDescLnReceiveCompleted": "আপনার সোয়াপ সফলভাবে সম্পন্ন হয়েছে! তহবিল এখন আপনার ওয়ালেটে পাওয়া উচিত।",
+  "@transactionSwapDescLnReceiveCompleted": {
+    "description": "Description for completed Lightning receive swap"
+  },
+  "fundExchangeScamConsentError": "আপনার সম্মতি নিবন্ধন করতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
+  "autoswapActiveCardTitle": "অটোসোয়াপ সক্রিয় আছে",
+  "@autoswapActiveCardTitle": {
+    "description": "Title text shown when autoswap is enabled and active"
+  },
+  "autoswapWarningExplanationBold": "স্বয়ংক্রিয়ভাবে",
+  "@autoswapWarningExplanationBold": {
+    "description": "The word 'automatically' to be displayed in bold"
+  },
+  "autoswapInfoConsentMessage": "অটোসোয়াপ বর্তমানে সক্রিয় কিন্তু আপনার সম্মতি না পাওয়া পর্যন্ত চালু হবে না। এটি চালু রাখতে চান?",
+  "@autoswapInfoConsentMessage": {
+    "description": "Consent message explaining autoswap status"
+  },
+  "deleteLogsTitle": "লগ মুছুন",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "লগ মুছে ফেলা হয়েছে",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "sendSelfTransfer": "নিজের কাছে ট্রান্সফার",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
+  "sendCoordinatingPayjoinTransaction": "পেজয়েন ট্রানজেকশন সমন্বয় করা হচ্ছে।",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "ছোট পেমেন্ট করতে ইনস্ট্যান্ট পেমেন্টে ফান্ড করার কথা বিবেচনা করুন।",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
+  },
+  "importWatchOnlyRequired": "প্রয়োজনীয়",
+  "@importWatchOnlyRequired": {
+    "description": "Placeholder hint for required input fields"
+  },
+  "importWatchOnlyImport": "আমদানি করুন",
+  "@importWatchOnlyImport": {
+    "description": "Button label to import watch-only wallet"
+  },
+  "importWatchOnlyExtendedPublicKey": "বর্ধিত পাবলিক কী",
+  "@importWatchOnlyExtendedPublicKey": {
+    "description": "Label for extended public key (xpub/ypub/zpub) display"
+  },
+  "importWatchOnlyDisclaimerTitle": "ডেরিভেশন পাথ সতর্কতা",
+  "@importWatchOnlyDisclaimerTitle": {
+    "description": "Title for derivation path warning disclaimer"
+  },
+  "importWatchOnlyDisclaimerDescription": "ব্যবহারের আগে ওয়ালেট থেকে প্রাপ্ত প্রথম ঠিকানা যাচাই করে নিশ্চিত করুন যে আপনার বেছে নেওয়া ডেরিভেশন পাথ প্রদত্ত xpub তৈরি করেছে। ভুল পাথ ব্যবহার করলে তহবিল হারানো হতে পারে।",
+  "@importWatchOnlyDisclaimerDescription": {
+    "description": "Description explaining derivation path matching requirement"
+  },
+  "bip85Title": "BIP85 নির্ধারণবাদী এনট্রপি",
+  "@bip85Title": {
+    "description": "AppBar title for BIP85 entropy derivation screen"
+  },
+  "bip85ExperimentalWarning": "পরীক্ষামূলক \nআপনার ডেরিভেশন পাথগুলি ম্যানুয়ালি ব্যাকআপ করুন",
+  "@bip85ExperimentalWarning": {
+    "description": "Warning message about experimental feature"
+  },
+  "bip85NextMnemonic": "পরবর্তী মনেমনিক",
+  "@bip85NextMnemonic": {
+    "description": "Button to derive next mnemonic entropy"
+  },
+  "bip85NextHex": "পরবর্তী HEX",
+  "@bip85NextHex": {
+    "description": "Button to derive next hex entropy"
+  },
+  "bip85Mnemonic": "মনেমনিক",
+  "@bip85Mnemonic": {
+    "description": "Label for mnemonic type entropy"
+  },
+  "bip85Hex": "HEX",
+  "@bip85Hex": {
+    "description": "Label for hex type entropy"
+  },
+  "bip85Index": "ইনডেক্স: {index}",
+  "@bip85Index": {
+    "description": "Shows derivation index",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      }
+    }
+  },
+  "bip329LabelsTitle": "BIP329 লেবেল",
+  "@bip329LabelsTitle": {
+    "description": "Title for BIP329 labels page"
+  },
+  "bip329LabelsHeading": "BIP329 লেবেল আমদানি/রপ্তানি",
+  "@bip329LabelsHeading": {
+    "description": "Main heading on BIP329 labels page"
+  },
+  "bip329LabelsDescription": "BIP329 স্ট্যান্ডার্ড ফরম্যাট ব্যবহার করে ওয়ালেট লেবেল আমদানি বা রপ্তানি করুন।",
+  "@bip329LabelsDescription": {
+    "description": "Description of BIP329 labels functionality"
+  },
+  "bip329LabelsImportButton": "লেবেল আমদানি করুন",
+  "@bip329LabelsImportButton": {
+    "description": "Button text to import labels"
+  },
+  "bip329LabelsExportButton": "লেবেল রপ্তানি করুন",
+  "@bip329LabelsExportButton": {
+    "description": "Button text to export labels"
+  },
+  "bip329LabelsExportSuccess": "লেবেল সফলভাবে রপ্তানি হয়েছে",
+  "@bip329LabelsExportSuccess": {
+    "description": "Success message after exporting labels"
+  },
+  "bip329LabelsImportSuccessSingular": "১টি লেবেল আমদানি হয়েছে",
+  "@bip329LabelsImportSuccessSingular": {
+    "description": "Success message after importing exactly 1 label"
+  },
+  "bip329LabelsImportSuccessPlural": "{count}টি লেবেল আমদানি হয়েছে",
+  "@bip329LabelsImportSuccessPlural": {
+    "description": "Success message after importing multiple labels",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "electrumTimeoutTooHighError": "টাইমআউট অনেক বেশি মনে হচ্ছে। (সর্বোচ্চ {maxTimeout} সেকেন্ড)",
+  "@electrumTimeoutTooHighError": {
+    "description": "Validation error for Timeout exceeding maximum",
+    "placeholders": {
+      "maxTimeout": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumRetryCountEmptyError": "পুনরায় চেষ্টার সংখ্যা খালি রাখা যাবে না",
+  "@electrumRetryCountEmptyError": {
+    "description": "Validation error for empty Retry Count field"
+  },
+  "electrumRetryCountNegativeError": "পুনরায় চেষ্টার সংখ্যা নেতিবাচক হতে পারবে না",
+  "@electrumRetryCountNegativeError": {
+    "description": "Validation error for negative Retry Count value"
+  },
+  "electrumTimeoutWarning": "আপনার টাইমআউট ({timeoutValue} সেকেন্ড) এই স্টপ গ্যাপের জন্য প্রস্তাবিত মানের ({recommended} সেকেন্ড) চেয়ে কম।",
+  "@electrumTimeoutWarning": {
+    "description": "Warning message when timeout is too low for the configured Stop Gap",
+    "placeholders": {
+      "timeoutValue": {
+        "type": "String"
+      },
+      "recommended": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidStopGapError": "অবৈধ স্টপ গ্যাপ মান: {value}",
+  "@electrumInvalidStopGapError": {
+    "description": "Error message for invalid Stop Gap value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidTimeoutError": "অবৈধ টাইমআউট মান: {value}",
+  "@electrumInvalidTimeoutError": {
+    "description": "Error message for invalid Timeout value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumInvalidRetryError": "অবৈধ পুনরায় চেষ্টার সংখ্যা মান: {value}",
+  "@electrumInvalidRetryError": {
+    "description": "Error message for invalid Retry Count value from backend",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumSaveFailedError": "উন্নত বিকল্পগুলি সংরক্ষণ করতে ব্যর্থ হয়েছে",
+  "@electrumSaveFailedError": {
+    "description": "Error message when saving advanced options fails"
+  },
+  "electrumUnknownError": "একটি ত্রুটি ঘটেছে",
+  "@electrumUnknownError": {
+    "description": "Generic error message for unknown errors"
+  },
+  "electrumReset": "রিসেট",
+  "@electrumReset": {
+    "description": "Reset button label in advanced options"
+  },
+  "electrumConfirm": "নিশ্চিত করুন",
+  "@electrumConfirm": {
+    "description": "Confirm button label in advanced options"
+  },
+  "electrumDeleteServerTitle": "কাস্টম সার্ভার মুছুন",
+  "@electrumDeleteServerTitle": {
+    "description": "Delete server dialog title"
+  },
+  "electrumDeletePrivacyNotice": "গোপনীয়তা বিজ্ঞপ্তি:\n\nআপনার নিজের নোড ব্যবহার করলে নিশ্চিত হয় যে কোনো তৃতীয় পক্ষ আপনার আইপি ঠিকানা আপনার ট্রানজেকশনের সাথে সংযুক্ত করতে পারবে না। আপনার শেষ কাস্টম সার্ভার মুছলে, আপনি একটি BullBitcoin সার্ভারের সাথে সংযুক্ত হবেন।\n",
+  "@electrumDeletePrivacyNotice": {
+    "description": "Privacy notice shown when deleting last custom server"
+  },
+  "electrumDeleteConfirmation": "আপনি কি সত্যিই এই সার্ভারটি মুছতে চান?\n\n{serverUrl}",
+  "@electrumDeleteConfirmation": {
+    "description": "Confirmation message for server deletion",
+    "placeholders": {
+      "serverUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "electrumCancel": "বাতিল",
+  "@electrumCancel": {
+    "description": "Cancel button label in delete dialog"
+  },
+  "electrumDelete": "মুছুন",
+  "@electrumDelete": {
+    "description": "Delete button label in delete dialog"
+  },
+  "electrumDefaultServers": "ডিফল্ট সার্ভার",
+  "@electrumDefaultServers": {
+    "description": "Section header for default servers list"
+  },
+  "electrumDefaultServersInfo": "আপনার গোপনীয়তা রক্ষা করতে, কাস্টম সার্ভার কনফিগার থাকলে ডিফল্ট সার্ভার ব্যবহার করা হয় না।",
+  "@electrumDefaultServersInfo": {
+    "description": "Info message explaining default servers behavior"
+  },
+  "electrumCustomServers": "কাস্টম সার্ভার",
+  "@electrumCustomServers": {
+    "description": "Section header for custom servers list"
+  },
+  "electrumDragToReorder": "(দীর্ঘ চাপ দিয়ে টেনে অগ্রাধিকার পরিবর্তন করুন)",
+  "@electrumDragToReorder": {
+    "description": "Instruction text for reordering servers"
+  },
+  "priceChartFailedToLoad": "মূল্য ইতিহাস লোড করতে ব্যর্থ হয়েছে",
+  "@priceChartFailedToLoad": {
+    "description": "Error message shown when price history fails to load"
+  },
+  "priceFailedToLoad": "মূল্য লোড করতে ব্যর্থ হয়েছে",
+  "@priceFailedToLoad": {
+    "description": "Error message shown when bitcoin price fails to load"
+  },
+  "statusScreenTryAgain": "আবার চেষ্টা করুন",
+  "@statusScreenTryAgain": {
+    "description": "Button text to retry after an error"
+  },
+  "statusScreenContinue": "চালিয়ে যান",
+  "@statusScreenContinue": {
+    "description": "Button text to proceed to next step"
+  },
+  "settingsErrorReportingTitle": "ত্রুটি রিপোর্টিং",
+  "@settingsErrorReportingTitle": {
+    "description": "Title for error reporting setting in app settings"
+  },
+  "errorReportingProgramTitle": "ত্রুটি রিপোর্টিং প্রোগ্রাম",
+  "@errorReportingProgramTitle": {
+    "description": "Title for the error reporting program explanation bottom sheet"
+  },
+  "errorReportingProgramDescription": "আমাদের ত্রুটি রিপোর্টিং প্রোগ্রামে অংশ নিয়ে Bull Bitcoin উন্নত করতে সাহায্য করুন। এটি সরাসরি আমাদের সবার জন্য Bull Bitcoin আরও ভালো করতে সাহায্য করে।\n\nসক্রিয় থাকলে, অ্যাপে সমস্যা হলে আমরা স্বয়ংক্রিয়ভাবে ত্রুটি রিপোর্ট পাঠাই। এই তথ্য বিশ্বজুড়ে আমাদের ব্যবহারকারীদের জন্য কী ঘটছে তা বুঝতে এবং সেই অনুযায়ী সমাধান করতে সাহায্য করে।\n\nআমরা এই তথ্য কোনো তৃতীয় পক্ষের সাথে শেয়ার করি না। আমরা আমাদের নিজস্ব সেলফ-হোস্টেড ব্যাকএন্ড সার্ভারের সাথে Sentry-র ওপেন-সোর্স ক্লায়েন্ট ব্যবহার করি।",
+  "@errorReportingProgramDescription": {
+    "description": "Description of the error reporting program"
+  },
+  "errorReportingAcceptButton": "গ্রহণ করুন",
+  "@errorReportingAcceptButton": {
+    "description": "Button to accept error reporting"
+  },
+  "errorReportingCancelButton": "বাতিল",
+  "@errorReportingCancelButton": {
+    "description": "Button to cancel error reporting"
+  },
+  "errorReportingRestartSnackbar": "এই পরিবর্তন প্রয়োগ করতে অ্যাপটি পুনরায় চালু করুন",
+  "@errorReportingRestartSnackbar": {
+    "description": "Snackbar message when error reporting setting is changed"
+  },
+  "backupWarningTitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন",
+  "@backupWarningTitle": {
+    "description": "Title for the backup warning bottom sheet"
+  },
+  "backupWarningDescription": "ব্যাকআপ ছাড়া, আপনার ফোন হারালে, অ্যাপ মুছলে বা কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যায় আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন। ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
+  "@backupWarningDescription": {
+    "description": "Description explaining why backup is important"
+  },
+  "backupWarningBackupNow": "হ্যাঁ",
+  "@backupWarningBackupNow": {
+    "description": "Button to navigate to backup options"
+  },
+  "backupWarningBackupLater": "না, আমি ঝুঁকি বুঝি",
+  "@backupWarningBackupLater": {
+    "description": "Button to dismiss backup warning"
   }
 }
