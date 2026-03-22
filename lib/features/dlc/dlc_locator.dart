@@ -1,6 +1,11 @@
 import 'package:bb_mobile/core/dlc/data/datasources/dlc_api_datasource.dart';
+import 'package:bb_mobile/core/dlc/data/datasources/dlc_wallet_token_store.dart';
 import 'package:bb_mobile/core/dlc/data/repositories/dlc_repository_impl.dart';
 import 'package:bb_mobile/core/dlc/domain/repositories/dlc_repository.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/accept_offer_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/cancel_dlc_order_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/check_dlc_connection_usecase.dart';
@@ -10,9 +15,11 @@ import 'package:bb_mobile/features/dlc/domain/usecases/get_instruments_usecase.d
 import 'package:bb_mobile/features/dlc/domain/usecases/get_my_orders_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_orderbook_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/place_dlc_order_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/register_dlc_wallet_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/sign_dlc_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/submit_signed_cets_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/take_order_usecase.dart';
+import 'package:bb_mobile/features/dlc/presentation/bloc/auth/dlc_wallet_auth_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/connection/dlc_connection_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/contracts/dlc_contracts_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/instruments/dlc_instruments_cubit.dart';
@@ -26,10 +33,6 @@ import 'package:get_it/get_it.dart';
 /// TODO: move to settings / environment config.
 const _dlcCoordinatorBaseUrl = 'https://dlc-coordinator.bullbitcoin.com/api/v1';
 
-/// Bearer token for authenticated endpoints.
-/// TODO: wire to actual wallet session token once wallet auth integration is done.
-const _dlcBearerToken = null;
-
 class DlcLocator {
   static void setup(GetIt locator) {
     _registerDatasources(locator);
@@ -39,11 +42,14 @@ class DlcLocator {
   }
 
   static void _registerDatasources(GetIt locator) {
+    locator.registerLazySingleton<DlcWalletTokenStore>(
+      () => DlcWalletTokenStore(),
+    );
     locator.registerLazySingleton<DlcApiDatasource>(
       () => DlcApiDatasource(
         dio: locator<Dio>(),
         baseUrl: _dlcCoordinatorBaseUrl,
-        bearerToken: _dlcBearerToken,
+        tokenStore: locator<DlcWalletTokenStore>(),
       ),
     );
   }
@@ -57,6 +63,14 @@ class DlcLocator {
   }
 
   static void _registerUsecases(GetIt locator) {
+    locator.registerFactory<RegisterDlcWalletUsecase>(
+      () => RegisterDlcWalletUsecase(
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        dlcApiDatasource: locator<DlcApiDatasource>(),
+        tokenStore: locator<DlcWalletTokenStore>(),
+      ),
+    );
     locator.registerFactory<CheckDlcConnectionUsecase>(
       () => CheckDlcConnectionUsecase(
         dlcRepository: locator<DlcRepository>(),
@@ -120,6 +134,15 @@ class DlcLocator {
   }
 
   static void _registerBlocs(GetIt locator) {
+    locator.registerFactory<DlcWalletAuthCubit>(
+      () => DlcWalletAuthCubit(
+        registerDlcWalletUsecase: locator<RegisterDlcWalletUsecase>(),
+        tokenStore: locator<DlcWalletTokenStore>(),
+        secureStorage: locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
+      ),
+    );
     locator.registerFactory<DlcConnectionCubit>(
       () => DlcConnectionCubit(
         checkDlcConnectionUsecase: locator<CheckDlcConnectionUsecase>(),
@@ -146,6 +169,7 @@ class DlcLocator {
     locator.registerFactory<DlcPlaceOrderCubit>(
       () => DlcPlaceOrderCubit(
         placeDlcOrderUsecase: locator<PlaceDlcOrderUsecase>(),
+        tokenStore: locator<DlcWalletTokenStore>(),
       ),
     );
     // DlcContractsCubit is a lazy singleton so the contracts list and detail

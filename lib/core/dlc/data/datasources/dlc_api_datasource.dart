@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/dlc/data/datasources/dlc_wallet_token_store.dart';
 import 'package:bb_mobile/core/dlc/data/models/dlc_contract_model.dart';
 import 'package:bb_mobile/core/dlc/data/models/dlc_instrument_model.dart';
 import 'package:bb_mobile/core/dlc/data/models/dlc_order_model.dart';
@@ -5,27 +6,59 @@ import 'package:bb_mobile/core/dlc/domain/entities/dlc_connection_status.dart';
 import 'package:dio/dio.dart';
 
 /// Raw HTTP calls to the DLC coordinator REST API.
-/// All authenticated endpoints use Bearer token auth.
+/// All authenticated endpoints use Bearer token auth supplied via [DlcWalletTokenStore].
 class DlcApiDatasource {
   DlcApiDatasource({
     required Dio dio,
     required String baseUrl,
-    // TODO: wire to actual wallet auth token once wallet integration is done
-    String? bearerToken,
+    required DlcWalletTokenStore tokenStore,
   })  : _dio = dio,
         _baseUrl = baseUrl,
-        _bearerToken = bearerToken;
+        _tokenStore = tokenStore;
 
   final Dio _dio;
   final String _baseUrl;
-  final String? _bearerToken;
+  final DlcWalletTokenStore _tokenStore;
 
   Options get _authOptions => Options(
         headers: {
-          if (_bearerToken != null)
-            'Authorization': 'Bearer $_bearerToken',
+          if (_tokenStore.walletToken != null)
+            'Authorization': 'Bearer ${_tokenStore.walletToken}',
         },
       );
+
+  // ─── Authentication ──────────────────────────────────────────────────────────
+
+  /// Obtain a one-time nonce required for wallet registration.
+  Future<Map<String, dynamic>> fetchNonce() async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '$_baseUrl/auth/nonce',
+    );
+    return response.data!;
+  }
+
+  /// Register the wallet with the DLC coordinator.
+  ///
+  /// Returns the response map which contains `wallet_id` and `wallet_token`.
+  Future<Map<String, dynamic>> registerWallet({
+    required String xpub,
+    required String xpubSignatureHex,
+    required String nonce,
+    required String label,
+    List<Map<String, dynamic>> utxos = const [],
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '$_baseUrl/auth/wallet',
+      data: {
+        'xpub': xpub,
+        'xpub_signature': xpubSignatureHex,
+        'nonce': nonce,
+        'label': label,
+        'utxos': utxos,
+      },
+    );
+    return response.data!;
+  }
 
   // ─── System Health ───────────────────────────────────────────────────────────
 

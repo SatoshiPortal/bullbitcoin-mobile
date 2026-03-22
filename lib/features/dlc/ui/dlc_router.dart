@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/dlc/presentation/bloc/auth/dlc_wallet_auth_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/connection/dlc_connection_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/contracts/dlc_contracts_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/instruments/dlc_instruments_cubit.dart';
@@ -18,6 +19,9 @@ class DlcRouter {
     path: DlcRoute.dlcHome.path,
     builder: (context, state) => MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (_) => locator<DlcWalletAuthCubit>(),
+        ),
         BlocProvider(
           create: (_) => locator<DlcConnectionCubit>(),
         ),

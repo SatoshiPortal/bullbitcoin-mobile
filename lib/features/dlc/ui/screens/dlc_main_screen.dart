@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_instrument.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
+import 'package:bb_mobile/features/dlc/presentation/bloc/auth/dlc_wallet_auth_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/connection/dlc_connection_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/contracts/dlc_contracts_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/instruments/dlc_instruments_cubit.dart';
@@ -26,11 +27,52 @@ class _DlcMainScreenState extends State<DlcMainScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    // Load initial data
+
+    // Initialize auth and, if needed, show the opt-in dialog after first frame.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final authCubit = context.read<DlcWalletAuthCubit>();
+      await authCubit.initialize();
+      if (!mounted) return;
+      final authState = authCubit.state;
+      if (authState.needsDecision) {
+        await _showOptInDialog();
+      }
+      // Load initial data only when registered (auth token is needed)
+      if (!mounted) return;
+      if (context.read<DlcWalletAuthCubit>().state.isRegistered) {
+        _loadInitialData();
+      } else {
+        // Still load public (unauthenticated) data
+        context.read<DlcConnectionCubit>().checkConnection();
+        context.read<DlcInstrumentsCubit>().loadInstruments();
+      }
+    });
+  }
+
+  void _loadInitialData() {
     context.read<DlcConnectionCubit>().checkConnection();
     context.read<DlcInstrumentsCubit>().loadInstruments();
     context.read<DlcMyOrdersCubit>().loadMyOrders();
     context.read<DlcContractsCubit>().loadContracts();
+  }
+
+  Future<void> _showOptInDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const _DlcOptInDialog(),
+    );
+    if (!mounted) return;
+    if (result == true) {
+      await context.read<DlcWalletAuthCubit>().register();
+      if (mounted &&
+          context.read<DlcWalletAuthCubit>().state.isRegistered) {
+        _loadInitialData();
+      }
+    } else {
+      await context.read<DlcWalletAuthCubit>().optOut();
+    }
   }
 
   @override
@@ -73,14 +115,130 @@ class _DlcMainScreenState extends State<DlcMainScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          _OrderbookTab(),
-          _TradeTab(),
-          _ActivityTab(),
-          _StatusTab(),
-        ],
+      body: BlocBuilder<DlcWalletAuthCubit, DlcWalletAuthState>(
+        buildWhen: (prev, curr) => prev.status != curr.status,
+        builder: (context, authState) {
+          if (authState.isOptedOut) {
+            return _OptedOutPlaceholder(
+              onEnable: () async {
+                await context.read<DlcWalletAuthCubit>().signOut();
+                if (mounted) await _showOptInDialog();
+              },
+            );
+          }
+          if (authState.isRegistering) {
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Registering wallet…'),
+                ],
+              ),
+            );
+          }
+          if (authState.status == DlcWalletAuthStatus.failed) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Registration failed:\n${authState.error}',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () async {
+                      context.read<DlcWalletAuthCubit>().retryAfterFailure();
+                      await _showOptInDialog();
+                    },
+                    child: const Text('Try again'),
+                  ),
+                ],
+              ),
+            );
+          }
+          return TabBarView(
+            controller: _tabController,
+            children: const [
+              _OrderbookTab(),
+              _TradeTab(),
+              _ActivityTab(),
+              _StatusTab(),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ─── Opt-in dialog ────────────────────────────────────────────────────────────
+
+class _DlcOptInDialog extends StatelessWidget {
+  const _DlcOptInDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Enable DLC Options'),
+      content: const Text(
+        'To participate in DLC Options trading, your wallet needs to be '
+        'registered with the Bull Bitcoin DLC coordinator.\n\n'
+        'This will use your wallet\'s public key to create an account. '
+        'No funds are moved.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: const Text('No thanks'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: const Text('Enable DLC Options'),
+        ),
+      ],
+    );
+  }
+}
+
+// ─── Opted-out placeholder ────────────────────────────────────────────────────
+
+class _OptedOutPlaceholder extends StatelessWidget {
+  const _OptedOutPlaceholder({required this.onEnable});
+
+  final VoidCallback onEnable;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.show_chart, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
+            Text(
+              'DLC Options disabled',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'You opted out of DLC Options. Tap the button below to enable it.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            OutlinedButton(
+              onPressed: onEnable,
+              child: const Text('Enable DLC Options'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -443,10 +601,7 @@ class _PlaceOrderFormState extends State<_PlaceOrderForm> {
         ],
         FilledButton(
           onPressed: widget.state.isValid && !widget.state.isSubmitting
-              ? () => cubit.submit(
-                    // TODO: replace with actual wallet funding pubkey
-                    fundingPubkeyHex: '02' + '00' * 32,
-                  )
+              ? () => cubit.submit()
               : null,
           child: widget.state.isSubmitting
               ? const SizedBox.square(
@@ -454,15 +609,6 @@ class _PlaceOrderFormState extends State<_PlaceOrderForm> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Text('Place Order'),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Note: wallet key integration pending — funding pubkey is a stub.',
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: Colors.orange.shade700),
-          textAlign: TextAlign.center,
         ),
       ],
     );

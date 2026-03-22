@@ -38,10 +38,7 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    context.read<DlcPlaceOrderCubit>().submit(
-          // TODO: replace with actual wallet funding pubkey
-          fundingPubkeyHex: '02' + '00' * 32,
-        );
+    context.read<DlcPlaceOrderCubit>().submit();
   }
 
   @override
@@ -182,15 +179,6 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
                             ),
                           )
                         : const Text('Place Order'),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Note: wallet key integration pending — funding pubkey is a stub.',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: Colors.orange.shade700),
-                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
