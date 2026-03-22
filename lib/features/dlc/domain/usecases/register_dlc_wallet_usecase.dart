@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/dlc/data/datasources/dlc_api_datasource.dart';
 import 'package:bb_mobile/core/dlc/data/datasources/dlc_wallet_token_store.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
@@ -74,8 +73,8 @@ class RegisterDlcWalletUsecase {
 
     // 4. Derive master key and sign the nonce
     final root = bip32.Bip32Keys.fromSeed(seedBytes);
-    final privateKeyBytes = root.privateKey;
-    final fundingPubkeyHex = hex.encode(root.publicKey);
+    final privateKeyBytes = root.private!;
+    final fundingPubkeyHex = hex.encode(root.public);
 
     final signatureHex = _signNonce(privateKeyBytes, nonce);
 
