@@ -6,21 +6,29 @@ import 'package:bb_mobile/features/dlc/domain/usecases/cancel_dlc_order_usecase.
 import 'package:bb_mobile/features/dlc/domain/usecases/check_dlc_connection_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_contract_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_contracts_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/get_instruments_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_my_orders_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_orderbook_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/place_dlc_order_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/sign_dlc_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/submit_signed_cets_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/take_order_usecase.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/connection/dlc_connection_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/contracts/dlc_contracts_cubit.dart';
+import 'package:bb_mobile/features/dlc/presentation/bloc/instruments/dlc_instruments_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/my_orders/dlc_my_orders_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/orderbook/dlc_orderbook_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/place_order/dlc_place_order_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-/// Base URL of the external DLC engine REST API.
+/// Base URL of the DLC coordinator REST API.
 /// TODO: move to settings / environment config.
-const _dlcEngineBaseUrl = 'https://dlc-engine.example.com/api/v1';
+const _dlcCoordinatorBaseUrl = 'https://dlc-coordinator.bullbitcoin.com/api/v1';
+
+/// Bearer token for authenticated endpoints.
+/// TODO: wire to actual wallet session token once wallet auth integration is done.
+const _dlcBearerToken = null;
 
 class DlcLocator {
   static void setup(GetIt locator) {
@@ -34,7 +42,8 @@ class DlcLocator {
     locator.registerLazySingleton<DlcApiDatasource>(
       () => DlcApiDatasource(
         dio: locator<Dio>(),
-        baseUrl: _dlcEngineBaseUrl,
+        baseUrl: _dlcCoordinatorBaseUrl,
+        bearerToken: _dlcBearerToken,
       ),
     );
   }
@@ -50,6 +59,11 @@ class DlcLocator {
   static void _registerUsecases(GetIt locator) {
     locator.registerFactory<CheckDlcConnectionUsecase>(
       () => CheckDlcConnectionUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
+    locator.registerFactory<GetInstrumentsUsecase>(
+      () => GetInstrumentsUsecase(
         dlcRepository: locator<DlcRepository>(),
       ),
     );
@@ -73,6 +87,21 @@ class DlcLocator {
         dlcRepository: locator<DlcRepository>(),
       ),
     );
+    locator.registerFactory<AcceptOfferUsecase>(
+      () => AcceptOfferUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
+    locator.registerFactory<TakeOrderUsecase>(
+      () => TakeOrderUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
+    locator.registerFactory<SignDlcUsecase>(
+      () => SignDlcUsecase(
+        dlcRepository: locator<DlcRepository>(),
+      ),
+    );
     locator.registerFactory<GetContractsUsecase>(
       () => GetContractsUsecase(
         dlcRepository: locator<DlcRepository>(),
@@ -80,11 +109,6 @@ class DlcLocator {
     );
     locator.registerFactory<GetContractUsecase>(
       () => GetContractUsecase(
-        dlcRepository: locator<DlcRepository>(),
-      ),
-    );
-    locator.registerFactory<AcceptOfferUsecase>(
-      () => AcceptOfferUsecase(
         dlcRepository: locator<DlcRepository>(),
       ),
     );
@@ -99,6 +123,13 @@ class DlcLocator {
     locator.registerFactory<DlcConnectionCubit>(
       () => DlcConnectionCubit(
         checkDlcConnectionUsecase: locator<CheckDlcConnectionUsecase>(),
+      ),
+    );
+    // DlcInstrumentsCubit is a lazy singleton so all tabs share the same
+    // instruments list and selected instrument.
+    locator.registerLazySingleton<DlcInstrumentsCubit>(
+      () => DlcInstrumentsCubit(
+        getInstrumentsUsecase: locator<GetInstrumentsUsecase>(),
       ),
     );
     locator.registerFactory<DlcOrderbookCubit>(
@@ -123,7 +154,6 @@ class DlcLocator {
       () => DlcContractsCubit(
         getContractsUsecase: locator<GetContractsUsecase>(),
         getContractUsecase: locator<GetContractUsecase>(),
-        acceptOfferUsecase: locator<AcceptOfferUsecase>(),
         submitSignedCetsUsecase: locator<SubmitSignedCetsUsecase>(),
       ),
     );

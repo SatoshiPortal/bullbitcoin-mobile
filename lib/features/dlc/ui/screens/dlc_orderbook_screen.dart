@@ -1,70 +1,37 @@
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/orderbook/dlc_orderbook_cubit.dart';
-import 'package:bb_mobile/features/dlc/ui/dlc_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
+/// Standalone orderbook screen (used for navigation from DLC home).
+/// For the main tabbed experience, see DlcMainScreen.
 class DlcOrderbookScreen extends StatefulWidget {
-  const DlcOrderbookScreen({super.key});
+  const DlcOrderbookScreen({super.key, required this.instrumentId});
+
+  final String instrumentId;
 
   @override
   State<DlcOrderbookScreen> createState() => _DlcOrderbookScreenState();
 }
 
-class _DlcOrderbookScreenState extends State<DlcOrderbookScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
+class _DlcOrderbookScreenState extends State<DlcOrderbookScreen> {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    context.read<DlcOrderbookCubit>().loadOrderbook();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+    context.read<DlcOrderbookCubit>().loadOrderbook(instrumentId: widget.instrumentId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Orderbook'),
+        title: Text('Orderbook: ${widget.instrumentId}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => context.read<DlcOrderbookCubit>().refresh(),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          onTap: (index) {
-            final cubit = context.read<DlcOrderbookCubit>();
-            switch (index) {
-              case 0:
-                cubit.setFilter(null);
-              case 1:
-                cubit.setFilter(DlcOptionType.call);
-              case 2:
-                cubit.setFilter(DlcOptionType.put);
-            }
-          },
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Calls'),
-            Tab(text: 'Puts'),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(DlcRoute.placeOrder.path),
-        icon: const Icon(Icons.add),
-        label: const Text('Place Order'),
       ),
       body: BlocBuilder<DlcOrderbookCubit, DlcOrderbookState>(
         builder: (context, state) {
@@ -81,8 +48,7 @@ class _DlcOrderbookScreenState extends State<DlcOrderbookScreen>
                   Text('Failed to load orderbook: ${state.error}'),
                   const SizedBox(height: 16),
                   FilledButton(
-                    onPressed: () =>
-                        context.read<DlcOrderbookCubit>().refresh(),
+                    onPressed: () => context.read<DlcOrderbookCubit>().refresh(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -117,32 +83,24 @@ class _OrderbookRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCall = order.optionType == DlcOptionType.call;
     final isBuy = order.side == DlcOrderSide.buy;
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: isCall ? Colors.green.shade100 : Colors.red.shade100,
-        child: Text(
-          isCall ? 'C' : 'P',
-          style: TextStyle(
-            color: isCall ? Colors.green.shade800 : Colors.red.shade800,
-            fontWeight: FontWeight.bold,
-          ),
+        backgroundColor: isBuy ? Colors.green.shade100 : Colors.red.shade100,
+        child: Icon(
+          isBuy ? Icons.arrow_upward : Icons.arrow_downward,
+          color: isBuy ? Colors.green.shade800 : Colors.red.shade800,
         ),
       ),
       title: Text(
-        '${isCall ? 'Call' : 'Put'} @ ${order.strikePriceSat} sats',
+        '${isBuy ? 'Buy' : 'Sell'} × ${order.quantity}',
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
-      subtitle: Text(
-        '${isBuy ? 'Buy' : 'Sell'} · qty ${order.remainingQuantity}/${order.quantity} · '
-        '${order.premiumSat} sats premium',
-      ),
+      subtitle: Text('Price: ${order.price} sats'),
       trailing: Chip(
-        label: Text(order.status.name),
+        label: Text(order.status),
         visualDensity: VisualDensity.compact,
       ),
     );
   }
 }
-

@@ -63,7 +63,9 @@ class AppRouter {
           final location = state.uri.toString();
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
-              : 0;
+              : location.startsWith(DlcRoute.dlcHome.path)
+                  ? 2
+                  : 0;
           final isSupportChat = location.contains('/support-chat');
 
           return BlocProvider(
@@ -78,6 +80,7 @@ class AppRouter {
                   // The app bar of the exchange tab is done with a sliver app bar
                   // on the ExchangeHomeScreen itself.
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+                  // DLC screen has its own AppBar with TabBar
                   extendBodyBehindAppBar: true,
                   body: child,
                   bottomNavigationBar: isSupportChat
@@ -87,7 +90,7 @@ class AppRouter {
                           onTap: (index) {
                             if (index == 0) {
                               context.goNamed(WalletRoute.walletHome.name);
-                            } else {
+                            } else if (index == 1) {
                               // Exchange tab
                               if (Platform.isIOS) {
                                 final isSuperuser =
@@ -110,6 +113,9 @@ class AppRouter {
                                   ExchangeRoute.exchangeHome.name,
                                 );
                               }
+                            } else {
+                              // DLC Options tab
+                              context.goNamed(DlcRoute.dlcHome.name);
                             }
                           },
                           items: [
@@ -123,6 +129,11 @@ class AppRouter {
                               label: context.loc.navigationTabExchange,
                               backgroundColor: context.appColors.background,
                             ),
+                            BottomNavigationBarItem(
+                              icon: const Icon(Icons.show_chart),
+                              label: 'DLC Options',
+                              backgroundColor: context.appColors.background,
+                            ),
                           ],
                         ),
                 ),
@@ -130,7 +141,7 @@ class AppRouter {
             ),
           );
         },
-        routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
+        routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes, DlcRouter.route],
       ),
       OnboardingRouter.route,
       AppUnlockRouter.route,
@@ -166,7 +177,6 @@ class AppRouter {
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,
-      DlcRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

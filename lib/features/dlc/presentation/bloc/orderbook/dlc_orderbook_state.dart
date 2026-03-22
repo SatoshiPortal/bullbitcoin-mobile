@@ -5,14 +5,14 @@ abstract class DlcOrderbookState with _$DlcOrderbookState {
   const factory DlcOrderbookState({
     @Default(false) bool isLoading,
     @Default([]) List<DlcOrder> orders,
-    DlcOptionType? activeFilter,
+    String? selectedInstrumentId,
     Exception? error,
   }) = _DlcOrderbookState;
   const DlcOrderbookState._();
 
-  List<DlcOrder> get callOrders =>
-      orders.where((o) => o.optionType == DlcOptionType.call).toList();
+  List<DlcOrder> get buyOrders =>
+      orders.where((o) => o.side == DlcOrderSide.buy).toList();
 
-  List<DlcOrder> get putOrders =>
-      orders.where((o) => o.optionType == DlcOptionType.put).toList();
+  List<DlcOrder> get sellOrders =>
+      orders.where((o) => o.side == DlcOrderSide.sell).toList();
 }

@@ -1,34 +1,58 @@
 import 'package:bb_mobile/core/dlc/data/models/dlc_contract_model.dart';
+import 'package:bb_mobile/core/dlc/data/models/dlc_instrument_model.dart';
 import 'package:bb_mobile/core/dlc/data/models/dlc_order_model.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_connection_status.dart';
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
 import 'package:dio/dio.dart';
 
-/// Raw HTTP calls to the external DLC engine REST API.
-/// All methods throw [DioException] on network/HTTP errors.
+/// Raw HTTP calls to the DLC coordinator REST API.
+/// All authenticated endpoints use Bearer token auth.
 class DlcApiDatasource {
-  DlcApiDatasource({required Dio dio, required String baseUrl})
-      : _dio = dio,
-        _baseUrl = baseUrl;
+  DlcApiDatasource({
+    required Dio dio,
+    required String baseUrl,
+    // TODO: wire to actual wallet auth token once wallet integration is done
+    String? bearerToken,
+  })  : _dio = dio,
+        _baseUrl = baseUrl,
+        _bearerToken = bearerToken;
 
   final Dio _dio;
   final String _baseUrl;
+  final String? _bearerToken;
 
-  // ─── Connection ─────────────────────────────────────────────────────────────
+  Options get _authOptions => Options(
+        headers: {
+          if (_bearerToken != null)
+            'Authorization': 'Bearer $_bearerToken',
+        },
+      );
 
-  Future<Map<String, dynamic>> getHealth() async {
-    final response = await _dio.get<Map<String, dynamic>>('$_baseUrl/health');
+  // ─── System Health ───────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getSystemReadiness() async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '$_baseUrl/auth/system-readiness',
+    );
     return response.data!;
+  }
+
+  // ─── Instruments ─────────────────────────────────────────────────────────────
+
+  Future<List<DlcInstrumentModel>> getInstruments() async {
+    final response = await _dio.get<List<dynamic>>(
+      '$_baseUrl/instruments/non-expired',
+    );
+    return response.data!
+        .cast<Map<String, dynamic>>()
+        .map(DlcInstrumentModel.fromJson)
+        .toList();
   }
 
   // ─── Orderbook ──────────────────────────────────────────────────────────────
 
-  Future<List<DlcOrderModel>> getOrderbook({String? filterType}) async {
+  Future<List<DlcOrderModel>> getOrderbook({required String instrumentId}) async {
     final response = await _dio.get<List<dynamic>>(
-      '$_baseUrl/orderbook',
-      queryParameters: {
-        if (filterType != null) 'type': filterType,
-      },
+      '$_baseUrl/orderbook/$instrumentId',
     );
     return response.data!
         .cast<Map<String, dynamic>>()
@@ -38,10 +62,10 @@ class DlcApiDatasource {
 
   // ─── My Orders ──────────────────────────────────────────────────────────────
 
-  Future<List<DlcOrderModel>> getMyOrders({required String pubkey}) async {
+  Future<List<DlcOrderModel>> getMyOrders() async {
     final response = await _dio.get<List<dynamic>>(
-      '$_baseUrl/orders/mine',
-      queryParameters: {'pubkey': pubkey},
+      '$_baseUrl/orders',
+      options: _authOptions,
     );
     return response.data!
         .cast<Map<String, dynamic>>()
@@ -49,49 +73,102 @@ class DlcApiDatasource {
         .toList();
   }
 
-  Future<DlcOrderModel> placeOrder({
-    required String optionType,
+  Future<Map<String, dynamic>> placeOrder({
+    required String instrumentId,
     required String side,
-    required int strikePriceSat,
-    required int premiumSat,
     required int quantity,
-    required int expiryTimestamp,
-    required String makerPubkey,
-    required String signedOfferHex,
+    required int price,
+    required String fundingPubkeyHex,
+    String? idempotencyKey,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
       '$_baseUrl/orders',
       data: {
-        'option_type': optionType,
+        'instrument_id': instrumentId,
         'side': side,
-        'strike_price_sat': strikePriceSat,
-        'premium_sat': premiumSat,
         'quantity': quantity,
-        'expiry_timestamp': expiryTimestamp,
-        'maker_pubkey': makerPubkey,
-        'signed_offer_hex': signedOfferHex,
+        'price': price,
+        'funding_pubkey_hex': fundingPubkeyHex,
+        if (idempotencyKey != null) 'idempotency_key': idempotencyKey,
       },
+      options: _authOptions,
     );
-    return DlcOrderModel.fromJson(response.data!);
+    return response.data!;
   }
 
-  Future<void> cancelOrder({
+  Future<void> cancelOrder({required String orderId}) async {
+    await _dio.post<void>(
+      '$_baseUrl/orders/$orderId/cancel',
+      options: _authOptions,
+    );
+  }
+
+  // ─── Taker (accept order) flow ───────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getAcceptContext({
     required String orderId,
-    required String makerPubkey,
-    required String signatureHex,
+    required String fundingPubkeyHex,
   }) async {
-    await _dio.delete<void>(
-      '$_baseUrl/orders/$orderId',
-      data: {'maker_pubkey': makerPubkey, 'signature_hex': signatureHex},
+    final response = await _dio.post<Map<String, dynamic>>(
+      '$_baseUrl/orders/$orderId/accept-context',
+      data: {'funding_pubkey_hex': fundingPubkeyHex},
+      options: _authOptions,
     );
+    return response.data!;
   }
 
-  // ─── Contracts ──────────────────────────────────────────────────────────────
+  Future<Map<String, dynamic>> submitAcceptMatch({
+    required String orderId,
+    required String fundingPubkeyHex,
+    required String cetAdaptorSignaturesHex,
+    required String refundSignatureHex,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '$_baseUrl/orders/$orderId/accept-match',
+      data: {
+        'funding_pubkey_hex': fundingPubkeyHex,
+        'cet_adaptor_signatures_hex': cetAdaptorSignaturesHex,
+        'refund_signature_hex': refundSignatureHex,
+      },
+      options: _authOptions,
+    );
+    return response.data!;
+  }
 
-  Future<List<DlcContractModel>> getContracts({required String pubkey}) async {
+  // ─── Maker (sign DLC) flow ────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getSignContext({required String dlcId}) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '$_baseUrl/dlcs/$dlcId/sign-context',
+      options: _authOptions,
+    );
+    return response.data!;
+  }
+
+  Future<DlcContractModel> submitSign({
+    required String dlcId,
+    required String cetAdaptorSignaturesHex,
+    required String refundSignatureHex,
+    required String fundingSignaturesHex,
+  }) async {
+    final response = await _dio.post<Map<String, dynamic>>(
+      '$_baseUrl/dlcs/$dlcId/sign',
+      data: {
+        'cet_adaptor_signatures_hex': cetAdaptorSignaturesHex,
+        'refund_signature_hex': refundSignatureHex,
+        'funding_signatures_hex': fundingSignaturesHex,
+      },
+      options: _authOptions,
+    );
+    return DlcContractModel.fromJson(response.data!);
+  }
+
+  // ─── DLC Contracts ────────────────────────────────────────────────────────────
+
+  Future<List<DlcContractModel>> getMyDlcs() async {
     final response = await _dio.get<List<dynamic>>(
-      '$_baseUrl/contracts',
-      queryParameters: {'pubkey': pubkey},
+      '$_baseUrl/dlcs',
+      options: _authOptions,
     );
     return response.data!
         .cast<Map<String, dynamic>>()
@@ -99,31 +176,10 @@ class DlcApiDatasource {
         .toList();
   }
 
-  Future<DlcContractModel> acceptOffer({
-    required String offerId,
-    required String acceptHex,
-  }) async {
-    final response = await _dio.post<Map<String, dynamic>>(
-      '$_baseUrl/contracts/$offerId/accept',
-      data: {'accept_hex': acceptHex},
-    );
-    return DlcContractModel.fromJson(response.data!);
-  }
-
-  Future<DlcContractModel> submitSignedCets({
-    required String contractId,
-    required String cetSignatureHex,
-  }) async {
-    final response = await _dio.post<Map<String, dynamic>>(
-      '$_baseUrl/contracts/$contractId/sign',
-      data: {'cet_signature_hex': cetSignatureHex},
-    );
-    return DlcContractModel.fromJson(response.data!);
-  }
-
-  Future<DlcContractModel> getContract({required String contractId}) async {
+  Future<DlcContractModel> getDlc({required String dlcId}) async {
     final response = await _dio.get<Map<String, dynamic>>(
-      '$_baseUrl/contracts/$contractId',
+      '$_baseUrl/dlcs/$dlcId',
+      options: _authOptions,
     );
     return DlcContractModel.fromJson(response.data!);
   }
@@ -134,7 +190,7 @@ extension DlcConnectionStatusX on Map<String, dynamic> {
     final status = this['status'] as String? ?? 'unknown';
     return DlcConnectionStatus(
       apiHealth: switch (status) {
-        'ok' => DlcApiHealth.healthy,
+        'ok' || 'ready' => DlcApiHealth.healthy,
         'degraded' => DlcApiHealth.degraded,
         _ => DlcApiHealth.unreachable,
       },

@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// TODO: replace stub values with real wallet signing logic.
-const _stubAcceptHex = 'stub_accept_hex';
-const _stubCetSignatureHex = 'stub_cet_signature_hex';
+/// TODO: replace stub signatures with real wallet signing logic.
+const _stubCetAdaptorSignaturesHex = 'stub_cet_adaptor_signatures_hex';
+const _stubRefundSignatureHex = 'stub_refund_signature_hex';
+const _stubFundingSignaturesHex = 'stub_funding_signatures_hex';
 
 class DlcContractDetailScreen extends StatelessWidget {
   const DlcContractDetailScreen({super.key});
@@ -28,20 +29,20 @@ class DlcContractDetailScreen extends StatelessWidget {
         final contract = state.selectedContract;
         if (contract == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Contract Detail')),
-            body: const Center(child: Text('No contract selected')),
+            appBar: AppBar(title: const Text('DLC Detail')),
+            body: const Center(child: Text('No DLC selected')),
           );
         }
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Contract Detail'),
+            title: const Text('DLC Detail'),
             actions: [
               IconButton(
                 icon: const Icon(Icons.refresh),
                 tooltip: 'Refresh',
                 onPressed: () => context
                     .read<DlcContractsCubit>()
-                    .refreshContract(contractId: contract.id),
+                    .refreshContract(dlcId: contract.id),
               ),
             ],
           ),
@@ -54,26 +55,16 @@ class DlcContractDetailScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 _DetailCard(contract: contract),
                 const SizedBox(height: 16),
-                if (contract.status == DlcContractStatus.offered)
-                  _AcceptOfferButton(
-                    contract: contract,
-                    isActing: state.isActing,
-                    onAccept: () => context
-                        .read<DlcContractsCubit>()
-                        .acceptOffer(
-                          offerId: contract.id,
-                          acceptHex: _stubAcceptHex,
-                        ),
-                  ),
                 if (contract.status == DlcContractStatus.accepted)
                   _SignCetsButton(
-                    contract: contract,
                     isActing: state.isActing,
                     onSign: () => context
                         .read<DlcContractsCubit>()
                         .submitSignedCets(
-                          contractId: contract.id,
-                          cetSignatureHex: _stubCetSignatureHex,
+                          dlcId: contract.id,
+                          cetAdaptorSignaturesHex: _stubCetAdaptorSignaturesHex,
+                          refundSignatureHex: _stubRefundSignatureHex,
+                          fundingSignaturesHex: _stubFundingSignaturesHex,
                         ),
                   ),
               ],
@@ -91,23 +82,18 @@ class _StatusBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCall = contract.optionType == DlcOptionType.call;
+    final isActive = contract.isActive;
     return Card(
-      color: isCall ? Colors.green.shade50 : Colors.red.shade50,
+      color: isActive ? Colors.blue.shade50 : Colors.grey.shade100,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor:
-                  isCall ? Colors.green.shade200 : Colors.red.shade200,
-              child: Text(
-                isCall ? 'C' : 'P',
-                style: TextStyle(
-                  color:
-                      isCall ? Colors.green.shade900 : Colors.red.shade900,
-                  fontWeight: FontWeight.bold,
-                ),
+              backgroundColor: isActive ? Colors.blue.shade200 : Colors.grey.shade300,
+              child: Icon(
+                Icons.handshake_outlined,
+                color: isActive ? Colors.blue.shade900 : Colors.grey.shade700,
               ),
             ),
             const SizedBox(width: 12),
@@ -116,14 +102,14 @@ class _StatusBanner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${isCall ? 'Call' : 'Put'} Option',
+                    'DLC Contract',
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Strike: ${contract.strikePriceSat} sats',
+                    'Instrument: ${contract.instrumentId}',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -146,9 +132,6 @@ class _DetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expiry = DateTime.fromMillisecondsSinceEpoch(
-      contract.expiryTimestamp * 1000,
-    );
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -163,22 +146,17 @@ class _DetailCard extends StatelessWidget {
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const Divider(),
-            _Row(label: 'Premium', value: '${contract.premiumSat} sats'),
+            _Row(
+              label: 'DLC ID',
+              value: contract.id,
+              onCopy: () => _copy(context, contract.id),
+            ),
+            _Row(
+              label: 'Order ID',
+              value: contract.orderId.isNotEmpty ? contract.orderId : '–',
+            ),
+            _Row(label: 'Price', value: '${contract.price} sats'),
             _Row(label: 'Collateral', value: '${contract.collateralSat} sats'),
-            _Row(
-              label: 'Expiry',
-              value: '${expiry.toLocal()}'.substring(0, 16),
-            ),
-            _Row(
-              label: 'Counterparty',
-              value: _truncate(contract.counterpartyPubkey),
-              onCopy: () => _copy(context, contract.counterpartyPubkey),
-            ),
-            _Row(
-              label: 'Oracle',
-              value: _truncate(contract.oraclePubkey),
-              onCopy: () => _copy(context, contract.oraclePubkey),
-            ),
             if (contract.fundingTxId != null)
               _Row(
                 label: 'Funding TX',
@@ -187,7 +165,17 @@ class _DetailCard extends StatelessWidget {
               ),
             if (contract.label != null)
               _Row(label: 'Label', value: contract.label!),
-            _Row(label: 'Created', value: contract.createdAt.substring(0, 10)),
+            _Row(
+              label: 'Created',
+              value: contract.createdAt.isNotEmpty
+                  ? contract.createdAt.substring(
+                      0,
+                      contract.createdAt.length < 10
+                          ? contract.createdAt.length
+                          : 10,
+                    )
+                  : '–',
+            ),
           ],
         ),
       ),
@@ -242,39 +230,8 @@ class _Row extends StatelessWidget {
   }
 }
 
-class _AcceptOfferButton extends StatelessWidget {
-  const _AcceptOfferButton({
-    required this.contract,
-    required this.isActing,
-    required this.onAccept,
-  });
-  final DlcContract contract;
-  final bool isActing;
-  final VoidCallback onAccept;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton.icon(
-      onPressed: isActing ? null : onAccept,
-      icon: isActing
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-            )
-          : const Icon(Icons.handshake),
-      label: const Text('Accept Offer'),
-    );
-  }
-}
-
 class _SignCetsButton extends StatelessWidget {
-  const _SignCetsButton({
-    required this.contract,
-    required this.isActing,
-    required this.onSign,
-  });
-  final DlcContract contract;
+  const _SignCetsButton({required this.isActing, required this.onSign});
   final bool isActing;
   final VoidCallback onSign;
 

@@ -7,19 +7,17 @@ part 'dlc_contract_model.g.dart';
 @freezed
 abstract class DlcContractModel with _$DlcContractModel {
   const factory DlcContractModel({
-    required String id,
-    @JsonKey(name: 'option_type') required String optionType,
+    @JsonKey(name: 'dlc_id') required String id,
+    @JsonKey(name: 'order_id') @Default('') String orderId,
     required String status,
-    @JsonKey(name: 'strike_price_sat') required int strikePriceSat,
-    @JsonKey(name: 'premium_sat') required int premiumSat,
-    @JsonKey(name: 'collateral_sat') required int collateralSat,
-    @JsonKey(name: 'expiry_timestamp') required int expiryTimestamp,
-    @JsonKey(name: 'counterparty_pubkey') required String counterpartyPubkey,
-    @JsonKey(name: 'oracle_pubkey') required String oraclePubkey,
+    @JsonKey(name: 'instrument_id') @Default('') String instrumentId,
+    @Default(0) int price,
+    @JsonKey(name: 'collateral_sat') @Default(0) int collateralSat,
     @JsonKey(name: 'funding_txid') String? fundingTxId,
-    @JsonKey(name: 'cet_signature') String? cetSignature,
+    @JsonKey(name: 'cet_adaptor_signatures_hex') String? cetAdaptorSignaturesHex,
+    @JsonKey(name: 'refund_signature_hex') String? refundSignatureHex,
     String? label,
-    @JsonKey(name: 'created_at') required String createdAt,
+    @JsonKey(name: 'created_at') @Default('') String createdAt,
   }) = _DlcContractModel;
   const DlcContractModel._();
 
@@ -28,16 +26,14 @@ abstract class DlcContractModel with _$DlcContractModel {
 
   DlcContract toEntity() => DlcContract(
         id: id,
-        optionType: optionType == 'call' ? DlcOptionType.call : DlcOptionType.put,
+        orderId: orderId,
         status: _parseStatus(status),
-        strikePriceSat: strikePriceSat,
-        premiumSat: premiumSat,
+        instrumentId: instrumentId,
+        price: price,
         collateralSat: collateralSat,
-        expiryTimestamp: expiryTimestamp,
-        counterpartyPubkey: counterpartyPubkey,
-        oraclePubkey: oraclePubkey,
         fundingTxId: fundingTxId,
-        cetSignature: cetSignature,
+        cetAdaptorSignaturesHex: cetAdaptorSignaturesHex,
+        refundSignatureHex: refundSignatureHex,
         label: label,
         createdAt: createdAt,
       );

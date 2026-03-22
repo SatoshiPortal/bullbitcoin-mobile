@@ -1,11 +1,7 @@
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/my_orders/dlc_my_orders_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-/// Temporary stub pubkey — will be replaced with the real wallet pubkey.
-const _stubPubkey = 'stub_pubkey';
 
 class DlcMyOrdersScreen extends StatefulWidget {
   const DlcMyOrdersScreen({super.key});
@@ -18,9 +14,7 @@ class _DlcMyOrdersScreenState extends State<DlcMyOrdersScreen> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<DlcMyOrdersCubit>()
-        .loadMyOrders(pubkey: _stubPubkey);
+    context.read<DlcMyOrdersCubit>().loadMyOrders();
   }
 
   @override
@@ -42,9 +36,7 @@ class _DlcMyOrdersScreenState extends State<DlcMyOrdersScreen> {
                   Text('Error: ${state.error}'),
                   const SizedBox(height: 16),
                   FilledButton(
-                    onPressed: () => context
-                        .read<DlcMyOrdersCubit>()
-                        .refresh(pubkey: _stubPubkey),
+                    onPressed: () => context.read<DlcMyOrdersCubit>().refresh(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -55,14 +47,12 @@ class _DlcMyOrdersScreenState extends State<DlcMyOrdersScreen> {
             return const Center(child: Text('No orders yet'));
           }
           return RefreshIndicator(
-            onRefresh: () => context
-                .read<DlcMyOrdersCubit>()
-                .refresh(pubkey: _stubPubkey),
+            onRefresh: () => context.read<DlcMyOrdersCubit>().refresh(),
             child: CustomScrollView(
               slivers: [
                 if (state.openOrders.isNotEmpty) ...[
                   const SliverToBoxAdapter(
-                    child: _SectionHeader(title: 'Open'),
+                    child: _SectionHeader(title: 'Open / Pending'),
                   ),
                   SliverList.separated(
                     itemCount: state.openOrders.length,
@@ -78,9 +68,23 @@ class _DlcMyOrdersScreenState extends State<DlcMyOrdersScreen> {
                     ),
                   ),
                 ],
+                if (state.matchedOrders.isNotEmpty) ...[
+                  const SliverToBoxAdapter(
+                    child: _SectionHeader(title: 'Matched'),
+                  ),
+                  SliverList.separated(
+                    itemCount: state.matchedOrders.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) => _MyOrderRow(
+                      order: state.matchedOrders[index],
+                      isCancelling: false,
+                      onCancel: null,
+                    ),
+                  ),
+                ],
                 if (state.closedOrders.isNotEmpty) ...[
                   const SliverToBoxAdapter(
-                    child: _SectionHeader(title: 'Closed / Filled'),
+                    child: _SectionHeader(title: 'Cancelled'),
                   ),
                   SliverList.separated(
                     itemCount: state.closedOrders.length,
@@ -105,9 +109,7 @@ class _DlcMyOrdersScreenState extends State<DlcMyOrdersScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Cancel order?'),
-        content: Text(
-          'Cancel ${order.optionType.name} order #${order.id.substring(0, 8)}…?',
-        ),
+        content: Text('Cancel order #${order.id.length >= 8 ? order.id.substring(0, 8) : order.id}…?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -121,12 +123,7 @@ class _DlcMyOrdersScreenState extends State<DlcMyOrdersScreen> {
       ),
     );
     if (confirmed == true && context.mounted) {
-      // TODO: replace with real signature from wallet key
-      context.read<DlcMyOrdersCubit>().cancelOrder(
-            orderId: order.id,
-            makerPubkey: _stubPubkey,
-            signatureHex: 'stub_signature',
-          );
+      context.read<DlcMyOrdersCubit>().cancelOrder(orderId: order.id);
     }
   }
 }
@@ -164,27 +161,36 @@ class _MyOrderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCall = order.optionType == DlcOptionType.call;
+    final isBuy = order.side == DlcOrderSide.buy;
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: isCall ? Colors.green.shade100 : Colors.red.shade100,
-        child: Text(
-          isCall ? 'C' : 'P',
-          style: TextStyle(
-            color: isCall ? Colors.green.shade800 : Colors.red.shade800,
-            fontWeight: FontWeight.bold,
-          ),
+        backgroundColor: isBuy ? Colors.green.shade100 : Colors.red.shade100,
+        child: Icon(
+          isBuy ? Icons.arrow_upward : Icons.arrow_downward,
+          color: isBuy ? Colors.green.shade800 : Colors.red.shade800,
         ),
       ),
       title: Text(
-        '${isCall ? 'Call' : 'Put'} @ ${order.strikePriceSat} sats',
+        '${isBuy ? 'Buy' : 'Sell'} × ${order.quantity} @ ${order.price} sats',
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
-      subtitle: Text(
-        '${order.side.name.toUpperCase()} · '
-        'qty ${order.remainingQuantity}/${order.quantity} · '
-        '${order.premiumSat} sats premium',
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Status: ${order.status}'),
+          if (order.dlcId != null) Text('DLC: ${order.dlcId}'),
+          if (order.needsSignature)
+            Text(
+              'Signature required',
+              style: TextStyle(
+                color: Colors.orange.shade700,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+            ),
+        ],
       ),
+      isThreeLine: order.dlcId != null || order.needsSignature,
       trailing: order.isOpen && onCancel != null
           ? isCancelling
               ? const SizedBox(
@@ -198,7 +204,7 @@ class _MyOrderRow extends StatelessWidget {
                   onPressed: onCancel,
                 )
           : Chip(
-              label: Text(order.status.name),
+              label: Text(order.status),
               visualDensity: VisualDensity.compact,
             ),
     );

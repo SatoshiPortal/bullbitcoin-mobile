@@ -6,14 +6,6 @@ class CancelDlcOrderUsecase {
 
   final DlcRepository _dlcRepository;
 
-  Future<void> execute({
-    required String orderId,
-    required String makerPubkey,
-    required String signatureHex,
-  }) =>
-      _dlcRepository.cancelOrder(
-        orderId: orderId,
-        makerPubkey: makerPubkey,
-        signatureHex: signatureHex,
-      );
+  Future<void> execute({required String orderId}) =>
+      _dlcRepository.cancelOrder(orderId: orderId);
 }

@@ -7,6 +7,6 @@ class GetContractUsecase {
 
   final DlcRepository _dlcRepository;
 
-  Future<DlcContract> execute({required String contractId}) =>
-      _dlcRepository.getContract(contractId: contractId);
+  Future<DlcContract> execute({required String dlcId}) =>
+      _dlcRepository.getDlc(dlcId: dlcId);
 }

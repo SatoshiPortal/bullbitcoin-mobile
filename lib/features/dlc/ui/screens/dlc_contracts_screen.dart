@@ -5,9 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-/// Temporary stub pubkey — will be replaced with the real wallet pubkey.
-const _stubPubkey = 'stub_pubkey';
-
 class DlcContractsScreen extends StatefulWidget {
   const DlcContractsScreen({super.key});
 
@@ -19,20 +16,18 @@ class _DlcContractsScreenState extends State<DlcContractsScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<DlcContractsCubit>().loadContracts(pubkey: _stubPubkey);
+    context.read<DlcContractsCubit>().loadContracts();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Contracts'),
+        title: const Text('My DLC Contracts'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => context
-                .read<DlcContractsCubit>()
-                .refresh(pubkey: _stubPubkey),
+            onPressed: () => context.read<DlcContractsCubit>().refresh(),
           ),
         ],
       ),
@@ -51,9 +46,7 @@ class _DlcContractsScreenState extends State<DlcContractsScreen> {
                   Text('Error: ${state.error}'),
                   const SizedBox(height: 16),
                   FilledButton(
-                    onPressed: () => context
-                        .read<DlcContractsCubit>()
-                        .refresh(pubkey: _stubPubkey),
+                    onPressed: () => context.read<DlcContractsCubit>().refresh(),
                     child: const Text('Retry'),
                   ),
                 ],
@@ -61,17 +54,15 @@ class _DlcContractsScreenState extends State<DlcContractsScreen> {
             );
           }
           if (state.contracts.isEmpty) {
-            return const Center(child: Text('No contracts yet'));
+            return const Center(child: Text('No DLC contracts yet'));
           }
           return RefreshIndicator(
-            onRefresh: () => context
-                .read<DlcContractsCubit>()
-                .refresh(pubkey: _stubPubkey),
+            onRefresh: () => context.read<DlcContractsCubit>().refresh(),
             child: CustomScrollView(
               slivers: [
                 if (state.offeredContracts.isNotEmpty) ...[
                   const SliverToBoxAdapter(
-                    child: _SectionHeader(title: 'Pending Offers'),
+                    child: _SectionHeader(title: 'Pending'),
                   ),
                   SliverList.separated(
                     itemCount: state.offeredContracts.length,
@@ -157,27 +148,20 @@ class _ContractRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCall = contract.optionType == DlcOptionType.call;
     final statusColor = _statusColor(contract.status);
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: isCall ? Colors.green.shade100 : Colors.red.shade100,
-        child: Text(
-          isCall ? 'C' : 'P',
-          style: TextStyle(
-            color: isCall ? Colors.green.shade800 : Colors.red.shade800,
-            fontWeight: FontWeight.bold,
-          ),
+        backgroundColor: statusColor.withAlpha(40),
+        child: Icon(
+          Icons.handshake_outlined,
+          color: statusColor,
         ),
       ),
       title: Text(
-        '${isCall ? 'Call' : 'Put'} @ ${contract.strikePriceSat} sats',
+        'DLC ${contract.id.length > 8 ? contract.id.substring(0, 8) : contract.id}...',
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
-      subtitle: Text(
-        'Premium ${contract.premiumSat} sats · '
-        'Collateral ${contract.collateralSat} sats',
-      ),
+      subtitle: Text('Instrument: ${contract.instrumentId}'),
       trailing: Chip(
         label: Text(contract.status.name),
         backgroundColor: statusColor.withAlpha(40),

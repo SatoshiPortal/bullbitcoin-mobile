@@ -12,6 +12,10 @@ abstract class DlcMyOrdersState with _$DlcMyOrdersState {
   }) = _DlcMyOrdersState;
   const DlcMyOrdersState._();
 
-  List<DlcOrder> get openOrders => orders.where((o) => o.isOpen).toList();
-  List<DlcOrder> get closedOrders => orders.where((o) => !o.isOpen).toList();
+  List<DlcOrder> get openOrders =>
+      orders.where((o) => o.isOpen || o.isPendingMatchAccept).toList();
+
+  List<DlcOrder> get matchedOrders => orders.where((o) => o.isMatched).toList();
+
+  List<DlcOrder> get closedOrders => orders.where((o) => o.isCancelled).toList();
 }

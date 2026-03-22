@@ -7,6 +7,5 @@ class GetContractsUsecase {
 
   final DlcRepository _dlcRepository;
 
-  Future<List<DlcContract>> execute({required String pubkey}) =>
-      _dlcRepository.getContracts(pubkey: pubkey);
+  Future<List<DlcContract>> execute() => _dlcRepository.getMyDlcs();
 }

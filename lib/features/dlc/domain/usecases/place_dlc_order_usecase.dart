@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
 import 'package:bb_mobile/core/dlc/domain/repositories/dlc_repository.dart';
 
@@ -8,25 +7,22 @@ class PlaceDlcOrderUsecase {
 
   final DlcRepository _dlcRepository;
 
-  /// [signedOfferHex] must be produced by the key-signing logic before calling this.
-  Future<DlcOrder> execute({
-    required DlcOptionType optionType,
+  /// Places a maker order on the DLC coordinator.
+  /// [fundingPubkeyHex] must come from the user's wallet.
+  Future<Map<String, dynamic>> execute({
+    required String instrumentId,
     required DlcOrderSide side,
-    required int strikePriceSat,
-    required int premiumSat,
     required int quantity,
-    required int expiryTimestamp,
-    required String makerPubkey,
-    required String signedOfferHex,
+    required int price,
+    required String fundingPubkeyHex,
+    String? idempotencyKey,
   }) =>
       _dlcRepository.placeOrder(
-        optionType: optionType,
+        instrumentId: instrumentId,
         side: side,
-        strikePriceSat: strikePriceSat,
-        premiumSat: premiumSat,
         quantity: quantity,
-        expiryTimestamp: expiryTimestamp,
-        makerPubkey: makerPubkey,
-        signedOfferHex: signedOfferHex,
+        price: price,
+        fundingPubkeyHex: fundingPubkeyHex,
+        idempotencyKey: idempotencyKey,
       );
 }

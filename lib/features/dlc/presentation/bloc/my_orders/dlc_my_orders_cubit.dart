@@ -18,22 +18,17 @@ class DlcMyOrdersCubit extends Cubit<DlcMyOrdersState> {
   final GetMyOrdersUsecase _getMyOrdersUsecase;
   final CancelDlcOrderUsecase _cancelDlcOrderUsecase;
 
-  Future<void> loadMyOrders({required String pubkey}) async {
+  Future<void> loadMyOrders() async {
     emit(state.copyWith(isLoading: true, error: null));
     try {
-      final orders = await _getMyOrdersUsecase.execute(pubkey: pubkey);
+      final orders = await _getMyOrdersUsecase.execute();
       emit(state.copyWith(isLoading: false, orders: orders));
     } on Exception catch (e) {
       emit(state.copyWith(isLoading: false, error: e));
     }
   }
 
-  Future<void> cancelOrder({
-    required String orderId,
-    required String makerPubkey,
-    /// TODO: derive signature from the wallet key in a dedicated use case
-    required String signatureHex,
-  }) async {
+  Future<void> cancelOrder({required String orderId}) async {
     emit(
       state.copyWith(
         isCancelling: true,
@@ -41,11 +36,7 @@ class DlcMyOrdersCubit extends Cubit<DlcMyOrdersState> {
       ),
     );
     try {
-      await _cancelDlcOrderUsecase.execute(
-        orderId: orderId,
-        makerPubkey: makerPubkey,
-        signatureHex: signatureHex,
-      );
+      await _cancelDlcOrderUsecase.execute(orderId: orderId);
       final updatedOrders = state.orders.where((o) => o.id != orderId).toList();
       emit(
         state.copyWith(
@@ -65,5 +56,5 @@ class DlcMyOrdersCubit extends Cubit<DlcMyOrdersState> {
     }
   }
 
-  Future<void> refresh({required String pubkey}) => loadMyOrders(pubkey: pubkey);
+  Future<void> refresh() => loadMyOrders();
 }

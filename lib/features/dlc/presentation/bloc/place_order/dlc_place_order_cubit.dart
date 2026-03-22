@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/place_dlc_order_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,42 +13,35 @@ class DlcPlaceOrderCubit extends Cubit<DlcPlaceOrderState> {
 
   final PlaceDlcOrderUsecase _placeDlcOrderUsecase;
 
-  void setOptionType(DlcOptionType type) =>
-      emit(state.copyWith(optionType: type, submittedOrder: null, error: null));
+  void setInstrument(String instrumentId) =>
+      emit(state.copyWith(instrumentId: instrumentId, submittedOrderResponse: null, error: null));
 
   void setSide(DlcOrderSide side) =>
-      emit(state.copyWith(side: side, submittedOrder: null, error: null));
+      emit(state.copyWith(side: side, submittedOrderResponse: null, error: null));
 
-  void setStrikePrice(int sats) =>
-      emit(state.copyWith(strikePriceSat: sats, error: null));
-
-  void setPremium(int sats) =>
-      emit(state.copyWith(premiumSat: sats, error: null));
+  void setPrice(int sats) =>
+      emit(state.copyWith(price: sats, error: null));
 
   void setQuantity(int qty) =>
       emit(state.copyWith(quantity: qty, error: null));
 
-  void setExpiry(DateTime expiry) =>
-      emit(state.copyWith(expiryTimestamp: expiry.millisecondsSinceEpoch ~/ 1000, error: null));
-
   Future<void> submit({
-    required String makerPubkey,
-    required String signedOfferHex,
+    /// TODO: derive from wallet once wallet integration is wired
+    required String fundingPubkeyHex,
+    String? idempotencyKey,
   }) async {
     if (!state.isValid) return;
-    emit(state.copyWith(isSubmitting: true, error: null, submittedOrder: null));
+    emit(state.copyWith(isSubmitting: true, error: null, submittedOrderResponse: null));
     try {
-      final order = await _placeDlcOrderUsecase.execute(
-        optionType: state.optionType,
+      final response = await _placeDlcOrderUsecase.execute(
+        instrumentId: state.instrumentId!,
         side: state.side,
-        strikePriceSat: state.strikePriceSat,
-        premiumSat: state.premiumSat,
         quantity: state.quantity,
-        expiryTimestamp: state.expiryTimestamp,
-        makerPubkey: makerPubkey,
-        signedOfferHex: signedOfferHex,
+        price: state.price,
+        fundingPubkeyHex: fundingPubkeyHex,
+        idempotencyKey: idempotencyKey,
       );
-      emit(state.copyWith(isSubmitting: false, submittedOrder: order));
+      emit(state.copyWith(isSubmitting: false, submittedOrderResponse: response));
     } on Exception catch (e) {
       emit(state.copyWith(isSubmitting: false, error: e));
     }

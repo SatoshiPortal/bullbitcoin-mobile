@@ -1,16 +1,13 @@
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/place_order/dlc_place_order_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Temporary stub values — will be replaced by real wallet key integration.
-const _stubPubkey = 'stub_pubkey';
-const _stubSignedOfferHex = 'stub_signed_offer_hex';
-
 class DlcPlaceOrderScreen extends StatefulWidget {
-  const DlcPlaceOrderScreen({super.key});
+  const DlcPlaceOrderScreen({super.key, this.instrumentId});
+
+  final String? instrumentId;
 
   @override
   State<DlcPlaceOrderScreen> createState() => _DlcPlaceOrderScreenState();
@@ -18,55 +15,32 @@ class DlcPlaceOrderScreen extends StatefulWidget {
 
 class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _strikePriceController = TextEditingController();
-  final _premiumController = TextEditingController();
+  final _instrumentController = TextEditingController();
+  final _priceController = TextEditingController();
   final _quantityController = TextEditingController(text: '1');
-  DateTime? _selectedExpiry;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.instrumentId != null) {
+      _instrumentController.text = widget.instrumentId!;
+      context.read<DlcPlaceOrderCubit>().setInstrument(widget.instrumentId!);
+    }
+  }
 
   @override
   void dispose() {
-    _strikePriceController.dispose();
-    _premiumController.dispose();
+    _instrumentController.dispose();
+    _priceController.dispose();
     _quantityController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickExpiry() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: now.add(const Duration(days: 7)),
-      firstDate: now.add(const Duration(days: 1)),
-      lastDate: now.add(const Duration(days: 365)),
-    );
-    if (picked == null || !mounted) return;
-    final time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(now),
-    );
-    if (time == null || !mounted) return;
-    final expiry = DateTime(
-      picked.year,
-      picked.month,
-      picked.day,
-      time.hour,
-      time.minute,
-    );
-    setState(() => _selectedExpiry = expiry);
-    context.read<DlcPlaceOrderCubit>().setExpiry(expiry);
-  }
-
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedExpiry == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select an expiry date')),
-      );
-      return;
-    }
     context.read<DlcPlaceOrderCubit>().submit(
-          makerPubkey: _stubPubkey,
-          signedOfferHex: _stubSignedOfferHex,
+          // TODO: replace with actual wallet funding pubkey
+          fundingPubkeyHex: '02' + '00' * 32,
         );
   }
 
@@ -77,19 +51,20 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
       body: BlocConsumer<DlcPlaceOrderCubit, DlcPlaceOrderState>(
         listener: (context, state) {
           if (state.isSuccess) {
+            final orderId = state.submittedOrderResponse?['order_id'];
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Order placed! ID: ${state.submittedOrder!.id.substring(0, 8)}…',
+                  orderId != null
+                      ? 'Order placed! ID: ${orderId.toString().substring(0, orderId.toString().length.clamp(0, 8))}…'
+                      : 'Order placed successfully!',
                 ),
                 backgroundColor: Colors.green,
               ),
             );
             context.read<DlcPlaceOrderCubit>().reset();
-            _strikePriceController.clear();
-            _premiumController.clear();
+            _priceController.clear();
             _quantityController.text = '1';
-            setState(() => _selectedExpiry = null);
           }
           if (state.error != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -108,26 +83,19 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── Option Type ──────────────────────────────────────────
-                  _SectionLabel(label: 'Option Type'),
+                  // ── Instrument ID ─────────────────────────────────────────
+                  _SectionLabel(label: 'Instrument ID'),
                   const SizedBox(height: 8),
-                  SegmentedButton<DlcOptionType>(
-                    segments: const [
-                      ButtonSegment(
-                        value: DlcOptionType.call,
-                        label: Text('Call'),
-                        icon: Icon(Icons.trending_up),
-                      ),
-                      ButtonSegment(
-                        value: DlcOptionType.put,
-                        label: Text('Put'),
-                        icon: Icon(Icons.trending_down),
-                      ),
-                    ],
-                    selected: {state.optionType},
-                    onSelectionChanged: (selection) => context
-                        .read<DlcPlaceOrderCubit>()
-                        .setOptionType(selection.first),
+                  TextFormField(
+                    controller: _instrumentController,
+                    decoration: const InputDecoration(
+                      hintText: 'e.g. btc-usd-call-50000-2024-12',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null,
+                    onChanged: (v) =>
+                        context.read<DlcPlaceOrderCubit>().setInstrument(v),
                   ),
                   const SizedBox(height: 20),
 
@@ -154,11 +122,11 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // ── Strike Price ─────────────────────────────────────────
-                  _SectionLabel(label: 'Strike Price (sats)'),
+                  // ── Price ─────────────────────────────────────────────────
+                  _SectionLabel(label: 'Price (sats)'),
                   const SizedBox(height: 8),
                   TextFormField(
-                    controller: _strikePriceController,
+                    controller: _priceController,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
@@ -173,35 +141,7 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
                     },
                     onChanged: (v) {
                       final n = int.tryParse(v);
-                      if (n != null) {
-                        context.read<DlcPlaceOrderCubit>().setStrikePrice(n);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // ── Premium ──────────────────────────────────────────────
-                  _SectionLabel(label: 'Premium per Contract (sats)'),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _premiumController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
-                      hintText: 'e.g. 10000',
-                      suffixText: 'sats',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (v) {
-                      final n = int.tryParse(v ?? '');
-                      if (n == null || n <= 0) return 'Enter a positive amount';
-                      return null;
-                    },
-                    onChanged: (v) {
-                      final n = int.tryParse(v);
-                      if (n != null) {
-                        context.read<DlcPlaceOrderCubit>().setPremium(n);
-                      }
+                      if (n != null) context.read<DlcPlaceOrderCubit>().setPrice(n);
                     },
                   ),
                   const SizedBox(height: 16),
@@ -224,24 +164,8 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
                     },
                     onChanged: (v) {
                       final n = int.tryParse(v);
-                      if (n != null) {
-                        context.read<DlcPlaceOrderCubit>().setQuantity(n);
-                      }
+                      if (n != null) context.read<DlcPlaceOrderCubit>().setQuantity(n);
                     },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // ── Expiry ───────────────────────────────────────────────
-                  _SectionLabel(label: 'Expiry'),
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: _pickExpiry,
-                    icon: const Icon(Icons.calendar_today),
-                    label: Text(
-                      _selectedExpiry == null
-                          ? 'Select expiry date & time'
-                          : '${_selectedExpiry!.toLocal()}'.substring(0, 16),
-                    ),
                   ),
                   const SizedBox(height: 32),
 
@@ -258,6 +182,15 @@ class _DlcPlaceOrderScreenState extends State<DlcPlaceOrderScreen> {
                             ),
                           )
                         : const Text('Place Order'),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Note: wallet key integration pending — funding pubkey is a stub.',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(color: Colors.orange.shade700),
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),

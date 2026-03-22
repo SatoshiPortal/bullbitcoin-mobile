@@ -7,6 +7,5 @@ class GetMyOrdersUsecase {
 
   final DlcRepository _dlcRepository;
 
-  Future<List<DlcOrder>> execute({required String pubkey}) =>
-      _dlcRepository.getMyOrders(pubkey: pubkey);
+  Future<List<DlcOrder>> execute() => _dlcRepository.getMyOrders();
 }

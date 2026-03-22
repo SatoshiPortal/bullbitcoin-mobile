@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_order.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -8,17 +7,18 @@ part 'dlc_order_model.g.dart';
 @freezed
 abstract class DlcOrderModel with _$DlcOrderModel {
   const factory DlcOrderModel({
-    required String id,
-    @JsonKey(name: 'option_type') required String optionType,
+    @JsonKey(name: 'order_id') required String id,
+    @JsonKey(name: 'instrument_id') required String instrumentId,
     required String side,
-    required String status,
-    @JsonKey(name: 'strike_price_sat') required int strikePriceSat,
-    @JsonKey(name: 'premium_sat') required int premiumSat,
     required int quantity,
-    @JsonKey(name: 'remaining_quantity') required int remainingQuantity,
-    @JsonKey(name: 'expiry_timestamp') required int expiryTimestamp,
-    @JsonKey(name: 'maker_pubkey') String? makerPubkey,
-    @JsonKey(name: 'created_at') required String createdAt,
+    required int price,
+    @Default('open') String status,
+    @JsonKey(name: 'is_maker') @Default(false) bool isMaker,
+    @JsonKey(name: 'sign_required') @Default(false) bool signRequired,
+    @JsonKey(name: 'dlc_id') String? dlcId,
+    @JsonKey(name: 'dlc_status') String? dlcStatus,
+    @JsonKey(name: 'offer_object_hex') String? offerObjectHex,
+    @JsonKey(name: 'created_at') @Default('') String createdAt,
   }) = _DlcOrderModel;
   const DlcOrderModel._();
 
@@ -27,24 +27,16 @@ abstract class DlcOrderModel with _$DlcOrderModel {
 
   DlcOrder toEntity() => DlcOrder(
         id: id,
-        optionType: optionType == 'call' ? DlcOptionType.call : DlcOptionType.put,
+        instrumentId: instrumentId,
         side: side == 'buy' ? DlcOrderSide.buy : DlcOrderSide.sell,
-        status: _parseStatus(status),
-        strikePriceSat: strikePriceSat,
-        premiumSat: premiumSat,
         quantity: quantity,
-        remainingQuantity: remainingQuantity,
-        expiryTimestamp: expiryTimestamp,
-        makerPubkey: makerPubkey,
+        price: price,
+        status: status,
+        isMaker: isMaker,
+        signRequired: signRequired,
+        dlcId: dlcId,
+        dlcStatus: dlcStatus,
+        offerObjectHex: offerObjectHex,
         createdAt: createdAt,
       );
-
-  static DlcOrderStatus _parseStatus(String raw) => switch (raw) {
-        'open' => DlcOrderStatus.open,
-        'partially_filled' => DlcOrderStatus.partiallyFilled,
-        'filled' => DlcOrderStatus.filled,
-        'cancelled' => DlcOrderStatus.cancelled,
-        'expired' => DlcOrderStatus.expired,
-        _ => DlcOrderStatus.open,
-      };
 }

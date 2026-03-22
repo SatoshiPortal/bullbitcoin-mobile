@@ -1,16 +1,18 @@
-import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/core/dlc/domain/repositories/dlc_repository.dart';
 
+/// Taker accept-context step: fetches signing context for accepting an order.
 class AcceptOfferUsecase {
   AcceptOfferUsecase({required DlcRepository dlcRepository})
       : _dlcRepository = dlcRepository;
 
   final DlcRepository _dlcRepository;
 
-  /// [acceptHex] must be produced by the key-signing logic before calling this.
-  Future<DlcContract> execute({
-    required String offerId,
-    required String acceptHex,
+  Future<Map<String, dynamic>> execute({
+    required String orderId,
+    required String fundingPubkeyHex,
   }) =>
-      _dlcRepository.acceptOffer(offerId: offerId, acceptHex: acceptHex);
+      _dlcRepository.getAcceptContext(
+        orderId: orderId,
+        fundingPubkeyHex: fundingPubkeyHex,
+      );
 }
