@@ -6,6 +6,8 @@ import 'package:bb_mobile/core/dlc/data/datasources/dlc_wallet_token_store.dart'
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
@@ -30,26 +32,30 @@ class DlcWalletRegistrationResult {
 /// stores the resulting [walletToken] in [DlcWalletTokenStore].
 ///
 /// Registration flow:
-///   1. Load default wallet (to get xpub).
+///   1. Load default wallet (to get xpub and wallet ID).
 ///   2. Load seed (to derive master private key for signing).
-///   3. Call `POST /auth/nonce` to obtain a challenge nonce.
-///   4. Sign `sha256(nonce.encode('utf-8').hex().encode('utf-8'))` with the
+///   3. Fetch current UTXOs to include in the registration payload.
+///   4. Call `POST /auth/nonce` to obtain a challenge nonce.
+///   5. Sign `sha256(nonce.encode('utf-8').hex().encode('utf-8'))` with the
 ///      BIP32 master private key using secp256k1 ECDSA (DER-encoded).
-///   5. Call `POST /auth/wallet` with xpub, signature, and nonce.
-///   6. Persist the returned `wallet_token` in [DlcWalletTokenStore].
+///   6. Call `POST /auth/wallet` with xpub, signature, nonce, and utxos.
+///   7. Persist the returned `wallet_token` in [DlcWalletTokenStore].
 class RegisterDlcWalletUsecase {
   RegisterDlcWalletUsecase({
     required WalletRepository walletRepository,
     required SeedRepository seedRepository,
+    required WalletUtxoRepository utxoRepository,
     required DlcApiDatasource dlcApiDatasource,
     required DlcWalletTokenStore tokenStore,
   })  : _walletRepository = walletRepository,
         _seedRepository = seedRepository,
+        _utxoRepository = utxoRepository,
         _dlcApiDatasource = dlcApiDatasource,
         _tokenStore = tokenStore;
 
   final WalletRepository _walletRepository;
   final SeedRepository _seedRepository;
+  final WalletUtxoRepository _utxoRepository;
   final DlcApiDatasource _dlcApiDatasource;
   final DlcWalletTokenStore _tokenStore;
 
@@ -67,23 +73,27 @@ class RegisterDlcWalletUsecase {
     final seed = await _seedRepository.get(wallet.masterFingerprint);
     final seedBytes = seed.bytes;
 
-    // 3. Fetch a one-time nonce from the coordinator
+    // 3. Fetch wallet UTXOs (best-effort — registration proceeds even if empty)
+    final utxos = await _fetchUtxos(wallet.id);
+
+    // 4. Fetch a one-time nonce from the coordinator
     final nonceResponse = await _dlcApiDatasource.fetchNonce();
     final nonce = nonceResponse['nonce'] as String;
 
-    // 4. Derive master key and sign the nonce
+    // 5. Derive master key and sign the nonce
     final root = bip32.Bip32Keys.fromSeed(seedBytes);
     final privateKeyBytes = root.private!;
     final fundingPubkeyHex = hex.encode(root.public);
 
     final signatureHex = _signNonce(privateKeyBytes, nonce);
 
-    // 5. Register with coordinator
+    // 6. Register with coordinator
     final regResponse = await _dlcApiDatasource.registerWallet(
       xpub: xpub,
       xpubSignatureHex: signatureHex,
       nonce: nonce,
       label: _walletLabel(wallet),
+      utxos: utxos,
     );
 
     final walletToken = regResponse['wallet_token'] as String? ??
@@ -96,7 +106,7 @@ class RegisterDlcWalletUsecase {
       );
     }
 
-    // 6. Store the token for use by DlcApiDatasource
+    // 7. Store the token for use by DlcApiDatasource
     _tokenStore.setRegistration(
       walletToken: walletToken,
       fundingPubkeyHex: fundingPubkeyHex,
@@ -113,6 +123,30 @@ class RegisterDlcWalletUsecase {
 
   String _walletLabel(Wallet wallet) =>
       wallet.label ?? 'BullBitcoin-${wallet.xpubFingerprint}';
+
+  /// Fetches the wallet's current UTXOs and converts them to the format
+  /// expected by the DLC coordinator registration endpoint:
+  ///   { "txid": "...", "vout": 0, "amount_sat": 100000 }
+  ///
+  /// Errors are swallowed so registration always proceeds even if the UTXO
+  /// fetch fails (e.g. wallet not yet synced).
+  Future<List<Map<String, dynamic>>> _fetchUtxos(String walletId) async {
+    try {
+      final utxos = await _utxoRepository.getWalletUtxos(walletId: walletId);
+      return utxos
+          .whereType<BitcoinWalletUtxo>()
+          .map(
+            (u) => <String, dynamic>{
+              'txid': u.txId,
+              'vout': u.vout,
+              'amount_sat': u.amountSat.toInt(),
+            },
+          )
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
 
   /// Signs the nonce as required by the DLC coordinator:
   ///   message_hex = nonce.encode('utf-8').hex()   // nonce bytes as hex string
@@ -195,15 +229,16 @@ class RegisterDlcWalletUsecase {
     return Uint8List.fromList(result);
   }
 
-  /// Build a deterministic SecureRandom seeded from private key + message hash
-  /// so signatures are deterministic in tests.
+  /// Build a deterministic SecureRandom seeded from private key + message hash.
+  /// FortunaRandom requires exactly 32 bytes, so we SHA256 the combined material.
   static SecureRandom _buildSecureRandom(
     Uint8List privKey,
     List<int> msgHash,
   ) {
-    final seed = Uint8List.fromList([...privKey, ...msgHash]);
+    final combined = Uint8List.fromList([...privKey, ...msgHash]);
+    final seed32 = Uint8List.fromList(sha256.convert(combined).bytes);
     final random = FortunaRandom();
-    random.seed(KeyParameter(seed));
+    random.seed(KeyParameter(seed32));
     return random;
   }
 }

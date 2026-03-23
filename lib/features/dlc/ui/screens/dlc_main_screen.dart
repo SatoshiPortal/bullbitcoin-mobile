@@ -58,20 +58,18 @@ class _DlcMainScreenState extends State<DlcMainScreen>
   }
 
   Future<void> _showOptInDialog() async {
-    final result = await showDialog<bool>(
+    // The dialog manages registration internally and pops with true on success.
+    final registered = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const _DlcOptInDialog(),
+      builder: (dialogContext) => BlocProvider.value(
+        value: context.read<DlcWalletAuthCubit>(),
+        child: const _DlcOptInDialog(),
+      ),
     );
     if (!mounted) return;
-    if (result == true) {
-      await context.read<DlcWalletAuthCubit>().register();
-      if (mounted &&
-          context.read<DlcWalletAuthCubit>().state.isRegistered) {
-        _loadInitialData();
-      }
-    } else {
-      await context.read<DlcWalletAuthCubit>().optOut();
+    if (registered == true) {
+      _loadInitialData();
     }
   }
 
@@ -178,29 +176,99 @@ class _DlcMainScreenState extends State<DlcMainScreen>
 
 // ─── Opt-in dialog ────────────────────────────────────────────────────────────
 
-class _DlcOptInDialog extends StatelessWidget {
+class _DlcOptInDialog extends StatefulWidget {
   const _DlcOptInDialog();
+
+  @override
+  State<_DlcOptInDialog> createState() => _DlcOptInDialogState();
+}
+
+class _DlcOptInDialogState extends State<_DlcOptInDialog> {
+  bool _isLoading = false;
+  String? _error;
+
+  Future<void> _onEnable() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      await context.read<DlcWalletAuthCubit>().register();
+      if (!mounted) return;
+      final success = context.read<DlcWalletAuthCubit>().state.isRegistered;
+      if (success) {
+        Navigator.pop(context, true);
+      } else {
+        final err = context.read<DlcWalletAuthCubit>().state.error;
+        setState(() {
+          _isLoading = false;
+          _error = err ?? 'Registration failed';
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = e.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Enable DLC Options'),
-      content: const Text(
-        'To participate in DLC Options trading, your wallet needs to be '
-        'registered with the Bull Bitcoin DLC coordinator.\n\n'
-        'This will use your wallet\'s public key to create an account. '
-        'No funds are moved.',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: const Text('No thanks'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
-          child: const Text('Enable DLC Options'),
-        ),
-      ],
+      content: _isLoading
+          ? const SizedBox(
+              height: 80,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 12),
+                    Text('Registering wallet…'),
+                  ],
+                ),
+              ),
+            )
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'To participate in DLC Options trading, your wallet needs to be '
+                  'registered with the Bull Bitcoin DLC coordinator.\n\n'
+                  'This will use your wallet\'s public key to create an account. '
+                  'No funds are moved.',
+                ),
+                if (_error != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    _error!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+      actions: _isLoading
+          ? null
+          : [
+              TextButton(
+                onPressed: () async {
+                  await context.read<DlcWalletAuthCubit>().optOut();
+                  if (context.mounted) Navigator.pop(context, false);
+                },
+                child: const Text('No thanks'),
+              ),
+              FilledButton(
+                onPressed: _onEnable,
+                child: Text(_error != null ? 'Retry' : 'Enable DLC Options'),
+              ),
+            ],
     );
   }
 }

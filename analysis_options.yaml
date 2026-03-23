@@ -10,6 +10,9 @@ linter:
 analyzer:
   errors:
     todo: ignore
+    # freezed puts @JsonKey on factory constructor parameters; the analyzer
+    # incorrectly flags these as invalid_annotation_target.
+    invalid_annotation_target: ignore
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart

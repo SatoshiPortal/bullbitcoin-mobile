@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/accept_offer_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/cancel_dlc_order_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/check_dlc_connection_usecase.dart';
@@ -67,6 +68,7 @@ class DlcLocator {
       () => RegisterDlcWalletUsecase(
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+        utxoRepository: locator<WalletUtxoRepository>(),
         dlcApiDatasource: locator<DlcApiDatasource>(),
         tokenStore: locator<DlcWalletTokenStore>(),
       ),

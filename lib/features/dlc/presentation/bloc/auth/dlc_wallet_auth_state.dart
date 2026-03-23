@@ -25,6 +25,7 @@ abstract class DlcWalletAuthState with _$DlcWalletAuthState {
   const factory DlcWalletAuthState({
     @Default(DlcWalletAuthStatus.unknown) DlcWalletAuthStatus status,
     String? walletId,
+    String? fundingPubkeyHex,
     String? error,
   }) = _DlcWalletAuthState;
 

@@ -56,6 +56,7 @@ class DlcWalletAuthCubit extends Cubit<DlcWalletAuthState> {
       emit(state.copyWith(
         status: DlcWalletAuthStatus.registered,
         walletId: savedWalletId,
+        fundingPubkeyHex: savedPubkey.isEmpty ? null : savedPubkey,
       ));
       return;
     }
@@ -90,6 +91,7 @@ class DlcWalletAuthCubit extends Cubit<DlcWalletAuthState> {
       emit(state.copyWith(
         status: DlcWalletAuthStatus.registered,
         walletId: result.walletId,
+        fundingPubkeyHex: result.fundingPubkeyHex,
         error: null,
       ));
     } catch (e) {
