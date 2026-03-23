@@ -5,6 +5,8 @@ abstract class DlcContractsState with _$DlcContractsState {
   const factory DlcContractsState({
     @Default(false) bool isLoading,
     @Default(false) bool isActing,
+    /// Current step when a signing operation is in progress; null otherwise.
+    DlcSigningStep? signingStep,
     @Default([]) List<DlcContract> contracts,
     DlcContract? selectedContract,
     Exception? error,

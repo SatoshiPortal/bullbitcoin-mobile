@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_contracts_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/get_contract_usecase.dart';
-import 'package:bb_mobile/features/dlc/domain/usecases/submit_signed_cets_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/sign_and_submit_cets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,15 +12,15 @@ class DlcContractsCubit extends Cubit<DlcContractsState> {
   DlcContractsCubit({
     required GetContractsUsecase getContractsUsecase,
     required GetContractUsecase getContractUsecase,
-    required SubmitSignedCetsUsecase submitSignedCetsUsecase,
+    required SignAndSubmitCetsUsecase signAndSubmitCetsUsecase,
   })  : _getContractsUsecase = getContractsUsecase,
         _getContractUsecase = getContractUsecase,
-        _submitSignedCetsUsecase = submitSignedCetsUsecase,
+        _signAndSubmitCetsUsecase = signAndSubmitCetsUsecase,
         super(const DlcContractsState());
 
   final GetContractsUsecase _getContractsUsecase;
   final GetContractUsecase _getContractUsecase;
-  final SubmitSignedCetsUsecase _submitSignedCetsUsecase;
+  final SignAndSubmitCetsUsecase _signAndSubmitCetsUsecase;
 
   Future<void> loadContracts() async {
     emit(state.copyWith(isLoading: true, error: null));
@@ -35,9 +35,8 @@ class DlcContractsCubit extends Cubit<DlcContractsState> {
   Future<void> refreshContract({required String dlcId}) async {
     try {
       final contract = await _getContractUsecase.execute(dlcId: dlcId);
-      final updated = state.contracts
-          .map((c) => c.id == dlcId ? contract : c)
-          .toList();
+      final updated =
+          state.contracts.map((c) => c.id == dlcId ? contract : c).toList();
       emit(state.copyWith(contracts: updated, selectedContract: contract));
     } on Exception catch (e) {
       emit(state.copyWith(error: e));
@@ -47,31 +46,34 @@ class DlcContractsCubit extends Cubit<DlcContractsState> {
   void selectContract(DlcContract contract) =>
       emit(state.copyWith(selectedContract: contract, error: null));
 
-  Future<void> submitSignedCets({
-    required String dlcId,
-    /// TODO: derive signatures from wallet signing logic
-    required String cetAdaptorSignaturesHex,
-    required String refundSignatureHex,
-    required String fundingSignaturesHex,
-  }) async {
-    emit(state.copyWith(isActing: true, error: null));
+  /// Signs the CETs for an accepted DLC contract (maker role) and submits
+  /// the signatures to the coordinator.  Progress is reflected in [signingStep].
+  Future<void> signAndSubmitMaker({required String dlcId}) async {
+    emit(state.copyWith(isActing: true, signingStep: null, error: null));
     try {
-      final contract = await _submitSignedCetsUsecase.execute(
-        dlcId: dlcId,
-        cetAdaptorSignaturesHex: cetAdaptorSignaturesHex,
-        refundSignatureHex: refundSignatureHex,
-        fundingSignaturesHex: fundingSignaturesHex,
-      );
-      final updated = state.contracts
-          .map((c) => c.id == dlcId ? contract : c)
-          .toList();
+      await for (final event
+          in _signAndSubmitCetsUsecase.executeMaker(dlcId: dlcId)) {
+        if (event.isDone && event.completedContract != null) {
+          final contract = event.completedContract!;
+          final updated = state.contracts
+              .map((c) => c.id == dlcId ? contract : c)
+              .toList();
+          emit(state.copyWith(
+            isActing: false,
+            signingStep: null,
+            contracts: updated,
+            selectedContract: contract,
+          ));
+        } else {
+          emit(state.copyWith(signingStep: event.step));
+        }
+      }
+    } catch (e) {
       emit(state.copyWith(
         isActing: false,
-        contracts: updated,
-        selectedContract: contract,
+        signingStep: null,
+        error: e is Exception ? e : Exception(e.toString()),
       ));
-    } on Exception catch (e) {
-      emit(state.copyWith(isActing: false, error: e));
     }
   }
 

@@ -1,13 +1,9 @@
 import 'package:bb_mobile/core/dlc/domain/entities/dlc_contract.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/sign_and_submit_cets_usecase.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/contracts/dlc_contracts_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-/// TODO: replace stub signatures with real wallet signing logic.
-const _stubCetAdaptorSignaturesHex = 'stub_cet_adaptor_signatures_hex';
-const _stubRefundSignatureHex = 'stub_refund_signature_hex';
-const _stubFundingSignaturesHex = 'stub_funding_signatures_hex';
 
 class DlcContractDetailScreen extends StatelessWidget {
   const DlcContractDetailScreen({super.key});
@@ -16,7 +12,7 @@ class DlcContractDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<DlcContractsCubit, DlcContractsState>(
       listener: (context, state) {
-        if (state.error != null) {
+        if (state.error != null && !state.isActing) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: ${state.error}'),
@@ -40,9 +36,11 @@ class DlcContractDetailScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.refresh),
                 tooltip: 'Refresh',
-                onPressed: () => context
-                    .read<DlcContractsCubit>()
-                    .refreshContract(dlcId: contract.id),
+                onPressed: state.isActing
+                    ? null
+                    : () => context
+                        .read<DlcContractsCubit>()
+                        .refreshContract(dlcId: contract.id),
               ),
             ],
           ),
@@ -56,16 +54,13 @@ class DlcContractDetailScreen extends StatelessWidget {
                 _DetailCard(contract: contract),
                 const SizedBox(height: 16),
                 if (contract.status == DlcContractStatus.accepted)
-                  _SignCetsButton(
+                  _SigningSection(
                     isActing: state.isActing,
+                    signingStep: state.signingStep,
+                    error: state.error,
                     onSign: () => context
                         .read<DlcContractsCubit>()
-                        .submitSignedCets(
-                          dlcId: contract.id,
-                          cetAdaptorSignaturesHex: _stubCetAdaptorSignaturesHex,
-                          refundSignatureHex: _stubRefundSignatureHex,
-                          fundingSignaturesHex: _stubFundingSignaturesHex,
-                        ),
+                        .signAndSubmitMaker(dlcId: contract.id),
                   ),
               ],
             ),
@@ -75,6 +70,215 @@ class DlcContractDetailScreen extends StatelessWidget {
     );
   }
 }
+
+// ─── Signing section ──────────────────────────────────────────────────────────
+
+class _SigningSection extends StatelessWidget {
+  const _SigningSection({
+    required this.isActing,
+    required this.signingStep,
+    required this.error,
+    required this.onSign,
+  });
+
+  final bool isActing;
+  final DlcSigningStep? signingStep;
+  final Exception? error;
+  final VoidCallback onSign;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isActing) {
+      return _SigningProgressCard(currentStep: signingStep);
+    }
+    if (error != null) {
+      return _SigningErrorCard(error: error!, onRetry: onSign);
+    }
+    return _SignButton(onSign: onSign);
+  }
+}
+
+class _SignButton extends StatelessWidget {
+  const _SignButton({required this.onSign});
+  final VoidCallback onSign;
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.icon(
+      onPressed: onSign,
+      icon: const Icon(Icons.draw),
+      label: const Text('Sign & Submit CETs'),
+    );
+  }
+}
+
+/// Shows the four signing steps with the current one animated.
+class _SigningProgressCard extends StatelessWidget {
+  const _SigningProgressCard({required this.currentStep});
+
+  final DlcSigningStep? currentStep;
+
+  static const _steps = [
+    (DlcSigningStep.fetchingContext, Icons.cloud_download_outlined, 'Fetching sign context'),
+    (DlcSigningStep.preparingKey, Icons.key_outlined, 'Preparing wallet key'),
+    (DlcSigningStep.signing, Icons.draw_outlined, 'Signing transactions'),
+    (DlcSigningStep.submitting, Icons.upload_outlined, 'Submitting signatures'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final currentIndex = currentStep == null
+        ? -1
+        : _steps.indexWhere((s) => s.$1 == currentStep);
+
+    return Card(
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  'Signing in progress…',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            for (var i = 0; i < _steps.length; i++)
+              _StepRow(
+                icon: _steps[i].$2,
+                label: _steps[i].$3,
+                status: i < currentIndex
+                    ? _StepStatus.done
+                    : i == currentIndex
+                        ? _StepStatus.active
+                        : _StepStatus.pending,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+enum _StepStatus { pending, active, done }
+
+class _StepRow extends StatelessWidget {
+  const _StepRow({
+    required this.icon,
+    required this.label,
+    required this.status,
+  });
+
+  final IconData icon;
+  final String label;
+  final _StepStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final (Color color, Widget leading) = switch (status) {
+      _StepStatus.done => (
+          theme.colorScheme.primary,
+          Icon(Icons.check_circle, size: 20, color: theme.colorScheme.primary),
+        ),
+      _StepStatus.active => (
+          theme.colorScheme.secondary,
+          const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      _StepStatus.pending => (
+          theme.colorScheme.outlineVariant,
+          Icon(icon, size: 20, color: theme.colorScheme.outlineVariant),
+        ),
+    };
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          leading,
+          const SizedBox(width: 12),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: color,
+              fontWeight: status == _StepStatus.active
+                  ? FontWeight.w600
+                  : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SigningErrorCard extends StatelessWidget {
+  const _SigningErrorCard({required this.error, required this.onRetry});
+
+  final Exception error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Theme.of(context).colorScheme.errorContainer,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.error_outline,
+                    color: Theme.of(context).colorScheme.onErrorContainer),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Signing failed',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onErrorContainer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error.toString(),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
+            ),
+            const SizedBox(height: 12),
+            FilledButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Status banner ─────────────────────────────────────────────────────────────
 
 class _StatusBanner extends StatelessWidget {
   const _StatusBanner({required this.contract});
@@ -90,10 +294,13 @@ class _StatusBanner extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: isActive ? Colors.blue.shade200 : Colors.grey.shade300,
+              backgroundColor:
+                  isActive ? Colors.blue.shade200 : Colors.grey.shade300,
               child: Icon(
                 Icons.handshake_outlined,
-                color: isActive ? Colors.blue.shade900 : Colors.grey.shade700,
+                color: isActive
+                    ? Colors.blue.shade900
+                    : Colors.grey.shade700,
               ),
             ),
             const SizedBox(width: 12),
@@ -125,6 +332,8 @@ class _StatusBanner extends StatelessWidget {
     );
   }
 }
+
+// ─── Detail card ───────────────────────────────────────────────────────────────
 
 class _DetailCard extends StatelessWidget {
   const _DetailCard({required this.contract});
@@ -216,7 +425,8 @@ class _Row extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+            child:
+                Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
           if (onCopy != null)
             IconButton(
@@ -226,27 +436,6 @@ class _Row extends StatelessWidget {
             ),
         ],
       ),
-    );
-  }
-}
-
-class _SignCetsButton extends StatelessWidget {
-  const _SignCetsButton({required this.isActing, required this.onSign});
-  final bool isActing;
-  final VoidCallback onSign;
-
-  @override
-  Widget build(BuildContext context) {
-    return FilledButton.icon(
-      onPressed: isActing ? null : onSign,
-      icon: isActing
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-            )
-          : const Icon(Icons.draw),
-      label: const Text('Submit Signed CETs'),
     );
   }
 }

@@ -17,8 +17,8 @@ import 'package:bb_mobile/features/dlc/domain/usecases/get_my_orders_usecase.dar
 import 'package:bb_mobile/features/dlc/domain/usecases/get_orderbook_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/place_dlc_order_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/register_dlc_wallet_usecase.dart';
+import 'package:bb_mobile/features/dlc/domain/usecases/sign_and_submit_cets_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/sign_dlc_usecase.dart';
-import 'package:bb_mobile/features/dlc/domain/usecases/submit_signed_cets_usecase.dart';
 import 'package:bb_mobile/features/dlc/domain/usecases/take_order_usecase.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/auth/dlc_wallet_auth_cubit.dart';
 import 'package:bb_mobile/features/dlc/presentation/bloc/connection/dlc_connection_cubit.dart';
@@ -128,8 +128,10 @@ class DlcLocator {
         dlcRepository: locator<DlcRepository>(),
       ),
     );
-    locator.registerFactory<SubmitSignedCetsUsecase>(
-      () => SubmitSignedCetsUsecase(
+    locator.registerFactory<SignAndSubmitCetsUsecase>(
+      () => SignAndSubmitCetsUsecase(
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
         dlcRepository: locator<DlcRepository>(),
       ),
     );
@@ -166,6 +168,7 @@ class DlcLocator {
       () => DlcMyOrdersCubit(
         getMyOrdersUsecase: locator<GetMyOrdersUsecase>(),
         cancelDlcOrderUsecase: locator<CancelDlcOrderUsecase>(),
+        signAndSubmitCetsUsecase: locator<SignAndSubmitCetsUsecase>(),
       ),
     );
     locator.registerFactory<DlcPlaceOrderCubit>(
@@ -180,7 +183,7 @@ class DlcLocator {
       () => DlcContractsCubit(
         getContractsUsecase: locator<GetContractsUsecase>(),
         getContractUsecase: locator<GetContractUsecase>(),
-        submitSignedCetsUsecase: locator<SubmitSignedCetsUsecase>(),
+        signAndSubmitCetsUsecase: locator<SignAndSubmitCetsUsecase>(),
       ),
     );
   }

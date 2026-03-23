@@ -8,6 +8,10 @@ abstract class DlcMyOrdersState with _$DlcMyOrdersState {
     @Default([]) List<DlcOrder> orders,
     /// Order IDs currently being cancelled
     @Default([]) List<String> cancellingIds,
+    /// The order ID currently being signed (taker accept flow).
+    String? signingOrderId,
+    /// Current step of the taker signing operation; null when idle.
+    DlcSigningStep? signingStep,
     Exception? error,
   }) = _DlcMyOrdersState;
   const DlcMyOrdersState._();
