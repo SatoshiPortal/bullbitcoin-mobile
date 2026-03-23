@@ -15,5 +15,7 @@
   "sendErrorInvoiceMustContainAmount": "Hóa đơn phải chứa số tiền",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
-  }
+  },
+  "settingsGetHelpLabel": "Nhận trợ giúp",
+  "exchangeSupportLoginChatRequired": "Để nhận hỗ trợ từ nhân viên, bạn cần đăng nhập vào tài khoản Bull Bitcoin của mình trước. Hoàn toàn miễn phí và không yêu cầu KYC, chỉ cần một địa chỉ email."
 }

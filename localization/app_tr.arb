@@ -825,6 +825,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "Canlı destek almak için önce Bull Bitcoin hesabınıza giriş yapmanız gerekir. Tamamen ücretsizdir ve KYC gerekmez, sadece bir e-posta adresi yeterlidir.",
   "seedsignerStep12": "Bull Bitcoin cüzdanı, SeedSigner'deki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2577,6 +2578,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Yardım Al",
   "exchangeStatisticsOrderStats": "Order Statistics",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3698,10 +3700,6 @@
   "walletNetworkBitcoin": "Bitcoin Network",
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
-  },
-  "exchangeSupportLoginAccountInfo": "Bullbitcoin.com ile her zaman web uygulamamız aracılığıyla erişebileceğiniz bir hesap oluşturacaksınız.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
   },
   "electrumAdvancedOptions": "Gelişmiş Seçenekler",
   "@electrumAdvancedOptions": {
@@ -11551,10 +11549,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "Sadece destek sohbet özelliğine erişebilirsiniz.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "dcaNetworkLabel": "Ağ Ağı Ağı",
   "@dcaNetworkLabel": {
     "description": "Label for network detail row"
@@ -11908,10 +11902,6 @@
   "swapProgressPendingMessage": "Transfer devam ediyor. Bitcoin işlemleri onaylarken alabilir. Eve dönebilir ve bekleyebilirsin.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Bull Bitcoin Destek Hesabına Bağlan",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "Ağ Ağı Ağı",
   "@walletDetailsNetworkLabel": {

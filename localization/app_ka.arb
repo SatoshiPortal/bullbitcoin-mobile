@@ -227,5 +227,7 @@
   "sendErrorInvoiceMustContainAmount": "ინვოისი უნდა შეიცავდეს თანხას",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
-  }
+  },
+  "settingsGetHelpLabel": "დახმარების მიღება",
+  "exchangeSupportLoginChatRequired": "ადამიანური მხარდაჭერის მისაღებად, ჯერ უნდა შეხვიდეთ თქვენს Bull Bitcoin ანგარიშში. სავსებით უფასოა და KYC არ არის საჭირო, საჭიროა მხოლოდ ელექტრონული ფოსტის მისამართი."
 }
