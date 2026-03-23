@@ -873,6 +873,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Obter ajuda",
   "sellTransactionFee": "Taxa de transação",
   "coldcardStep5": "Se você tiver problemas de digitalização:",
   "buyExpressWithdrawal": "Retirada expressa",
@@ -3357,6 +3358,7 @@
   "payInvoiceDetails": "Detalhes da fatura",
   "exchangeLandingLoginButton": "Login Ou Inscreva-se",
   "exchangeLandingLoginToUseSupport": "Por favor, faça login ou inscreva-se para usar o chat de suporte para questões relacionadas à exchange.",
+  "exchangeSupportLoginChatRequired": "Para obter suporte humano, deve primeiro iniciar sessão na sua conta Bull Bitcoin. É 100 % gratuito e não é necessário KYC, apenas um endereço de email.",
   "torSettingsEnableProxy": "Ativar Proxy Tor",
   "bitboxScreenAddressToVerify": "Endereço para verificar:",
   "payConfirmPayment": "Confirmar pagamento",

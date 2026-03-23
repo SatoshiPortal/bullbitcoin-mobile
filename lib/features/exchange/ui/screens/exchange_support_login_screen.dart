@@ -87,7 +87,7 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                   ),
                   // Semi-transparent overlay with login card
                   Container(
-                    color: Colors.black.withValues(alpha: 0.55),
+                    color: context.appColors.onSurface.withValues(alpha: 0.55),
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(32),

@@ -876,6 +876,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "获取帮助",
   "sellTransactionFee": "交易费",
   "coldcardStep5": "如果你遇到麻烦,就会:",
   "buyExpressWithdrawal": "提 出",
@@ -4130,6 +4131,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "如需人工支持，您必须先登录您的 Bull Bitcoin 账户。完全免费，无需 KYC，只需一个电子邮件地址。",
   "recipientsSearchHint": "按名称或标签搜索收件人",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
