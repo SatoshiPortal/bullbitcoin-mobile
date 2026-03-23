@@ -4,10 +4,10 @@ import 'package:bb_mobile/features/fund_exchange/application/ports/exchange_envi
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/environment/settings_exchange_environment_adapter.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/gateways/bullbitcoin_api_funding_gateway.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/gateways/delegating_funding_gateway.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/interface_adapters/settings_exchange_environment_adapter.dart';
+import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/bullbitcoin_api_funding_gateway.dart';
+import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/delegating_funding_gateway.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 

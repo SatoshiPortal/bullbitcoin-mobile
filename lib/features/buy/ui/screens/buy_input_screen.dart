@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/fund_exchange/frameworks/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';

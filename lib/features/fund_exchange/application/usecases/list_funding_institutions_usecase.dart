@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_errors.dart';
+import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_error.dart';
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_errors.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_error.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 

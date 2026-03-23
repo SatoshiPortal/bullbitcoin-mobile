@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_errors.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/fund_exchange_domain_error.dart';
 import 'package:meta/meta.dart';
 
 @immutable

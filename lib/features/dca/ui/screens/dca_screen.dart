@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_amount_input_fields.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart';
-import 'package:bb_mobile/features/fund_exchange/frameworks/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
