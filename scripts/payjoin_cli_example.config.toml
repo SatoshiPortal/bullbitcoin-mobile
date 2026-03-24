@@ -1,0 +1,29 @@
+# NOTE: payjoin-cli does NOT require a config.toml for the e2e test.
+# All arguments are passed directly on the command line by the Dart test.
+# This file is kept as a reference only.
+#
+# If you want to use payjoin-cli manually (outside of the automated test),
+# copy this to a directory and rename it config.toml, then run payjoin-cli
+# from that directory.
+#
+# Reference: https://github.com/payjoin/rust-payjoin
+
+[bitcoind]
+# testnet3 default (must match the network the mobile app uses)
+rpchost = "http://127.0.0.1:18332/wallet/payjoin-test"
+# Use either cookie file:
+# cookie = "/home/<user>/.bitcoin/testnet3/.cookie"
+# Or rpcuser / rpcpassword:
+cookie = "/home/user/.bitcoin/testnet3/.cookie"
+
+# rpcuser = "your_rpc_user"
+# rpcpassword = "your_rpc_password"
+
+[v2]
+# Must match PayjoinConstants in lib/core/utils/constants.dart
+pj_directory = "https://payjo.in"
+ohttp_relays = [
+    "https://ohttp.achow101.com",
+    "https://pj.bobspacebkk.com",
+    "https://pj.benalleng.com",
+]
