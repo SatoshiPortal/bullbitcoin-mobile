@@ -876,6 +876,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "获取帮助",
   "sellTransactionFee": "交易费",
   "coldcardStep5": "如果你遇到麻烦,就会:",
   "buyExpressWithdrawal": "提 出",
@@ -3381,9 +3382,6 @@
   },
   "payInvoiceDetails": "发票细节",
   "exchangeLandingLoginButton": "标志",
-  "exchangeSupportLoginSubtitle": "连接到 Bull Bitcoin 支持账户",
-  "exchangeSupportLoginAccessMessage": "您将只能访问支持聊天功能。",
-  "exchangeSupportLoginAccountInfo": "您将在 bullbitcoin.com 创建一个账户，您可以随时通过我们的网络应用访问。",
   "torSettingsEnableProxy": "Enable Tor Proxy",
   "bitboxScreenAddressToVerify": "地址:",
   "payConfirmPayment": "普通工资",
@@ -4133,6 +4131,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "如需人工支持，您必须先登录您的 Bull Bitcoin 账户。完全免费，无需 KYC，只需一个电子邮件地址。",
   "recipientsSearchHint": "按名称或标签搜索收件人",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"

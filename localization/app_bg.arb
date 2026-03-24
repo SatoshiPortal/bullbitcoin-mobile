@@ -2187,6 +2187,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Получете помощ",
   "exchangeStatisticsOrderStats": "Статистика за поръчки",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -9447,5 +9448,6 @@
   "appInitErrorShareLogsButton": "Споделяне на логове",
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
-  }
+  },
+  "exchangeSupportLoginChatRequired": "За да получите помощ от жив оператор, първо трябва да влезете в акаунта си в Bull Bitcoin. Напълно безплатно е и не се изисква KYC, само имейл адрес."
 }

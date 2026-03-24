@@ -35,5 +35,7 @@
   "sendErrorInvoiceMustContainAmount": "Ankara lazima iwe na kiasi",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
-  }
+  },
+  "settingsGetHelpLabel": "Pata Msaada",
+  "exchangeSupportLoginChatRequired": "Ili kupata msaada wa binadamu, lazima kwanza uingie kwenye akaunti yako ya Bull Bitcoin. Ni bure kabisa na hakuna KYC inayohitajika, anwani ya barua pepe tu."
 }

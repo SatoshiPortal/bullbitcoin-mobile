@@ -873,6 +873,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Получить помощь",
   "sellTransactionFee": "Плата за операции",
   "coldcardStep5": "Если у вас есть проблемы с сканированием:",
   "buyExpressWithdrawal": "Экспресс-вывод",
@@ -3379,9 +3380,7 @@
   "payInvoiceDetails": "Детали счетов-фактур",
   "exchangeLandingLoginButton": "Зарегистрироваться или зарегистрироваться",
   "exchangeLandingLoginToUseSupport": "Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать чат поддержки для вопросов, связанных с биржей.",
-  "exchangeSupportLoginSubtitle": "Подключиться к учетной записи поддержки Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "У вас будет доступ только к функции чата поддержки.",
-  "exchangeSupportLoginAccountInfo": "Вы создадите учетную запись на bullbitcoin.com, к которой всегда сможете получить доступ через наше веб-приложение.",
+  "exchangeSupportLoginChatRequired": "Чтобы получить поддержку от живого оператора, необходимо сначала войти в свой аккаунт Bull Bitcoin. Это полностью бесплатно, KYC не требуется — только адрес электронной почты.",
   "torSettingsEnableProxy": "Включить Tor Proxy",
   "bitboxScreenAddressToVerify": "Адрес для проверки:",
   "payConfirmPayment": "Подтвердить оплату",

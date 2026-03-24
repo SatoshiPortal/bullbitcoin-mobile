@@ -730,6 +730,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "Για να λάβετε ανθρώπινη υποστήριξη, πρέπει πρώτα να συνδεθείτε στον λογαριασμό σας Bull Bitcoin. Είναι 100% δωρεάν και δεν απαιτείται KYC, μόνο μια διεύθυνση email.",
   "seedsignerStep12": "Το πορτοφόλι Bitcoin Bull θα σας ζητήσει να σαρώσετε τον κωδικό QR στο SeedSigner. Βάλτε το.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2157,6 +2158,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Λήψη βοήθειας",
   "exchangeStatisticsOrderStats": "Στατιστική",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3106,10 +3108,6 @@
   "walletNetworkBitcoin": "Bitcoin Network",
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
-  },
-  "exchangeSupportLoginAccountInfo": "Θα δημιουργήσετε ένα λογαριασμό με το bullbitcoin.com που μπορείτε πάντα να έχετε πρόσβαση μέσω της εφαρμογής web μας.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
   },
   "electrumAdvancedOptions": "Προχωρημένες επιλογές",
   "@electrumAdvancedOptions": {
@@ -9583,10 +9581,6 @@
   "@receiveAmount": {
     "description": "Optional amount field for invoice"
   },
-  "exchangeSupportLoginAccessMessage": "Θα έχετε πρόσβαση μόνο στο χαρακτηριστικό συνομιλίας υποστήριξης.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "Επίπεδο 1 όριο: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -9912,10 +9906,6 @@
   "swapProgressPendingMessage": "Η μεταφορά βρίσκεται σε εξέλιξη. Οι συναλλαγές Bitcoin μπορούν να πάρουν λίγο χρόνο για να επιβεβαιώσουν. Μπορείτε να επιστρέψετε στο σπίτι και να περιμένετε.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support Account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "Network",
   "@walletDetailsNetworkLabel": {

@@ -829,6 +829,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "실시간 지원을 받으려면 먼저 Bull Bitcoin 계정에 로그인해야 합니다. 완전 무료이며 KYC가 필요하지 않고, 이메일 주소만 있으면 됩니다.",
   "seedsignerStep12": "Bull Bitcoin 지갑은 SeedSigner에서 QR 코드를 스캔하도록 요청합니다. 그것을 검사하십시오.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2585,6 +2586,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "도움 받기",
   "exchangeStatisticsOrderStats": "주문 통계",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3710,10 +3712,6 @@
   "walletNetworkBitcoin": "Bitcoin 네트워크",
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
-  },
-  "exchangeSupportLoginAccountInfo": "웹 앱을 통해 항상 액세스 할 수있는 bullbitcoin.com 계정을 만들 것입니다.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
   },
   "electrumAdvancedOptions": "고급 옵션",
   "@electrumAdvancedOptions": {
@@ -11647,10 +11645,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "지원 채팅 기능에만 액세스 할 수 있습니다.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "레벨 1 제한: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -12017,10 +12011,6 @@
   "swapProgressPendingMessage": "전송은 진행 중입니다. Bitcoin 거래는 확인하는 동안 걸릴 수 있습니다. 집과 대기를 반환 할 수 있습니다.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Bull Bitcoin 지원 계정에 연결",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "회사연혁",
   "@walletDetailsNetworkLabel": {

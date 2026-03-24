@@ -858,6 +858,7 @@
     }
   },
   "settingsGithubLabel": "GitHub",
+  "settingsGetHelpLabel": "Hilfe erhalten",
   "sellTransactionFee": "Transaktionsgebühren",
   "coldcardStep5": "Wenn Sie Probleme beim Scannen haben:",
   "buyExpressWithdrawal": "Express-Auszahlung",
@@ -3337,9 +3338,7 @@
   "payInvoiceDetails": "Rechnungsdetails",
   "exchangeLandingLoginButton": "Anmelden oder registrieren",
   "exchangeLandingLoginToUseSupport": "Bitte melden Sie sich an oder registrieren Sie sich, um den Support-Chat für Börsenfragen zu nutzen",
-  "exchangeSupportLoginSubtitle": "Mit Bull Bitcoin Support-Konto verbinden",
-  "exchangeSupportLoginAccessMessage": "Sie haben nur Zugriff auf die Support-Chat-Funktion",
-  "exchangeSupportLoginAccountInfo": "Sie erstellen ein Konto bei bullbitcoin.com, auf das Sie jederzeit über unsere Web-App zugreifen können",
+  "exchangeSupportLoginChatRequired": "Um persönlichen Support zu erhalten, müssen Sie sich zuerst in Ihrem Bull Bitcoin Konto anmelden. Es ist 100 % kostenlos und es ist kein KYC erforderlich, nur eine E-Mail-Adresse.",
   "torSettingsEnableProxy": "Tor Proxy aktivieren",
   "bitboxScreenAddressToVerify": "Adresse:",
   "payConfirmPayment": "Zahlung bestätigen",

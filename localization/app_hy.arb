@@ -15,5 +15,7 @@
   "sendErrorInvoiceMustContainAmount": "Հաշիվ-ապրանքագիրը պետք է պարունակի գումար",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
-  }
+  },
+  "settingsGetHelpLabel": "Ստանալ օգնություն",
+  "exchangeSupportLoginChatRequired": "Մարդկային աջակցություն ստանալու համար նախ պետք է մուտք գործեք ձեր Bull Bitcoin հաշիվը։ Ամբողջովին անվճար է և KYC չի պահանջվում, միայն էլեկտրոնային փոստի հասցե:"
 }
