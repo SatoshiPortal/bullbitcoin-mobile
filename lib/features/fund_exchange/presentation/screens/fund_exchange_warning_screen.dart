@@ -21,23 +21,23 @@ class FundExchangeWarningScreen extends StatefulWidget {
 }
 
 class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
-  bool hasConfirmedNoCoercion = false;
+  bool _hasConfirmedNoCoercion = false;
   late StreamSubscription<FundExchangeState> _blocSubscription;
-  bool isSubmittingConsent = false;
-  FundExchangePresentationError? submitConsentError;
+  bool _isSubmittingConsent = false;
+  FundExchangePresentationError? _submitConsentError;
 
   @override
   void initState() {
     super.initState();
     _blocSubscription = context.read<FundExchangeBloc>().stream.listen((state) {
-      if (state.isSubmittingScamWarningConsent != isSubmittingConsent) {
+      if (state.isSubmittingScamWarningConsent != _isSubmittingConsent) {
         setState(
-          () => isSubmittingConsent = state.isSubmittingScamWarningConsent,
+          () => _isSubmittingConsent = state.isSubmittingScamWarningConsent,
         );
       }
-      if (state.submitScamWarningConsentException != submitConsentError) {
+      if (state.submitScamWarningConsentException != _submitConsentError) {
         setState(
-          () => submitConsentError = state.submitScamWarningConsentException,
+          () => _submitConsentError = state.submitScamWarningConsentException,
         );
       }
     });
@@ -61,7 +61,7 @@ class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
           preferredSize: const Size.fromHeight(3),
           child: FadingLinearProgress(
             height: 3,
-            trigger: isSubmittingConsent,
+            trigger: _isSubmittingConsent,
             backgroundColor: context.appColors.surface,
             foregroundColor: context.appColors.primary,
           ),
@@ -133,13 +133,15 @@ class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              value: hasConfirmedNoCoercion,
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  hasConfirmedNoCoercion = value;
-                });
-              },
+              value: _hasConfirmedNoCoercion,
+              onChanged: _isSubmittingConsent
+                  ? null
+                  : (value) {
+                      if (value == null) return;
+                      setState(() {
+                        _hasConfirmedNoCoercion = value;
+                      });
+                    },
               title: Text(
                 context.loc.fundExchangeWarningConfirmation,
                 style: theme.textTheme.bodyLarge,
@@ -147,10 +149,10 @@ class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
               controlAffinity: ListTileControlAffinity.leading,
             ),
             const Spacer(),
-            if (submitConsentError != null) ...[
+            if (_submitConsentError != null) ...[
               Text(
                 context.loc.fundExchangeScamConsentError,
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.error,
                 ),
                 textAlign: TextAlign.center,
@@ -159,11 +161,13 @@ class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
             ],
             BBButton.big(
               label: context.loc.fundExchangeContinueButton,
-              disabled: !hasConfirmedNoCoercion,
+              disabled: !_hasConfirmedNoCoercion || _isSubmittingConsent,
               onPressed: () {
-                context.read<FundExchangeBloc>().add(
-                  const FundExchangeEvent.scamWarningConsentSubmitted(),
-                );
+                if (_hasConfirmedNoCoercion) {
+                  context.read<FundExchangeBloc>().add(
+                    const FundExchangeEvent.scamWarningConsentSubmitted(),
+                  );
+                }
               },
               bgColor: context.appColors.primary,
               textColor: context.appColors.onPrimary,

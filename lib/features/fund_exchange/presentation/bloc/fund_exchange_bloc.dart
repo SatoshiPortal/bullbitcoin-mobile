@@ -52,6 +52,12 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
 
+      // To test scam warning consent flow.
+      // Comment out before production.
+      //final groups = summary.groups.toList();
+      //groups.remove('CONSENT_SCAM_WARNING');
+      //emit(state.copyWith(userSummary: summary.copyWith(groups: groups)));
+
       emit(state.copyWith(userSummary: summary));
     } on ApiKeyException catch (e) {
       emit(state.copyWith(apiKeyException: e));
