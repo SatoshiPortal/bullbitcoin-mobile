@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -15,7 +14,7 @@ class FundExchangeScamWarningCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BBText(
+            Text(
               context.loc.fundExchangeWarningTacticsTitle,
               style: theme.textTheme.headlineSmall,
             ),
