@@ -24,20 +24,20 @@ import 'package:go_router/go_router.dart';
 
 enum FundExchangeRoute {
   fundExchange('/fund-exchange'),
-  fundExchangeWarning('warning'),
-  fundExchangeEmailETransfer('email-e-transfer'),
-  fundExchangeBankTransferWire('bank-transfer-wire'),
-  fundExchangeOnlineBillPayment('online-bill-payment'),
-  fundExchangeCanadaPost('canada-post'),
-  fundExchangeInstantSepa('instant-sepa'),
-  fundExchangeRegularSepa('regular-sepa'),
-  fundExchangeSpeiTransfer('spei-transfer'),
-  fundExchangeSinpe('sinpe'),
-  fundExchangeCostaRicaIbanCrc('cr-iban-crc'),
-  fundExchangeCostaRicaIbanUsd('cr-iban-usd'),
-  fundExchangeArsBankTransfer('ars-bank-transfer'),
   fundExchangeCopBankTransferInput('cop-bank-transfer-input'),
-  fundExchangeCopBankTransfer('cop-bank-transfer');
+  fundExchangeWarning('warning'),
+  fundExchangeEmailETransfer('/fund-exchange-email-e-transfer'),
+  fundExchangeBankTransferWire('/fund-exchange-bank-transfer-wire'),
+  fundExchangeOnlineBillPayment('/fund-exchange-online-bill-payment'),
+  fundExchangeCanadaPost('/fund-exchange-canada-post'),
+  fundExchangeInstantSepa('/fund-exchange-instant-sepa'),
+  fundExchangeRegularSepa('/fund-exchange-regular-sepa'),
+  fundExchangeSpeiTransfer('/fund-exchange-spei-transfer'),
+  fundExchangeSinpe('/fund-exchange-sinpe'),
+  fundExchangeCostaRicaIbanCrc('/fund-exchange-cr-iban-crc'),
+  fundExchangeCostaRicaIbanUsd('/fund-exchange-cr-iban-usd'),
+  fundExchangeArsBankTransfer('/fund-exchange-ars-bank-transfer'),
+  fundExchangeCopBankTransfer('/fund-exchange-cop-bank-transfer');
 
   final String path;
 
@@ -74,203 +74,203 @@ void _goToFundingScreen(
 }
 
 class FundExchangeRouter {
-  static final route = GoRoute(
-    name: FundExchangeRoute.fundExchange.name,
-    path: FundExchangeRoute.fundExchange.path,
-    redirect: (context, state) {
-      final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
-      if (notLoggedIn) {
-        return ExchangeRoute.exchangeHome.path;
-      }
-      return null;
-    },
-    builder: (context, state) {
-      return BlocProvider(
-        create: (_) =>
-            locator<FundExchangeBloc>()..add(const FundExchangeEvent.started()),
-        child: MultiBlocListener(
-          listeners: [
-            BlocListener<FundExchangeBloc, FundExchangeState>(
-              listenWhen: (previous, current) =>
-                  previous.apiKeyException == null &&
-                  current.apiKeyException != null,
-              listener: (context, state) {
-                context.goNamed(ExchangeRoute.exchangeHome.name);
-              },
-            ),
-            BlocListener<FundExchangeBloc, FundExchangeState>(
-              listenWhen: (previous, current) =>
-                  previous.fundingInstitutions == null &&
-                  current.fundingInstitutions != null,
-              listener: (context, state) {
-                // If more funding methods load institutions in the future,
-                // this will need to check the loading funding institutions jurisdiction
-                context.pushNamed(
-                  FundExchangeRoute.fundExchangeCopBankTransferInput.name,
-                  extra: context.read<FundExchangeBloc>(),
-                );
-              },
-            ),
-            BlocListener<FundExchangeBloc, FundExchangeState>(
-              listenWhen: (previous, current) =>
-                  previous.fundingDetails == null &&
-                  current.fundingDetails != null,
-              listener: (context, state) {
-                if (state.shouldShowScamWarningConsent) {
-                  // Push so going back returns to the previous screen
+  static final routes = [
+    GoRoute(
+      name: FundExchangeRoute.fundExchange.name,
+      path: FundExchangeRoute.fundExchange.path,
+      redirect: (context, state) {
+        final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
+        if (notLoggedIn) {
+          return ExchangeRoute.exchangeHome.path;
+        }
+        return null;
+      },
+      builder: (context, state) {
+        return BlocProvider(
+          create: (_) =>
+              locator<FundExchangeBloc>()
+                ..add(const FundExchangeEvent.started()),
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<FundExchangeBloc, FundExchangeState>(
+                listenWhen: (previous, current) =>
+                    previous.apiKeyException == null &&
+                    current.apiKeyException != null,
+                listener: (context, state) {
+                  context.goNamed(ExchangeRoute.exchangeHome.name);
+                },
+              ),
+              BlocListener<FundExchangeBloc, FundExchangeState>(
+                listenWhen: (previous, current) =>
+                    previous.fundingInstitutions == null &&
+                    current.fundingInstitutions != null,
+                listener: (context, state) {
+                  // If more funding methods load institutions in the future,
+                  // this will need to check the loading funding institutions jurisdiction
                   context.pushNamed(
-                    FundExchangeRoute.fundExchangeWarning.name,
+                    FundExchangeRoute.fundExchangeCopBankTransferInput.name,
                     extra: context.read<FundExchangeBloc>(),
                   );
-                  return;
-                } else {
+                },
+              ),
+              BlocListener<FundExchangeBloc, FundExchangeState>(
+                listenWhen: (previous, current) =>
+                    previous.fundingDetails == null &&
+                    current.fundingDetails != null,
+                listener: (context, state) {
+                  if (state.shouldShowScamWarningConsent) {
+                    // Push so going back returns to the previous screen
+                    context.pushNamed(
+                      FundExchangeRoute.fundExchangeWarning.name,
+                      extra: context.read<FundExchangeBloc>(),
+                    );
+                    return;
+                  } else {
+                    _goToFundingScreen(
+                      context,
+                      context.read<FundExchangeBloc>(),
+                      state.fundingDetails,
+                    );
+                  }
+                },
+              ),
+            ],
+            child: const FundExchangeMethodSelectionScreen(),
+          ),
+        );
+      },
+      routes: [
+        GoRoute(
+          name: FundExchangeRoute.fundExchangeCopBankTransferInput.name,
+          path: FundExchangeRoute.fundExchangeCopBankTransferInput.path,
+          builder: (context, state) => BlocProvider.value(
+            value: state.extra! as FundExchangeBloc,
+            child: const FundExchangeCopBankTransferInputScreen(),
+          ),
+        ),
+        GoRoute(
+          name: FundExchangeRoute.fundExchangeWarning.name,
+          path: FundExchangeRoute.fundExchangeWarning.path,
+          builder: (context, state) {
+            final bloc = state.extra! as FundExchangeBloc;
+
+            return BlocProvider.value(
+              value: bloc,
+              child: BlocListener<FundExchangeBloc, FundExchangeState>(
+                listenWhen: (previous, current) =>
+                    previous.shouldShowScamWarningConsent &&
+                    !current.shouldShowScamWarningConsent,
+                listener: (context, state) {
                   _goToFundingScreen(
                     context,
                     context.read<FundExchangeBloc>(),
                     state.fundingDetails,
                   );
-                }
-              },
-            ),
-          ],
-          child: const FundExchangeMethodSelectionScreen(),
+                },
+                child: const FundExchangeWarningScreen(),
+              ),
+            );
+          },
         ),
-      );
-    },
-
-    routes: [
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeWarning.name,
-        path: FundExchangeRoute.fundExchangeWarning.path,
-        builder: (context, state) {
-          final bloc = state.extra! as FundExchangeBloc;
-
-          return BlocProvider.value(
-            value: bloc,
-            child: BlocListener<FundExchangeBloc, FundExchangeState>(
-              listenWhen: (previous, current) =>
-                  previous.shouldShowScamWarningConsent &&
-                  !current.shouldShowScamWarningConsent,
-              listener: (context, state) {
-                _goToFundingScreen(
-                  context,
-                  context.read<FundExchangeBloc>(),
-                  state.fundingDetails,
-                );
-              },
-              child: const FundExchangeWarningScreen(),
-            ),
-          );
-        },
+      ],
+    ),
+    // Funding detail routes at top level so navigating to them with goNamed
+    // does not rebuild the /fund-exchange parent route and re-trigger _onStarted.
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeEmailETransfer.name,
+      path: FundExchangeRoute.fundExchangeEmailETransfer.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeEmailETransferScreen(),
       ),
-      // Added a route per funding method instead of one screen with a switch
-      // statement since different funding methods have different processes.
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeEmailETransfer.name,
-        path: FundExchangeRoute.fundExchangeEmailETransfer.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeEmailETransferScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeBankTransferWire.name,
+      path: FundExchangeRoute.fundExchangeBankTransferWire.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeBankTransferWireScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeBankTransferWire.name,
-        path: FundExchangeRoute.fundExchangeBankTransferWire.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeBankTransferWireScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeOnlineBillPayment.name,
+      path: FundExchangeRoute.fundExchangeOnlineBillPayment.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeOnlineBillPaymentScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeOnlineBillPayment.name,
-        path: FundExchangeRoute.fundExchangeOnlineBillPayment.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeOnlineBillPaymentScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeCanadaPost.name,
+      path: FundExchangeRoute.fundExchangeCanadaPost.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeCanadaPostScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeCanadaPost.name,
-        path: FundExchangeRoute.fundExchangeCanadaPost.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeCanadaPostScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeInstantSepa.name,
+      path: FundExchangeRoute.fundExchangeInstantSepa.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeInstantSepaScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeInstantSepa.name,
-        path: FundExchangeRoute.fundExchangeInstantSepa.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeInstantSepaScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeRegularSepa.name,
+      path: FundExchangeRoute.fundExchangeRegularSepa.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeRegularSepaScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeRegularSepa.name,
-        path: FundExchangeRoute.fundExchangeRegularSepa.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeRegularSepaScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeSpeiTransfer.name,
+      path: FundExchangeRoute.fundExchangeSpeiTransfer.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeSpeiTransferScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeSpeiTransfer.name,
-        path: FundExchangeRoute.fundExchangeSpeiTransfer.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeSpeiTransferScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeSinpe.name,
+      path: FundExchangeRoute.fundExchangeSinpe.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeSinpeScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeSinpe.name,
-        path: FundExchangeRoute.fundExchangeSinpe.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeSinpeScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
+      path: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeCrIbanCrcScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
-        path: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeCrIbanCrcScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
+      path: FundExchangeRoute.fundExchangeCostaRicaIbanUsd.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeCrIbanUsdScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
-        path: FundExchangeRoute.fundExchangeCostaRicaIbanUsd.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeCrIbanUsdScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeArsBankTransfer.name,
+      path: FundExchangeRoute.fundExchangeArsBankTransfer.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeArsBankTransferScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeArsBankTransfer.name,
-        path: FundExchangeRoute.fundExchangeArsBankTransfer.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeArsBankTransferScreen(),
-        ),
+    ),
+    GoRoute(
+      name: FundExchangeRoute.fundExchangeCopBankTransfer.name,
+      path: FundExchangeRoute.fundExchangeCopBankTransfer.path,
+      builder: (context, state) => BlocProvider.value(
+        value: state.extra! as FundExchangeBloc,
+        child: const FundExchangeCopBankTransferScreen(),
       ),
-      GoRoute(
-        name: FundExchangeRoute.fundExchangeCopBankTransferInput.name,
-        path: FundExchangeRoute.fundExchangeCopBankTransferInput.path,
-        builder: (context, state) => BlocProvider.value(
-          value: state.extra! as FundExchangeBloc,
-          child: const FundExchangeCopBankTransferInputScreen(),
-        ),
-        routes: [
-          GoRoute(
-            name: FundExchangeRoute.fundExchangeCopBankTransfer.name,
-            path: FundExchangeRoute.fundExchangeCopBankTransfer.path,
-            builder: (context, state) => BlocProvider.value(
-              value: state.extra! as FundExchangeBloc,
-              child: const FundExchangeCopBankTransferScreen(),
-            ),
-          ),
-        ],
-      ),
-    ],
-  );
+    ),
+  ];
 }
