@@ -51,9 +51,10 @@ class AssetConstants {
 class PayjoinConstants {
   static List<String> get ohttpRelayUrls {
     final list = [
-      'https://ohttp.achow101.com',
+      // 'https://ohttp.achow101.com',
+      // 'https://ohttp.cakewallet.com',
       'https://pj.bobspacebkk.com',
-      'https://ohttp.cakewallet.com',
+      'https://pj.benalleng.com'
     ];
     list.shuffle(Random.secure());
     return list;
