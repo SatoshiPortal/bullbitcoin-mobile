@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/fund_exchange/application/ports/exchange_envi
 import 'package:bb_mobile/features/fund_exchange/application/ports/funding_gateway_port.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/get_funding_details_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/usecases/list_funding_institutions_usecase.dart';
+import 'package:bb_mobile/features/fund_exchange/application/usecases/register_responsibility_consent_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/interface_adapters/settings_exchange_environment_adapter.dart';
 import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/bullbitcoin_api_funding_gateway.dart';
 import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/delegating_funding_gateway.dart';
@@ -54,6 +55,12 @@ class FundExchangeLocator {
         fundingGateway: locator<FundingGatewayPort>(),
       ),
     );
+
+    locator.registerFactory<RegisterResponsibilityConsentUsecase>(
+      () => RegisterResponsibilityConsentUsecase(
+        fundingGateway: locator<FundingGatewayPort>(),
+      ),
+    );
   }
 
   static void registerDrivingInterfaceAdapters(GetIt locator) {
@@ -63,6 +70,8 @@ class FundExchangeLocator {
         listFundingInstitutionsUsecase:
             locator<ListFundingInstitutionsUsecase>(),
         getFundingDetailsUsecase: locator<GetFundingDetailsUsecase>(),
+        registerResponsibilityConsentUsecase:
+            locator<RegisterResponsibilityConsentUsecase>(),
       ),
     );
   }

@@ -16,7 +16,9 @@ import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_spei_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_warning_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,6 +42,35 @@ enum FundExchangeRoute {
   final String path;
 
   const FundExchangeRoute(this.path);
+}
+
+FundExchangeRoute _routeForFundingDetails(
+  FundingDetails details,
+) => switch (details) {
+  ETransferFundingDetails() => FundExchangeRoute.fundExchangeEmailETransfer,
+  WireFundingDetails() => FundExchangeRoute.fundExchangeBankTransferWire,
+  BillPaymentFundingDetails() =>
+    FundExchangeRoute.fundExchangeOnlineBillPayment,
+  CanadaPostFundingDetails() => FundExchangeRoute.fundExchangeCanadaPost,
+  InstantSepaFundingDetails() => FundExchangeRoute.fundExchangeInstantSepa,
+  RegularSepaFundingDetails() => FundExchangeRoute.fundExchangeRegularSepa,
+  SpeiFundingDetails() => FundExchangeRoute.fundExchangeSpeiTransfer,
+  SinpeFundingDetails() => FundExchangeRoute.fundExchangeSinpe,
+  CrIbanCrcFundingDetails() => FundExchangeRoute.fundExchangeCostaRicaIbanCrc,
+  CrIbanUsdFundingDetails() => FundExchangeRoute.fundExchangeCostaRicaIbanUsd,
+  ArsBankTransferFundingDetails() =>
+    FundExchangeRoute.fundExchangeArsBankTransfer,
+  CopBankTransferFundingDetails() =>
+    FundExchangeRoute.fundExchangeCopBankTransfer,
+};
+
+void _goToFundingScreen(
+  BuildContext context,
+  FundExchangeBloc bloc,
+  FundingDetails? fundingDetails,
+) {
+  if (fundingDetails == null) throw UnimplementedError();
+  context.goNamed(_routeForFundingDetails(fundingDetails).name, extra: bloc);
 }
 
 class FundExchangeRouter {
@@ -85,11 +116,20 @@ class FundExchangeRouter {
                   previous.fundingDetails == null &&
                   current.fundingDetails != null,
               listener: (context, state) {
-                // Push so going back returns to the previous screen
-                context.pushNamed(
-                  FundExchangeRoute.fundExchangeWarning.name,
-                  extra: context.read<FundExchangeBloc>(),
-                );
+                if (state.shouldShowScamWarningConsent) {
+                  // Push so going back returns to the previous screen
+                  context.pushNamed(
+                    FundExchangeRoute.fundExchangeWarning.name,
+                    extra: context.read<FundExchangeBloc>(),
+                  );
+                  return;
+                } else {
+                  _goToFundingScreen(
+                    context,
+                    context.read<FundExchangeBloc>(),
+                    state.fundingDetails,
+                  );
+                }
               },
             ),
           ],
@@ -107,7 +147,19 @@ class FundExchangeRouter {
 
           return BlocProvider.value(
             value: bloc,
-            child: FundExchangeWarningScreen(),
+            child: BlocListener<FundExchangeBloc, FundExchangeState>(
+              listenWhen: (previous, current) =>
+                  previous.shouldShowScamWarningConsent &&
+                  !current.shouldShowScamWarningConsent,
+              listener: (context, state) {
+                _goToFundingScreen(
+                  context,
+                  context.read<FundExchangeBloc>(),
+                  state.fundingDetails,
+                );
+              },
+              child: const FundExchangeWarningScreen(),
+            ),
           );
         },
       ),

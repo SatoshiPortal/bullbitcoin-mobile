@@ -45,3 +45,10 @@ class FundExchangeUnknownError extends FundExchangeApplicationError {
 
   const FundExchangeUnknownError({required this.message});
 }
+
+class ResponsibilityConsentRegistrationFailed
+    extends FundExchangeApplicationError {
+  final String message;
+
+  const ResponsibilityConsentRegistrationFailed({required this.message});
+}

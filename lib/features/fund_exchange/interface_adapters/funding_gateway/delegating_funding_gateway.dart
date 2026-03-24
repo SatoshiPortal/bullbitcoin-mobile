@@ -51,4 +51,14 @@ class DelegatingFundingGateway implements FundingGatewayPort {
       );
     }
   }
+
+  @override
+  Future<void> registerResponsibilityConsent() async {
+    final isTestnet = await _exchangeEnvironment.isTestnet;
+    if (isTestnet) {
+      return _bullBitcoinTestnetFundingGateway.registerResponsibilityConsent();
+    } else {
+      return _bullbitcoinFundingGateway.registerResponsibilityConsent();
+    }
+  }
 }

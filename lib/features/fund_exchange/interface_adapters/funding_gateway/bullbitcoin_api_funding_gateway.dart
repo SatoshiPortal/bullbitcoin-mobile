@@ -14,6 +14,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
   final Dio _authenticatedApiClient;
   final String _ordersPath = '/ak/api-orders';
   final String _recipientsPath = '/ak/api-recipients';
+  final String _usersPath = '/ak/api-users';
 
   BullBitcoinApiFundingGateway({required Dio authenticatedApiClient})
     : _authenticatedApiClient = authenticatedApiClient;
@@ -113,5 +114,31 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         })
         .whereType<FundingInstitution>()
         .toList();
+  }
+
+  @override
+  Future<void> registerResponsibilityConsent() async {
+    final resp = await _authenticatedApiClient.post(
+      _usersPath,
+      data: {
+        'id': 1,
+        'jsonrpc': '2.0',
+        'method': 'registerResponsibilityConsent',
+        'params': {},
+      },
+    );
+
+    if (resp.statusCode != 200) {
+      throw const ResponsibilityConsentRegistrationFailed(
+        message: 'Unexpected status code',
+      );
+    }
+
+    final error = resp.data['error'];
+    if (error != null) {
+      throw ResponsibilityConsentRegistrationFailed(
+        message: error['message']?.toString() ?? 'Unknown API error',
+      );
+    }
   }
 }

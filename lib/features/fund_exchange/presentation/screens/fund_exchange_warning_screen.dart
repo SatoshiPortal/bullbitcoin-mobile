@@ -2,13 +2,10 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
-import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class FundExchangeWarningScreen extends StatefulWidget {
   const FundExchangeWarningScreen({super.key});
@@ -121,75 +118,9 @@ class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
             label: context.loc.fundExchangeContinueButton,
             disabled: !hasConfirmedNoCoercion,
             onPressed: () {
-              final bloc = context.read<FundExchangeBloc>();
-              final fundingDetails = bloc.state.fundingDetails;
-              // To not go back to the warning but directly go to payment method selection
-              // screen we use `pushReplacementNamed` instead of `pushNamed` here.
-              switch (fundingDetails) {
-                case ETransferFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeEmailETransfer.name,
-                    extra: bloc,
-                  );
-                case WireFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeBankTransferWire.name,
-                    extra: bloc,
-                  );
-                case BillPaymentFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeOnlineBillPayment.name,
-                    extra: bloc,
-                  );
-                case CanadaPostFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeCanadaPost.name,
-                    extra: bloc,
-                  );
-                case InstantSepaFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeInstantSepa.name,
-                    extra: bloc,
-                  );
-                case RegularSepaFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeRegularSepa.name,
-                    extra: bloc,
-                  );
-                case SpeiFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeSpeiTransfer.name,
-                    extra: bloc,
-                  );
-                case SinpeFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeSinpe.name,
-                    extra: bloc,
-                  );
-                case CrIbanCrcFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
-                    extra: bloc,
-                  );
-                case CrIbanUsdFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
-                    extra: bloc,
-                  );
-                case ArsBankTransferFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeArsBankTransfer.name,
-                    extra: bloc,
-                  );
-                case CopBankTransferFundingDetails():
-                  context.pushReplacementNamed(
-                    FundExchangeRoute.fundExchangeCopBankTransfer.name,
-                    extra: bloc,
-                  );
-                case null:
-                  // TODO: Handle this case.
-                  throw UnimplementedError();
-              }
+              context.read<FundExchangeBloc>().add(
+                const FundExchangeEvent.scamWarningConsentSubmitted(),
+              );
             },
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,

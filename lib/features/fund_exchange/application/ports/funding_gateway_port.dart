@@ -10,4 +10,5 @@ abstract class FundingGatewayPort {
   Future<FundingDetails> getFundingDetails({
     required FundingMethod fundingMethod,
   });
+  Future<void> registerResponsibilityConsent();
 }

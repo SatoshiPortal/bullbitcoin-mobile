@@ -13,6 +13,8 @@ sealed class FundExchangeState with _$FundExchangeState {
     @Default(false) bool isLoadingFundingDetails,
     FundingDetails? fundingDetails,
     FundExchangePresentationError? getExchangeFundingDetailsException,
+    @Default(false) bool isSubmittingScamWarningConsent,
+    FundExchangePresentationError? submitScamWarningConsentException,
   }) = _FundExchangeState;
   const FundExchangeState._();
 
@@ -41,4 +43,9 @@ sealed class FundExchangeState with _$FundExchangeState {
         return FundingJurisdiction.canada;
     }
   }
+
+  bool get shouldShowScamWarningConsent =>
+      userSummary != null &&
+      !userSummary!.hasConsentedScamWarning &&
+      !isSubmittingScamWarningConsent;
 }
