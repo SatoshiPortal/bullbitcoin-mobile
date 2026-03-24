@@ -58,8 +58,9 @@ class BitcoinWalletRepository {
       networkFee: networkFee,
       drain: drain,
       unspendable: unspendable,
-      selected:
-          selected?.map((utxo) => WalletUtxoMapper.fromEntity(utxo)).toList(),
+      selected: selected
+          ?.map((utxo) => WalletUtxoMapper.fromEntity(utxo))
+          .toList(),
       replaceByFee: replaceByFee ?? false,
     );
 
@@ -96,6 +97,37 @@ class BitcoinWalletRepository {
             as PublicBdkWalletModel;
 
     final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
+
+    return isFromWallet;
+  }
+
+  Future<bool> isAddressOfWallet(
+    String address, {
+    required String walletId,
+  }) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+
+    final wallet =
+        WalletModel.publicBdk(
+              externalDescriptor: metadata.externalPublicDescriptor,
+              internalDescriptor: metadata.internalPublicDescriptor,
+              isTestnet: metadata.isTestnet,
+              id: metadata.id,
+            )
+            as PublicBdkWalletModel;
+
+    final isFromWallet = await _bdkWallet.isAddressMine(
+      address,
+      wallet: wallet,
+    );
 
     return isFromWallet;
   }

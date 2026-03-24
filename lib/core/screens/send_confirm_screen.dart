@@ -765,7 +765,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              _buildError.title,
+              context.loc.sendErrorBuildFailed,
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,
@@ -789,7 +789,7 @@ class CommonConfirmSendErrorSection extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              _confirmError.title,
+              context.loc.sendErrorConfirmationFailed,
               style: context.font.bodyLarge,
               color: context.appColors.error,
               maxLines: 5,

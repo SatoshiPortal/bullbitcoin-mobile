@@ -162,11 +162,15 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orders;
     } catch (e) {
-      log.severe(
-        message: 'Error fetching orders',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (e is ApiKeyException) {
+        log.warning('Error fetching orders', error: e);
+      } else {
+        log.severe(
+          message: 'Error fetching orders',
+          error: e,
+          trace: StackTrace.current,
+        );
+      }
       return [];
     }
   }

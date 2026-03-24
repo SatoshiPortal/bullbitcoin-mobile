@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -94,38 +95,7 @@ class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
               textAlign: TextAlign.center,
             ),
             const Gap(24.0),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      context.loc.fundExchangeWarningTacticsTitle,
-                      style: theme.textTheme.headlineSmall,
-                    ),
-                    const Gap(8.0),
-                    ..._getTactics(context).map(
-                      (tactic) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('• ', style: TextStyle(fontSize: 14)),
-                            Expanded(
-                              child: Text(
-                                tactic,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            const FundExchangeScamWarningCard(),
             const Gap(24.0),
             CheckboxListTile(
               tileColor: context.appColors.secondaryFixedDim,
@@ -178,15 +148,4 @@ class _FundExchangeWarningScreenState extends State<FundExchangeWarningScreen> {
       ),
     );
   }
-
-  List<String> _getTactics(BuildContext context) => [
-    context.loc.fundExchangeWarningTactic1,
-    context.loc.fundExchangeWarningTactic2,
-    context.loc.fundExchangeWarningTactic3,
-    context.loc.fundExchangeWarningTactic4,
-    context.loc.fundExchangeWarningTactic5,
-    context.loc.fundExchangeWarningTactic6,
-    context.loc.fundExchangeWarningTactic7,
-    context.loc.fundExchangeWarningTactic8,
-  ];
 }

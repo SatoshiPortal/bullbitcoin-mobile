@@ -380,6 +380,19 @@ class WalletRepository {
     await _walletMetadataDatasource.delete(walletId);
   }
 
+  // used only to delete lwk db - required for UpdateOnDifferentStatusError
+  Future<void> deleteLwkDb() async {
+    final metadatas = await _walletMetadataDatasource.fetchAll();
+
+    final liquidDefaultWallets = metadatas.where(
+      (metadata) => metadata.isDefault && metadata.isLiquid,
+    );
+
+    for (final metadata in liquidDefaultWallets) {
+      await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+    }
+  }
+
   Stream<String> get _walletSyncStartedStream => StreamGroup.merge([
     _bdkWallet.walletSyncStartedStream,
     _lwkWallet.walletSyncStartedStream,

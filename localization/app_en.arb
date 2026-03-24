@@ -360,6 +360,10 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Get Help",
+  "@settingsGetHelpLabel": {
+    "description": "Label for the Get Help support chat link in settings"
+  },
   "settingsServicesStatusTitle": "Services Status",
   "@settingsServicesStatusTitle": {
     "description": "Title for the services status section in the settings menu"
@@ -7068,6 +7072,10 @@
   "@sendConfirmSend": {
     "description": "Title for send confirmation screen"
   },
+  "sendSelfTransfer": "Self-transfer",
+  "@sendSelfTransfer": {
+    "description": "Label shown when the transaction is sending to the same wallet"
+  },
   "sendSending": "Sending",
   "@sendSending": {
     "description": "Title shown while transaction is being sent"
@@ -7075,6 +7083,10 @@
   "sendBroadcastingTransaction": "Broadcasting the transaction.",
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
+  },
+  "sendCoordinatingPayjoinTransaction": "Coordinating a Payjoin transaction.",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
   },
   "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
   "@sendSwapInProgressInvoice": {
@@ -7169,6 +7181,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
   "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
@@ -7192,6 +7208,10 @@
   "sendErrorAmountBelowSwapLimits": "Amount is below swap limits",
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Consider funding Instant Payments to make smaller payments.",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
   "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
   "@sendErrorAmountAboveSwapLimits": {
@@ -10363,17 +10383,9 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
-  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support Account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
-  },
-  "exchangeSupportLoginAccessMessage": "You will only have access to the support chat feature.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
-  "exchangeSupportLoginAccountInfo": "You will be creating an account with bullbitcoin.com that you can always access via our web app.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
+  "exchangeSupportLoginChatRequired": "To get human support, you must first log in to your Bull Bitcoin account. It's 100% free and no KYC is required, only an email address.",
+  "@exchangeSupportLoginChatRequired": {
+    "description": "Message on chat preview overlay prompting login to access support chat"
   },
   "exchangeHomeDeposit": "Deposit",
   "@exchangeHomeDeposit": {
@@ -12713,6 +12725,18 @@
   "errorReportingRestartSnackbar": "Restart the app to apply this change",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "App failed to start",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "An error occurred during startup. Please restart the app. If the problem persists, share your logs and contact support.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Share Logs",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "BACKUP YOUR WALLET NOW",
   "@backupWarningTitle": {

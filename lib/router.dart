@@ -63,7 +63,8 @@ class AppRouter {
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
-          final isSupportChat = location.contains('/support-chat');
+          final isSupportChat = location.contains('/support-chat') ||
+              location.contains('/login-support');
 
           return BlocProvider(
             create: (_) => locator<PriceChartCubit>(),

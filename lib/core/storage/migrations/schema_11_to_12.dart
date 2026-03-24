@@ -24,21 +24,31 @@ class Schema11To12 {
 
     // For structural changes involving a new autoincrement primary key,
     // we need to manually recreate the table:
-    // 1. Fetch all existing data from the old table
-    // 2. Delete the old table
+    // 1. Fetch all existing data from the old table (if it exists)
+    // 2. Delete the old table (if it exists)
     // 3. Create new table with correct schema
     // 4. Insert the data back
 
-    // Step 1: Fetch all existing labels data
-    final existingLabels = await m.database.select(schema11.labels).get();
+    // Step 1: Try to fetch all existing labels data
+    // Wrap in try-catch to handle case where table doesn't exist
+    List<QueryRow> existingLabels = [];
+    try {
+      existingLabels = await m.database.select(schema11.labels).get();
+    } catch (e) {
+      // Table doesn't exist, which is fine - we'll create it fresh
+    }
 
-    // Step 2: Delete old labels table
-    await m.deleteTable(schema11.labels.actualTableName);
+    // Step 2: Delete old labels table if it exists
+    try {
+      await m.deleteTable(schema11.labels.actualTableName);
+    } catch (e) {
+      // Table doesn't exist, which is fine
+    }
 
     // Step 3: Create new labels table with new schema
     await m.createTable(schema12.labels);
 
-    // Step 4: Insert existing data into new table
+    // Step 4: Insert existing data into new table (if any)
     // id will be auto-generated, ref -> reference, spendable is dropped
     for (final row in existingLabels) {
       final origin = row.readNullable<String>('origin');

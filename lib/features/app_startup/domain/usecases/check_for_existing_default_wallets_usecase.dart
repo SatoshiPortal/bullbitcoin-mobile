@@ -19,26 +19,46 @@ class CheckForExistingDefaultWalletsUsecase {
   Future<bool> execute() async {
     final settings = await _settingsRepository.fetch();
     final environment = settings.environment;
-    final defaultWallets = await _walletRepository.getWallets(
-      onlyDefaults: true,
-      environment: environment,
-    );
+
+    late final List defaultWallets;
+    try {
+      defaultWallets = await _walletRepository.getWallets(
+        onlyDefaults: true,
+        environment: environment,
+      );
+    } catch (e) {
+      if (e.toString().contains('UpdateOnDifferentStatus')) {
+        log.fine('UpdateOnDifferentStatus error, deleting lwkDb');
+        await _walletRepository.deleteLwkDb();
+        log.fine('Deleted LwkDb, retrying getWallets');
+        defaultWallets = await _walletRepository.getWallets(
+          onlyDefaults: true,
+          environment: environment,
+        );
+      } else {
+        rethrow;
+      }
+    }
 
     if (defaultWallets.isNotEmpty) {
       log.fine('FINE: found default wallet');
-      for (final wallet in defaultWallets) {
-        try {
-          await _seedRepository.get(wallet.masterFingerprint);
-          log.fine('FINE: Seed Found');
-        } catch (e) {
-          log.severe(
-            message: 'Seed not found for default wallet ',
-            error: e,
-            trace: StackTrace.current,
-          );
-          rethrow;
-        }
-      }
+      // Check all seeds in parallel to avoid sequential keychain reads
+      // blocking the UI thread
+      await Future.wait(
+        defaultWallets.map((wallet) async {
+          try {
+            await _seedRepository.get(wallet.masterFingerprint);
+            log.fine('FINE: Seed Found');
+          } catch (e) {
+            log.severe(
+              message: 'Seed not found for default wallet ',
+              error: e,
+              trace: StackTrace.current,
+            );
+            rethrow;
+          }
+        }),
+      );
       return true;
     } else {
       log.fine('No default wallets found');

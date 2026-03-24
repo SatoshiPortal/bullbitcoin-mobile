@@ -398,7 +398,7 @@
   "ledgerVerifyTitle": "Проверка Адреса на Ledger",
   "recoverbullSwitchToPassword": "Вместо этого выберите пароль",
   "exchangeDcaNetworkBitcoin": "Bitcoin Network",
-  "autoswapWarningTitle": "Autoswap включен со следующими настройками",
+  "autoswapWarningTitle": "Autoswap включен со следующими настройками:",
   "seedsignerStep1": "Включите устройство SeedSigner",
   "backupWalletHowToDecideBackupLosePhysical": "Один из самых распространенных способов, которыми люди теряют свой биткойн, заключается в том, что они теряют физическую резервную копию. Любой, кто найдет вашу физическую поддержку, сможет взять весь ваш биткойн. Если вы очень уверены, что можете хорошо спрятать его и никогда его не потерять, это хороший вариант.",
   "transactionLabelStatus": "Статус",
@@ -664,6 +664,7 @@
   "payCalculating": "Расчет...",
   "transactionDetailLabelTransferId": "ID передачи",
   "fundExchangeContinueButton": "Продолжить",
+  "fundExchangeScamConsentError": "Не удалось зарегистрировать ваше согласие. Пожалуйста, попробуйте ещё раз.",
   "currencySettingsDefaultFiatCurrencyLabel": "По умолчанию фиатная валюта",
   "payRecipient": "Получатель",
   "fundExchangeCrIbanUsdRecipientNameHelp": "Используйте наше официальное фирменное имя. Не используйте «Bull Bitcoin».",
@@ -872,6 +873,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Получить помощь",
   "sellTransactionFee": "Плата за операции",
   "coldcardStep5": "Если у вас есть проблемы с сканированием:",
   "buyExpressWithdrawal": "Экспресс-вывод",
@@ -1117,6 +1119,7 @@
   "doNotShareWarning": "НЕ С КЕМ БЫ ТО НИ БЫЛО",
   "torSettingsPortNumber": "Номер порта",
   "payNameHint": "Имя получателя",
+  "autoswapWarningTriggerAmount": "Максимальный баланс 0,02 BTC",
   "legacySeedViewScreenTitle": "Наследные семена",
   "recoverbullErrorCheckStatusFailed": "Не удалось проверить состояние хранилища",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
@@ -1181,7 +1184,7 @@
   },
   "routeErrorMessage": "Страница не найдена",
   "connectHardwareWalletPassport": "Паспорт",
-  "autoswapTriggerBalanceError": "Треггерный баланс должен быть не менее 2x базового баланса",
+  "autoswapTriggerBalanceError": "Максимальный баланс должен быть не менее чем в два раза больше целевого баланса.",
   "receiveEnterHere": "Входите сюда...",
   "receiveNetworkFee": "Network Fee",
   "payLiquidFee": "Жидкий корм",
@@ -1250,8 +1253,7 @@
   "fundExchangeJurisdictionArgentina": "🇦🇷 Аргентина",
   "walletNetworkBitcoin": "Bitcoin Network",
   "electrumAdvancedOptions": "Дополнительные параметры",
-  "autoswapWarningCardSubtitle": "Нажмите, чтобы узнать больше, отключить или настроить",
-  "autoswapActiveCardTitle": "Autoswap активен",
+  "autoswapWarningCardSubtitle": "Свопа будет срабатывать, если ваш баланс Instant Payments превысит 0,02 BTC.",
   "transactionStatusConfirmed": "Подтверждено",
   "dcaFrequencyDaily": "день",
   "transactionLabelSendAmount": "Отправить",
@@ -1493,14 +1495,6 @@
       }
     }
   },
-  "deleteLogsTitle": "Удалить журналы",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
-  "logsDeletedMessage": "Журналы удалены",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
   "payDecodingInvoice": "Удаление счета-фактуры...",
   "importColdcardInstructionsStep5": "Выберите \"Export Wallet\"",
   "electrumStopGapTooHighError": "Стоп Гэп кажется слишком высоким. {maxStopGap}",
@@ -1521,10 +1515,6 @@
   },
   "sellInstantPayments": "Мгновенные платежи",
   "priceChartFetchingHistory": "Получение истории цен...",
-  "priceChartFailedToLoad": "Не удалось загрузить историю цен",
-  "priceFailedToLoad": "Не удалось загрузить цену",
-  "statusScreenTryAgain": "Попробовать снова",
-  "statusScreenContinue": "Продолжить",
   "sellDone": "Дон",
   "payFromWallet": "От Wallet",
   "dcaConfirmRecurringBuyTitle": "Подтверждение Купить",
@@ -1538,7 +1528,7 @@
   "coreSwapsStatusPending": "Завершение",
   "electrumDragToReorder": "(Долгая пресса, чтобы перетащить и изменить приоритет)",
   "keystoneStep4": "Если у вас есть проблемы с сканированием:",
-  "autoswapTriggerAtBalanceInfoText": "Autoswap запускает, когда ваш баланс будет выше этой суммы.",
+  "autoswapTriggerAtBalanceInfoText": "Автообмен сработает, когда ваш баланс превысит этот максимальный баланс.",
   "exchangeLandingDisclaimerNotAvailable": "Услуги по обмену криптовалютами недоступны в мобильном приложении Bull Bitcoin.",
   "sendCustomFeeRate": "Пользовательские ставки",
   "ledgerHelpTitle": "Устранение неполадок",
@@ -1572,8 +1562,9 @@
     }
   },
   "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
+  "sendErrorInvoiceMustContainAmount": "Счёт должен содержать сумму",
   "arkNoBalanceData": "Данные о балансе отсутствуют",
-  "autoswapWarningCardTitle": "Autoswap рекомендуется",
+  "autoswapWarningCardTitle": "Автообмен включен",
   "coreSwapsChainCompletedSuccess": "Передача завершена успешно.",
   "physicalBackupRecommendation": "Физическая поддержка: ",
   "autoswapMaxBalance": "Макс Мгновенный баланс",
@@ -1621,11 +1612,11 @@
   "walletDetailsSignerDeviceNotSupported": "Не поддерживается",
   "exchangeLandingDisclaimerLegal": "Доступ к услугам обмена будет ограничен странами, где Bull Bitcoin может легально работать и может потребовать KYC.",
   "backupWalletEncryptedVaultTitle": "Зашифрованное хранилище",
-  "mempoolNetworkLiquidMainnet": "Жидкий Mainnet",
+  "mempoolNetworkLiquidMainnet": "Liquid Mainnet",
   "sellFromAnotherWallet": "Продавать еще один биткойн-кошелек",
   "automaticallyFetchKeyButton": ">>",
   "importColdcardButtonOpenCamera": "Откройте камеру",
-  "recoverbullReenterRequired": "(X14X)",
+  "recoverbullReenterRequired": "Re-enter your {inputType}",
   "@recoverbullReenterRequired": {
     "placeholders": {
       "inputType": {
@@ -1663,8 +1654,7 @@
   "arkReceiveUnifiedAddress": "Единый адрес (BIP21)",
   "sellHowToPayInvoice": "Как вы хотите заплатить этот счет?",
   "payUseCoinjoin": "Использовать CoinJoin",
-  "autoswapWarningExplanation": "Когда ваш баланс превышает максимальный баланс, своп будет запущен автоматически. Целевой баланс будет храниться в вашем кошельке Instant Payments, а оставшаяся сумма будет переведена в ваш Secure Bitcoin Wallet.",
-  "autoswapWarningExplanationBold": "автоматически",
+  "autoswapWarningExplanation": "Когда ваш баланс превысит максимальный баланс, будет выполнен обмен. Целевой баланс будет сохранён в вашем кошельке мгновенных платежей, а оставшаяся сумма будет обменена в ваш безопасный кошелек Bitcoin.",
   "recoverbullVaultRecoveryTitle": "Восстановление хранилища",
   "passportStep14": "Теперь он готов к трансляции! Как только вы нажмете трансляцию, транзакция будет опубликована в сети Bitcoin и средства будут отправлены.",
   "settingsCurrencyTitle": "Валюта",
@@ -2300,7 +2290,7 @@
   },
   "bitboxScreenUnknownError": "Неизвестная ошибка",
   "electrumPrivacyNoticeTitle": "Уведомление о конфиденциальности",
-  "receiveLiquid": "Жидкость",
+  "receiveLiquid": "Liquid",
   "payOpenChannelRequired": "Открытие канала требуется для этой оплаты",
   "coldcardStep1": "Войти в устройство Coldcard Q",
   "transactionDetailLabelBitcoinTxId": "Bitcoin транзакции",
@@ -2567,7 +2557,7 @@
   "sendNetworkFeesLabel": "Отправить сетевые сборы",
   "electrumUnknownError": "Произошла ошибка",
   "payWhichWallet": "От какого кошелька вы хотите заплатить?",
-  "autoswapBaseBalanceInfoText": "Ваш баланс платежного кошелька вернется к этому балансу после автосвапа.",
+  "autoswapBaseBalanceInfoText": "Баланс вашего мгновенного платежного кошелька вернется к этому целевому балансу после автоматического обмена.",
   "recoverbullSelectDecryptVault": "Зашифрованное хранилище",
   "buyUpgradeKYC": "Улучшенный KYC Уровень",
   "transactionOrderLabelOrderType": "Тип заказа",
@@ -2858,7 +2848,7 @@
   "keystoneStep12": "Кошелек Bull Bitcoin попросит вас сканировать QR-код на Keystone. Сканируйте.",
   "ledgerErrorRejectedByUser": "Сделка была отклонена пользователем на устройстве Ledger.",
   "payFeeRate": "Fee Rate",
-  "autoswapWarningDescription": "Autoswap гарантирует, что хороший баланс поддерживается между вашими Instant Payments и Secure Bitcoin Wallet.",
+  "autoswapWarningDescription": "Автообмен предотвращает случайное хранение слишком большой суммы в мгновенном платежном кошельке, что небезопасно для долгосрочного хранения.",
   "fundExchangeSinpeAddedToBalance": "Как только платеж будет отправлен, он будет добавлен к балансу вашего счета.",
   "durationMinute": "{minutes}",
   "@durationMinute": {
@@ -3137,6 +3127,7 @@
   "payEmail": "Email",
   "coldcardStep10": "Нажмите на кнопки, чтобы подписать транзакцию на вашем Coldcard.",
   "sendErrorAmountBelowSwapLimits": "Сумма ниже лимитов на свопы",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Рассмотрите пополнение Мгновенных Платежей для меньших платежей.",
   "labelErrorNotFound": "Лейбл «{label}» не найден.",
   "@labelErrorNotFound": {
     "placeholders": {
@@ -3193,6 +3184,7 @@
   "bitboxActionImportWalletButton": "Начало",
   "fundExchangeLabelSwiftCode": "Код SWIFT",
   "buyEnterBitcoinAddress": "Введите адрес биткойна",
+  "autoswapWarningBaseBalance": "Целевой баланс 0,01 BTC",
   "transactionDetailLabelPayoutAmount": "Сумма выплат",
   "importQrDeviceSpecterStep6": "Выберите \"Сингл ключ\"",
   "importQrDeviceJadeStep10": "Вот так!",
@@ -3335,7 +3327,7 @@
       }
     }
   },
-  "exchangeBitcoinWalletsLiquidAddressLabel": "Жидкий адрес",
+  "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid адрес",
   "backupWalletSuccessTestButton": "Проверка",
   "pinCodeSettingUp": "Настройка PIN-кода",
   "replaceByFeeErrorFeeRateTooLow": "Вы должны увеличить ставку сбора как минимум на 1 атт/вбайт по сравнению с первоначальной транзакцией",
@@ -3388,9 +3380,7 @@
   "payInvoiceDetails": "Детали счетов-фактур",
   "exchangeLandingLoginButton": "Зарегистрироваться или зарегистрироваться",
   "exchangeLandingLoginToUseSupport": "Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать чат поддержки для вопросов, связанных с биржей.",
-  "exchangeSupportLoginSubtitle": "Подключиться к учетной записи поддержки Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "У вас будет доступ только к функции чата поддержки.",
-  "exchangeSupportLoginAccountInfo": "Вы создадите учетную запись на bullbitcoin.com, к которой всегда сможете получить доступ через наше веб-приложение.",
+  "exchangeSupportLoginChatRequired": "Чтобы получить поддержку от живого оператора, необходимо сначала войти в свой аккаунт Bull Bitcoin. Это полностью бесплатно, KYC не требуется — только адрес электронной почты.",
   "torSettingsEnableProxy": "Включить Tor Proxy",
   "bitboxScreenAddressToVerify": "Адрес для проверки:",
   "payConfirmPayment": "Подтвердить оплату",
@@ -3520,7 +3510,7 @@
   "payViewTransaction": "Просмотр транзакции",
   "transactionLabelToWallet": "Кошелек",
   "exchangeFileUploadInstructions": "Если вам нужно отправить любые другие документы, загрузите их здесь.",
-  "ledgerInstructionsAndroidDual": "Убедитесь, что вы Ledger разблокирован с открытым приложением Bitcoin и включен Bluetooth.",
+  "ledgerInstructionsAndroidDual": "Убедитесь, что ваш Ledger разблокирован, приложение Bitcoin открыто и Bluetooth включен.",
   "arkSendRecipientLabel": "Адрес получателя",
   "defaultWalletsLabel": "По умолчанию",
   "jadeStep9": "После того, как транзакция будет импортирована в ваш Джейд, рассмотрите адрес назначения и сумму.",
@@ -4085,7 +4075,7 @@
   "pinCodeConfirm": "Подтверждение",
   "bitboxActionUnlockDeviceProcessing": "Разблокировочное устройство",
   "seedsignerStep4": "Если у вас есть проблемы с сканированием:",
-  "mempoolNetworkLiquidTestnet": "Жидкий Тестет",
+  "mempoolNetworkLiquidTestnet": "Liquid Тестет",
   "payBitcoinOnChain": "Bitcoin на цепочке",
   "torSettingsDescDisconnected": "Tor proxy не работает",
   "ledgerButtonTryAgain": "Попробуйте снова",
@@ -4135,10 +4125,241 @@
   "logoutConfirmationDescription": "Вы уверены, что хотите выйти из своей учетной записи Bull Bitcoin? Вам нужно будет снова войти в систему, чтобы получить доступ к функциям обмена.",
   "logoutConfirmationCancel": "Отмена",
   "logoutConfirmationLogout": "Выйти",
-  "autoswapInfoTitle": "Autoswap рекомендуется",
-  "autoswapInfoDismissButton": "ДА, СПАСИБО",
-  "autoswapInfoSettingsButton": "НЕТ, Я ПОНИМАЮ РИСКИ",
-  "autoswapInfoRemindLater": "Настроить Autoswap",
+  "recipientsSearchHint": "Поиск получателей по имени или этикетке",
+  "@recipientsSearchHint": {
+    "description": "Hint text for recipients search field"
+  },
+  "autoswapInfoSettingsButton": "Настройка",
+  "@autoswapInfoSettingsButton": {
+    "description": "Secondary button to navigate to autoswap settings"
+  },
+  "autoswapInfoRemindLater": "Напомни мне позже",
+  "@autoswapInfoRemindLater": {
+    "description": "Tertiary action to close sheet without dismissing"
+  },
+  "autoswapInfoTitle": "Autoswap активен",
+  "@autoswapInfoTitle": {
+    "description": "Title for autoswap information bottom sheet"
+  },
+  "autoswapInfoDismissButton": "Понял, не показывай",
+  "@autoswapInfoDismissButton": {
+    "description": "Primary button to dismiss autoswap info permanently"
+  },
+  "transactionNoteHint": "Заметка",
+  "@transactionNoteHint": {
+    "description": "Hint text for note input field"
+  },
+  "receiveNotePlaceholder": "Заметка",
+  "@receiveNotePlaceholder": {
+    "description": "Placeholder text for note input field"
+  },
+  "receiveNote": "Заметка",
+  "@receiveNote": {
+    "description": "Label for adding a note to a receive transaction"
+  },
+  "receiveNoteLabel": "Заметка",
+  "@receiveNoteLabel": {
+    "description": "Label for the note field in receive"
+  },
+  "exchangeSettingsRecipientsTitle": "Получатели",
+  "@exchangeSettingsRecipientsTitle": {
+    "description": "Title for the recipients button in exchange settings"
+  },
+  "exchangeSettingsTransactionsTitle": "Операции",
+  "@exchangeSettingsTransactionsTitle": {
+    "description": "Title for the transactions button in exchange settings"
+  },
+  "exchangeFileUploadSuccess": "Файл успешно загружен",
+  "@exchangeFileUploadSuccess": {
+    "description": "Success message when file is uploaded successfully"
+  },
+  "exchangeAppSettingsEmailNotificationsLabel": "Уведомления по электронной почте",
+  "@exchangeAppSettingsEmailNotificationsLabel": {
+    "description": "Label for email notifications toggle in exchange app settings"
+  },
+  "exchangeAppSettingsEmailNotificationsDescription": "Получение уведомлений по электронной почте для заказов и обновлений учетной записи",
+  "@exchangeAppSettingsEmailNotificationsDescription": {
+    "description": "Description for email notifications toggle in exchange app settings"
+  },
+  "exchangeBitcoinWalletsSaveSuccess": "Настенный адрес сохранен успешно",
+  "@exchangeBitcoinWalletsSaveSuccess": {
+    "description": "Success message when wallet address is saved"
+  },
+  "exchangeBitcoinWalletsDescription": "Установить адреса кошелька по умолчанию для автоматического снятия Bitcoin.",
+  "@exchangeBitcoinWalletsDescription": {
+    "description": "Description text on the default bitcoin wallets screen"
+  },
+  "exchangeFileUploadDocumentsTitle": "Загрузка документов",
+  "@exchangeFileUploadDocumentsTitle": {
+    "description": "Title for the upload documents section"
+  },
+  "exchangeFileUploadInstructionsWithParams": "Загрузить файлы {maxFiles}. Разрешенные форматы: PDF, JPG, PNG, GIF, HEIC. Максимальный размер файла: 10 МБ за файл.",
+  "@exchangeFileUploadInstructionsWithParams": {
+    "description": "Instructions for file upload with parameters",
+    "placeholders": {
+      "maxFiles": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadNoFilesSelected": "Не выбраны файлы",
+  "@exchangeFileUploadNoFilesSelected": {
+    "description": "Message when no files are selected for upload"
+  },
+  "exchangeFileUploadSelectFilesHint": "Tap «Выбрать файлы» для выбора документов",
+  "@exchangeFileUploadSelectFilesHint": {
+    "description": "Hint text for selecting files"
+  },
+  "exchangeFileUploadSelectFiles": "Выберите файлы",
+  "@exchangeFileUploadSelectFiles": {
+    "description": "Button label to select files"
+  },
+  "exchangeFileUploadAddMoreFiles": "Добавить больше файлов",
+  "@exchangeFileUploadAddMoreFiles": {
+    "description": "Button label to add more files"
+  },
+  "exchangeFileUploadUploading": "Загрузка...",
+  "@exchangeFileUploadUploading": {
+    "description": "Loading text while uploading files"
+  },
+  "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "@exchangeFileUploadUploadCount": {
+    "description": "Button label showing number of files to upload",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadClearAll": "Все",
+  "@exchangeFileUploadClearAll": {
+    "description": "Button label to clear all files"
+  },
+  "exchangeFileUploadAllSuccess": "Все файлы загружены успешно",
+  "@exchangeFileUploadAllSuccess": {
+    "description": "Success message when all files are uploaded"
+  },
+  "exchangeFileUploadPartialSuccess": "{uploaded} файлов, загруженных {total}",
+  "@exchangeFileUploadPartialSuccess": {
+    "description": "Message when some files failed to upload",
+    "placeholders": {
+      "uploaded": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeFileUploadStatusReady": "Готово",
+  "@exchangeFileUploadStatusReady": {
+    "description": "Status badge when files can be uploaded"
+  },
+  "exchangeFileUploadStatusInReview": "Обзор",
+  "@exchangeFileUploadStatusInReview": {
+    "description": "Status badge when files are under review"
+  },
+  "exchangeFileUploadStatusAccepted": "Принята",
+  "@exchangeFileUploadStatusAccepted": {
+    "description": "Status badge when files have been accepted"
+  },
+  "exchangeFileUploadStatusRejected": "Rejected - Tap to re-upload",
+  "@exchangeFileUploadStatusRejected": {
+    "description": "Status badge when files have been rejected, with re-upload option"
+  },
+  "exchangeFileUploadInReviewMessage": "Ваши документы в настоящее время находятся на рассмотрении. Вы не можете загрузить больше файлов до завершения обзора.",
+  "@exchangeFileUploadInReviewMessage": {
+    "description": "Message shown when documents are under review"
+  },
+  "exchangeFileUploadAcceptedMessage": "Ваши документы были приняты. Никаких дополнительных uploads не требуется.",
+  "@exchangeFileUploadAcceptedMessage": {
+    "description": "Message shown when documents have been accepted"
+  },
+  "exchangeStatisticsTitle": "Статистика",
+  "@exchangeStatisticsTitle": {
+    "description": "Title for the statistics screen"
+  },
+  "exchangeStatisticsNoData": "Статистические данные отсутствуют",
+  "@exchangeStatisticsNoData": {
+    "description": "Message when no statistics are available"
+  },
+  "exchangeStatisticsAsOf": "{date}",
+  "@exchangeStatisticsAsOf": {
+    "description": "Label showing when statistics were last updated",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsOrderStats": "Статистика заказа",
+  "@exchangeStatisticsOrderStats": {
+    "description": "Title for order statistics section"
+  },
+  "exchangeStatisticsBuySellRatio": "Купить/продавать Соотношение",
+  "@exchangeStatisticsBuySellRatio": {
+    "description": "Label for buy/sell ratio statistic"
+  },
+  "exchangeStatisticsBuyStats": "Купить статистику",
+  "@exchangeStatisticsBuyStats": {
+    "description": "Title for buy statistics section"
+  },
+  "exchangeStatisticsSellStats": "Статистика",
+  "@exchangeStatisticsSellStats": {
+    "description": "Title for sell statistics section"
+  },
+  "exchangeStatisticsVolume": "Объем",
+  "@exchangeStatisticsVolume": {
+    "description": "Label for volume statistic"
+  },
+  "exchangeStatisticsTradeCount": "Торговый счет",
+  "@exchangeStatisticsTradeCount": {
+    "description": "Label for trade count statistic"
+  },
+  "exchangeStatisticsAveragePrice": "Средняя цена",
+  "@exchangeStatisticsAveragePrice": {
+    "description": "Label for average price statistic"
+  },
+  "exchangeStatisticsTotalVolume": "Общий объем торговли",
+  "@exchangeStatisticsTotalVolume": {
+    "description": "Label for total trading volume statistic"
+  },
+  "exchangeStatisticsBillerStats": "Статистика",
+  "@exchangeStatisticsBillerStats": {
+    "description": "Title for biller statistics section"
+  },
+  "exchangeStatisticsCurrency": "Валюта: {currency}",
+  "@exchangeStatisticsCurrency": {
+    "description": "Label showing currency for biller stats",
+    "placeholders": {
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeStatisticsTotalAmount": "Общая сумма",
+  "@exchangeStatisticsTotalAmount": {
+    "description": "Label for total amount statistic"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+  "autoswapActiveCardTitle": "Autoswap активен",
+  "deleteLogsTitle": "Удалить журналы",
+  "@deleteLogsTitle": {
+    "description": "Clickable text to delete application logs"
+  },
+  "logsDeletedMessage": "Журналы удалены",
+  "@logsDeletedMessage": {
+    "description": "Confirmation message when logs are deleted"
+  },
+  "priceChartFailedToLoad": "Не удалось загрузить историю цен",
+  "priceFailedToLoad": "Не удалось загрузить цену",
+  "statusScreenTryAgain": "Попробовать снова",
+  "statusScreenContinue": "Продолжить",
+  "autoswapWarningExplanationBold": "автоматически",
+  "sendSelfTransfer": "Перевод себе",
   "autoswapInfoConsentMessage": "Autoswap в настоящее время включен, но не сработает, пока вы не дадите согласие. Хотите оставить его включенным?",
   "mempoolServerStatusOnline": "В сети",
   "mempoolServerStatusOffline": "Не в сети",
@@ -4162,8 +4383,7 @@
   "mempoolErrorSaveServerFailed": "Не удалось сохранить сервер: {error}",
   "mempoolErrorLoadFailed": "Не удалось загрузить данные сервера mempool: {error}",
   "mempoolErrorDeleteFailed": "Не удалось удалить пользовательский сервер: {error}",
-  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}"
-,
+  "mempoolErrorUpdateSettingsFailed": "Не удалось обновить настройки: {error}",
   "settingsErrorReportingTitle": "Отчет об ошибках",
   "@settingsErrorReportingTitle": {
     "description": "Title for error reporting setting in app settings"
@@ -4187,6 +4407,18 @@
   "errorReportingRestartSnackbar": "Перезапустите приложение, чтобы применить это изменение",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "Не удалось запустить приложение",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Во время запуска произошла ошибка. Пожалуйста, перезапустите приложение. Если проблема не исчезнет, поделитесь журналами и обратитесь в службу поддержки.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Поделиться журналами",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ КОШЕЛЬКА СЕЙЧАС",
   "@backupWarningTitle": {
