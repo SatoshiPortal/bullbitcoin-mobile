@@ -53,6 +53,7 @@ AMOUNT_SAT="${PAYJOIN_CLI_SEND_AMOUNT_SAT:-2000}"
 FEE_RATE="${PAYJOIN_CLI_FEE_RATE:-2}"
 BIP21_WAIT_SECS="${BIP21_WAIT_SECS:-180}"
 CLI_TIMEOUT_SECS="${CLI_TIMEOUT_SECS:-300}"
+CLI_BROADCAST_GRACE_SECS="${CLI_BROADCAST_GRACE_SECS:-60}"
 
 # Pin the Rust toolchain for payjoin-cli builds
 export RUSTUP_TOOLCHAIN="$RUST_TOOLCHAIN"
@@ -186,7 +187,7 @@ echo "[script] Final URI: $BIP21_URI"
 echo "[script] Starting payjoin-cli send (fee-rate: ${FEE_RATE} sat/vB)..."
 echo "[script] Full command: cargo run --manifest-path $CLI_SOURCE_DIR/Cargo.toml -- ${RPC_ARGS[*]} --db-path $DB_PATH --ohttp-relays $OHTTP_RELAY --pj-directory $PJ_DIRECTORY send --fee-rate $FEE_RATE \"$BIP21_URI\""
 
-"$CARGO_PATH" run \
+RUST_LOG=trace "$CARGO_PATH" run \
   --manifest-path "$CLI_SOURCE_DIR/Cargo.toml" \
   -- \
   "${RPC_ARGS[@]}" \
@@ -244,6 +245,18 @@ while [ "$ELAPSED" -lt "$CLI_TIMEOUT_SECS" ]; do
     fi
   fi
 
+  # When Flutter finishes first, give the CLI a grace period to complete
+  # its broadcast (sendrawtransaction RPC) before the loop times out.
+  if [ "$FLUTTER_DONE" = true ] && [ "$CLI_DONE" = false ]; then
+    if [ -z "${CLI_GRACE_DEADLINE:-}" ]; then
+      CLI_GRACE_DEADLINE=$((ELAPSED + CLI_BROADCAST_GRACE_SECS))
+      echo "[script] Flutter done — giving CLI ${CLI_BROADCAST_GRACE_SECS}s grace period to finish broadcast..."
+    elif [ "$ELAPSED" -ge "$CLI_GRACE_DEADLINE" ]; then
+      echo "[script] CLI grace period expired (${CLI_BROADCAST_GRACE_SECS}s) — checking for raw tx in log..."
+      break
+    fi
+  fi
+
   if [ "$FLUTTER_DONE" = true ] && [ "$CLI_DONE" = true ]; then
     break
   fi
@@ -298,9 +311,7 @@ if [ -s "$CLI_LOG" ]; then
     echo "  [INFO] CLI mentions success but no txid found in output"
   else
     echo "  [WARN] No broadcast confirmation in CLI output"
-    if [ "$CLI_EXIT" != "0" ]; then
-      PASS=false
-    fi
+    PASS=false
   fi
 else
   echo "  [FAIL] payjoin-cli produced no output (was it started?)"
