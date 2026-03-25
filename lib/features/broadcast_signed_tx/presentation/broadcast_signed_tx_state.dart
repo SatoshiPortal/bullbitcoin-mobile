@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,5 +14,7 @@ abstract class BroadcastSignedTxState with _$BroadcastSignedTxState {
     @Default(false) bool isBroadcasted,
     @Default(null) Uri? pushTxUri,
     @Default(null) Exception? error,
+    @Default(null) int? fee,
+    @Default([]) List<DecodedOutput> decodedOutputs,
   }) = _BroadcastSignedTxState;
 }

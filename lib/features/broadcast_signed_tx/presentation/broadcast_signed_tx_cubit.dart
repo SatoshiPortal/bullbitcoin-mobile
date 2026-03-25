@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
@@ -15,13 +18,81 @@ import 'package:url_launcher/url_launcher.dart';
 
 class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
+  final GetSettingsUsecase _getSettingsUsecase;
+  final GetWalletsUsecase _getWalletsUsecase;
+  final GetWalletUtxosUsecase _getWalletUtxosUsecase;
 
   BroadcastSignedTxCubit({
     required BroadcastBitcoinTransactionUsecase
     broadcastBitcoinTransactionUsecase,
+    required GetSettingsUsecase getSettingsUsecase,
+    required GetWalletsUsecase getWalletsUsecase,
+    required GetWalletUtxosUsecase getWalletUtxosUsecase,
     String? unsignedPsbt,
   }) : _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
+       _getSettingsUsecase = getSettingsUsecase,
+       _getWalletsUsecase = getWalletsUsecase,
+       _getWalletUtxosUsecase = getWalletUtxosUsecase,
        super(BroadcastSignedTxState(bbqr: Bbqr(), unsignedPsbt: unsignedPsbt));
+
+  Future<void> _decodeTransaction() async {
+    if (state.transaction == null) return;
+    try {
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment.isTestnet;
+      final tx = state.transaction!.tx;
+
+      final decodedOutputs = await tx.decodeOutputs(isTestnet: isTestnet);
+      final fee = await _calculateFee(tx);
+
+      emit(state.copyWith(decodedOutputs: decodedOutputs, fee: fee));
+    } catch (e) {
+      // If decoding fails, we just keep the raw transaction data
+    }
+  }
+
+  /// Looks up each input's previous output in the local wallet UTXO database
+  /// to determine the input amounts, then computes fee = inputs - outputs.
+  Future<int?> _calculateFee(BitcoinTx tx) async {
+    try {
+      final wallets = await _getWalletsUsecase.execute(onlyBitcoin: true);
+
+      // Collect all UTXOs from all bitcoin wallets into a lookup map
+      // keyed by "txid:vout"
+      final utxoMap = <String, BigInt>{};
+      for (final wallet in wallets) {
+        final utxos = await _getWalletUtxosUsecase.execute(
+          walletId: wallet.id,
+        );
+        for (final utxo in utxos) {
+          utxoMap['${utxo.txId}:${utxo.vout}'] = utxo.amountSat;
+        }
+      }
+
+      // Sum up input amounts by looking up each input in the UTXO map
+      BigInt totalInputs = BigInt.zero;
+      for (final input in tx.vin) {
+        final key = '${input.txid}:${input.vout}';
+        final amount = utxoMap[key];
+        if (amount == null) {
+          // Input not found locally — can't compute fee
+          return null;
+        }
+        totalInputs += amount;
+      }
+
+      // Sum up output amounts
+      BigInt totalOutputs = BigInt.zero;
+      for (final output in tx.vout) {
+        totalOutputs += output.value;
+      }
+
+      final fee = totalInputs - totalOutputs;
+      return fee.toInt();
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<void> onQrScanned(String payload) async {
     try {
@@ -65,10 +136,14 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
             ),
           ),
         );
+        await _decodeTransaction();
       } else {
         final (tx, bbqr) = await state.bbqr.scanTransaction(payload);
         emit(state.copyWith(bbqr: bbqr));
-        if (tx != null) emit(state.copyWith(transaction: tx));
+        if (tx != null) {
+          emit(state.copyWith(transaction: tx));
+          await _decodeTransaction();
+        }
       }
     } catch (e) {
       emit(state.copyWith(error: UnexpectedError(e)));
@@ -142,6 +217,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
           transaction: ParsedTx(format: TxFormat.psbt, data: input, tx: tx),
         ),
       );
+      await _decodeTransaction();
     } catch (e) {
       try {
         final tx = await BitcoinTx.fromBytes(hex.decode(input));
@@ -150,6 +226,7 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
             transaction: ParsedTx(format: TxFormat.hex, data: input, tx: tx),
           ),
         );
+        await _decodeTransaction();
       } catch (e) {
         emit(state.copyWith(error: InvalidTxError()));
       }

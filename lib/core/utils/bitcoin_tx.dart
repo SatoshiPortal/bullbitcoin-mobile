@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -100,6 +101,22 @@ class BitcoinTx {
 
     return totalAmount;
   }
+
+  Future<List<DecodedOutput>> decodeOutputs({required bool isTestnet}) async {
+    final decoded = <DecodedOutput>[];
+    for (final output in vout) {
+      final address = await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+        Uint8List.fromList(output.scriptPubKey.bytes),
+        isTestnet: isTestnet,
+      );
+      decoded.add(DecodedOutput(
+        address: address,
+        value: output.value,
+        index: output.n,
+      ));
+    }
+    return decoded;
+  }
 }
 
 @freezed
@@ -131,4 +148,16 @@ abstract class TxScriptSig with _$TxScriptSig {
 
   factory TxScriptSig.fromJson(Map<String, dynamic> json) =>
       _$TxScriptSigFromJson(json);
+}
+
+class DecodedOutput {
+  final String? address;
+  final BigInt value;
+  final int index;
+
+  const DecodedOutput({
+    required this.address,
+    required this.value,
+    required this.index,
+  });
 }
