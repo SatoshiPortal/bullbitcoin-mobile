@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/delete_account_confirmation_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/delete_account_success_bottom_sheet.dart';
@@ -37,7 +39,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                if (isSuperuser) ...[
+                if (isSuperuser || Platform.isAndroid) ...[
                   SettingsEntryItem(
                     icon: Icons.account_circle,
                     title: context.loc.exchangeSettingsAccountInformationTitle,
@@ -158,7 +160,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                       },
                     ),
                 ],
-                if (!state.notLoggedIn && !isSuperuser)
+                if (!state.notLoggedIn && !isSuperuser && Platform.isIOS)
                   SettingsEntryItem(
                     icon: Icons.delete_forever,
                     title: context.loc.exchangeSettingsDeleteAccountTitle,
