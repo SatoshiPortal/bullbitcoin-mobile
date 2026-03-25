@@ -1991,6 +1991,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "برای دریافت پشتیبانی انسانی، ابتدا باید وارد حساب Bull Bitcoin خود شوید. کاملاً رایگان است و نیازی به KYC نیست، فقط یک آدرس ایمیل.",
   "seedsignerStep12": "کیف پول بیت کوین بول از شما می خواهد کد QR را در SeedSigner اسکن کنید. آن را اسکن کنید.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -3408,6 +3409,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "دریافت کمک",
   "exchangeStatisticsOrderStats": "آمار سفارش",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -4384,10 +4386,6 @@
   "walletNetworkBitcoin": "شبکه Bitcoin Network",
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
-  },
-  "exchangeSupportLoginAccountInfo": "شما یک حساب با بولدوزرcoin.com ایجاد خواهید کرد که شما همیشه می توانید از طریق برنامه وب ما دسترسی داشته باشید.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
   },
   "electrumAdvancedOptions": "گزینه های پیشرفته",
   "@electrumAdvancedOptions": {
@@ -10902,10 +10900,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "شما فقط به ویژگی چت پشتیبانی دسترسی خواهید داشت.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "سطح ۱: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -11222,10 +11216,6 @@
   "swapProgressPendingMessage": "انتقال در حال پیشرفت است. معاملات بیت کوین می تواند مدتی طول بکشد تا تایید شود. می توانید به خانه برگردید و صبر کنید.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "ارتباط با Bitcoin Support Account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "شبکه Network",
   "@walletDetailsNetworkLabel": {
@@ -12449,5 +12439,41 @@
   "appInitErrorShareLogsButton": "اشتراک‌گذاری گزارش‌ها",
   "@appInitErrorShareLogsButton": {
     "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

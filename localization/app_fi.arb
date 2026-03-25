@@ -75,6 +75,7 @@
   "settingsAppVersionLabel": "Sovellusversio: ",
   "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Pyydä apua",
   "settingsServicesStatusTitle": "Palveluiden tila",
   "settingsTorSettingsTitle": "Tor-asetukset",
   "settingsRecoverbullTitle": "Recoverbull",
@@ -3231,9 +3232,7 @@
   "exchangeLandingRestriction": "Pörssipalvelujen käyttö on rajoitettua maihin, joissa Bull Bitcoin voi toimia laillisesti, ja se voi edellyttää KYC-tunnistusta.",
   "exchangeLandingLoginButton": "Kirjaudu tai rekisteröidy",
   "exchangeLandingLoginToUseSupport": "Ole hyvä ja kirjaudu sisään tai rekisteröidy käyttääksesi tukichattia pörssiongelmiin.",
-  "exchangeSupportLoginSubtitle": "Yhdistä Bull Bitcoin -tukitiliin",
-  "exchangeSupportLoginAccessMessage": "Sinulla on pääsy vain tukichat-ominaisuuteen.",
-  "exchangeSupportLoginAccountInfo": "Luot tilin osoitteeseen bullbitcoin.com, johon voit aina käyttää verkkosovelluksemme kautta.",
+  "exchangeSupportLoginChatRequired": "Saadaksesi henkilökohtaista tukea sinun on ensin kirjauduttava Bull Bitcoin -tilillesi. Se on 100 % ilmaista eikä KYC:tä vaadita, ainoastaan sähköpostiosoite.",
   "exchangeHomeDeposit": "Talleta",
   "exchangeHomeWithdraw": "Nosta",
   "exchangeKycLight": "Kevyt",
@@ -4419,5 +4418,41 @@
   "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

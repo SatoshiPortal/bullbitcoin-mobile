@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
@@ -40,6 +41,12 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
 
+    final isSuperuser =
+        context.select(
+          (SettingsCubit cubit) => cubit.state.isSuperuser,
+        ) ??
+        false;
+
     final serviceStatusLoading = context.select(
       (ServiceStatusCubit cubit) => cubit.state.isLoading,
     );
@@ -58,17 +65,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
               children: [
                 SettingsEntryItem(
                   icon: Icons.currency_exchange,
-                  title: context.loc.settingsExchangeSettingsTitle,
+                  title: Platform.isIOS && !isSuperuser
+                      ? context.loc.settingsAccountSettingsTitle
+                      : context.loc.settingsExchangeSettingsTitle,
                   onTap: () {
                     if (Platform.isIOS) {
-                      final isSuperuser =
-                          context.read<SettingsCubit>().state.isSuperuser ??
-                          false;
                       if (isSuperuser) {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
+                        final notLoggedIn =
+                            context.read<ExchangeCubit>().state.notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -77,13 +81,19 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           );
                         }
                       } else {
-                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        final notLoggedIn =
+                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        if (notLoggedIn) {
+                          context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        } else {
+                          context.pushNamed(
+                            SettingsRoute.exchangeSettings.name,
+                          );
+                        }
                       }
                     } else {
-                      final notLoggedIn = context
-                          .read<ExchangeCubit>()
-                          .state
-                          .notLoggedIn;
+                      final notLoggedIn =
+                          context.read<ExchangeCubit>().state.notLoggedIn;
                       if (notLoggedIn) {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
@@ -172,27 +182,6 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     InkWell(
                       onTap: () {
                         final url = Uri.parse(
-                          SettingsConstants.telegramSupportLink,
-                        );
-                        launchUrl(url, mode: LaunchMode.externalApplication);
-                      },
-                      child: Column(
-                        mainAxisSize: .min,
-                        children: [
-                          const Icon(FontAwesomeIcons.telegram),
-                          const Gap(8),
-                          Text(
-                            context.loc.settingsTelegramLabel,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        final url = Uri.parse(
                           SettingsConstants.githubSupportLink,
                         );
                         launchUrl(url, mode: LaunchMode.externalApplication);
@@ -204,6 +193,37 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           const Gap(8),
                           Text(
                             context.loc.settingsGithubLabel,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: context.appColors.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        final notLoggedIn =
+                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        if (notLoggedIn) {
+                          context.pushNamed(
+                            ExchangeRoute.exchangeLoginForSupport.name,
+                          );
+                        } else {
+                          context.pushNamed(
+                            ExchangeSupportChatRoute.supportChat.name,
+                          );
+                        }
+                      },
+                      child: Column(
+                        mainAxisSize: .min,
+                        children: [
+                          Icon(
+                            Icons.headset_mic,
+                            color: context.appColors.onSurface,
+                          ),
+                          const Gap(8),
+                          Text(
+                            context.loc.settingsGetHelpLabel,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: context.appColors.onSurface,
                             ),

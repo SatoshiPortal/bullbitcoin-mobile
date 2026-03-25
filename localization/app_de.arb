@@ -858,6 +858,7 @@
     }
   },
   "settingsGithubLabel": "GitHub",
+  "settingsGetHelpLabel": "Hilfe erhalten",
   "sellTransactionFee": "Transaktionsgebühren",
   "coldcardStep5": "Wenn Sie Probleme beim Scannen haben:",
   "buyExpressWithdrawal": "Express-Auszahlung",
@@ -3337,9 +3338,7 @@
   "payInvoiceDetails": "Rechnungsdetails",
   "exchangeLandingLoginButton": "Anmelden oder registrieren",
   "exchangeLandingLoginToUseSupport": "Bitte melden Sie sich an oder registrieren Sie sich, um den Support-Chat für Börsenfragen zu nutzen",
-  "exchangeSupportLoginSubtitle": "Mit Bull Bitcoin Support-Konto verbinden",
-  "exchangeSupportLoginAccessMessage": "Sie haben nur Zugriff auf die Support-Chat-Funktion",
-  "exchangeSupportLoginAccountInfo": "Sie erstellen ein Konto bei bullbitcoin.com, auf das Sie jederzeit über unsere Web-App zugreifen können",
+  "exchangeSupportLoginChatRequired": "Um persönlichen Support zu erhalten, müssen Sie sich zuerst in Ihrem Bull Bitcoin Konto anmelden. Es ist 100 % kostenlos und es ist kein KYC erforderlich, nur eine E-Mail-Adresse.",
   "torSettingsEnableProxy": "Tor Proxy aktivieren",
   "bitboxScreenAddressToVerify": "Adresse:",
   "payConfirmPayment": "Zahlung bestätigen",
@@ -4333,5 +4332,41 @@
   "retry": "Wiederholen",
   "@retry": {
     "description": "Generic retry button label"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }
