@@ -3090,6 +3090,10 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
+  "transactionListLoadingFailed": "Could not load transactions.",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
   "transactionListToday": "Today",
   "@transactionListToday": {
     "description": "Date label for today's transactions"

@@ -67,7 +67,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       );
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(err: e));
+        emit(state.copyWith(err: e, isSyncing: false));
       }
     }
   }

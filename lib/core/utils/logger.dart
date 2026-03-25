@@ -11,7 +11,8 @@ Logger log = Logger.init();
 class Logger {
   final Directory dir;
   final dep.LoggerColorful logger;
-  Future<void>? _currentWrite;
+  IOSink? _sink;
+  bool _isLogging = false;
 
   static const _logFilename = 'bull_logs.tsv';
 
@@ -43,7 +44,10 @@ class Logger {
     final logs = await readLogs();
     final linesToDelete = logs.length ~/ 2;
     final logsToKeep = logs.sublist(linesToDelete);
+    await _sink?.flush();
+    await _sink?.close();
     await logsFile.writeAsString(logsToKeep.join('\n'));
+    _openSink();
     final logsSizeInKbAfter = await getSizeInKb();
     log.fine('Logs pruned from $logsSizeInKb kB to $logsSizeInKbAfter kB');
   }
@@ -52,19 +56,29 @@ class Logger {
     dep.Logger.root.level = dep.Level.ALL;
 
     dep.Logger.root.onRecord.listen((record) {
-      final time = record.time.toIso8601String();
-      final content = [time, record.level.name, record.message];
+      _isLogging = true;
+      try {
+        final time = record.time.toIso8601String();
+        final content = [time, record.level.name, record.message];
 
-      final (:String error, :String trace) = record.stringifyErrorAndTrace();
-      content.addAll([error, trace]);
+        final (:String error, :String trace) =
+            record.stringifyErrorAndTrace();
+        content.addAll([error, trace]);
 
-      final sanitizedContent = content.map((e) => _sanitize(e)).toList();
-      final tsvLine = sanitizedContent.join('\t');
+        final sanitizedContent =
+            content.map((e) => _sanitize(e)).toList();
+        final tsvLine = sanitizedContent.join('\t');
 
-      // We don't want to keep the info session in memory, they should be written to file
-      if (record.level != dep.Level.INFO) _queueWrite(tsvLine);
+        // We don't want to keep the info session in memory, they should be written to file
+        if (record.level != dep.Level.INFO) _queueWrite(tsvLine);
 
-      if (kDebugMode) debugPrint(content.join('\t'));
+
+        if (kDebugMode) debugPrint(content.join('\t'));
+      } catch (e) {
+        if (kDebugMode) debugPrint('[Logger listener failed] $e');
+      } finally {
+        _isLogging = false;
+      }
     });
   }
 
@@ -81,22 +95,30 @@ class Logger {
 
   Future<void> ensureLogsExist() async {
     try {
-      if (await logsFile.exists()) return;
-
-      await logsFile.create(recursive: true);
-      fine('Logs created');
+      if (!await logsFile.exists()) {
+        await logsFile.create(recursive: true);
+        fine('Logs created');
+      }
+      _openSink();
     } catch (e) {
       severe(message: 'Logs existence', error: e, trace: StackTrace.current);
     }
   }
 
-  void _queueWrite(String log) {
-    final write = () async {
-      await _currentWrite;
-      await logsFile.writeAsString('$log\n', mode: FileMode.append);
-    }();
+  void _openSink() {
+    _sink = logsFile.openWrite(mode: FileMode.append);
+  }
 
-    _currentWrite = write;
+  // Note: This is safe because Dart is single-threaded — writeln() completes
+  // atomically before yielding. If background isolates ever need to log,
+  // they should send messages to the main isolate via SendPort/ReceivePort
+  // rather than writing to the sink directly.
+  //
+  // We do NOT call flush() here — IOSink auto-flushes its internal buffer
+  // (~8KB). Calling flush() on every write causes "StreamSink is bound to a
+  // stream" errors when the next writeln() arrives before flush() completes.
+  void _queueWrite(String log) {
+    _sink?.writeln(log);
   }
 
   /// Logs information messages that are part of the normal operation of the app.
@@ -144,8 +166,30 @@ class Logger {
     required StackTrace trace,
     required Object error,
   }) {
-    logger.severe(message ?? error.toString(), error, trace);
-    Report.error(message: message, exception: error, stackTrace: trace);
+    // Guard against reentrant logging: if Report.error() or the broadcast
+    // listener throws, runZonedGuarded catches it and calls severe() again
+    // while the broadcast stream is still firing — causing a crash.
+    if (_isLogging) {
+      // Bypass the broadcast stream entirely — write directly to file and console.
+      final time = DateTime.now().toIso8601String();
+      final line = _sanitize(
+        [time, 'SEVERE', message ?? error.toString(), error.toString(), trace.toString()].join('\t'),
+      );
+      _queueWrite(line);
+      if (kDebugMode) debugPrint('[REENTRANT] $line');
+      return;
+    }
+    _isLogging = true;
+    try {
+      logger.severe(message ?? error.toString(), error, trace);
+      Report.error(message: message, exception: error, stackTrace: trace);
+    } catch (e) {
+      // A logging function must never throw — it would break the caller's
+      // control flow (e.g. preventing a catch block from returning null).
+      if (kDebugMode) debugPrint('[Logger.severe failed] $e');
+    } finally {
+      _isLogging = false;
+    }
   }
 
   /// Logs critical errors that could crash the app or make it unusable.
@@ -173,7 +217,10 @@ class Logger {
   }
 
   Future<void> deleteLogs() async {
+    await _sink?.flush();
+    await _sink?.close();
     await logsFile.writeAsString('');
+    _openSink();
     log.shout('Logs deleted');
   }
 
