@@ -147,7 +147,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                                               .state
                                               .notLoggedIn;
                                           if (notLoggedIn) {
-                                            context.goNamed(
+                                            context.pushNamed(
                                               ExchangeRoute
                                                   .exchangeLoginForSupport
                                                   .name,

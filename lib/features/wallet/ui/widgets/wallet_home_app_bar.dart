@@ -98,7 +98,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                             .state
                             .notLoggedIn;
                         if (notLoggedIn) {
-                          context.goNamed(
+                          context.pushNamed(
                             ExchangeRoute.exchangeLoginForSupport.name,
                           );
                         } else {
