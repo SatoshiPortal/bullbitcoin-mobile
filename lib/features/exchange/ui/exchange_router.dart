@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -36,6 +37,11 @@ class ExchangeRouter {
         if (notLoggedIn) {
           return ExchangeRoute.exchangeLanding.path;
         }
+        final isSuperuser =
+            context.read<SettingsCubit>().state.isSuperuser ?? false;
+        if (Platform.isIOS && !isSuperuser) {
+          return WalletRoute.walletHome.path;
+        }
         return null;
       },
       pageBuilder: (context, state) {
@@ -52,7 +58,6 @@ class ExchangeRouter {
             return const ExchangeKycScreen();
           },
         ),
-        ExchangeSupportChatRouter.route,
       ],
     ),
     GoRoute(
@@ -86,17 +91,35 @@ class ExchangeRouter {
         );
       },
     ),
+    ExchangeSupportChatRouter.route,
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
       pageBuilder: (context, state) {
+        final fromSupport =
+            state.uri.queryParameters['from'] == 'support';
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
             listenWhen: (previous, current) =>
                 previous.notLoggedIn && !current.notLoggedIn,
-            listener: (context, state) {
-              // Redirect to home screen if the API key becomes valid
+            listener: (context, exchangeState) {
+              if (fromSupport) {
+                final isIOSNonSuperuser = Platform.isIOS &&
+                    !(context.read<SettingsCubit>().state.isSuperuser ?? false);
+                context.goNamed(
+                  ExchangeSupportChatRoute.supportChat.name,
+                  queryParameters:
+                      isIOSNonSuperuser ? {} : {'from': 'exchange'},
+                );
+                return;
+              }
+              final isSuperuser =
+                  context.read<SettingsCubit>().state.isSuperuser ?? false;
+              if (Platform.isIOS && !isSuperuser) {
+                context.goNamed(WalletRoute.walletHome.name);
+                return;
+              }
               context.goNamed(ExchangeRoute.exchangeHome.name);
             },
             child: const ExchangeAuthScreen(),

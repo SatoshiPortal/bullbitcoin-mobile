@@ -12,16 +12,21 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_cubit.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
-  const ExchangeSupportChatScreen({super.key});
+  const ExchangeSupportChatScreen({super.key, this.fromExchange = false});
+
+  final bool fromExchange;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +41,18 @@ class ExchangeSupportChatScreen extends StatelessWidget {
       )..loadMessages(),
       child: Scaffold(
         appBar: AppBar(
+          leading: BackButton(
+            color: context.appColors.onSurface,
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else if (fromExchange) {
+                context.goNamed(ExchangeRoute.exchangeHome.name);
+              } else {
+                context.goNamed(WalletRoute.walletHome.name);
+              }
+            },
+          ),
           title: BBText(
             context.loc.exchangeSupportChatTitle,
             style: context.font.headlineMedium,

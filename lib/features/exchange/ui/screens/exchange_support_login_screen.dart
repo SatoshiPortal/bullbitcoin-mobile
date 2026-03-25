@@ -125,6 +125,7 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                                   onPressed: () {
                                     context.goNamed(
                                       ExchangeRoute.exchangeAuth.name,
+                                      queryParameters: {'from': 'support'},
                                     );
                                   },
                                   bgColor: context.appColors.primary,
