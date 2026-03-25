@@ -16,10 +16,6 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.appColors.background,
       appBar: AppBar(
-        leading: BackButton(
-          color: context.appColors.onSurface,
-          onPressed: () => context.pop(),
-        ),
         title: BBText(
           context.loc.exchangeSupportChatTitle,
           style: context.font.headlineMedium,
