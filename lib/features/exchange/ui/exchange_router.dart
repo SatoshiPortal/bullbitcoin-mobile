@@ -37,12 +37,10 @@ class ExchangeRouter {
         if (notLoggedIn) {
           return ExchangeRoute.exchangeLanding.path;
         }
-        if (Platform.isIOS) {
-          final isSuperuser =
-              context.read<SettingsCubit>().state.isSuperuser ?? false;
-          if (!isSuperuser) {
-            return WalletRoute.walletHome.path;
-          }
+        final isSuperuser =
+            context.read<SettingsCubit>().state.isSuperuser ?? false;
+        if (Platform.isIOS && !isSuperuser) {
+          return WalletRoute.walletHome.path;
         }
         return null;
       },
@@ -116,13 +114,11 @@ class ExchangeRouter {
                 );
                 return;
               }
-              if (Platform.isIOS) {
-                final isSuperuser =
-                    context.read<SettingsCubit>().state.isSuperuser ?? false;
-                if (!isSuperuser) {
-                  context.goNamed(WalletRoute.walletHome.name);
-                  return;
-                }
+              final isSuperuser =
+                  context.read<SettingsCubit>().state.isSuperuser ?? false;
+              if (Platform.isIOS && !isSuperuser) {
+                context.goNamed(WalletRoute.walletHome.name);
+                return;
               }
               context.goNamed(ExchangeRoute.exchangeHome.name);
             },
