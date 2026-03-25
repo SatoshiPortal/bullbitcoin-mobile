@@ -205,11 +205,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         final notLoggedIn =
                             context.read<ExchangeCubit>().state.notLoggedIn;
                         if (notLoggedIn) {
-                          context.goNamed(
+                          context.pushNamed(
                             ExchangeRoute.exchangeLoginForSupport.name,
                           );
                         } else {
-                          context.goNamed(
+                          context.pushNamed(
                             ExchangeSupportChatRoute.supportChat.name,
                           );
                         }
