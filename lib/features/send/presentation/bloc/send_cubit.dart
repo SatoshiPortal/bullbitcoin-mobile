@@ -42,7 +42,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/labels/new_label.dart';
+
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
