@@ -2,6 +2,13 @@
 
 All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
+## [X.X.X] - To be released
+
+### Bug Fixes
+- **Transaction note now saved to database** ([#1173](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/1173)): Fixed an issue where notes added during a send were stored in state but never persisted. Notes embedded in Bolt11 invoice descriptions or BIP21 label parameters are also automatically pre-populated if the user has not set one manually
+
+---
+
 ## [6.8.0] - 2026-03-17
 
 ### New Features
