@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -10,6 +12,7 @@ import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -153,10 +156,26 @@ class ExchangeHomeScreen extends StatelessWidget {
                                                   .name,
                                             );
                                           } else {
+                                            final isIOSNonSuperuser =
+                                                Platform.isIOS &&
+                                                    !(context
+                                                            .read<
+                                                              SettingsCubit
+                                                            >()
+                                                            .state
+                                                            .isSuperuser ??
+                                                        false);
                                             context.pushNamed(
                                               ExchangeSupportChatRoute
                                                   .supportChat
                                                   .name,
+                                              queryParameters:
+                                                  isIOSNonSuperuser
+                                                      ? {
+                                                          'backToWalletHome':
+                                                              'true',
+                                                        }
+                                                      : {},
                                             );
                                           }
                                         },
