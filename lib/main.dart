@@ -133,11 +133,18 @@ Future main() async {
       runApp(const BullBitcoinWalletApp());
     },
     (error, stackTrace) {
-      log.severe(
-        message: 'Global Unhandled Error',
-        error: error,
-        trace: stackTrace,
-      );
+      // Use try-catch to prevent cascading crashes if logging itself fails
+      try {
+        log.severe(
+          message: 'Global Unhandled Error',
+          error: error,
+          trace: stackTrace,
+        );
+      } catch (_) {
+        debugPrint(
+          'Global Unhandled Error (logger failed): $error\n$stackTrace',
+        );
+      }
     },
   );
 }

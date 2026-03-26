@@ -13,14 +13,32 @@ class TransactionsByDayList extends StatelessWidget {
     super.key,
     required this.transactionsByDay,
     this.ongoingSwaps,
+    this.errorMessage,
   });
 
   final Map<int, List<Transaction>>? transactionsByDay;
   final List<Transaction>? ongoingSwaps;
+  final String? errorMessage;
 
   @override
   Widget build(BuildContext context) {
-    if (transactionsByDay == null) {
+    if (errorMessage != null) {
+      return Center(
+        child: Column(
+          children: [
+            const Gap(16),
+            BBText(
+              errorMessage!,
+              maxLines: 2,
+              textAlign: .center,
+              style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
+                color: context.appColors.error,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else if (transactionsByDay == null) {
       return Center(
         child: Column(
           children: [
@@ -66,10 +84,9 @@ class TransactionsByDayList extends StatelessWidget {
           }
 
           // Adjust index if we have ongoing swaps
-          final adjustedIndex =
-              ongoingSwaps != null && ongoingSwaps!.isNotEmpty
-                  ? index - 1
-                  : index;
+          final adjustedIndex = ongoingSwaps != null && ongoingSwaps!.isNotEmpty
+              ? index - 1
+              : index;
           final entry = transactionsByDay!.entries.elementAt(adjustedIndex);
           final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
           final txs = entry.value;

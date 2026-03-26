@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
 class GetTransactionsUsecase {
@@ -156,7 +157,12 @@ class GetTransactionsUsecase {
             ? orders.map((o) => Transaction(order: o))
             : <Transaction>[]),
       ];
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log.severe(
+        message: 'Failed to fetch transactions',
+        error: e,
+        trace: stackTrace,
+      );
       throw Exception('Failed to fetch transactions: $e');
     }
   }
