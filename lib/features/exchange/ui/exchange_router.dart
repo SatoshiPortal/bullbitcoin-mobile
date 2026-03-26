@@ -91,7 +91,6 @@ class ExchangeRouter {
         );
       },
     ),
-    ExchangeSupportChatRouter.route,
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
