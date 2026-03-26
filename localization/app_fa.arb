@@ -12452,7 +12452,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "حذف حساب یک اقدام غیرقابل بازگشت است، این کار حساب شما را ظرف ۵ روز کاری به طور دائمی حذف خواهد کرد.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
