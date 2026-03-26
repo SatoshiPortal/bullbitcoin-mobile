@@ -18,7 +18,7 @@ class AddressScriptConversions {
       // This is expected for non-address scripts (e.g. OP_RETURN) and
       // not really a bug so using fine instead of severe or warning to avoid
       // flooding the logger with it.
-      log.fine(
+      log.info(
         'error converting scriptPubkey to address',
         error: e,
         trace: StackTrace.current,
