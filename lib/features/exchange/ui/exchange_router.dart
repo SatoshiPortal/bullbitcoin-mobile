@@ -91,7 +91,6 @@ class ExchangeRouter {
         );
       },
     ),
-    ExchangeSupportChatRouter.route,
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
@@ -107,10 +106,11 @@ class ExchangeRouter {
               if (fromSupport) {
                 final isIOSNonSuperuser = Platform.isIOS &&
                     !(context.read<SettingsCubit>().state.isSuperuser ?? false);
-                context.goNamed(
+                context.pushNamed(
                   ExchangeSupportChatRoute.supportChat.name,
-                  queryParameters:
-                      isIOSNonSuperuser ? {} : {'from': 'exchange'},
+                  queryParameters: isIOSNonSuperuser
+                      ? {'backToWalletHome': 'true'}
+                      : {'from': 'exchange'},
                 );
                 return;
               }
