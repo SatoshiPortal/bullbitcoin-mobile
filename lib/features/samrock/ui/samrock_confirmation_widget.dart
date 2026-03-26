@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/samrock/domain/entities/samrock_setup.dart';
 import 'package:flutter/material.dart';
