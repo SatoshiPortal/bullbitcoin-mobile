@@ -29,41 +29,48 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Create user
-RUN adduser --disabled-password --gecos '' $USER && \
-    adduser $USER sudo && \
-    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN adduser --disabled-password --gecos '' $USER
+RUN adduser $USER sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USER
 
-# Install Rust and FVM (FVM installer sequential)
-RUN set -eux; \
-    echo "Downloading Rust and FVM installers..."; \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh; \
-    curl -fsSL https://fvm.app/install.sh -o /tmp/fvm-install.sh; \
-    sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip; \
-    echo "Running Rust and FVM installers..."; \
-    sh /tmp/rustup.sh -y; \
-    bash /tmp/fvm-install.sh ${FVM_VERSION}; \
-    rm -f /tmp/rustup.sh /tmp/fvm-install.sh
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
+RUN sh /tmp/rustup.sh -y
+RUN rm /tmp/rustup.sh
+ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 
-ENV PATH="/home/$USER/.cargo/bin:/home/$USER/fvm/bin:${PATH}"
+# Add Android Rust targets
+RUN rustup target add aarch64-linux-android
+RUN rustup target add armv7-linux-androideabi
+RUN rustup target add x86_64-linux-android
+RUN rustup target add i686-linux-android
 RUN rustc --version && cargo --version
 
-# Install Flutter via FVM (sequential)
-RUN fvm install ${FLUTTER_VERSION} && \
-    fvm global ${FLUTTER_VERSION}
-ENV PATH="/home/$USER/fvm/default/bin:/home/$USER/fvm/bin:${PATH}"
+# Install FVM
+RUN curl -fsSL https://fvm.app/install.sh -o /tmp/fvm-install.sh
+RUN bash /tmp/fvm-install.sh ${FVM_VERSION}
+RUN rm /tmp/fvm-install.sh
+ENV PATH="/home/$USER/fvm/bin:${PATH}"
+
+# Install Flutter via FVM
+RUN fvm install ${FLUTTER_VERSION}
+RUN fvm global ${FLUTTER_VERSION}
+ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
+
+# Download Android cmdline-tools
+RUN sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
 
 # Set up Android SDK
-RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools && \
-    sudo unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools && \
-    sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest && \
-    sudo rm /tmp/android-cmdline-tools.zip && \
-    sudo chown -R $USER ${ANDROID_HOME}
+RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools
+RUN sudo unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
+RUN sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
+RUN sudo rm /tmp/android-cmdline-tools.zip
+RUN sudo chown -R $USER ${ANDROID_HOME}
 
-# Accept licenses and install Android SDK components (sequential)
+# Install Android SDK components
 RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses
-RUN sdkmanager --sdk_root=${ANDROID_HOME} \
-    "platform-tools" \
-    "platforms;android-${ANDROID_API_LEVEL}" \
-    "build-tools;${ANDROID_BUILD_TOOLS}" \
-    "ndk;${ANDROID_NDK}"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_API_LEVEL}"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"
