@@ -2,9 +2,9 @@
 
 # About BULL Wallet
 
-BULL Wallet is a self-custodial Bitcoin and Liquid Network which offers non-custodial atomic swaps across Bitcoin, Lightning and Liquid. The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin, even in a high fee environment. Our driving principle is to create a user experience which nudges the user into implementing best practices.
+BULL Wallet is a self-custodial Bitcoin and Liquid Network wallet which offers non-custodial atomic swaps across Bitcoin, Lightning and Liquid. The wallet philosophy is to provide advanced features that give users the maximum control, while still being easy to use for beginners. Our goal is to make sure that anyone can take self-custody of their Bitcoin, even in a high fee environment. Our driving principle is to create a user experience which nudges the user into implementing best practices.
 
-Following the cypherpunk ethos, the BULL Wallet wallet is fully open-source and trustless.
+Following the cypherpunk ethos, the BULL Wallet is fully open-source and trustless.
 
 ## Wallet basics
 
