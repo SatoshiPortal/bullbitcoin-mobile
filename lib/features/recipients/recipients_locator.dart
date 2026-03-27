@@ -1,14 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/recipients/application/ports/recipients_gateway_port.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/add_recipient_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/check_sinpe_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/get_recipients_usecase.dart';
 import 'package:bb_mobile/features/recipients/application/usecases/list_cad_billers_usecase.dart';
-import 'package:bb_mobile/features/recipients/frameworks/http/authenticated_bullbitcoin_dio_factory.dart';
-import 'package:bb_mobile/features/recipients/frameworks/http/bullbitcoin_api_key_provider.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/bullbitcoin_api_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/gateways/delegating_recipients_gateway.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -19,36 +15,9 @@ import 'package:get_it/get_it.dart';
 
 class RecipientsLocator {
   static void setup(GetIt locator) {
-    registerFrameworks(locator);
     registerDrivenInterfaceAdapters(locator);
     registerApplicationServicesAndUseCases(locator);
     registerDrivingInterfaceAdapters(locator);
-  }
-
-  static void registerFrameworks(GetIt locator) {
-    locator.registerLazySingleton<BullbitcoinApiKeyProvider>(
-      () => BullbitcoinApiKeyProvider(
-        secureStorage: locator<KeyValueStorageDatasource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
-        ),
-      ),
-    );
-
-    locator.registerLazySingleton<Dio>(
-      () => AuthenticatedBullBitcoinDioFactory.create(
-        isTestnet: false,
-        apiKeyProvider: locator<BullbitcoinApiKeyProvider>(),
-      ),
-      instanceName: 'authenticatedBullBitcoinApiClient',
-    );
-
-    locator.registerLazySingleton<Dio>(
-      () => AuthenticatedBullBitcoinDioFactory.create(
-        isTestnet: true,
-        apiKeyProvider: locator<BullbitcoinApiKeyProvider>(),
-      ),
-      instanceName: 'authenticatedBullBitcoinApiTestClient',
-    );
   }
 
   static void registerDrivenInterfaceAdapters(GetIt locator) {
