@@ -132,7 +132,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
         return context.loc.withdrawConfirmIban;
       case RecipientType.sinpeMovilCrc:
         return context.loc.withdrawConfirmPhone;
-      case RecipientType.cbuCvuArgentina:
+      case RecipientType.bankAccountArgentina:
         return context.loc.withdrawConfirmAccount;
       case RecipientType.pseColombia:
         return context.loc.withdrawConfirmBankAccount;
@@ -167,7 +167,7 @@ class WithdrawConfirmationScreen extends StatelessWidget {
         return recipient.iban;
       case RecipientType.sinpeMovilCrc:
         return recipient.phoneNumber;
-      case RecipientType.cbuCvuArgentina:
+      case RecipientType.bankAccountArgentina:
         return null; // TODO: Implement
       case RecipientType.pseColombia:
         return recipient.bankAccount;
