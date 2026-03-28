@@ -1,10 +1,10 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/status/domain/usecases/check_all_service_status_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ServiceStatusCubit extends Cubit<ServiceStatusState> {
+class ServiceStatusCubit extends SafeCubit<ServiceStatusState> {
   final CheckAllServiceStatusUsecase _checkAllServiceStatusUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
 

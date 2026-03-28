@@ -1,12 +1,12 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_default_wallet_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
+class DefaultWalletsCubit extends SafeCubit<DefaultWalletsState> {
   DefaultWalletsCubit({
     required GetDefaultWalletsUsecase getDefaultWalletsUsecase,
     required SaveDefaultWalletUsecase saveDefaultWalletUsecase,
@@ -131,9 +131,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       );
 
       await Future<void>.delayed(const Duration(seconds: 2));
-      if (!isClosed) {
-        emit(state.copyWith(saveSuccess: false));
-      }
+      emit(state.copyWith(saveSuccess: false));
     } catch (e) {
       log.severe(
         message: 'Failed to save wallet',
@@ -178,9 +176,7 @@ class DefaultWalletsCubit extends Cubit<DefaultWalletsState> {
       _clearInputForType(type);
 
       await Future<void>.delayed(const Duration(seconds: 2));
-      if (!isClosed) {
-        emit(state.copyWith(saveSuccess: false));
-      }
+      emit(state.copyWith(saveSuccess: false));
     } catch (e) {
       log.severe(
         message: 'Failed to delete wallet',

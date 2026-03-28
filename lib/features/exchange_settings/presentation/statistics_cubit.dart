@@ -1,9 +1,9 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_stats_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/statistics_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class StatisticsCubit extends Cubit<StatisticsState> {
+class StatisticsCubit extends SafeCubit<StatisticsState> {
   StatisticsCubit({required GetOrderStatsUsecase getOrderStatsUsecase})
     : _getOrderStatsUsecase = getOrderStatsUsecase,
       super(const StatisticsState());

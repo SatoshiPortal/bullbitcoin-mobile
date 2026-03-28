@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -8,13 +9,12 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transactions_cubit.freezed.dart';
 part 'transactions_state.dart';
 
-class TransactionsCubit extends Cubit<TransactionsState> {
+class TransactionsCubit extends SafeCubit<TransactionsState> {
   TransactionsCubit({
     String? walletId,
     bool exchangeOnly = false,
@@ -66,9 +66,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         state.copyWith(transactions: transactions, isSyncing: false, err: null),
       );
     } catch (e) {
-      if (!isClosed) {
-        emit(state.copyWith(err: e));
-      }
+      emit(state.copyWith(err: e));
     }
   }
 
