@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_settings_dto.dart';
 import 'package:bb_mobile/core/mempool/application/dtos/requests/delete_custom_mempool_server_request.dart';
@@ -12,13 +13,12 @@ import 'package:bb_mobile/core/mempool/domain/errors/mempool_server_exception.da
 import 'package:bb_mobile/core/mempool/domain/ports/mempool_server_validator_port.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_network.dart';
 import 'package:bb_mobile/core/mempool/domain/value_objects/mempool_server_status.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'mempool_settings_state.dart';
 part 'mempool_settings_cubit.freezed.dart';
 
-class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
+class MempoolSettingsCubit extends SafeCubit<MempoolSettingsState> {
   final LoadMempoolServerDataUsecase _loadDataUsecase;
   final SetCustomMempoolServerUsecase _setCustomServerUsecase;
   final DeleteCustomMempoolServerUsecase _deleteCustomServerUsecase;

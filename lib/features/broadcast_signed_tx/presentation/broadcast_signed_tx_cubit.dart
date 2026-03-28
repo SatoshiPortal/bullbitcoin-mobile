@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
@@ -9,11 +10,10 @@ import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
+class BroadcastSignedTxCubit extends SafeCubit<BroadcastSignedTxState> {
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
 
   BroadcastSignedTxCubit({

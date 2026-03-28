@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/errors/send_errors.dart'
@@ -42,9 +43,8 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SendCubit extends Cubit<SendState> {
+class SendCubit extends SafeCubit<SendState> {
   SendCubit({
     Wallet? wallet,
     required SelectBestWalletUsecase bestWalletUsecase,
