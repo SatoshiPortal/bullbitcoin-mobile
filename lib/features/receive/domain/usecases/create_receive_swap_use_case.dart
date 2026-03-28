@@ -69,11 +69,11 @@ class CreateReceiveSwapUsecase {
       }
 
       final btcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.bbElectrumTestUrl
+          ? ApiServiceConstants.publicElectrumTestUrl
           : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.publicElectrumTestUrl
+          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
           : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       final claimAddress = await _getReceiveAddressUsecase.execute(
