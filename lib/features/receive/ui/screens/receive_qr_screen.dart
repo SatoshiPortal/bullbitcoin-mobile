@@ -619,11 +619,18 @@ class ReceiveCopyAddress extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16 + 12),
       child: Row(
         children: [
-          BBText(
-            context.loc.receiveCopyAddressOnly,
-            style: context.font.headlineSmall,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                Text(
+                  context.loc.receiveCopyAddressOnly,
+                  style: context.font.headlineSmall,
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
+          const Gap(8),
           Switch(
             value: context.select<ReceiveBloc, bool>(
               (bloc) =>
