@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -6,9 +7,8 @@ import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/errors.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ReplaceByFeeCubit extends Cubit<ReplaceByFeeState> {
+class ReplaceByFeeCubit extends SafeCubit<ReplaceByFeeState> {
   final WalletTransaction originalTransaction;
   final BumpFeeUsecase bumpFeeUsecase;
   final BroadcastBitcoinTransactionUsecase broadcastBitcoinTransactionUsecase;

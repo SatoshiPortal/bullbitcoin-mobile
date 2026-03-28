@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/bbqr/bbqr.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/urqr/urqr.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ShowAnimatedQrCubit extends Cubit<ShowAnimatedQrState> {
+class ShowAnimatedQrCubit extends SafeCubit<ShowAnimatedQrState> {
   final String psbt;
   final QrType qrType;
   Timer? _timer;

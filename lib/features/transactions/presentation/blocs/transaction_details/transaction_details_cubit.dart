@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
@@ -18,13 +19,12 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction_details_cubit.freezed.dart';
 part 'transaction_details_state.dart';
 
-class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
+class TransactionDetailsCubit extends SafeCubit<TransactionDetailsState> {
   TransactionDetailsCubit({
     required GetWalletUsecase getWalletUsecase,
     required GetTransactionsByTxIdUsecase getTransactionsByTxIdUsecase,
