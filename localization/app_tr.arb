@@ -825,6 +825,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "Canlı destek almak için önce Bull Bitcoin hesabınıza giriş yapmanız gerekir. Tamamen ücretsizdir ve KYC gerekmez, sadece bir e-posta adresi yeterlidir.",
   "seedsignerStep12": "Bull Bitcoin cüzdanı, SeedSigner'deki QR kodunu taramanızı isteyecektir. Bunu yorumlayın.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2577,6 +2578,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Yardım Al",
   "exchangeStatisticsOrderStats": "Order Statistics",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3699,10 +3701,6 @@
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
   },
-  "exchangeSupportLoginAccountInfo": "Bullbitcoin.com ile her zaman web uygulamamız aracılığıyla erişebileceğiniz bir hesap oluşturacaksınız.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "electrumAdvancedOptions": "Gelişmiş Seçenekler",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -4745,6 +4743,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Takas oluşturmak için başarısız oldu.",
+  "sendErrorInvoiceMustContainAmount": "Fatura bir miktar içermelidir",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -11550,10 +11549,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "Sadece destek sohbet özelliğine erişebilirsiniz.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "dcaNetworkLabel": "Ağ Ağı Ağı",
   "@dcaNetworkLabel": {
     "description": "Label for network detail row"
@@ -11907,10 +11902,6 @@
   "swapProgressPendingMessage": "Transfer devam ediyor. Bitcoin işlemleri onaylarken alabilir. Eve dönebilir ve bekleyebilirsin.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Bull Bitcoin Destek Hesabına Bağlan",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "Ağ Ağı Ağı",
   "@walletDetailsNetworkLabel": {
@@ -12436,5 +12427,53 @@
   "buyUpgradeKYC": "KYC Seviyesini Yükselt",
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
+  },
+  "appInitErrorTitle": "Uygulama başlatılamadı",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Başlatma sırasında bir hata oluştu. Lütfen uygulamayı yeniden başlatın. Sorun devam ederse günlüklerinizi paylaşın ve destekle iletişime geçin.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Günlükleri paylaş",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

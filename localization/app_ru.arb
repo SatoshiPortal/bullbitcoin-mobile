@@ -873,6 +873,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Получить помощь",
   "sellTransactionFee": "Плата за операции",
   "coldcardStep5": "Если у вас есть проблемы с сканированием:",
   "buyExpressWithdrawal": "Экспресс-вывод",
@@ -1561,6 +1562,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
+  "sendErrorInvoiceMustContainAmount": "Счёт должен содержать сумму",
   "arkNoBalanceData": "Данные о балансе отсутствуют",
   "autoswapWarningCardTitle": "Автообмен включен",
   "coreSwapsChainCompletedSuccess": "Передача завершена успешно.",
@@ -3378,9 +3380,7 @@
   "payInvoiceDetails": "Детали счетов-фактур",
   "exchangeLandingLoginButton": "Зарегистрироваться или зарегистрироваться",
   "exchangeLandingLoginToUseSupport": "Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать чат поддержки для вопросов, связанных с биржей.",
-  "exchangeSupportLoginSubtitle": "Подключиться к учетной записи поддержки Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "У вас будет доступ только к функции чата поддержки.",
-  "exchangeSupportLoginAccountInfo": "Вы создадите учетную запись на bullbitcoin.com, к которой всегда сможете получить доступ через наше веб-приложение.",
+  "exchangeSupportLoginChatRequired": "Чтобы получить поддержку от живого оператора, необходимо сначала войти в свой аккаунт Bull Bitcoin. Это полностью бесплатно, KYC не требуется — только адрес электронной почты.",
   "torSettingsEnableProxy": "Включить Tor Proxy",
   "bitboxScreenAddressToVerify": "Адрес для проверки:",
   "payConfirmPayment": "Подтвердить оплату",
@@ -4408,6 +4408,18 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
+  "appInitErrorTitle": "Не удалось запустить приложение",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Во время запуска произошла ошибка. Пожалуйста, перезапустите приложение. Если проблема не исчезнет, поделитесь журналами и обратитесь в службу поддержки.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Поделиться журналами",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
   "backupWarningTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ КОШЕЛЬКА СЕЙЧАС",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
@@ -4423,5 +4435,41 @@
   "backupWarningBackupLater": "НЕТ, Я ПОНИМАЮ РИСК",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

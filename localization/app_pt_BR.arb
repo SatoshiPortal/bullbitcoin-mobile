@@ -999,6 +999,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "Para obter suporte humano, você precisa primeiro fazer login na sua conta Bull Bitcoin. É 100% gratuito e não é necessário KYC, apenas um endereço de e-mail.",
   "receiveShareInvoice": "Compartilhar Fatura",
   "@receiveShareInvoice": {
     "description": "Button to share invoice"
@@ -2272,6 +2273,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Obter ajuda",
   "fundExchangeCrIbanUsdLabelIban": "Número da conta IBAN (apenas dólares americanos)",
   "@fundExchangeCrIbanUsdLabelIban": {
     "description": "Label for IBAN number field for USD only"
@@ -3575,10 +3577,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "exchangeSupportLoginAccountInfo": "Você estará criando uma conta com o bullbitcoin.com que você sempre pode acessar através do nosso aplicativo web.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "fundExchangeLabelBankCountry": "Países Baixos",
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
@@ -4128,6 +4126,7 @@
     "description": "Label showing source wallet"
   },
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -11272,10 +11271,6 @@
   "@passportStep9": {
     "description": "Passport instruction for signing"
   },
-  "exchangeSupportLoginSubtitle": "Conecte-se à conta de suporte Bull Bitcoin",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
-  },
   "arkTxBoarding": "Quadro",
   "@arkTxBoarding": {
     "description": "Transaction type label for Ark boarding transactions"
@@ -11357,10 +11352,6 @@
   "backupSettingsEncryptedVault": "Vault criptografado",
   "@backupSettingsEncryptedVault": {
     "description": "Label for encrypted vault backup status row"
-  },
-  "exchangeSupportLoginAccessMessage": "Você só terá acesso ao recurso de chat de suporte.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
   },
   "payLabelHint": "Digite um rótulo para este destinatário",
   "@payLabelHint": {
@@ -12432,5 +12423,53 @@
   "buyInsufficientFundsError": "Fundos insuficientes em sua conta Bull Bitcoin para completar esta ordem de compra.",
   "@buyInsufficientFundsError": {
     "description": "Error message for insufficient funds during buy"
+  },
+  "appInitErrorTitle": "Falha ao iniciar o aplicativo",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Ocorreu um erro durante a inicialização. Por favor, reinicie o aplicativo. Se o problema persistir, compartilhe seus registros e entre em contato com o suporte.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Compartilhar registros",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

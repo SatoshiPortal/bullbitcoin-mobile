@@ -876,6 +876,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "获取帮助",
   "sellTransactionFee": "交易费",
   "coldcardStep5": "如果你遇到麻烦,就会:",
   "buyExpressWithdrawal": "提 出",
@@ -1564,6 +1565,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "未能制造 s.",
+  "sendErrorInvoiceMustContainAmount": "发票必须包含金额",
   "arkNoBalanceData": "无结余数据",
   "autoswapWarningCardTitle": "自动换币已启用",
   "coreSwapsChainCompletedSuccess": "移交工作顺利完成.",
@@ -3380,9 +3382,6 @@
   },
   "payInvoiceDetails": "发票细节",
   "exchangeLandingLoginButton": "标志",
-  "exchangeSupportLoginSubtitle": "连接到 Bull Bitcoin 支持账户",
-  "exchangeSupportLoginAccessMessage": "您将只能访问支持聊天功能。",
-  "exchangeSupportLoginAccountInfo": "您将在 bullbitcoin.com 创建一个账户，您可以随时通过我们的网络应用访问。",
   "torSettingsEnableProxy": "Enable Tor Proxy",
   "bitboxScreenAddressToVerify": "地址:",
   "payConfirmPayment": "普通工资",
@@ -4132,6 +4131,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "如需人工支持，您必须先登录您的 Bull Bitcoin 账户。完全免费，无需 KYC，只需一个电子邮件地址。",
   "recipientsSearchHint": "按名称或标签搜索收件人",
   "@recipientsSearchHint": {
     "description": "Hint text for recipients search field"
@@ -4399,6 +4399,18 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
+  "appInitErrorTitle": "应用启动失败",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "启动时发生错误。请重启应用。如果问题持续存在，请分享您的日志并联系支持团队。",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "分享日志",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
   "backupWarningTitle": "立即备份您的钱包",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
@@ -4414,5 +4426,41 @@
   "backupWarningBackupLater": "不，我了解风险",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

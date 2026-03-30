@@ -243,7 +243,9 @@ class AddressErrorSection extends StatelessWidget {
     }
     if (swapError != null) {
       return BBText(
-        context.loc.sendErrorSwapCreationFailed,
+        swapError is AmountlessInvoiceException
+            ? context.loc.sendErrorInvoiceMustContainAmount
+            : swapError.message,
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,
@@ -459,9 +461,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     context,
                                     swapLimitsError,
                                   )
-                                : swapCreationError != null
-                                ? context.loc.sendErrorSwapCreationFailed
-                                : null,
+                                : swapCreationError?.message,
                             focusNode: _amountFocusNode,
                             readOnly: _isMax,
                             isMax: _isMax,

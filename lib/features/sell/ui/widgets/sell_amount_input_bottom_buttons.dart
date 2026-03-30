@@ -11,7 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class SellAmountInputBottomButtons extends StatelessWidget {
+class SellAmountInputBottomButtons extends StatefulWidget {
   const SellAmountInputBottomButtons({
     super.key,
     required this.amountController,
@@ -26,25 +26,63 @@ class SellAmountInputBottomButtons extends StatelessWidget {
   final FiatCurrency? fiatCurrency;
 
   @override
+  State<SellAmountInputBottomButtons> createState() =>
+      _SellAmountInputBottomButtonsState();
+}
+
+class _SellAmountInputBottomButtonsState
+    extends State<SellAmountInputBottomButtons> {
+  bool _needsKycUpgrade = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.amountController.addListener(_onAmountChanged);
+  }
+
+  void _onAmountChanged() {
+    final cadAmount = widget.isFiatCurrencyInput
+        ? double.tryParse(widget.amountController.text) ?? 0.0
+        : 0.0;
+    final newValue = context.read<SellBloc>().state.needsKycUpgrade(
+      cadAmount,
+      currency: widget.fiatCurrency,
+    );
+    if (newValue != _needsKycUpgrade) {
+      setState(() {
+        _needsKycUpgrade = newValue;
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(SellAmountInputBottomButtons oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.amountController != widget.amountController) {
+      oldWidget.amountController.removeListener(_onAmountChanged);
+      widget.amountController.addListener(_onAmountChanged);
+    }
+    if (oldWidget.isFiatCurrencyInput != widget.isFiatCurrencyInput ||
+        oldWidget.fiatCurrency != widget.fiatCurrency) {
+      _onAmountChanged();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.amountController.removeListener(_onAmountChanged);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isLoading = context.select(
       (SellBloc bloc) => bloc.state is SellInitialState,
     );
-    final isFullyVerifiedKycLevel = context.select(
-      (SellBloc bloc) => bloc.state.isFullyVerifiedKycLevel,
-    );
-    final isLimitedKyc = context.select(
-      (SellBloc bloc) => bloc.state.isLimitedKycLevel,
-    );
-    // For CAD, we allow selling with limited KYC.
-    // For other fiat currencies, we require full KYC.
-    final isKycLevelOk =
-        isFullyVerifiedKycLevel ||
-        fiatCurrency == FiatCurrency.cad && isLimitedKyc;
 
     if (isLoading) {
       return const LoadingLineContent(height: 48);
-    } else if (!isKycLevelOk) {
+    } else if (_needsKycUpgrade) {
       return Column(
         children: [
           InfoCard(
@@ -68,21 +106,21 @@ class SellAmountInputBottomButtons extends StatelessWidget {
       return BBButton.big(
         label: context.loc.sellSendPaymentContinue,
         onPressed: () {
-          if (formKey.currentState!.validate()) {
+          if (widget.formKey.currentState!.validate()) {
             final sellBloc = context.read<SellBloc>();
-            final sellState = sellBloc.state;
+            final state = sellBloc.state;
             sellBloc.add(
               SellEvent.amountInputContinuePressed(
-                amountInput: amountController.text,
-                isFiatCurrencyInput: isFiatCurrencyInput,
+                amountInput: widget.amountController.text,
+                isFiatCurrencyInput: widget.isFiatCurrencyInput,
                 fiatCurrency:
-                    fiatCurrency ??
-                    ((sellState is SellAmountInputState)
+                    widget.fiatCurrency ??
+                    ((state is SellAmountInputState)
                         ? FiatCurrency.fromCode(
-                          sellState.userSummary.currency ?? 'CAD',
+                          state.userSummary.currency ?? 'CAD',
                         )
-                        : sellState is SellWalletSelectionState
-                        ? sellState.fiatCurrency
+                        : state is SellWalletSelectionState
+                        ? state.fiatCurrency
                         : FiatCurrency.cad),
               ),
             );

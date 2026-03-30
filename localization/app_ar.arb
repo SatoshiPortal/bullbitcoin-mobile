@@ -801,6 +801,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "للحصول على دعم بشري، يجب عليك أولاً تسجيل الدخول إلى حساب Bull Bitcoin الخاص بك. الخدمة مجانية 100% ولا يتطلب الأمر أي KYC، فقط عنوان بريد إلكتروني.",
   "seedsignerStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (بريد سيغنر) افحصه.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2427,6 +2428,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "الحصول على مساعدة",
   "exchangeStatisticsOrderStats": "النظام الإحصائي",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3497,10 +3499,6 @@
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
   },
-  "exchangeSupportLoginAccountInfo": "سوف تخلقين حساباً مع (بولبيتكوين) و يمكنك دائماً الوصول عبر تطبيقنا على الإنترنت.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "electrumAdvancedOptions": "الخيارات المتقدمة",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -4505,6 +4503,10 @@
   "sendErrorSwapCreationFailed": "فشل في إحداث تبادل.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
+  },
+  "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
   },
   "arkNoBalanceData": "لا توجد بيانات عن الرصيد",
   "@arkNoBalanceData": {
@@ -10916,10 +10918,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "سيكون لديك فقط الوصول إلى ملامح الدردشة الدعم.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "الحد الأدنى للمستوى 1: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -11260,10 +11258,6 @@
   "swapProgressPendingMessage": "عملية النقل جارية صفقات (بيتكوين) قد تستغرق وقتاً لتأكيدها يمكنك العودة للمنزل والانتظار.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "الشبكة",
   "@walletDetailsNetworkLabel": {
@@ -12436,5 +12430,53 @@
   "autoswapRecipientWalletRequired": "♪",
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
+  },
+  "appInitErrorTitle": "فشل تشغيل التطبيق",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "حدث خطأ أثناء بدء التشغيل. يرجى إعادة تشغيل التطبيق. إذا استمر المشكل، شارك سجلاتك وتواصل مع الدعم.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "مشاركة السجلات",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

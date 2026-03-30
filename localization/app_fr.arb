@@ -113,6 +113,7 @@
   "settingsAppVersionLabel": "Version de l'application : ",
   "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Obtenir de l'aide",
   "settingsServicesStatusTitle": "État des services",
   "settingsTorSettingsTitle": "Paramètres Tor",
   "settingsRecoverbullTitle": "Recoverbull",
@@ -2135,6 +2136,7 @@
   "sendEnterRelativeFee": "Entrer les frais relatifs en sats/vB",
   "sendErrorArkExperimentalOnly": "Les demandes de paiement ARK ne sont disponibles que depuis la fonctionnalité expérimentale Ark.",
   "sendErrorSwapCreationFailed": "Échec de la création de l'échange.",
+  "sendErrorInvoiceMustContainAmount": "La facture doit contenir un montant",
   "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
   "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
   "sendErrorBuildFailed": "Échec de la construction",
@@ -3284,9 +3286,7 @@
   "exchangeLandingRestriction": "L'accès aux services d'échange sera restreint aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
   "exchangeLandingLoginButton": "Se connecter ou s'inscrire",
   "exchangeLandingLoginToUseSupport": "Veuillez vous connecter ou vous inscrire pour utiliser le chat de support pour les problèmes liés à l'échange.",
-  "exchangeSupportLoginSubtitle": "Se connecter au compte de support Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "Vous aurez uniquement accès à la fonctionnalité de chat de support.",
-  "exchangeSupportLoginAccountInfo": "Vous allez créer un compte avec bullbitcoin.com auquel vous pourrez toujours accéder via notre application web.",
+  "exchangeSupportLoginChatRequired": "Pour obtenir de l'aide humaine, vous devez d'abord vous connecter à votre compte Bull Bitcoin. C'est 100 % gratuit et aucun KYC n'est requis, seulement une adresse courriel.",
   "exchangeHomeDeposit": "Déposer",
   "exchangeHomeWithdraw": "Retirer",
   "exchangeKycLight": "Léger",
@@ -4388,6 +4388,18 @@
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
   },
+  "appInitErrorTitle": "Impossible de démarrer l'application",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Une erreur s'est produite au démarrage. Veuillez redémarrer l'application. Si le problème persiste, partagez vos journaux et contactez le support.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Partager les journaux",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
   "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
@@ -4403,5 +4415,41 @@
   "backupWarningBackupLater": "NON, JE COMPRENDS LE RISQUE",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
   }
 }

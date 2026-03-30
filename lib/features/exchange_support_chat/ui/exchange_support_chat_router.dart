@@ -14,7 +14,8 @@ class ExchangeSupportChatRouter {
     name: ExchangeSupportChatRoute.supportChat.name,
     path: ExchangeSupportChatRoute.supportChat.path,
     builder: (context, state) {
-      return const ExchangeSupportChatScreen();
+      final fromExchange = state.uri.queryParameters['from'] == 'exchange';
+      return ExchangeSupportChatScreen(fromExchange: fromExchange);
     },
   );
 }
