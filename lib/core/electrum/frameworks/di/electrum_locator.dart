@@ -10,7 +10,6 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repo
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/frameworks/socket/datasources/socket_connectivity_datasource.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/environment_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_status_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_server_repository.dart';
@@ -28,9 +27,6 @@ class ElectrumLocator {
     locator.registerLazySingleton<ElectrumSettingsStorageDatasource>(
       () =>
           ElectrumSettingsStorageDatasource(sqlite: locator<SqliteDatabase>()),
-    );
-    locator.registerLazySingleton<SocketConnectivityDatasource>(
-      () => const SocketConnectivityDatasource(),
     );
   }
 
@@ -56,9 +52,7 @@ class ElectrumLocator {
           EnvironmentAdapter(getSettingsUsecase: locator<GetSettingsUsecase>()),
     );
     locator.registerLazySingleton<ServerStatusPort>(
-      () => ServerStatusAdapter(
-        socketDatasource: locator<SocketConnectivityDatasource>(),
-      ),
+      () => const ServerStatusAdapter(),
     );
   }
 

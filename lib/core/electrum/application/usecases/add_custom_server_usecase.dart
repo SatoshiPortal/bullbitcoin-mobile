@@ -47,7 +47,7 @@ class AddCustomServerUsecase {
     final (_, status) =
         await (
           _electrumServerRepository.save(server),
-          _serverStatusPort.checkServerStatus(
+          _serverStatusPort.checkSocket(
             url: server.url,
             useTorProxy: useTorProxy,
             torProxyPort: appSettings.torProxyPort,
