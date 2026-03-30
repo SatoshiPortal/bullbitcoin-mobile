@@ -81,32 +81,29 @@ class ElectrumSettingsBloc
       final settings = data.settings;
       emit(
         state.copyWith(
-          environment:
-              settings.network.isTestnet
-                  ? ElectrumEnvironment.testnet
-                  : ElectrumEnvironment.mainnet,
-          defaultServers:
-              servers
-                  .where((s) => !s.isCustom)
-                  .map(
-                    (s) => ElectrumServerViewModel(
-                      url: s.url,
-                      status: statuses[s.url]!,
-                      priority: s.priority,
-                    ),
-                  )
-                  .toList(),
-          customServers:
-              servers
-                  .where((s) => s.isCustom)
-                  .map(
-                    (s) => ElectrumServerViewModel(
-                      url: s.url,
-                      status: statuses[s.url]!,
-                      priority: s.priority,
-                    ),
-                  )
-                  .toList(),
+          environment: settings.network.isTestnet
+              ? ElectrumEnvironment.testnet
+              : ElectrumEnvironment.mainnet,
+          defaultServers: servers
+              .where((s) => !s.isCustom)
+              .map(
+                (s) => ElectrumServerViewModel(
+                  url: s.url,
+                  status: statuses[s.url]!,
+                  priority: s.priority,
+                ),
+              )
+              .toList(),
+          customServers: servers
+              .where((s) => s.isCustom)
+              .map(
+                (s) => ElectrumServerViewModel(
+                  url: s.url,
+                  status: statuses[s.url]!,
+                  priority: s.priority,
+                ),
+              )
+              .toList(),
           advancedOptions: ElectrumAdvancedOptionsViewModel(
             retry: settings.retry,
             timeout: settings.timeout,
@@ -156,6 +153,18 @@ class ElectrumSettingsBloc
         ),
       );
       final status = await _addCustomServerUsecase.execute(request);
+
+      // Only add to state if both connectivity checks passed
+      if (status == ElectrumServerStatus.offline) {
+        emit(
+          state.copyWith(
+            electrumServersError: AddFailedException(
+              'Socket or deamon not available',
+            ),
+          ),
+        );
+        return;
+      }
 
       // Add the new server to the list in the state
       //  with the returned status so the UI can reflect it immediately
@@ -212,36 +221,32 @@ class ElectrumSettingsBloc
 
       final response = await _setCustomServersPriorityUsecase.execute(
         SetCustomServersPriorityRequest(
-          servers:
-              reorderedServers
-                  .map(
-                    (e) => ElectrumServerDto(
-                      isCustom: true,
-                      url: e.url,
-                      network: ElectrumServerNetwork.fromEnvironment(
-                        isTestnet:
-                            state.environment == ElectrumEnvironment.testnet,
-                        isLiquid: state.isLiquid,
-                      ),
-                      priority: e.priority,
-                    ),
-                  )
-                  .toList(),
-        ),
-      );
-      final updatedServers =
-          response.servers
+          servers: reorderedServers
               .map(
-                (dto) => ElectrumServerViewModel(
-                  url: dto.url,
-                  status:
-                      currentServers
-                          .firstWhere((s) => s.url == dto.url)
-                          .status, // Preserve existing status
-                  priority: dto.priority,
+                (e) => ElectrumServerDto(
+                  isCustom: true,
+                  url: e.url,
+                  network: ElectrumServerNetwork.fromEnvironment(
+                    isTestnet: state.environment == ElectrumEnvironment.testnet,
+                    isLiquid: state.isLiquid,
+                  ),
+                  priority: e.priority,
                 ),
               )
-              .toList();
+              .toList(),
+        ),
+      );
+      final updatedServers = response.servers
+          .map(
+            (dto) => ElectrumServerViewModel(
+              url: dto.url,
+              status: currentServers
+                  .firstWhere((s) => s.url == dto.url)
+                  .status, // Preserve existing status
+              priority: dto.priority,
+            ),
+          )
+          .toList();
       emit(state.copyWith(customServers: updatedServers));
     } catch (e) {
       emit(
@@ -267,8 +272,9 @@ class ElectrumSettingsBloc
       final request = DeleteCustomServerRequest(url: event.server.url);
       await _deleteCustomServerUsecase.execute(request);
       // Remove the server from the list in the state
-      final updatedCustomServers =
-          sortedServers.where((s) => s.url != event.server.url).toList();
+      final updatedCustomServers = sortedServers
+          .where((s) => s.url != event.server.url)
+          .toList();
       emit(state.copyWith(customServers: updatedCustomServers));
     } catch (e) {
       emit(

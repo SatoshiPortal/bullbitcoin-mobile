@@ -30,10 +30,7 @@ class ServerStatusAdapter implements ServerStatusPort {
               proxyPort: torProxyPort,
               timeoutSeconds: effectiveTimeout,
             )
-          : await _checkRawSocket(
-              uri: uri,
-              timeoutSeconds: effectiveTimeout,
-            );
+          : await _checkRawSocket(uri: uri, timeoutSeconds: effectiveTimeout);
 
       return isConnectable
           ? ElectrumServerStatus.online
@@ -65,6 +62,8 @@ class ServerStatusAdapter implements ServerStatusPort {
         uri: uri,
         timeoutSeconds: effectiveTimeout,
       );
+
+      if (response.isEmpty) return ElectrumServerStatus.offline;
 
       final json = jsonDecode(response) as Map<String, dynamic>;
       final isAlive = json.containsKey('result') && json['result'] != null;
@@ -121,11 +120,12 @@ class ServerStatusAdapter implements ServerStatusPort {
 
     try {
       socket.write(request);
-      return await utf8.decoder
+      final line = await utf8.decoder
           .bind(socket)
           .transform(const LineSplitter())
-          .first
+          .firstWhere((_) => true, orElse: () => '')
           .timeout(Duration(seconds: timeoutSeconds));
+      return line;
     } finally {
       socket.destroy();
     }
