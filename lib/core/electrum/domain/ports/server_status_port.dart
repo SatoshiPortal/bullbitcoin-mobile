@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 
 abstract class ServerStatusPort {
-  Future<ElectrumServerStatus> checkServerStatus({
+  Future<ElectrumServerStatus> checkSocket({
     required String url,
     int? timeout,
     bool useTorProxy = false,
