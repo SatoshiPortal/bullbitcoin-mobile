@@ -96,9 +96,10 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkBitcoinElectrumServer(Network network) async {
     try {
-      final isOnline = await _electrumConnectivityPort.checkServersInUseAreOnlineForNetwork(
-        network.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
-      );
+      final isOnline = await _electrumConnectivityPort
+          .checkServersInUseAreOnlineForNetwork(
+            network.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+          );
 
       return ServiceStatusInfo(
         status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
@@ -116,9 +117,10 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
     try {
-      final isOnline = await _electrumConnectivityPort.checkServersInUseAreOnlineForNetwork(
-        network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
-      );
+      final isOnline = await _electrumConnectivityPort
+          .checkServersInUseAreOnlineForNetwork(
+            network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+          );
 
       return ServiceStatusInfo(
         status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
@@ -199,8 +201,12 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkMempoolService(Network network) async {
     try {
-      // Test mempool connectivity by getting fees
-      await _feesRepository.getNetworkFees(network: network);
+      // NOTE: Mempool is a Bitcoin only service
+      // Liquid fees are hardcoded it will always return connected!
+      final onlyBitcoinNetwork = network.isTestnet
+          ? Network.bitcoinTestnet
+          : Network.bitcoinMainnet;
+      await _feesRepository.getNetworkFees(network: onlyBitcoinNetwork);
 
       return ServiceStatusInfo(
         status: ServiceStatus.online,
