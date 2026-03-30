@@ -7,8 +7,24 @@ import 'package:bb_mobile/features/status_check/presentation/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ServiceStatusPage extends StatelessWidget {
+class ServiceStatusPage extends StatefulWidget {
   const ServiceStatusPage({super.key});
+
+  @override
+  State<ServiceStatusPage> createState() => _ServiceStatusPageState();
+}
+
+class _ServiceStatusPageState extends State<ServiceStatusPage> {
+  final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Show the RefreshIndicator spinner and trigger the first check
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refreshIndicatorKey.currentState?.show();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +36,7 @@ class ServiceStatusPage extends StatelessWidget {
           final cubit = context.read<ServiceStatusCubit>();
 
           return RefreshIndicator(
+            key: _refreshIndicatorKey,
             onRefresh: () async => await cubit.checkStatus(),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
