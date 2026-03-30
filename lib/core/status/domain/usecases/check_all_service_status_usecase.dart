@@ -96,14 +96,12 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkBitcoinElectrumServer(Network network) async {
     try {
-      // Check Bitcoin Electrum servers
-      final hasOnlineServers = await _electrumConnectivityPort
-          .checkServersInUseAreOnlineForNetwork(
-            network.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
-          );
+      final isOnline = await _electrumConnectivityPort.checkServersInUseAreOnlineForNetwork(
+        network.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+      );
 
       return ServiceStatusInfo(
-        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
+        status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
         name: 'Bitcoin Electrum',
         lastChecked: DateTime.now(),
       );
@@ -118,14 +116,12 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
     try {
-      final hasOnlineServers = await _electrumConnectivityPort
-          .checkServersInUseAreOnlineForNetwork(
-            network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
-          );
+      final isOnline = await _electrumConnectivityPort.checkServersInUseAreOnlineForNetwork(
+        network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+      );
 
       return ServiceStatusInfo(
-        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
-
+        status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
         name: 'Liquid Electrum',
         lastChecked: DateTime.now(),
       );

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -47,6 +48,62 @@ class SocketConnectivityDatasource {
         trace: StackTrace.current,
       );
       return false;
+    }
+  }
+
+  /// Sends an Electrum `server.version` JSON-RPC request and verifies the
+  /// server responds with a valid result. Works on all Electrum implementations
+  /// (ElectrumX, Fulcrum, electrs) since `server.version` is mandatory for
+  /// the initial protocol handshake.
+  Future<bool> checkProtocol({
+    required String host,
+    required int port,
+    required bool useSsl,
+    int timeoutSeconds = 5,
+  }) async {
+    SecureSocket? sslSocket;
+    Socket? tcpSocket;
+    try {
+      const request =
+          '{"id":1,"method":"server.version","params":["bb-mobile","1.4"]}\n';
+
+      String response;
+
+      if (useSsl) {
+        sslSocket = await SecureSocket.connect(
+          host,
+          port,
+          timeout: Duration(seconds: timeoutSeconds),
+          onBadCertificate: (_) => true, // accept self-signed certs
+        );
+        sslSocket.write(request);
+        response = await utf8.decoder
+            .bind(sslSocket)
+            .transform(const LineSplitter())
+            .first
+            .timeout(Duration(seconds: timeoutSeconds));
+      } else {
+        tcpSocket = await Socket.connect(
+          host,
+          port,
+          timeout: Duration(seconds: timeoutSeconds),
+        );
+        tcpSocket.write(request);
+        response = await utf8.decoder
+            .bind(tcpSocket)
+            .transform(const LineSplitter())
+            .first
+            .timeout(Duration(seconds: timeoutSeconds));
+      }
+
+      final json = jsonDecode(response) as Map<String, dynamic>;
+      return json.containsKey('result') && json['result'] != null;
+    } catch (e) {
+      log.warning('Electrum protocol check failed for $host:$port - $e');
+      return false;
+    } finally {
+      sslSocket?.destroy();
+      tcpSocket?.destroy();
     }
   }
 

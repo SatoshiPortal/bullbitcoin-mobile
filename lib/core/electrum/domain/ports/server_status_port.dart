@@ -7,4 +7,13 @@ abstract class ServerStatusPort {
     bool useTorProxy = false,
     int torProxyPort = 9050,
   });
+
+  /// Verifies the server speaks the Electrum protocol by sending a
+  /// `server.version` request. Works on all implementations (ElectrumX,
+  /// Fulcrum, electrs). Returns [ElectrumServerStatus.online] if the server
+  /// responds with a valid result, [ElectrumServerStatus.offline] otherwise.
+  Future<ElectrumServerStatus> checkProtocol({
+    required String url,
+    int? timeout,
+  });
 }

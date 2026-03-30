@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
@@ -66,14 +65,6 @@ class ElectrumLocator {
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<AddCustomServerUsecase>(
       () => AddCustomServerUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-        serverStatusPort: locator<ServerStatusPort>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<CheckForOnlineElectrumServersUsecase>(
-      () => CheckForOnlineElectrumServersUsecase(
-        environmentPort: locator<EnvironmentPort>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
         serverStatusPort: locator<ServerStatusPort>(),
         settingsRepository: locator<SettingsRepository>(),
