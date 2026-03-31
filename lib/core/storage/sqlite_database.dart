@@ -58,7 +58,14 @@ class SqliteDatabase extends _$SqliteDatabase {
       return LazyDatabase(() async {
         final dbFolder = await getApplicationDocumentsDirectory();
         final dbPath = p.join(dbFolder.path, '${SqliteDatabase.name}.sqlite');
-        return NativeDatabase(File(dbPath));
+        return NativeDatabase(
+          File(dbPath),
+          setup: (database) {
+            database.execute('PRAGMA journal_mode = WAL;');
+            database.execute('PRAGMA busy_timeout = 2000;');
+            database.execute('PRAGMA synchronous = FULL;');
+          },
+        );
       });
     });
   }
@@ -84,7 +91,11 @@ class SqliteDatabase extends _$SqliteDatabase {
           // causes "database locked" errors.
           // With write-ahead logging (WAL) enabled, a single writer and multiple
           // readers can operate on the database in parallel.
-          database.execute('pragma journal_mode = WAL;');
+          database.execute('PRAGMA journal_mode = WAL;');
+          // Retry for up to 1 second when the database is locked before failing.
+          database.execute('PRAGMA busy_timeout = 2000;');
+          // Ensure maximum durability: fsync before and after every write.
+          database.execute('PRAGMA synchronous = FULL;');
         },
       ),
     );
