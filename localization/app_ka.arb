@@ -265,5 +265,6 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
-  }
+  },
+  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი"
 }
