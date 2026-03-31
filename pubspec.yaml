@@ -24,6 +24,11 @@ dependencies:
       url: https://github.com/iosifpeterfi/flutter_secure_storage
       ref: f0d4b6cd96b5fbc43d125cd25fb2d38c0241fe9c
       path: flutter_secure_storage
+  flutter_secure_storage_legacy:
+    git:
+      url: https://github.com/SatoshiPortal/flutter_secure_storage
+      ref: 6184f2d3afee95aec55cccacf1fb533c6b7d19bf
+      path: flutter_secure_storage
   path_provider: ^2.1.5
   payjoin_flutter:
     git:
