@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
@@ -132,6 +133,7 @@ class AppRouter {
         },
         routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
       ),
+      ExchangeSupportChatRouter.route,
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,

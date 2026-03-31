@@ -15,7 +15,12 @@ class ExchangeSupportChatRouter {
     path: ExchangeSupportChatRoute.supportChat.path,
     builder: (context, state) {
       final fromExchange = state.uri.queryParameters['from'] == 'exchange';
-      return ExchangeSupportChatScreen(fromExchange: fromExchange);
+      final backToWalletHome =
+          state.uri.queryParameters['backToWalletHome'] == 'true';
+      return ExchangeSupportChatScreen(
+        fromExchange: fromExchange,
+        backToWalletHome: backToWalletHome,
+      );
     },
   );
 }

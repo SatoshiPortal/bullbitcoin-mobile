@@ -209,8 +209,17 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                             ExchangeRoute.exchangeLoginForSupport.name,
                           );
                         } else {
+                          final isIOSNonSuperuser = Platform.isIOS &&
+                              !(context
+                                      .read<SettingsCubit>()
+                                      .state
+                                      .isSuperuser ??
+                                  false);
                           context.pushNamed(
                             ExchangeSupportChatRoute.supportChat.name,
+                            queryParameters: isIOSNonSuperuser
+                                ? {'backToWalletHome': 'true'}
+                                : {},
                           );
                         }
                       },

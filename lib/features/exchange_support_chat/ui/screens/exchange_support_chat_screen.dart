@@ -24,9 +24,14 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class ExchangeSupportChatScreen extends StatelessWidget {
-  const ExchangeSupportChatScreen({super.key, this.fromExchange = false});
+  const ExchangeSupportChatScreen({
+    super.key,
+    this.fromExchange = false,
+    this.backToWalletHome = false,
+  });
 
   final bool fromExchange;
+  final bool backToWalletHome;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +49,9 @@ class ExchangeSupportChatScreen extends StatelessWidget {
           leading: BackButton(
             color: context.appColors.onSurface,
             onPressed: () {
-              if (context.canPop()) {
+              if (backToWalletHome) {
+                context.goNamed(WalletRoute.walletHome.name);
+              } else if (context.canPop()) {
                 context.pop();
               } else if (fromExchange) {
                 context.goNamed(ExchangeRoute.exchangeHome.name);
