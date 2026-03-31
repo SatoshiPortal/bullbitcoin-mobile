@@ -78,11 +78,14 @@ class _AddressesScreenState extends State<AddressesScreen> {
                 initialValue: selectedTab,
                 onSelected: (value) {
                   if (value == context.loc.addressViewChangeType) {
-                    ComingSoonBottomSheet.show(
-                      context,
-                      description:
-                          context.loc.addressViewChangeAddressesDescription,
-                    );
+                    if (context.read<AddressViewBloc>().state.isLiquid) {
+                      ComingSoonBottomSheet.show(
+                        context,
+
+                        description:
+                            context.loc.addressViewChangeAddressesDescription,
+                      );
+                    }
                     setState(() {
                       selectedTab = context.loc.addressViewChangeType;
                       showChangeAddresses = true;
@@ -105,14 +108,18 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   final hasReachedEnd = showChangeAddresses
                       ? state.hasReachedEndOfChangeAddresses
                       : state.hasReachedEndOfReceiveAddresses;
+                  final error = showChangeAddresses
+                      ? state.changeAddressesError
+                      : state.receiveAddressesError;
+                  final isLiquid = state.isLiquid;
 
                   if (state.isLoading && addresses.isEmpty) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if (state.error != null && addresses.isEmpty) {
+                  } else if (error != null && addresses.isEmpty) {
                     return Center(
                       child: Text(
                         context.loc.addressViewErrorLoadingAddresses(
-                          state.error!.toString(),
+                          error.toString(),
                         ),
                         style: context.font.bodyMedium?.copyWith(
                           color: context.appColors.error,
@@ -122,7 +129,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                   } else if (addresses.isEmpty) {
                     return Center(
                       child: Text(
-                        showChangeAddresses
+                        showChangeAddresses && isLiquid
                             ? context.loc.addressViewChangeAddressesComingSoon
                             : context.loc.addressViewNoAddressesFound,
                         style: context.font.bodyMedium?.copyWith(
@@ -138,7 +145,7 @@ class _AddressesScreenState extends State<AddressesScreen> {
                       itemCount:
                           addresses.length +
                           (hasReachedEnd ? 0 : 1) +
-                          (state.error != null ? 1 : 0),
+                          (error != null ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index < addresses.length) {
                           final address = addresses[index];
@@ -150,13 +157,12 @@ class _AddressesScreenState extends State<AddressesScreen> {
                             labels: address.labels,
                           );
                         } else {
-                          if (state.error != null &&
-                              index == addresses.length) {
+                          if (error != null && index == addresses.length) {
                             return Center(
                               child: Text(
                                 context.loc
                                     .addressViewErrorLoadingMoreAddresses(
-                                      state.error!.toString(),
+                                      error.toString(),
                                     ),
                                 style: context.font.bodyMedium?.copyWith(
                                   color: context.appColors.error,

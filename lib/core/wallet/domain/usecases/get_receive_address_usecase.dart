@@ -20,7 +20,7 @@ class GetReceiveAddressUsecase {
           walletId: walletId,
         );
       } else {
-        address = await _walletAddressRepository.getLastUnusedReceiveAddress(
+        address = await _walletAddressRepository.getLastRevealedReceiveAddress(
           walletId: walletId,
         );
       }
