@@ -13,8 +13,14 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
   }) = _BitcoinPriceState;
   const BitcoinPriceState._();
 
+  /// Fiat per 1 BTC from the API; must be positive to display converted amounts.
+  bool get hasValidFiatRate =>
+      currency != null &&
+      bitcoinPrice != null &&
+      bitcoinPrice! > 0;
+
   String? calculateFiatPrice(int satAmount) {
-    if (bitcoinPrice == null) return null;
+    if (!hasValidFiatRate) return null;
     final p = bitcoinPrice! * ConvertAmount.satsToBtc(satAmount);
     if (currency == null) return null;
     return '${_fiatFormatting(p.toStringAsFixed(2))} ${currency!}';
