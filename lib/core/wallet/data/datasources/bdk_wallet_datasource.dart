@@ -328,6 +328,7 @@ class BdkWalletDatasource {
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
       transactions,
       wallet: wallet,
+      bdkWallet: bdkWallet,
     );
 
     // Map the transactions to WalletTransactionModel
@@ -575,6 +576,7 @@ class BdkWalletDatasource {
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
     List<bdk.TransactionDetails> transactions, {
     required WalletModel wallet,
+    required bdk.Wallet bdkWallet,
   }) async {
     final listOfOutputs = await Future.wait(
       transactions.map((tx) async {
@@ -589,11 +591,12 @@ class BdkWalletDatasource {
                   output.scriptPubkey.bytes,
                   isTestnet: wallet.isTestnet,
                 );
+            final script = bdk.ScriptBuf(bytes: scriptPubkeyBytes);
 
             return TransactionOutputModel.bitcoin(
               txId: tx.txid,
               vout: vout,
-              isOwn: await isMine(scriptPubkeyBytes, wallet: wallet),
+              isOwn: bdkWallet.isMine(script: script),
               value: output.value,
               scriptPubkey: scriptPubkeyBytes,
               address: address,
