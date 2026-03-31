@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -91,10 +90,11 @@ class BBButton extends StatelessWidget {
               mainAxisAlignment: .center,
               children: [
                 if (iconData == null && icon == null) ...[
-                  BBText(
+                  Text(
                     label,
-                    style: textStyle ?? context.font.headlineLarge,
-                    color: textColor,
+                    style: (textStyle ?? context.font.headlineLarge)?.copyWith(
+                      color: textColor,
+                    ),
                   ),
                 ] else if (label.isEmpty) ...[
                   image,
@@ -102,16 +102,16 @@ class BBButton extends StatelessWidget {
                   if (iconFirst) ...[
                     image,
                     const Gap(10),
-                    BBText(
+                    Text(
                       label,
-                      style: textStyle ?? context.font.headlineLarge,
-                      color: textColor,
+                      style: (textStyle ?? context.font.headlineLarge)
+                          ?.copyWith(color: textColor),
                     ),
                   ] else ...[
-                    BBText(
+                    Text(
                       label,
-                      style: textStyle ?? context.font.headlineLarge,
-                      color: textColor,
+                      style: (textStyle ?? context.font.headlineLarge)
+                          ?.copyWith(color: textColor),
                     ),
                     const Gap(10),
                     image,
