@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/database_seeds.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/settings/frameworks/drift/migrations/on_create_migration.dart';
 import 'package:drift/drift.dart';
 
 class Schema0To1 {
@@ -22,6 +23,7 @@ class Schema0To1 {
     //
     // Make sure to only seed NEW columns/rows and don't overwrite existing data.
     await Future.wait([
+      AppSettingsOnCreateMigration.seed(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultSettings(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultElectrumServers(m.database as SqliteDatabase),
       DatabaseSeeds.seedDefaultElectrumSettings(m.database as SqliteDatabase),
