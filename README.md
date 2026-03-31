@@ -24,6 +24,10 @@ Both these wallets are able to send and receive Lightning Network payments via t
 
 ### [Default service providers](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/lib/core/utils/constants.dart#L60)
 
+### [Reproducible builds](reproducibility/README.md)
+
+The app can be built reproducibly from source and verified against official releases. See the [`reproducibility/`](reproducibility/) directory for instructions.
+
 ### General features
 
 - Non-custodial: private keys are generated on the device, and never leave the device.
