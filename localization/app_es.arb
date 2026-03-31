@@ -107,6 +107,7 @@
   "pinCodeCheckingStatus": "Verificando estado del PIN",
   "pinCodeProcessing": "Procesando",
   "pinCodeSettingUp": "Configurando su código PIN",
+  "pinCodeBackupRequiredWarning": "Por favor, completa una copia de seguridad de la billetera antes de establecer un PIN",
   "settingsCurrencyTitle": "Moneda",
   "settingsAppSettingsTitle": "Configuración de la aplicación",
   "settingsTermsOfServiceTitle": "Términos de servicio",

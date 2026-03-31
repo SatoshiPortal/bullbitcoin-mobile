@@ -191,6 +191,7 @@
   "pinCodeCheckingStatus": "Перевірка стану PIN",
   "pinCodeProcessing": "Переробка",
   "pinCodeSettingUp": "Налаштування коду PIN",
+  "pinCodeBackupRequiredWarning": "Будь ласка, виконайте резервне копіювання гаманця перед встановленням PIN-коду",
   "settingsCurrencyTitle": "Ціна",
   "settingsAppSettingsTitle": "Налаштування додатків",
   "settingsTermsOfServiceTitle": "Умови надання послуг",

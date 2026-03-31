@@ -3288,6 +3288,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid-Adresse",
   "backupWalletSuccessTestButton": "Backup testen",
   "pinCodeSettingUp": "PIN einrichten",
+  "pinCodeBackupRequiredWarning": "Bitte schließen Sie eine Wallet-Sicherung ab, bevor Sie eine PIN festlegen",
   "replaceByFeeErrorFeeRateTooLow": "Sie müssen den Gebührensatz um mindestens 1 sat/vbyte gegenüber der ursprünglichen Transaktion erhöhen",
   "payPriority": "Priorität",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Überweisung in Costa-Ricanischem Colón (CRC)",
