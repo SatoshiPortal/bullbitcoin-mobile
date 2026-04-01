@@ -1,0 +1,17 @@
+{
+    // time devcontainer up --workspace-folder ~/Repos/BULL --config ~/Repos/BULL/.devcontainer/devcontainer.json
+    "name": "${localWorkspaceFolderBasename}",
+    "build": {
+        "dockerfile": "../Dockerfile"
+    },
+    "remoteUser": "bull",
+    "shutdownAction": "stopContainer",
+    "runArgs": [
+        "--name",
+        "${localWorkspaceFolderBasename}",
+        "--hostname",
+        "mobile",
+        "--memory=8g"
+    ],
+    "postCreateCommand": "flutter config --no-analytics && dart --disable-analytics && cp -n .env.template .env"
+}

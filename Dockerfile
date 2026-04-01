@@ -1,107 +1,76 @@
-# Use a base Ubuntu image
-FROM --platform=linux/amd64 ubuntu:24.04
+FROM debian:trixie
 
-# Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
-ENV USER="docker"
+ENV USER="bull"
 
-# Install necessary dependencies
-RUN apt update && apt install -y \
+ARG FVM_VERSION=4.0.5
+ARG FLUTTER_VERSION=3.38.5
+ARG ANDROID_CMDLINE_TOOLS_VERSION=14742923
+ARG ANDROID_API_LEVEL=36
+ARG ANDROID_BUILD_TOOLS=36.0.0
+ARG ANDROID_NDK=29.0.14206865
+
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    sudo \
+    ca-certificates \
     curl \
     git \
     unzip \
     xz-utils \
     zip \
-    libglu1-mesa \
     wget \
-    clang \
-    cmake \
-    ninja-build \
-    pkg-config \
-    libgtk-3-dev \
-    software-properties-common \
+    make \
+    openjdk-21-jdk-headless \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt update && apt install -y sudo
+# Create user
 RUN adduser --disabled-password --gecos '' $USER
 RUN adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
 USER $USER
-RUN sudo apt update 
-
-# Install OpenJDK 17
-RUN sudo apt-get update && sudo apt-get install -y openjdk-21-jdk && sudo rm -rf /var/lib/apt/lists/*
 
 # Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
+RUN sh /tmp/rustup.sh -y
+RUN rm /tmp/rustup.sh
 ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 
-# Verify Rust installation
+# Add Android Rust targets
+RUN rustup target add aarch64-linux-android
+RUN rustup target add armv7-linux-androideabi
+RUN rustup target add x86_64-linux-android
+RUN rustup target add i686-linux-android
 RUN rustc --version && cargo --version
 
-# Set environment variables
-ENV FLUTTER_HOME=/opt/flutter
-ENV ANDROID_HOME=/opt/android-sdk
-ENV PATH=$FLUTTER_HOME/bin:$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+# Install FVM
+RUN curl -fsSL https://fvm.app/install.sh -o /tmp/fvm-install.sh
+RUN bash /tmp/fvm-install.sh ${FVM_VERSION}
+RUN rm /tmp/fvm-install.sh
+ENV PATH="/home/$USER/fvm/bin:${PATH}"
 
-# Install Flutter
-RUN sudo git clone https://github.com/flutter/flutter.git $FLUTTER_HOME
-RUN sudo sh -c "cd $FLUTTER_HOME && git checkout stable && ./bin/flutter --version"
+# Install Flutter via FVM
+RUN fvm install ${FLUTTER_VERSION}
+RUN fvm global ${FLUTTER_VERSION}
+ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
+
+# Download Android cmdline-tools
+RUN sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
 
 # Set up Android SDK
-RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools && \
-    sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O android-cmdline-tools.zip && \
-    sudo unzip -q android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools && \
-    sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest && \
-    sudo rm android-cmdline-tools.zip
+RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools
+RUN sudo unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
+RUN sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
+RUN sudo rm /tmp/android-cmdline-tools.zip
+RUN sudo chown -R $USER ${ANDROID_HOME}
 
-RUN sudo chown -R $USER /opt/flutter
-RUN sudo chown -R $USER /opt/android-sdk
-
-RUN flutter config --android-sdk=/opt/android-sdk
-
-# Accept licenses and install necessary Android SDK components
-RUN yes | sdkmanager --licenses
-RUN sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
-
-# Clean up existing app directory
-RUN sudo rm -rf /app
-
-RUN sudo mkdir /app
-
-RUN sudo chown -R $USER /app
-
-# Clone the Bull Bitcoin mobile repository
-RUN git clone --branch main https://github.com/SatoshiPortal/bullbitcoin-mobile /app
-
-# Create device-spec.json directly in the container
-RUN echo '{\
-    "supportedAbis": ["armeabi-v7a", "armeabi"],\
-    "supportedLocales": ["en"],\
-    "screenDensity": 280,\
-    "sdkVersion": 31\
-}' > /app/device-spec.json
-
-WORKDIR /app
-
-# Setup the project
-RUN make clean
-RUN make deps
-RUN make build-runner
-RUN make l10n
-
-# Create .env (empty values)
-RUN cp .env.template .env
-
-# Generate a fake keystore
-RUN keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
-
-# Set up key.properties
-RUN echo "storePassword=android" > /app/android/key.properties && \
-    echo "keyPassword=android" >> /app/android/key.properties && \
-    echo "keyAlias=upload" >> /app/android/key.properties && \
-    echo "storeFile=/app/upload-keystore.jks" >> /app/android/key.properties
-
-# Build APK with specific target platform
-RUN flutter build apk --debug --target-platform android-arm64
+# Install Android SDK components
+RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_API_LEVEL}"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
+RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"

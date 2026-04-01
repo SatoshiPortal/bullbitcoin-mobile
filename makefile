@@ -1,6 +1,6 @@
 .PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check
 
-fvm-check: 
+fvm-check:
 	@echo "🔍 Checking FVM"
 	@if ! command -v fvm >/dev/null 2>&1; then \
 		echo "❌ FVM is not installed. Please install FVM first:"; \
@@ -12,7 +12,7 @@ fvm-check:
 all: setup
 	@echo "✨ All tasks completed!"
 
-setup: fvm-check clean deps build-runner translations hooks ios-pod-update
+setup: fvm-check deps build-runner translations hooks
 	@echo "🚀 Setup complete!"
 
 clean:
@@ -30,7 +30,7 @@ build-runner:
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
 	@fvm dart run build_runner watch --delete-conflicting-outputs
-	
+
 translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter pub get
@@ -64,7 +64,7 @@ docker-build:
 
 test: unit-test integration-test
 
-unit-test: 
+unit-test:
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
 
