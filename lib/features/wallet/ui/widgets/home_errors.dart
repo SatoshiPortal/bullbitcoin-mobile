@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/cards/autoswap_warning_card.dart';
 import 'package:bb_mobile/core/widgets/cards/backup_card.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -19,6 +20,7 @@ class HomeWarnings extends StatelessWidget {
     return BlocBuilder<WalletBloc, WalletState>(
       buildWhen: (previous, current) =>
           previous.hasNoBackup() != current.hasNoBackup() ||
+          previous.isOnLegacyStorage != current.isOnLegacyStorage ||
           previous.showAutoSwapDefaultEnabledWarning() !=
               current.showAutoSwapDefaultEnabledWarning() ||
           previous.showAutoSwapActiveStatus() !=
@@ -26,12 +28,14 @@ class HomeWarnings extends StatelessWidget {
           previous.warnings != current.warnings,
       builder: (context, state) {
         final showBackupWarning = state.hasNoBackup();
+        final showLegacyStorageWarning = state.isOnLegacyStorage;
         final showAutoSwapDefaultEnabledWarning = state
             .showAutoSwapDefaultEnabledWarning();
         final showAutoSwapActiveStatus = state.showAutoSwapActiveStatus();
         final serverWarning = state.warnings;
 
         if (!showBackupWarning &&
+            !showLegacyStorageWarning &&
             !showAutoSwapDefaultEnabledWarning &&
             !showAutoSwapActiveStatus &&
             serverWarning.isEmpty) {
@@ -43,12 +47,41 @@ class HomeWarnings extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (showBackupWarning)
-                BackupCard(
+              // Legacy storage + no backup: highest priority, forced flow, no dismiss.
+              if (showLegacyStorageWarning && showBackupWarning)
+                InfoCard(
+                  title: context.loc.homeLegacyStorageWithNoBackupTitle,
+                  description:
+                      context.loc.homeLegacyStorageWithNoBackupDescription,
+                  tagColor: context.appColors.error,
+                  bgColor: context.appColors.errorContainer,
                   onTap: () => context.pushNamed(
                     BackupSettingsSubroute.backupOptions.name,
                   ),
-                ),
+                )
+              else ...[
+                // Legacy storage only: has backup, still needs reinstall.
+                if (showLegacyStorageWarning) ...[
+                  InfoCard(
+                    title: context.loc.homeLegacyStorageTitle,
+                    description: context.loc.homeLegacyStorageDescription,
+                    tagColor: context.appColors.error,
+                    bgColor: context.appColors.errorContainer,
+                    onTap: () => context.pushNamed(
+                      BackupSettingsSubroute.backupOptions.name,
+                    ),
+                  ),
+                  const Gap(5),
+                ],
+
+                // Regular backup warning (no legacy storage issue).
+                if (showBackupWarning)
+                  BackupCard(
+                    onTap: () => context.pushNamed(
+                      BackupSettingsSubroute.backupOptions.name,
+                    ),
+                  ),
+              ],
 
               if (showAutoSwapDefaultEnabledWarning) ...[
                 if (showBackupWarning) const Gap(5),

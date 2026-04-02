@@ -265,5 +265,29 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "საფულე ახლავე უნდა დაიბექაფოს",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "თქვენი საფულე მოძველებულ საცავის ბიბლიოთეკაზეა და სარეზერვო ასლი არ აქვს. დაუყოვნებლივ უნდა შექმნათ სარეზერვო ასლი თქვენი სიდ ფრაზისთვის, შემდეგ წაშალეთ და ხელახლა დააინსტალირეთ აპლიკაცია.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "აღმოჩენილია მოძველებული საცავი",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "შეეხეთ ახლავე საფულის სარეზერვო ასლის შესაქმნელად და აპლიკაციის ხელახლა დასაინსტალირებლად.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "სარეზერვო ასლი ახლავე",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "მოგვიანებით",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   }
 }

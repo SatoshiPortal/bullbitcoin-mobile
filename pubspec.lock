@@ -762,8 +762,8 @@ packages:
     dependency: "direct main"
     description:
       path: flutter_secure_storage
-      ref: f0d4b6cd96b5fbc43d125cd25fb2d38c0241fe9c
-      resolved-ref: f0d4b6cd96b5fbc43d125cd25fb2d38c0241fe9c
+      ref: bull-bitcoin-fork
+      resolved-ref: "22c2a112035e26201c97046cf9a0ff56c127c7ba"
       url: "https://github.com/iosifpeterfi/flutter_secure_storage"
     source: git
     version: "10.0.0"
@@ -778,20 +778,16 @@ packages:
   flutter_secure_storage_legacy:
     dependency: "direct main"
     description:
-      path: flutter_secure_storage
-      ref: "6184f2d3afee95aec55cccacf1fb533c6b7d19bf"
-      resolved-ref: "6184f2d3afee95aec55cccacf1fb533c6b7d19bf"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage"
-    source: git
+      path: "../flutter_secure_storage/flutter_secure_storage"
+      relative: true
+    source: path
     version: "9.2.3"
   flutter_secure_storage_legacy_platform_interface:
     dependency: transitive
     description:
-      path: flutter_secure_storage_platform_interface
-      ref: "6184f2d3afee95aec55cccacf1fb533c6b7d19bf"
-      resolved-ref: "6184f2d3afee95aec55cccacf1fb533c6b7d19bf"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage"
-    source: git
+      path: "../flutter_secure_storage/flutter_secure_storage_platform_interface"
+      relative: true
+    source: path
     version: "1.1.2"
   flutter_secure_storage_linux:
     dependency: transitive

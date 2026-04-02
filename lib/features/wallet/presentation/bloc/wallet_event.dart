@@ -67,3 +67,7 @@ class DisableAutoSwap extends WalletEvent {
 class DismissBackupWarning extends WalletEvent {
   const DismissBackupWarning();
 }
+
+class DismissLegacyStorageWarning extends WalletEvent {
+  const DismissLegacyStorageWarning();
+}

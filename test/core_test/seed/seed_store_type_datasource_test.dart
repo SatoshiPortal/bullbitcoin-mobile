@@ -79,31 +79,6 @@ void main() {
       expect(entity.storageLibrary, SeedStorageLibrary.fss9);
     });
 
-    test('write oubliette then read returns oubliette', () async {
-      final model = SeedStoreTypeModel.fromEntity(
-        const SeedStoreType(storageLibrary: SeedStorageLibrary.oubliette),
-      );
-
-      await datasource.write(model);
-
-      final prefs = await SharedPreferences.getInstance();
-      final rawValue = prefs.getString('seed_store_type');
-      final decoded = jsonDecode(rawValue!) as Map<String, dynamic>;
-
-      print('--- write oubliette ---');
-      print('key:   seed_store_type');
-      print('value: $rawValue');
-      print('decoded: $decoded');
-
-      final result = await datasource.read();
-      final entity = result!.toEntity();
-
-      print('entity.storageLibrary: ${entity.storageLibrary}');
-
-      expect(decoded['storageLibrary'], 'oubliette');
-      expect(entity.storageLibrary, SeedStorageLibrary.oubliette);
-    });
-
     test('overwrite replaces the stored value — no duplicates', () async {
       await datasource.write(
         SeedStoreTypeModel.fromEntity(
@@ -115,11 +90,6 @@ void main() {
           const SeedStoreType(storageLibrary: SeedStorageLibrary.fss10),
         ),
       );
-      await datasource.write(
-        SeedStoreTypeModel.fromEntity(
-          const SeedStoreType(storageLibrary: SeedStorageLibrary.oubliette),
-        ),
-      );
 
       final prefs = await SharedPreferences.getInstance();
       final allKeys = prefs.getKeys();
@@ -127,7 +97,7 @@ void main() {
           allKeys.where((k) => k == 'seed_store_type').toList();
       final rawValue = prefs.getString('seed_store_type');
 
-      print('--- overwrite fss9 -> fss10 -> oubliette ---');
+      print('--- overwrite fss9 -> fss10 ---');
       print('all keys in store: $allKeys');
       print('seed_store_type key count: ${seedStoreKeys.length}');
       print('key:   seed_store_type');
@@ -139,7 +109,7 @@ void main() {
       print('entity.storageLibrary: ${entity.storageLibrary}');
 
       expect(seedStoreKeys.length, 1, reason: 'only one seed_store_type entry must exist');
-      expect(entity.storageLibrary, SeedStorageLibrary.oubliette);
+      expect(entity.storageLibrary, SeedStorageLibrary.fss10);
     });
   });
 }
