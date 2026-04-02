@@ -157,12 +157,31 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensToLabel,
-            details: BBText(
-              _receiveWalletLabel,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.secondary,
-              ),
-              textAlign: .end,
+            details: Row(
+              mainAxisAlignment: .end,
+              mainAxisSize: .min,
+              children: [
+                Expanded(
+                  child: BBText(
+                    _receiveWalletLabel,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.secondary,
+                    ),
+                    textAlign: .end,
+                  ),
+                ),
+                const Gap(4),
+                InkWell(
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: _receiveWalletLabel));
+                  },
+                ),
+              ],
             ),
           ),
           _divider(context),
