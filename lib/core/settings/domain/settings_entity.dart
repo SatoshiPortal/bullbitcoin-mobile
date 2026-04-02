@@ -54,6 +54,7 @@ enum Language {
   finnish('fi', 'FI', 'Suomi'),
   franceFrench('fr', 'FR', 'Français'),
   hindi('hi', null, 'हिन्दी'),
+  hinglish('hi', 'Latn', 'Hinglish'),
   italian('it', 'IT', 'Italiano'),
   korean('ko', null, '한국어'),
   portuguese('pt', 'PT', 'Português'),
