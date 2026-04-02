@@ -22,7 +22,7 @@ class TransactionMapper {
   /// (e.g. non-standard script), the address field is left `null`.
   static BitcoinTransaction fromBitcoinTx(
     btc_utils.BitcoinTx bitcoinTx, {
-    bool? isTestnet,
+    bool isTestnet = false,
   }) {
     return BitcoinTransaction(
       txid: bitcoinTx.txid,
@@ -198,20 +198,18 @@ class TransactionMapper {
   static BitcoinTxOutput _mapBitcoinOutput(
     btc_utils.TxVout vout,
     int index, {
-    bool? isTestnet,
+    bool isTestnet = false,
   }) {
     String? address;
-    if (isTestnet != null) {
-      try {
-        address = bdk.Address.fromScript(
-          script: bdk.Script(
-            rawOutputScript: Uint8List.fromList(vout.scriptPubKey.bytes),
-          ),
-          network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
-        ).toString();
-      } on Exception {
-        // Non-standard or unrecognized script — address left null
-      }
+    try {
+      address = bdk.Address.fromScript(
+        script: bdk.Script(
+          rawOutputScript: Uint8List.fromList(vout.scriptPubKey.bytes),
+        ),
+        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      ).toString();
+    } on Exception {
+      // Non-standard or unrecognized script — address left null
     }
 
     return BitcoinTxOutput(
