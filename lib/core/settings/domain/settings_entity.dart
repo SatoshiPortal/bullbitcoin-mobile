@@ -52,6 +52,7 @@ enum Language {
   finnish('fi', 'FI', 'Suomi'),
   franceFrench('fr', 'FR', 'Français'),
   hindi('hi', null, 'हिन्दी'),
+  hinglish('hi', 'Latn', 'Hinglish'),
   italian('it', 'IT', 'Italiano'),
   korean('ko', null, '한국어'),
   portuguese('pt', 'PT', 'Português'),
@@ -60,7 +61,8 @@ enum Language {
   thai('th', null, 'ภาษาไทย'),
   turkish('tr', null, 'Türkçe'),
   ukrainian('uk', 'UA', 'Українська'),
-  simplifiedChinese('zh', 'CN', '简体中文');
+  simplifiedChinese('zh', 'CN', '简体中文'),
+  assamese('as', null, 'অসমীয়া');
 
   final String languageCode;
   final String? countryCode;
