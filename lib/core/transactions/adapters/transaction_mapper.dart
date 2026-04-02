@@ -57,12 +57,14 @@ class TransactionMapper {
     }
   }
 
+  static int? _inputValueSat(TransactionInput input) => switch (input) {
+    BitcoinTransactionInput(:final value) => value?.toInt(),
+    LiquidTransactionInput(:final value) => value.toInt(),
+  };
+
   static BitcoinTransaction _walletTxToBitcoin(WalletTransaction walletTx) {
     final inputs = walletTx.inputs.map((input) {
-      final valueSat = switch (input) {
-        BitcoinTransactionInput(:final value) => value?.toInt(),
-        LiquidTransactionInput(:final value) => value.toInt(),
-      };
+      final valueSat = _inputValueSat(input);
       return BitcoinTxInput(
         previousTxId: input.previousTxId,
         previousVout: input.previousTxVout,
@@ -118,10 +120,7 @@ class TransactionMapper {
 
   static LiquidTransaction _walletTxToLiquid(WalletTransaction walletTx) {
     final inputs = walletTx.inputs.map((input) {
-      final valueSat = switch (input) {
-        BitcoinTransactionInput(:final value) => value?.toInt(),
-        LiquidTransactionInput(:final value) => value.toInt(),
-      };
+      final valueSat = _inputValueSat(input);
       return LiquidTxInput(
         previousTxId: input.previousTxId,
         previousVout: input.previousTxVout,
@@ -210,8 +209,8 @@ class TransactionMapper {
           ),
           network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
         ).toString();
-      } catch (_) {
-        // Non-standard script — leave address null
+      } on Exception {
+        // Non-standard or unrecognized script — address left null
       }
     }
 

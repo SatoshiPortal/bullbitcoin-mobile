@@ -13,7 +13,7 @@ class TransactionLocator {
   }
 
   static void _registerUseCases(GetIt locator) {
-    locator.registerFactory<BuildTransactionUsecase>(
+    locator.registerLazySingleton<BuildTransactionUsecase>(
       () =>
           BuildTransactionUsecase(transactionPort: locator<TransactionPort>()),
     );

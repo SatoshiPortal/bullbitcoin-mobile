@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/application/build_transaction_usecase.dart';
+import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/core/transactions/ui/transaction_screen.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -93,23 +95,12 @@ class BroadcastSignedTxPage extends StatelessWidget {
                 if (state.transaction != null &&
                     state.isBroadcasted == false) ...[
                   BlocProvider(
-                    create: (_) {
-                      final txCubit = TransactionCubit(
-                        buildTransactionUsecase:
-                            locator<BuildTransactionUsecase>(),
-                      );
-                      // Convert BitcoinTx to domain entity and resolve inputs
-                      final domainTx = TransactionMapper.fromBitcoinTx(
-                        state.transaction!.tx,
-                      );
-                      txCubit.loadFromTransaction(domainTx);
-                      return txCubit;
-                    },
-                    child: TransactionScreen(
-                      bottomActions: _BroadcastActions(
-                        cubit: cubit,
-                        state: state,
-                      ),
+                    create: (_) => TransactionCubit(
+                      buildTransactionUsecase:
+                          locator<BuildTransactionUsecase>(),
+                    ),
+                    child: _TransactionReviewSection(
+                      bitcoinTx: state.transaction!.tx,
                     ),
                   ),
                 ],
@@ -142,16 +133,17 @@ class BroadcastSignedTxPage extends StatelessWidget {
 }
 
 class _BroadcastActions extends StatelessWidget {
-  const _BroadcastActions({required this.cubit, required this.state});
-
-  final BroadcastSignedTxCubit cubit;
-  final BroadcastSignedTxState state;
+  const _BroadcastActions();
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<BroadcastSignedTxCubit>();
+    final pushTxUri = context.select(
+      (BroadcastSignedTxCubit c) => c.state.pushTxUri,
+    );
     return Row(
       children: [
-        if (state.pushTxUri != null)
+        if (pushTxUri != null)
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -176,5 +168,31 @@ class _BroadcastActions extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _TransactionReviewSection extends StatefulWidget {
+  const _TransactionReviewSection({required this.bitcoinTx});
+
+  final btc_utils.BitcoinTx bitcoinTx;
+
+  @override
+  State<_TransactionReviewSection> createState() =>
+      _TransactionReviewSectionState();
+}
+
+class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
+  late final Transaction _transaction;
+
+  @override
+  void initState() {
+    super.initState();
+    _transaction = TransactionMapper.fromBitcoinTx(widget.bitcoinTx);
+    context.read<TransactionCubit>().loadFromTransaction(_transaction);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const TransactionScreen(bottomActions: _BroadcastActions());
   }
 }

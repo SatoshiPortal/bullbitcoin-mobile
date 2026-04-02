@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction_entity.dart';
 import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_state.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Cubit managing the state of a transaction being reviewed.
@@ -31,25 +30,6 @@ class TransactionCubit extends Cubit<TransactionState> {
       emit(TransactionState.loaded(entity: entity));
     } on TransactionError catch (e) {
       emit(TransactionState.error(error: e));
-    } catch (e) {
-      emit(
-        TransactionState.error(
-          error: TransactionError.unexpected(e.toString()),
-        ),
-      );
-    }
-  }
-
-  /// Load a wallet-built transaction synchronously.
-  ///
-  /// All data is already available from the wallet's local DB.
-  void loadFromWalletTransaction(WalletTransaction walletTx, Transaction tx) {
-    try {
-      final entity = _buildTransactionUsecase.executeFromWalletTransaction(
-        walletTx,
-        tx,
-      );
-      emit(TransactionState.loaded(entity: entity));
     } catch (e) {
       emit(
         TransactionState.error(

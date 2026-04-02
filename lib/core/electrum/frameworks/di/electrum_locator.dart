@@ -119,7 +119,7 @@ class ElectrumLocator {
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
       ),
     );
-    locator.registerFactory<FetchElectrumTransactionUsecase>(
+    locator.registerLazySingleton<FetchElectrumTransactionUsecase>(
       () => FetchElectrumTransactionUsecase(
         getServersUsecase: locator<GetElectrumServersToUseUsecase>(),
         environmentPort: locator<EnvironmentPort>(),

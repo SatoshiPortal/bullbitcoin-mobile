@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/transactions/domain/entity/liquid_transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
 
 /// The display/review model for a transaction.
@@ -33,8 +34,12 @@ class TransactionEntity {
   /// Total value of all outputs in satoshis.
   int get totalOutputsSat => transaction.totalOutputsSat;
 
-  /// Transaction fee in satoshis (inputs - outputs).
-  int get feeSat => totalInputsSat - totalOutputsSat;
+  /// Transaction fee in satoshis.
+  /// For Liquid, uses the explicit fee field. For Bitcoin, computed as inputs − outputs.
+  int get feeSat => switch (transaction) {
+    LiquidTransaction(:final feeSat) => feeSat,
+    _ => totalInputsSat - totalOutputsSat,
+  };
 
   /// Fee rate in sat/vbyte, or null if vsize is zero.
   double? get feeRate =>

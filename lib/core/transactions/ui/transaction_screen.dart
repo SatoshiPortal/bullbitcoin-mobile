@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction_entity.dart';
+import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_state.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
@@ -84,9 +85,7 @@ class TransactionScreen extends StatelessWidget {
             topWidget: topWidget,
             bottomActions: bottomActions,
           ),
-          TransactionErrorState(:final error) => _ErrorView(
-            message: error.toString(),
-          ),
+          TransactionErrorState(:final error) => _ErrorView(error: error),
         };
       },
     );
@@ -124,9 +123,20 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message});
+  const _ErrorView({required this.error});
 
-  final String message;
+  final TransactionError error;
+
+  String _message() => switch (error) {
+    TransactionFetchFailed(:final txid) =>
+      'Could not fetch transaction $txid from Electrum.',
+    TransactionInputResolutionFailed(:final parentTxId, :final vout) =>
+      'Input not found: output $vout of $parentTxId does not exist.',
+    TransactionParseFailed(:final message) =>
+      'Failed to parse transaction: ${message ?? 'unknown error'}.',
+    UnexpectedTransactionError(:final message) =>
+      'Unexpected error: ${message ?? 'unknown'}.',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +149,7 @@ class _ErrorView extends StatelessWidget {
             Icon(Icons.error_outline, color: context.appColors.error, size: 48),
             const Gap(16),
             BBText(
-              message,
+              _message(),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
