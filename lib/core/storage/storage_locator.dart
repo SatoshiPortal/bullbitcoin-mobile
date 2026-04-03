@@ -41,6 +41,7 @@ class StorageLocator {
       case null:
         // No flag — fresh install or first run of 6.9.0.
         // Always try the latest storage options first and fallback to older options
+        log.fine('StorageLocator: no existing flag — attempting fss10 init');
         try {
           final storage = fss10.FlutterSecureStorage(
             aOptions: const fss10.AndroidOptions(
@@ -52,43 +53,64 @@ class StorageLocator {
                   fss10.KeychainAccessibility.first_unlock_this_device,
             ),
           );
+          log.fine('StorageLocator: fss10 storage instance created');
           secureStorageDatasource = SecureStorageDatasourceImpl(storage);
+          log.fine('StorageLocator: fss10 datasource wrapper created, writing flag');
           await seedStoreTypeDatasource.write(
             SeedStoreTypeModel.fromEntity(
               const SeedStoreType(storageLibrary: SeedStorageLibrary.fss10),
             ),
           );
-          log.info(
+          log.fine(
             'StorageLocator: fss10 initialized successfully, flag written',
           );
         } catch (fss10Error) {
           log.warning(
-            'StorageLocator: fss10 init failed, falling back to fss9',
+            'StorageLocator: fss10 init failed — starting fallback to fss9. '
+            'Error type: ${fss10Error.runtimeType}',
             error: fss10Error,
           );
 
-          final storage = fss9.FlutterSecureStorage(
-            aOptions: const fss9.AndroidOptions(
-              resetOnError: false,
-              encryptedSharedPreferences: true,
-            ),
-            iOptions: const fss9.IOSOptions(
-              accessibility:
-                  fss9.KeychainAccessibility.first_unlock_this_device,
-            ),
-          );
-          secureStorageDatasource = SecureStorageLegacyDatasourceImpl(storage);
-          await seedStoreTypeDatasource.write(
-            SeedStoreTypeModel.fromEntity(
-              const SeedStoreType(storageLibrary: SeedStorageLibrary.fss9),
-            ),
-          );
-          log.info(
-            'StorageLocator: fss9 initialized successfully, flag written',
-          );
+          try {
+            final storage = fss9.FlutterSecureStorage(
+              aOptions: const fss9.AndroidOptions(
+                resetOnError: false,
+                encryptedSharedPreferences: true,
+              ),
+              iOptions: const fss9.IOSOptions(
+                accessibility:
+                    fss9.KeychainAccessibility.first_unlock_this_device,
+              ),
+            );
+            log.fine('StorageLocator: fss9 storage instance created');
+            secureStorageDatasource =
+                SecureStorageLegacyDatasourceImpl(storage);
+            log.fine(
+              'StorageLocator: fss9 datasource wrapper created, writing flag',
+            );
+            await seedStoreTypeDatasource.write(
+              SeedStoreTypeModel.fromEntity(
+                const SeedStoreType(storageLibrary: SeedStorageLibrary.fss9),
+              ),
+            );
+            log.fine(
+              'StorageLocator: fss9 fallback initialized successfully, flag written',
+            );
+          } catch (fss9Error) {
+            log.severe(
+              message:
+                  'StorageLocator: fss9 fallback also failed. '
+                  'fss10 error type: ${fss10Error.runtimeType}, '
+                  'fss9 error type: ${fss9Error.runtimeType}',
+              error: fss9Error,
+              trace: StackTrace.current,
+            );
+            rethrow;
+          }
         }
 
       case SeedStorageLibrary.fss9:
+        log.fine('StorageLocator: existing flag is fss9 — using legacy storage');
         final storage = fss9.FlutterSecureStorage(
           aOptions: const fss9.AndroidOptions(
             resetOnError: false,
@@ -99,8 +121,10 @@ class StorageLocator {
           ),
         );
         secureStorageDatasource = SecureStorageLegacyDatasourceImpl(storage);
+        log.fine('StorageLocator: fss9 legacy storage initialized from flag');
 
       case SeedStorageLibrary.fss10:
+        log.fine('StorageLocator: existing flag is fss10 — using current storage');
         final storage = fss10.FlutterSecureStorage(
           aOptions: const fss10.AndroidOptions(
             resetOnError: false,
@@ -111,6 +135,7 @@ class StorageLocator {
           ),
         );
         secureStorageDatasource = SecureStorageDatasourceImpl(storage);
+        log.fine('StorageLocator: fss10 storage initialized from flag');
     }
 
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
