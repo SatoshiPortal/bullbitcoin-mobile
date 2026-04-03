@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
+import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/samrock/presentation/bloc/samrock_cubit.dart';
@@ -51,6 +52,16 @@ class SamrockSetupPage extends StatelessWidget {
                 style: context.font.labelMedium,
                 color: context.appColors.onPrimary,
               ),
+            ),
+          ),
+          Positioned(
+            bottom: MediaQuery.of(context).size.height * 0.12,
+            left: 16,
+            right: 16,
+            child: PasteInput(
+              text: '',
+              hint: 'Paste SamRock URL',
+              onChanged: cubit.parseUrl,
             ),
           ),
           Positioned(
