@@ -10,10 +10,13 @@ enum SamrockPaymentMethod {
   factory SamrockPaymentMethod.fromString(String value) {
     switch (value.toLowerCase()) {
       case 'btc':
+      case 'btc-chain':
         return SamrockPaymentMethod.btc;
       case 'lbtc':
+      case 'liquid-chain':
         return SamrockPaymentMethod.lbtc;
       case 'btcln':
+      case 'btc-ln':
         return SamrockPaymentMethod.btcln;
       default:
         throw ArgumentError('Unknown payment method: $value');
