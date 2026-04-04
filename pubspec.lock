@@ -762,9 +762,9 @@ packages:
     dependency: "direct main"
     description:
       path: flutter_secure_storage
-      ref: bull-bitcoin-fork
-      resolved-ref: "22c2a112035e26201c97046cf9a0ff56c127c7ba"
-      url: "https://github.com/iosifpeterfi/flutter_secure_storage"
+      ref: "47ad06f"
+      resolved-ref: "47ad06fd643b5b04e9af103eadfc35e4347b9391"
+      url: "https://github.com/SatoshiPortal/flutter_secure_storage"
     source: git
     version: "10.0.0"
   flutter_secure_storage_darwin:
@@ -778,16 +778,20 @@ packages:
   flutter_secure_storage_legacy:
     dependency: "direct main"
     description:
-      path: "../flutter_secure_storage/flutter_secure_storage"
-      relative: true
-    source: path
+      path: flutter_secure_storage
+      ref: c32db29
+      resolved-ref: c32db29224ff4728c2532191b8ab649ac23e1926
+      url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
+    source: git
     version: "9.2.3"
   flutter_secure_storage_legacy_platform_interface:
     dependency: transitive
     description:
-      path: "../flutter_secure_storage/flutter_secure_storage_platform_interface"
-      relative: true
-    source: path
+      path: flutter_secure_storage_platform_interface
+      ref: c32db29224ff4728c2532191b8ab649ac23e1926
+      resolved-ref: c32db29224ff4728c2532191b8ab649ac23e1926
+      url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
+    source: git
     version: "1.1.2"
   flutter_secure_storage_linux:
     dependency: transitive
@@ -928,10 +932,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "7974313e217a7771557add6ff2238acb63f635317c35fa590d348fb238f00896"
+      sha256: "48fb2f42ad057476fa4b733cb95e9f9ea7b0b010bb349ea491dca7dbdb18ffc4"
       url: "https://pub.dev"
     source: hosted
-    version: "17.1.0"
+    version: "17.2.0"
   google_fonts:
     dependency: "direct main"
     description:
@@ -1096,10 +1100,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "9eae0cbd672549dacc18df855c2a23782afe4854ada5190b7d63b30ee0b0d3fd"
+      sha256: "66810af8e99b2657ee98e5c6f02064f69bb63f7a70e343937f70946c5f8c6622"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.13+15"
+    version: "0.8.13+16"
   image_picker_for_web:
     dependency: transitive
     description:

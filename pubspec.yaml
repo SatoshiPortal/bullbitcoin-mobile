@@ -21,13 +21,13 @@ dependencies:
   google_fonts: ^6.3.3
   flutter_secure_storage:
     git:
-      url: https://github.com/iosifpeterfi/flutter_secure_storage
-      ref: bull-bitcoin-fork
+      url: https://github.com/SatoshiPortal/flutter_secure_storage
+      ref: 47ad06f
       path: flutter_secure_storage
   flutter_secure_storage_legacy:
     git:
-      url: https://github.com/SatoshiPortal/flutter_secure_storage
-      ref: legacy-9.3.2
+      url: https://github.com/SatoshiPortal/flutter_secure_storage_legacy
+      ref: c32db29
       path: flutter_secure_storage
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
