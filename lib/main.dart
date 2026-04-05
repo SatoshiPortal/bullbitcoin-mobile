@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/env_validator.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -39,6 +40,7 @@ import 'package:workmanager/workmanager.dart';
 class Bull {
   static Future<void> init() async {
     await initLogs();
+    await initEnv();
     await initFlutterRustBridgeDependencies();
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
@@ -47,9 +49,17 @@ class Bull {
     await initWorkmanager();
   }
 
+  static Future<void> initEnv() async {
+    await dotenv.load(isOptional: true);
+
+    final errors = EnvValidator.validate(dotenv.env);
+    if (errors.isNotEmpty) {
+      throw Exception('.env validation failed:\n${errors.join('\n')}');
+    }
+  }
+
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
-      dotenv.load(isOptional: true),
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),
