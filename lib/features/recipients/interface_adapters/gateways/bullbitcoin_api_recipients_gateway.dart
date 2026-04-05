@@ -99,6 +99,7 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
           // doesn't support yet, which without does would cause the user not
           // to see any recipients at all.
           try {
+            log.info('Parsing recipient: $e');
             return RecipientModel.fromJson(e as Map<String, dynamic>).toDomain;
           } catch (err, stackTrace) {
             log.severe(

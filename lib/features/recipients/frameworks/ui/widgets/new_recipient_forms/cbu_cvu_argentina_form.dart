@@ -6,21 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class CbuCvuArgentinaForm extends StatefulWidget {
-  const CbuCvuArgentinaForm({super.key, this.hookError});
+class BankAccountArgentinaForm extends StatefulWidget {
+  const BankAccountArgentinaForm({super.key, this.hookError});
 
   final String? hookError;
 
   @override
-  CbuCvuArgentinaFormState createState() => CbuCvuArgentinaFormState();
+  BankAccountArgentinaFormState createState() => BankAccountArgentinaFormState();
 }
 
-class CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
+class BankAccountArgentinaFormState extends State<BankAccountArgentinaForm> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _cbuCvuFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _labelFocusNode = FocusNode();
-  String _cbuCvu = '';
+  String _claveUniform = '';
   String _name = '';
   String _label = '';
 
@@ -34,8 +34,8 @@ class CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
 
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      final formData = CbuCvuArgentinaFormDataModel(
-        cbuCvu: _cbuCvu,
+      final formData = BankAccountArgentinaFormDataModel(
+        claveUniform: _claveUniform,
         name: _name,
         label: _label.isEmpty ? null : _label,
       );
@@ -65,7 +65,7 @@ class CbuCvuArgentinaFormState extends State<CbuCvuArgentinaForm> {
                 : null,
             onChanged: (value) {
               setState(() {
-                _cbuCvu = value;
+                _claveUniform = value;
               });
             },
           ),
