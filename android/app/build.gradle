@@ -56,10 +56,10 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file("debug.keystore")
-            storePassword "android"
             keyAlias "androiddebugkey"
             keyPassword "android"
+            storeFile file("debug.keystore")
+            storePassword "android"
         }
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -74,6 +74,7 @@ android {
             minifyEnabled false
             shrinkResources false
             signingConfig signingConfigs.debug
+            applicationIdSuffix ".debug"
         }
         release {        
             minifyEnabled false
