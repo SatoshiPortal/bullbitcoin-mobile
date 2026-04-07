@@ -141,6 +141,9 @@ class _BroadcastActions extends StatelessWidget {
     final pushTxUri = context.select(
       (BroadcastSignedTxCubit c) => c.state.pushTxUri,
     );
+    final isBroadcasting = context.select(
+      (BroadcastSignedTxCubit c) => c.state.isBroadcasting,
+    );
     return Row(
       children: [
         if (pushTxUri != null)
@@ -152,6 +155,7 @@ class _BroadcastActions extends StatelessWidget {
                 bgColor: context.appColors.primary,
                 textColor: context.appColors.onPrimary,
                 onPressed: cubit.pushTxUri,
+                disabled: isBroadcasting,
               ),
             ),
           ),
@@ -163,6 +167,7 @@ class _BroadcastActions extends StatelessWidget {
               bgColor: context.appColors.primary,
               textColor: context.appColors.onPrimary,
               onPressed: cubit.broadcastTransaction,
+              disabled: isBroadcasting,
             ),
           ),
         ),

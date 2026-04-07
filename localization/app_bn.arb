@@ -12220,5 +12220,15 @@
   "legacyStorageWarningLater": "পরে",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "লেনদেনের ইনপুট সমাধান করা হচ্ছে...",
+  "coreScreensFeeRateLabel": "ফি রেট",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "পরিবর্তন আউটপুট অজানা — সমস্ত আউটপুট সমানভাবে দেখানো হচ্ছে",
+  "coreScreensUnknown": "অজানা",
+  "coreScreensFetchFailed": "Electrum থেকে লেনদেন {txid} আনা যায়নি।",
+  "coreScreensInputResolutionFailed": "ইনপুট পাওয়া যায়নি: {parentTxId}-এর আউটপুট {vout} বিদ্যমান নেই।",
+  "coreScreensParseFailed": "লেনদেন পার্স করতে ব্যর্থ: {message}।",
+  "coreScreensUnexpectedError": "অপ্রত্যাশিত ত্রুটি: {message}।",
+  "coreScreensNoServersAvailable": "কোনো Electrum সার্ভার উপলব্ধ নেই।"
 }

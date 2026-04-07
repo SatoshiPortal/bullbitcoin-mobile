@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "Daha sonra",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
+  "coreScreensFeeRateLabel": "Ücret oranı",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Para üstü çıktısı bilinmiyor — tüm çıktılar eşit gösteriliyor",
+  "coreScreensUnknown": "Bilinmiyor",
+  "coreScreensFetchFailed": "İşlem {txid} Electrum'dan alınamadı.",
+  "coreScreensInputResolutionFailed": "Girdi bulunamadı: {parentTxId} çıktısı {vout} mevcut değil.",
+  "coreScreensParseFailed": "İşlem ayrıştırılamadı: {message}.",
+  "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
+  "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok."
 }

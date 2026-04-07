@@ -98,5 +98,16 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN"
+  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
+  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensFeeRateLabel": "Fee rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensNoServersAvailable": "No Electrum servers available."
 }

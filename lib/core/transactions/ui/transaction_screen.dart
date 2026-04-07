@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/transactions/domain/entity/transaction_entity.dar
 import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_state.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -106,15 +107,15 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(32),
+        padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            FadingLinearProgress(trigger: true),
-            Gap(16),
-            Text('Resolving transaction inputs...'),
+            const FadingLinearProgress(trigger: true),
+            const Gap(16),
+            Text(context.loc.coreScreensResolvingInputs),
           ],
         ),
       ),
@@ -127,15 +128,17 @@ class _ErrorView extends StatelessWidget {
 
   final TransactionError error;
 
-  String _message() => switch (error) {
+  String _message(BuildContext context) => switch (error) {
     TransactionFetchFailed(:final txid) =>
-      'Could not fetch transaction $txid from Electrum.',
+      context.loc.coreScreensFetchFailed(txid),
     TransactionInputResolutionFailed(:final parentTxId, :final vout) =>
-      'Input not found: output $vout of $parentTxId does not exist.',
+      context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
     TransactionParseFailed(:final message) =>
-      'Failed to parse transaction: ${message ?? 'unknown error'}.',
+      context.loc.coreScreensParseFailed(message ?? 'unknown'),
+    TransactionNoServersAvailable() =>
+      context.loc.coreScreensNoServersAvailable,
     UnexpectedTransactionError(:final message) =>
-      'Unexpected error: ${message ?? 'unknown'}.',
+      context.loc.coreScreensUnexpectedError(message ?? 'unknown'),
   };
 
   @override
@@ -149,7 +152,7 @@ class _ErrorView extends StatelessWidget {
             Icon(Icons.error_outline, color: context.appColors.error, size: 48),
             const Gap(16),
             BBText(
-              _message(),
+              _message(context),
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.error,
               ),
@@ -243,7 +246,7 @@ class _SummarySection extends StatelessWidget {
 
         // --- Amount row ---
         _InfoRow(
-          label: 'Amount',
+          label: context.loc.coreScreensAmountLabel,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -267,7 +270,7 @@ class _SummarySection extends StatelessWidget {
 
         // --- Network fees row ---
         _InfoRow(
-          label: 'Network fees',
+          label: context.loc.coreScreensNetworkFeesLabel,
           child: BBText(
             '${_formatSats(entity.feeSat)} sats',
             style: context.font.bodyLarge,
@@ -280,9 +283,11 @@ class _SummarySection extends StatelessWidget {
         if (entity.feeRate != null) ...[
           _divider(context),
           _InfoRow(
-            label: 'Fee rate',
+            label: context.loc.coreScreensFeeRateLabel,
             child: BBText(
-              '${entity.feeRate!.toStringAsFixed(1)} sat/vB',
+              context.loc.coreScreensFeeRateValue(
+                entity.feeRate!.toStringAsFixed(1),
+              ),
               style: context.font.bodyLarge,
               color: context.appColors.secondary,
               textAlign: TextAlign.end,
@@ -311,7 +316,7 @@ class _SummarySection extends StatelessWidget {
                 const Gap(4),
                 Expanded(
                   child: BBText(
-                    'Change output unknown — all outputs shown equally',
+                    context.loc.coreScreensChangeOutputUnknown,
                     style: context.font.bodySmall?.copyWith(
                       color: context.appColors.onSurfaceVariant,
                     ),
@@ -331,7 +336,7 @@ class _SummarySection extends StatelessWidget {
     if (fromLabel != null) {
       // Wallet name provided — simple row
       return _InfoRow(
-        label: 'From',
+        label: context.loc.coreScreensFromLabel,
         child: BBText(
           fromLabel!,
           style: context.font.bodyLarge,
@@ -345,9 +350,9 @@ class _SummarySection extends StatelessWidget {
     final inputs = entity.resolvedInputs;
     if (inputs.isEmpty) {
       return _InfoRow(
-        label: 'From',
+        label: context.loc.coreScreensFromLabel,
         child: BBText(
-          'Unknown',
+          context.loc.coreScreensUnknown,
           style: context.font.bodyLarge,
           color: context.appColors.onSurfaceVariant,
           textAlign: TextAlign.end,
@@ -361,7 +366,7 @@ class _SummarySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText(
-            'From',
+            context.loc.coreScreensFromLabel,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
             ),
@@ -390,7 +395,7 @@ class _SummarySection extends StatelessWidget {
     // Single recipient with toLabel provided — use the simple layout
     if (toLabel != null && recipientOutputs.length == 1) {
       return _InfoRow(
-        label: 'To',
+        label: context.loc.coreScreensToLabel,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -424,7 +429,7 @@ class _SummarySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText(
-            'To',
+            context.loc.coreScreensToLabel,
             style: context.font.bodySmall?.copyWith(
               color: context.appColors.onSurfaceVariant,
             ),
@@ -583,6 +588,7 @@ class _InfoRow extends StatelessWidget {
 
 /// Format satoshis with thousand separators for readability.
 String _formatSats(int sats) {
+  if (sats < 0) return '-${_formatSats(-sats)}';
   final str = sats.toString();
   final buffer = StringBuffer();
   for (int i = 0; i < str.length; i++) {

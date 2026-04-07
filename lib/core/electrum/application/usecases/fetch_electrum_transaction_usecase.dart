@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_re
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
+import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 
 /// Fetches a Bitcoin transaction by txid via Electrum RPC.
@@ -42,7 +43,9 @@ class FetchElectrumTransactionUsecase {
     );
 
     if (response.servers.isEmpty) {
-      throw Exception('No Electrum servers available for $network');
+      throw TransactionError.noServersAvailable(
+        network: network.toString(),
+      );
     }
 
     // Try servers in priority order — fallback on failure
@@ -64,6 +67,9 @@ class FetchElectrumTransactionUsecase {
       }
     }
 
-    throw Exception('All Electrum servers failed for txid $txid: $lastError');
+    throw TransactionError.fetchFailed(
+      txid: txid,
+      message: lastError.toString(),
+    );
   }
 }

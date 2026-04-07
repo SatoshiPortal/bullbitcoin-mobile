@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "Αργότερα",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "Επίλυση εισόδων συναλλαγής...",
+  "coreScreensFeeRateLabel": "Ποσοστό χρέωσης",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Η έξοδος ρέστων είναι άγνωστη — όλες οι έξοδοι εμφανίζονται ισότιμα",
+  "coreScreensUnknown": "Άγνωστο",
+  "coreScreensFetchFailed": "Αδυναμία ανάκτησης συναλλαγής {txid} από το Electrum.",
+  "coreScreensInputResolutionFailed": "Η είσοδος δεν βρέθηκε: η έξοδος {vout} του {parentTxId} δεν υπάρχει.",
+  "coreScreensParseFailed": "Αποτυχία ανάλυσης συναλλαγής: {message}.",
+  "coreScreensUnexpectedError": "Μη αναμενόμενο σφάλμα: {message}.",
+  "coreScreensNoServersAvailable": "Δεν υπάρχουν διαθέσιμοι Electrum διακομιστές."
 }

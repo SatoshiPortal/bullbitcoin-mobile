@@ -4542,5 +4542,15 @@
   "legacyStorageWarningLater": "Mais tarde",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "Resolvendo entradas da transação...",
+  "coreScreensFeeRateLabel": "Taxa de comissão",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Saída de troco desconhecida — todas as saídas mostradas igualmente",
+  "coreScreensUnknown": "Desconhecido",
+  "coreScreensFetchFailed": "Não foi possível obter a transação {txid} do Electrum.",
+  "coreScreensInputResolutionFailed": "Entrada não encontrada: a saída {vout} de {parentTxId} não existe.",
+  "coreScreensParseFailed": "Falha ao analisar a transação: {message}.",
+  "coreScreensUnexpectedError": "Erro inesperado: {message}.",
+  "coreScreensNoServersAvailable": "Nenhum servidor Electrum disponível."
 }

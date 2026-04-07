@@ -290,5 +290,16 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი"
+  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
+  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensFeeRateLabel": "Fee rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensNoServersAvailable": "No Electrum servers available."
 }

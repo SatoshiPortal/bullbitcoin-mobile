@@ -4496,5 +4496,15 @@
   "legacyStorageWarningLater": "Позже",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "Разрешение входов транзакции...",
+  "coreScreensFeeRateLabel": "Ставка комиссии",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Выход сдачи неизвестен — все выходы показаны одинаково",
+  "coreScreensUnknown": "Неизвестно",
+  "coreScreensFetchFailed": "Не удалось получить транзакцию {txid} из Electrum.",
+  "coreScreensInputResolutionFailed": "Вход не найден: выход {vout} из {parentTxId} не существует.",
+  "coreScreensParseFailed": "Не удалось разобрать транзакцию: {message}.",
+  "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
+  "coreScreensNoServersAvailable": "Нет доступных серверов Electrum."
 }

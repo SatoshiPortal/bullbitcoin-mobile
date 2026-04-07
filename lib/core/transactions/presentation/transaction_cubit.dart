@@ -10,8 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Supports two entry points:
 /// - [loadFromTransaction] — for external transactions (PSBT/HEX),
 ///   resolves input values asynchronously via Electrum.
-/// - [loadFromWalletTransaction] — for wallet-built transactions,
-///   constructs the entity synchronously from local data.
+/// - [setEntity] — for pre-built [TransactionEntity] instances,
+///   sets the entity directly without async resolution.
 class TransactionCubit extends Cubit<TransactionState> {
   final BuildTransactionUsecase _buildTransactionUsecase;
 
@@ -24,6 +24,7 @@ class TransactionCubit extends Cubit<TransactionState> {
   /// This is async because it needs to fetch parent transactions
   /// via Electrum to resolve input values.
   Future<void> loadFromTransaction(Transaction tx) async {
+    if (state is TransactionLoading) return;
     emit(const TransactionState.loading());
     try {
       final entity = await _buildTransactionUsecase.executeFromTransaction(tx);

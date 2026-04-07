@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "ภายหลัง",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
+  "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "ไม่ทราบเอาต์พุตทอน — แสดงเอาต์พุตทั้งหมดเท่าเทียมกัน",
+  "coreScreensUnknown": "ไม่ทราบ",
+  "coreScreensFetchFailed": "ไม่สามารถดึงธุรกรรม {txid} จาก Electrum",
+  "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
+  "coreScreensParseFailed": "วิเคราะห์ธุรกรรมล้มเหลว: {message}",
+  "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
+  "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้"
 }

@@ -22,6 +22,10 @@ sealed class TransactionError with _$TransactionError {
   const factory TransactionError.parseFailed({String? message}) =
       TransactionParseFailed;
 
+  /// No Electrum servers are available for the requested network.
+  const factory TransactionError.noServersAvailable({String? network}) =
+      TransactionNoServersAvailable;
+
   /// An unexpected error occurred.
   const factory TransactionError.unexpected(String? message) =
       UnexpectedTransactionError;

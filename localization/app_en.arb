@@ -12622,6 +12622,74 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "@coreScreensResolvingInputs": {
+    "description": "Loading message while resolving transaction input values"
+  },
+  "coreScreensFeeRateLabel": "Fee rate",
+  "@coreScreensFeeRateLabel": {
+    "description": "Label for fee rate row in transaction review"
+  },
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "@coreScreensFeeRateValue": {
+    "description": "Fee rate value with unit",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "@coreScreensChangeOutputUnknown": {
+    "description": "Info text when change output cannot be identified"
+  },
+  "coreScreensUnknown": "Unknown",
+  "@coreScreensUnknown": {
+    "description": "Fallback text for unknown values"
+  },
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "@coreScreensFetchFailed": {
+    "description": "Error when transaction fetch fails",
+    "placeholders": {
+      "txid": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "@coreScreensInputResolutionFailed": {
+    "description": "Error when input resolution fails",
+    "placeholders": {
+      "vout": {
+        "type": "int"
+      },
+      "parentTxId": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "@coreScreensParseFailed": {
+    "description": "Error when transaction parsing fails",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "@coreScreensUnexpectedError": {
+    "description": "Generic unexpected error",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "@coreScreensNoServersAvailable": {
+    "description": "Error when no Electrum servers are available"
+  },
   "recoverbullErrorRejected": "Rejected by the Key Server",
   "@recoverbullErrorRejected": {
     "description": "Error message when request is rejected by the key server"

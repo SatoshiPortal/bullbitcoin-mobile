@@ -9513,5 +9513,15 @@
   "legacyStorageWarningLater": "По-късно",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "Разрешаване на входовете на транзакцията...",
+  "coreScreensFeeRateLabel": "Размер на таксата",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Изходът за ресто е неизвестен — всички изходи са показани еднакво",
+  "coreScreensUnknown": "Неизвестно",
+  "coreScreensFetchFailed": "Неуспешно извличане на транзакция {txid} от Electrum.",
+  "coreScreensInputResolutionFailed": "Входът не е намерен: изход {vout} на {parentTxId} не съществува.",
+  "coreScreensParseFailed": "Неуспешен анализ на транзакцията: {message}.",
+  "coreScreensUnexpectedError": "Неочаквана грешка: {message}.",
+  "coreScreensNoServersAvailable": "Няма налични Electrum сървъри."
 }

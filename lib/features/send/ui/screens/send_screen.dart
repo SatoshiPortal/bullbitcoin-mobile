@@ -865,6 +865,9 @@ class _OnchainTransactionReview extends StatelessWidget {
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
     );
+    final isToSelf = context.select(
+      (SendCubit cubit) => cubit.state.isToSelf == true,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -876,6 +879,7 @@ class _OnchainTransactionReview extends StatelessWidget {
           formattedFiatEquivalent: '~$formattedFiatEquivalent',
           absoluteFees: formattedAbsoluteFees,
           selectedFeeOptionTitle: selectedFeeOption.title(),
+          isToSelf: isToSelf,
           onFeePriorityTap: hasFinalizedTx
               ? null
               : () async {

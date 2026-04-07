@@ -119,13 +119,15 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
     required String absoluteFees,
     required String selectedFeeOptionTitle,
     VoidCallback? onFeePriorityTap,
+    bool isToSelf = false,
   }) : _sendWalletLabel = sendWalletLabel,
        _receiveWalletLabel = receiveWalletLabel,
        _formattedBitcoinAmount = formattedBitcoinAmount,
        _formattedFiatEquivalent = formattedFiatEquivalent,
        _absoluteFees = absoluteFees,
        _selectedFeeOptionTitle = selectedFeeOptionTitle,
-       _onFeePriorityTap = onFeePriorityTap;
+       _onFeePriorityTap = onFeePriorityTap,
+       _isToSelf = isToSelf;
   final String _sendWalletLabel;
   final String _receiveWalletLabel;
   final String _formattedBitcoinAmount;
@@ -133,6 +135,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
   final String _absoluteFees;
   final String _selectedFeeOptionTitle;
   final VoidCallback? _onFeePriorityTap;
+  final bool _isToSelf;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.appColors.secondaryFixedDim);
   }
@@ -184,6 +187,20 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
               ],
             ),
           ),
+          if (_isToSelf) ...[
+            _divider(context),
+            CommonInfoRow(
+              title: context.loc.sendSelfTransfer,
+              details: Align(
+                alignment: Alignment.centerRight,
+                child: Icon(
+                  Icons.check,
+                  color: context.appColors.secondary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensAmountLabel,
