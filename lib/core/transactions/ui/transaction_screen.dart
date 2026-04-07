@@ -5,11 +5,10 @@ import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart'
 import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_state.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -396,28 +395,13 @@ class _SummarySection extends StatelessWidget {
     if (toLabel != null && recipientOutputs.length == 1) {
       return _InfoRow(
         label: context.loc.coreScreensToLabel,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(
-              child: BBText(
-                toLabel!,
-                style: context.font.bodyLarge,
-                color: context.appColors.secondary,
-                textAlign: TextAlign.end,
-                maxLines: 5,
-              ),
-            ),
-            const Gap(4),
-            GestureDetector(
-              onTap: () => Clipboard.setData(ClipboardData(text: toLabel!)),
-              child: Icon(
-                Icons.copy,
-                color: context.appColors.primary,
-                size: 16,
-              ),
-            ),
-          ],
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: AddressViewer(
+            toLabel!,
+            style: context.font.bodyLarge,
+            color: context.appColors.secondary,
+          ),
         ),
       );
     }
@@ -459,37 +443,20 @@ class _InputAddressRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayAddress =
-        input.address ?? StringFormatting.truncateMiddle(input.previousTxId);
-    final copyText = input.address ?? input.previousTxId;
+    final fullAddress = input.address ?? input.previousTxId;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                child: BBText(
-                  displayAddress,
-                  style: context.font.bodySmall,
-                  color: context.appColors.secondary,
-                  textAlign: TextAlign.end,
-                  maxLines: 3,
-                ),
-              ),
-              const Gap(4),
-              GestureDetector(
-                onTap: () => Clipboard.setData(ClipboardData(text: copyText)),
-                child: Icon(
-                  Icons.copy,
-                  color: context.appColors.primary,
-                  size: 14,
-                ),
-              ),
-            ],
+          Align(
+            alignment: Alignment.centerRight,
+            child: AddressViewer(
+              fullAddress,
+              style: context.font.bodySmall,
+              color: context.appColors.secondary,
+            ),
           ),
           BBText(
             '${_formatSats(input.valueSat)} sats',
@@ -511,38 +478,20 @@ class _OutputAddressRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address = output.address;
-    final displayAddress =
-        address ?? StringFormatting.truncateMiddle(output.scriptPubKeyHex);
-    final copyText = address ?? output.scriptPubKeyHex;
+    final fullAddress = output.address ?? output.scriptPubKeyHex;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                child: BBText(
-                  displayAddress,
-                  style: context.font.bodySmall,
-                  color: context.appColors.secondary,
-                  textAlign: TextAlign.end,
-                  maxLines: 3,
-                ),
-              ),
-              const Gap(4),
-              GestureDetector(
-                onTap: () => Clipboard.setData(ClipboardData(text: copyText)),
-                child: Icon(
-                  Icons.copy,
-                  color: context.appColors.primary,
-                  size: 14,
-                ),
-              ),
-            ],
+          Align(
+            alignment: Alignment.centerRight,
+            child: AddressViewer(
+              fullAddress,
+              style: context.font.bodySmall,
+              color: context.appColors.secondary,
+            ),
           ),
           BBText(
             '${_formatSats(output.valueSat)} sats',
