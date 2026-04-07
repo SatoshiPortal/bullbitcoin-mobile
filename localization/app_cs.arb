@@ -12513,5 +12513,10 @@
   "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
   "coreScreensParseFailed": "Analýza transakce selhala: {message}.",
   "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
-  "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné."
+  "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
+  "addressViewerTitle": "Adresa",
+  "addressViewerTapToCopy": "Klepněte pro kopírování",
+  "addressViewerViewInExplorer": "Zobrazit v prohlížeči",
+  "bullEyeTransactionTitle": "ID transakce",
+  "bullEyeInvoiceTitle": "Faktura"
 }

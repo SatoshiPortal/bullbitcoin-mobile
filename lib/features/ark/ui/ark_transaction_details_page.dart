@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
@@ -103,31 +104,26 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                     DetailsTableItem(
                       label: context.loc.arkTransactionId,
                       displayValue: StringFormatting.truncateMiddle(txid),
-                      copyValue: txid,
-                      displayWidget:
-                          isBoarding
-                              ? GestureDetector(
-                                onTap: () async {
-                                  final mempoolUrlBuilder =
-                                      locator<MempoolUrlBuilder>();
-
-                                  final mempoolUrl =
-                                      await mempoolUrlBuilder.bitcoinTxidUrl(
-                                    txid,
-                                    isTestnet: false,
-                                  );
-
-                                  await launchUrl(Uri.parse(mempoolUrl));
-                                },
-                                child: Text(
-                                  StringFormatting.truncateMiddle(txid),
-                                  style: TextStyle(
-                                    color: context.appColors.primary,
-                                  ),
-                                  textAlign: TextAlign.end,
-                                ),
-                              )
-                              : null,
+                      displayWidget: BullEye.transaction(
+                        txid,
+                        style: TextStyle(
+                          color: isBoarding
+                              ? context.appColors.primary
+                              : context.appColors.onSurface,
+                        ),
+                        onExplore: isBoarding
+                            ? () async {
+                                final mempoolUrlBuilder =
+                                    locator<MempoolUrlBuilder>();
+                                final mempoolUrl =
+                                    await mempoolUrlBuilder.bitcoinTxidUrl(
+                                  txid,
+                                  isTestnet: false,
+                                );
+                                await launchUrl(Uri.parse(mempoolUrl));
+                              }
+                            : null,
+                      ),
                     ),
                     DetailsTableItem(label: context.loc.arkType, displayValue: type),
                     DetailsTableItem(

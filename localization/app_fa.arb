@@ -12513,5 +12513,10 @@
   "coreScreensInputResolutionFailed": "ورودی یافت نشد: خروجی {vout} از {parentTxId} وجود ندارد.",
   "coreScreensParseFailed": "تحلیل تراکنش ناموفق بود: {message}.",
   "coreScreensUnexpectedError": "خطای غیرمنتظره: {message}.",
-  "coreScreensNoServersAvailable": "هیچ سرور Electrum در دسترس نیست."
+  "coreScreensNoServersAvailable": "هیچ سرور Electrum در دسترس نیست.",
+  "addressViewerTitle": "آدرس",
+  "addressViewerTapToCopy": "برای کپی ضربه بزنید",
+  "addressViewerViewInExplorer": "مشاهده در اکسپلورر",
+  "bullEyeTransactionTitle": "شناسه تراکنش",
+  "bullEyeInvoiceTitle": "صورتحساب"
 }

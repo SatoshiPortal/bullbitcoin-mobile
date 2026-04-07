@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart'
 import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_state.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
@@ -398,7 +398,7 @@ class _SummarySection extends StatelessWidget {
         label: context.loc.coreScreensToLabel,
         child: Align(
           alignment: Alignment.centerRight,
-          child: AddressViewer(
+          child: BullEye.address(
             toLabel!,
             style: context.font.bodyLarge,
             color: context.appColors.secondary,
@@ -453,7 +453,7 @@ class _InputAddressRow extends StatelessWidget {
         children: [
           SizedBox(
             width: double.infinity,
-            child: AddressViewer(
+            child: BullEye.address(
               fullAddress,
               style: context.font.bodySmall,
               color: context.appColors.secondary,
@@ -488,7 +488,7 @@ class _OutputAddressRow extends StatelessWidget {
         children: [
           SizedBox(
             width: double.infinity,
-            child: AddressViewer(
+            child: BullEye.address(
               fullAddress,
               style: context.font.bodySmall,
               color: context.appColors.secondary,

@@ -12513,5 +12513,10 @@
   "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
   "coreScreensParseFailed": "วิเคราะห์ธุรกรรมล้มเหลว: {message}",
   "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
-  "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้"
+  "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้",
+  "addressViewerTitle": "ที่อยู่",
+  "addressViewerTapToCopy": "แตะเพื่อคัดลอก",
+  "addressViewerViewInExplorer": "ดูในเอ็กซ์พลอเรอร์",
+  "bullEyeTransactionTitle": "รหัสธุรกรรม",
+  "bullEyeInvoiceTitle": "ใบแจ้งหนี้"
 }

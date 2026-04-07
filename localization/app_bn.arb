@@ -12230,5 +12230,10 @@
   "coreScreensInputResolutionFailed": "ইনপুট পাওয়া যায়নি: {parentTxId}-এর আউটপুট {vout} বিদ্যমান নেই।",
   "coreScreensParseFailed": "লেনদেন পার্স করতে ব্যর্থ: {message}।",
   "coreScreensUnexpectedError": "অপ্রত্যাশিত ত্রুটি: {message}।",
-  "coreScreensNoServersAvailable": "কোনো Electrum সার্ভার উপলব্ধ নেই।"
+  "coreScreensNoServersAvailable": "কোনো Electrum সার্ভার উপলব্ধ নেই।",
+  "addressViewerTitle": "ঠিকানা",
+  "addressViewerTapToCopy": "কপি করতে ট্যাপ করুন",
+  "addressViewerViewInExplorer": "এক্সপ্লোরারে দেখুন",
+  "bullEyeTransactionTitle": "লেনদেন আইডি",
+  "bullEyeInvoiceTitle": "চালান"
 }

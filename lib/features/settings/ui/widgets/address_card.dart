@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class AddressCard extends StatelessWidget {
@@ -41,43 +40,10 @@ class AddressCard extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            GestureDetector(
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: address));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.loc.addressCardCopiedMessage,
-                      textAlign: .center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: context.appColors.surface,
-                      ),
-                    ),
-                    duration: const Duration(seconds: 2),
-                    backgroundColor: context.appColors.onSurface.withAlpha(204),
-                    behavior: .floating,
-                    elevation: 4,
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 16,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                );
-              },
-              child: Text(
-                StringFormatting.truncateMiddle(address, head: 10, tail: 20),
-                style: context.font.headlineMedium?.copyWith(
-                  color: context.appColors.primary,
-                ),
-              ),
+            BullEye.address(
+              address,
+              style: context.font.headlineMedium,
+              color: context.appColors.primary,
             ),
             const Gap(8),
             Text(

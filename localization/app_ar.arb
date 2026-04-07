@@ -12516,5 +12516,10 @@
   "coreScreensInputResolutionFailed": "المدخل غير موجود: المخرج {vout} من {parentTxId} غير موجود.",
   "coreScreensParseFailed": "فشل تحليل المعاملة: {message}.",
   "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
-  "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة."
+  "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
+  "addressViewerTitle": "العنوان",
+  "addressViewerTapToCopy": "انقر للنسخ",
+  "addressViewerViewInExplorer": "عرض في المستكشف",
+  "bullEyeTransactionTitle": "معرف المعاملة",
+  "bullEyeInvoiceTitle": "فاتورة"
 }

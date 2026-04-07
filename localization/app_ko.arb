@@ -12513,5 +12513,10 @@
   "coreScreensInputResolutionFailed": "입력을 찾을 수 없음: {parentTxId}의 출력 {vout}이 존재하지 않습니다.",
   "coreScreensParseFailed": "거래 분석 실패: {message}.",
   "coreScreensUnexpectedError": "예상치 못한 오류: {message}.",
-  "coreScreensNoServersAvailable": "사용 가능한 Electrum 서버가 없습니다."
+  "coreScreensNoServersAvailable": "사용 가능한 Electrum 서버가 없습니다.",
+  "addressViewerTitle": "주소",
+  "addressViewerTapToCopy": "복사하려면 탭하세요",
+  "addressViewerViewInExplorer": "탐색기에서 보기",
+  "bullEyeTransactionTitle": "거래 ID",
+  "bullEyeInvoiceTitle": "인보이스"
 }

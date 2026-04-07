@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -296,14 +297,9 @@ class PayReceivePaymentScreen extends StatelessWidget {
       _ => '',
     };
 
-    if (order.payinMethod == OrderPaymentMethod.lnInvoice &&
-        fullText.length > 20) {
-      final displayText =
-          '${fullText.substring(0, 36)}...${fullText.substring(fullText.length - 30)}';
-      return CopyInput(text: displayText, clipboardText: fullText);
-    }
-
-    return CopyInput(text: fullText);
+    return order.payinMethod == OrderPaymentMethod.lnInvoice
+        ? BullEye.invoice(fullText)
+        : BullEye.address(fullText);
   }
 
   String _getRecipientInfoLabel(RecipientViewModel recipient) {

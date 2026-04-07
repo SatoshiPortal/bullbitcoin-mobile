@@ -9523,5 +9523,10 @@
   "coreScreensInputResolutionFailed": "Входът не е намерен: изход {vout} на {parentTxId} не съществува.",
   "coreScreensParseFailed": "Неуспешен анализ на транзакцията: {message}.",
   "coreScreensUnexpectedError": "Неочаквана грешка: {message}.",
-  "coreScreensNoServersAvailable": "Няма налични Electrum сървъри."
+  "coreScreensNoServersAvailable": "Няма налични Electrum сървъри.",
+  "addressViewerTitle": "Адрес",
+  "addressViewerTapToCopy": "Натиснете за копиране",
+  "addressViewerViewInExplorer": "Виж в експлорър",
+  "bullEyeTransactionTitle": "ID на транзакция",
+  "bullEyeInvoiceTitle": "Фактура"
 }

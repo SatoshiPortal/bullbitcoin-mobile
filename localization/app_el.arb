@@ -12513,5 +12513,10 @@
   "coreScreensInputResolutionFailed": "Η είσοδος δεν βρέθηκε: η έξοδος {vout} του {parentTxId} δεν υπάρχει.",
   "coreScreensParseFailed": "Αποτυχία ανάλυσης συναλλαγής: {message}.",
   "coreScreensUnexpectedError": "Μη αναμενόμενο σφάλμα: {message}.",
-  "coreScreensNoServersAvailable": "Δεν υπάρχουν διαθέσιμοι Electrum διακομιστές."
+  "coreScreensNoServersAvailable": "Δεν υπάρχουν διαθέσιμοι Electrum διακομιστές.",
+  "addressViewerTitle": "Διεύθυνση",
+  "addressViewerTapToCopy": "Πατήστε για αντιγραφή",
+  "addressViewerViewInExplorer": "Προβολή στον εξερευνητή",
+  "bullEyeTransactionTitle": "ID συναλλαγής",
+  "bullEyeInvoiceTitle": "Τιμολόγιο"
 }

@@ -1,13 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -962,9 +963,6 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
-    final paymentRequest = context.select(
-      (SendCubit cubit) => cubit.state.paymentRequest,
-    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1001,37 +999,10 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: context.loc.sendTo,
-            details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
-              children: [
-                Expanded(
-                  child: BBText(
-                    paymentRequest!.isLnAddress
-                        ? paymentRequestAddress
-                        : StringFormatting.truncateMiddle(
-                            paymentRequestAddress,
-                          ),
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                    textAlign: .end,
-                    maxLines: 10,
-                  ),
-                ),
-                const Gap(4),
-                InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
-                  onTap: () {
-                    Clipboard.setData(
-                      ClipboardData(text: paymentRequestAddress),
-                    );
-                  },
-                ),
-              ],
+            details: BullEye.address(
+              paymentRequestAddress,
+              style: context.font.bodyLarge,
+              color: context.appColors.secondary,
             ),
           ),
           _divider(context),
@@ -1262,42 +1233,11 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: context.loc.sendTo,
-            details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
-              children: [
-                Expanded(
-                  child: BBText(
-                    paymentRequestAddress,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                    textAlign: .end,
-                    maxLines: 10,
-                  ),
-                ),
-                const Gap(4),
-                InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
-                  onTap: () {
-                    Clipboard.setData(
-                      ClipboardData(text: paymentRequestAddress),
-                    );
-                  },
-                ),
-              ],
+            details: BullEye.address(
+              paymentRequestAddress,
+              style: context.font.bodyLarge,
+              color: context.appColors.secondary,
             ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
           ),
           _divider(context),
           InfoRow(

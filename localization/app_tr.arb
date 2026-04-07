@@ -12513,5 +12513,10 @@
   "coreScreensInputResolutionFailed": "Girdi bulunamadı: {parentTxId} çıktısı {vout} mevcut değil.",
   "coreScreensParseFailed": "İşlem ayrıştırılamadı: {message}.",
   "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
-  "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok."
+  "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok.",
+  "addressViewerTitle": "Adres",
+  "addressViewerTapToCopy": "Kopyalamak için dokunun",
+  "addressViewerViewInExplorer": "Gezginde görüntüle",
+  "bullEyeTransactionTitle": "İşlem kimliği",
+  "bullEyeInvoiceTitle": "Fatura"
 }

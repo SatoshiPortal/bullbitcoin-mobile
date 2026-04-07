@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -160,25 +160,19 @@ class ReceiveQRDetails extends StatelessWidget {
                 color: context.appColors.secondary,
               ),
               const Gap(6),
-              // TODO: We should probably just make a specific widget for the
-              //  address and invoice instead of using CopyInput.
-              CopyInput(
-                text: addressOrInvoiceOnly,
-                clipboardText: clipboardData,
-                overflow: .ellipsis,
-                canShowValueModal: true,
-                modalTitle: isLightning
-                    ? context.loc.receiveLightningInvoice
-                    : context.loc.receiveAddress,
-                modalContent: isLightning
-                    ? addressOrInvoiceOnly
-                    : addressOrInvoiceOnly
-                          .replaceAllMapped(
-                            RegExp('.{1,4}'),
-                            (match) => '${match.group(0)} ',
-                          )
-                          .trim(),
-              ),
+              isLightning
+                  ? BullEye.invoice(
+                      addressOrInvoiceOnly,
+                      clipboardText: clipboardData,
+                      style: context.font.bodyLarge,
+                      color: context.appColors.secondary,
+                    )
+                  : BullEye.address(
+                      addressOrInvoiceOnly,
+                      clipboardText: clipboardData,
+                      style: context.font.bodyLarge,
+                      color: context.appColors.secondary,
+                    ),
             ],
           ),
         ],

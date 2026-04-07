@@ -12513,5 +12513,10 @@
   "coreScreensInputResolutionFailed": "इनपुट नहीं मिला: {parentTxId} का आउटपुट {vout} मौजूद नहीं है।",
   "coreScreensParseFailed": "लेन-देन पार्स करने में विफल: {message}।",
   "coreScreensUnexpectedError": "अप्रत्याशित त्रुटि: {message}।",
-  "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।"
+  "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।",
+  "addressViewerTitle": "पता",
+  "addressViewerTapToCopy": "कॉपी करने के लिए टैप करें",
+  "addressViewerViewInExplorer": "एक्सप्लोरर में देखें",
+  "bullEyeTransactionTitle": "लेन-देन आईडी",
+  "bullEyeInvoiceTitle": "चालान"
 }

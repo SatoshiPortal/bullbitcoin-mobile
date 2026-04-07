@@ -12690,6 +12690,26 @@
   "@coreScreensNoServersAvailable": {
     "description": "Error when no Electrum servers are available"
   },
+  "addressViewerTitle": "Address",
+  "@addressViewerTitle": {
+    "description": "Title shown in the address detail dialog"
+  },
+  "addressViewerTapToCopy": "Tap to copy",
+  "@addressViewerTapToCopy": {
+    "description": "Hint text in address detail dialog"
+  },
+  "addressViewerViewInExplorer": "View in explorer",
+  "@addressViewerViewInExplorer": {
+    "description": "Button to open address or transaction in block explorer"
+  },
+  "bullEyeTransactionTitle": "Transaction ID",
+  "@bullEyeTransactionTitle": {
+    "description": "Title shown in the BullEye detail dialog for transaction IDs"
+  },
+  "bullEyeInvoiceTitle": "Invoice",
+  "@bullEyeInvoiceTitle": {
+    "description": "Title shown in the BullEye detail dialog for Lightning invoices"
+  },
   "recoverbullErrorRejected": "Rejected by the Key Server",
   "@recoverbullErrorRejected": {
     "description": "Error message when request is rejected by the key server"

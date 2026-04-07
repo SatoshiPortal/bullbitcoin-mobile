@@ -4402,5 +4402,10 @@
   "coreScreensInputResolutionFailed": "Eingang nicht gefunden: Ausgang {vout} von {parentTxId} existiert nicht.",
   "coreScreensParseFailed": "Transaktion konnte nicht verarbeitet werden: {message}.",
   "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
-  "coreScreensNoServersAvailable": "Keine Electrum-Server verfügbar."
+  "coreScreensNoServersAvailable": "Keine Electrum-Server verfügbar.",
+  "addressViewerTitle": "Adresse",
+  "addressViewerTapToCopy": "Zum Kopieren tippen",
+  "addressViewerViewInExplorer": "Im Explorer anzeigen",
+  "bullEyeTransactionTitle": "Transaktions-ID",
+  "bullEyeInvoiceTitle": "Rechnung"
 }

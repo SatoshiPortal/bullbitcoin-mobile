@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -73,9 +74,10 @@ class TransactionDetailsTable extends StatelessWidget {
           DetailsTableItem(
             label: context.loc.transactionDetailLabelTransactionId,
             displayValue: StringFormatting.truncateMiddle(txId),
-            copyValue: txId,
-            displayWidget: GestureDetector(
-              onTap: () async {
+            displayWidget: BullEye.transaction(
+              txId,
+              style: TextStyle(color: context.appColors.primary),
+              onExplore: () async {
                 final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
 
                 final String mempoolUrl;
@@ -93,11 +95,6 @@ class TransactionDetailsTable extends StatelessWidget {
 
                 await launchUrl(Uri.parse(mempoolUrl));
               },
-              child: Text(
-                StringFormatting.truncateMiddle(txId),
-                style: TextStyle(color: context.appColors.primary),
-                textAlign: TextAlign.end,
-              ),
             ),
           ),
 
@@ -128,8 +125,10 @@ class TransactionDetailsTable extends StatelessWidget {
                     swap.receiveAddress!.isNotEmpty
                 ? context.loc.transactionDetailLabelRecipientAddress
                 : context.loc.transactionDetailLabelAddress,
-            displayValue: StringFormatting.truncateMiddle(toAddress),
-            copyValue: toAddress,
+            displayWidget: BullEye.address(
+              toAddress,
+              style: TextStyle(color: context.appColors.onSurface),
+            ),
           ),
         if (addressLabels.isNotEmpty && toAddress != null)
           LabelsTableItem(

@@ -4489,5 +4489,10 @@
   "coreScreensInputResolutionFailed": "Syötettä ei löydy: ulostuloa {vout} kohteesta {parentTxId} ei ole olemassa.",
   "coreScreensParseFailed": "Tapahtuman jäsennys epäonnistui: {message}.",
   "coreScreensUnexpectedError": "Odottamaton virhe: {message}.",
-  "coreScreensNoServersAvailable": "Electrum-palvelimia ei ole saatavilla."
+  "coreScreensNoServersAvailable": "Electrum-palvelimia ei ole saatavilla.",
+  "addressViewerTitle": "Osoite",
+  "addressViewerTapToCopy": "Kopioi napauttamalla",
+  "addressViewerViewInExplorer": "Näytä selaimessa",
+  "bullEyeTransactionTitle": "Tapahtuman tunnus",
+  "bullEyeInvoiceTitle": "Lasku"
 }

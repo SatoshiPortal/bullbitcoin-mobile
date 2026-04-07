@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -297,12 +298,12 @@ class _WalletAddressField extends StatelessWidget {
                 children: [
                   Expanded(
                     child: hasAddress
-                        ? BBText(
-                            _truncateAddress(currentAddress),
+                        ? BullEye.address(
+                            currentAddress,
                             style: context.font.bodyLarge?.copyWith(
-                              color: context.appColors.onSurface,
                               fontWeight: FontWeight.w500,
                             ),
+                            color: context.appColors.onSurface,
                           )
                         : BBText(
                             context.loc.exchangeBitcoinWalletsEnterAddressHint,
@@ -325,8 +326,4 @@ class _WalletAddressField extends StatelessWidget {
     );
   }
 
-  String _truncateAddress(String address) {
-    if (address.length <= 20) return address;
-    return '${address.substring(0, 10)}...${address.substring(address.length - 8)}';
-  }
 }

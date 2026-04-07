@@ -4506,5 +4506,10 @@
   "coreScreensInputResolutionFailed": "Вход не найден: выход {vout} из {parentTxId} не существует.",
   "coreScreensParseFailed": "Не удалось разобрать транзакцию: {message}.",
   "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
-  "coreScreensNoServersAvailable": "Нет доступных серверов Electrum."
+  "coreScreensNoServersAvailable": "Нет доступных серверов Electrum.",
+  "addressViewerTitle": "Адрес",
+  "addressViewerTapToCopy": "Нажмите для копирования",
+  "addressViewerViewInExplorer": "Посмотреть в обозревателе",
+  "bullEyeTransactionTitle": "ID транзакции",
+  "bullEyeInvoiceTitle": "Счёт"
 }

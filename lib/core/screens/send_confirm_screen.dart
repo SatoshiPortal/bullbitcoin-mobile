@@ -1,15 +1,14 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/widgets/bull_eye.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 enum SendType { send, swap }
@@ -160,31 +159,10 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensToLabel,
-            details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
-              children: [
-                Expanded(
-                  child: BBText(
-                    _receiveWalletLabel,
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.secondary,
-                    ),
-                    textAlign: .end,
-                  ),
-                ),
-                const Gap(4),
-                InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
-                  onTap: () {
-                    Clipboard.setData(ClipboardData(text: _receiveWalletLabel));
-                  },
-                ),
-              ],
+            details: BullEye.address(
+              _receiveWalletLabel,
+              style: context.font.bodyLarge,
+              color: context.appColors.secondary,
             ),
           ),
           if (_isToSelf) ...[
@@ -312,40 +290,12 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensToLabel,
-            details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
-              children: [
-                BBText(
-                  StringFormatting.truncateMiddle(_paymentRequestAddress),
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.appColors.secondary,
-                  ),
-                  textAlign: .end,
-                ),
-                const Gap(4),
-                InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
-                  onTap: () {
-                    Clipboard.setData(
-                      ClipboardData(text: _paymentRequestAddress),
-                    );
-                  },
-                ),
-              ],
+            details: BullEye.address(
+              _paymentRequestAddress,
+              style: context.font.bodyLarge?.copyWith(
+                color: context.appColors.secondary,
+              ),
             ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
           ),
           _divider(context),
           CommonInfoRow(
@@ -560,35 +510,11 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                 swap.isChainSwap &&
                     (swap as ChainSwap).receiveWalletId == null &&
                     (swap as ChainSwap).receiveAddress != null
-                ? Row(
-                    mainAxisAlignment: .end,
-                    mainAxisSize: .min,
-                    children: [
-                      BBText(
-                        StringFormatting.truncateMiddle(
-                          (swap as ChainSwap).receiveAddress!,
-                        ),
-                        style: context.font.bodyLarge?.copyWith(
-                          color: context.appColors.secondary,
-                        ),
-                        textAlign: .end,
-                      ),
-                      const Gap(4),
-                      InkWell(
-                        child: Icon(
-                          Icons.copy,
-                          color: context.appColors.primary,
-                          size: 16,
-                        ),
-                        onTap: () {
-                          Clipboard.setData(
-                            ClipboardData(
-                              text: (swap as ChainSwap).receiveAddress!,
-                            ),
-                          );
-                        },
-                      ),
-                    ],
+                ? BullEye.address(
+                    (swap as ChainSwap).receiveAddress!,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.secondary,
+                    ),
                   )
                 : receiveWalletLabel != null && receiveWalletLabel!.isNotEmpty
                 ? BBText(
@@ -704,19 +630,11 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
 
 class CommonSendBottomButtons extends StatelessWidget {
   const CommonSendBottomButtons({
-    required bool isBitcoinWallet,
-    required StateStreamableSource<Object?> blocProviderValue,
     required bool disableSendButton,
     required Function onSendPressed,
-  }) : _isBitcoinWallet = isBitcoinWallet,
-       _blocProviderValue = blocProviderValue,
-       _disableSendButton = disableSendButton,
+  }) : _disableSendButton = disableSendButton,
        _onSendPressed = onSendPressed;
 
-  // ignore: unused_field
-  final bool _isBitcoinWallet;
-  // ignore: unused_field
-  final StateStreamableSource<Object?> _blocProviderValue;
   final bool _disableSendButton;
   final Function _onSendPressed;
 
@@ -724,36 +642,9 @@ class CommonSendBottomButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          // if (_isBitcoinWallet) ...[
-          //   BBButton.big(
-          //     label: 'Advanced Settings',
-          //     onPressed: () {
-          //       showModalBottomSheet(
-          //         context: context,
-          //         isScrollControlled: true,
-          //         backgroundColor: context.colour.secondaryFixed,
-          //         builder:
-          //             (BuildContext buildContext) => BlocProvider.value(
-          //               value: _blocProviderValue,
-          //               child: const AdvancedOptionsBottomSheet(),
-          //             ),
-          //       );
-          //     },
-          //     borderColor: context.colour.secondary,
-          //     outlined: true,
-          //     bgColor: context.appColors.transparent,
-          //     textColor: context.colour.secondary,
-          //   ),
-          //   const Gap(12),
-          // ],
-          CommonConfirmSendButton(
-            disableSendButton: _disableSendButton,
-            onPressed: _onSendPressed,
-          ),
-        ],
+      child: CommonConfirmSendButton(
+        disableSendButton: _disableSendButton,
+        onPressed: _onSendPressed,
       ),
     );
   }

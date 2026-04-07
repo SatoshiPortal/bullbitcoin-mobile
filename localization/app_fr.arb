@@ -4486,5 +4486,10 @@
   "coreScreensInputResolutionFailed": "Entrée introuvable : la sortie {vout} de {parentTxId} n'existe pas.",
   "coreScreensParseFailed": "Échec de l'analyse de la transaction : {message}.",
   "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
-  "coreScreensNoServersAvailable": "Aucun serveur Electrum disponible."
+  "coreScreensNoServersAvailable": "Aucun serveur Electrum disponible.",
+  "addressViewerTitle": "Adresse",
+  "addressViewerTapToCopy": "Appuyez pour copier",
+  "addressViewerViewInExplorer": "Voir dans l'explorateur",
+  "bullEyeTransactionTitle": "ID de transaction",
+  "bullEyeInvoiceTitle": "Facture"
 }

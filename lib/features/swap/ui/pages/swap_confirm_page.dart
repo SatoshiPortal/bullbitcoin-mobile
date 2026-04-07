@@ -150,8 +150,6 @@ class SwapConfirmPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: CommonSendBottomButtons(
-                isBitcoinWallet: fromWallet != null && !fromWallet.isLiquid,
-                blocProviderValue: context.read<TransferBloc>(),
                 onSendPressed: () {
                   context.read<TransferBloc>().add(
                     const TransferEvent.confirmed(),

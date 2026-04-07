@@ -4497,5 +4497,10 @@
   "coreScreensInputResolutionFailed": "未找到输入：{parentTxId} 的输出 {vout} 不存在。",
   "coreScreensParseFailed": "解析交易失败：{message}。",
   "coreScreensUnexpectedError": "意外错误：{message}。",
-  "coreScreensNoServersAvailable": "没有可用的 Electrum 服务器。"
+  "coreScreensNoServersAvailable": "没有可用的 Electrum 服务器。",
+  "addressViewerTitle": "地址",
+  "addressViewerTapToCopy": "点击复制",
+  "addressViewerViewInExplorer": "在浏览器中查看",
+  "bullEyeTransactionTitle": "交易 ID",
+  "bullEyeInvoiceTitle": "发票"
 }
