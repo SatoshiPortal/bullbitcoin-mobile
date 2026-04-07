@@ -128,8 +128,9 @@ class _ErrorView extends StatelessWidget {
   final TransactionError error;
 
   String _message(BuildContext context) => switch (error) {
-    TransactionFetchFailed(:final txid) =>
-      context.loc.coreScreensFetchFailed(txid),
+    TransactionFetchFailed(:final txid) => context.loc.coreScreensFetchFailed(
+      txid,
+    ),
     TransactionInputResolutionFailed(:final parentTxId, :final vout) =>
       context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
     TransactionParseFailed(:final message) =>
@@ -450,8 +451,8 @@ class _InputAddressRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
+          SizedBox(
+            width: double.infinity,
             child: AddressViewer(
               fullAddress,
               style: context.font.bodySmall,
@@ -485,8 +486,8 @@ class _OutputAddressRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Align(
-            alignment: Alignment.centerRight,
+          SizedBox(
+            width: double.infinity,
             child: AddressViewer(
               fullAddress,
               style: context.font.bodySmall,
