@@ -1,57 +1,18 @@
 {
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",
-  "@appInitErrorTitle": {
-    "description": "Title shown on the fatal init error screen in main.dart"
-  },
   "appInitErrorMessage": "Գործարկման ժամանակ սխալ է տեղի ունեցել: Խնդրում ենք վերագործարկել հավելվածը: Եթե խնդիրը շարունակվում է, կիսվեք ձեր մատյաններով և կապ հաստատեք աջակցության հետ:",
-  "@appInitErrorMessage": {
-    "description": "Body text on the fatal init error screen in main.dart"
-  },
   "appInitErrorShareLogsButton": "Կիսվել մատյաններով",
-  "@appInitErrorShareLogsButton": {
-    "description": "Button label to share logs on the fatal init error screen"
-  },
   "sendErrorInvoiceMustContainAmount": "Հաշիվ-ապրանքագիրը պետք է պարունակի գումար",
-  "@sendErrorInvoiceMustContainAmount": {
-    "description": "Error when a Lightning invoice without an amount is used"
-  },
   "settingsGetHelpLabel": "Ստանալ օգնություն",
   "exchangeSupportLoginChatRequired": "Մարդկային աջակցություն ստանալու համար նախ պետք է մուտք գործեք ձեր Bull Bitcoin հաշիվը։ Ամբողջովին անվճար է և KYC չի պահանջվում, միայն էլեկտրոնային փոստի հասցե:",
   "settingsAccountSettingsTitle": "Account Settings",
-  "@settingsAccountSettingsTitle": {
-    "description": "Title for the account settings screen (shown to non-superusers)"
-  },
   "exchangeSettingsDeleteAccountTitle": "Delete Account",
-  "@exchangeSettingsDeleteAccountTitle": {
-    "description": "Label for the delete account option in exchange settings"
-  },
   "deleteAccountConfirmationTitle": "Delete Account",
-  "@deleteAccountConfirmationTitle": {
-    "description": "Title for the delete account confirmation bottom sheet"
-  },
   "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
-  "@deleteAccountConfirmationDescription": {
-    "description": "Description for the delete account confirmation bottom sheet"
-  },
   "deleteAccountConfirmationCancel": "Cancel",
-  "@deleteAccountConfirmationCancel": {
-    "description": "Cancel button label for delete account confirmation"
-  },
   "deleteAccountConfirmationDelete": "Delete Account",
-  "@deleteAccountConfirmationDelete": {
-    "description": "Delete button label for delete account confirmation"
-  },
   "deleteAccountSuccessTitle": "Account Deletion Requested",
-  "@deleteAccountSuccessTitle": {
-    "description": "Title for the delete account success bottom sheet"
-  },
   "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
-  "@deleteAccountSuccessDescription": {
-    "description": "Description for the delete account success bottom sheet"
-  },
-  "deleteAccountSuccessClose": "Close",
-  "@deleteAccountSuccessClose": {
-    "description": "Close button label for delete account success bottom sheet"
-  }
+  "deleteAccountSuccessClose": "Close"
 }

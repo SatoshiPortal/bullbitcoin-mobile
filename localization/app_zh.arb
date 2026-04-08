@@ -33,13 +33,6 @@
   "psbtFlowClickScan": "浮雕",
   "sellInstitutionNumber": "机构数目",
   "recoverbullGoogleDriveErrorDisplay": "Rror: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolSettingsCustomServer": "海关服务器",
   "fundExchangeMethodRegularSepa": "SEPA",
   "addressViewTransactions": "交易",
@@ -50,13 +43,6 @@
   "electrumPrivacyNoticeSave": "Save",
   "bip329LabelsImportSuccessSingular": "1 个标签已导入",
   "bip329LabelsImportSuccessPlural": "{count} 个标签已导入",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "withdrawOwnershipOtherAccount": "这是他人的陈述",
   "receiveInvoice": "闪电",
   "receiveGenerateAddress": "新地址",
@@ -65,18 +51,6 @@
   "fundExchangeCrIbanCrcTransferCodeWarning": "在付款时,必须将转让法作为“对象”或“理由”或“说明”。 如果你忘记列入这一法典,你的支付可能会被拒绝.",
   "paySinpeBeneficiario": "受益人",
   "exchangeDcaAddressDisplay": "{addressLabel}:{address}",
-  "@exchangeDcaAddressDisplay": {
-    "placeholders": {
-      "addressLabel": {
-        "type": "String",
-        "description": "The address label (e.g., 'Bitcoin address')"
-      },
-      "address": {
-        "type": "String",
-        "description": "The actual address"
-      }
-    }
-  },
   "autoswapAlwaysBlockEnabledInfo": "如果允许,超出规定限额收费的自动转让将始终受阻",
   "electrumServerAlreadyExists": "这个服务器已经存在",
   "sellPaymentMethod": "支付方法",
@@ -90,13 +64,6 @@
   "systemLabelAutoSwap": "Auto Swap",
   "fundExchangeSinpeTitle": "SINPE 转让",
   "payExpiresIn": "{time}年到期",
-  "@payExpiresIn": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelConfirmationTime": "认可时间",
   "fundExchangeCanadaPostStep5": "5. 支付现金或借用卡",
   "importQrDeviceKruxName": "Krux",
@@ -112,13 +79,6 @@
   "transactionOrderLabelPayoutStatus": "薪金状况",
   "transactionSwapStatusSwapStatus": "差距",
   "arkAboutDurationSeconds": "{seconds}秒",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "receiveInvoiceCopied": "Invoice copied to clippad",
   "kruxStep7": "   - 提高你的器具的亮度",
   "autoswapUpdateSettingsError": "未能更新汽车互换环境",
@@ -134,13 +94,6 @@
   "arkReceiveBoardingAddress": "BTC 地址",
   "sellSendPaymentTitle": "2. 肯定付款",
   "recoverbullReenterConfirm": "请重新加入{inputType}号],以确认.",
-  "@recoverbullReenterConfirm": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyCopiedToClipboard": "涂料",
   "dcaLightningAddressInvalidError": "请进入有效的电灯地址",
   "ledgerButtonNeedHelp": "需要帮助?",
@@ -157,16 +110,6 @@
   "recoverbullGoBackEdit": "<背 景",
   "importWatchOnlyWalletGuides": "挂图",
   "receiveConfirming": "1. 确认......({count}/{required})",
-  "@receiveConfirming": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "required": {
-        "type": "int"
-      }
-    }
-  },
   "fundExchangeInfoPaymentDescription": "在付款说明中,增加你的转让代码.",
   "payInstantPayments": "经常付款",
   "importWatchOnlyImportButton": "1. 进口观察-Only Wallet",
@@ -175,22 +118,8 @@
   "importQrDeviceJadeStep7": "如有必要,选择“选择”改变地址类型",
   "transactionNetworkLightning": "照明",
   "paySecurityQuestionLength": "{count}/40 特性",
-  "@paySecurityQuestionLength": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendBroadcastingTransaction": "播放交易.",
   "pinCodeMinLengthError": "PIN必须至少是{minLength}长期数字",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "swapReceiveExactAmountLabel": "收到确切数额",
   "arkContinueButton": "继续",
   "ledgerImportButton": "进口",
@@ -201,13 +130,6 @@
   "transactionDetailLabelSwapFees": "学费",
   "broadcastSignedTxFee": "Fee",
   "recoverbullRecoveryBalanceLabel": "余额:{amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyFundYourAccount": "基金",
   "sellReplaceByFeeActivated": "替换",
   "globalDefaultBitcoinWalletLabel": "安保",
@@ -222,13 +144,6 @@
   "swapAmountPlaceholder": "页: 1",
   "fundExchangeMethodInstantSepaSubtitle": "最长――只有不到20 000欧元的交易",
   "dcaConfirmError": "有些错误:{error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLiquid": "流动网络",
   "fundExchangeSepaDescription": "根据以下细节,从贵银行账户转划特别经济伙伴关系基金 ",
   "sendAddress": "地址: ",
@@ -246,34 +161,13 @@
   "sendEstimatedDeliveryHoursToDays": "每天",
   "coreWalletTransactionStatusPending": "待决",
   "ledgerActionFailedMessage": "{action} Failed",
-  "@ledgerActionFailedMessage": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorLoadWallets": "未能装载围墙:{error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeLabelBankAccountCountry": "银行账户",
   "walletAddressTypeNestedSegwit": "Nest",
   "dcaConfirmDeactivate": "是的,中止",
   "exchangeLandingFeature2": "DCA, Limit Order and Auto-buy",
   "payPaymentPending": "待付款",
   "payConfirmHighFee": "这项付款的收费为{percentage}%。 继续?",
-  "@payConfirmHighFee": {
-    "placeholders": {
-      "percentage": {
-        "type": "String"
-      }
-    }
-  },
   "payPayoutAmount": "薪酬数额",
   "autoswapMaxBalanceInfo": "当隔离墙余额超过这一数额的两倍时,汽车转移将引发将余额降至这一水平",
   "payPhone": "电话",
@@ -291,13 +185,6 @@
   "buyDocumentUpload": "载荷文件",
   "walletAddressTypeConfidentialSegwit": "保密小组",
   "transactionDetailRetryTransfer": "转业{action}",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendTransferFeeDescription": "这是从发出的款项中扣除的总费用",
   "bitcoinSettingsWalletsTitle": "挂图",
   "arkReceiveSegmentBoarding": "董事会",
@@ -307,16 +194,6 @@
   "arkSessionDuration": "会期",
   "buyAboveMaxAmountError": "你试图购买最高数额.",
   "electrumTimeoutWarning": "你的排位({timeoutValue}秒)低于建议值({recommended}秒).",
-  "@electrumTimeoutWarning": {
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "sendShowPsbt": "显示PSBT",
   "ledgerErrorUnknownOccurred": "未知错误",
   "receiveAddress": "招待会",
@@ -329,14 +206,6 @@
   "paySearchPayments": "搜查费......",
   "payPendingPayments": "待决",
   "passwordMinLengthError": "{pinOrPassword} 必须是至少6位数长者",
-  "@passwordMinLengthError": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "coreSwapsLnSendExpired": "页: 1",
   "sellSendPaymentUsdBalance": "美元 结余",
   "backupWalletEncryptedVaultTag": "简便和简单(1分钟)",
@@ -377,16 +246,6 @@
   "payFeeTooHigh": "生育率异常高",
   "fundExchangeBankTransferWireTitle": "银行转账(wire)",
   "psbtFlowPartProgress": "{total}部分",
-  "@psbtFlowPartProgress": {
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
   "receiveShareInvoice": "份额",
   "buyCantBuyMoreThan": "买不起",
   "dcaUnableToGetConfig": "无法获得发展中国家的组合",
@@ -434,13 +293,6 @@
   "backupWalletSuccessTitle": "填满!",
   "transactionSwapDescLnSendFailed": "有一个问题涉及你。 你的资金将自动退还给你的围墙.",
   "sendCoinAmount": "数额:{amount}",
-  "@sendCoinAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "walletDeletionFailedOkButton": "OK",
   "payTotalFees": "总费用",
   "fundExchangeOnlineBillPaymentHelpBillerName": "将该公司列为收款人——其付款程序人",
@@ -454,13 +306,6 @@
   "buyConfirmPayoutMethod": "薪酬办法",
   "dcaCancelButton": "Cancel",
   "durationMinutes": "{minutes}分钟",
-  "@durationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmNetworkLiquid": "流动资金",
   "walletDetailsAddressTypeLabel": "地址类型",
   "emptyMnemonicWordsError": "插入你的 m言",
@@ -478,13 +323,6 @@
   "replaceByFeeCustomFeeTitle": "习俗税",
   "kruxStep14": "土木板将请你扫描Krux的QR代码。 缩略语.",
   "payAvailableBalance": "可查阅:{amount}",
-  "@payAvailableBalance": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "payCheckingStatus": "检查付款状况......",
   "payMemo": "Memo",
   "languageSettingsLabel": "语言",
@@ -502,13 +340,6 @@
   "appStartupErrorMessageWithBackup": "无法初始化。请删除并重新安装以修复。",
   "payPasteInvoice": "Paste Invoice",
   "labelErrorUnexpected": "意外错误:{message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "arkStatusSettled": "重新安置",
   "dcaWalletBitcoinSubtitle": "最低0.001 BTC",
   "bitboxScreenEnterPasswordSubtext": "请进入您关于Bibox装置的密码,以便继续使用.",
@@ -525,13 +356,6 @@
   "autoswapRecipientWalletInfoText": "选择哪座围墙将接收转移的资金(需要)",
   "withdrawAboveMaxAmountError": "你试图将最高数额撤回.",
   "psbtFlowScanDeviceQr": "推土墙将请你扫描关于{device}的QR代码。 缩略语.",
-  "@psbtFlowScanDeviceQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailedMessage": "发生了错误,请再次尝试伐木.",
   "okButton": "OK",
   "passportStep13": "交易将进口到Bulet.",
@@ -551,13 +375,6 @@
   "torSettingsStatusConnected": "连接",
   "receiveNote": "说明",
   "arkCopiedToClipboard": "{label}",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "arkRecipientAddress": "客户地址",
   "payLightningNetwork": "照明网络",
   "shareLogsLabel": "份额记录",
@@ -574,13 +391,6 @@
   "psbtFlowReadyToBroadcast": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "sendErrorLiquidWalletRequired": "液体墙必须用于照明蒸发",
   "arkDurationMinutes": "{minutes}分钟",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupInsufficientBalance": "平衡不足",
   "swapTransferRefundedMessage": "转账已成功退还.",
   "payInvalidState": "Invalid State",
@@ -607,13 +417,6 @@
   "buyAwaitingConfirmation": "等待确认 ",
   "payExpired": "过期",
   "recoverbullBalance": "余额:{balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "准入环境",
   "payPaymentSuccessful": "付款成功",
   "exchangeHomeWithdraw": "草原",
@@ -621,13 +424,6 @@
   "importQrDeviceJadeStep6": "从围墙菜单中选取“Export Xpub”",
   "buyContinue": "继续",
   "recoverbullEnterToDecrypt": "请进入您的{inputType},对你的过失进行加密.",
-  "@recoverbullEnterToDecrypt": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferTitle": "转让",
   "testBackupSuccessTitle": "成功完成试验!",
   "recoverbullSelectTakeYourTime": "发言时间",
@@ -642,13 +438,6 @@
   "dcaOrderTypeLabel": "命令类型",
   "withdrawConfirmCard": "文件",
   "dcaSuccessMessageHourly": "页: 1",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "loginButton": "LOGIN",
   "revealingVaultKeyButton": "修订......",
   "arkAboutNetwork": "网络",
@@ -656,13 +445,6 @@
   "transactionPayjoinStatusExpired": "过期",
   "fundExchangeMethodBankTransferWire": "银行转账 (Wire or EFT)",
   "psbtFlowLoginToDevice": "your{device} 装置",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa 哥斯达黎加",
   "payCalculating": "计算......",
   "transactionDetailLabelTransferId": "转账证明",
@@ -679,26 +461,12 @@
   "torSettingsInfoDescription": "•  • 代理仅适用于(不包括液体)\n•  • Default Orbot港9050\n• 确保Orbot在获得授权之前能够运行\n•  • 联系可能较慢,通过托拉斯进行",
   "dcaAddressBitcoin": "页: 1",
   "sendErrorAmountBelowMinimum": "低于最低互换限额的数额:",
-  "@sendErrorAmountBelowMinimum": {
-    "placeholders": {
-      "minLimit": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveErrorFetchFailed": "Failed to fetch vaults from Valle Drive",
   "systemLabelExchangeBuy": "1. 采购",
   "sendRecipientAddress": "接收人的讲话",
   "arkTxTypeBoarding": "董事会",
   "exchangeAmountInputValidationInsufficient": "结余不足",
   "psbtFlowReviewTransaction": "一旦交易进口到{device},审查目的地地址和数额.",
-  "@psbtFlowReviewTransaction": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "arkTransactions": "交易",
   "broadcastSignedTxCameraButton": "摄像机",
   "importQrDeviceJadeName": "B. 集群",
@@ -723,13 +491,6 @@
   "rbfSatsPerVbyte": "注",
   "broadcastSignedTxDoneButton": "Done",
   "sendRecommendedFee": "建议:{rate} sat/vB",
-  "@sendRecommendedFee": {
-    "placeholders": {
-      "rate": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolCustomServerUrl": "服务器 URL",
   "buyOrderAlreadyConfirmedError": "这项购买令已经确认.",
   "fundExchangeArsBankTransferTitle": "银行转账",
@@ -742,13 +503,6 @@
   "sellSendPaymentFeePriority": "妇女优先",
   "bitboxActionSignTransactionProcessing": "签署交易",
   "sellWalletBalance": "余额:{amount}",
-  "@sellWalletBalance": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveNoBackupsFound": "没有发现的支持",
   "sellSelectNetwork": "选定网络",
   "sellSendPaymentOrderNumber": "命令号数",
@@ -778,38 +532,16 @@
   "recoverbullErrorInvalidCredentials": "这一备份卷宗的密码",
   "paySinpeMonto": "数额",
   "arkDurationSeconds": "{seconds}秒",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
   "receiveCopyOrScanAddressOnly": "只读或扫描",
   "transactionDetailAccelerate": "加速",
   "importQrDevicePassportStep11": "贴上你护照挂号的标签,并打上“港口”",
   "fundExchangeJurisdictionCanada": "🇨🇦 加拿大",
   "withdrawBelowMinAmountError": "你们正试图在最低数额以下撤出.",
   "recoverbullTransactions": "交易:{count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "swapYouPay": "页: 1",
   "encryptedVaultTitle": "加密",
   "fundExchangeCrIbanUsdLabelIban": "IBAN账户编号(仅美元)",
   "chooseAccessPinTitle": "选取{pinOrPassword}",
-  "@chooseAccessPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "importWalletSeedSigner": "SeedSigner",
   "featureComingSoonTitle": "简历",
   "swapProgressRefundInProgress": "转款",
@@ -827,28 +559,12 @@
   "withdrawConfirmPhone": "电话",
   "payNoDetailsAvailable": "不详",
   "allSeedViewOldWallets": "旧墙({count})",
-  "@allSeedViewOldWallets": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "sellOrderPlaced": "成功签发的Sell订单",
   "buyInsufficientFundsError": "页: 1.",
   "ledgerHelpStep4": "确保你安装了Ledger Live的最新版本.",
   "recoverbullPleaseWait": "请等待我们建立安全联系......",
   "broadcastSignedTxBroadcast": "广播",
   "lastKnownEncryptedVault": "密执安 不详:{date}",
-  "@lastKnownEncryptedVault": {
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "2025-01-20 15:30:45"
-      }
-    }
-  },
   "fundExchangeInfoTransferCode": "在付款时,必须将转让法作为“对象”或“理由”.",
   "hwChooseDevice": "选择硬件围墙",
   "transactionListNoTransactions": "尚未进行交易.",
@@ -868,13 +584,6 @@
   "exchangeKycLimited": "有限公司",
   "backupWalletHowToDecideVaultCustomRecommendationText": "你相信,你不会丢失ault,如果你失去电话,仍然可以查阅.",
   "swapErrorAmountBelowMinimum": "数额低于最低兑换额:{min}克拉",
-  "@swapErrorAmountBelowMinimum": {
-    "placeholders": {
-      "min": {
-        "type": "String"
-      }
-    }
-  },
   "settingsGithubLabel": "Github",
   "settingsGetHelpLabel": "获取帮助",
   "sellTransactionFee": "交易费",
@@ -897,23 +606,8 @@
   "connectHardwareWalletDescription": "选择硬件围墙",
   "sendEstimatedDelivery10Minutes": "10分钟",
   "enterPinToContinueMessage": "{pinOrPassword}",
-  "@enterPinToContinueMessage": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "swapTransferFrom": "转让",
   "errorSharingLogsMessage": "汇率:{error}",
-  "@errorSharingLogsMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payShowQrCode": "显示QR代码",
   "onboardingRecoverWalletButtonLabel": "Recover Wallet",
   "torSettingsPortValidationEmpty": "请进入港口号",
@@ -924,25 +618,11 @@
   "settingsWalletBackupTitle": "挂图",
   "ledgerConnectingSubtext": "建立安全联系.",
   "transactionError": "Error - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumPrivacyNoticeCancel": "Cancel",
   "coreSwapsLnSendPending": "尚未开始使用Sap.",
   "recoverbullVaultCreatedSuccess": "成功制造",
   "payAmount": "数额",
   "sellMaximumAmount": "最大销售额:{amount}",
-  "@sellMaximumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sellViewDetailsButton": "观点细节",
   "receiveGenerateInvoice": "基因",
   "kruxStep8": "   - 完成红色激光器,并在QR代码上下",
@@ -953,13 +633,6 @@
   "coldcardStep12": "Click “I'm do” in the Bull Wallet.",
   "autoswapAlwaysBlockDisabledInfo": "如果残疾,将给予你允许因高收费而被阻断的汽车转让的选择权",
   "bip85Index": "指数:{index}",
-  "@bip85Index": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "broadcastSignedTxPageTitle": "广播签署的交易",
   "sendInsufficientBalance": "结余不足",
   "paySecurityAnswer": "安保",
@@ -993,13 +666,6 @@
   "swapValidationInsufficientBalance": "结余不足",
   "transactionLabelFromWallet": "挂图",
   "recoverbullErrorRateLimited": "比率有限。 {retryIn}",
-  "@recoverbullErrorRateLimited": {
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyExtendedPublicKey": "扩大公众 关键",
   "autoswapAlwaysBlock": "Always Block High Fees",
   "walletDeletionConfirmationTitle": "删除墙壁",
@@ -1008,13 +674,6 @@
   "paySinpeOrigen": "1. 起源",
   "networkFeeLabel": "Fee",
   "recoverbullMemorizeWarning": "你们必须纪念这{inputType},以恢复你们的隔离墙。 它至少必须是6位数。 如果你失去这一{inputType},你就无法收回.",
-  "@recoverbullMemorizeWarning": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep15": "交易将进口到Bulet.",
   "fundExchangeETransferLabelSecretQuestion": "保密问题",
   "importColdcardButtonPurchase": "采购装置",
@@ -1027,13 +686,6 @@
   "arkPreconfirmed": "事先确认",
   "recoverbullSelectFileNotSelectedError": "未选定",
   "arkDurationDay": "{days}天",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
   "arkSendButton": "修正",
   "buyInputContinue": "继续",
   "fundExchangeMethodSpeiTransferSubtitle": "利用《公约》的资金转移",
@@ -1044,13 +696,6 @@
   "transferIdLabel": "转账证明",
   "paySelectActiveWallet": "请选择围墙",
   "arkDurationHours": "{hours}小时",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transcribeLabel": "说明",
   "pinCodeProcessing": "处理",
   "transactionDetailLabelRefunded": "重建资金",
@@ -1059,13 +704,6 @@
   "sendSwapInitiated": "启动",
   "backupSettingsKeyWarningMessage": "至关重要的是,你不要在你拯救了你的后备档案的同一地点节省备用钥匙。 管道将其储存在单独的装置或单独的云层供应商上.",
   "recoverbullEnterToTest": "请进入您的{inputType},以测试你的过失.",
-  "@recoverbullEnterToTest": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCrBankTransferDescription1": "采用以下详细情况,从贵国银行账户转账 ",
   "transactionNoteSaveButton": "Save",
   "fundExchangeHelpBeneficiaryName": "利用我们的正式公司名称。 不要使用“Bul>.",
@@ -1108,13 +746,6 @@
   "swapYouReceive": "页: 1",
   "recoverbullSelectCustomLocationProvider": "习俗地点",
   "electrumInvalidRetryError": "Invalid Retry 数额:{value}",
-  "@electrumInvalidRetryError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "paySelectNetwork": "选定网络",
   "informationWillNotLeave": "这些资料 ",
   "backupWalletInstructionSecurityRisk": "任何人如果能用你的12个字眼支持的话,就可偷走你的笔记。 这样做是好的.",
@@ -1147,28 +778,11 @@
   "settingsServicesStatusTitle": "现况",
   "sellPriceWillRefreshIn": "价格上涨 ",
   "labelDeleteFailed": "不可删除“{label}”。 请再次审判.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep16": "它现在准备广播! 一旦你点击广播,交易将立即公布在INSTRA网络上,资金将寄出.",
   "recoverbullRecoveryErrorVaultCorrupted": "某些备案卷被腐败.",
   "buyVerifyIdentity": "身份证明",
   "exchangeDcaCancelDialogConfirmButton": "是的,中止",
   "electrumServerUrlHint": "{network} {environment} 服务器URL",
-  "@electrumServerUrlHint": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "payEmailHint": "电子邮件地址",
   "backupWalletGoogleDrivePermissionWarning": "谷歌将请你与本信分享个人信息.",
   "bitboxScreenVerifyAddressSubtext": "将这一地址与您的Box02屏幕相比较",
@@ -1178,13 +792,6 @@
   "walletBalanceUnconfirmedIncoming": "A. 进展",
   "selectAmountTitle": "选择性数额",
   "buyYouBought": "页: 1",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "routeErrorMessage": "页 次",
   "connectHardwareWalletPassport": "护照",
   "autoswapTriggerBalanceError": "最大余额必须至少为目标余额的两倍。",
@@ -1194,24 +801,10 @@
   "fundExchangeSepaTitle": "SEPA 转让",
   "autoswapLoadSettingsError": "未能装上汽车交换场",
   "durationSeconds": "{seconds}秒",
-  "@durationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
   "broadcastSignedTxReviewTransaction": "审查交易",
   "walletArkExperimental": "试验",
   "importQrDeviceKeystoneStep5": "从钱包列表中选择 \"BULL\"",
   "electrumLoadFailedError": "未能装载服务器{reason}",
-  "@electrumLoadFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "ledgerVerifyAddressLabel": "地址:",
   "buyAccelerateTransaction": "加速交易",
   "backupSettingsTested": "测试",
@@ -1221,21 +814,7 @@
   "exchangeAuthOk": "OK",
   "settingsSecurityPinTitle": "安保科",
   "testBackupErrorFailedToFetch": "Failed to fetch Backup: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkDurationMinute": "{minutes}分钟",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTroubleScanningTitle": "如果你遇到麻烦,就会:",
   "arkReceiveUnifiedCopied": "统一地址复制",
   "importQrDeviceJadeStep9": "你在你的装置上看到QR编码.",
@@ -1359,31 +938,11 @@
   "sellIBAN": "IBAN",
   "allSeedViewPassphraseLabel": "通行证:",
   "dcaBuyingMessage": "只要你的账户有资金,你就每{frequency}次通过{network}购买{amount}.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeCurrencyDropdownValidation": "请选择货币",
   "withdrawConfirmTitle": "2. 肯定撤回",
   "importQrDeviceSpecterStep3": "进入你的种子/钥匙(永远选择适合你的工作)",
   "payPayeeAccountNumber": "收款人账户",
   "importMnemonicBalanceLabel": "余额:{amount}",
-  "@importMnemonicBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapProgressInProgress": "A. 进展",
   "fundExchangeWarningConfirmation": "我确认,我没有被问到别的人.",
   "recoverbullSelectCustomLocationError": "未能从海关地点选择档案",
@@ -1391,13 +950,6 @@
   "confirmSendTitle": "Confirm Send",
   "buyKYCLevel1": "1级——基本",
   "sendErrorAmountAboveMaximum": "高于最高汇率限额的数额:",
-  "@sendErrorAmountAboveMaximum": {
-    "placeholders": {
-      "maxLimit": {
-        "type": "String"
-      }
-    }
-  },
   "coreSwapsLnSendCompletedSuccess": "蒸汽成功完成.",
   "importColdcardScanning": "扫描......",
   "transactionLabelTransferFee": "汇款",
@@ -1407,14 +959,6 @@
   "bitboxCubitPermissionDenied": "拒绝美国允许。 请准许使用您的Box装置.",
   "swapTransferTo": "转入",
   "testBackupPinMessage": "努力确保你记住你的支持{pinOrPassword}",
-  "@testBackupPinMessage": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "bitcoinSettingsMempoolServerTitle": "Memrix服务器设置",
   "transactionSwapDescLnReceiveDefault": "你们的雕刻正在进行之中。 这一过程是自动化的,可能需要一些时间才能完成.",
   "selectCoinsManuallyLabel": "手工选编",
@@ -1490,32 +1034,10 @@
   "arkSetupTitle": "方 法",
   "seedsignerStep3": "2. 弹 wall中显示的QR代码",
   "sellErrorLoadUtxos": "Failed toload UEKOs: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "payDecodingInvoice": "发票的下降......",
   "importColdcardInstructionsStep5": "选择“Export Wallet”",
   "electrumStopGapTooHighError": "消除差距似乎太高。 (Max. {maxStopGap}",
-  "@electrumStopGapTooHighError": {
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTimeoutTooHighError": "时间不够。 ({maxTimeout}秒)",
-  "@electrumTimeoutTooHighError": {
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "sellInstantPayments": "经常付款",
   "priceChartFetchingHistory": "Fetching Price History...",
   "sellDone": "Done",
@@ -1557,13 +1079,6 @@
   "keystoneStep2": "浮雕",
   "sendContinue": "继续",
   "transactionDetailRetrySwap": "Retry Swap {action}",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "sendErrorSwapCreationFailed": "未能制造 s.",
   "sendErrorInvoiceMustContainAmount": "发票必须包含金额",
   "arkNoBalanceData": "无结余数据",
@@ -1573,13 +1088,6 @@
   "autoswapMaxBalance": "Max Instant Wallet Balance",
   "importQrDeviceImport": "进口",
   "importQrDeviceScanPrompt": "页: 1",
-  "@importQrDeviceScanPrompt": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCostaRicaMethodSinpeTitle": "SINPE Móvil",
   "sellBitcoinOnChain": "页: 1",
   "fundExchangeLabelCedulaJuridica": "Cédula Jurídica",
@@ -1602,13 +1110,6 @@
   "walletAddressTypeLegacy": "遗产",
   "hwPassport": "护照",
   "electrumInvalidStopGapError": "无效 差距值:{value}",
-  "@electrumInvalidStopGapError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "dcaFrequencyWeekly": "每周",
   "fundExchangeMethodRegularSepaSubtitle": "只使用20 000欧元以上的大宗交易",
   "settingsTelegramLabel": "电报",
@@ -1620,13 +1121,6 @@
   "automaticallyFetchKeyButton": "Fetch Key",
   "importColdcardButtonOpenCamera": "开放照相机",
   "recoverbullReenterRequired": "重新加入{inputType}",
-  "@recoverbullReenterRequired": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "payFeePriority": "妇女优先",
   "buyInsufficientBalanceDescription": "你们没有足够的平衡来建立这一秩序.",
   "sendSelectNetworkFee": "选择网络收费",
@@ -1639,13 +1133,6 @@
   "replaceByFeeScreenTitle": "收费",
   "arkReceiveCopyAddress": "复印件",
   "testBackupErrorWriteFailed": "储存的书写失败:{error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaNetworkLightning": "照明网络",
   "sendType": "类型: ",
   "buyBitcoinAddressHint": "BC1QYL7J673H..6Y6ALV70M0",
@@ -1665,13 +1152,6 @@
   "sendSwapDetails": "差距",
   "onboardingPhysicalBackupDescription": "用12个字恢复你的围墙.",
   "psbtFlowSelectSeed": "一旦交易在你{device}进口,你应选择你希望签署的种子.",
-  "@psbtFlowSelectSeed": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "pinStatusLoading": "抢劫",
   "payTitle": "薪金",
   "buyInputKycMessage": "您必须首先完成身份证明核查",
@@ -1682,13 +1162,6 @@
   "arkSendSuccessMessage": "你的阿方交易是成功的!",
   "sendSats": "ats",
   "electrumInvalidTimeoutError": "失效时差值:{value}",
-  "@electrumInvalidTimeoutError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeKycLevelLimited": "有限公司",
   "withdrawConfirmEmail": "电子邮件",
   "buyNetworkFees": "网络费",
@@ -1711,14 +1184,6 @@
   "backupKeySeparationWarning": "至关重要的是,你不要在你拯救了你的后备档案的同一地点节省备用钥匙。 管道将其储存在单独的装置或单独的云层供应商上.",
   "coreSwapsStatusInProgress": "A. 进展",
   "confirmAccessPinTitle": "固定出入{pinOrPassword}",
-  "@confirmAccessPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "sellErrorUnexpectedOrderType": "预期SellOrder,但收到不同的订单类型",
   "pinCreateHeadline": "创建新的支柱",
   "transactionSwapProgressConfirmed": "1. 确认",
@@ -1742,13 +1207,6 @@
   "arkSetupExperimentalWarning": "仍在试验之中。\n\n你的阿尔卑斯墙源自你的主要墙壁画。 不需要额外的支持,你现有的围墙备用也恢复了我们的阿方基金。\n\n通过继续这样做,你承认Arka的实验性质和失去资金的风险。\n\n编制说明:Arki秘密来自主要围墙种子,使用武断的BIP-85衍生物(指数11811).",
   "keyServerLabel": "主要服务器 ",
   "recoverbullEnterToView": "请进入您的{inputType}处,查看你的过失钥匙.",
-  "@recoverbullEnterToView": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "payReviewPayment": "审核",
   "electrumBitcoinSslInfo": "如果未具体规定议定书,则将使用l.",
   "transactionTitle": "交易",
@@ -1801,13 +1259,6 @@
   "sellSelectWallet": "选择隔离墙",
   "mempoolCustomServerAdd": "添加习俗服务器",
   "sendHighFeeWarningDescription": "收费总额是{feePercent}%",
-  "@sendHighFeeWarningDescription": {
-    "placeholders": {
-      "feePercent": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawConfirmButton": "2. 肯定撤回",
   "fundExchangeLabelBankAccountDetails": "银行账户细节",
   "payLiquidAddress": "清算",
@@ -1817,39 +1268,11 @@
   "payContinue": "继续",
   "importColdcardInstructionsStep8": "页: 1",
   "dcaSuccessMessageMonthly": "页: 1",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSelectedCoins": "{count} 选定的硬币",
-  "@sendSelectedCoins": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "rbfErrorNoFeeRate": "请选择收费率",
   "backupWalletGoogleDrivePrivacyMessage1": "这些资料 ",
   "labelErrorUnsupportedType": "这种{type}不支持",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "paySatsPerByte": "{sats}sat/vB",
-  "@paySatsPerByte": {
-    "placeholders": {
-      "sats": {
-        "type": "String"
-      }
-    }
-  },
   "payRbfActivated": "替换",
   "dcaConfirmNetworkLightning": "照明",
   "ledgerDefaultWalletLabel": "Ledger Wallet",
@@ -1874,13 +1297,6 @@
   "electrumCloseTooltip": "近距离",
   "payIbanHint": "进入国际律师协会",
   "sendCoinConfirmations": "{count} 确认",
-  "@sendCoinConfirmations": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "fundExchangeLabelRecipientNameArs": "客户名称",
   "sendTo": "致",
   "gotItButton": "签字",
@@ -1889,13 +1305,6 @@
   "transactionPayjoinSendWithout": "无薪假",
   "paySelectCountry": "选择国家",
   "importMnemonicTransactionsLabel": "交易:{count}",
-  "@importMnemonicTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSettingsReferralsTitle": "移案",
   "autoswapAlwaysBlockInfoEnabled": "如果允许,超出规定限额收费的自动转让将始终受阻",
   "importMnemonicSelectScriptType": "进口Mnemonic",
@@ -1906,13 +1315,6 @@
   "exchangeAccountInfoEmailLabel": "电子邮件",
   "legacySeedViewNoSeedsMessage": "没有发现遗产种子.",
   "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "keystoneStep5": "   - 提高你的器具的亮度",
   "sendSelectCoinsManually": "手工选编",
   "importMnemonicEmpty": "就业",
@@ -1938,16 +1340,6 @@
   "arkTxPayment": "支付",
   "importQrDeviceSeedsignerStep6": "选择“箭”作为出口选择",
   "swapValidationMaximumAmount": "最高限额为{amount}{currency}",
-  "@swapValidationMaximumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeETransferLabelBeneficiaryName": "使用这一名称作为E- transfer受益人的名称",
   "backupWalletErrorFileSystemPath": "未能选择档案系统道路",
   "coreSwapsLnSendCanCoop": "斯瓦普将立即完成.",
@@ -1957,19 +1349,6 @@
   "receiveRequestInboundLiquidity": "请求接收能力",
   "backupWalletHowToDecideBackupMoreInfo": "访问后收集更多信息.",
   "walletAutoTransferBlockedMessage": "企图转让{amount} BTC。 现行收费为{currentFee}%,收费门槛为{thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "kruxStep11": "Click the buttons to sign the trade on You Krux.",
   "exchangeSupportChatEmptyState": "尚未发出任何信息。 开始对话!",
   "payExternalWalletDescription": "另一围墙的薪金",
@@ -2003,13 +1382,6 @@
   "fundExchangeLabelPaymentDescription": "付款说明",
   "payAmountTooHigh": "数额超过上限",
   "dcaConfirmPaymentBalance": "{currency} 结余",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "torSettingsPortValidationInvalid": "请输入有效号码",
   "sellBankTransfer": "银行转账",
   "importQrDeviceSeedsignerStep3": "页: 1",
@@ -2028,13 +1400,6 @@
   "dcaAddressLightning": "照明地址",
   "keystoneStep13": "交易将进口到Bulet.",
   "receiveGenerationFailed": "未能产生{type}",
-  "@receiveGenerationFailed": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "coreSwapsLnReceiveCanCoop": "斯瓦普将立即完成.",
   "addressViewAddressesTitle": "地址",
   "withdrawRecipientsNoRecipients": "没有任何受援者发现退出.",
@@ -2071,14 +1436,6 @@
   "sendFrozenCoin": "Frozen",
   "importColdcardInstructionsStep4": "1. 证明您的坚定认识已更新到1.3.4.5版",
   "lastBackupTestLabel": "后续测试:{date}",
-  "@lastBackupTestLabel": {
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "2025-01-20 15:30:45"
-      }
-    }
-  },
   "sendBroadcastTransaction": "广播交易",
   "receiveBitcoinConfirmationMessage": "交易将同时确认.",
   "walletTypeWatchOnly": "Watch-Only",
@@ -2104,14 +1461,6 @@
   "pinCodeSettingsLabel": "PIN 代码",
   "buyExternalBitcoinWallet": "外墙",
   "passwordTooCommonError": "这{pinOrPassword}太常见。 请选择不同的方法.",
-  "@passwordTooCommonError": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "importWalletJade": "B. 集群",
   "payInvalidInvoice": "无效发票",
   "receiveTotalFee": "共计",
@@ -2125,24 +1474,10 @@
   "recoverbullGoogleDriveErrorDeleteFailed": "页: 1",
   "broadcastSignedTxTo": "致",
   "arkAboutDurationDays": "{days}天",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "payPaymentDetails": "付款细节",
   "bitboxActionVerifyAddressTitle": "1. 核实Bibinox的地址",
   "psbtSignTransaction": "签字交易",
   "sellRemainingLimit": "保留今天:{amount}",
-  "@sellRemainingLimit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxActionImportWalletSuccess": "进口",
   "nextButton": "下一步",
   "ledgerSignButton": "开始签署",
@@ -2168,22 +1503,8 @@
   "confirmLogoutMessage": "你们是否希望从您的“宝石”中抽出。 你们需要再次展示互访特征.",
   "receivePaymentInProgress": "正在付款",
   "dcaSuccessMessageDaily": "页: 1",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "walletNetworkLiquidTestnet": "流动测试",
   "electrumDeleteFailedError": "未能删除海关服务器{reason}",
-  "@electrumDeleteFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "receiveBoltzSwapFee": "Boltz Swap Fee",
   "swapInfoBanner": "顺便提一下。 只有将资金留在停薪区,用于日常开支.",
   "payRBFEnabled": "RBF",
@@ -2220,13 +1541,6 @@
   "importColdcardMultisigPrompt": "多西墙壁画,扫描墙壁描述器QR代码",
   "passphraseLabel": "Passphrase",
   "recoverbullConfirmInput": "Confirm {inputType}",
-  "@recoverbullConfirmInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "transactionSwapDescLnReceiveCompleted": "你的wa子已经成功完成! 这些资金现在应当放在你的墙上.",
   "psbtFlowSignTransaction": "签字交易",
   "payAllPayments": "所有付款",
@@ -2242,23 +1556,9 @@
   "arkAboutSessionDuration": "会期",
   "transferFeeLabel": "汇款",
   "pinValidationError": "PIN必须至少是{minLength}长期数字",
-  "@pinValidationError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "buyConfirmationTimeValue": "大约10分钟",
   "dcaOrderTypeValue": "重复购买",
   "ledgerConnectingMessage": "连接{deviceName}",
-  "@ledgerConnectingMessage": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "buyConfirmAwaitingConfirmation": "等待确认 ",
   "torSettingsSaveButton": "Save",
   "allSeedViewShowSeedsButton": "图片",
@@ -2284,13 +1584,6 @@
   "backupWalletTitle": "页: 1",
   "jadeStep10": "Click the buttons to sign the trade on You Jade.",
   "arkAboutDurationHour": "{hours}小时",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "bitboxScreenUnknownError": "未知错误",
   "electrumPrivacyNoticeTitle": "隐私通知",
   "receiveLiquid": "流动资金",
@@ -2308,14 +1601,6 @@
   "kruxStep4": "Click Load",
   "bitboxErrorInvalidMagicBytes": "检测到了无效的PSBT格式.",
   "sellErrorRecalculateFees": "未收回费用:{error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "dcaSetupFrequencyError": "请选择频率",
   "testBackupErrorNoMnemonic": "无mon装",
   "payInvoiceExpired": "发票过期",
@@ -2334,21 +1619,7 @@
   "buyThatWasFast": "这是迅速的,是没有的?",
   "importWalletPassport": "护照",
   "buyExpressWithdrawalFee": "快费:{amount}",
-  "@buyExpressWithdrawalFee": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sellDailyLimit": "日限: {amount}",
-  "@sellDailyLimit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullConnectionFailed": "连接失败",
   "transactionDetailLabelPayinMethod": "薪酬办法",
   "sellCurrentRate": "现行标准",
@@ -2392,13 +1663,6 @@
   "sendClearSelection": "明确甄选",
   "fundExchangeLabelClabe": "CLABE",
   "statusCheckLastChecked": "上次检查:{time}",
-  "@statusCheckLastChecked": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "backupWalletVaultProviderQuickEasy": "快速和容易",
   "sellPayoutAmount": "薪酬数额",
   "dcaConfirmFrequencyDaily": "每天",
@@ -2421,14 +1685,6 @@
   "sendSatsPerVB": "注",
   "withdrawRecipientsContinue": "继续",
   "enterPinAgainMessage": "页: 1.",
-  "@enterPinAgainMessage": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "importColdcardButtonInstructions": "指示",
   "bitboxActionUnlockDeviceProcessingSubtext": "请进入您对Bibox装置的密码......",
   "sellWhichWalletQuestion": "你们想要从哪条墙上出售?",
@@ -2455,13 +1711,6 @@
   "seedsignerStep6": "   - 完成红色激光器,并在QR代码上下",
   "ledgerHelpStep5": "保证你能 电气化装置正在使用最新的公司软件,你可以使用Ledger式实况台更新公司软件.",
   "torSettingsPortDisplay": "港口:{port}",
-  "@torSettingsPortDisplay": {
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "payTransitNumber": "过境号码",
   "importQrDeviceSpecterStep5": "选择“公共钥匙”",
   "fundExchangeCostaRicaMethodIbanUsdTitle": "IBAN 哥斯达黎加(美元)",
@@ -2490,13 +1739,6 @@
   "sendSwapCancelled": "取消",
   "backupWalletGoogleDrivePrivacyMessage4": "永远 ",
   "dcaPaymentMethodValue": "{currency} 结余",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapTransferCompletedTitle": "已完成的移交",
   "torSettingsStatusDisconnected": "互不关联",
   "exchangeDcaCancelDialogTitle": "Cancel 购物?",
@@ -2512,13 +1754,6 @@
   "transactionOrderLabelOriginName": "出生地名称",
   "importQrDeviceKeystoneInstructionsTitle": "主要指示",
   "electrumSavePriorityFailedError": "未能节省服务器优先事项{reason}",
-  "@electrumSavePriorityFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "globalDefaultLiquidWalletLabel": "经常付款",
   "bitboxActionVerifyAddressProcessing": "BiBox...的展示地址.",
   "sendTypeSwap": "蒸汽",
@@ -2526,22 +1761,8 @@
   "bitboxActionSignTransactionSuccess": "成功交易签名",
   "fundExchangeMethodInstantSepa": "Intant SEPA",
   "buyVerificationFailed": "核查失败:{reason}",
-  "@buyVerificationFailed": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyBuyDevice": "购买装置",
   "sellMinimumAmount": "最低销售额:{amount}",
-  "@sellMinimumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "importColdcardTitle": "连接式冷漠 问题",
   "ledgerSuccessImportDescription": "成功进口了Ledger围墙.",
   "pinStatusProcessing": "处理",
@@ -2567,14 +1788,6 @@
   "autoswapEnableToggleLabel": "通用自动转让",
   "sendDustAmount": "数额太小(最多)",
   "allSeedViewExistingWallets": "现有的挂图({count})",
-  "@allSeedViewExistingWallets": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "arkSendConfirmedBalance": "确认的平衡",
   "sellFastest": "快速",
   "receiveTitle": "收 款",
@@ -2586,13 +1799,6 @@
   "connectHardwareWalletLedger": "分类账",
   "importQrDevicePassportInstructionsTitle": "基金会 护照指示",
   "rbfFeeRate": "Fee rate: {rate} sat/vbyte",
-  "@rbfFeeRate": {
-    "placeholders": {
-      "rate": {
-        "type": "String"
-      }
-    }
-  },
   "leaveYourPhone": "页: 1 ",
   "sendFastFee": "快速",
   "exchangeBrandName": "BUL BITCOIN",
@@ -2609,13 +1815,6 @@
   "backupSettingsSecurityWarning": "安保预警",
   "arkCopyAddress": "复印件",
   "sendScheduleFor": "{date}表",
-  "@sendScheduleFor": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowClickDone": "Click “I'm do” in the Bull Wallet.",
   "addressCardUnusedLabel": "未使用",
   "bitboxActionUnlockDeviceSuccess": "装置 成功",
@@ -2624,25 +1823,11 @@
   "payEnterValidAmount": "请提供有效数额",
   "pinButtonRemove": "移除安全局",
   "urProgressLabel": "UR Progress: {parts}部分",
-  "@urProgressLabel": {
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelAddressNotes": "地址说明",
   "coldcardInstructionsTitle": "冷卡加指示",
   "electrumDefaultServers": "违约服务器",
   "onboardingRecoverWallet": "Recover Wallet",
   "scanningProgressLabel": "扫描: {percent}%",
-  "@scanningProgressLabel": {
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
   "transactionOrderLabelReferenceNumber": "参考数字",
   "backupWalletHowToDecide": "如何决定?",
   "recoverbullTestBackupDescription": "现在让我考验你们的支持,以确保一切都得到妥善执行.",
@@ -2664,13 +1849,6 @@
   "transactionDetailLabelStatus": "现况",
   "sellSendPaymentPayinAmount": "薪酬数额",
   "psbtFlowTurnOnDevice": "更换{device}装置",
-  "@psbtFlowTurnOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "backupSettingsKeyServer": "主要服务器 ",
   "connectHardwareWalletColdcardQ": "冷信卡",
   "seedsignerStep2": "浮雕",
@@ -2681,21 +1859,7 @@
   "dcaSetupContinue": "继续",
   "electrumFormatError": "使用地:港口形式(例如:50001)",
   "arkAboutDurationDay": "{days}天",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "arkDurationHour": "{hours}小时",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "transactionFeesDeductedFrom": "这笔费用将从所付数额中扣除",
   "buyConfirmYouPay": "页: 1",
   "importWatchOnlyTitle": "进口观察",
@@ -2708,13 +1872,6 @@
   "testBackupCreatedAt": "创建:",
   "dcaSetRecurringBuyTitle": "2. 约定的变更",
   "psbtFlowSignTransactionOnDevice": "Click the buttons to sign the trade on their {device}.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "transactionStatusPending": "待决",
   "settingsSuperuserModeDisabledMessage": "超级用户模式残疾.",
   "bitboxCubitConnectionFailed": "未能与BitBox装置连接。 请检查您的联系.",
@@ -2729,13 +1886,6 @@
   "backupWalletChooseVaultLocationTitle": "颜色",
   "receiveCopyAddressOnly": "只读或扫描",
   "testBackupErrorTestFailed": "未能测试备份:{error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payLightningFee": "F. 照明",
   "payLabelOptional": "Label (optional)",
   "recoverbullGoogleDriveDeleteButton": "删除",
@@ -2743,13 +1893,6 @@
   "exchangeDcaDeactivateTitle": "2. 启动",
   "fundExchangeMethodEmailETransferSubtitle": "最容易和最快的方法(不变)",
   "testBackupLastBackupTest": "后续测试:{timestamp}",
-  "@testBackupLastBackupTest": {
-    "placeholders": {
-      "timestamp": {
-        "type": "String"
-      }
-    }
-  },
   "payAmountRequired": "所需数额",
   "keystoneStep7": "   -  device把你的装置退回一小块",
   "coreSwapsChainExpired": "到期的转让",
@@ -2758,13 +1901,6 @@
   "transactionListYesterday": "昨天",
   "walletButtonReceive": "收 款",
   "buyLevel2Limit": "2级限制:{amount}",
-  "@buyLevel2Limit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxCubitDeviceNotPaired": "装置不配对。 请首先完成配对过程.",
   "sellCrcBalance": "CRC 结余",
   "paySelectCoinsManually": "手工选编",
@@ -2773,13 +1909,6 @@
   "electrumDefaultServersInfo": "为了保护你的隐私,在定制服务器配置时,不使用违约服务器.",
   "transactionDetailLabelPayoutMethod": "薪酬办法",
   "testBackupErrorLoadMnemonic": "Failed toload mnemonic: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payPriceRefreshIn": "价格上涨 ",
   "bitboxCubitOperationCancelled": "该行动被取消。 请再次审判.",
   "passportStep3": "2. 弹 wall中显示的QR代码",
@@ -2824,13 +1953,6 @@
   "buyProofOfAddress": "地址证明",
   "backupWalletInstructionNoDigitalCopies": "不要提供你背书的数字副本。 在纸面上书写,或在金属中填写.",
   "psbtFlowError": "Rror: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeFastestDescription": "大约10分钟",
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2..",
   "importQrDeviceSeedsignerStep2": "开放“种子”菜单",
@@ -2853,13 +1975,6 @@
   "autoswapWarningDescription": "自动换币可确保您不会无意中在即时支付钱包中持有过多资金，这对长期存储不安全。",
   "fundExchangeSinpeAddedToBalance": "一旦收到付款,将列入你的账户结余.",
   "durationMinute": "{minutes}分钟",
-  "@durationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullErrorDecryptedVaultNotSet": "未确定加密的违约",
   "pinCodeMismatchError": "PIN不匹配",
   "autoswapRecipientWalletPlaceholderRequired": "选择围墙*",
@@ -2889,24 +2004,9 @@
   "exchangeTransactionsComingSoon": "交易——Son公司",
   "navigationTabExchange": "交换",
   "dcaSuccessMessageWeekly": "页: 1",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawConfirmRecipientName": "客户名称",
   "autoswapRecipientWalletPlaceholder": "选修围墙",
   "enterYourBackupPinTitle": "填满{pinOrPassword}",
-  "@enterYourBackupPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "backupSettingsExporting": "出口......",
   "receiveDetails": "详细情况",
   "importQrDeviceSpecterStep11": "组建工作已经完成",
@@ -2931,13 +2031,6 @@
   "receiveInvoiceExpired": "发票过期",
   "ledgerButtonManagePermissions": "管理申请",
   "autoswapMinimumThresholdErrorSats": "最低平衡门槛值为{amount}克拉",
-  "@autoswapMinimumThresholdErrorSats": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyKycPendingTitle": "KYC ID 有待核查",
   "transactionOrderLabelPayinStatus": "Payin Status",
   "sellSendPaymentSecureWallet": "安全墙",
@@ -2960,13 +2053,6 @@
   "payAccountNumber": "账户编号",
   "arkSatsUnit": "ats",
   "payMinimumAmount": "最低程度:{amount}",
-  "@payMinimumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSwapRefundCompleted": "周转基金",
   "torSettingsStatusUnknown": "身份不明",
   "sendConfirmSwap": "Confirm Swap",
@@ -2985,33 +2071,12 @@
   "backupWalletVaultProviderGoogleDrive": "谷歌运动",
   "bitboxCubitDeviceNotFound": "没有发现任何BitBox装置。 请把你的装置连接起来,再次尝试.",
   "autoswapSaveError": "未能挽救环境:{error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "标准退出",
   "swapContinue": "继续",
   "arkSettleButton": "定居者",
   "electrumAddFailedError": "未能增加海关服务器{reason}",
-  "@electrumAddFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailLabelTransferFees": "转账费",
   "arkAboutDurationHours": "{hours}小时",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "importWalletSectionGeneric": "通用围墙",
   "arkEsploraUrl": "Esplora URL",
   "backupSettingsNotTested": "未经测试",
@@ -3030,13 +2095,6 @@
   "coreSwapsActionClose": "近距离",
   "kruxStep6": "如果你遇到麻烦,就会:",
   "autoswapMaximumFeeError": "最高限额为{threshold}%",
-  "@autoswapMaximumFeeError": {
-    "placeholders": {
-      "threshold": {
-        "type": "String"
-      }
-    }
-  },
   "swapValidationEnterAmount": "请列出数额",
   "recoverbullErrorVaultCreatedKeyNotStored": "失败:制造了Vault文档,但钥匙没有储存在服务器上",
   "exchangeSupportChatWalletIssuesInfo": "这份聊天仅用于交换供资/Buy/Sell/Withdraw/Pay方面的相关问题。\n关于隔离墙相关问题,通过在这里点击加入电报组.",
@@ -3066,42 +2124,13 @@
   "swapValidationPositiveAmount": "进入正值",
   "walletDetailsSignerLabel": "签字人",
   "exchangeDcaSummaryMessage": "只要你的账户有资金,你就每{frequency}次通过{network}购买{amount}.",
-  "@exchangeDcaSummaryMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String",
-        "description": "The amount being purchased (e.g., '$100 CAD')"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "addressLabel": "地址: ",
   "testBackupWalletTitle": "测试{walletName}",
-  "@testBackupWalletTitle": {
-    "placeholders": {
-      "walletName": {
-        "type": "String"
-      }
-    }
-  },
   "withdrawRecipientsPrompt": "我们寄钱在哪里?",
   "withdrawRecipientsTitle": "选定受援国",
   "sellPayoutRecipient": "收款人",
   "backupWalletLastBackupTest": "后续测试: ",
   "whatIsWordNumberPrompt": "字数{number}?",
-  "@whatIsWordNumberPrompt": {
-    "placeholders": {
-      "number": {
-        "type": "int",
-        "example": "5"
-      }
-    }
-  },
   "keystoneStep1": "2. 贵重物品组",
   "keystoneStep3": "2. 弹 wall中显示的QR代码",
   "backupKeyWarningMessage": "警告: 如果你节省了支助钥匙,则谨慎行事.",
@@ -3132,13 +2161,6 @@
   "sendErrorAmountBelowSwapLimits": "数额低于互换限额",
   "sendErrorAmountBelowSwapLimitsBitcoin": "考虑为即时支付充值以进行小额支付。",
   "labelErrorNotFound": "Label “{label}”没有发现.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "payPrivatePayment": "私人支付",
   "autoswapDefaultWalletLabel": "页: 1",
   "recoverbullTestSuccessDescription": "你们能够恢复使用丢失的“红外墙”",
@@ -3147,14 +2169,6 @@
   "autoswapRecipientWallet": "Recipient Wallet",
   "arkUnifiedAddressBip21": "统一地址(BIP21)",
   "pickPasswordOrPinButton": "Pick a {pinOrPassword} Bright",
-  "@pickPasswordOrPinButton": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "password"
-      }
-    }
-  },
   "transactionDetailLabelOrderType": "命令类型",
   "autoswapWarningSettingsLink": "让我把汽车环境自动化",
   "payLiquidNetwork": "流动网络",
@@ -3194,24 +2208,9 @@
   "payPayeeAccountNumberHint": "账面编号",
   "importQrDevicePassportStep8": "在您的移动装置上,主机是“开放式照相机”",
   "dcaConfirmationError": "有些错误:{error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "oopsSomethingWentWrong": "Oops! 某些错误",
   "pinStatusSettingUpDescription": "1. 制定您的《个人资料》",
   "enterYourPinTitle": "{pinOrPassword}",
-  "@enterYourPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "onboardingPhysicalBackup": "1. 物理支持",
   "swapFromLabel": "摘自",
   "fundExchangeCrIbanCrcDescription": "采用以下详细情况,从贵国银行账户转账 ",
@@ -3242,13 +2241,6 @@
   "recoverbullGotIt": "签字",
   "sendAdvancedOptions": "A. 先进选择",
   "sellRateValidFor": "汇率{seconds}",
-  "@sellRateValidFor": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "autoswapAutoSaveError": "未能挽救环境",
   "exchangeAccountInfoVerificationLightVerification": "轻型核查",
   "exchangeFeatureBankTransfers": "•  • 银行转账和付款账单",
@@ -3258,29 +2250,11 @@
   "arkCollaborativeRedeem": "协作",
   "pinCodeCheckingStatus": "D. 检查个人信息网络的状况",
   "usePasswordInsteadButton": "使用{pinOrPassword} 替代",
-  "@usePasswordInsteadButton": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "password"
-      }
-    }
-  },
   "coreSwapsLnSendFailedRefunding": "很快将退款.",
   "dcaWalletTypeLightning": "照明网络",
   "transactionSwapProgressBroadcasted": "广播",
   "backupWalletVaultProviderAppleICloud": "页: 1",
   "swapValidationMinimumAmount": "最低数额为{amount}{currency}",
-  "@swapValidationMinimumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicTitle": "进口Mnemonic",
   "payReplaceByFeeActivated": "替换",
   "testBackupDoNotShare": "纽约总部",
@@ -3311,25 +2285,9 @@
   "backupWalletBestPracticesTitle": "B. 反馈最佳做法",
   "transactionSwapInfoFailedExpired": "如有任何问题或关切,请联系援助支助.",
   "memorizePasswordWarning": "你们必须纪念这{pinOrPassword},以恢复你们的隔离墙。 它至少必须是6位数。 如果你失去这一{pinOrPassword},你就无法收回.",
-  "@memorizePasswordWarning": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "googleAppleCloudRecommendation": "谷歌 肥料云: ",
   "exchangeGoToWebsiteButton": "Go to Bullchange website",
   "testWalletTitle": "测试{walletName}",
-  "@testWalletTitle": {
-    "placeholders": {
-      "walletName": {
-        "type": "String",
-        "example": "Default Wallets"
-      }
-    }
-  },
   "exchangeBitcoinWalletsLiquidAddressLabel": "流动资金",
   "backupWalletSuccessTestButton": "退约",
   "pinCodeSettingUp": "1. 制定您的《个人资料》",
@@ -3340,13 +2298,6 @@
   "payChannelBalanceLow": "渠道平衡",
   "allSeedViewNoSeedsFound": "没有发现种子.",
   "bitboxScreenActionFailed": "{action} Failed",
-  "@bitboxScreenActionFailed": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSetupScheduleMessage": "将根据这一时间表自动进行采购.",
   "coreSwapsStatusExpired": "过期",
   "fundExchangeCanadaPostStep3": "3. 。 转售出你想要装载的金额",
@@ -3373,13 +2324,6 @@
   "never": "永远 ",
   "notLoggedInTitle": "页: 1",
   "testBackupWhatIsWordNumber": "字数{number}?",
-  "@testBackupWhatIsWordNumber": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
   "payInvoiceDetails": "发票细节",
   "exchangeLandingLoginButton": "标志",
   "torSettingsEnableProxy": "Enable Tor Proxy",
@@ -3395,13 +2339,6 @@
   "fundExchangeLabelIban": "IBAN账户",
   "swapDoNotUninstallWarning": "在转让完成之前,不要 app!",
   "testBackupErrorVerificationFailed": "核查失败:{error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "sendViewDetails": "观点细节",
   "recoverbullErrorUnexpected": "未预见的错误,见记录",
   "sendSubmarineSwap": "3. 潜艇",
@@ -3410,26 +2347,12 @@
   "payFastest": "快速",
   "allSeedViewSecurityWarningTitle": "安保预警",
   "sendSwapFeeEstimate": "估计交换费:{amount}",
-  "@sendSwapFeeEstimate": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "coreSwapsLnReceiveExpired": "页: 1.",
   "fundExchangeOnlineBillPaymentLabelBillerName": "• 寻找贵国银行的账单人名单以证明这一名称",
   "recoverbullSelectFetchDriveFilesError": "未能抓住所有的动力",
   "psbtFlowLoadFromCamera": "Click Load",
   "exchangeAccountInfoVerificationLimitedVerification": "有限的核查",
   "addressViewErrorLoadingMoreAddresses": "{error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "页: 1",
   "sendBuildingTransaction": "房舍管理.",
   "fundExchangeMethodEmailETransfer": "Email E-transfer",
@@ -3454,13 +2377,6 @@
   "fundExchangeCostaRicaMethodIbanCrcTitle": "IBAN Costa Rica (CRC)",
   "payOrderDetails": "命令细节",
   "importMnemonicTransactions": "{count} 交易",
-  "@importMnemonicTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeAppSettingsPreferredLanguageLabel": "简称",
   "walletDeletionConfirmationMessage": "你们是否希望删除这一围墙?",
   "rbfTitle": "收费",
@@ -3469,13 +2385,6 @@
   "pickPinInsteadButton": "Pick PIN>",
   "backupWalletVaultProviderCustomLocation": "习俗地点",
   "addressViewErrorLoadingAddresses": "负载地址: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorConnectionTypeNotInitialized": "连接类型没有初步确定.",
   "transactionListOngoingTransfersDescription": "这些转移目前正在进行之中。 你们的资金是安全的,在转让完成后将可动用.",
   "ledgerErrorUnknown": "不详的错误",
@@ -3483,24 +2392,10 @@
   "ledgerProcessingVerifySubtext": "请确认您的Ledger装置上的地址.",
   "transactionOrderLabelOriginCedula": "来源:Cedula",
   "recoverbullRecoveryTransactionsLabel": "交易:{count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "buyViewDetails": "观点细节",
   "paySwapFailed": "Swap失败",
   "autoswapMaxFeeLabel": "Max Transfer Fee",
   "importMnemonicBalance": "余额:{amount}",
-  "@importMnemonicBalance": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "appUnlockScreenTitle": "认证",
   "importQrDeviceWalletName": "挂图",
   "payNoRouteFound": "未找到支付款项的路线",
@@ -3522,13 +2417,6 @@
   "sellSwiftCode": "SWIFT/BIC Code",
   "fundExchangeCanadaPostTitle": "加拿大个人现金或借项",
   "receiveInvoiceExpiry": "{time}年的发票到期",
-  "@receiveInvoiceExpiry": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupGoogleDrivePrivacyPart5": "提 交点.",
   "arkTotal": "共计",
   "bitboxActionSignTransactionSuccessSubtext": "你的交易已成功签署.",
@@ -3543,14 +2431,6 @@
   "receiveBitcoinTransactionWillTakeTime": "交易将同时确认.",
   "sellOrderNotFoundError": "没有发现销售订单。 请再次审判.",
   "sellErrorPrepareTransaction": "未准备交易:{error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "fundExchangeOnlineBillPaymentTitle": "《在线法案》支付",
   "importQrDeviceSeedsignerStep7": "在你的移动装置上,利用开放式照相机",
   "addressViewChangeAddressesDescription": "显示围墙 更改地址",
@@ -3569,13 +2449,6 @@
   "payOwnerName": "1. 所有权名称",
   "transactionNetworkLiquid": "流动资金",
   "payEstimatedConfirmation": "估计确认:{time}",
-  "@payEstimatedConfirmation": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxErrorInvalidResponse": "BiBox装置的无效反应。 请再次审判.",
   "psbtFlowAddPassphrase": "添加一个字句,如果你有的话(选择)",
   "payAdvancedOptions": "A. 先进选择",
@@ -3590,13 +2463,6 @@
   "fundExchangeCrIbanUsdDescriptionEnd": "。 资金将计入你的账户结余.",
   "psbtFlowMoveCloserFurther": "Ry  device  device",
   "arkAboutDurationMinutes": "{minutes}分钟",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "swapProgressTitle": "内部转让",
   "pinButtonConfirm": "执 行",
   "coldcardStep2": "添加一个字句,如果你有的话(选择)",
@@ -3604,25 +2470,11 @@
   "coreWalletTransactionStatusConfirmed": "1. 确认",
   "recoverbullSelectGoogleDrive": "谷歌运动",
   "recoverbullEnterInput": "{inputType}",
-  "@recoverbullEnterInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDevicePassportStep12": "组建工作已经完成.",
   "fundExchangeLabelIbanUsdOnly": "IBAN账户编号(仅美元)",
   "payRecipientDetails": "收款人详细情况",
   "fundExchangeWarningTitle": "for监测",
   "receiveError": "Rror: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCount": "业余",
   "walletDetailsDescriptorLabel": "说明",
   "importQrDeviceSeedsignerInstructionsTitle": "见dSigner 指示",
@@ -3650,23 +2502,9 @@
   "transactionSwapDescLnReceiveFailed": "有一个问题涉及你。 如果资金没有在24小时内返还,请联系支助.",
   "sellOrderNumber": "命令号数",
   "payRecipientCount": "{count} 收款人",
-  "@payRecipientCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendErrorBuildFailed": "1. 建设失败者",
   "transactionDetailSwapProgress": "差距",
   "arkAboutDurationMinute": "{minutes}分钟",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "backupWalletInstructionLoseBackup": "如果你失去12个字后,你将无法恢复使用Wallet.",
   "payIsCorporateAccount": "这是公司账户吗?",
   "sellSendPaymentInsufficientBalance": "部分隔离墙没有足够平衡以完成这一销售订单.",
@@ -3679,16 +2517,6 @@
   "transactionDetailLabelOrderStatus": "身份",
   "electrumSaveFailedError": "未能节省先进选择",
   "arkSettleTransactionCount": "{count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxScreenWalletTypeLabel": "挂号:",
   "importQrDeviceKruxStep6": "这!",
   "recoverbullRecoveryErrorMissingDerivationPath": "后备档案缺失衍生物.",
@@ -3699,27 +2527,10 @@
   "importColdcardImporting": "进口高压板墙......",
   "exchangeDcaHideSettings": "良好做法",
   "appUnlockIncorrectPinError": "Incorrect PIN. 请再次审判。 ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
   "buyBitcoinSent": "页: 1!",
   "coreScreensPageNotFound": "页 次",
   "passportStep8": "一旦交易在你的护照上进口,审查目的地地址和数额.",
   "importQrDeviceTitle": "连接{deviceName}",
-  "@importQrDeviceTitle": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeFeatureDcaOrders": "• DCA, Limit Order and Auto-buy",
   "payIban": "IBAN",
   "sellSendPaymentPayoutRecipient": "收款人",
@@ -3733,23 +2544,9 @@
   "fundExchangeBankTransfer": "银行转账",
   "importQrDeviceButtonInstructions": "指示",
   "buyLevel3Limit": "3级限制:{amount}",
-  "@buyLevel3Limit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "electrumLiquidSslInfo": "任何议定书都不得具体指明,《特别法》将自动使用.",
   "sendDeviceConnected": "装置",
   "swapErrorAmountAboveMaximum": "数额超过最高点数:{max}克拉",
-  "@swapErrorAmountAboveMaximum": {
-    "placeholders": {
-      "max": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowPassportTitle": "基金会 护照指示",
   "exchangeLandingFeature3": "Sell, 获得薪水",
   "notLoggedInMessage": "请登录在您的“Bu”账户中,以便进入交换环境.",
@@ -3768,13 +2565,6 @@
   "exchangeAccountComingSoon": "这一特点不久将出现.",
   "sellInProgress": "A. 正在取得进展......",
   "testBackupLastKnownVault": "密执安 不详:{timestamp}",
-  "@testBackupLastKnownVault": {
-    "placeholders": {
-      "timestamp": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullErrorFetchKeyFailed": "未能从服务器中取出电子键",
   "sendSwapInProgressInvoice": "该轮车正在铺设。 发票将分几秒支付.",
   "arkReceiveButton": "收 款",
@@ -3807,25 +2597,11 @@
   "passportStep9": "• 点击 but子在你护照上签字.",
   "walletTypeBitcoinNetwork": "计算机网络",
   "electrumDeleteConfirmation": "你们是否希望删除这一服务器?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "arkServerUrl": "服务器 URL",
   "importMnemonicSelectType": "选择进口的围墙类型",
   "fundExchangeMethodArsBankTransfer": "银行转账",
   "importQrDeviceKeystoneStep1": "打开您的 Keystone",
   "arkDurationDays": "{days}天",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
   "bitcoinSettingsBip85EntropiesTitle": "BIP85 决定因素",
   "swapTransferAmount": "转账数额",
   "feePriorityLabel": "妇女优先",
@@ -3835,13 +2611,6 @@
   "payInsufficientBalance": "部分隔离墙没有足够平衡以完成这一工资单.",
   "viewLogsLabel": "观点记录",
   "sendSwapTimeEstimate": "估计时间:{time}",
-  "@sendSwapTimeEstimate": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "hwKeystone": "关键石块",
   "kruxStep12": "然后,Krux将显示自己的QR代码.",
   "buyInputMinAmountError": "你们至少应当购买",
@@ -3865,13 +2634,6 @@
   "receiveAmount": "数额(备选案文)",
   "testBackupErrorSelectAllWords": "请选择所有语文",
   "buyLevel1Limit": "1级限制:{amount}",
-  "@buyLevel1Limit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "dcaNetworkLabel": "网络",
   "sendScanBitcoinQRCode": "页: 1.",
   "toLabel": "致",
@@ -3888,13 +2650,6 @@
   "createdAtLabel": "创建:",
   "pinConfirmMismatchError": "PIN不匹配",
   "autoswapMinimumThresholdErrorBtc": "最低平衡门槛值为{amount}BTC",
-  "@autoswapMinimumThresholdErrorBtc": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "receiveLiquidNetwork": "流动资金",
   "autoswapSettingsTitle": "自动转让环境",
   "payFirstNameHint": "填满第一名字",
@@ -3915,37 +2670,16 @@
   "dcaUseDefaultLightningAddress": "利用我的缺省电灯.",
   "recoverbullErrorRejected": "关键服务器重新启用",
   "sellEstimatedArrival": "抵达估计数:{time}",
-  "@sellEstimatedArrival": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeWarningTacticsTitle": "B. 共同节奏战术",
   "payInstitutionCodeHint": "加入机构法",
   "arkConfirmedBalance": "确认的平衡",
   "walletAddressTypeNativeSegwit": "Indigenous Segwit",
   "payOpenInvoice": "公开发票",
   "payMaximumAmount": "最多:{amount}",
-  "@payMaximumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sellSendPaymentNetworkFees": "网络费",
   "transactionSwapDescLnReceivePaid": "收到付款! 我们现在把链交易广播到你的墙上.",
   "payAboveMaxAmount": "你们试图支付最多数额,以支付这一围墙的费用.",
   "receiveNetworkUnavailable": "{network} 目前没有",
-  "@receiveNetworkUnavailable": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeHelpBeneficiaryAddress": "如果贵国银行有此要求,我国官方地址",
   "backupWalletPhysicalBackupTitle": "1. 物理支持",
   "arkTxBoarding": "董事会",
@@ -3957,13 +2691,6 @@
   "backupSettingsRevealing": "修订......",
   "payTotal": "共计",
   "autoswapSaveErrorMessage": "未能挽救环境:{error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressLabelLightning": "照明地址",
   "addressViewTitle": "地址细节",
   "payCompleted": "支付!",
@@ -3979,13 +2706,6 @@
   "fundExchangeBankTransferWireTimeframe": "您寄出的任何资金都将在1-2个工作日内添加到您的布莱特.",
   "sendDeviceDisconnected": "装置",
   "withdrawConfirmError": "Rror: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "payFeeBumpFailed": "胎儿 failed折",
   "arkAboutUnilateralExitDelay": "单方面撤出拖延",
   "payUnsupportedInvoiceType": "未证明的发票类型",
@@ -4003,26 +2723,12 @@
   "chooseVaultLocationTitle": "颜色",
   "dcaConfirmOrderTypeValue": "重复购买",
   "psbtFlowDeviceShowsQr": "{device}随后将显示自己的QR代码.",
-  "@psbtFlowDeviceShowsQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeCrBankTransferDescriptionExactly": "确切地说",
   "testBackupEncryptedVaultTitle": "加密",
   "dcaWalletTypeLiquid": "液体(LBTC)",
   "fundExchangeLabelInstitutionNumber": "机构数目",
   "encryptedVaultDescription": "匿名背书,使用你的云层进行强有力的加密.",
   "arkAboutCopiedMessage": "{label}",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "swapAmountLabel": "数额",
   "recoverbullSelectCustomLocation": "习俗地点",
   "sellConfirmOrder": "Confirm Sell Order",
@@ -4030,13 +2736,6 @@
   "buyVerificationComplete": "核查完成情况",
   "transactionNotesLabel": "交易说明",
   "replaceByFeeFeeRateDisplay": "Fee rate: {feeRate} sat/vbyte",
-  "@replaceByFeeFeeRateDisplay": {
-    "placeholders": {
-      "feeRate": {
-        "type": "String"
-      }
-    }
-  },
   "torSettingsPortValidationRange": "港口必须在1至65535之间",
   "fundExchangeMethodCrIbanUsdSubtitle": "美元转账资金",
   "electrumTimeoutEmptyError": "空洞",
@@ -4100,13 +2799,6 @@
   "bitboxScreenConnectDevice": "3. 连接比比奥人",
   "arkYesterday": "昨天",
   "amountRequestedLabel": "要求的数额:{amount}",
-  "@amountRequestedLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "swapProgressRefunded": "转拨资金",
   "payPaymentHistory": "支付史",
   "exchangeFeatureUnifiedHistory": "• 统一交易史",
@@ -4128,223 +2820,54 @@
   "logoutConfirmationCancel": "取消",
   "logoutConfirmationLogout": "退出",
   "exchangeLandingLoginToUseSupport": "请登录或注册以使用支持聊天来处理兑换相关问题。",
-  "@exchangeLandingLoginToUseSupport": {
-    "description": "Message prompting user to login to access support chat"
-  },
   "exchangeSupportLoginChatRequired": "如需人工支持，您必须先登录您的 Bull Bitcoin 账户。完全免费，无需 KYC，只需一个电子邮件地址。",
   "recipientsSearchHint": "按名称或标签搜索收件人",
-  "@recipientsSearchHint": {
-    "description": "Hint text for recipients search field"
-  },
   "autoswapInfoSettingsButton": "配置设置",
-  "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
-  },
   "autoswapInfoRemindLater": "稍后提醒我",
-  "@autoswapInfoRemindLater": {
-    "description": "Tertiary action to close sheet without dismissing"
-  },
   "autoswapInfoTitle": "自动换币处于启用状态",
-  "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
-  },
   "autoswapInfoDismissButton": "知道了，以后不再显示",
-  "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
-  },
   "exchangeSettingsRecipientsTitle": "收件者",
-  "@exchangeSettingsRecipientsTitle": {
-    "description": "Title for the recipients button in exchange settings"
-  },
   "exchangeFileUploadSuccess": "文件上传成功",
-  "@exchangeFileUploadSuccess": {
-    "description": "Success message when file is uploaded successfully"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "电子邮件 通知",
-  "@exchangeAppSettingsEmailNotificationsLabel": {
-    "description": "Label for email notifications toggle in exchange app settings"
-  },
   "exchangeAppSettingsEmailNotificationsDescription": "收到电子邮件命令通知和账户最新情况",
-  "@exchangeAppSettingsEmailNotificationsDescription": {
-    "description": "Description for email notifications toggle in exchange app settings"
-  },
   "exchangeBitcoinWalletsSaveSuccess": "钱包地址保存成功",
-  "@exchangeBitcoinWalletsSaveSuccess": {
-    "description": "Success message when wallet address is saved"
-  },
   "exchangeBitcoinWalletsDescription": "为比特币自动提现设置默认钱包地址",
-  "@exchangeBitcoinWalletsDescription": {
-    "description": "Description text on the default bitcoin wallets screen"
-  },
   "exchangeFileUploadDocumentsTitle": "载荷文件",
-  "@exchangeFileUploadDocumentsTitle": {
-    "description": "Title for the upload documents section"
-  },
   "exchangeFileUploadInstructionsWithParams": "载到{maxFiles}文档。 允许的形式:PDF、JPG、PNG、GIF、HEIC。 最高档案尺寸:每份档案中有10个.",
-  "@exchangeFileUploadInstructionsWithParams": {
-    "description": "Instructions for file upload with parameters",
-    "placeholders": {
-      "maxFiles": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeFileUploadNoFilesSelected": "没有文件被选择",
-  "@exchangeFileUploadNoFilesSelected": {
-    "description": "Message when no files are selected for upload"
-  },
   "exchangeFileUploadSelectFilesHint": "单点“选择文件”以选择文档",
-  "@exchangeFileUploadSelectFilesHint": {
-    "description": "Hint text for selecting files"
-  },
   "exchangeFileUploadSelectFiles": "选择性卷宗",
-  "@exchangeFileUploadSelectFiles": {
-    "description": "Button label to select files"
-  },
   "exchangeFileUploadAddMoreFiles": "增加更多文件",
-  "@exchangeFileUploadAddMoreFiles": {
-    "description": "Button label to add more files"
-  },
   "exchangeFileUploadUploading": "上传中......",
-  "@exchangeFileUploadUploading": {
-    "description": "Loading text while uploading files"
-  },
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
-  "@exchangeFileUploadUploadCount": {
-    "description": "Button label showing number of files to upload",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeFileUploadClearAll": "删除所有",
-  "@exchangeFileUploadClearAll": {
-    "description": "Button label to clear all files"
-  },
   "exchangeFileUploadAllSuccess": "所有文件均已成功上传",
-  "@exchangeFileUploadAllSuccess": {
-    "description": "Success message when all files are uploaded"
-  },
   "exchangeFileUploadPartialSuccess": "{total}份上传的文件{uploaded}",
-  "@exchangeFileUploadPartialSuccess": {
-    "description": "Message when some files failed to upload",
-    "placeholders": {
-      "uploaded": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeFileUploadStatusReady": "准备就绪",
-  "@exchangeFileUploadStatusReady": {
-    "description": "Status badge when files can be uploaded"
-  },
   "exchangeFileUploadStatusInReview": "审查",
-  "@exchangeFileUploadStatusInReview": {
-    "description": "Status badge when files are under review"
-  },
   "exchangeFileUploadStatusAccepted": "接受",
-  "@exchangeFileUploadStatusAccepted": {
-    "description": "Status badge when files have been accepted"
-  },
   "exchangeFileUploadStatusRejected": "Rejected - Tap to reupload",
-  "@exchangeFileUploadStatusRejected": {
-    "description": "Status badge when files have been rejected, with re-upload option"
-  },
   "exchangeFileUploadInReviewMessage": "你们的文件目前正在审查之中。 在完成审查之前,你不能再卸下更多的档案.",
-  "@exchangeFileUploadInReviewMessage": {
-    "description": "Message shown when documents are under review"
-  },
   "exchangeFileUploadAcceptedMessage": "你的文件已被接受。 无需额外上载.",
-  "@exchangeFileUploadAcceptedMessage": {
-    "description": "Message shown when documents have been accepted"
-  },
   "exchangeStatisticsTitle": "统计",
-  "@exchangeStatisticsTitle": {
-    "description": "Title for the statistics screen"
-  },
   "exchangeStatisticsNoData": "没有统计数据",
-  "@exchangeStatisticsNoData": {
-    "description": "Message when no statistics are available"
-  },
   "exchangeStatisticsAsOf": "截至{date}年",
-  "@exchangeStatisticsAsOf": {
-    "description": "Label showing when statistics were last updated",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeStatisticsOrderStats": "命令统计",
-  "@exchangeStatisticsOrderStats": {
-    "description": "Title for order statistics section"
-  },
   "exchangeStatisticsBuySellRatio": "定购单",
-  "@exchangeStatisticsBuySellRatio": {
-    "description": "Label for buy/sell ratio statistic"
-  },
   "exchangeStatisticsBuyStats": "采购统计",
-  "@exchangeStatisticsBuyStats": {
-    "description": "Title for buy statistics section"
-  },
   "exchangeStatisticsSellStats": "Sell 统计",
-  "@exchangeStatisticsSellStats": {
-    "description": "Title for sell statistics section"
-  },
   "exchangeStatisticsVolume": "数量",
-  "@exchangeStatisticsVolume": {
-    "description": "Label for volume statistic"
-  },
   "exchangeStatisticsTradeCount": "贸易指数",
-  "@exchangeStatisticsTradeCount": {
-    "description": "Label for trade count statistic"
-  },
   "exchangeStatisticsAveragePrice": "平均价格",
-  "@exchangeStatisticsAveragePrice": {
-    "description": "Label for average price statistic"
-  },
   "exchangeStatisticsTotalVolume": "国际贸易总量",
-  "@exchangeStatisticsTotalVolume": {
-    "description": "Label for total trading volume statistic"
-  },
   "exchangeStatisticsBillerStats": "账单统计",
-  "@exchangeStatisticsBillerStats": {
-    "description": "Title for biller statistics section"
-  },
   "exchangeStatisticsCurrency": "货币:{currency}",
-  "@exchangeStatisticsCurrency": {
-    "description": "Label showing currency for biller stats",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeStatisticsTotalAmount": "总额",
-  "@exchangeStatisticsTotalAmount": {
-    "description": "Label for total amount statistic"
-  },
   "retry": "学历",
-  "@retry": {
-    "description": "Generic retry button label"
-  },
   "exchangeSettingsTransactionsTitle": "交易",
-  "@exchangeSettingsTransactionsTitle": {
-    "description": "Title for the transactions button in exchange settings"
-  },
   "autoswapActiveCardTitle": "自动交换已激活",
   "deleteLogsTitle": "删除日志",
-  "@deleteLogsTitle": {
-    "description": "Clickable text to delete application logs"
-  },
   "logsDeletedMessage": "日志已删除",
-  "@logsDeletedMessage": {
-    "description": "Confirmation message when logs are deleted"
-  },
   "priceChartFailedToLoad": "无法加载价格历史",
   "priceFailedToLoad": "无法加载价格",
   "statusScreenTryAgain": "重试",
@@ -4376,91 +2899,25 @@
   "mempoolErrorDeleteFailed": "删除自定义服务器失败：{error}",
   "mempoolErrorUpdateSettingsFailed": "更新设置失败：{error}",
   "settingsErrorReportingTitle": "错误报告",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
   "errorReportingProgramTitle": "错误报告计划",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
   "errorReportingProgramDescription": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。\n\n启用后，当应用程序发生问题时，我们会自动发送错误报告。这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。\n\n我们不会与第三方分享此信息。我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
   "errorReportingAcceptButton": "接受",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
   "errorReportingCancelButton": "取消",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
   "errorReportingRestartSnackbar": "重新启动应用程序以应用此更改",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "appInitErrorTitle": "应用启动失败",
-  "@appInitErrorTitle": {
-    "description": "Title shown on the fatal init error screen in main.dart"
-  },
   "appInitErrorMessage": "启动时发生错误。请重启应用。如果问题持续存在，请分享您的日志并联系支持团队。",
-  "@appInitErrorMessage": {
-    "description": "Body text on the fatal init error screen in main.dart"
-  },
   "appInitErrorShareLogsButton": "分享日志",
-  "@appInitErrorShareLogsButton": {
-    "description": "Button label to share logs on the fatal init error screen"
-  },
   "backupWarningTitle": "立即备份您的钱包",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
   "backupWarningDescription": "如果没有备份，一旦您丢失手机、删除应用程序或遇到与应用程序或设备相关的严重问题，您将无法访问您的比特币。没有备份，就无法恢复您的钱包。",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "是",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
   "backupWarningBackupLater": "不，我了解风险",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
-  "@settingsAccountSettingsTitle": {
-    "description": "Title for the account settings screen (shown to non-superusers)"
-  },
   "exchangeSettingsDeleteAccountTitle": "Delete Account",
-  "@exchangeSettingsDeleteAccountTitle": {
-    "description": "Label for the delete account option in exchange settings"
-  },
   "deleteAccountConfirmationTitle": "Delete Account",
-  "@deleteAccountConfirmationTitle": {
-    "description": "Title for the delete account confirmation bottom sheet"
-  },
   "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
-  "@deleteAccountConfirmationDescription": {
-    "description": "Description for the delete account confirmation bottom sheet"
-  },
   "deleteAccountConfirmationCancel": "Cancel",
-  "@deleteAccountConfirmationCancel": {
-    "description": "Cancel button label for delete account confirmation"
-  },
   "deleteAccountConfirmationDelete": "Delete Account",
-  "@deleteAccountConfirmationDelete": {
-    "description": "Delete button label for delete account confirmation"
-  },
   "deleteAccountSuccessTitle": "Account Deletion Requested",
-  "@deleteAccountSuccessTitle": {
-    "description": "Title for the delete account success bottom sheet"
-  },
   "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
-  "@deleteAccountSuccessDescription": {
-    "description": "Description for the delete account success bottom sheet"
-  },
-  "deleteAccountSuccessClose": "Close",
-  "@deleteAccountSuccessClose": {
-    "description": "Close button label for delete account success bottom sheet"
-  }
+  "deleteAccountSuccessClose": "Close"
 }

@@ -5,29 +5,8 @@
   "translationWarningContributeButton": "Auta parantamaan käännöksiä",
   "translationWarningDismissButton": "Selvä",
   "durationSeconds": "{seconds} sekuntia",
-  "@durationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
   "durationMinute": "{minutes} minuutti",
-  "@durationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "durationMinutes": "{minutes} minuuttia",
-  "@durationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "onboardingScreenTitle": "Tervetuloa",
   "onboardingCreateWalletButtonLabel": "Luo lompakko",
   "onboardingRecoverWalletButtonLabel": "Palauta lompakko",
@@ -49,13 +28,6 @@
   "pinCodeCreateTitle": "Luo uusi PIN",
   "pinCodeCreateDescription": "PIN suojaa pääsyn lompakkoosi ja asetuksiin. Pidä se muistettavana.",
   "pinCodeMinLengthError": "PIN-koodin on oltava vähintään {minLength} numeroa pitkä",
-  "@pinCodeMinLengthError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "pinCodeConfirmTitle": "Vahvista uusi PIN",
   "pinCodeMismatchError": "PIN-koodit eivät täsmää",
   "pinCodeSecurityPinTitle": "PIN",
@@ -288,13 +260,6 @@
   "receiveContinue": "Jatka",
   "receiveCopyAddressOnly": "Kopioi tai skannaa vain osoite",
   "receiveError": "Virhe: {error}",
-  "@receiveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "receiveFeeExplanation": "Tämä kulu vähennetään lähetetystä summasta",
   "receiveNotePlaceholder": "Kuvaus",
   "receiveReceiveAmount": "Vastaanotettava määrä",
@@ -334,13 +299,6 @@
   "buyAwaitingConfirmation": "Odotetaan vahvistusta ",
   "buyConfirmPurchase": "Vahvista osto",
   "buyYouBought": "Ostit {amount}",
-  "@buyYouBought": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyPayoutWillBeSentIn": "Maksusi lähetetään ",
   "buyViewDetails": "Näytä tiedot",
   "buyAccelerateTransaction": "Kiihdytä transaktiota",
@@ -425,13 +383,6 @@
   "paySecurityQuestion": "Turvakysymys",
   "paySecurityQuestionHint": "Syötä turvakysymys (10–40 merkkiä)",
   "paySecurityQuestionLength": "{count}/40 merkkiä",
-  "@paySecurityQuestionLength": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "paySecurityQuestionLengthError": "Vaaditaan 10–40 merkkiä",
   "paySecurityAnswer": "Turvavastaus",
   "paySecurityAnswerHint": "Syötä turvavastaus",
@@ -561,32 +512,11 @@
   "payRbfActivated": "Replace-by-fee aktivoitu",
   "transactionTitle": "Transaktiot",
   "transactionError": "Virhe - {error}",
-  "@transactionError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailTitle": "Transaktion tiedot",
   "transactionDetailTransferProgress": "Siirron edistyminen",
   "transactionDetailSwapProgress": "Swapin edistyminen",
   "transactionDetailRetryTransfer": "Yritä siirtoa uudelleen {action}",
-  "@transactionDetailRetryTransfer": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailRetrySwap": "Yritä uudelleen swappiä {action}",
-  "@transactionDetailRetrySwap": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "transactionDetailAddNote": "Lisää kuvaus",
   "transactionDetailBumpFees": "Aktivoi RFB",
   "transactionFilterAll": "Kaikki",
@@ -938,14 +868,6 @@
   "howToDecideButton": "Miten valita?",
   "backupBestPracticesTitle": "Varmuuskopion parhaat käytännöt",
   "lastBackupTestLabel": "Viimeisin varmuuskopion testi: {date}",
-  "@lastBackupTestLabel": {
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "2025-01-20 15:30:45"
-      }
-    }
-  },
   "backupInstruction1": "Jos menetät 12 sanan varmuuskopiosi, et voi palauttaa Bitcoin-lompakkoasi.",
   "backupInstruction2": "Ilman varmuuskopiota, jos menetät tai rikot puhelimesi tai poistat Bull Bitcoin -sovelluksen, bitcoinisi menevät lopullisesti hukkaan.",
   "backupInstruction3": "Kuka tahansa, jolla on pääsy 12 sanan varmuuskopioosi, voi varastaa bitcoinisi. Piilota se huolellisesti.",
@@ -975,14 +897,6 @@
   "cancelButton": "Peruuta",
   "continueButton": "Jatka",
   "testWalletTitle": "Testaa {walletName}",
-  "@testWalletTitle": {
-    "placeholders": {
-      "walletName": {
-        "type": "String",
-        "example": "Default Wallets"
-      }
-    }
-  },
   "defaultWalletsLabel": "Oletuslompakot",
   "confirmButton": "Vahvista",
   "recoveryPhraseTitle": "Tallenna siemenlauseen\nsanat oikeassa järjestyksessä",
@@ -994,14 +908,6 @@
   "nextButton": "Seuraava",
   "tapWordsInOrderTitle": "Valitset siemenlauseen\nsanat oikeassa järjestyksessä",
   "whatIsWordNumberPrompt": "Mikä on sana numero {number}?",
-  "@whatIsWordNumberPrompt": {
-    "placeholders": {
-      "number": {
-        "type": "int",
-        "example": "5"
-      }
-    }
-  },
   "allWordsSelectedMessage": "Olet valinnut kaikki sanat",
   "verifyButton": "Vahvista",
   "passphraseLabel": "Suojaussana",
@@ -1025,41 +931,9 @@
   "backupKeyHint": "acc8b7b12daf06412f45a90b7fd2…",
   "automaticallyFetchKeyButton": "Hae avain automaattisesti >>",
   "enterYourPinTitle": "Syötä {pinOrPassword}",
-  "@enterYourPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "enterYourBackupPinTitle": "Syötä varmuuskopion {pinOrPassword}",
-  "@enterYourBackupPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "enterPinToContinueMessage": "Syötä {pinOrPassword} jatkaaksesi",
-  "@enterPinToContinueMessage": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "testBackupPinMessage": "Testaa, että muistat varmuuskopion {pinOrPassword}",
-  "@testBackupPinMessage": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "passwordLabel": "Salasana",
   "pickPasswordInsteadButton": "Valitse salasana sen sijaan >>",
   "pickPinInsteadButton": "Valitse PIN sen sijaan >>",
@@ -1085,14 +959,6 @@
   "googleAppleCloudRecommendationText": "Haluat varmistaa, ettet koskaan menetä pääsyä holvitiedostoosi, vaikka menetät laitteesi.",
   "chooseVaultLocationTitle": "Valitse holvin sijainti",
   "lastKnownEncryptedVault": "Viimeksi tunnettu salattu holvi: {date}",
-  "@lastKnownEncryptedVault": {
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "2025-01-20 15:30:45"
-      }
-    }
-  },
   "googleDriveSignInMessage": "Sinun täytyy kirjautua Google Driveen",
   "googleDrivePrivacyMessage": "Google pyytää jakamaan henkilökohtaisia tietoja tämän sovelluksen kanssa.",
   "informationWillNotLeave": "Tämä tieto ",
@@ -1112,77 +978,13 @@
   "recoverWalletScreenTitle": "Palauta lompakko",
   "recoverbullVaultRecoveryTitle": "Recoverbull-holvin palautus",
   "chooseAccessPinTitle": "Valitse käyttö {pinOrPassword}",
-  "@chooseAccessPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "memorizePasswordWarning": "Sinun täytyy muistaa tämä {pinOrPassword} palauttaaksesi pääsyn lompakkoosi. Sen on oltava vähintään 6 numeroa pitkä. Jos menetät tämän {pinOrPassword} et voi palauttaa varmuuskopioasi.",
-  "@memorizePasswordWarning": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "passwordTooCommonError": "Tämä {pinOrPassword} on liian yleinen. Valitse toinen.",
-  "@passwordTooCommonError": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "passwordMinLengthError": "{pinOrPassword} on oltava vähintään 6 numeroa pitkä",
-  "@passwordMinLengthError": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "pickPasswordOrPinButton": "Valitse {pinOrPassword} sen sijaan >>",
-  "@pickPasswordOrPinButton": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "password"
-      }
-    }
-  },
   "confirmAccessPinTitle": "Vahvista käyttö {pinOrPassword}",
-  "@confirmAccessPinTitle": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "enterPinAgainMessage": "Syötä {pinOrPassword} uudelleen jatkaaksesi.",
-  "@enterPinAgainMessage": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "PIN"
-      }
-    }
-  },
   "usePasswordInsteadButton": "Käytä {pinOrPassword} sen sijaan >>",
-  "@usePasswordInsteadButton": {
-    "placeholders": {
-      "pinOrPassword": {
-        "type": "String",
-        "example": "password"
-      }
-    }
-  },
   "oopsSomethingWentWrong": "Hups! Jotain meni pieleen",
   "connectingToKeyServer": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
   "anErrorOccurred": "Tapahtui virhe",
@@ -1203,13 +1005,6 @@
   "dcaAmountLabel": "Määrä",
   "dcaPaymentMethodLabel": "Maksutapa",
   "dcaPaymentMethodValue": "{currency} saldo",
-  "@dcaPaymentMethodValue": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "dcaOrderTypeLabel": "Tilaustyyppi",
   "dcaOrderTypeValue": "Toistuva osto",
   "dcaNetworkLabel": "Verkko",
@@ -1218,47 +1013,12 @@
   "dcaNetworkLiquid": "Liquid-verkko",
   "dcaLightningAddressLabel": "Lightning-osoite",
   "dcaConfirmationError": "Jotain meni pieleen: {error}",
-  "@dcaConfirmationError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmButton": "Jatka",
   "dcaSuccessTitle": "Toistuva osto on aktiivinen!",
   "dcaSuccessMessageHourly": "Ostat {amount} joka tunti",
-  "@dcaSuccessMessageHourly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSuccessMessageDaily": "Ostat {amount} joka päivä",
-  "@dcaSuccessMessageDaily": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSuccessMessageWeekly": "Ostat {amount} joka viikko",
-  "@dcaSuccessMessageWeekly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "dcaSuccessMessageMonthly": "Ostat {amount} joka kuukausi",
-  "@dcaSuccessMessageMonthly": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "dcaBackToHomeButton": "Kotisivulle",
   "dcaChooseWalletTitle": "Valitse Bitcoin-lompakko",
   "dcaWalletSelectionDescription": "Bitcoin-ostot tehdään automaattisesti tämän aikataulun mukaan.",
@@ -1301,21 +1061,7 @@
   "swapErrorBalanceTooLow": "Saldo liian pieni minimisiirtoa varten",
   "swapErrorAmountExceedsMaximum": "Määrä ylittää suurimman sallitun siirtomäärän",
   "swapErrorAmountBelowMinimum": "Määrä on alle minimisiirtomäärän: {min} sats",
-  "@swapErrorAmountBelowMinimum": {
-    "placeholders": {
-      "min": {
-        "type": "String"
-      }
-    }
-  },
   "swapErrorAmountAboveMaximum": "Määrä ylittää suurimman sallitun siirtomäärän: {max} sats",
-  "@swapErrorAmountAboveMaximum": {
-    "placeholders": {
-      "max": {
-        "type": "String"
-      }
-    }
-  },
   "swapErrorInsufficientFunds": "Transaktiota ei voitu muodostaa. Todennäköisesti syynä on riittämättömät varat kulujen ja määrän kattamiseen.",
   "swapTransferTitle": "Siirto",
   "swapExternalTransferLabel": "Ulkoinen siirto",
@@ -1329,27 +1075,7 @@
   "swapValidationPositiveAmount": "Syötä positiivinen määrä",
   "swapValidationInsufficientBalance": "Riittämätön saldo",
   "swapValidationMinimumAmount": "Minimimäärä on {amount} {currency}",
-  "@swapValidationMinimumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapValidationMaximumAmount": "Maksimimäärä on {amount} {currency}",
-  "@swapValidationMaximumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "swapValidationSelectFromWallet": "Valitse lompakko, josta siirretään",
   "swapValidationSelectToWallet": "Valitse lompakko, johon siirretään",
   "swapDoNotUninstallWarning": "Älä poista sovellusta ennen kuin swappi valmistuu!",
@@ -1363,29 +1089,12 @@
   "appUnlockScreenTitle": "Tunnistautuminen",
   "pinCreateHeadline": "Luo uusi PIN-koodi",
   "pinValidationError": "PIN-koodin vähimmäispituus on {minLength} numeroa",
-  "@pinValidationError": {
-    "placeholders": {
-      "minLength": {
-        "type": "String"
-      }
-    }
-  },
   "pinButtonContinue": "Jatka",
   "pinConfirmHeadline": "Vahvista uusi PIN-koodi",
   "pinConfirmMismatchError": "PIN-koodit eivät täsmää",
   "pinButtonConfirm": "Vahvista",
   "appUnlockEnterPinMessage": "Avaaminen vaatii PIN-koodin",
   "appUnlockIncorrectPinError": "Väärä PIN-koodi. Yritä uudelleen. ({failedAttempts} {attemptsWord})",
-  "@appUnlockIncorrectPinError": {
-    "placeholders": {
-      "failedAttempts": {
-        "type": "int"
-      },
-      "attemptsWord": {
-        "type": "String"
-      }
-    }
-  },
   "appUnlockAttemptSingular": "epäonnistunut yritys",
   "appUnlockAttemptPlural": "epäonnistunutta yritystä",
   "appUnlockButton": "Avaa",
@@ -1410,41 +1119,13 @@
   "autoswapAlwaysBlockInfoDisabled": "Kun tämä on pois käytöstä, sinulle tarjotaan mahdollisuus sallia automaattiset swapit, jotka on estetty korkeiden kulujen vuoksi",
   "autoswapSaveButton": "Tallenna",
   "autoswapSaveErrorMessage": "Asetusten tallennus epäonnistui: {error}",
-  "@autoswapSaveErrorMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapLoadSettingsError": "Automaattisen swapin asetusten lataus epäonnistui",
   "autoswapUpdateSettingsError": "Automaattisen swapin asetusten päivitys epäonnistui",
   "autoswapSelectWalletError": "Valitse vastaanottajan Bitcoin-lompakko",
   "autoswapAutoSaveError": "Asetusten tallennus epäonnistui",
   "autoswapMinimumThresholdErrorBtc": "Minimisaldon raja on {amount} BTC",
-  "@autoswapMinimumThresholdErrorBtc": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapMinimumThresholdErrorSats": "Minimisaldon raja on {amount} sat",
-  "@autoswapMinimumThresholdErrorSats": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapMaximumFeeError": "Suurin kuluraja on {threshold}%",
-  "@autoswapMaximumFeeError": {
-    "placeholders": {
-      "threshold": {
-        "type": "String"
-      }
-    }
-  },
   "autoswapTriggerBalanceError": "Maksimi-saldo on oltava vähintään kaksi kertaa tavoitesaldo.",
   "arkNoTransactionsYet": "Ei vielä transaktioita.",
   "arkToday": "Tänään",
@@ -1471,16 +1152,6 @@
   "arkRedeemButton": "Lunasta",
   "arkInstantPayments": "Välittömät Ark-maksut",
   "arkSettleTransactionCount": "Vahvista {count} {transaction}",
-  "@arkSettleTransactionCount": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      },
-      "transaction": {
-        "type": "String"
-      }
-    }
-  },
   "arkTransaction": "transaktio",
   "arkTransactions": "transaktiot",
   "arkReceiveButton": "Vastaanota",
@@ -1513,70 +1184,14 @@
   "arkUnilateralExitDelay": "Yksipuolinen poistumisviive",
   "arkEsploraUrl": "Esplora URL",
   "arkDurationSeconds": "{seconds} sekuntia",
-  "@arkDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "String"
-      }
-    }
-  },
   "arkDurationMinute": "{minutes} minuutti",
-  "@arkDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "arkDurationMinutes": "{minutes} minuuttia",
-  "@arkDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "String"
-      }
-    }
-  },
   "arkDurationHour": "{hours} tunti",
-  "@arkDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "arkDurationHours": "{hours} tuntia",
-  "@arkDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "String"
-      }
-    }
-  },
   "arkDurationDay": "{days} päivä",
-  "@arkDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
   "arkDurationDays": "{days} päivää",
-  "@arkDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "String"
-      }
-    }
-  },
   "arkCopy": "Kopioi",
   "arkCopiedToClipboard": "{label} kopioitu leikepöydälle",
-  "@arkCopiedToClipboard": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "arkSendSuccessTitle": "Lähetys onnistui",
   "arkSendSuccessMessage": "Ark-siirtosi onnistui!",
   "arkBoardingUnconfirmed": "Boarding vahvistamatta",
@@ -1641,13 +1256,6 @@
   "bitboxScreenEnterPassword": "Syötä salasana",
   "bitboxScreenVerifyAddress": "Vahvista osoite",
   "bitboxScreenActionFailed": "{action} epäonnistui",
-  "@bitboxScreenActionFailed": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "bitboxScreenConnectSubtext": "Varmista, että BitBox02 on avattu ja liitetty USB:llä.",
   "bitboxScreenScanningSubtext": "Etsitään BitBox-laitettasi...",
   "bitboxScreenConnectingSubtext": "Luodaan suojattu yhteys...",
@@ -1692,13 +1300,6 @@
   "replaceByFeeFastestDescription": "Arvioitu toimitusaika ~ 10 minuuttia",
   "replaceByFeeFastestTitle": "Nopein",
   "replaceByFeeFeeRateDisplay": "Kulutaso: {feeRate} sat/vbyte",
-  "@replaceByFeeFeeRateDisplay": {
-    "placeholders": {
-      "feeRate": {
-        "type": "String"
-      }
-    }
-  },
   "replaceByFeeOriginalTransactionTitle": "Alkuperäinen transaktio",
   "replaceByFeeSatsVbUnit": "sat/vB",
   "replaceByFeeScreenTitle": "Replace-by-Fee",
@@ -1715,13 +1316,6 @@
   "loginButton": "KIRJAUDU SISÄÄN",
   "selectAmountTitle": "Valitse määrä",
   "amountRequestedLabel": "Pyydetty määrä: {amount}",
-  "@amountRequestedLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "addressLabel": "Osoite: ",
   "typeLabel": "Tyyppi: ",
   "addressViewReceiveType": "Vastaanotto",
@@ -1730,21 +1324,7 @@
   "copyDialogButton": "Kopioi",
   "closeDialogButton": "Sulje",
   "scanningProgressLabel": "Skannataan: {percent}%",
-  "@scanningProgressLabel": {
-    "placeholders": {
-      "percent": {
-        "type": "String"
-      }
-    }
-  },
   "urProgressLabel": "UR:n eteneminen: {parts} osaa",
-  "@urProgressLabel": {
-    "placeholders": {
-      "parts": {
-        "type": "String"
-      }
-    }
-  },
   "scanningCompletedMessage": "Skannaus valmis",
   "urDecodingFailedMessage": "UR:n dekoodaus epäonnistui",
   "urProcessingFailedMessage": "UR:n käsittely epäonnistui",
@@ -1752,13 +1332,6 @@
   "shareLogsLabel": "Jaa lokitiedot",
   "viewLogsLabel": "Näytä lokitiedot",
   "errorSharingLogsMessage": "Lokitietojen jako epäonnistui: {error}",
-  "@errorSharingLogsMessage": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "copiedToClipboardMessage": "Kopioitu leikepöydälle",
   "submitButton": "Lähetä",
   "optionalPassphraseHint": "Valinnainen salafraasi",
@@ -1810,13 +1383,6 @@
   "payInvalidAmount": "Virheellinen määrä",
   "payFeeTooHigh": "Kulu on poikkeuksellisen korkea",
   "payConfirmHighFee": "Tämän maksun kulu on {percentage}% summasta. Jatketaanko?",
-  "@payConfirmHighFee": {
-    "placeholders": {
-      "percentage": {
-        "type": "String"
-      }
-    }
-  },
   "payNoRouteFound": "Reittiä ei löydy tälle maksulle",
   "payRoutingFailed": "Reititys epäonnistui",
   "payChannelBalanceLow": "Kanavan saldo liian pieni",
@@ -1831,13 +1397,6 @@
   "payShareInvoice": "Jaa lasku",
   "payInvoiceCopied": "Lasku kopioitu leikepöydälle",
   "payExpiresIn": "Vanhenee {time}",
-  "@payExpiresIn": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "payExpired": "Vanhentunut",
   "payLightningFee": "Lightning-kulu",
   "payOnChainFee": "On-chain-kulu",
@@ -1847,29 +1406,8 @@
   "payTotalFees": "Kokonaiskulut",
   "payFeeBreakdown": "Kuluerittely",
   "payMinimumAmount": "Minimi: {amount}",
-  "@payMinimumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "payMaximumAmount": "Maksimi: {amount}",
-  "@payMaximumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "payAvailableBalance": "Saatavilla: {amount}",
-  "@payAvailableBalance": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "payRequiresSwap": "Tämä maksu vaatii swapin",
   "paySwapInProgress": "Swap on käynnissä...",
   "paySwapCompleted": "Swap on suoritettu",
@@ -1890,21 +1428,7 @@
   "payCustomFee": "Mukautettu kulu",
   "payFeeRate": "Kulutaso",
   "paySatsPerByte": "{sats} sat/vB",
-  "@paySatsPerByte": {
-    "placeholders": {
-      "sats": {
-        "type": "String"
-      }
-    }
-  },
   "payEstimatedConfirmation": "Arvioitu vahvistusaika: {time}",
-  "@payEstimatedConfirmation": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "payReplaceByFee": "Replace-by-Fee (RBF)",
   "payEnableRBF": "Ota RBF käyttöön",
   "payRBFEnabled": "RBF käytössä",
@@ -1917,13 +1441,6 @@
   "payAddRecipient": "Lisää vastaanottaja",
   "payRemoveRecipient": "Poista vastaanottaja",
   "payRecipientCount": "{count} vastaanottajaa",
-  "@payRecipientCount": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "payTotalAmount": "Kokonaismäärä",
   "paySendAll": "Lähetä kaikki",
   "paySendMax": "Maksimi",
@@ -1957,30 +1474,9 @@
   "sendCoinControl": "Kolikkohallinta",
   "sendSelectCoins": "Valitse kolikot",
   "sendSelectedCoins": "{count} kolikkoa valittu",
-  "@sendSelectedCoins": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendClearSelection": "Tyhjennä valinta",
   "sendCoinAmount": "Määrä: {amount}",
-  "@sendCoinAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendCoinConfirmations": "{count} vahvistusta",
-  "@sendCoinConfirmations": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "sendUnconfirmed": "Vahvistamaton",
   "sendFrozenCoin": "Jäädytetty",
   "sendFreezeCoin": "Jäädytä kolikko",
@@ -1990,21 +1486,7 @@
   "sendSwapDetails": "Vaihdon tiedot",
   "sendSwapAmount": "Vaihtomäärä",
   "sendSwapFeeEstimate": "Arvioitu vaihtokulu: {amount}",
-  "@sendSwapFeeEstimate": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sendSwapTimeEstimate": "Arvioitu aika: {time}",
-  "@sendSwapTimeEstimate": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "sendConfirmSwap": "Vahvista vaihto",
   "sendSwapCancelled": "Vaihto peruutettu",
   "sendSwapTimeout": "Vaihto aikakatkaistiin",
@@ -2012,13 +1494,6 @@
   "sendFeeRateTooLow": "Kulutaso liian alhainen",
   "sendFeeRateTooHigh": "Kulutaso vaikuttaa erittäin korkealta",
   "sendRecommendedFee": "Suositus: {rate} sat/vB",
-  "@sendRecommendedFee": {
-    "placeholders": {
-      "rate": {
-        "type": "String"
-      }
-    }
-  },
   "sendEconomyFee": "Taloudinen",
   "sendNormalFee": "Normaali",
   "sendFastFee": "Nopea",
@@ -2039,13 +1514,6 @@
   "sendOutputTooSmall": "Ulostulo alle dust-rajan",
   "sendScheduledPayment": "Ajastettu maksu",
   "sendScheduleFor": "Ajastettu ajalle {date}",
-  "@sendScheduleFor": {
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "sendSwapId": "Swap-ID",
   "sendSendAmount": "Lähetettävä määrä",
   "sendReceiveAmount": "Vastaanotettava määrä",
@@ -2075,13 +1543,6 @@
   "sendSignWithBitBox": "Allekirjoita BitBoxilla",
   "sendTransactionSignedLedger": "Transaktio allekirjoitettu onnistuneesti Ledgerillä",
   "sendHighFeeWarningDescription": "Kokonaiskulu on {feePercent}% lähettämästäsi määrästä",
-  "@sendHighFeeWarningDescription": {
-    "placeholders": {
-      "feePercent": {
-        "type": "String"
-      }
-    }
-  },
   "sendEnterAbsoluteFee": "Anna absoluuttinen kulu satoshissa",
   "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
   "sendErrorArkExperimentalOnly": "ARK-maksupyyntöjä on saatavilla vain kokeellisesta Ark-ominaisuudesta.",
@@ -2096,21 +1557,7 @@
   "sendErrorAmountBelowSwapLimitsBitcoin": "Harkitse Pikamaksun rahoittamista pienempiä maksuja varten.",
   "sendErrorAmountAboveSwapLimits": "Määrä ylittää swap-rajat",
   "sendErrorAmountBelowMinimum": "Määrä alle minimirajan: {minLimit} sat",
-  "@sendErrorAmountBelowMinimum": {
-    "placeholders": {
-      "minLimit": {
-        "type": "String"
-      }
-    }
-  },
   "sendErrorAmountAboveMaximum": "Määrä ylittää suurimman swap-rajan: {maxLimit} sat",
-  "@sendErrorAmountAboveMaximum": {
-    "placeholders": {
-      "maxLimit": {
-        "type": "String"
-      }
-    }
-  },
   "sendErrorSwapFeesNotLoaded": "Swap-kuluja ei ole ladattu",
   "sendErrorInsufficientFundsForFees": "Ei riittävästi varoja summan ja kulujen kattamiseen",
   "sendErrorBroadcastFailed": "Transaktion lähetys epäonnistui. Tarkista verkkoyhteytesi ja yritä uudelleen.",
@@ -2124,13 +1571,6 @@
   "sellAmount": "Määrä myytäväksi",
   "sellReceiveAmount": "Saat",
   "sellWalletBalance": "Saldo: {amount}",
-  "@sellWalletBalance": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sellPaymentMethod": "Maksutapa",
   "sellBankTransfer": "Pankkisiirto",
   "sellInteracTransfer": "Interac e-Transfer",
@@ -2150,41 +1590,13 @@
   "sellOrderFailed": "Myyntitilauksen lähetys epäonnistui",
   "sellInsufficientBalance": "Lompakon saldo ei riitä",
   "sellMinimumAmount": "Minimimyyntimäärä: {amount}",
-  "@sellMinimumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sellMaximumAmount": "Maksimi myyntimäärä: {amount}",
-  "@sellMaximumAmount": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sellNetworkError": "Verkkovirhe. Yritä uudelleen",
   "sellRateExpired": "Vaihtokurssi vanhentunut. Päivitän...",
   "sellUpdatingRate": "Päivitetään vaihtokurssia...",
   "sellCurrentRate": "Nykyinen kurssi",
   "sellRateValidFor": "Kurssi voimassa {seconds}s",
-  "@sellRateValidFor": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "sellEstimatedArrival": "Arvioitu saapuminen: {time}",
-  "@sellEstimatedArrival": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "sellTransactionFee": "Transaktiokulu",
   "sellServiceFee": "Palvelumaksu",
   "sellTotalFees": "Kokonaiskulut",
@@ -2196,31 +1608,10 @@
   "sellCompleteKYC": "Suorita KYC",
   "sellDailyLimitReached": "Päivittäinen myyntiraja saavutettu",
   "sellDailyLimit": "Päivittäinen raja: {amount}",
-  "@sellDailyLimit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "sellRemainingLimit": "Jäljellä tänään: {amount}",
-  "@sellRemainingLimit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyExpressWithdrawal": "Pikasiirto",
   "buyExpressWithdrawalDesc": "Vastaanota Bitcoin välittömästi maksun jälkeen",
   "buyExpressWithdrawalFee": "Pikakulu: {amount}",
-  "@buyExpressWithdrawalFee": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyStandardWithdrawal": "Tavallinen nosto",
   "buyStandardWithdrawalDesc": "Vastaanota Bitcoin maksun selvityttyä (1–3 päivää)",
   "buyKYCLevel": "KYC-taso",
@@ -2229,41 +1620,13 @@
   "buyKYCLevel3": "Taso 3 - Täysi",
   "buyUpgradeKYC": "Nosta KYC-tasoa",
   "buyLevel1Limit": "Taso 1 raja: {amount}",
-  "@buyLevel1Limit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyLevel2Limit": "Taso 2 raja: {amount}",
-  "@buyLevel2Limit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyLevel3Limit": "Taso 3 raja: {amount}",
-  "@buyLevel3Limit": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "buyVerificationRequired": "Vahvistus vaaditaan tätä summaa varten",
   "buyVerifyIdentity": "Vahvista henkilöllisyys",
   "buyVerificationInProgress": "Vahvistus käynnissä...",
   "buyVerificationComplete": "Vahvistus valmis",
   "buyVerificationFailed": "Vahvistus epäonnistui: {reason}",
-  "@buyVerificationFailed": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "buyDocumentUpload": "Lataa asiakirjat",
   "buyPhotoID": "Kuvallinen henkilötodistus",
   "buyProofOfAddress": "Osoitteen todistus",
@@ -2286,43 +1649,12 @@
   "receiveShareAddress": "Jaa osoite",
   "receiveShareInvoice": "Jaa lasku",
   "receiveInvoiceExpiry": "Lasku vanhenee {time}",
-  "@receiveInvoiceExpiry": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "receiveInvoiceExpired": "Lasku vanhentunut",
   "receiveAwaitingPayment": "Odotetaan maksua...",
   "receiveConfirming": "Vahvistetaan... ({count}/{required})",
-  "@receiveConfirming": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      },
-      "required": {
-        "type": "int"
-      }
-    }
-  },
   "receiveConfirmed": "Vahvistettu",
   "receiveGenerationFailed": "Generointi epäonnistui: {type}",
-  "@receiveGenerationFailed": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "receiveNetworkUnavailable": "{network} ei ole tällä hetkellä käytettävissä",
-  "@receiveNetworkUnavailable": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "receiveInsufficientInboundLiquidity": "Lightning-vastaanottokapasiteetti ei riitä",
   "receiveRequestInboundLiquidity": "Pyydä vastaanottokapasiteettia",
   "backupSettingsPhysicalBackup": "Fyysinen varmuuskopio",
@@ -2400,25 +1732,11 @@
   "backupWalletErrorSaveBackup": "Varmuuskopion tallennus epäonnistui",
   "backupWalletErrorGoogleDriveSave": "Tallennus Google Driveen epäonnistui",
   "testBackupWalletTitle": "Testaa {walletName}",
-  "@testBackupWalletTitle": {
-    "placeholders": {
-      "walletName": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupDefaultWallets": "Oletuslompakot",
   "testBackupConfirm": "Vahvista",
   "testBackupWriteDownPhrase": "Kirjoita siemenlauseen\nsanat oikeassa järjestyksessä",
   "testBackupStoreItSafe": "Säilytä se turvallisessa paikassa.",
   "testBackupLastBackupTest": "Viimeisin varmuuskopiointitesti: {timestamp}",
-  "@testBackupLastBackupTest": {
-    "placeholders": {
-      "timestamp": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupDoNotShare": "ÄLÄ JAA KENENKÄÄN KANSSA",
   "testBackupTranscribe": "Kirjoita ylös",
   "testBackupDigitalCopy": "Digitaalinen kopio",
@@ -2426,13 +1744,6 @@
   "testBackupNext": "Seuraava",
   "testBackupTapWordsInOrder": "Napauta siemenlauseen\nsanat oikeassa järjestyksessä",
   "testBackupWhatIsWordNumber": "Mikä on sana numero {number}?",
-  "@testBackupWhatIsWordNumber": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
   "testBackupAllWordsSelected": "Olet valinnut kaikki sanat",
   "testBackupVerify": "Vahvista",
   "testBackupPassphrase": "Suojaussana",
@@ -2448,13 +1759,6 @@
   "testBackupPhysicalBackupTag": "Luotettava (varaa aikaa)",
   "testBackupChooseVaultLocation": "Valitse holvin sijainti",
   "testBackupLastKnownVault": "Viimeksi tunnettu salattu holvi: {timestamp}",
-  "@testBackupLastKnownVault": {
-    "placeholders": {
-      "timestamp": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupRetrieveVaultDescription": "Testaa, että voit hakea salatun holvisi.",
   "testBackupGoogleDriveSignIn": "Sinun täytyy kirjautua Google Driveen",
   "testBackupGoogleDrivePermission": "Google pyytää jakamaan henkilökohtaisia tietoja tämän sovelluksen kanssa.",
@@ -2474,86 +1778,23 @@
   "testBackupErrorSelectAllWords": "Valitse kaikki sanat",
   "testBackupErrorIncorrectOrder": "Sanat väärässä järjestyksessä. Yritä uudelleen.",
   "testBackupErrorVerificationFailed": "Vahvistus epäonnistui: {error}",
-  "@testBackupErrorVerificationFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorFailedToFetch": "Varmuuskopion hakeminen epäonnistui: {error}",
-  "@testBackupErrorFailedToFetch": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorInvalidFile": "Virheellinen tiedoston sisältö",
   "testBackupErrorUnexpectedSuccess": "Odottamaton onnistuminen: varmuuskopion pitäisi vastata olemassa olevaa lompakkoa",
   "testBackupErrorWalletMismatch": "Varmuuskopio ei vastaa olemassa olevaa lompakkoa",
   "testBackupErrorWriteFailed": "Tallennus epäonnistui: {error}",
-  "@testBackupErrorWriteFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorTestFailed": "Varmuuskopion testaus epäonnistui: {error}",
-  "@testBackupErrorTestFailed": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorLoadWallets": "Lompakoiden lataus epäonnistui: {error}",
-  "@testBackupErrorLoadWallets": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "testBackupErrorLoadMnemonic": "Siemenlauseen lataus epäonnistui: {error}",
-  "@testBackupErrorLoadMnemonic": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveCancelButton": "Peruuta",
   "recoverbullGoogleDriveDeleteButton": "Poista",
   "recoverbullGoogleDriveDeleteConfirmation": "Haluatko varmasti poistaa tämän holvin varmuuskopion? Tätä toimintoa ei voi peruuttaa.",
   "recoverbullGoogleDriveDeleteVaultTitle": "Poista holvi",
   "recoverbullGoogleDriveErrorDisplay": "Virhe: {error}",
-  "@recoverbullGoogleDriveErrorDisplay": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullBalance": "Saldo: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Tarkistetaan yhteyttä RecoverBull-palveluun",
   "recoverbullConfirm": "Vahvista",
   "recoverbullConfirmInput": "Vahvista {inputType}",
-  "@recoverbullConfirmInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullConnected": "Yhdistetty",
   "recoverbullConnecting": "Yhdistetään",
   "recoverbullConnectingTor": "Tor-verkkoyhteys avainpalvelimeen avautuu.\nTämä voi kestää jopa minuutin.",
@@ -2563,37 +1804,9 @@
   "recoverbullDecryptVault": "Pura holvi",
   "recoverbullEncryptedVaultCreated": "Salattu holvi luotu!",
   "recoverbullEnterInput": "Syötä {inputType}",
-  "@recoverbullEnterInput": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterToDecrypt": "Syötä {inputType} purkaaksesi holvisi.",
-  "@recoverbullEnterToDecrypt": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterToTest": "Syötä {inputType} testataksesi holviasi.",
-  "@recoverbullEnterToTest": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterToView": "Syötä {inputType} nähdäksesi holviavaimesi.",
-  "@recoverbullEnterToView": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterVaultKeyInstead": "Syötä sen sijaan holviavain",
   "recoverbullErrorCheckStatusFailed": "Holvin tilan tarkistus epäonnistui",
   "recoverbullErrorConnectionFailed": "Yhteyden muodostaminen kohdeavainpalvelimeen epäonnistui. Yritä myöhemmin uudelleen!",
@@ -2607,13 +1820,6 @@
   "recoverbullErrorRecoveryFailed": "Holvin palautus epäonnistui",
   "recoverbullTorNotStarted": "Tor ei ole käynnissä",
   "recoverbullErrorRateLimited": "Kutsuja rajoitettu. Yritä uudelleen {retryIn} kuluttua",
-  "@recoverbullErrorRateLimited": {
-    "placeholders": {
-      "retryIn": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullErrorUnexpected": "Odottamaton virhe, katso lokit",
   "recoverbullUnexpectedError": "Odottamaton virhe",
   "recoverbullErrorSelectVault": "Holvin valinta epäonnistui",
@@ -2628,13 +1834,6 @@
   "recoverbullKeyServer": "Avainpalvelin ",
   "recoverbullLookingForBalance": "Etsitään saldoa ja transaktioita…",
   "recoverbullMemorizeWarning": "Sinun on muistettava tämä {inputType} palauttaaksesi pääsyn lompakkoosi. Sen on oltava vähintään 6 numeroa. Jos menetät tämän {inputType}, et voi palauttaa varmuuskopioasi.",
-  "@recoverbullMemorizeWarning": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullPassword": "Salasana",
   "recoverbullPasswordMismatch": "Salasanat eivät täsmää",
   "recoverbullPasswordRequired": "Salasana on pakollinen",
@@ -2643,21 +1842,7 @@
   "recoverbullPIN": "PIN",
   "recoverbullPleaseWait": "Odota hetki, kun luomme suojattua yhteyttä...",
   "recoverbullReenterConfirm": "Syötä {inputType} uudelleen vahvistaaksesi.",
-  "@recoverbullReenterConfirm": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullReenterRequired": "Syötä {inputType} uudelleen",
-  "@recoverbullReenterRequired": {
-    "placeholders": {
-      "inputType": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullGoogleDriveErrorDeleteFailed": "Holvin poistaminen Google Drivesta epäonnistui",
   "recoverbullGoogleDriveErrorExportFailed": "Holvin vienti Google Drivesta epäonnistui",
   "recoverbullGoogleDriveErrorFetchFailed": "Holvien hakeminen Google Drivesta epäonnistui",
@@ -2697,13 +1882,6 @@
   "recoverbullTestSuccessDescription": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
   "recoverbullTorNetwork": "Tor-verkko",
   "recoverbullTransactions": "Transaktioita: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Holvi luotu onnistuneesti",
   "recoverbullVaultImportedSuccess": "Holvisi tuotiin onnistuneesti",
   "recoverbullVaultKey": "Holviavain",
@@ -2714,21 +1892,7 @@
   "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
   "recoverbullRecoveryLoadingMessage": "Etsitään saldoa ja transaktioita…",
   "recoverbullRecoveryBalanceLabel": "Saldo: {amount}",
-  "@recoverbullRecoveryBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullRecoveryTransactionsLabel": "Transaktioita: {count}",
-  "@recoverbullRecoveryTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullRecoveryContinueButton": "Jatka",
   "recoverbullRecoveryErrorWalletExists": "Tämä lompakko on jo olemassa.",
   "recoverbullRecoveryErrorWalletMismatch": "Toinen oletuslompakko on jo olemassa. Voit asettaa vain yhden oletuslompakon.",
@@ -2741,13 +1905,6 @@
   "rbfFastest": "Nopein",
   "rbfEstimatedDelivery": "Arvioitu vahvistusviive ~ 10 minuuttia",
   "rbfFeeRate": "Kulutaso: {rate} sat/vbyte",
-  "@rbfFeeRate": {
-    "placeholders": {
-      "rate": {
-        "type": "String"
-      }
-    }
-  },
   "rbfCustomFee": "Mukautettu kulu",
   "rbfSatsPerVbyte": "sats/vB",
   "rbfErrorNoFeeRate": "Valitse kulutaso",
@@ -2760,25 +1917,8 @@
   "psbtFlowInstructions": "Ohjeet",
   "psbtFlowDone": "Valmis",
   "psbtFlowError": "Virhe: {error}",
-  "@psbtFlowError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowNoPartsToDisplay": "Ei osia näytettäväksi",
   "psbtFlowPartProgress": "Osa {current}/{total}",
-  "@psbtFlowPartProgress": {
-    "placeholders": {
-      "current": {
-        "type": "String"
-      },
-      "total": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowKruxTitle": "Krux-ohjeet",
   "psbtFlowKeystoneTitle": "Keystone-ohjeet",
   "psbtFlowPassportTitle": "Foundation Passport -ohjeet",
@@ -2787,21 +1927,7 @@
   "psbtFlowColdcardTitle": "Coldcard Q -ohjeet",
   "psbtFlowJadeTitle": "Blockstream Jade PSBT -ohjeet",
   "psbtFlowLoginToDevice": "Kirjaudu {device}-laitteeseesi",
-  "@psbtFlowLoginToDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTurnOnDevice": "Käynnistä {device}-laitteesi",
-  "@psbtFlowTurnOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowAddPassphrase": "Lisää salasanalause, jos sinulla on (valinnainen)",
   "psbtFlowClickScan": "Valitse Skannaa",
   "psbtFlowClickSign": "Valitse Allekirjoita",
@@ -2818,46 +1944,11 @@
   "psbtFlowHoldSteady": "Pidä QR-koodi vakaana ja keskellä",
   "psbtFlowMoveCloserFurther": "Kokeile siirtää laitetta lähemmäs tai kauemmas",
   "psbtFlowReviewTransaction": "Kun transaktio on tuotu {device}-laitteeseesi, tarkista vastaanottajan osoite ja määrä.",
-  "@psbtFlowReviewTransaction": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowSelectSeed": "Kun transaktio on tuotu {device}-laitteeseesi, valitse siemen, jolla haluat allekirjoittaa.",
-  "@psbtFlowSelectSeed": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowSignTransactionOnDevice": "Paina painikkeita allekirjoittaaksesi transaktion {device}-laitteellasi.",
-  "@psbtFlowSignTransactionOnDevice": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowDeviceShowsQr": "{device} näyttää sitten oman QR-koodinsa.",
-  "@psbtFlowDeviceShowsQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowClickDone": "Valitse \"Valmis\" Bull Bitcoin -lompakossa.",
   "psbtFlowScanDeviceQr": "Bull Bitcoin -lompakko pyytää sinua skannaamaan {device}-laitteen QR-koodin. Skannaa se.",
-  "@psbtFlowScanDeviceQr": {
-    "placeholders": {
-      "device": {
-        "type": "String"
-      }
-    }
-  },
   "psbtFlowTransactionImported": "Transaktio tuodaan Bull Bitcoin -lompakkoon.",
   "psbtFlowReadyToBroadcast": "Se on nyt valmis lähetettäväksi! Kun valitset Lähetä, transaktio julkaistaan Bitcoin-verkossa ja varat lähetetään.",
   "hwConnectTitle": "Yhdistä laitteistolompakko",
@@ -2996,40 +2087,12 @@
   "importMnemonicEmpty": "Tyhjä",
   "importMnemonicHasBalance": "Sisältää saldoa",
   "importMnemonicTransactions": "{count} transaktiota",
-  "@importMnemonicTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "importMnemonicBalance": "Saldo: {amount}",
-  "@importMnemonicBalance": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicImport": "Tuo",
   "importMnemonicImporting": "Tuodaan...",
   "importMnemonicSelectType": "Valitse tuotava lompakkotyyppi",
   "importMnemonicBalanceLabel": "Saldo: {amount}",
-  "@importMnemonicBalanceLabel": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
   "importMnemonicTransactionsLabel": "Transaktioita: {count}",
-  "@importMnemonicTransactionsLabel": {
-    "placeholders": {
-      "count": {
-        "type": "String"
-      }
-    }
-  },
   "importWatchOnlyTitle": "Tuo watch-only -lompakko",
   "importWatchOnlyPasteHint": "Liitä xpub, ypub, zpub tai descriptor",
   "importWatchOnlyXpub": "xpub",
@@ -3062,13 +2125,6 @@
   "bip85Mnemonic": "Siemenlause",
   "bip85Hex": "HEX",
   "bip85Index": "Indeksi: {index}",
-  "@bip85Index": {
-    "placeholders": {
-      "index": {
-        "type": "int"
-      }
-    }
-  },
   "bip329LabelsTitle": "BIP329-tunnisteet",
   "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
   "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",
@@ -3077,13 +2133,6 @@
   "bip329LabelsExportSuccess": "Tunnisteet viety onnistuneesti",
   "bip329LabelsImportSuccessSingular": "1 tunniste tuotu",
   "bip329LabelsImportSuccessPlural": "{count} tunnistetta tuotu",
-  "@bip329LabelsImportSuccessPlural": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "broadcastSignedTxTitle": "Lähetä transaktio",
   "broadcastSignedTxScanQR": "Skannaa laitteistolompakon QR-koodi",
   "broadcastSignedTxReviewTransaction": "Tarkista transaktio",
@@ -3105,21 +2154,7 @@
   "addressViewCopyAddress": "Kopioi osoite",
   "addressViewShowQR": "Näytä QR-koodi",
   "importQrDeviceTitle": "Yhdistä {deviceName}",
-  "@importQrDeviceTitle": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceScanPrompt": "Skannaa QR-koodi laitteestasi ({deviceName})",
-  "@importQrDeviceScanPrompt": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "importQrDeviceScanning": "Skannataan...",
   "importQrDeviceImporting": "Tuodaan lompakkoa...",
   "importQrDeviceSuccess": "Lompakko tuotu onnistuneesti",
@@ -3252,19 +2287,6 @@
   "dcaAddressLightning": "Lightning-osoite",
   "dcaAddressLiquid": "Liquid-osoite",
   "dcaBuyingMessage": "Ostat {amount} joka {frequency} verkossa {network}, niin kauan kuin tililläsi on varoja.",
-  "@dcaBuyingMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeAuthLoginFailed": "Kirjautuminen epäonnistui",
   "exchangeAuthErrorMessage": "Tapahtui virhe. Yritä kirjautua uudelleen.",
   "exchangeAuthOk": "OK",
@@ -3289,13 +2311,6 @@
   "withdrawConfirmCard": "Kortti",
   "withdrawConfirmButton": "Vahvista nosto",
   "withdrawConfirmError": "Virhe: {error}",
-  "@withdrawConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "fundExchangeFundAccount": "Talletus",
   "fundExchangeSelectCountry": "Valitse maa ja maksutapa",
   "fundExchangeSpeiTransfer": "SPEI-siirto",
@@ -3319,13 +2334,6 @@
   "dcaConfirmAmount": "Määrä",
   "dcaConfirmPaymentMethod": "Maksutapa",
   "dcaConfirmPaymentBalance": "{currency}-saldo",
-  "@dcaConfirmPaymentBalance": {
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmOrderType": "Toimeksiantotyyppi",
   "dcaConfirmOrderTypeValue": "Toistuva osto",
   "dcaConfirmNetwork": "Verkko",
@@ -3334,13 +2342,6 @@
   "dcaConfirmNetworkLiquid": "Liquid",
   "dcaConfirmLightningAddress": "Lightning-osoite",
   "dcaConfirmError": "Jokin meni pieleen: {error}",
-  "@dcaConfirmError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "dcaConfirmContinue": "Jatka",
   "buyInputTitle": "Osta Bitcoinia",
   "buyInputMinAmountError": "Sinun tulee ostaa vähintään",
@@ -3418,13 +2419,6 @@
   "autoswapDefaultWalletLabel": "Bitcoin-lompakko",
   "autoswapSave": "Tallenna",
   "autoswapSaveError": "Asetusten tallennus epäonnistui: {error}",
-  "@autoswapSaveError": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTitle": "Electrum-palvelinasetukset",
   "electrumNetworkBitcoin": "Bitcoin",
   "electrumNetworkLiquid": "Liquid",
@@ -3432,16 +2426,6 @@
   "electrumAddCustomServer": "Lisää oma palvelin",
   "electrumCloseTooltip": "Sulje",
   "electrumServerUrlHint": "{network} {environment} -palvelimen URL",
-  "@electrumServerUrlHint": {
-    "placeholders": {
-      "network": {
-        "type": "String"
-      },
-      "environment": {
-        "type": "String"
-      }
-    }
-  },
   "electrumMainnet": "Mainnet",
   "electrumTestnet": "Testnet",
   "electrumEmptyFieldError": "Tämä kenttä ei voi olla tyhjä",
@@ -3460,60 +2444,15 @@
   "electrumInvalidNumberError": "Anna kelvollinen numero",
   "electrumStopGapNegativeError": "Stop Gap ei voi olla negatiivinen",
   "electrumStopGapTooHighError": "Stop Gap vaikuttaa liian suurelta. (Enintään {maxStopGap})",
-  "@electrumStopGapTooHighError": {
-    "placeholders": {
-      "maxStopGap": {
-        "type": "String"
-      }
-    }
-  },
   "electrumTimeoutEmptyError": "Aikakatkaisu ei voi olla tyhjä",
   "electrumTimeoutPositiveError": "Aikakatkaisun on oltava positiivinen",
   "electrumTimeoutTooHighError": "Aikakatkaisu vaikuttaa liian suurelta. (Enintään {maxTimeout} sekuntia)",
-  "@electrumTimeoutTooHighError": {
-    "placeholders": {
-      "maxTimeout": {
-        "type": "String"
-      }
-    }
-  },
   "electrumRetryCountEmptyError": "Uusintayritysten määrä ei voi olla tyhjä",
   "electrumRetryCountNegativeError": "Uusintayritysten määrä ei voi olla negatiivinen",
   "electrumTimeoutWarning": "Aikakatkaisusi ({timeoutValue} sekuntia) on alempi kuin suositus ({recommended} sekuntia) tälle Stop Gap -arvolle.",
-  "@electrumTimeoutWarning": {
-    "placeholders": {
-      "timeoutValue": {
-        "type": "String"
-      },
-      "recommended": {
-        "type": "String"
-      }
-    }
-  },
   "electrumInvalidStopGapError": "Virheellinen Stop Gap -arvo: {value}",
-  "@electrumInvalidStopGapError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "electrumInvalidTimeoutError": "Virheellinen aikakatkaisu: {value}",
-  "@electrumInvalidTimeoutError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "electrumInvalidRetryError": "Virheellinen uusintayritysten määrä: {value}",
-  "@electrumInvalidRetryError": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "electrumSaveFailedError": "Lisäasetusten tallennus epäonnistui",
   "electrumUnknownError": "Tapahtui virhe",
   "electrumReset": "Palauta oletukset",
@@ -3521,13 +2460,6 @@
   "electrumDeleteServerTitle": "Poista oma palvelin",
   "electrumDeletePrivacyNotice": "Tietosuoja-ilmoitus:\n\nOman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi. Poistamalla viimeisen oman palvelimesi muodostat yhteyden BullBitcoin-palvelimeen.\n",
   "electrumDeleteConfirmation": "Haluatko varmasti poistaa tämän palvelimen?\n\n{serverUrl}",
-  "@electrumDeleteConfirmation": {
-    "placeholders": {
-      "serverUrl": {
-        "type": "String"
-      }
-    }
-  },
   "electrumCancel": "Peruuta",
   "electrumDelete": "Poista",
   "electrumDefaultServers": "Oletuspalvelimet",
@@ -3535,37 +2467,9 @@
   "electrumCustomServers": "Omat palvelimet",
   "electrumDragToReorder": "(Pitkä painallus, raahaa ja muuta prioriteettia)",
   "electrumLoadFailedError": "Palvelinten lataus epäonnistui{reason}",
-  "@electrumLoadFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "electrumSavePriorityFailedError": "Palvelinten prioriteetin tallennus epäonnistui{reason}",
-  "@electrumSavePriorityFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "electrumAddFailedError": "Oman palvelimen lisääminen epäonnistui{reason}",
-  "@electrumAddFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "electrumDeleteFailedError": "Oman palvelimen poistaminen epäonnistui{reason}",
-  "@electrumDeleteFailedError": {
-    "placeholders": {
-      "reason": {
-        "type": "String"
-      }
-    }
-  },
   "electrumServerAlreadyExists": "Tämä palvelin on jo olemassa",
   "electrumPrivacyNoticeTitle": "Tietosuoja-ilmoitus",
   "electrumPrivacyNoticeContent1": "Tietosuoja-ilmoitus: Oman solmun käyttäminen varmistaa, ettei kolmas osapuoli voi yhdistää IP-osoitettasi transaktioihisi.",
@@ -3595,82 +2499,19 @@
   "arkAboutNetwork": "Verkko",
   "arkAboutDust": "Dust",
   "arkAboutDustValue": "{dust} SATS",
-  "@arkAboutDustValue": {
-    "placeholders": {
-      "dust": {
-        "type": "int"
-      }
-    }
-  },
   "arkAboutSessionDuration": "Istunnon kesto",
   "arkAboutBoardingExitDelay": "Boarding-exit-viive",
   "arkAboutUnilateralExitDelay": "Yksipuolinen exit-viive",
   "arkAboutEsploraUrl": "Esplora-URL",
   "arkAboutCopy": "Kopioi",
   "arkAboutCopiedMessage": "{label} kopioitu leikepöydälle",
-  "@arkAboutCopiedMessage": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "arkAboutDurationSeconds": "{seconds} sekuntia",
-  "@arkAboutDurationSeconds": {
-    "placeholders": {
-      "seconds": {
-        "type": "int"
-      }
-    }
-  },
   "arkAboutDurationMinute": "{minutes} minuutti",
-  "@arkAboutDurationMinute": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "arkAboutDurationMinutes": "{minutes} minuuttia",
-  "@arkAboutDurationMinutes": {
-    "placeholders": {
-      "minutes": {
-        "type": "int"
-      }
-    }
-  },
   "arkAboutDurationHour": "{hours} tunti",
-  "@arkAboutDurationHour": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "arkAboutDurationHours": "{hours} tuntia",
-  "@arkAboutDurationHours": {
-    "placeholders": {
-      "hours": {
-        "type": "int"
-      }
-    }
-  },
   "arkAboutDurationDay": "{days} päivä",
-  "@arkAboutDurationDay": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "arkAboutDurationDays": "{days} päivää",
-  "@arkAboutDurationDays": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "arkSendRecipientTitle": "Lähetä vastaanottajalle",
   "arkSendRecipientError": "Anna vastaanottaja",
   "arkSendAmountTitle": "Syötä määrä",
@@ -3684,22 +2525,8 @@
   "arkAboutHide": "Piilota",
   "arkContinueButton": "Jatka",
   "addressViewErrorLoadingAddresses": "Osoitteiden lataus epäonnistui: {error}",
-  "@addressViewErrorLoadingAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewNoAddressesFound": "Osoitteita ei löytynyt",
   "addressViewErrorLoadingMoreAddresses": "Lisää osoitteita ladattaessa tapahtui virhe: {error}",
-  "@addressViewErrorLoadingMoreAddresses": {
-    "placeholders": {
-      "error": {
-        "type": "String"
-      }
-    }
-  },
   "addressViewChangeAddressesComingSoon": "Vaihtoraha-osoitteet tulossa pian",
   "addressViewChangeAddressesDescription": "Näytä lompakon vaihtoraha-osoitteet",
   "appStartupErrorTitle": "Käynnistysvirhe",
@@ -3728,21 +2555,7 @@
   "ledgerConnectTitle": "Yhdistä Ledger-laitteesi",
   "ledgerScanningTitle": "Etsitään laitteita",
   "ledgerConnectingMessage": "Yhdistetään laitteeseen {deviceName}",
-  "@ledgerConnectingMessage": {
-    "placeholders": {
-      "deviceName": {
-        "type": "String"
-      }
-    }
-  },
   "ledgerActionFailedMessage": "{action} epäonnistui",
-  "@ledgerActionFailedMessage": {
-    "placeholders": {
-      "action": {
-        "type": "String"
-      }
-    }
-  },
   "ledgerInstructionsIos": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä.",
   "ledgerInstructionsAndroidUsb": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja liitä laite USB-kaapelilla.",
   "ledgerInstructionsAndroidDual": "Varmista, että Ledger on avattu, Bitcoin-sovellus on käynnissä ja Bluetooth on käytössä tai liitä laite USB-kaapelilla.",
@@ -3827,33 +2640,7 @@
   "exchangeDcaAddressLabelLightning": "Lightning-osoite",
   "exchangeDcaAddressLabelLiquid": "Liquid-osoite",
   "exchangeDcaSummaryMessage": "Ostat {amount} joka {frequency} verkossa {network} niin kauan kuin tililläsi on varoja.",
-  "@exchangeDcaSummaryMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String",
-        "description": "The amount being purchased (e.g., '$100 CAD')"
-      },
-      "frequency": {
-        "type": "String"
-      },
-      "network": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeDcaAddressDisplay": "{addressLabel}: {address}",
-  "@exchangeDcaAddressDisplay": {
-    "placeholders": {
-      "addressLabel": {
-        "type": "String",
-        "description": "The address label (e.g., 'Bitcoin address')"
-      },
-      "address": {
-        "type": "String",
-        "description": "The actual address"
-      }
-    }
-  },
   "exchangeCurrencyDropdownTitle": "Valitse valuutta",
   "exchangeCurrencyDropdownValidation": "Valitse valuutta",
   "exchangeKycLevelLight": "Kevyt",
@@ -3870,58 +2657,18 @@
   "sellKycPendingTitle": "KYC-vahvistus kesken",
   "sellKycPendingDescription": "Sinun on ensin suoritettava henkilöllisyyden varmistus",
   "sellErrorPrepareTransaction": "Tapahtuman valmistelu epäonnistui: {error}",
-  "@sellErrorPrepareTransaction": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "sellErrorNoWalletSelected": "Maksuun ei ole valittu lompakkoa",
   "sellErrorFeesNotCalculated": "Transaktio kuluja ei laskettu. Yritä uudelleen.",
   "sellErrorUnexpectedOrderType": "Odotettiin SellOrder-pyyntöä, mutta vastaanotettiin eri tyyppinen pyyntö",
   "sellErrorLoadUtxos": "UTXOjen lataus epäonnistui: {error}",
-  "@sellErrorLoadUtxos": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "sellErrorRecalculateFees": "Kulujen uudelleenlaskenta epäonnistui: {error}",
-  "@sellErrorRecalculateFees": {
-    "placeholders": {
-      "error": {
-        "type": "String",
-        "description": "The error message"
-      }
-    }
-  },
   "sellLoadingGeneric": "Ladataan...",
   "allSeedViewTitle": "Näytä siemenlauseet",
   "allSeedViewLoadingMessage": "Tämä voi kestää hetken, jos käytössä on paljon siemenlauseita.",
   "allSeedViewNoSeedsFound": "Siemenlauseita ei löytynyt.",
   "allSeedViewShowSeedsButton": "Näytä siemenlauseet",
   "allSeedViewExistingWallets": "Nykyiset lompakot ({count})",
-  "@allSeedViewExistingWallets": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "allSeedViewOldWallets": "Vanhat lompakot ({count})",
-  "@allSeedViewOldWallets": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "format": "decimalPattern"
-      }
-    }
-  },
   "allSeedViewSecurityWarningTitle": "Turvavaroitus",
   "allSeedViewSecurityWarningMessage": "Siemenlauseiden näyttäminen on turvallisuusriski. Kuka tahansa, joka näkee siemenlauseesi, voi käyttää varojasi. Varmista, että olet yksityisessä tilassa eikä kukaan näe näyttöäsi.",
   "allSeedViewIUnderstandButton": "Ymmärrän",
@@ -3932,13 +2679,6 @@
   "delete": "Poista",
   "statusCheckTitle": "Palvelun tila",
   "statusCheckLastChecked": "Viimeksi tarkistettu: {time}",
-  "@statusCheckLastChecked": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "statusCheckOnline": "Käytössä",
   "statusCheckOffline": "Poissa käytöstä",
   "statusCheckUnknown": "Tuntematon",
@@ -3946,13 +2686,6 @@
   "torSettingsEnableProxy": "Ota Tor-välityspalvelin käyttöön",
   "torSettingsProxyPort": "Tor-välityspalvelimen portti",
   "torSettingsPortDisplay": "Portti: {port}",
-  "@torSettingsPortDisplay": {
-    "placeholders": {
-      "port": {
-        "type": "int"
-      }
-    }
-  },
   "torSettingsPortNumber": "Porttinumero",
   "torSettingsPortHint": "9050",
   "torSettingsPortHelper": "Orbotin oletusportti: 9050",
@@ -3979,19 +2712,6 @@
   "withdrawOwnershipOtherAccount": "Tämä on jonkun toisen tili",
   "walletAutoTransferBlockedTitle": "Automaattinen siirto estetty",
   "walletAutoTransferBlockedMessage": "Yritetään siirtää {amount} BTC. Nykyinen kulu olisi {currentFee}% siirtosummasta ja maksukynnys on asetettu arvoon {thresholdFee}%",
-  "@walletAutoTransferBlockedMessage": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "currentFee": {
-        "type": "String"
-      },
-      "thresholdFee": {
-        "type": "String"
-      }
-    }
-  },
   "walletAutoTransferBlockButton": "Estä",
   "walletAutoTransferAllowButton": "Salli",
   "navigationTabWallet": "Lompakko",
@@ -4038,38 +2758,10 @@
   "systemLabelExchangeBuy": "Osta",
   "systemLabelExchangeSell": "Myy",
   "labelErrorNotFound": "Tunnistetta \"{label}\" ei löytynyt.",
-  "@labelErrorNotFound": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "labelErrorUnsupportedType": "Tunnistetyyppiä {type} ei tueta",
-  "@labelErrorUnsupportedType": {
-    "placeholders": {
-      "type": {
-        "type": "String"
-      }
-    }
-  },
   "labelErrorUnexpected": "Odottamaton virhe: {message}",
-  "@labelErrorUnexpected": {
-    "placeholders": {
-      "message": {
-        "type": "String"
-      }
-    }
-  },
   "labelErrorSystemCannotDelete": "Järjestelmätunnisteita ei voi poistaa.",
   "labelDeleteFailed": "Tunnisteen \"{label}\" poistaminen epäonnistui. Yritä uudelleen.",
-  "@labelDeleteFailed": {
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "coreSwapsStatusPending": "Odottaa",
   "coreSwapsStatusInProgress": "Käynnissä",
   "coreSwapsStatusCompleted": "Valmis",
@@ -4131,209 +2823,49 @@
   "logoutConfirmationCancel": "Peruuta",
   "logoutConfirmationLogout": "Kirjaudu ulos",
   "recipientsSearchHint": "Etsi vastaanottajia nimen tai tunnisteen perusteella.",
-  "@recipientsSearchHint": {
-    "description": "Hint text for recipients search field"
-  },
   "autoswapInfoSettingsButton": "Muokkaa asetuksia.",
-  "@autoswapInfoSettingsButton": {
-    "description": "Secondary button to navigate to autoswap settings"
-  },
   "autoswapInfoRemindLater": "Muistuta minua myöhemmin.",
-  "@autoswapInfoRemindLater": {
-    "description": "Tertiary action to close sheet without dismissing"
-  },
   "autoswapInfoTitle": "Autoswap on aktiivinen.",
-  "@autoswapInfoTitle": {
-    "description": "Title for autoswap information bottom sheet"
-  },
   "autoswapInfoDismissButton": "Selvä, älä näytä uudelleen.",
-  "@autoswapInfoDismissButton": {
-    "description": "Primary button to dismiss autoswap info permanently"
-  },
   "exchangeSettingsRecipientsTitle": "Vastaanottajat",
-  "@exchangeSettingsRecipientsTitle": {
-    "description": "Title for the recipients button in exchange settings"
-  },
   "exchangeSettingsTransactionsTitle": "Transaktiot",
-  "@exchangeSettingsTransactionsTitle": {
-    "description": "Title for the transactions button in exchange settings"
-  },
   "exchangeFileUploadDocumentsTitle": "Lataa asiakirjat",
-  "@exchangeFileUploadDocumentsTitle": {
-    "description": "Title for the upload documents section"
-  },
   "exchangeStatisticsTotalAmount": "Kokonaismäärä",
-  "@exchangeStatisticsTotalAmount": {
-    "description": "Label for total amount statistic"
-  },
   "retry": "Yritä uudelleen",
-  "@retry": {
-    "description": "Generic retry button label"
-  },
   "exchangeFileUploadSuccess": "Tiedosto ladattu onnistuneesti",
-  "@exchangeFileUploadSuccess": {
-    "description": "Success message when file is uploaded successfully"
-  },
   "exchangeAppSettingsEmailNotificationsLabel": "Sähköpostiilmoitukset",
-  "@exchangeAppSettingsEmailNotificationsLabel": {
-    "description": "Label for email notifications toggle in exchange app settings"
-  },
   "exchangeAppSettingsEmailNotificationsDescription": "Saat sähköposti-ilmoituksia tilauksista ja tilipäivityksistä",
-  "@exchangeAppSettingsEmailNotificationsDescription": {
-    "description": "Description for email notifications toggle in exchange app settings"
-  },
   "exchangeBitcoinWalletsSaveSuccess": "Wallet-osoite tallennettu onnistuneesti",
-  "@exchangeBitcoinWalletsSaveSuccess": {
-    "description": "Success message when wallet address is saved"
-  },
   "exchangeBitcoinWalletsDescription": "Aseta oletuslompakko-osoitteet automaattisille Bitcoin-poistoille.",
-  "@exchangeBitcoinWalletsDescription": {
-    "description": "Description text on the default bitcoin wallets screen"
-  },
   "exchangeFileUploadInstructionsWithParams": "Lataa {maxFiles}-tiedostot. Sallittuja muotoja: PDF, JPG, PNG, GIF, HEIC. Maksimitiedostokoko: 10 Mt per tiedosto.",
-  "@exchangeFileUploadInstructionsWithParams": {
-    "description": "Instructions for file upload with parameters",
-    "placeholders": {
-      "maxFiles": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeFileUploadNoFilesSelected": "Ei tiedostoja valittu",
-  "@exchangeFileUploadNoFilesSelected": {
-    "description": "Message when no files are selected for upload"
-  },
   "exchangeFileUploadSelectFilesHint": "Napauta \"Valitse Tiedostot\" valita asiakirjat",
-  "@exchangeFileUploadSelectFilesHint": {
-    "description": "Hint text for selecting files"
-  },
   "exchangeFileUploadSelectFiles": "Valitse tiedostot",
-  "@exchangeFileUploadSelectFiles": {
-    "description": "Button label to select files"
-  },
   "exchangeFileUploadAddMoreFiles": "Lisää tiedostoja",
-  "@exchangeFileUploadAddMoreFiles": {
-    "description": "Button label to add more files"
-  },
   "exchangeFileUploadUploading": "Lataaminen...",
-  "@exchangeFileUploadUploading": {
-    "description": "Loading text while uploading files"
-  },
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
-  "@exchangeFileUploadUploadCount": {
-    "description": "Button label showing number of files to upload",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeFileUploadClearAll": "Selkeä kaikki",
-  "@exchangeFileUploadClearAll": {
-    "description": "Button label to clear all files"
-  },
   "exchangeFileUploadAllSuccess": "Kaikki tiedostot ladattu onnistuneesti",
-  "@exchangeFileUploadAllSuccess": {
-    "description": "Success message when all files are uploaded"
-  },
   "exchangeFileUploadPartialSuccess": "{uploaded} tiedostot ladattu",
-  "@exchangeFileUploadPartialSuccess": {
-    "description": "Message when some files failed to upload",
-    "placeholders": {
-      "uploaded": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
   "exchangeFileUploadStatusReady": "Valmiina",
-  "@exchangeFileUploadStatusReady": {
-    "description": "Status badge when files can be uploaded"
-  },
   "exchangeFileUploadStatusInReview": "Review",
-  "@exchangeFileUploadStatusInReview": {
-    "description": "Status badge when files are under review"
-  },
   "exchangeFileUploadStatusAccepted": "Hyväksytty",
-  "@exchangeFileUploadStatusAccepted": {
-    "description": "Status badge when files have been accepted"
-  },
   "exchangeFileUploadStatusRejected": "Hylätty - Tap to re-upload",
-  "@exchangeFileUploadStatusRejected": {
-    "description": "Status badge when files have been rejected, with re-upload option"
-  },
   "exchangeFileUploadInReviewMessage": "Asiakirjat ovat parhaillaan tarkastelussa. Et voi ladata lisää tiedostoja, kunnes arvostelu on valmis.",
-  "@exchangeFileUploadInReviewMessage": {
-    "description": "Message shown when documents are under review"
-  },
   "exchangeFileUploadAcceptedMessage": "Asiakirjat on hyväksytty. Ylimääräisiä latauksia ei tarvita.",
-  "@exchangeFileUploadAcceptedMessage": {
-    "description": "Message shown when documents have been accepted"
-  },
   "exchangeStatisticsTitle": "Tilastot",
-  "@exchangeStatisticsTitle": {
-    "description": "Title for the statistics screen"
-  },
   "exchangeStatisticsNoData": "Ei tilastoja saatavilla",
-  "@exchangeStatisticsNoData": {
-    "description": "Message when no statistics are available"
-  },
   "exchangeStatisticsAsOf": "As of {date}",
-  "@exchangeStatisticsAsOf": {
-    "description": "Label showing when statistics were last updated",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeStatisticsOrderStats": "Tilaa tilastot",
-  "@exchangeStatisticsOrderStats": {
-    "description": "Title for order statistics section"
-  },
   "exchangeStatisticsBuySellRatio": "Osta/myyntisuhde",
-  "@exchangeStatisticsBuySellRatio": {
-    "description": "Label for buy/sell ratio statistic"
-  },
   "exchangeStatisticsBuyStats": "Osta tilastoja",
-  "@exchangeStatisticsBuyStats": {
-    "description": "Title for buy statistics section"
-  },
   "exchangeStatisticsSellStats": "Myy tilastoja",
-  "@exchangeStatisticsSellStats": {
-    "description": "Title for sell statistics section"
-  },
   "exchangeStatisticsVolume": "Volume",
-  "@exchangeStatisticsVolume": {
-    "description": "Label for volume statistic"
-  },
   "exchangeStatisticsTradeCount": "Kauppa Count",
-  "@exchangeStatisticsTradeCount": {
-    "description": "Label for trade count statistic"
-  },
   "exchangeStatisticsAveragePrice": "Keskimääräinen hinta",
-  "@exchangeStatisticsAveragePrice": {
-    "description": "Label for average price statistic"
-  },
   "exchangeStatisticsTotalVolume": "Total Trading Volume",
-  "@exchangeStatisticsTotalVolume": {
-    "description": "Label for total trading volume statistic"
-  },
   "exchangeStatisticsBillerStats": "Billerin tilastot",
-  "@exchangeStatisticsBillerStats": {
-    "description": "Title for biller statistics section"
-  },
   "exchangeStatisticsCurrency": "Valuutta: {currency}",
-  "@exchangeStatisticsCurrency": {
-    "description": "Label showing currency for biller stats",
-    "placeholders": {
-      "currency": {
-        "type": "String"
-      }
-    }
-  },
   "mempoolServerStatusOnline": "Verkossa",
   "mempoolServerStatusOffline": "Ei verkossa",
   "mempoolServerStatusChecking": "Tarkistetaan...",
@@ -4368,91 +2900,25 @@
   "autoswapActiveCardTitle": "Autoswap on aktiivinen",
   "autoswapInfoConsentMessage": "Autoswap on tällä hetkellä käytössä, mutta se ei käynnisty ennen kuin annat suostumuksesi. Haluatko pitää sen päällä?",
   "settingsErrorReportingTitle": "Virheraportointi",
-  "@settingsErrorReportingTitle": {
-    "description": "Title for error reporting setting in app settings"
-  },
   "errorReportingProgramTitle": "Virheraportoinnin ohjelma",
-  "@errorReportingProgramTitle": {
-    "description": "Title for the error reporting program explanation bottom sheet"
-  },
   "errorReportingProgramDescription": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.\n\nKun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista. Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.\n\nEmme jaa näitä tietoja kolmansien osapuolten kanssa. Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
   "errorReportingAcceptButton": "Hyväksy",
-  "@errorReportingAcceptButton": {
-    "description": "Button to accept error reporting"
-  },
   "errorReportingCancelButton": "Peruuta",
-  "@errorReportingCancelButton": {
-    "description": "Button to cancel error reporting"
-  },
   "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
-  "@errorReportingRestartSnackbar": {
-    "description": "Snackbar message when error reporting setting is changed"
-  },
   "appInitErrorTitle": "Sovelluksen käynnistys epäonnistui",
-  "@appInitErrorTitle": {
-    "description": "Title shown on the fatal init error screen in main.dart"
-  },
   "appInitErrorMessage": "Käynnistyksen aikana tapahtui virhe. Käynnistä sovellus uudelleen. Jos ongelma jatkuu, jaa lokitiedostosi ja ota yhteyttä tukeen.",
-  "@appInitErrorMessage": {
-    "description": "Body text on the fatal init error screen in main.dart"
-  },
   "appInitErrorShareLogsButton": "Jaa lokit",
-  "@appInitErrorShareLogsButton": {
-    "description": "Button label to share logs on the fatal init error screen"
-  },
   "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
-  "@backupWarningTitle": {
-    "description": "Title for the backup warning bottom sheet"
-  },
   "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "KYLLÄ",
-  "@backupWarningBackupNow": {
-    "description": "Button to navigate to backup options"
-  },
   "backupWarningBackupLater": "EI, YMMÄRRÄN RISKIN",
-  "@backupWarningBackupLater": {
-    "description": "Button to dismiss backup warning"
-  },
   "settingsAccountSettingsTitle": "Account Settings",
-  "@settingsAccountSettingsTitle": {
-    "description": "Title for the account settings screen (shown to non-superusers)"
-  },
   "exchangeSettingsDeleteAccountTitle": "Delete Account",
-  "@exchangeSettingsDeleteAccountTitle": {
-    "description": "Label for the delete account option in exchange settings"
-  },
   "deleteAccountConfirmationTitle": "Delete Account",
-  "@deleteAccountConfirmationTitle": {
-    "description": "Title for the delete account confirmation bottom sheet"
-  },
   "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
-  "@deleteAccountConfirmationDescription": {
-    "description": "Description for the delete account confirmation bottom sheet"
-  },
   "deleteAccountConfirmationCancel": "Cancel",
-  "@deleteAccountConfirmationCancel": {
-    "description": "Cancel button label for delete account confirmation"
-  },
   "deleteAccountConfirmationDelete": "Delete Account",
-  "@deleteAccountConfirmationDelete": {
-    "description": "Delete button label for delete account confirmation"
-  },
   "deleteAccountSuccessTitle": "Account Deletion Requested",
-  "@deleteAccountSuccessTitle": {
-    "description": "Title for the delete account success bottom sheet"
-  },
   "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
-  "@deleteAccountSuccessDescription": {
-    "description": "Description for the delete account success bottom sheet"
-  },
-  "deleteAccountSuccessClose": "Close",
-  "@deleteAccountSuccessClose": {
-    "description": "Close button label for delete account success bottom sheet"
-  }
+  "deleteAccountSuccessClose": "Close"
 }
