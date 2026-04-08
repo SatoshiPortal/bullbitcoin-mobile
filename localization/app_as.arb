@@ -1,17 +1,17 @@
 {
-  "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
   "appInitErrorMessage": "আৰম্ভণিৰ সময়ত এটা ত্ৰুটি ঘটিছে। অনুগ্ৰহ কৰি এপটো পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, আপোনাৰ লগ শ্বেয়াৰ কৰক আৰু সহায়ৰ সৈতে যোগাযোগ কৰক।",
   "appInitErrorShareLogsButton": "লগ শ্বেয়াৰ কৰক",
-  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
-  "settingsGetHelpLabel": "সহায় লওক",
-  "exchangeSupportLoginChatRequired": "মানৱ সহায়তা পাবলৈ, আপুনি প্ৰথমে আপোনাৰ Bull Bitcoin একাউণ্টত লগ ইন কৰিব লাগিব। ই সম্পূৰ্ণ বিনামূলীয়া আৰু কোনো KYC প্ৰয়োজন নাই, কেৱল এটা ইমেইল ঠিকনা।",
-  "settingsAccountSettingsTitle": "Account Settings",
-  "exchangeSettingsDeleteAccountTitle": "Delete Account",
-  "deleteAccountConfirmationTitle": "Delete Account",
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
   "deleteAccountConfirmationCancel": "Cancel",
   "deleteAccountConfirmationDelete": "Delete Account",
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountSuccessClose": "Close",
   "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
-  "deleteAccountSuccessClose": "Close"
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "exchangeSupportLoginChatRequired": "মানৱ সহায়তা পাবলৈ, আপুনি প্ৰথমে আপোনাৰ Bull Bitcoin একাউণ্টত লগ ইন কৰিব লাগিব। ই সম্পূৰ্ণ বিনামূলীয়া আৰু কোনো KYC প্ৰয়োজন নাই, কেৱল এটা ইমেইল ঠিকনা।",
+  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsGetHelpLabel": "সহায় লওক"
 }
