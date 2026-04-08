@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
@@ -92,15 +91,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       }
 
       loadAnnouncements();
+    } on GetExchangeUserSummaryException catch (e) {
+      emit(state.copyWith(getUserSummaryException: e));
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      if (e is ApiKeyException) {
-        emit(state.copyWith(apiKeyException: e));
-        // Disconnect WebSocket if API key is invalid
-        disconnectWebSocket();
-      } else if (e is GetExchangeUserSummaryException) {
-        emit(state.copyWith(getUserSummaryException: e));
-      }
     }
   }
 
