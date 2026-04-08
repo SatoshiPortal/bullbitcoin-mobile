@@ -1,6 +1,6 @@
 {
   "translationWarningTitle": "Traduzioni generate dall'IA",
-  "translationWarningDescription": "La maggior parte delle traduzioni in questa app sono state generate utilizzando l'IA e potrebbero contenere imprecisioni. Se noti errori o desideri aiutare a migliorare le traduzioni, puoi contribuire attraverso la nostra piattaforma di traduzione comunitaria.",
+  "translationWarningDescription": "La maggior parte delle traduzioni in questa app sono state generate utilizzando l'IA e potrebbero contenere imprecisioni. Se noti errori o desideri aiutare a migliorare le traduzioni, puoi inviare una correzione sul nostro repository GitHub.",
   "translationWarningContributeButton": "Aiuta a migliorare le traduzioni",
   "translationWarningDismissButton": "Capito",
   "bitboxErrorMultipleDevicesFound": "Trovati più dispositivi BitBox. Assicurarsi che un solo dispositivo sia collegato.",

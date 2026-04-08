@@ -1,7 +1,7 @@
 {
   "@@locale": "fr",
   "translationWarningTitle": "Traductions générées par IA",
-  "translationWarningDescription": "La plupart des traductions de cette application ont été générées par IA et peuvent contenir des inexactitudes. Si vous remarquez des erreurs ou souhaitez aider à améliorer les traductions, vous pouvez contribuer via notre plateforme de traduction communautaire.",
+  "translationWarningDescription": "La plupart des traductions de cette application ont été générées par IA et peuvent contenir des inexactitudes. Si vous remarquez des erreurs ou souhaitez aider à améliorer les traductions, vous pouvez soumettre une correction sur notre dépôt GitHub.",
   "translationWarningContributeButton": "Aider à améliorer les traductions",
   "translationWarningDismissButton": "Compris",
   "durationSeconds": "{seconds} secondes",

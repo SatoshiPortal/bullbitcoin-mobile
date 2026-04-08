@@ -37,7 +37,7 @@
   },
   "translationWarningContributeButton": "Çevirileri Geliştirmeye Yardım",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "Swap ID",
   "@transactionLabelSwapId": {
@@ -941,7 +941,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "Bu uygulamadaki çevirilerin çoğu AI kullanıyor ve yanlışlıklar içerebilir. Herhangi bir hata fark ederseniz veya çevirileri geliştirmeye yardımcı olmak istiyorsanız, topluluğumuzun çeviri platformu aracılığıyla katkıda bulunabilirsiniz.",
+  "translationWarningDescription": "Bu uygulamadaki çevirilerin çoğu yapay zeka kullanılarak oluşturulmuştur ve hatalar içerebilir. Herhangi bir hata fark ederseniz veya çevirileri iyileştirmeye yardımcı olmak isterseniz, GitHub depomuzda bir düzeltme gönderebilirsiniz.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },

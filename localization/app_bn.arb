@@ -53,7 +53,7 @@
   },
   "translationWarningContributeButton": "অনুবাদ উন্নত করতে সাহায্য করুন",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "বদল আইডি",
   "@transactionLabelSwapId": {
@@ -941,7 +941,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "এই অ্যাপে বেশিরভাগ অনুবাদ এআই-ব্যবহার করে তৈরি এবং সেগুলোতেই ভুল থাকতে পারে। আপনি যদি কোনো ভুল দেখতে পান বা অনুবাদ উন্নত করতে চান, তাহলে আমাদের কমিউনিটি অনুবাদ প্ল্যাটফর্মের মাধ্যমে অংশগ্রহণ করতে পারেন।",
+  "translationWarningDescription": "এই অ্যাপের বেশিরভাগ অনুবাদ AI ব্যবহার করে তৈরি করা হয়েছে এবং এতে ভুল থাকতে পারে। আপনি যদি কোনো ত্রুটি লক্ষ্য করেন বা অনুবাদ উন্নত করতে সাহায্য করতে চান, আপনি আমাদের GitHub রিপোজিটরিতে একটি সংশোধন জমা দিতে পারেন।",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },

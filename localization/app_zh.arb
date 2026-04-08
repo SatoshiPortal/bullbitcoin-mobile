@@ -1,6 +1,6 @@
 {
   "translationWarningTitle": "AI生成的翻译",
-  "translationWarningDescription": "此应用程序中的大多数翻译都是使用AI生成的，可能存在不准确之处。如果您发现任何错误或想帮助改进翻译，可以通过我们的社区翻译平台进行贡献。",
+  "translationWarningDescription": "此应用中的大多数翻译是使用AI生成的，可能存在不准确之处。如果您发现任何错误或想帮助改进翻译，可以在我们的GitHub仓库中提交修复。",
   "translationWarningContributeButton": "帮助改进翻译",
   "translationWarningDismissButton": "知道了",
   "bitboxErrorMultipleDevicesFound": "发现多处Box装置。 请确保只有一个装置连接起来.",
