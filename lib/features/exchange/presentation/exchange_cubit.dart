@@ -72,9 +72,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> fetchUserSummary({bool force = false}) async {
     try {
-      emit(
-        state.copyWith(apiKeyException: null, getUserSummaryException: null),
-      );
+      emit(state.copyWith(getUserSummaryException: null));
 
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
