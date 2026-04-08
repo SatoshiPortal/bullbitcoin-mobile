@@ -15,7 +15,10 @@ class DriftLabelsRepositoryAdapter implements LabelsRepositoryPort {
     final companion = LabelMapper.newLabelEntityToCompanion(newLabel);
     final id = await _database.into(_database.labels).insert(
       companion,
-      mode: InsertMode.insertOrIgnore,
+      onConflict: DoUpdate(
+        (old) => companion,
+        target: [_database.labels.label, _database.labels.reference],
+      ),
     );
 
     return LabelEntity(
