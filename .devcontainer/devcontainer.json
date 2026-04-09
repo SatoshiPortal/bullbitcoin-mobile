@@ -1,17 +1,25 @@
 {
-    // time devcontainer up --workspace-folder ~/Repos/BULL --config ~/Repos/BULL/.devcontainer/devcontainer.json
-    "name": "${localWorkspaceFolderBasename}",
-    "build": {
-        "dockerfile": "../Dockerfile"
-    },
-    "remoteUser": "bull",
-    "shutdownAction": "stopContainer",
-    "runArgs": [
-        "--name",
-        "${localWorkspaceFolderBasename}",
-        "--hostname",
-        "mobile",
-        "--memory=8g"
-    ],
-    "postCreateCommand": "flutter config --no-analytics && dart --disable-analytics && cp -n .env.template .env"
+  "name": "${localWorkspaceFolderBasename}",
+  "build": {
+    "dockerfile": "../Dockerfile",
+  },
+  "remoteUser": "bull",
+  "shutdownAction": "stopContainer",
+  "runArgs": [
+    "--name",
+    "${localWorkspaceFolderBasename}",
+    "--hostname",
+    "mobile",
+    "--memory=8g",
+  ],
+
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/bull/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind,consistency=cached",
+  ],
+  "containerEnv": {
+    "SSH_AUTH_SOCK": "/ssh-agent",
+  },
+  "postCreateCommand": "flutter config --no-analytics && dart --disable-analytics && cp -n .env.template .env",
+  "postStartCommand": "sudo chown -R bull:bull /home/bull/.ssh && chmod 700 /home/bull/.ssh && chmod 600 /home/bull/.ssh/*",
 }
