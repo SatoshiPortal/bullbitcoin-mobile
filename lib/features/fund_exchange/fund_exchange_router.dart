@@ -158,8 +158,9 @@ class FundExchangeRouter {
               value: bloc,
               child: BlocListener<FundExchangeBloc, FundExchangeState>(
                 listenWhen: (previous, current) =>
-                    previous.shouldShowScamWarningConsent &&
-                    !current.shouldShowScamWarningConsent,
+                    previous.isSubmittingScamWarningConsent &&
+                    !current.isSubmittingScamWarningConsent &&
+                    current.userSummary?.hasConsentedScamWarning == true,
                 listener: (context, state) {
                   _goToFundingScreen(
                     context,
