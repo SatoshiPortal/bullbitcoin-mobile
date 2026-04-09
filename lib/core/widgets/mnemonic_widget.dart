@@ -82,7 +82,7 @@ class _MnemonicWidgetState extends State<MnemonicWidget> {
   }
 
   void updateMnemonic(({int index, String word}) value) {
-    words[value.index] = value.word;
+    words[value.index] = value.word.toLowerCase().trim();
     setState(() {});
   }
 

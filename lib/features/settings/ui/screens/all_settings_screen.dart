@@ -41,6 +41,12 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
 
+    final isSuperuser =
+        context.select(
+          (SettingsCubit cubit) => cubit.state.isSuperuser,
+        ) ??
+        false;
+
     final serviceStatusLoading = context.select(
       (ServiceStatusCubit cubit) => cubit.state.isLoading,
     );
@@ -59,17 +65,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
               children: [
                 SettingsEntryItem(
                   icon: Icons.currency_exchange,
-                  title: context.loc.settingsExchangeSettingsTitle,
+                  title: Platform.isIOS && !isSuperuser
+                      ? context.loc.settingsAccountSettingsTitle
+                      : context.loc.settingsExchangeSettingsTitle,
                   onTap: () {
                     if (Platform.isIOS) {
-                      final isSuperuser =
-                          context.read<SettingsCubit>().state.isSuperuser ??
-                          false;
                       if (isSuperuser) {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
+                        final notLoggedIn =
+                            context.read<ExchangeCubit>().state.notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -78,13 +81,19 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           );
                         }
                       } else {
-                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        final notLoggedIn =
+                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        if (notLoggedIn) {
+                          context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        } else {
+                          context.pushNamed(
+                            SettingsRoute.exchangeSettings.name,
+                          );
+                        }
                       }
                     } else {
-                      final notLoggedIn = context
-                          .read<ExchangeCubit>()
-                          .state
-                          .notLoggedIn;
+                      final notLoggedIn =
+                          context.read<ExchangeCubit>().state.notLoggedIn;
                       if (notLoggedIn) {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
@@ -196,11 +205,11 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         final notLoggedIn =
                             context.read<ExchangeCubit>().state.notLoggedIn;
                         if (notLoggedIn) {
-                          context.goNamed(
+                          context.pushNamed(
                             ExchangeRoute.exchangeLoginForSupport.name,
                           );
                         } else {
-                          context.goNamed(
+                          context.pushNamed(
                             ExchangeSupportChatRoute.supportChat.name,
                           );
                         }

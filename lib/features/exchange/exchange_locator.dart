@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecas
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -22,6 +23,8 @@ class ExchangeLocator {
         deleteExchangeApiKeyUsecase: locator.get<DeleteExchangeApiKeyUsecase>(),
         getAnnouncementsUsecase: locator.get<GetAnnouncementsUsecase>(),
         exchangeNotificationService: locator.get<ExchangeNotificationService>(),
+        sendSupportChatMessageUsecase:
+            locator.get<SendSupportChatMessageUsecase>(),
       ),
     );
   }

@@ -90,8 +90,17 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  bdk_flutter:
+  bdk_dart:
     dependency: "direct main"
+    description:
+      path: "."
+      ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
+      resolved-ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
+      url: "https://github.com/bitcoindevkit/bdk-dart"
+    source: git
+    version: "2.3.0-alpha.0"
+  bdk_flutter:
+    dependency: transitive
     description:
       path: "."
       ref: "3024b3452b4b0e5982d737f82ff461024a881ae7"
@@ -209,8 +218,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "5344da8a75b59e696856901ca5885bd6fe352269"
-      resolved-ref: "5344da8a75b59e696856901ca5885bd6fe352269"
+      ref: e09ab48e5d67db898279a33c4a3c71164fcd7ab9
+      resolved-ref: e09ab48e5d67db898279a33c4a3c71164fcd7ab9
       url: "https://github.com/SatoshiPortal/boltz-dart"
     source: git
     version: "0.2.1"
@@ -346,10 +355,10 @@ packages:
     dependency: transitive
     description:
       name: characters
-      sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
+      sha256: f71061c654a3380576a52b451dd5532377954cf9dbd272a78fc8479606670803
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.1"
+    version: "1.4.0"
   charcode:
     dependency: transitive
     description:
@@ -1281,18 +1290,18 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: "12956d0ad8390bbcc63ca2e1469c0619946ccb52809807067a7020d57e647aa6"
+      sha256: dc58c723c3c24bf8d3e2d3ad3f2f9d7bd9cf43ec6feaa64181775e60190153f2
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.18"
+    version: "0.12.17"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
-      sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
+      sha256: f7142bb1154231d7ea5f96bc7bde4bda2a0945d2806bb11670e30b850d56bdec
       url: "https://pub.dev"
     source: hosted
-    version: "0.13.0"
+    version: "0.11.1"
   meta:
     dependency: "direct main"
     description:
@@ -1332,7 +1341,15 @@ packages:
       sha256: "6ba77bb18063eebe9de401f5e6437e95e1438af0a87a3a39084fbd37c90df572"
       url: "https://pub.dev"
     source: hosted
-    version: "0.17.6"
+    version: "0.17.4"
+  native_toolchain_rust:
+    dependency: transitive
+    description:
+      name: native_toolchain_rust
+      sha256: e53ef1025e2c190333ec61f638513c890c1becf11222e27b115b03bac369c6be
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   ndef:
     dependency: transitive
     description:
@@ -1651,8 +1668,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "4eacd2aa741b79ef203fd7cd67addf3060a4e646"
-      resolved-ref: "4eacd2aa741b79ef203fd7cd67addf3060a4e646"
+      ref: a6e4133331d84381163f3788b17bb760e0bf79fc
+      resolved-ref: a6e4133331d84381163f3788b17bb760e0bf79fc
       url: "https://github.com/SatoshiPortal/satoshifier-dart"
     source: git
     version: "0.0.1"
@@ -1873,26 +1890,26 @@ packages:
     dependency: "direct dev"
     description:
       name: test
-      sha256: "54c516bbb7cee2754d327ad4fca637f78abfc3cbcc5ace83b3eda117e42cd71a"
+      sha256: "75906bf273541b676716d1ca7627a17e4c4070a3a16272b7a3dc7da3b9f3f6b7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.29.0"
+    version: "1.26.3"
   test_api:
     dependency: transitive
     description:
       name: test_api
-      sha256: "93167629bfc610f71560ab9312acdda4959de4df6fac7492c89ff0d3886f6636"
+      sha256: ab2726c1a94d3176a45960b6234466ec367179b87dd74f1611adb1f3b5fb9d55
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.9"
+    version: "0.7.7"
   test_core:
     dependency: transitive
     description:
       name: test_core
-      sha256: "394f07d21f0f2255ec9e3989f21e54d3c7dc0e6e9dbce160e5a9c1a6be0e2943"
+      sha256: "0cc24b5ff94b38d2ae73e1eb43cc302b77964fbf67abad1e296025b78deb53d0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.15"
+    version: "0.6.12"
   time:
     dependency: transitive
     description:
@@ -1909,6 +1926,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.7.1"
+  toml:
+    dependency: transitive
+    description:
+      name: toml
+      sha256: "35a35f782228656a2af31e8c73d1353cc4ef3d683fd68af1111b44631879c05e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.0"
   tor:
     dependency: "direct main"
     description:

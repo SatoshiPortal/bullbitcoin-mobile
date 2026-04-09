@@ -17,6 +17,7 @@ class GetAddressAtIndexUsecase {
       final address = await _walletAddressRepository.getAddressAtIndex(
         walletId: walletId,
         index: index,
+        isChange: false,
       );
 
       return address;
