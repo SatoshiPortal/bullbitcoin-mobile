@@ -15,6 +15,7 @@ sealed class FundExchangeState with _$FundExchangeState {
     FundExchangePresentationError? getExchangeFundingDetailsException,
     @Default(false) bool isSubmittingScamWarningConsent,
     FundExchangePresentationError? submitScamWarningConsentException,
+    PendingConsentAction? pendingConsentAction,
   }) = _FundExchangeState;
   const FundExchangeState._();
 

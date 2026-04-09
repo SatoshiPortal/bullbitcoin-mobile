@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_de
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/pending_consent_action.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -37,6 +38,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     );
     on<FundExchangeFundingDetailsRequested>(_onFundingDetailsRequested);
     on<FundExchangeScamWarningConsentSubmitted>(_onScamWarningConsentSubmitted);
+    on<FundExchangeScamWarningDismissed>(_onScamWarningDismissed);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -51,13 +53,6 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   ) async {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
-
-      // To test scam warning consent flow.
-      // Comment out before production.
-      //final groups = summary.groups.toList();
-      //groups.remove('CONSENT_SCAM_WARNING');
-      //emit(state.copyWith(userSummary: summary.copyWith(groups: groups)));
-
       emit(state.copyWith(userSummary: summary));
     } on ApiKeyException catch (e) {
       emit(state.copyWith(apiKeyException: e));
@@ -72,12 +67,17 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     FundExchangeFundingInstitutionsRequested event,
     Emitter<FundExchangeState> emit,
   ) async {
+    if (state.shouldShowScamWarningConsent) {
+      emit(state.copyWith(pendingConsentAction: const PendingCopInputAction()));
+      return;
+    }
     try {
       emit(
         state.copyWith(
           fundingInstitutions: null,
           listFundingInstitutionsException: null,
           isLoadingFundingInstitutions: true,
+          pendingConsentAction: null,
         ),
       );
 
@@ -104,12 +104,21 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     FundExchangeFundingDetailsRequested event,
     Emitter<FundExchangeState> emit,
   ) async {
+    if (state.shouldShowScamWarningConsent) {
+      emit(
+        state.copyWith(
+          pendingConsentAction: PendingFundingDetailsAction(event.fundingMethod),
+        ),
+      );
+      return;
+    }
     try {
       emit(
         state.copyWith(
           fundingDetails: null,
           getExchangeFundingDetailsException: null,
           isLoadingFundingDetails: true,
+          pendingConsentAction: null,
         ),
       );
 
@@ -157,7 +166,6 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
       }
 
       final fundingDetails = await _getFundingDetailsUsecase.execute(query);
-
       emit(state.copyWith(fundingDetails: fundingDetails.fundingDetails));
     } on FundExchangeApplicationError catch (e) {
       emit(
@@ -194,6 +202,24 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
       // Fetch and update user summary to reflect consent
       final updatedSummary = await _getExchangeUserSummaryUsecase.execute();
       emit(state.copyWith(userSummary: updatedSummary));
+
+      // Re-dispatch the pending action now that consent is confirmed.
+      // Clear the action first so shouldShowScamWarningConsent=false prevents
+      // the consent check from triggering again on re-dispatch.
+      final action = state.pendingConsentAction;
+      emit(state.copyWith(pendingConsentAction: null));
+      switch (action) {
+        case PendingFundingDetailsAction(:final method):
+          add(FundExchangeEvent.fundingDetailsRequested(fundingMethod: method));
+        case PendingCopInputAction():
+          add(
+            const FundExchangeEvent.fundingInstitutionsRequested(
+              jurisdiction: FundingJurisdiction.colombia,
+            ),
+          );
+        case null:
+          break;
+      }
     } on FundExchangeApplicationError catch (e) {
       emit(
         state.copyWith(
@@ -208,5 +234,12 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     } finally {
       emit(state.copyWith(isSubmittingScamWarningConsent: false));
     }
+  }
+
+  Future<void> _onScamWarningDismissed(
+    FundExchangeScamWarningDismissed event,
+    Emitter<FundExchangeState> emit,
+  ) async {
+    emit(state.copyWith(pendingConsentAction: null));
   }
 }

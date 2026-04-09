@@ -15,17 +15,16 @@ import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_excha
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_regular_sepa_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_sinpe_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_spei_transfer_screen.dart';
-import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_warning_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum FundExchangeRoute {
   fundExchange('/fund-exchange'),
   fundExchangeCopBankTransferInput('cop-bank-transfer-input'),
-  fundExchangeWarning('warning'),
   fundExchangeEmailETransfer('/fund-exchange-email-e-transfer'),
   fundExchangeBankTransferWire('/fund-exchange-bank-transfer-wire'),
   fundExchangeOnlineBillPayment('/fund-exchange-online-bill-payment'),
@@ -100,38 +99,57 @@ class FundExchangeRouter {
                   context.goNamed(ExchangeRoute.exchangeHome.name);
                 },
               ),
+              // Navigate to COP input screen once institutions are loaded.
+              // Uses goNamed so it replaces the current route stack entry
+              // (including the warning screen if it is active), avoiding a
+              // flash back to the method selection screen.
               BlocListener<FundExchangeBloc, FundExchangeState>(
                 listenWhen: (previous, current) =>
                     previous.fundingInstitutions == null &&
                     current.fundingInstitutions != null,
                 listener: (context, state) {
-                  // If more funding methods load institutions in the future,
-                  // this will need to check the loading funding institutions jurisdiction
-                  context.pushNamed(
+                  context.goNamed(
                     FundExchangeRoute.fundExchangeCopBankTransferInput.name,
                     extra: context.read<FundExchangeBloc>(),
                   );
                 },
               ),
+              // Navigate to the funding details screen once details are loaded.
               BlocListener<FundExchangeBloc, FundExchangeState>(
                 listenWhen: (previous, current) =>
                     previous.fundingDetails == null &&
                     current.fundingDetails != null,
                 listener: (context, state) {
-                  if (state.shouldShowScamWarningConsent) {
-                    // Push so going back returns to the previous screen
-                    context.pushNamed(
-                      FundExchangeRoute.fundExchangeWarning.name,
-                      extra: context.read<FundExchangeBloc>(),
-                    );
-                    return;
-                  } else {
-                    _goToFundingScreen(
-                      context,
-                      context.read<FundExchangeBloc>(),
-                      state.fundingDetails,
-                    );
-                  }
+                  _goToFundingScreen(
+                    context,
+                    context.read<FundExchangeBloc>(),
+                    state.fundingDetails,
+                  );
+                },
+              ),
+              // Show the scam warning consent bottom sheet when a method is
+              // tapped and the user has not yet consented.
+              BlocListener<FundExchangeBloc, FundExchangeState>(
+                listenWhen: (previous, current) =>
+                    previous.pendingConsentAction == null &&
+                    current.pendingConsentAction != null,
+                listener: (context, state) {
+                  final bloc = context.read<FundExchangeBloc>();
+                  showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) => BlocProvider.value(
+                      value: bloc,
+                      child: const FundExchangeWarningBottomSheet(),
+                    ),
+                  ).then((_) {
+                    if (!(bloc.state.userSummary?.hasConsentedScamWarning ??
+                        false)) {
+                      bloc.add(
+                        const FundExchangeEvent.scamWarningDismissed(),
+                      );
+                    }
+                  });
                 },
               ),
             ],
@@ -147,31 +165,6 @@ class FundExchangeRouter {
             value: state.extra! as FundExchangeBloc,
             child: const FundExchangeCopBankTransferInputScreen(),
           ),
-        ),
-        GoRoute(
-          name: FundExchangeRoute.fundExchangeWarning.name,
-          path: FundExchangeRoute.fundExchangeWarning.path,
-          builder: (context, state) {
-            final bloc = state.extra! as FundExchangeBloc;
-
-            return BlocProvider.value(
-              value: bloc,
-              child: BlocListener<FundExchangeBloc, FundExchangeState>(
-                listenWhen: (previous, current) =>
-                    previous.isSubmittingScamWarningConsent &&
-                    !current.isSubmittingScamWarningConsent &&
-                    current.userSummary?.hasConsentedScamWarning == true,
-                listener: (context, state) {
-                  _goToFundingScreen(
-                    context,
-                    context.read<FundExchangeBloc>(),
-                    state.fundingDetails,
-                  );
-                },
-                child: const FundExchangeWarningScreen(),
-              ),
-            );
-          },
         ),
       ],
     ),

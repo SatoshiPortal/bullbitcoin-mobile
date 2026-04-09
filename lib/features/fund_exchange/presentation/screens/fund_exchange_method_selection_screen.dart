@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_canada_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_costa_rica_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_europe_methods.dart';
@@ -31,6 +32,8 @@ class _FundExchangeMethodSelectionScreenState
   FundingJurisdiction? jurisdiction;
   bool isLoadingFundingDetails = false;
   bool isLoadingFundingInstitutions = false;
+  FundExchangePresentationError? _fundingDetailsError;
+  FundExchangePresentationError? _institutionsError;
   late final StreamSubscription<FundExchangeState> _blocSubscription;
 
   @override
@@ -49,11 +52,23 @@ class _FundExchangeMethodSelectionScreenState
       if (state.isLoadingFundingDetails != isLoadingFundingDetails) {
         setState(() {
           isLoadingFundingDetails = state.isLoadingFundingDetails;
+          if (state.isLoadingFundingDetails) _fundingDetailsError = null;
         });
       }
       if (state.isLoadingFundingInstitutions != isLoadingFundingInstitutions) {
         setState(() {
           isLoadingFundingInstitutions = state.isLoadingFundingInstitutions;
+          if (state.isLoadingFundingInstitutions) _institutionsError = null;
+        });
+      }
+      if (state.getExchangeFundingDetailsException != _fundingDetailsError) {
+        setState(() {
+          _fundingDetailsError = state.getExchangeFundingDetailsException;
+        });
+      }
+      if (state.listFundingInstitutionsException != _institutionsError) {
+        setState(() {
+          _institutionsError = state.listFundingInstitutionsException;
         });
       }
     });
@@ -167,6 +182,16 @@ class _FundExchangeMethodSelectionScreenState
                       },
                     ),
                   },
+                if (_fundingDetailsError != null || _institutionsError != null) ...[
+                  const Gap(16.0),
+                  Text(
+                    context.loc.fundExchangeErrorLoadingDetails,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ],
             ),
           ),

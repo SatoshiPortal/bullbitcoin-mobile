@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart'; // FundExchangePresentationError
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,7 @@ class _FundExchangeCopBankTransferInputScreenState
   final _formKey = GlobalKey<FormState>();
   FundingInstitution? _selectedInstitution;
   bool isLoadingFundingDetails = false;
+  FundExchangePresentationError? _fundingDetailsError;
   late final TextEditingController _amountController;
   late final StreamSubscription<FundExchangeState> _blocSubscription;
 
@@ -39,6 +41,11 @@ class _FundExchangeCopBankTransferInputScreenState
       if (state.isLoadingFundingDetails != isLoadingFundingDetails) {
         setState(() {
           isLoadingFundingDetails = state.isLoadingFundingDetails;
+        });
+      }
+      if (state.getExchangeFundingDetailsException != _fundingDetailsError) {
+        setState(() {
+          _fundingDetailsError = state.getExchangeFundingDetailsException;
         });
       }
     });
@@ -266,6 +273,16 @@ class _FundExchangeCopBankTransferInputScreenState
                   onFieldSubmitted: (_) => _submitForm(),
                 ),
                 const Gap(32.0),
+                if (_fundingDetailsError != null) ...[
+                  Text(
+                    context.loc.fundExchangeErrorLoadingDetails,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const Gap(8.0),
+                ],
                 BBButton.big(
                   label: context.loc.fundExchangeCopGeneratePaymentLink,
                   disabled: isLoadingFundingDetails,

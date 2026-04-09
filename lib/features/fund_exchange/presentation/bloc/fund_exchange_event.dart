@@ -11,5 +11,7 @@ sealed class FundExchangeEvent with _$FundExchangeEvent {
   }) = FundExchangeFundingDetailsRequested;
   const factory FundExchangeEvent.scamWarningConsentSubmitted() =
       FundExchangeScamWarningConsentSubmitted;
+  const factory FundExchangeEvent.scamWarningDismissed() =
+      FundExchangeScamWarningDismissed;
   const FundExchangeEvent._();
 }
