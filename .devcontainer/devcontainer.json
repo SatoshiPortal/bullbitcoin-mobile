@@ -2,24 +2,28 @@
   "name": "${localWorkspaceFolderBasename}",
   "build": {
     "dockerfile": "../Dockerfile",
+    "args": {
+      "USERNAME": "${localEnv:USER}",
+    },
   },
-  "remoteUser": "bull",
+  "remoteUser": "${localEnv:USER}",
+  "updateRemoteUserUID": true,
   "shutdownAction": "stopContainer",
   "runArgs": [
     "--name",
     "${localWorkspaceFolderBasename}",
     "--hostname",
-    "mobile",
+    "bull",
     "--memory=8g",
   ],
-
   "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/bull/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
     "source=${localEnv:SSH_AUTH_SOCK},target=/ssh-agent,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind,consistency=cached",
   ],
   "containerEnv": {
     "SSH_AUTH_SOCK": "/ssh-agent",
   },
   "postCreateCommand": "flutter config --no-analytics && dart --disable-analytics && cp -n .env.template .env",
-  "postStartCommand": "sudo chown -R bull:bull /home/bull/.ssh && chmod 700 /home/bull/.ssh && chmod 600 /home/bull/.ssh/*",
+  "postStartCommand": "sudo chown -R ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.ssh && chmod 700 /home/${localEnv:USER}/.ssh && chmod 600 /home/${localEnv:USER}/.ssh/*",
 }
