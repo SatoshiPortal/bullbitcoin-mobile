@@ -240,11 +240,12 @@ class _FundExchangeCopBankTransferInputScreenState
                       horizontal: 16.0,
                     ),
                     suffixIcon: IconButton(
-                      onPressed: () {
-                        if (_amountController.text.isNotEmpty) {
-                          Clipboard.setData(
-                            ClipboardData(text: _amountController.text),
-                          );
+                      onPressed: () async {
+                        final data =
+                            await Clipboard.getData(Clipboard.kTextPlain);
+                        if (data?.text != null) {
+                          _amountController.text = data!.text!
+                              .replaceAll(RegExp(r'[^0-9]'), '');
                         }
                       },
                       icon: const Icon(Icons.content_paste, size: 20),
