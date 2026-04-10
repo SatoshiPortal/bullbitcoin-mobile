@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations container docker-run test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -67,7 +67,9 @@ docker-build:
 		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
 		.
 
-
+devcontainer:
+	@echo "🏗️ Building Dev Container"
+	@devcontainer up --workspace-folder . --config ./.devcontainer/devcontainer.json
 
 test: unit-test integration-test
 
