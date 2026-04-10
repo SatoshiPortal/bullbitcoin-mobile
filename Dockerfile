@@ -7,6 +7,9 @@ ENV USER=$USERNAME
 ARG FVM_VERSION=4.0.5
 ARG FLUTTER_VERSION=3.38.5
 ARG ANDROID_CMDLINE_TOOLS_VERSION=14742923
+
+# Android versions (passed via --build-arg from Makefile, defaults as fallback)
+ARG JVM_TARGET=21
 ARG ANDROID_API_LEVEL=36
 ARG ANDROID_BUILD_TOOLS=36.0.0
 ARG ANDROID_NDK=29.0.14206865
@@ -25,7 +28,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     wget \
     make \
-    openjdk-21-jdk-headless \
+    openjdk-${JVM_TARGET}-jdk-headless \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
