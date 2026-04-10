@@ -9,7 +9,7 @@ subprojects {
             project.plugins.hasPlugin("com.android.library")) {
             project.android {
                 compileSdk = 36
-                buildToolsVersion "35.0.0"
+                buildToolsVersion "36.0.0"
             }
         }
         if (project.hasProperty('android')) {
@@ -34,7 +34,7 @@ subprojects {
                 }
             }
         }
-        
+
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
             kotlinOptions {
                 jvmTarget = "21"
