@@ -24,8 +24,6 @@ class SaveExchangeApiKeyUsecase {
         apiKeyResponseData,
         isTestnet: isTestnet,
       );
-
-      log.fine('API key saved successfully');
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
       throw SaveExchangeApiKeyException('$e');
