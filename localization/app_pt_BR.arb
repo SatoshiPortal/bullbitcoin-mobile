@@ -41,7 +41,7 @@
   },
   "translationWarningContributeButton": "Melhorar as traduções",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "payPleasePayInvoice": "Por favor, pague esta fatura",
   "@payPleasePayInvoice": {
@@ -1391,7 +1391,7 @@
   "@broadcastSignedTxNfcTitle": {
     "description": "Title for NFC scanning page"
   },
-  "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando AI e podem conter imprecisões. Se você notar quaisquer erros ou gostaria de ajudar a melhorar as traduções, você pode contribuir através da nossa plataforma de tradução comunitária.",
+  "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se você notar erros ou quiser ajudar a melhorar as traduções, você pode enviar uma correção no nosso repositório do GitHub.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
