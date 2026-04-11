@@ -1,17 +1,17 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.8.0+170
+version: 6.8.0+172
 
 environment:
   sdk: ">=3.10.0 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter
-  bdk_flutter:
+  bdk_dart:
     git:
-      url: https://github.com/SatoshiPortal/bdk-flutter
-      ref: 3024b3452b4b0e5982d737f82ff461024a881ae7
+      url: https://github.com/bitcoindevkit/bdk-dart
+      ref: 6dfdddbfa6da8fbfa82d796c2564fbeec899232e
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -53,7 +53,7 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart
-      ref: 5344da8a75b59e696856901ca5885bd6fe352269
+      ref: e09ab48e5d67db898279a33c4a3c71164fcd7ab9
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
@@ -105,7 +105,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/satoshifier-dart
-      ref: 4eacd2aa741b79ef203fd7cd67addf3060a4e646
+      ref: a6e4133331d84381163f3788b17bb760e0bf79fc
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:

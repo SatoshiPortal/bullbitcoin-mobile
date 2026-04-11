@@ -1,6 +1,6 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations docker-build docker-run test unit-test integration-test fvm-check build
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
 
-fvm-check: 
+fvm-check:
 	@echo "🔍 Checking FVM"
 	@if ! command -v fvm >/dev/null 2>&1; then \
 		echo "❌ FVM is not installed. Please install FVM first:"; \
@@ -12,7 +12,7 @@ fvm-check:
 all: setup
 	@echo "✨ All tasks completed!"
 
-setup: fvm-check clean deps build-runner translations hooks ios-pod-update
+setup: fvm-check deps build-runner translations hooks
 	@echo "🚀 Setup complete!"
 
 clean:
@@ -30,7 +30,7 @@ build-runner:
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
 	@fvm dart run build_runner watch --delete-conflicting-outputs
-	
+
 translations:
 	@echo "🌐 Generating translations files"
 	@fvm flutter pub get
@@ -59,26 +59,48 @@ ios-sqlite-update:
 
 docker-build:
 	@echo "🏗️ Building Docker image"
-	@ docker build \
-		--build-arg MODE=$(or $(MODE),debug) \
-		--build-arg FORMAT=$(or $(FORMAT),apk) \
-		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
-		--build-arg ENV_SOURCE=$(or $(ENV_SOURCE),template) \
-		--build-arg FAKE_KEYSTORE=$(or $(FAKE_KEYSTORE),true) \
-		-t bull-mobile .
+	@docker build -t bull-mobile \
+		--build-arg FLUTTER_VERSION=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc) \
+		--build-arg JVM_TARGET=$$(grep 'android.jvmTarget' android/gradle.properties | cut -d= -f2) \
+		--build-arg ANDROID_API_LEVEL=$$(grep 'android.compileSdk' android/gradle.properties | cut -d= -f2) \
+		--build-arg ANDROID_BUILD_TOOLS=$$(grep 'android.buildToolsVersion' android/gradle.properties | cut -d= -f2) \
+		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
+		.
 
 MODE ?= debug
 FORMAT ?= apk
 
-build:
-	@echo "🔨 Building $(FORMAT) ($(MODE))"
-	@SOURCE_DATE_EPOCH=$$(git log -1 --format=%ct) \
-		CARGO_ENCODED_RUSTFLAGS=$$(printf '%s\037%s\037%s' "--remap-path-prefix=$$HOME/.cargo=/cargo" "--remap-path-prefix=$$HOME/.rustup=/rustup" "--remap-path-prefix=$$(pwd)=/build") \
-		fvm flutter build $(if $(filter aab,$(FORMAT)),appbundle,apk) --$(MODE)
+# Allow "make apk release" or "make apk debug" syntax
+ifneq (,$(filter release,$(MAKECMDGOALS)))
+  MODE := release
+endif
+ifneq (,$(filter debug,$(MAKECMDGOALS)))
+  MODE := debug
+endif
+release debug:
+	@:
+
+apk: docker-build
+	@echo "🔨 Building $(FORMAT) ($(MODE)) via Docker"
+	@docker build -f Dockerfile.apk \
+		--build-arg MODE=$(MODE) \
+		--build-arg FORMAT=$(FORMAT) \
+		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
+		--build-arg ENV_SOURCE=$(or $(ENV_SOURCE),template) \
+		--build-arg FAKE_KEYSTORE=$(or $(FAKE_KEYSTORE),true) \
+		-t bull-mobile-apk .
+
+verify:
+	@echo "🔍 Verifying reproducible build"
+	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
+
+devcontainer:
+	@echo "🏗️ Building Dev Container"
+	@devcontainer up --workspace-folder . --config ./.devcontainer/devcontainer.json
 
 test: unit-test integration-test
 
-unit-test: 
+unit-test:
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
 

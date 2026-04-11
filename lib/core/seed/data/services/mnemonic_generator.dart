@@ -1,14 +1,14 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 
 class MnemonicGenerator {
   const MnemonicGenerator();
 
-  Future<List<String>> generate() async {
+  List<String> generate() {
     try {
-      final mnemonic = await bdk.Mnemonic.create(bdk.WordCount.words12);
+      final mnemonic = bdk.Mnemonic(wordCount: bdk.WordCount.words12);
 
-      final mnemonicWords = mnemonic.asString().split(' ');
+      final mnemonicWords = mnemonic.toString().split(' ');
       return mnemonicWords;
     } catch (e) {
       throw FailedToGenerateMnemonicException(e.toString());

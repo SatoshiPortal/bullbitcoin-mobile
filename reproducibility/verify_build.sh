@@ -296,16 +296,27 @@ else
 fi
 echo "Gradle heap size: $gradle_heap (based on ${available_mem_gb}GB available)"
 
-# Build using root Dockerfile
+# Build using two-stage Dockerfiles
 echo "=== Building from source ==="
 echo "This may take 30-60 minutes..."
 
 buildFormat="apk"
 [[ "$verificationMode" == "device" ]] && buildFormat="aab"
 
+# Stage 1: Build base toolchain image
+echo "Building base toolchain image..."
 $CONTAINER_CMD build \
     --network=host \
     --ulimit nofile=65536:65536 \
+    -t bull-mobile \
+    "$REPO_ROOT"
+
+# Stage 2: Build the app
+echo "Building app..."
+$CONTAINER_CMD build \
+    --network=host \
+    --ulimit nofile=65536:65536 \
+    -f "$REPO_ROOT/Dockerfile.apk" \
     --build-arg MODE=release \
     --build-arg FORMAT="$buildFormat" \
     --build-arg GRADLE_HEAP="$gradle_heap" \

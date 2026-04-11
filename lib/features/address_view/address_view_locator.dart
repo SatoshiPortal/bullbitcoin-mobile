@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/address_view/domain/usecases/get_address_list_usecase.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -21,6 +22,7 @@ class AddressViewLocator {
     // Register the AddressViewBloc with the locator
     locator.registerFactoryParam<AddressViewBloc, String, int?>(
       (walletId, limit) => AddressViewBloc(
+        getWalletUseCase: locator<GetWalletUsecase>(),
         getAddressListUseCase: locator<GetAddressListUsecase>(),
         walletId: walletId,
         limit: limit,
