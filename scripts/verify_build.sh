@@ -7,6 +7,11 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+APP_ID="com.bullbitcoin.mobile"
+GITHUB_REPO="SatoshiPortal/bullbitcoin-mobile"
+BASE_IMAGE="bull-mobile"
+BUILD_IMAGE="bull-mobile-build"
+
 # Colors
 RED='\033[1;31m'
 GREEN='\033[1;32m'
@@ -36,7 +41,7 @@ containerApktool() {
     $CONTAINER_CMD run --rm \
         -v "$targetFolderParent":/tfp \
         -v "$appFolder":/af:ro \
-        bull-mobile \
+        "$BASE_IMAGE" \
         sh -c "apktool d -f -o /tfp/$targetFolderBase /af/$appFile"
 }
 
@@ -122,13 +127,11 @@ else
     exit 1
 fi
 
-# Build the base image. It provides the app build toolchain plus apktool and
-# bundletool, both used throughout this script. Docker/Podman will skip layers
-# that are already cached, so this is fast on subsequent runs.
-echo "Building bull-mobile base image..."
+# Build the base image
+echo "Building $BASE_IMAGE base image..."
 $CONTAINER_CMD build \
     --network=host \
-    -t bull-mobile \
+    -t "$BASE_IMAGE" \
     "$REPO_ROOT"
 
 # Determine verification mode
@@ -188,7 +191,6 @@ workDir=$(cd "$workDir" && pwd)
 echo "Workspace: $workDir"
 
 # Extract metadata from official APK (device mode)
-appId="com.bullbitcoin.mobile"
 officialVersion="$appVersion"
 versionCode=""
 appHash=""
@@ -198,19 +200,19 @@ if [[ "$verificationMode" == "device" ]]; then
     tempDir=$(mktemp -d)
     containerApktool "$tempDir" "$apkDir/base.apk"
 
-    appId=$(grep 'package=' "$tempDir/AndroidManifest.xml" | sed 's/.*package="//g' | sed 's/".*//g')
+    extractedAppId=$(grep 'package=' "$tempDir/AndroidManifest.xml" | sed 's/.*package="//g' | sed 's/".*//g')
     officialVersion=$(grep 'versionName' "$tempDir/apktool.yml" | awk '{print $2}' | tr -d "'")
     versionCode=$(grep 'versionCode' "$tempDir/apktool.yml" | awk '{print $2}' | tr -d "'")
     rm -rf "$tempDir"
 
-    if [[ "$appId" != "com.bullbitcoin.mobile" ]]; then
-        echo -e "${RED}Error: Unexpected appId: $appId${NC}"
+    if [[ "$extractedAppId" != "$APP_ID" ]]; then
+        echo -e "${RED}Error: Unexpected appId: $extractedAppId${NC}"
         exit 2
     fi
 
     appHash=$(sha256sum "$apkDir/base.apk" | awk '{print $1}')
 
-    echo "App ID: $appId"
+    echo "App ID: $APP_ID"
     echo "Version: $officialVersion ($versionCode)"
     echo "Hash: $appHash"
 fi
@@ -256,8 +258,8 @@ fi
 if [[ "$verificationMode" == "github" && -z "$apkDir" ]]; then
     echo "Downloading official APK from GitHub..."
     apkDir="$workDir"
-    releaseJson=$(curl -sL "https://api.github.com/repos/SatoshiPortal/bullbitcoin-mobile/releases/tags/v${appVersion}")
-    apkUrl=$(echo "$releaseJson" | grep -o "https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/download/v${appVersion}/[^\"]*\\.apk" | head -n1)
+    releaseJson=$(curl -sL "https://api.github.com/repos/${GITHUB_REPO}/releases/tags/v${appVersion}")
+    apkUrl=$(echo "$releaseJson" | grep -o "https://github.com/${GITHUB_REPO}/releases/download/v${appVersion}/[^\"]*\\.apk" | head -n1)
 
     if [[ -z "$apkUrl" ]]; then
         echo -e "${RED}Error: APK not found in GitHub release v${appVersion}${NC}"
@@ -299,7 +301,7 @@ else
 fi
 echo "Gradle heap size: $gradle_heap (based on ${available_mem_gb}GB available)"
 
-# Build the app (bull-mobile base image was already built earlier)
+# Build the app
 echo "=== Building from source ==="
 echo "This may take 30-60 minutes..."
 
@@ -313,7 +315,7 @@ $CONTAINER_CMD build \
     --build-arg MODE=release \
     --build-arg FORMAT="$buildFormat" \
     --build-arg GRADLE_HEAP="$gradle_heap" \
-    -t bullbitcoin-verify:v${appVersion} \
+    -t ${BUILD_IMAGE}:v${appVersion} \
     "$REPO_ROOT"
 
 echo "Build complete"
@@ -321,7 +323,7 @@ echo "Build complete"
 # Extract built artifact
 echo "Extracting built artifact..."
 container_name="bullbitcoin_extract_$$"
-$CONTAINER_CMD create --name "$container_name" bullbitcoin-verify:v${appVersion} > /dev/null
+$CONTAINER_CMD create --name "$container_name" ${BUILD_IMAGE}:v${appVersion} > /dev/null
 
 if [[ "$verificationMode" == "github" ]]; then
     $CONTAINER_CMD cp "$container_name:/app/build/app/outputs/flutter-apk/app-release.apk" "$workDir/built.apk"
@@ -358,7 +360,7 @@ else
 
     $CONTAINER_CMD run --rm \
         -v "$workDir":/work \
-        bull-mobile \
+        "$BASE_IMAGE" \
         sh -c "
             bundletool build-apks \
                 --bundle=/work/built.aab \
@@ -413,7 +415,7 @@ fi
 # Results
 echo ""
 echo "===== Verification Results ====="
-echo "appId:          $appId"
+echo "appId:          $APP_ID"
 echo "apkVersionName: $officialVersion"
 echo "apkVersionCode: ${versionCode:-unknown}"
 echo "appHash:        $appHash"
@@ -443,7 +445,7 @@ cat > "$workDir/RESULTS.md" <<EOF
 | Field          | Value |
 |----------------|-------|
 | date           | $(date -u +"%Y-%m-%dT%H:%M:%SZ") |
-| appId          | $appId |
+| appId          | $APP_ID |
 | versionName    | $officialVersion |
 | versionCode    | ${versionCode:-unknown} |
 | appHash        | $appHash |
