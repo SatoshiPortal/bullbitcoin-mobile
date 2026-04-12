@@ -5,8 +5,7 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Colors
 RED='\033[1;31m'
@@ -37,7 +36,7 @@ containerApktool() {
     $CONTAINER_CMD run --rm \
         -v "$targetFolderParent":/tfp \
         -v "$appFolder":/af:ro \
-        $VERIFY_TOOLS_IMAGE \
+        bull-mobile \
         sh -c "apktool d -f -o /tfp/$targetFolderBase /af/$appFile"
 }
 
@@ -123,10 +122,14 @@ else
     exit 1
 fi
 
-# Build verification tools container
-VERIFY_TOOLS_IMAGE="bullbitcoin-verify-tools:latest"
-echo "Building verification tools container..."
-$CONTAINER_CMD build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
+# Build the base image. It provides the app build toolchain plus apktool and
+# bundletool, both used throughout this script. Docker/Podman will skip layers
+# that are already cached, so this is fast on subsequent runs.
+echo "Building bull-mobile base image..."
+$CONTAINER_CMD build \
+    --network=host \
+    -t bull-mobile \
+    "$REPO_ROOT"
 
 # Determine verification mode
 verificationMode=""
@@ -175,7 +178,7 @@ if [[ -z "$appVersion" ]]; then
 fi
 
 # Setup workspace
-workDir="$SCRIPT_DIR/bullbitcoin_${appVersion}_verification"
+workDir="$REPO_ROOT/bullbitcoin_${appVersion}_verification"
 if [[ -d "$workDir" ]]; then
     echo -e "${YELLOW}Workspace exists. Remove first: rm -rf $workDir${NC}"
     exit 1
@@ -296,27 +299,17 @@ else
 fi
 echo "Gradle heap size: $gradle_heap (based on ${available_mem_gb}GB available)"
 
-# Build using two-stage Dockerfiles
+# Build the app (bull-mobile base image was already built earlier)
 echo "=== Building from source ==="
 echo "This may take 30-60 minutes..."
 
 buildFormat="apk"
 [[ "$verificationMode" == "device" ]] && buildFormat="aab"
 
-# Stage 1: Build base toolchain image
-echo "Building base toolchain image..."
 $CONTAINER_CMD build \
     --network=host \
     --ulimit nofile=65536:65536 \
-    -t bull-mobile \
-    "$REPO_ROOT"
-
-# Stage 2: Build the app
-echo "Building app..."
-$CONTAINER_CMD build \
-    --network=host \
-    --ulimit nofile=65536:65536 \
-    -f "$REPO_ROOT/Dockerfile.apk" \
+    -f "$REPO_ROOT/Dockerfile.build" \
     --build-arg MODE=release \
     --build-arg FORMAT="$buildFormat" \
     --build-arg GRADLE_HEAP="$gradle_heap" \
@@ -365,7 +358,7 @@ else
 
     $CONTAINER_CMD run --rm \
         -v "$workDir":/work \
-        $VERIFY_TOOLS_IMAGE \
+        bull-mobile \
         sh -c "
             bundletool build-apks \
                 --bundle=/work/built.aab \

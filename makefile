@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build build verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -70,7 +70,7 @@ docker-build:
 MODE ?= debug
 FORMAT ?= apk
 
-# Allow "make apk release" or "make apk debug" syntax
+# Allow "make build release" or "make build debug" syntax
 ifneq (,$(filter release,$(MAKECMDGOALS)))
   MODE := release
 endif
@@ -80,19 +80,19 @@ endif
 release debug:
 	@:
 
-apk: docker-build
+build: docker-build
 	@echo "🔨 Building $(FORMAT) ($(MODE)) via Docker"
-	@docker build -f Dockerfile.apk \
+	@docker build -f Dockerfile.build \
 		--build-arg MODE=$(MODE) \
 		--build-arg FORMAT=$(FORMAT) \
 		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
 		--build-arg ENV_SOURCE=$(or $(ENV_SOURCE),template) \
 		--build-arg FAKE_KEYSTORE=$(or $(FAKE_KEYSTORE),true) \
-		-t bull-mobile-apk .
+		-t bull-mobile-build .
 
 verify:
 	@echo "🔍 Verifying reproducible build"
-	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
+	@./scripts/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
 
 devcontainer:
 	@echo "🏗️ Building Dev Container"

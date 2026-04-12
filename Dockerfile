@@ -78,3 +78,27 @@ RUN sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_API_LEVEL}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"
+
+
+# Reproducibility / release tooling
+
+ARG APKTOOL_VERSION=3.0.1
+ARG APKTOOL_SHA256=b947b945b4bc455609ba768d071b64d9e63834079898dbaae15b67bf03bcd362
+ARG BUNDLETOOL_VERSION=1.18.3
+ARG BUNDLETOOL_SHA256=a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+
+RUN sudo curl -fsSL \
+        https://github.com/iBotPeaches/Apktool/releases/download/v${APKTOOL_VERSION}/apktool_${APKTOOL_VERSION}.jar \
+        -o /usr/local/bin/apktool.jar \
+    && echo "${APKTOOL_SHA256}  /usr/local/bin/apktool.jar" | sha256sum -c - \
+    && printf '#!/bin/sh\nexec java -jar /usr/local/bin/apktool.jar "$@"\n' \
+        | sudo tee /usr/local/bin/apktool > /dev/null \
+    && sudo chmod +x /usr/local/bin/apktool
+
+RUN sudo curl -fsSL \
+        https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar \
+        -o /usr/local/bin/bundletool.jar \
+    && echo "${BUNDLETOOL_SHA256}  /usr/local/bin/bundletool.jar" | sha256sum -c - \
+    && printf '#!/bin/sh\nexec java -jar /usr/local/bin/bundletool.jar "$@"\n' \
+        | sudo tee /usr/local/bin/bundletool > /dev/null \
+    && sudo chmod +x /usr/local/bin/bundletool
