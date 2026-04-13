@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/support_chat_message.dart';
@@ -11,13 +12,12 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_message
 import 'package:bb_mobile/core/exchange/domain/usecases/get_support_chat_messages_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/features/exchange_support_chat/presentation/exchange_support_chat_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
-class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
+class ExchangeSupportChatCubit extends SafeCubit<ExchangeSupportChatState> {
   ExchangeSupportChatCubit({
     required GetSupportChatMessagesUsecase getMessagesUsecase,
     required SendSupportChatMessageUsecase sendMessageUsecase,

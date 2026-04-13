@@ -1,12 +1,12 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
+class ImportMnemonicCubit extends SafeCubit<ImportMnemonicState> {
   final ImportWalletUsecase _importWalletUsecase;
   final TheDirtyUsecase _checkWalletUsecase;
 
@@ -42,19 +42,19 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
         mnemonic: mnemonic,
         scriptType: ScriptType.bip84,
       );
-      if (!isClosed) emit(state.copyWith(bip84Status: bip84Status));
+      emit(state.copyWith(bip84Status: bip84Status));
 
       final bip49Status = await _checkWalletUsecase(
         mnemonic: mnemonic,
         scriptType: ScriptType.bip49,
       );
-      if (!isClosed) emit(state.copyWith(bip49Status: bip49Status));
+      emit(state.copyWith(bip49Status: bip49Status));
 
       final bip44Status = await _checkWalletUsecase(
         mnemonic: mnemonic,
         scriptType: ScriptType.bip44,
       );
-      if (!isClosed) emit(state.copyWith(bip44Status: bip44Status));
+      emit(state.copyWith(bip44Status: bip44Status));
     } catch (e) {
       emit(state.copyWith(error: e as Exception));
     }
