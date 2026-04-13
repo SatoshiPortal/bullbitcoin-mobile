@@ -65,10 +65,13 @@ class _FundExchangeCopBankTransferInputScreenState
       );
       if (amount == null || amount <= 0) return;
 
+      final institution = _selectedInstitution;
+      if (institution == null) return;
+
       context.read<FundExchangeBloc>().add(
         FundExchangeEvent.fundingDetailsRequested(
           fundingMethod: CopBankTransfer(
-            bankCode: _selectedInstitution!.code,
+            bankCode: institution.code,
             amountCop: amount,
           ),
         ),
@@ -293,7 +296,7 @@ class _FundExchangeCopBankTransferInputScreenState
                 ],
                 BBButton.big(
                   label: context.loc.fundExchangeCopGeneratePaymentLink,
-                  disabled: isLoadingFundingDetails,
+                  disabled: isLoadingFundingDetails || _selectedInstitution == null,
                   onPressed: _submitForm,
                   bgColor: context.appColors.primary,
                   textColor: context.appColors.onPrimary,
