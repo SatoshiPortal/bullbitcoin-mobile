@@ -1,1 +1,7 @@
 build/
+.dart_tool/
+.gradle/
+android/.gradle/
+ios/
+.idea/
+*.iml
