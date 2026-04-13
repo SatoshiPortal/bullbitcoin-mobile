@@ -13,8 +13,13 @@ sealed class InstitutionModel with _$InstitutionModel {
     required List<InstitutionAccountTypeModel> accountTypes,
   }) = _InstitutionModel;
 
+  // Handle backend typo 'accounTypes' until server-side fix is deployed
   factory InstitutionModel.fromJson(Map<String, dynamic> json) =>
-      _$InstitutionModelFromJson(json);
+      _$InstitutionModelFromJson(
+        json.containsKey('accountTypes') || !json.containsKey('accounTypes')
+            ? json
+            : {...json, 'accountTypes': json['accounTypes']},
+      );
 
   const InstitutionModel._();
 
