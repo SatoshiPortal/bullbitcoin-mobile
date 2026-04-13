@@ -33,7 +33,7 @@ class RecipientDetailsDto {
   final String? debitcard;
   final String? ownerName;
   final String? phoneNumber;
-  final String? cbuCvu;
+  final String? claveUniform;
   final String? bankCode;
   final String? accountType;
   final String? bankAccount;
@@ -68,7 +68,7 @@ class RecipientDetailsDto {
     this.debitcard,
     this.ownerName,
     this.phoneNumber,
-    this.cbuCvu,
+    this.claveUniform,
     this.bankCode,
     this.accountType,
     this.bankAccount,
@@ -212,14 +212,14 @@ class RecipientDetailsDto {
       }(),
 
       // ARGENTINA
-      RecipientType.cbuCvuArgentina => () {
-        final d = details as CbuCvuArgentinaDetails;
+      RecipientType.bankAccountArgentina => () {
+        final d = details as BankAccountArgentinaDetails;
         return RecipientDetailsDto(
           recipientType: type,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
-          cbuCvu: d.cbuCvu,
+          claveUniform: d.claveUniform,
           name: d.name,
         );
       }(),
@@ -329,15 +329,14 @@ class RecipientDetailsDto {
       // EUROPE
       case RecipientType.sepaEur:
         if (iban == null) throw StateError('iban is required for SEPA_EUR.');
-        if (isCorporate == null) {
-          throw StateError('isCorporate is required for SEPA_EUR.');
-        }
+        final inferredIsCorporate =
+            isCorporate ?? (corporateName != null && corporateName!.trim().isNotEmpty);
         return SepaEurDetails.create(
           label: label,
           isDefault: def,
           isOwner: isOwner,
           iban: iban!,
-          isCorporate: isCorporate!,
+          isCorporate: inferredIsCorporate,
           firstname: firstname,
           lastname: lastname,
           corporateName: corporateName,
@@ -444,18 +443,15 @@ class RecipientDetailsDto {
         );
 
       // ARGENTINA
-      case RecipientType.cbuCvuArgentina:
-        if (cbuCvu == null) {
-          throw StateError('cbuCvu is required for CBU_CVU_ARGENTINA.');
-        }
+      case RecipientType.bankAccountArgentina:
         if (name == null) {
           throw StateError('name is required for CBU_CVU_ARGENTINA.');
         }
-        return CbuCvuArgentinaDetails.create(
+        return BankAccountArgentinaDetails.create(
           label: label,
           isDefault: def,
           isOwner: isOwner,
-          cbuCvu: cbuCvu!,
+          claveUniform: claveUniform ?? '',
           name: name!,
         );
       case RecipientType.pseColombia:
