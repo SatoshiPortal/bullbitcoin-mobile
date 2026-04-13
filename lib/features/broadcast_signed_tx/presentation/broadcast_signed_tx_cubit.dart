@@ -7,7 +7,7 @@ import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/type.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:bitcoin_base/bitcoin_base.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
@@ -41,16 +41,13 @@ class BroadcastSignedTxCubit extends SafeCubit<BroadcastSignedTxState> {
 
           // Seedsigner doesn't return the original input data, so here we try to add inputs data from the unsigned tx
 
-          final psbt = await bdk.PartiallySignedTransaction.fromString(
-            state.unsignedPsbt!,
-          );
-          final signedPsbt = await bdk.PartiallySignedTransaction.fromString(
-            payload,
-          );
+          final psbt = bdk.Psbt(psbtBase64: state.unsignedPsbt!);
+          final signedPsbt = bdk.Psbt(psbtBase64: payload);
 
-          final tx = psbt.combine(signedPsbt);
+          final tx = psbt.combine(other: signedPsbt);
 
-          final finalPsbt = Psbt.deserialize(tx.serialize());
+          // TODO: Check if we can't just do tx.finalize() here to get the finalized psbt
+          final finalPsbt = Psbt.deserialize(tx.extractTx().serialize());
 
           final builder = PsbtBuilder.fromPsbt(finalPsbt);
           finalTx = builder.finalizeAll().toHex();

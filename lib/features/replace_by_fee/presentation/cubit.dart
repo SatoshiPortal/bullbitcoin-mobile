@@ -6,7 +6,8 @@ import 'package:bb_mobile/features/replace_by_fee/domain/bump_fee_usecase.dart';
 import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/errors.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
-import 'package:bdk_flutter/bdk_flutter.dart';
+import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReplaceByFeeCubit extends SafeCubit<ReplaceByFeeState> {
   final WalletTransaction originalTransaction;
@@ -66,9 +67,10 @@ class ReplaceByFeeCubit extends SafeCubit<ReplaceByFeeState> {
       );
 
       emit(state.copyWith(txid: txid));
-    } on TransactionConfirmedException catch (_) {
-      emit(state.copyWith(error: TransactionConfirmedError()));
-    } on FeeRateTooLowException catch (_) {
+      // Just replacing with a similar bdk_dart error here for migration from bdk_flutter,
+      //  but no library errors should leak into the presentation layer,
+      //  we should catch them in the usecase and throw application errors instead
+    } on bdk.FeeRateTooLowCreateTxException catch (_) {
       emit(state.copyWith(error: FeeRateTooLowError()));
     } catch (e) {
       emit(state.copyWith(error: GenericError()));

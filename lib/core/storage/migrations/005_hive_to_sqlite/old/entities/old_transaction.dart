@@ -2,7 +2,7 @@
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_address.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_swap.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -31,8 +31,7 @@ abstract class OldTransaction with _$OldTransaction {
     // String? serializedTx,
     @Default([]) List<OldAddress> outAddrs,
     @Default([]) List<OldTxIn> inputs,
-    @JsonKey(includeFromJson: false, includeToJson: false)
-    bdk.TransactionDetails? bdkTx,
+    @JsonKey(includeFromJson: false, includeToJson: false) bdk.TxDetails? bdkTx,
     // Wallet? wallet,
     @Default(false) bool isSwap,
     OldSwapTx? swapTx,
@@ -151,15 +150,15 @@ abstract class OldTransaction with _$OldTransaction {
     if (dt.isAfter(DateTime.now().subtract(const Duration(days: 2)))) {
       return timeago.format(dt);
     }
-    final day =
-        dt.day.toString().length == 1 ? '0${dt.day}' : dt.day.toString();
+    final day = dt.day.toString().length == 1
+        ? '0${dt.day}'
+        : dt.day.toString();
     return '${months[dt.month - 1]} $day, ${dt.year}';
   }
 
-  DateTime? getBroadcastDateTime() =>
-      broadcastTime == null
-          ? null
-          : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
+  DateTime? getBroadcastDateTime() => broadcastTime == null
+      ? null
+      : DateTime.fromMillisecondsSinceEpoch(broadcastTime!);
 
   // bool canRBF() => rbfEnabled == true && timestamp == 0;
   // TODO: New code: Yet to check
@@ -180,14 +179,12 @@ class SerializedTx {
     return SerializedTx(
       version: json['version'] as int?,
       lockTime: json['lock_time'] as int?,
-      input:
-          (json['input'] as List?)
-              ?.map((e) => OldInput.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      output:
-          (json['output'] as List?)
-              ?.map((e) => OldOutput.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      input: (json['input'] as List?)
+          ?.map((e) => OldInput.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      output: (json['output'] as List?)
+          ?.map((e) => OldOutput.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
   int? version;

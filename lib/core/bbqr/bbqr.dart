@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:dart_bbqr/bbqr.dart' as bbqr;
 
@@ -88,8 +88,10 @@ class Bbqr {
 
   static Future<List<String>> splitPsbt(String psbt) async {
     try {
-      final bdkPsbt = await bdk.PartiallySignedTransaction.fromString(psbt);
-      final psbtBytes = bdkPsbt.serialize();
+      // check if the PSBT is valid, will throw if not
+      final parsedPsbt = bdk.Psbt(psbtBase64: psbt);
+      final validPstb = parsedPsbt.serialize();
+      final psbtBytes = base64.decode(validPstb);
 
       // The more we split the easier it is to scan the QR code.
       var minSplitNumber = BigInt.from(psbtBytes.length ~/ 1000);

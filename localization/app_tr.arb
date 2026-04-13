@@ -10041,6 +10041,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "PIN ayarlamadan önce lütfen bir cüzdan yedeklemesi tamamlayın",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "Ücret oranını en az 1 do /vbay tarafından orijinal işlemle kıyaslamanız gerekir",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"

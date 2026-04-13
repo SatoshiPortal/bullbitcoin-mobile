@@ -73,9 +73,7 @@ class ExchangeCubit extends SafeCubit<ExchangeState> {
 
   Future<void> fetchUserSummary({bool force = false}) async {
     try {
-      emit(
-        state.copyWith(apiKeyException: null, getUserSummaryException: null),
-      );
+      emit(state.copyWith(getUserSummaryException: null));
 
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
@@ -92,15 +90,10 @@ class ExchangeCubit extends SafeCubit<ExchangeState> {
       }
 
       loadAnnouncements();
+    } on GetExchangeUserSummaryException catch (e) {
+      emit(state.copyWith(getUserSummaryException: e));
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      if (e is ApiKeyException) {
-        emit(state.copyWith(apiKeyException: e));
-        // Disconnect WebSocket if API key is invalid
-        disconnectWebSocket();
-      } else if (e is GetExchangeUserSummaryException) {
-        emit(state.copyWith(getUserSummaryException: e));
-      }
     }
   }
 

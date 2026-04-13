@@ -1,14 +1,15 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:path_provider/path_provider.dart';
 
 class BdkFacade {
+  // Standard lookahead value for address discovery
+  static const int _lookahead = 25;
+
   static Future<bdk.Wallet> createWallet(WalletModel walletModel) {
     if (walletModel is PublicBdkWalletModel) {
       return createPublicWallet(walletModel);
@@ -28,29 +29,54 @@ class BdkFacade {
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
 
-    final external = await bdk.Descriptor.create(
+    final external = bdk.Descriptor(
       descriptor: walletModel.externalDescriptor,
       network: network,
     );
-    final internal = await bdk.Descriptor.create(
+    final internal = bdk.Descriptor(
       descriptor: walletModel.internalDescriptor,
       network: network,
     );
 
-    // Create the database configuration
-    final dbPath = await _getDbPath(walletModel.dbName);
-    final dbConfig = bdk.DatabaseConfig.sqlite(
-      config: bdk.SqliteDbConfiguration(path: dbPath),
-    );
+    // Get the database path based on the wallet's id for uniqueness and in hex
+    // to ensure it's a valid filename
+    final dbPath = await _getDbPath(walletModel.hexId);
+    final dbFile = File(dbPath);
 
-    final wallet = await bdk.Wallet.create(
-      descriptor: external,
-      changeDescriptor: internal,
-      network: network,
-      databaseConfig: dbConfig,
-    );
+    try {
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
 
-    return wallet;
+      // Use load if database (wallet) exists, otherwise create new
+      final wallet = await dbFile.exists()
+          ? bdk.Wallet.load(
+              descriptor: external,
+              changeDescriptor: internal,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            )
+          : bdk.Wallet(
+              descriptor: external,
+              changeDescriptor: internal,
+              network: network,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            );
+
+      return wallet;
+    } catch (e) {
+      // If there's any error (corrupted db, etc.), delete and recreate
+      if (await dbFile.exists()) {
+        await dbFile.delete();
+      }
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
+      return bdk.Wallet(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: network,
+        persister: dbPersister,
+        lookahead: _lookahead,
+      );
+    }
   }
 
   static Future<bdk.Wallet> createPrivateWallet(WalletModel walletModel) async {
@@ -62,8 +88,8 @@ class BdkFacade {
         ? bdk.Network.testnet
         : bdk.Network.bitcoin;
 
-    final bdkMnemonic = await bdk.Mnemonic.fromString(walletModel.mnemonic);
-    final secretKey = await bdk.DescriptorSecretKey.create(
+    final bdkMnemonic = bdk.Mnemonic.fromString(mnemonic: walletModel.mnemonic);
+    final secretKey = bdk.DescriptorSecretKey(
       network: network,
       mnemonic: bdkMnemonic,
       password: walletModel.passphrase,
@@ -74,93 +100,102 @@ class BdkFacade {
 
     switch (walletModel.scriptType) {
       case ScriptType.bip84:
-        external = await bdk.Descriptor.newBip84(
+        external = bdk.Descriptor.newBip84(
           secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.external_,
           network: network,
-          keychain: bdk.KeychainKind.externalChain,
         );
-        internal = await bdk.Descriptor.newBip84(
+        internal = bdk.Descriptor.newBip84(
           secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.internal,
           network: network,
-          keychain: bdk.KeychainKind.internalChain,
         );
       case ScriptType.bip49:
-        external = await bdk.Descriptor.newBip49(
+        external = bdk.Descriptor.newBip49(
           secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.external_,
           network: network,
-          keychain: bdk.KeychainKind.externalChain,
         );
-        internal = await bdk.Descriptor.newBip49(
+        internal = bdk.Descriptor.newBip49(
           secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.internal,
           network: network,
-          keychain: bdk.KeychainKind.internalChain,
         );
       case ScriptType.bip44:
-        external = await bdk.Descriptor.newBip44(
+        external = bdk.Descriptor.newBip44(
           secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.external_,
           network: network,
-          keychain: bdk.KeychainKind.externalChain,
         );
-        internal = await bdk.Descriptor.newBip44(
+        internal = bdk.Descriptor.newBip44(
           secretKey: secretKey,
+          keychainKind: bdk.KeychainKind.internal,
           network: network,
-          keychain: bdk.KeychainKind.internalChain,
         );
     }
 
-    // Create the database configuration
-    final dbPath = await _getDbPath(walletModel.dbName);
-    final dbConfig = bdk.DatabaseConfig.sqlite(
-      config: bdk.SqliteDbConfiguration(path: dbPath),
-    );
+    // Get the database path
+    final dbPath = await _getDbPath(walletModel.hexId);
+    final dbFile = File(dbPath);
 
-    final wallet = await bdk.Wallet.create(
-      descriptor: external,
-      changeDescriptor: internal,
-      network: network,
-      databaseConfig: dbConfig,
-    );
+    try {
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
 
-    return wallet;
+      // Use load if database exists, otherwise create new
+      final wallet = await dbFile.exists()
+          ? bdk.Wallet.load(
+              descriptor: external,
+              changeDescriptor: internal,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            )
+          : bdk.Wallet(
+              descriptor: external,
+              changeDescriptor: internal,
+              network: network,
+              persister: dbPersister,
+              lookahead: _lookahead,
+            );
+
+      return wallet;
+    } catch (e) {
+      // If there's any error (corrupted db, etc.), delete and recreate
+      if (await dbFile.exists()) {
+        await dbFile.delete();
+      }
+      final dbPersister = bdk.Persister.newSqlite(path: dbPath);
+      return bdk.Wallet(
+        descriptor: external,
+        changeDescriptor: internal,
+        network: network,
+        persister: dbPersister,
+        lookahead: _lookahead,
+      );
+    }
   }
 
-  static Future<String> _getDbPath(String dbName) async {
+  /// Persists wallet changes to the database
+  static Future<void> saveWallet(
+    bdk.Wallet bdkWallet,
+    String walletIdHex,
+  ) async {
+    final dbPath = await _getDbPath(walletIdHex);
+    final persister = bdk.Persister.newSqlite(path: dbPath);
+    bdkWallet.persist(persister: persister);
+  }
+
+  static Future<String> _getDbPath(String walletIdHex) async {
     final dir = await getApplicationDocumentsDirectory();
-    return '${dir.path}/$dbName';
+    // Add since bdk_dart might not migrate old bdk_flutter db we suffix the db name with `_bdk_dart` to avoid conflicts
+    return '${dir.path}/${'${walletIdHex}_bdk_dart'}';
   }
 
   static Future<void> delete(WalletModel walletModel) async {
-    final dbPath = await _getDbPath(walletModel.dbName);
+    final dbPath = await _getDbPath(walletModel.hexId);
     final dbFile = File(dbPath);
 
     if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
 
     await dbFile.delete();
-  }
-
-  static Future<void> sync(
-    WalletModel wallet,
-    ElectrumServerModel electrumServer,
-    ElectrumSettingsModel electrumSettings,
-  ) async {
-    final blockchain = await bdk.Blockchain.create(
-      config: bdk.BlockchainConfig.electrum(
-        config: bdk.ElectrumConfig(
-          url: electrumServer.url,
-          // Only set the socks5 if it's not empty,
-          //  otherwise bdk will throw an error
-          socks5: electrumSettings.socks5?.isNotEmpty == true
-              ? electrumSettings.socks5
-              : null,
-          retry: electrumSettings.retry,
-          timeout: electrumSettings.timeout,
-          stopGap: BigInt.from(electrumSettings.stopGap),
-          validateDomain: electrumSettings.validateDomain,
-        ),
-      ),
-    );
-
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    await bdkWallet.sync(blockchain: blockchain);
   }
 }
