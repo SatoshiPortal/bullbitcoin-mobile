@@ -10,8 +10,6 @@ sealed class InstitutionModel with _$InstitutionModel {
   const factory InstitutionModel({
     required String code,
     required String name,
-    // ignore: invalid_annotation_target
-    @JsonKey(name: 'accounTypes')
     required List<InstitutionAccountTypeModel> accountTypes,
   }) = _InstitutionModel;
 

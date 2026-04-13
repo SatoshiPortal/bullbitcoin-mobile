@@ -835,6 +835,7 @@
   "fundExchangeJurisdictionMexico": "🇲🇽 Mexico",
   "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Rica",
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
   "fundExchangeMethodEmailETransfer": "Transferencia electrónica por correo",
   "fundExchangeMethodEmailETransferSubtitle": "Método más fácil y rápido (instantáneo)",
   "fundExchangeMethodBankTransferWire": "Transferencia bancaria (Wire o EFT)",
