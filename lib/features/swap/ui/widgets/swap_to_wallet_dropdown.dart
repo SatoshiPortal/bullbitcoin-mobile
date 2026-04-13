@@ -15,6 +15,9 @@ class SwapToWalletDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final wallets = context.select((TransferBloc bloc) => bloc.state.wallets);
     final selected = context.select((TransferBloc bloc) => bloc.state.toWallet);
+    final fromWallet = context.select(
+      (TransferBloc bloc) => bloc.state.fromWallet,
+    );
 
     return Column(
       crossAxisAlignment: .start,
@@ -25,26 +28,34 @@ class SwapToWalletDropdown extends StatelessWidget {
           const LoadingLineContent()
         else
           BBDropdown<Wallet>(
-            items: wallets
-                .map(
-                  (wallet) => DropdownMenuItem(
-                    value: wallet,
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          wallet.isLiquid
-                              ? 'assets/logos/liquid.png'
-                              : 'assets/logos/bitcoin.png',
-                          width: 20,
-                          height: 20,
+            items:
+                [
+                      ...wallets.where((w) => w.id != fromWallet?.id),
+                      ...wallets.where((w) => w.id == fromWallet?.id),
+                    ]
+                    .map(
+                      (wallet) => DropdownMenuItem(
+                        value: wallet,
+                        enabled: wallet.id != fromWallet?.id,
+                        child: Opacity(
+                          opacity: wallet.id != fromWallet?.id ? 1.0 : 0.4,
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                wallet.isLiquid
+                                    ? 'assets/logos/liquid.png'
+                                    : 'assets/logos/bitcoin.png',
+                                width: 20,
+                                height: 20,
+                              ),
+                              const Gap(8),
+                              Text(wallet.displayLabel(context)),
+                            ],
+                          ),
                         ),
-                        const Gap(8),
-                        Text(wallet.displayLabel(context)),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
+                      ),
+                    )
+                    .toList(),
             value: selected,
             validator: (value) {
               if (value == null) {
