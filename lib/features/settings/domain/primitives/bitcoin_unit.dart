@@ -1,0 +1,1 @@
+enum BitcoinUnit { btc, sats }
