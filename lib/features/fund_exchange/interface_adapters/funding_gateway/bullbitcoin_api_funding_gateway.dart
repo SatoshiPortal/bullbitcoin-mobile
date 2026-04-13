@@ -76,7 +76,12 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
 
     try {
       if (fundingMethod is CopBankTransfer) {
-        final result = resp.data['result'] as String;
+        final result = resp.data['result'];
+        if (result is! String) {
+          throw const FetchFundingDetailsFailed(
+            message: 'Invalid payment link format',
+          );
+        }
         return CopBankTransferFundingDetails(paymentLink: result);
       }
       final element = resp.data['result']['element'] as Map<String, dynamic>;
