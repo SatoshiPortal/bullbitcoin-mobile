@@ -40,14 +40,38 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     );
 
     if (resp.statusCode != 200) {
+      final method =
+          fundingMethod is CopBankTransfer
+              ? 'getCopPaymentLink'
+              : 'getFundingDetails';
+      log.severe(
+        message: '$method failed: unexpected status code ${resp.statusCode}',
+        error: FetchFundingDetailsFailed(
+          message: 'Unexpected status code ${resp.statusCode}',
+        ),
+        trace: StackTrace.current,
+      );
       throw const FetchFundingDetailsFailed(message: 'Unexpected status code');
     }
 
     final error = resp.data['error'];
     if (error != null) {
-      throw FetchFundingDetailsFailed(
-        message: error['message']?.toString() ?? 'Unknown API error',
+      final method =
+          fundingMethod is CopBankTransfer
+              ? 'getCopPaymentLink'
+              : 'getFundingDetails';
+      final apiError = error['data']?['apiError'];
+      final errorCode = apiError?['code']?.toString() ?? '';
+      final errorMessage =
+          apiError?['en']?.toString() ??
+          error['message']?.toString() ??
+          'Unknown API error';
+      log.severe(
+        message: '$method API error [$errorCode]: $errorMessage',
+        error: FetchFundingDetailsFailed(message: errorMessage),
+        trace: StackTrace.current,
       );
+      throw FetchFundingDetailsFailed(message: errorMessage);
     }
 
     try {
