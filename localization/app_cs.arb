@@ -219,6 +219,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Před nastavením PIN dokončete zálohu peněženky",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "settingsCurrencyTitle": "Čeština",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"

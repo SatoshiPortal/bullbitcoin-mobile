@@ -9461,6 +9461,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "يرجى إكمال نسخة احتياطية للمحفظة قبل تعيين رمز PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"

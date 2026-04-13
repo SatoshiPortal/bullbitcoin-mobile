@@ -10120,6 +10120,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "PIN을 설정하기 전에 지갑 백업을 완료해 주세요",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"

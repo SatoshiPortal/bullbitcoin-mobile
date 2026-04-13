@@ -97,5 +97,6 @@
   "legacyStorageWarningLater": "Baadaye",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN"
 }

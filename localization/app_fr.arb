@@ -107,6 +107,7 @@
   "pinCodeCheckingStatus": "Vérification du statut du code PIN",
   "pinCodeProcessing": "Traitement",
   "pinCodeSettingUp": "Configuration de votre code PIN",
+  "pinCodeBackupRequiredWarning": "Veuillez effectuer une sauvegarde du portefeuille avant de définir un code PIN",
   "settingsCurrencyTitle": "Devise",
   "settingsAppSettingsTitle": "Paramètres de l'application",
   "settingsTermsOfServiceTitle": "Conditions d'utilisation",

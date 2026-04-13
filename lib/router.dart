@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
@@ -145,7 +145,7 @@ class AppRouter {
       SendRouter.route,
       SwapRouter.route,
       ...BuyRouter.routes,
-      FundExchangeRouter.route,
+      ...FundExchangeRouter.routes,
       SellRouter.route,
       WithdrawRouter.route,
       PayRouter.route,

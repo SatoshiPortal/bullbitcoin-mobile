@@ -49,7 +49,7 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                           context.loc.pinCodeConfirmTitle,
                           textAlign: .center,
                           style: context.font.headlineMedium?.copyWith(
-                            color: context.appColors.outline,
+                            color: context.appColors.onSurface,
                           ),
                           maxLines: 3,
                         ),
@@ -59,26 +59,26 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                           PinCodeSettingState,
                           (String, bool)
                         >(
-                          selector:
-                              (state) => (
-                                state.pinCodeConfirmation,
-                                state.obscurePinCode,
-                              ),
+                          selector: (state) =>
+                              (state.pinCodeConfirmation, state.obscurePinCode),
                           builder: (context, data) {
                             final (pinCode, obscurePinCode) = data;
                             return BBInputText(
                               value: pinCode,
                               obscure: obscurePinCode,
-                              onRightTap:
-                                  () => context.read<PinCodeSettingBloc>().add(
+                              onRightTap: () =>
+                                  context.read<PinCodeSettingBloc>().add(
                                     const PinCodeSettingPinCodeObscureToggled(),
                                   ),
-                              rightIcon:
-                                  obscurePinCode
-                                      ? const Icon(
-                                        Icons.visibility_off_outlined,
-                                      )
-                                      : const Icon(Icons.visibility_outlined),
+                              rightIcon: obscurePinCode
+                                  ? Icon(
+                                      Icons.visibility_off_outlined,
+                                      color: context.appColors.onSurface,
+                                    )
+                                  : Icon(
+                                      Icons.visibility_outlined,
+                                      color: context.appColors.onSurface,
+                                    ),
                               onlyNumbers: true,
                               onChanged: (value) {},
                             );
@@ -94,12 +94,12 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                           builder: (context, showError) {
                             return showError
                                 ? Text(
-                                  context.loc.pinCodeMismatchError,
-                                  textAlign: .start,
-                                  style: context.font.labelSmall?.copyWith(
-                                    color: context.appColors.error,
-                                  ),
-                                )
+                                    context.loc.pinCodeMismatchError,
+                                    textAlign: .start,
+                                    style: context.font.labelSmall?.copyWith(
+                                      color: context.appColors.error,
+                                    ),
+                                  )
                                 : const SizedBox.shrink();
                           },
                         ),
@@ -113,14 +113,14 @@ class ConfirmPinCodeScreen extends StatelessWidget {
                 child: DialPad(
                   disableFeedback: true,
                   onlyDigits: true,
-                  onNumberPressed:
-                      (value) => context.read<PinCodeSettingBloc>().add(
+                  onNumberPressed: (value) =>
+                      context.read<PinCodeSettingBloc>().add(
                         PinCodeSettingPinCodeConfirmationNumberAdded(
                           int.parse(value),
                         ),
                       ),
-                  onBackspacePressed:
-                      () => context.read<PinCodeSettingBloc>().add(
+                  onBackspacePressed: () =>
+                      context.read<PinCodeSettingBloc>().add(
                         const PinCodeSettingPinCodeConfirmationNumberRemoved(),
                       ),
                 ),
@@ -159,17 +159,19 @@ class _ConfirmButton extends StatelessWidget {
           return BBButton.big(
             label: context.loc.pinCodeConfirm,
             textStyle: context.font.headlineLarge,
-            disabled: !canConfirm,
-            bgColor:
-                canConfirm
-                    ? context.appColors.secondary
-                    : context.appColors.outline,
+            bgColor: canConfirm
+                ? context.appColors.secondary
+                : context.appColors.textMuted,
             onPressed: () {
-              context.read<PinCodeSettingBloc>().add(
-                const PinCodeSettingPinCodeConfirmed(),
-              );
+              if (canConfirm) {
+                context.read<PinCodeSettingBloc>().add(
+                  const PinCodeSettingPinCodeConfirmed(),
+                );
+              }
             },
-            textColor: context.appColors.onSecondary,
+            textColor: canConfirm
+                ? context.appColors.onSecondary
+                : context.appColors.surface,
           );
         },
       ),

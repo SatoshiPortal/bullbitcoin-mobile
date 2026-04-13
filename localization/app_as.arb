@@ -76,5 +76,6 @@
   "legacyStorageWarningLater": "পিছত",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক"
 }

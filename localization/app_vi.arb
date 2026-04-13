@@ -77,5 +77,6 @@
   "legacyStorageWarningLater": "Sau",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN"
 }

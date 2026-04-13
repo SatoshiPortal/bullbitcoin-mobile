@@ -77,5 +77,6 @@
   "legacyStorageWarningLater": "Aveli ush",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ"
 }

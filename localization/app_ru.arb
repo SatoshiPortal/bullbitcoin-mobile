@@ -3330,6 +3330,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid адрес",
   "backupWalletSuccessTestButton": "Проверка",
   "pinCodeSettingUp": "Настройка PIN-кода",
+  "pinCodeBackupRequiredWarning": "Пожалуйста, выполните резервное копирование кошелька перед установкой PIN-кода",
   "replaceByFeeErrorFeeRateTooLow": "Вы должны увеличить ставку сбора как минимум на 1 атт/вбайт по сравнению с первоначальной транзакцией",
   "payPriority": "Приоритет",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Перевод средств в Коста-Рике",

@@ -102,7 +102,8 @@ enum OrderStatus {
   inProgress('In progress'),
   awaitingConfirmation('Awaiting confirmation'),
   completed('Completed'),
-  rejected('Rejected');
+  rejected('Rejected'),
+  failed('Failed');
 
   final String value;
   const OrderStatus(this.value);

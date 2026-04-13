@@ -3333,6 +3333,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "流动资金",
   "backupWalletSuccessTestButton": "退约",
   "pinCodeSettingUp": "1. 制定您的《个人资料》",
+  "pinCodeBackupRequiredWarning": "请在设置PIN之前完成钱包备份",
   "replaceByFeeErrorFeeRateTooLow": "您需要将收费率提高到至少1分之一的CO/vbyte,而不是原来的交易",
   "payPriority": "优先程度",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "哥斯达黎加哥伦的转移资金",

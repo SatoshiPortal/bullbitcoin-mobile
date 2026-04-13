@@ -8308,6 +8308,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Παρακαλώ ολοκληρώστε ένα αντίγραφο ασφαλείας πορτοφολιού πριν ορίσετε PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "Πρέπει να αυξήσετε το ποσοστό χρέωσης κατά τουλάχιστον 1 sat/vbyte σε σύγκριση με την αρχική συναλλαγή",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
