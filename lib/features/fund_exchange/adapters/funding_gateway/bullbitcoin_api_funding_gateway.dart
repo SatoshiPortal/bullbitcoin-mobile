@@ -5,9 +5,9 @@ import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_juris
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/models/get_funding_details_request_params_model.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/models/get_funding_details_response_model.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/models/institution_model.dart';
+import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/get_funding_details_request_params_model.dart';
+import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/get_funding_details_response_model.dart';
+import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/institution_model.dart';
 import 'package:dio/dio.dart';
 
 class BullBitcoinApiFundingGateway implements FundingGatewayPort {

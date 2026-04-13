@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
-import 'package:bb_mobile/features/fund_exchange/interface_adapters/funding_gateway/models/institution_account_type_model.dart';
+import 'package:bb_mobile/features/fund_exchange/adapters/funding_gateway/models/institution_account_type_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'institution_model.freezed.dart';
