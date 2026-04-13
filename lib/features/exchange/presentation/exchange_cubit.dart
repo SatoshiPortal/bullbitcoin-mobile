@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/bloc/safe_cubit.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
