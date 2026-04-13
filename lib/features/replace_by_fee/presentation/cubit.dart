@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/replace_by_fee/domain/fee_entity.dart';
 import 'package:bb_mobile/features/replace_by_fee/errors.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ReplaceByFeeCubit extends SafeCubit<ReplaceByFeeState> {
   final WalletTransaction originalTransaction;
