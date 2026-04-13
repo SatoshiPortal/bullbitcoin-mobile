@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -144,6 +145,7 @@ class SendLocator {
     locator.registerFactoryParam<SendCubit, Wallet?, void>(
       (wallet, _) => SendCubit(
         wallet: wallet,
+        labelsFacade: locator<LabelsFacade>(),
         bestWalletUsecase: locator<SelectBestWalletUsecase>(),
         detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
         getSettingsUsecase: locator<GetSettingsUsecase>(),
