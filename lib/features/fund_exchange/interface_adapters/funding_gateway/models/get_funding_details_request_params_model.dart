@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -43,7 +44,7 @@ sealed class GetFundingDetailsRequestParamsModel
           : null,
       amount: fundingMethod is CopBankTransfer ? fundingMethod.amountCop : null,
       callbackUrl: fundingMethod is CopBankTransfer
-          ? "https://app.bullbitcoin.com"
+          ? ApiServiceConstants.bbAppUrl
           : null,
     );
   }
