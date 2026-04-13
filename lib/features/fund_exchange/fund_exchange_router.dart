@@ -100,31 +100,36 @@ class FundExchangeRouter {
                 },
               ),
               // Navigate to COP input screen once institutions are loaded.
-              // Uses goNamed so it replaces the current route stack entry
-              // (including the warning screen if it is active), avoiding a
-              // flash back to the method selection screen.
+              // Uses pushNamed to avoid rebuilding the parent /fund-exchange
+              // route (which would dispose the BLoC passed via extra).
               BlocListener<FundExchangeBloc, FundExchangeState>(
                 listenWhen: (previous, current) =>
                     previous.fundingInstitutions == null &&
                     current.fundingInstitutions != null,
                 listener: (context, state) {
-                  context.goNamed(
+                  context.pushNamed(
                     FundExchangeRoute.fundExchangeCopBankTransferInput.name,
                     extra: context.read<FundExchangeBloc>(),
                   );
                 },
               ),
               // Navigate to the funding details screen once details are loaded.
+              // COP uses pushNamed so the input screen stays in the stack and
+              // the user gets a back button to adjust amount/bank if needed.
               BlocListener<FundExchangeBloc, FundExchangeState>(
                 listenWhen: (previous, current) =>
                     previous.fundingDetails == null &&
                     current.fundingDetails != null,
                 listener: (context, state) {
-                  _goToFundingScreen(
-                    context,
-                    context.read<FundExchangeBloc>(),
-                    state.fundingDetails,
-                  );
+                  final bloc = context.read<FundExchangeBloc>();
+                  if (state.fundingDetails is CopBankTransferFundingDetails) {
+                    context.pushNamed(
+                      FundExchangeRoute.fundExchangeCopBankTransfer.name,
+                      extra: bloc,
+                    );
+                  } else {
+                    _goToFundingScreen(context, bloc, state.fundingDetails);
+                  }
                 },
               ),
               // Show the scam warning consent bottom sheet when a method is

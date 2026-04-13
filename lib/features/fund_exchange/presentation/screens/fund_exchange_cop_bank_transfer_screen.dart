@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
@@ -44,18 +45,17 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.fundExchangeCopOpenPaymentLink,
                     iconData: Icons.open_in_new,
-                    onPressed: () async {
-                      final launched = await launchUrl(
-                        Uri.parse(details.paymentLink),
-                        mode: LaunchMode.inAppBrowserView,
-                      );
-                      if (!launched && context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              context.loc.fundExchangeCopFailedToOpenLink,
-                            ),
-                          ),
+                    onPressed: () {
+                      try {
+                        launchUrl(
+                          Uri.parse(details.paymentLink),
+                          mode: LaunchMode.inAppBrowserView,
+                        );
+                      } catch (e, stackTrace) {
+                        log.severe(
+                          message: 'Failed to open COP payment link',
+                          error: e,
+                          trace: stackTrace,
                         );
                       }
                     },

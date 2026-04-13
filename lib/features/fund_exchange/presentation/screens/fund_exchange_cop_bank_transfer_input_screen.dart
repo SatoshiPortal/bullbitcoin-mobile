@@ -86,7 +86,15 @@ class _FundExchangeCopBankTransferInputScreenState
               .toUpperCase()
         : '';
 
-    return Scaffold(
+    return PopScope(
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          context.read<FundExchangeBloc>().add(
+            const FundExchangeEvent.fundingDetailsErrorCleared(),
+          );
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
         title: Text(context.loc.fundExchangeBankTransfer),
         bottom: PreferredSize(
@@ -295,6 +303,8 @@ class _FundExchangeCopBankTransferInputScreenState
           ),
         ),
       ),
+    ),
     );
   }
 }
+

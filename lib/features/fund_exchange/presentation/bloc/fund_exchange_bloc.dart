@@ -39,6 +39,7 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     on<FundExchangeFundingDetailsRequested>(_onFundingDetailsRequested);
     on<FundExchangeScamWarningConsentSubmitted>(_onScamWarningConsentSubmitted);
     on<FundExchangeScamWarningDismissed>(_onScamWarningDismissed);
+    on<FundExchangeFundingDetailsErrorCleared>(_onFundingDetailsErrorCleared);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
@@ -241,5 +242,12 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     Emitter<FundExchangeState> emit,
   ) async {
     emit(state.copyWith(pendingConsentAction: null));
+  }
+
+  Future<void> _onFundingDetailsErrorCleared(
+    FundExchangeFundingDetailsErrorCleared event,
+    Emitter<FundExchangeState> emit,
+  ) async {
+    emit(state.copyWith(getExchangeFundingDetailsException: null));
   }
 }
