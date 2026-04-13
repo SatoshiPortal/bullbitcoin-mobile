@@ -40,10 +40,9 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     );
 
     if (resp.statusCode != 200) {
-      final method =
-          fundingMethod is CopBankTransfer
-              ? 'getCopPaymentLink'
-              : 'getFundingDetails';
+      final method = fundingMethod is CopBankTransfer
+          ? 'getCopPaymentLink'
+          : 'getFundingDetails';
       log.severe(
         message: '$method failed: unexpected status code ${resp.statusCode}',
         error: FetchFundingDetailsFailed(
@@ -56,10 +55,9 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
 
     final error = resp.data['error'];
     if (error != null) {
-      final method =
-          fundingMethod is CopBankTransfer
-              ? 'getCopPaymentLink'
-              : 'getFundingDetails';
+      final method = fundingMethod is CopBankTransfer
+          ? 'getCopPaymentLink'
+          : 'getFundingDetails';
       final apiError = error['data']?['apiError'];
       final errorCode = apiError?['code']?.toString() ?? '';
       final errorMessage =
@@ -75,6 +73,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     }
 
     try {
+      final result = resp.data['result'];
       if (fundingMethod is CopBankTransfer) {
         final result = resp.data['result'];
         if (result is! String) {
@@ -84,7 +83,12 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         }
         return CopBankTransferFundingDetails(paymentLink: result);
       }
-      final element = resp.data['result']['element'] as Map<String, dynamic>;
+      if (result is! Map<String, dynamic>) {
+        throw const FetchFundingDetailsFailed(
+          message: 'Missing funding details in response',
+        );
+      }
+      final element = result['element'] as Map<String, dynamic>;
       return GetFundingDetailsResponseModel.fromJson(
         element,
       ).toDomain(method: fundingMethod);
@@ -123,7 +127,9 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       );
     }
 
-    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    final result = resp.data['result'];
+    if (result is! Map<String, dynamic>) return [];
+    final elements = result['elements'] as List<dynamic>?;
     if (elements == null) return [];
 
     return elements
