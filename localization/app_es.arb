@@ -567,6 +567,8 @@
   "payInProgress": "¡Pago en progreso!",
   "payInProgressDescription": "Su pago ha sido iniciado y el destinatario recibirá los fondos después de que su transacción reciba 1 confirmación on-chain.",
   "payViewDetails": "Ver detalles",
+  "payViewReceipt": "Ver comprobante",
+  "paySinpeReceipt": "Comprobante SINPE",
   "payCompleted": "¡Pago completado!",
   "payCompletedDescription": "Su pago ha sido completado y el destinatario ha recibido los fondos.",
   "paySinpeEnviado": "SINPE ENVIADO!",

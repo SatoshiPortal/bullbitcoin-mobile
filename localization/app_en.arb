@@ -2443,6 +2443,14 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
+  "payViewReceipt": "View receipt",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
   "payCompleted": "Payment Completed!",
   "@payCompleted": {
     "description": "Title for payment completed screen"
