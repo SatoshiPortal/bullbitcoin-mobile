@@ -8,7 +8,7 @@ import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:bb_mobile/features/dca/presentation/dca_bloc.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_amount_input_fields.dart';
 import 'package:bb_mobile/features/dca/ui/widgets/dca_frequency_radio_list.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -36,9 +36,8 @@ class _DcaScreenState extends State<DcaScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<DcaBloc, DcaState>(
-      listenWhen:
-          (previous, current) =>
-              previous is DcaInitialState && current is DcaBuyInputState,
+      listenWhen: (previous, current) =>
+          previous is DcaInitialState && current is DcaBuyInputState,
       listener: (context, state) {
         setState(() {
           _hasFunds = state.balances.isNotEmpty;
@@ -72,7 +71,7 @@ class _DcaScreenState extends State<DcaScreen> {
                       label: context.loc.dcaSetupFundAccount,
                       onPressed: () {
                         context.pushReplacementNamed(
-                          FundExchangeRoute.fundExchangeAccount.name,
+                          FundExchangeRoute.fundExchange.name,
                         );
                       },
                       bgColor: context.appColors.primary,
@@ -100,11 +99,9 @@ class _DcaScreenState extends State<DcaScreen> {
                     const Gap(24),
                     FormField<DcaBuyFrequency>(
                       initialValue: _frequency,
-                      validator:
-                          (val) =>
-                              val == null
-                                  ? context.loc.dcaSetupFrequencyError
-                                  : null,
+                      validator: (val) => val == null
+                          ? context.loc.dcaSetupFrequencyError
+                          : null,
                       builder: (field) {
                         return DcaFrequencyRadioList(
                           selectedFrequency: field.value,
