@@ -10647,6 +10647,10 @@
   "@fundExchangeCopOpenPaymentLink": {
     "description": "Button label to open COP payment link"
   },
+  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
+  "@fundExchangeCopFailedToOpenLink": {
+    "description": "Error shown when the COP payment link fails to open"
+  },
   "dcaSetupTitle": "Set Recurring Buy",
   "@dcaSetupTitle": {
     "description": "AppBar title for DCA setup screen"

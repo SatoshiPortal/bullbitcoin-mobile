@@ -3368,6 +3368,7 @@
   "fundExchangeCopGeneratePaymentLink": "Generar enlace de pago",
   "fundExchangeCopRedirectMessage": "Serás redirigido a una página externa para realizar el pago.",
   "fundExchangeCopOpenPaymentLink": "Abrir enlace de pago",
+  "fundExchangeCopFailedToOpenLink": "No se pudo abrir el enlace de pago. Por favor intenta de nuevo o contacta soporte.",
   "dcaSetupTitle": "Configurar compra recurrente",
   "dcaSetupInsufficientBalance": "Saldo insuficiente",
   "dcaSetupInsufficientBalanceMessage": "No tiene suficiente saldo para crear esta orden.",

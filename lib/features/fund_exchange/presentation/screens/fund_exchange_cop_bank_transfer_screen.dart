@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -46,12 +44,20 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
                   BBButton.big(
                     label: context.loc.fundExchangeCopOpenPaymentLink,
                     iconData: Icons.open_in_new,
-                    onPressed: () {
-                      launchUrl(
+                    onPressed: () async {
+                      final launched = await launchUrl(
                         Uri.parse(details.paymentLink),
                         mode: LaunchMode.inAppBrowserView,
                       );
-                      context.goNamed(ExchangeRoute.exchangeHome.name);
+                      if (!launched && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.loc.fundExchangeCopFailedToOpenLink,
+                            ),
+                          ),
+                        );
+                      }
                     },
                     bgColor: context.appColors.primary,
                     textColor: context.appColors.onPrimary,
