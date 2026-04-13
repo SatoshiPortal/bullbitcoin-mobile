@@ -3332,6 +3332,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "Indirizzo liquido",
   "backupWalletSuccessTestButton": "Test di backup",
   "pinCodeSettingUp": "Impostazione del codice PIN",
+  "pinCodeBackupRequiredWarning": "Completa un backup del portafoglio prima di impostare un PIN",
   "replaceByFeeErrorFeeRateTooLow": "È necessario aumentare il tasso di tassa di almeno 1 sat/vbyte rispetto alla transazione originale",
   "payPriority": "Priorità",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Fondi di trasferimento in Costa Rica Colón (CRC)",

@@ -69,6 +69,7 @@
   "pinCodeCheckingStatus": "Tarkistetaan PIN-tilaa",
   "pinCodeProcessing": "Käsitellään",
   "pinCodeSettingUp": "PIN-koodin käyttöönotto",
+  "pinCodeBackupRequiredWarning": "Suorita lompakkosi varmuuskopiointi ennen PIN-koodin asettamista",
   "settingsCurrencyTitle": "Valuutta",
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",

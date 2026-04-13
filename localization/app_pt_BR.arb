@@ -10256,6 +10256,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Por favor, conclua um backup da carteira antes de definir um PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "bitboxScreenActionFailed": "{action}",
   "@bitboxScreenActionFailed": {
     "description": "Main text when action fails",
