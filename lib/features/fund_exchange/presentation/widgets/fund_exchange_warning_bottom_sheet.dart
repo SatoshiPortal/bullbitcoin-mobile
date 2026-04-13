@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_scam_warning_card.dart';
@@ -96,12 +97,12 @@ class _FundExchangeWarningBottomSheetState
                 ),
               ),
               const Gap(8.0),
-              Text(
+              BBText(
                 context.loc.fundExchangeWarningTitle,
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(4.0),
-              Text(
+              BBText(
                 context.loc.fundExchangeWarningDescription,
                 style: theme.textTheme.headlineSmall,
                 textAlign: TextAlign.center,
@@ -124,7 +125,7 @@ class _FundExchangeWarningBottomSheetState
                           _hasConfirmedNoCoercion = value;
                         });
                       },
-                title: Text(
+                title: BBText(
                   context.loc.fundExchangeWarningConfirmation,
                   style: theme.textTheme.bodyLarge,
                 ),
@@ -132,11 +133,10 @@ class _FundExchangeWarningBottomSheetState
               ),
               const Gap(16.0),
               if (_submitConsentError != null) ...[
-                Text(
+                BBText(
                   context.loc.fundExchangeScamConsentError,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.error,
-                  ),
+                  style: theme.textTheme.bodyMedium,
+                  color: theme.colorScheme.error,
                   textAlign: TextAlign.center,
                 ),
                 const Gap(8.0),

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_done_bottom_navigation_bar.dart';
@@ -37,7 +38,7 @@ class FundExchangeCopBankTransferScreen extends StatelessWidget {
                   const FundExchangeDetailsErrorCard(),
                   const Gap(24.0),
                 ] else ...[
-                  Text(
+                  BBText(
                     context.loc.fundExchangeCopRedirectMessage,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),

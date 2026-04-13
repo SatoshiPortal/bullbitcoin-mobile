@@ -51,7 +51,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                   crossAxisAlignment: .start,
                   children: [
                     Expanded(
-                      child: Text(step, style: const TextStyle(fontSize: 14)),
+                      child: BBText(step, style: theme.textTheme.bodyMedium),
                     ),
                   ],
                 ),

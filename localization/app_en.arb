@@ -10611,10 +10611,6 @@
   "@fundExchangeCopSenderName": {
     "description": "Label for sender name field in COP bank transfer"
   },
-  "fundExchangeCopCopy": "Copy",
-  "@fundExchangeCopCopy": {
-    "description": "Copy button label in COP bank transfer"
-  },
   "fundExchangeCopIssuingBank": "Issuing Bank",
   "@fundExchangeCopIssuingBank": {
     "description": "Label for issuing bank dropdown in COP bank transfer"

@@ -41,7 +41,7 @@ class FundExchangeSpeiTransferScreen extends StatelessWidget {
                 style: theme.textTheme.displaySmall,
               ),
               const Gap(16.0),
-              Text(
+              BBText(
                 context.loc.fundExchangeSpeiDescription,
                 style: theme.textTheme.headlineSmall,
               ),

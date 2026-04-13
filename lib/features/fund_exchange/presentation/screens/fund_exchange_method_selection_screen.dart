@@ -184,11 +184,10 @@ class _FundExchangeMethodSelectionScreenState
                   },
                 if (_fundingDetailsError != null || _institutionsError != null) ...[
                   const Gap(16.0),
-                  Text(
+                  BBText(
                     context.loc.fundExchangeErrorLoadingDetails,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.error,
-                    ),
+                    style: theme.textTheme.bodyMedium,
+                    color: theme.colorScheme.error,
                     textAlign: TextAlign.center,
                   ),
                 ],

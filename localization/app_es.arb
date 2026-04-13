@@ -3359,7 +3359,6 @@
   "fundExchangeBankTransferSubtitle": "Envíe una transferencia bancaria desde su cuenta bancaria",
   "fundExchangeCopDailyLimitWarning": "Si excedes tu límite diario de transacciones, la transacción fallará. Tendrás que contactar al soporte al cliente.",
   "fundExchangeCopSenderName": "Nombre del remitente",
-  "fundExchangeCopCopy": "Copiar",
   "fundExchangeCopIssuingBank": "Banco emisor",
   "fundExchangeCopSelectBankError": "Por favor selecciona un banco emisor",
   "fundExchangeCopAmount": "Monto",

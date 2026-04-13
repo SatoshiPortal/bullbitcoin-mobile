@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
@@ -23,19 +24,20 @@ class FundExchangeDetail extends StatelessWidget {
       mainAxisAlignment: .center,
       crossAxisAlignment: .start,
       children: [
-        Text(label),
+        BBText(label, style: theme.textTheme.bodyMedium),
         if (helpText != null) ...[
           const Gap(4.0),
-          Text(
+          BBText(
             helpText!,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: context.appColors.outline,
-            ),
+            style: theme.textTheme.labelMedium,
+            color: context.appColors.outline,
           ),
         ],
         const Gap(8.0),
         ListTile(
-          title: value != null ? Text(value!) : const LoadingLineContent(),
+          title: value != null
+              ? BBText(value!, style: theme.textTheme.bodyLarge)
+              : const LoadingLineContent(),
           trailing: IconButton(
             onPressed:
                 value != null

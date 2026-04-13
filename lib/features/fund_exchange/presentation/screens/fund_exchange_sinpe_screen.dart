@@ -55,7 +55,7 @@ class FundExchangeSinpeScreen extends StatelessWidget {
                 ),
               ),
               const Gap(24.0),
-              Text(
+              BBText(
                 context.loc.fundExchangeSinpeAddedToBalance,
                 style: theme.textTheme.headlineSmall,
               ),

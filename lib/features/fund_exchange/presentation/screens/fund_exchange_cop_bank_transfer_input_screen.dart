@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_institution.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
@@ -81,6 +82,7 @@ class _FundExchangeCopBankTransferInputScreenState
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final bloc = context.read<FundExchangeBloc>();
     final userSummary = bloc.state.userSummary;
     final institutions = bloc.state.fundingInstitutions ?? [];
@@ -140,9 +142,9 @@ class _FundExchangeCopBankTransferInputScreenState
                       ),
                       const Gap(8.0),
                       Expanded(
-                        child: Text(
+                        child: BBText(
                           context.loc.fundExchangeCopDailyLimitWarning,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: theme.textTheme.bodyMedium,
                         ),
                       ),
                     ],
@@ -150,38 +152,52 @@ class _FundExchangeCopBankTransferInputScreenState
                 ),
                 const Gap(24.0),
                 // Sender Name (read-only with copy)
-                Text(
+                BBText(
                   context.loc.fundExchangeCopSenderName,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: context.appColors.secondary,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
+                  color: context.appColors.secondary,
                 ),
                 const Gap(8.0),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    side: BorderSide(
-                      color: context.appColors.secondaryFixedDim,
+                TextFormField(
+                  initialValue: senderName,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: context.appColors.onSecondary,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.appColors.secondaryFixedDim,
+                      ),
                     ),
-                  ),
-                  title: Text(senderName),
-                  trailing: TextButton.icon(
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: senderName));
-                    },
-                    icon: const Icon(Icons.copy, size: 16),
-                    label: Text(context.loc.fundExchangeCopCopy),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                      borderSide: BorderSide(
+                        color: context.appColors.secondaryFixedDim,
+                      ),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 14.0,
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: senderName));
+                      },
+                      icon: const Icon(Icons.copy, size: 20),
+                    ),
                   ),
                 ),
                 const Gap(24.0),
                 // Issuing Bank dropdown
-                Text(
+                BBText(
                   context.loc.fundExchangeCopIssuingBank,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: context.appColors.secondary,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
+                  color: context.appColors.secondary,
                 ),
                 const Gap(8.0),
                 DropdownButtonFormField<FundingInstitution>(
@@ -226,12 +242,12 @@ class _FundExchangeCopBankTransferInputScreenState
                 ),
                 const Gap(24.0),
                 // Amount field
-                Text(
+                BBText(
                   context.loc.fundExchangeCopAmount,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: context.appColors.secondary,
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
+                  color: context.appColors.secondary,
                 ),
                 const Gap(8.0),
                 TextFormField(
@@ -256,6 +272,7 @@ class _FundExchangeCopBankTransferInputScreenState
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
+                      vertical: 14.0,
                     ),
                     suffixIcon: IconButton(
                       onPressed: () async {
@@ -285,11 +302,10 @@ class _FundExchangeCopBankTransferInputScreenState
                 ),
                 const Gap(32.0),
                 if (_fundingDetailsError != null) ...[
-                  Text(
+                  BBText(
                     context.loc.fundExchangeErrorLoadingDetails,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                    style: theme.textTheme.bodyMedium,
+                    color: theme.colorScheme.error,
                     textAlign: TextAlign.center,
                   ),
                   const Gap(8.0),
