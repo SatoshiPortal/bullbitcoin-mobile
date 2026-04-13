@@ -30,6 +30,7 @@ class _FundExchangeWarningBottomSheetState
   void initState() {
     super.initState();
     _blocSubscription = context.read<FundExchangeBloc>().stream.listen((state) {
+      if (!mounted) return;
       final isLoading =
           state.isSubmittingScamWarningConsent ||
           state.isLoadingFundingDetails ||
