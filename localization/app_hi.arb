@@ -12479,5 +12479,29 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "वॉलेट का अभी बैकअप लेना जरूरी है",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "आपका वॉलेट एक पुरानी स्टोरेज लाइब्रेरी पर है और इसका कोई बैकअप नहीं है। आपको तुरंत अपनी सीड फ्रेज का बैकअप लेना होगा, फिर ऐप को डिलीट करके फिर से इंस्टॉल करना होगा।",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "पुरानी स्टोरेज पाई गई",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "अभी अपने वॉलेट का बैकअप लेने और ऐप को फिर से इंस्टॉल करने के लिए टैप करें।",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "अभी बैकअप करें",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "बाद में",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   }
 }

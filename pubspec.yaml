@@ -21,10 +21,16 @@ dependencies:
   google_fonts: ^6.3.3
   flutter_secure_storage:
     git:
-      url: https://github.com/iosifpeterfi/flutter_secure_storage
-      ref: f0d4b6cd96b5fbc43d125cd25fb2d38c0241fe9c
+      url: https://github.com/SatoshiPortal/flutter_secure_storage
+      ref: 47ad06f
+      path: flutter_secure_storage
+  flutter_secure_storage_legacy:
+    git:
+      url: https://github.com/SatoshiPortal/flutter_secure_storage_legacy
+      ref: c32db29
       path: flutter_secure_storage
   path_provider: ^2.1.5
+  shared_preferences: ^2.3.0
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-flutter
