@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/swaps/data/models/swap_tx_outspend_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:boltz/boltz.dart';
 
@@ -927,12 +928,17 @@ class BoltzDatasource {
       (event) {
         final swapId = event.id;
         final boltzStatus = event.status;
+        final transactionId = event.transaction?.id;
 
         _pendingSwapEventTimers[swapId]?.cancel();
 
         _pendingSwapEventTimers[swapId] = Timer(
           const Duration(seconds: 2),
-          () => _processWebSocketEvent(swapId, boltzStatus),
+          () => _processWebSocketEvent(
+            swapId,
+            boltzStatus,
+            transactionId: transactionId,
+          ),
         );
       },
       onError: (error) {
@@ -944,8 +950,9 @@ class BoltzDatasource {
 
   Future<void> _processWebSocketEvent(
     String swapId,
-    SwapStatus boltzStatus,
-  ) async {
+    SwapStatus boltzStatus, {
+    String? transactionId,
+  }) async {
     _pendingSwapEventTimers.remove(swapId);
 
     final swapModel = await _boltzStore.fetch(swapId);
@@ -993,9 +1000,13 @@ class BoltzDatasource {
         return;
       case SwapStatus.txnDirect:
         if (swapModel is LnReceiveSwapModel) {
-          // Needs review to ensure the direct tx is linked to the swap
-          // Currently just going a basic handle so we do not error
+          log.fine(
+            '[BoltzDatasource] txnDirect for MRH swap ${swapModel.id}'
+            ' receiveAddress=${swapModel.receiveAddress}'
+            ' txidReceived=${transactionId != null}',
+          );
           updatedSwapModel = swapModel.copyWith(
+            receiveTxid: transactionId,
             status: swap_entity.SwapStatus.completed.name,
             completionTime: DateTime.now().millisecondsSinceEpoch,
           );
