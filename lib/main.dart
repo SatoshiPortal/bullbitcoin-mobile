@@ -29,7 +29,6 @@ import 'package:dart_bbqr/bbqr.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
@@ -49,7 +48,6 @@ class Bull {
 
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
-      dotenv.load(isOptional: true),
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),

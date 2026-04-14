@@ -10,8 +10,8 @@ dependencies:
     sdk: flutter
   bdk_dart:
     git:
-      url: https://github.com/bitcoindevkit/bdk-dart
-      ref: 6dfdddbfa6da8fbfa82d796c2564fbeec899232e
+      url: https://github.com/ethicnology/bdk-dart
+      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -46,7 +46,6 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/bitbox-dart
       ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
-  flutter_dotenv: ^6.0.0
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1
@@ -162,7 +161,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
     - assets/
     - assets/icons/
     - assets/logos/

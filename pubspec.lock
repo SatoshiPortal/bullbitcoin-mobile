@@ -94,9 +94,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
-      resolved-ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
-      url: "https://github.com/bitcoindevkit/bdk-dart"
+      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
+      resolved-ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
+      url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
   bdk_flutter:
@@ -685,14 +685,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.1"
-  flutter_dotenv:
-    dependency: "direct main"
-    description:
-      name: flutter_dotenv
-      sha256: d4130c4a43e0b13fefc593bc3961f2cb46e30cb79e253d4a526b1b5d24ae1ce4
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.0"
   flutter_driver:
     dependency: transitive
     description: flutter

@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -69,6 +69,37 @@ docker-build:
 		--build-arg ANDROID_BUILD_TOOLS=$$(grep 'android.buildToolsVersion' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
 		.
+
+MODE ?= debug
+FORMAT ?= apk
+
+# Allow "make apk release" or "make apk debug" syntax
+ifneq (,$(filter release,$(MAKECMDGOALS)))
+  MODE := release
+endif
+ifneq (,$(filter debug,$(MAKECMDGOALS)))
+  MODE := debug
+endif
+release debug:
+	@:
+
+apk: docker-build
+	@echo "🔨 Building $(FORMAT) ($(MODE)) via Docker"
+	@docker build -f Dockerfile.apk \
+		--build-arg MODE=$(MODE) \
+		--build-arg FORMAT=$(FORMAT) \
+		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
+		-t bull-mobile-apk .
+	@docker rm -f bull-apk-extract > /dev/null 2>&1 || true
+	@docker create --name bull-apk-extract bull-mobile-apk > /dev/null
+	@docker cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
+	@docker rm bull-apk-extract > /dev/null
+	@echo "✅ APK extracted: ./app-$(MODE).apk"
+	@sha256sum ./app-$(MODE).apk
+
+verify:
+	@echo "🔍 Verifying reproducible build"
+	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
 
 devcontainer:
 	@echo "🏗️ Building Dev Container"

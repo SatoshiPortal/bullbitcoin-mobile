@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dar
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -171,8 +170,8 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           onHttpAuthRequest: (HttpAuthRequest request) {
             request.onProceed(
               WebViewCredential(
-                user: dotenv.env['BASIC_AUTH_USERNAME'] ?? '',
-                password: dotenv.env['BASIC_AUTH_PASSWORD'] ?? '',
+                user: ApiServiceConstants.basicAuthUsername,
+                password: ApiServiceConstants.basicAuthPassword,
               ),
             );
           },
