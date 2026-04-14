@@ -7,8 +7,6 @@ ARG MODE=debug
 ARG FORMAT=apk
 # GRADLE_HEAP: JVM heap size for Gradle (e.g. 2g, 4g, 6g)
 ARG GRADLE_HEAP=4g
-# ENV_SOURCE: where to get .env: template (copy from .env.template) or local (use .env from source)
-ARG ENV_SOURCE=template
 COPY --chown=$USER:$USER . /app/
 
 WORKDIR /app
@@ -20,11 +18,6 @@ RUN fvm install
 RUN fvm flutter pub get
 RUN fvm dart run build_runner build --delete-conflicting-outputs
 RUN fvm flutter gen-l10n
-
-# Use .env.template unless ENV_SOURCE=local, in which case .env is already present
-RUN if [ "$ENV_SOURCE" != "local" ]; then \
-        cp .env.template .env; \
-    fi
 
 
 # Configure Gradle for containerized builds

@@ -1,32 +1,32 @@
 {
-  "name": "${localWorkspaceFolderBasename}",
-  "build": {
-    "dockerfile": "../Dockerfile",
-    "args": {
-      "USERNAME": "${localEnv:USER}",
+    "name": "${localWorkspaceFolderBasename}",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "args": {
+            "USERNAME": "${localEnv:USER}"
+        }
     },
-  },
-  "remoteUser": "${localEnv:USER}",
-  "updateRemoteUserUID": true,
-  "shutdownAction": "stopContainer",
-  "initializeCommand": ".devcontainer/init-ssh-agent.sh",
-  "runArgs": [
-    "--name",
-    "${localWorkspaceFolderBasename}",
-    "--hostname",
-    "bull",
-    "--memory=8g",
-    "--security-opt",
-    "label=disable",
-  ],
-  "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
-    "source=/tmp/ssh-agent.sock,target=/ssh-agent,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind,consistency=cached",
-  ],
-  "containerEnv": {
-    "SSH_AUTH_SOCK": "/ssh-agent",
-  },
-  "postCreateCommand": "flutter config --no-analytics && dart --disable-analytics && cp -n .env.template .env",
-  "postStartCommand": "sudo chown -R --no-dereference ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.ssh || true; chmod 700 /home/${localEnv:USER}/.ssh; find /home/${localEnv:USER}/.ssh -maxdepth 1 -type f -exec chmod 600 {} + 2>/dev/null || true",
+    "remoteUser": "${localEnv:USER}",
+    "updateRemoteUserUID": true,
+    "shutdownAction": "stopContainer",
+    "initializeCommand": ".devcontainer/init-ssh-agent.sh",
+    "runArgs": [
+        "--name",
+        "${localWorkspaceFolderBasename}",
+        "--hostname",
+        "bull",
+        "--memory=8g",
+        "--security-opt",
+        "label=disable"
+    ],
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
+        "source=/tmp/ssh-agent.sock,target=/ssh-agent,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind,consistency=cached"
+    ],
+    "containerEnv": {
+        "SSH_AUTH_SOCK": "/ssh-agent"
+    },
+    "postCreateCommand": "flutter config --no-analytics && dart --disable-analytics",
+    "postStartCommand": "sudo chown -R --no-dereference ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.ssh || true; chmod 700 /home/${localEnv:USER}/.ssh; find /home/${localEnv:USER}/.ssh -maxdepth 1 -type f -exec chmod 600 {} + 2>/dev/null || true"
 }

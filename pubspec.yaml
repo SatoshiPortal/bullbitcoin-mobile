@@ -40,7 +40,6 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/bitbox-dart
       ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
-  flutter_dotenv: ^6.0.0
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1
@@ -156,7 +155,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
     - assets/
     - assets/icons/
     - assets/logos/
