@@ -218,8 +218,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: d788728ab5324c45f1b5ebf84ed6c3fd8b86c863
-      resolved-ref: d788728ab5324c45f1b5ebf84ed6c3fd8b86c863
+      ref: "80d6f1a4b307717bc8eb1ad110d85f0a2ee5e5a4"
+      resolved-ref: "80d6f1a4b307717bc8eb1ad110d85f0a2ee5e5a4"
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
     version: "0.2.1"
@@ -1668,8 +1668,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "973c88dad2cbd260617e752f40552263745d1725"
-      resolved-ref: "973c88dad2cbd260617e752f40552263745d1725"
+      ref: c1dd6d76639eaa79a8e6c40ff1c05c78e9c4bae5
+      resolved-ref: c1dd6d76639eaa79a8e6c40ff1c05c78e9c4bae5
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"
