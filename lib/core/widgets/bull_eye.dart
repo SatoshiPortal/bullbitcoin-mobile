@@ -65,6 +65,12 @@ class BullEye extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = color ?? context.appColors.secondary;
     final textStyle = style ?? context.font.bodyLarge;
+    final effectiveStyle = (textStyle ?? const TextStyle()).copyWith(
+      color: textColor,
+      decoration: TextDecoration.underline,
+      decorationStyle: TextDecorationStyle.dotted,
+      decorationColor: textColor.withAlpha(120),
+    );
 
     return GestureDetector(
       onTap: () => _showDetailDialog(context),
@@ -76,13 +82,12 @@ class BullEye extends StatelessWidget {
         builder: (context, constraints) {
           final truncated = _fitToWidth(
             data,
-            textStyle?.copyWith(color: textColor) ?? const TextStyle(),
+            effectiveStyle,
             constraints.maxWidth,
           );
           return BBText(
             truncated,
-            style: textStyle,
-            color: textColor,
+            style: effectiveStyle,
             maxLines: 1,
             overflow: TextOverflow.clip,
           );
@@ -162,6 +167,9 @@ class _BullEyeDetailSheet extends StatelessWidget {
     return groups;
   }
 
+  bool _useAltStyle(int index) =>
+      index.isOdd && type != _BullEyeType.transaction;
+
   String _title(BuildContext context) => switch (type) {
     _BullEyeType.address => context.loc.addressViewerTitle,
     _BullEyeType.transaction => context.loc.bullEyeTransactionTitle,
@@ -186,11 +194,14 @@ class _BullEyeDetailSheet extends StatelessWidget {
             runSpacing: 6,
             alignment: WrapAlignment.center,
             children: [
-              for (final group in _groups)
+              for (int i = 0; i < _groups.length; i++)
                 Text(
-                  group,
+                  _groups[i],
                   style: context.font.bodyLarge?.copyWith(
-                    color: context.appColors.secondary,
+                    color: _useAltStyle(i)
+                        ? context.appColors.textMuted
+                        : context.appColors.secondary,
+                    fontWeight: _useAltStyle(i) ? FontWeight.w700 : null,
                     fontFeatures: [const FontFeature.tabularFigures()],
                     letterSpacing: 1.2,
                   ),
