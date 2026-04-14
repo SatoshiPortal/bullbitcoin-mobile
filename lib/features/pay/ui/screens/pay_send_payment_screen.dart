@@ -149,7 +149,7 @@ class PaySendPaymentScreen extends StatelessWidget {
                         RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
                         RecipientType.sinpeMovilCrc => 'SINPE Móvil',
                         // ARGENTINA types
-                        RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
+                        RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
                         RecipientType.pseColombia => 'Bank Account COP',
                         RecipientType.nequiColombia => 'Nequi',
                       }
@@ -241,7 +241,7 @@ class PaySendPaymentScreen extends StatelessWidget {
 
   String? _getRecipientInfoValue(RecipientViewModel recipient) {
     switch (recipient.type) {
-      case RecipientType.cbuCvuArgentina:
+      case RecipientType.bankAccountArgentina:
       case RecipientType.pseColombia:
         return recipient.bankAccount;
       case RecipientType.nequiColombia:

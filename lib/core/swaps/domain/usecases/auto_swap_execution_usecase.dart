@@ -132,11 +132,11 @@ class AutoSwapExecutionUsecase {
             as MnemonicSeed;
 
     final btcElectrumUrl = defaultBitcoinWallet.isTestnet
-        ? ApiServiceConstants.bbElectrumTestUrl
+        ? ApiServiceConstants.publicElectrumTestUrl
         : ApiServiceConstants.bbElectrumUrl;
 
     final lbtcElectrumUrl = defaultLiquidWallet.isTestnet
-        ? ApiServiceConstants.publicElectrumTestUrl
+        ? ApiServiceConstants.publicliquidElectrumTestUrlPath
         : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
     debugPrint(

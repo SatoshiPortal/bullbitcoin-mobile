@@ -21,7 +21,6 @@ sealed class RecipientModel with _$RecipientModel {
   }) = _RecipientModel;
 
   factory RecipientModel.fromJson(Map<String, dynamic> json) {
-    // The details fields are flat in the JSON, so we parse them directly
     final details = RecipientDetailsModel.fromJson(json);
 
     return RecipientModel(

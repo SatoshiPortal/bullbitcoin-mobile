@@ -3288,6 +3288,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "Liquid-Adresse",
   "backupWalletSuccessTestButton": "Backup testen",
   "pinCodeSettingUp": "PIN einrichten",
+  "pinCodeBackupRequiredWarning": "Bitte schließen Sie eine Wallet-Sicherung ab, bevor Sie eine PIN festlegen",
   "replaceByFeeErrorFeeRateTooLow": "Sie müssen den Gebührensatz um mindestens 1 sat/vbyte gegenüber der ursprünglichen Transaktion erhöhen",
   "payPriority": "Priorität",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Überweisung in Costa-Ricanischem Colón (CRC)",
@@ -4333,39 +4334,39 @@
   "@retry": {
     "description": "Generic retry button label"
   },
-  "settingsAccountSettingsTitle": "Account Settings",
+  "settingsAccountSettingsTitle": "Kontoeinstellungen",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
   },
-  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "exchangeSettingsDeleteAccountTitle": "Konto löschen",
   "@exchangeSettingsDeleteAccountTitle": {
     "description": "Label for the delete account option in exchange settings"
   },
-  "deleteAccountConfirmationTitle": "Delete Account",
+  "deleteAccountConfirmationTitle": "Konto löschen bestätigen",
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Dies sendet eine Anforderung zur Kontolöschung an unser Support-Team. Ihr Konto wird innerhalb von 5 Werktagen gelöscht.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationCancel": "Cancel",
+  "deleteAccountConfirmationCancel": "Abbrechen",
   "@deleteAccountConfirmationCancel": {
     "description": "Cancel button label for delete account confirmation"
   },
-  "deleteAccountConfirmationDelete": "Delete Account",
+  "deleteAccountConfirmationDelete": "Konto löschen",
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Konto-Löschung angefordert",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Ihre Anfrage zur Kontolöschung wurde eingegangen. Sie wird innerhalb von 5 Werktagen bearbeitet.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessClose": "Close",
+  "deleteAccountSuccessClose": "Schließen",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   }
