@@ -74,6 +74,7 @@ class TransactionDetailsTable extends StatelessWidget {
           DetailsTableItem(
             label: context.loc.transactionDetailLabelTransactionId,
             displayValue: StringFormatting.truncateMiddle(txId),
+            copyValue: txId,
             displayWidget: BullEye.transaction(
               txId,
               style: TextStyle(color: context.appColors.primary),
@@ -125,6 +126,7 @@ class TransactionDetailsTable extends StatelessWidget {
                     swap.receiveAddress!.isNotEmpty
                 ? context.loc.transactionDetailLabelRecipientAddress
                 : context.loc.transactionDetailLabelAddress,
+            copyValue: toAddress,
             displayWidget: BullEye.address(
               toAddress,
               style: TextStyle(color: context.appColors.onSurface),

@@ -290,11 +290,32 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensToLabel,
-            details: BullEye.address(
-              _paymentRequestAddress,
-              style: context.font.bodyLarge?.copyWith(
-                color: context.appColors.secondary,
-              ),
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: BullEye.address(
+                    _paymentRequestAddress,
+                    style: context.font.bodyLarge?.copyWith(
+                      color: context.appColors.secondary,
+                    ),
+                  ),
+                ),
+                const Gap(4),
+                InkWell(
+                  onTap: () {
+                    Clipboard.setData(
+                      ClipboardData(text: _paymentRequestAddress),
+                    );
+                  },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
+                ),
+              ],
             ),
           ),
           _divider(context),
@@ -510,11 +531,34 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                 swap.isChainSwap &&
                     (swap as ChainSwap).receiveWalletId == null &&
                     (swap as ChainSwap).receiveAddress != null
-                ? BullEye.address(
-                    (swap as ChainSwap).receiveAddress!,
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.secondary,
-                    ),
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: BullEye.address(
+                          (swap as ChainSwap).receiveAddress!,
+                          style: context.font.bodyLarge?.copyWith(
+                            color: context.appColors.secondary,
+                          ),
+                        ),
+                      ),
+                      const Gap(4),
+                      InkWell(
+                        onTap: () {
+                          Clipboard.setData(
+                            ClipboardData(
+                              text: (swap as ChainSwap).receiveAddress!,
+                            ),
+                          );
+                        },
+                        child: Icon(
+                          Icons.copy,
+                          color: context.appColors.primary,
+                          size: 16,
+                        ),
+                      ),
+                    ],
                   )
                 : receiveWalletLabel != null && receiveWalletLabel!.isNotEmpty
                 ? BBText(

@@ -160,19 +160,57 @@ class ReceiveQRDetails extends StatelessWidget {
                 color: context.appColors.secondary,
               ),
               const Gap(6),
-              isLightning
-                  ? BullEye.invoice(
-                      addressOrInvoiceOnly,
-                      clipboardText: clipboardData,
-                      style: context.font.bodyLarge,
-                      color: context.appColors.secondary,
-                    )
-                  : BullEye.address(
-                      addressOrInvoiceOnly,
-                      clipboardText: clipboardData,
-                      style: context.font.bodyLarge,
-                      color: context.appColors.secondary,
+              Container(
+                decoration: BoxDecoration(
+                  color: context.appColors.onSecondary,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: context.appColors.secondaryFixedDim,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Gap(15),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: isLightning
+                            ? BullEye.invoice(
+                                addressOrInvoiceOnly,
+                                clipboardText: clipboardData,
+                                style: context.font.bodyLarge,
+                                color: context.appColors.secondary,
+                              )
+                            : BullEye.address(
+                                addressOrInvoiceOnly,
+                                clipboardText: clipboardData,
+                                style: context.font.bodyLarge,
+                                color: context.appColors.secondary,
+                              ),
+                      ),
                     ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      iconSize: 20,
+                      icon: Icon(
+                        Icons.copy_sharp,
+                        color: context.appColors.secondary,
+                      ),
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: clipboardData.isNotEmpty
+                                ? clipboardData
+                                : addressOrInvoiceOnly,
+                          ),
+                        );
+                        SnackBarUtils.showCopiedSnackBar(context);
+                      },
+                    ),
+                    const Gap(8),
+                  ],
+                ),
+              ),
             ],
           ),
         ],
