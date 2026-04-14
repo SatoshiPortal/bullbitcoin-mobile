@@ -1002,8 +1002,8 @@ class BoltzDatasource {
         if (swapModel is LnReceiveSwapModel) {
           log.fine(
             '[BoltzDatasource] txnDirect for MRH swap ${swapModel.id}'
-            ' receiveTxid=$transactionId'
-            ' receiveAddress=${swapModel.receiveAddress}',
+            ' receiveAddress=${swapModel.receiveAddress}'
+            ' txidReceived=${transactionId != null}',
           );
           updatedSwapModel = swapModel.copyWith(
             receiveTxid: transactionId,
