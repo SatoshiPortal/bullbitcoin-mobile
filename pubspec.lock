@@ -94,8 +94,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: fac15b9109b5dc209aed09803200a3f91d1f01d4
-      resolved-ref: fac15b9109b5dc209aed09803200a3f91d1f01d4
+      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
+      resolved-ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
       url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
