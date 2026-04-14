@@ -88,6 +88,12 @@ apk: docker-build
 		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
 		--build-arg ENV_SOURCE=$(or $(ENV_SOURCE),template) \
 		-t bull-mobile-apk .
+	@docker rm -f bull-apk-extract > /dev/null 2>&1 || true
+	@docker create --name bull-apk-extract bull-mobile-apk > /dev/null
+	@docker cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
+	@docker rm bull-apk-extract > /dev/null
+	@echo "✅ APK extracted: ./app-$(MODE).apk"
+	@sha256sum ./app-$(MODE).apk
 
 verify:
 	@echo "🔍 Verifying reproducible build"
