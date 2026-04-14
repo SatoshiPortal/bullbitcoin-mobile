@@ -43,12 +43,12 @@ class CreateChainSwapToExternalUsecase {
 
       final btcElectrumUrl =
           sendWallet.network.isTestnet
-              ? ApiServiceConstants.bbElectrumTestUrl
+              ? ApiServiceConstants.publicElectrumTestUrl
               : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl =
           sendWallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
+              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
               : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {

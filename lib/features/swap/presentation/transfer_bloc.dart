@@ -242,23 +242,55 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       return;
     }
 
-    if (newFromWallet.isLiquid == newToWallet.isLiquid) {
-      if (newFromWallet.isLiquid) {
-        return;
-      }
-    } else {
-      final isFromWalletChanged = newFromWallet != state.fromWallet;
-      if (isFromWalletChanged && newFromWallet.isLiquid) {
-        final bitcoinWallets = state.wallets.where((w) => !w.isLiquid).toList();
-        if (bitcoinWallets.isNotEmpty) {
-          newToWallet = bitcoinWallets.first;
+    final isFromWalletChanged = newFromWallet != state.fromWallet;
+
+    // Prevent selecting the same wallet for both from and to
+    if (newFromWallet.id == newToWallet.id) {
+      if (isFromWalletChanged) {
+        final opposite = state.wallets
+            .where((w) => w.isLiquid != newFromWallet.isLiquid && w.isDefault)
+            .firstOrNull;
+        if (opposite != null) {
+          newToWallet = opposite;
+        } else {
+          return;
         }
-      } else if (!isFromWalletChanged && newToWallet.isLiquid) {
-        final bitcoinWallets = state.wallets
-            .where((w) => !w.isLiquid && w.signsLocally)
-            .toList();
-        if (bitcoinWallets.isNotEmpty) {
-          newFromWallet = bitcoinWallets.first;
+      } else {
+        final opposite = state.wallets
+            .where(
+              (w) =>
+                  w.isLiquid != newToWallet.isLiquid &&
+                  w.isDefault &&
+                  w.signsLocally,
+            )
+            .firstOrNull;
+        if (opposite != null) {
+          newFromWallet = opposite;
+        } else {
+          return;
+        }
+      }
+    }
+
+    // Prevent Liquid-to-Liquid transfers (not supported)
+    if (newFromWallet.isLiquid && newToWallet.isLiquid) {
+      if (isFromWalletChanged) {
+        final btcWallet = state.wallets
+            .where((w) => !w.isLiquid && w.isDefault)
+            .firstOrNull;
+        if (btcWallet != null) {
+          newToWallet = btcWallet;
+        } else {
+          return;
+        }
+      } else {
+        final btcWallet = state.wallets
+            .where((w) => !w.isLiquid && w.isDefault && w.signsLocally)
+            .firstOrNull;
+        if (btcWallet != null) {
+          newFromWallet = btcWallet;
+        } else {
+          return;
         }
       }
     }

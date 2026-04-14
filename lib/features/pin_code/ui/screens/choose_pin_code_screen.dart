@@ -164,10 +164,9 @@ class _ConfirmButton extends StatelessWidget {
           return BBButton.big(
             label: context.loc.pinCodeContinue,
             textStyle: context.font.headlineLarge,
-            disabled: !isValidPinCode,
             bgColor: isValidPinCode
                 ? context.appColors.primary
-                : context.appColors.surfaceContainerHighest,
+                : context.appColors.textMuted,
             onPressed: () {
               if (isValidPinCode) {
                 context.read<PinCodeSettingBloc>().add(
@@ -177,7 +176,7 @@ class _ConfirmButton extends StatelessWidget {
             },
             textColor: isValidPinCode
                 ? context.appColors.onPrimary
-                : context.appColors.textMuted,
+                : context.appColors.surface,
           );
         },
       ),

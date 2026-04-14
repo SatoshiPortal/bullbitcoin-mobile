@@ -336,6 +336,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Please complete a wallet backup before setting a PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "settingsCurrencyTitle": "Currency",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -2439,6 +2443,14 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
+  "payViewReceipt": "View receipt",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
   "payCompleted": "Payment Completed!",
   "@payCompleted": {
     "description": "Title for payment completed screen"
@@ -3469,6 +3481,10 @@
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
+  },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
   },
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
@@ -10598,6 +10614,50 @@
   "fundExchangeBankTransferSubtitle": "Send a bank transfer from your bank account",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
+  },
+  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "@fundExchangeCopDailyLimitWarning": {
+    "description": "Warning about daily transaction limit for COP bank transfer"
+  },
+  "fundExchangeCopSenderName": "Sender Name",
+  "@fundExchangeCopSenderName": {
+    "description": "Label for sender name field in COP bank transfer"
+  },
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "@fundExchangeCopIssuingBank": {
+    "description": "Label for issuing bank dropdown in COP bank transfer"
+  },
+  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "@fundExchangeCopSelectBankError": {
+    "description": "Validation error when no bank is selected"
+  },
+  "fundExchangeCopAmount": "Amount",
+  "@fundExchangeCopAmount": {
+    "description": "Label for amount field in COP bank transfer"
+  },
+  "fundExchangeCopEnterAmountError": "Please enter an amount",
+  "@fundExchangeCopEnterAmountError": {
+    "description": "Validation error when amount is empty"
+  },
+  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "@fundExchangeCopValidAmountError": {
+    "description": "Validation error when amount is invalid"
+  },
+  "fundExchangeCopGeneratePaymentLink": "Generate Payment Link",
+  "@fundExchangeCopGeneratePaymentLink": {
+    "description": "Button label to generate COP payment link"
+  },
+  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "@fundExchangeCopRedirectMessage": {
+    "description": "Message about redirect to external payment page"
+  },
+  "fundExchangeCopOpenPaymentLink": "Open Payment Link",
+  "@fundExchangeCopOpenPaymentLink": {
+    "description": "Button label to open COP payment link"
+  },
+  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
+  "@fundExchangeCopFailedToOpenLink": {
+    "description": "Error shown when the COP payment link fails to open"
   },
   "dcaSetupTitle": "Set Recurring Buy",
   "@dcaSetupTitle": {

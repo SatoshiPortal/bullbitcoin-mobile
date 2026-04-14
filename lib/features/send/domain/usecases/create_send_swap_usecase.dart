@@ -72,12 +72,12 @@ class CreateSendSwapUsecase {
 
       final btcElectrumUrl =
           wallet.network.isTestnet
-              ? ApiServiceConstants.bbElectrumTestUrl
+              ? ApiServiceConstants.publicElectrumTestUrl
               : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl =
           wallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
+              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
               : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
