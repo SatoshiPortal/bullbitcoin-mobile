@@ -101,6 +101,7 @@ class ApiServiceConstants {
   static const String bbApiTestUrl = 'https://api05.bullbitcoin.dev';
   static const String bbAuthUrl = 'https://accounts.bullbitcoin.com';
   static const String bbAuthTestUrl = 'https://accounts05.bullbitcoin.dev';
+  static const String bbAppUrl = 'https://app.bullbitcoin.com';
   static const String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
   static const String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
   static const String googleDriveClientId =
