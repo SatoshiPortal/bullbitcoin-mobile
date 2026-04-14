@@ -59,7 +59,8 @@ RUN SOURCE_DATE_EPOCH=$(git -C /app log -1 --format=%ct) && \
         "--remap-path-prefix=$HOME/.cargo=/cargo" \
         "--remap-path-prefix=$HOME/.rustup=/rustup" \
         "--remap-path-prefix=/app=/build") && \
-    export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS && \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 && \
+    export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS && \
     if [ "$FORMAT" = "aab" ]; then \
         fvm flutter build appbundle --${MODE}; \
     else \

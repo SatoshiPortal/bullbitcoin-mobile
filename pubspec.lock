@@ -94,9 +94,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
-      resolved-ref: "6dfdddbfa6da8fbfa82d796c2564fbeec899232e"
-      url: "https://github.com/bitcoindevkit/bdk-dart"
+      ref: fac15b9109b5dc209aed09803200a3f91d1f01d4
+      resolved-ref: fac15b9109b5dc209aed09803200a3f91d1f01d4
+      url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
   bdk_flutter:
