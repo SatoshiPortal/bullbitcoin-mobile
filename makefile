@@ -87,7 +87,6 @@ apk: docker-build
 		--build-arg FORMAT=$(FORMAT) \
 		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
 		--build-arg ENV_SOURCE=$(or $(ENV_SOURCE),template) \
-		--build-arg FAKE_KEYSTORE=$(or $(FAKE_KEYSTORE),true) \
 		-t bull-mobile-apk .
 
 verify:

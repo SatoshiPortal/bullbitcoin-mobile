@@ -9,10 +9,6 @@ ARG FORMAT=apk
 ARG GRADLE_HEAP=4g
 # ENV_SOURCE: where to get .env: template (copy from .env.template) or local (use .env from source)
 ARG ENV_SOURCE=template
-# FAKE_KEYSTORE: if true, generates a fake keystore for reproducibility testing
-#                if false, expects real keystore and key.properties via secret mounts
-ARG FAKE_KEYSTORE=true
-
 COPY --chown=$USER:$USER . /app/
 
 WORKDIR /app
@@ -30,21 +26,6 @@ RUN if [ "$ENV_SOURCE" != "local" ]; then \
         cp .env.template .env; \
     fi
 
-# For production: mount a real keystore and key.properties via:
-#   docker build --secret id=keystore,src=./upload-keystore.jks \
-#                --secret id=key_properties,src=./android/key.properties
-RUN --mount=type=secret,id=keystore \
-    --mount=type=secret,id=key_properties \
-    if [ "$FAKE_KEYSTORE" = "true" ]; then \
-        keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US" && \
-        echo "storePassword=android" > /app/android/key.properties && \
-        echo "keyPassword=android" >> /app/android/key.properties && \
-        echo "keyAlias=upload" >> /app/android/key.properties && \
-        echo "storeFile=/app/upload-keystore.jks" >> /app/android/key.properties; \
-    else \
-        cp /run/secrets/keystore /app/upload-keystore.jks && \
-        cp /run/secrets/key_properties /app/android/key.properties; \
-    fi
 
 # Configure Gradle for containerized builds
 RUN mkdir -p $HOME/.gradle && \
