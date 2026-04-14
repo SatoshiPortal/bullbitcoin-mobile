@@ -99,9 +99,7 @@ packages:
       url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
-  bdk_flutter:
-    dependency: transitive
-    description:
+
       path: "."
       ref: "3024b3452b4b0e5982d737f82ff461024a881ae7"
       resolved-ref: "3024b3452b4b0e5982d737f82ff461024a881ae7"
