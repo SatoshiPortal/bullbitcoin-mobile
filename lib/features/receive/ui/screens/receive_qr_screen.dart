@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/bull_eye.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -175,13 +176,13 @@ class ReceiveQRDetails extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12.0),
                         child: isLightning
-                            ? BullEye.invoice(
+                            ? InvoiceViewer(
                                 addressOrInvoiceOnly,
                                 clipboardText: clipboardData,
                                 style: context.font.bodyLarge,
                                 color: context.appColors.secondary,
                               )
-                            : BullEye.address(
+                            : AddressViewer(
                                 addressOrInvoiceOnly,
                                 clipboardText: clipboardData,
                                 style: context.font.bodyLarge,

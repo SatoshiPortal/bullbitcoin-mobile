@@ -12515,8 +12515,9 @@
   "coreScreensUnexpectedError": "Μη αναμενόμενο σφάλμα: {message}.",
   "coreScreensNoServersAvailable": "Δεν υπάρχουν διαθέσιμοι Electrum διακομιστές.",
   "addressViewerTitle": "Διεύθυνση",
-  "addressViewerTapToCopy": "Πατήστε για αντιγραφή",
-  "addressViewerViewInExplorer": "Προβολή στον εξερευνητή",
-  "bullEyeTransactionTitle": "ID συναλλαγής",
-  "bullEyeInvoiceTitle": "Τιμολόγιο"
+  "viewerTapToCopy": "Πατήστε για αντιγραφή",
+  "viewerViewInExplorer": "Προβολή στον εξερευνητή",
+  "transactionViewerTitle": "ID συναλλαγής",
+  "invoiceViewerTitle": "Τιμολόγιο",
+  "viewerCopyLink": "Αντιγραφή συνδέσμου"
 }

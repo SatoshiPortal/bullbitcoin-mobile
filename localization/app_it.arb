@@ -4499,8 +4499,9 @@
   "coreScreensUnexpectedError": "Errore imprevisto: {message}.",
   "coreScreensNoServersAvailable": "Nessun server Electrum disponibile.",
   "addressViewerTitle": "Indirizzo",
-  "addressViewerTapToCopy": "Tocca per copiare",
-  "addressViewerViewInExplorer": "Visualizza nell'explorer",
-  "bullEyeTransactionTitle": "ID transazione",
-  "bullEyeInvoiceTitle": "Fattura"
+  "viewerTapToCopy": "Tocca per copiare",
+  "viewerViewInExplorer": "Visualizza nell'explorer",
+  "transactionViewerTitle": "ID transazione",
+  "invoiceViewerTitle": "Fattura",
+  "viewerCopyLink": "Copiare link"
 }

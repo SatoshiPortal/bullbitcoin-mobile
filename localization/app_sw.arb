@@ -110,9 +110,10 @@
   "coreScreensParseFailed": "Failed to parse transaction: {message}.",
   "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "coreScreensNoServersAvailable": "No Electrum servers available.",
-  "addressViewerTitle": "Address",
-  "addressViewerTapToCopy": "Tap to copy",
-  "addressViewerViewInExplorer": "View in explorer",
-  "bullEyeTransactionTitle": "Transaction ID",
-  "bullEyeInvoiceTitle": "Invoice"
+  "addressViewerTitle": "Anwani",
+  "viewerTapToCopy": "Gusa kunakili",
+  "viewerViewInExplorer": "Tazama kwenye kivinjari",
+  "viewerCopyLink": "Nakili kiungo",
+  "transactionViewerTitle": "Kitambulisho cha muamala",
+  "invoiceViewerTitle": "Ankara"
 }

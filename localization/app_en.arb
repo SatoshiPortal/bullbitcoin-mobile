@@ -12694,21 +12694,25 @@
   "@addressViewerTitle": {
     "description": "Title shown in the address detail dialog"
   },
-  "addressViewerTapToCopy": "Tap to copy",
-  "@addressViewerTapToCopy": {
-    "description": "Hint text in address detail dialog"
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
   },
-  "addressViewerViewInExplorer": "View in explorer",
-  "@addressViewerViewInExplorer": {
+  "viewerViewInExplorer": "View in explorer",
+  "@viewerViewInExplorer": {
     "description": "Button to open address or transaction in block explorer"
   },
-  "bullEyeTransactionTitle": "Transaction ID",
-  "@bullEyeTransactionTitle": {
-    "description": "Title shown in the BullEye detail dialog for transaction IDs"
+  "viewerCopyLink": "Copy link",
+  "@viewerCopyLink": {
+    "description": "Button to copy the block explorer URL to clipboard"
   },
-  "bullEyeInvoiceTitle": "Invoice",
-  "@bullEyeInvoiceTitle": {
-    "description": "Title shown in the BullEye detail dialog for Lightning invoices"
+  "transactionViewerTitle": "Transaction ID",
+  "@transactionViewerTitle": {
+    "description": "Title shown in the transaction viewer detail dialog"
+  },
+  "invoiceViewerTitle": "Invoice",
+  "@invoiceViewerTitle": {
+    "description": "Title shown in the invoice viewer detail dialog"
   },
   "recoverbullErrorRejected": "Rejected by the Key Server",
   "@recoverbullErrorRejected": {

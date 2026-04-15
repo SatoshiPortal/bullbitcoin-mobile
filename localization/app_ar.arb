@@ -12518,8 +12518,9 @@
   "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
   "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
   "addressViewerTitle": "العنوان",
-  "addressViewerTapToCopy": "انقر للنسخ",
-  "addressViewerViewInExplorer": "عرض في المستكشف",
-  "bullEyeTransactionTitle": "معرف المعاملة",
-  "bullEyeInvoiceTitle": "فاتورة"
+  "viewerTapToCopy": "انقر للنسخ",
+  "viewerViewInExplorer": "عرض في المستكشف",
+  "transactionViewerTitle": "معرف المعاملة",
+  "invoiceViewerTitle": "فاتورة",
+  "viewerCopyLink": "انسخ الرابط"
 }

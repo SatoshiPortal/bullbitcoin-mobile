@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bull_eye.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/features/labels/ui/labels_widget.dart';
@@ -116,7 +116,7 @@ class CoinSelectTile extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: BullEye.address(
+                        child: AddressViewer(
                           address,
                           style: context.font.labelLarge,
                           color: context.appColors.onSurface,

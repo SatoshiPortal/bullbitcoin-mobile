@@ -12515,8 +12515,9 @@
   "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
   "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok.",
   "addressViewerTitle": "Adres",
-  "addressViewerTapToCopy": "Kopyalamak için dokunun",
-  "addressViewerViewInExplorer": "Gezginde görüntüle",
-  "bullEyeTransactionTitle": "İşlem kimliği",
-  "bullEyeInvoiceTitle": "Fatura"
+  "viewerTapToCopy": "Kopyalamak için dokunun",
+  "viewerViewInExplorer": "Gezginde görüntüle",
+  "transactionViewerTitle": "İşlem kimliği",
+  "invoiceViewerTitle": "Fatura",
+  "viewerCopyLink": "Bağlantıyı kopyala"
 }

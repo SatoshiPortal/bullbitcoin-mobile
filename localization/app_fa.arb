@@ -12515,8 +12515,9 @@
   "coreScreensUnexpectedError": "خطای غیرمنتظره: {message}.",
   "coreScreensNoServersAvailable": "هیچ سرور Electrum در دسترس نیست.",
   "addressViewerTitle": "آدرس",
-  "addressViewerTapToCopy": "برای کپی ضربه بزنید",
-  "addressViewerViewInExplorer": "مشاهده در اکسپلورر",
-  "bullEyeTransactionTitle": "شناسه تراکنش",
-  "bullEyeInvoiceTitle": "صورتحساب"
+  "viewerTapToCopy": "برای کپی ضربه بزنید",
+  "viewerViewInExplorer": "مشاهده در اکسپلورر",
+  "transactionViewerTitle": "شناسه تراکنش",
+  "invoiceViewerTitle": "صورتحساب",
+  "viewerCopyLink": "لینک را کپی کنید"
 }

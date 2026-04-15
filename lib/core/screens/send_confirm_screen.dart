@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
-import 'package:bb_mobile/core/widgets/bull_eye.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -159,7 +159,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: context.loc.coreScreensToLabel,
-            details: BullEye.address(
+            details: AddressViewer(
               _receiveWalletLabel,
               style: context.font.bodyLarge,
               color: context.appColors.secondary,
@@ -295,7 +295,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: BullEye.address(
+                  child: AddressViewer(
                     _paymentRequestAddress,
                     style: context.font.bodyLarge?.copyWith(
                       color: context.appColors.secondary,
@@ -536,7 +536,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Expanded(
-                        child: BullEye.address(
+                        child: AddressViewer(
                           (swap as ChainSwap).receiveAddress!,
                           style: context.font.bodyLarge?.copyWith(
                             color: context.appColors.secondary,

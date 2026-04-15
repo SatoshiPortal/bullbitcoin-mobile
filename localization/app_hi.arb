@@ -12515,8 +12515,9 @@
   "coreScreensUnexpectedError": "अप्रत्याशित त्रुटि: {message}।",
   "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।",
   "addressViewerTitle": "पता",
-  "addressViewerTapToCopy": "कॉपी करने के लिए टैप करें",
-  "addressViewerViewInExplorer": "एक्सप्लोरर में देखें",
-  "bullEyeTransactionTitle": "लेन-देन आईडी",
-  "bullEyeInvoiceTitle": "चालान"
+  "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
+  "viewerViewInExplorer": "एक्सप्लोरर में देखें",
+  "transactionViewerTitle": "लेन-देन आईडी",
+  "invoiceViewerTitle": "चालान",
+  "viewerCopyLink": "प्रतिरूप जोड़ना"
 }

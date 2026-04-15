@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/widgets/bull_eye.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -1004,7 +1004,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: BullEye.address(
+                  child: AddressViewer(
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
@@ -1259,7 +1259,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: BullEye.address(
+                  child: AddressViewer(
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,

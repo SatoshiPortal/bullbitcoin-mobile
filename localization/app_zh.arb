@@ -4499,8 +4499,9 @@
   "coreScreensUnexpectedError": "意外错误：{message}。",
   "coreScreensNoServersAvailable": "没有可用的 Electrum 服务器。",
   "addressViewerTitle": "地址",
-  "addressViewerTapToCopy": "点击复制",
-  "addressViewerViewInExplorer": "在浏览器中查看",
-  "bullEyeTransactionTitle": "交易 ID",
-  "bullEyeInvoiceTitle": "发票"
+  "viewerTapToCopy": "点击复制",
+  "viewerViewInExplorer": "在浏览器中查看",
+  "transactionViewerTitle": "交易 ID",
+  "invoiceViewerTitle": "发票",
+  "viewerCopyLink": "复制链接"
 }

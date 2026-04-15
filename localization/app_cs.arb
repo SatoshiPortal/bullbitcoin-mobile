@@ -12515,8 +12515,9 @@
   "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
   "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
   "addressViewerTitle": "Adresa",
-  "addressViewerTapToCopy": "Klepněte pro kopírování",
-  "addressViewerViewInExplorer": "Zobrazit v prohlížeči",
-  "bullEyeTransactionTitle": "ID transakce",
-  "bullEyeInvoiceTitle": "Faktura"
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "viewerViewInExplorer": "Zobrazit v prohlížeči",
+  "transactionViewerTitle": "ID transakce",
+  "invoiceViewerTitle": "Faktura",
+  "viewerCopyLink": "Kopírovat odkaz"
 }

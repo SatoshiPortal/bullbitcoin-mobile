@@ -4404,8 +4404,9 @@
   "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
   "coreScreensNoServersAvailable": "Keine Electrum-Server verfügbar.",
   "addressViewerTitle": "Adresse",
-  "addressViewerTapToCopy": "Zum Kopieren tippen",
-  "addressViewerViewInExplorer": "Im Explorer anzeigen",
-  "bullEyeTransactionTitle": "Transaktions-ID",
-  "bullEyeInvoiceTitle": "Rechnung"
+  "viewerTapToCopy": "Zum Kopieren tippen",
+  "viewerViewInExplorer": "Im Explorer anzeigen",
+  "transactionViewerTitle": "Transaktions-ID",
+  "invoiceViewerTitle": "Rechnung",
+  "viewerCopyLink": "Link kopieren"
 }

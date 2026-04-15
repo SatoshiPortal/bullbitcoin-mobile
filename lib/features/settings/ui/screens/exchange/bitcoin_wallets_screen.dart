@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/default_wallet.dart';
-import 'package:bb_mobile/core/widgets/bull_eye.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -298,7 +298,7 @@ class _WalletAddressField extends StatelessWidget {
                 children: [
                   Expanded(
                     child: hasAddress
-                        ? BullEye.address(
+                        ? AddressViewer(
                             currentAddress,
                             style: context.font.bodyLarge?.copyWith(
                               fontWeight: FontWeight.w500,

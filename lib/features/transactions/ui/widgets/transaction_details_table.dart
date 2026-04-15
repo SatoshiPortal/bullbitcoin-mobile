@@ -6,9 +6,9 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/widgets/bull_eye.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -16,12 +16,10 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/labels_table_item.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class TransactionDetailsTable extends StatelessWidget {
   const TransactionDetailsTable({super.key});
@@ -75,28 +73,19 @@ class TransactionDetailsTable extends StatelessWidget {
             label: context.loc.transactionDetailLabelTransactionId,
             displayValue: StringFormatting.truncateMiddle(txId),
             copyValue: txId,
-            displayWidget: BullEye.transaction(
-              txId,
-              style: TextStyle(color: context.appColors.primary),
-              onExplore: () async {
-                final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
-
-                final String mempoolUrl;
-                if (isLiquid) {
-                  mempoolUrl = await mempoolUrlBuilder.liquidTxidUrl(
-                    transaction?.walletTransaction?.unblindedUrl ?? '',
-                    isTestnet: isTestnet,
-                  );
-                } else {
-                  mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
+            displayWidget: isLiquid
+                ? TransactionViewer.liquid(
                     txId,
+                    style: TextStyle(color: context.appColors.primary),
                     isTestnet: isTestnet,
-                  );
-                }
-
-                await launchUrl(Uri.parse(mempoolUrl));
-              },
-            ),
+                    unblindedUrl:
+                        transaction?.walletTransaction?.unblindedUrl,
+                  )
+                : TransactionViewer.bitcoin(
+                    txId,
+                    style: TextStyle(color: context.appColors.primary),
+                    isTestnet: isTestnet,
+                  ),
           ),
 
         if (labels.isNotEmpty && txId != null)
@@ -127,7 +116,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ? context.loc.transactionDetailLabelRecipientAddress
                 : context.loc.transactionDetailLabelAddress,
             copyValue: toAddress,
-            displayWidget: BullEye.address(
+            displayWidget: AddressViewer(
               toAddress,
               style: TextStyle(color: context.appColors.onSurface),
             ),

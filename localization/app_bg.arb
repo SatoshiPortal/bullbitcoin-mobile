@@ -9525,8 +9525,9 @@
   "coreScreensUnexpectedError": "Неочаквана грешка: {message}.",
   "coreScreensNoServersAvailable": "Няма налични Electrum сървъри.",
   "addressViewerTitle": "Адрес",
-  "addressViewerTapToCopy": "Натиснете за копиране",
-  "addressViewerViewInExplorer": "Виж в експлорър",
-  "bullEyeTransactionTitle": "ID на транзакция",
-  "bullEyeInvoiceTitle": "Фактура"
+  "viewerTapToCopy": "Натиснете за копиране",
+  "viewerViewInExplorer": "Виж в експлорър",
+  "transactionViewerTitle": "ID на транзакция",
+  "invoiceViewerTitle": "Фактура",
+  "viewerCopyLink": "Копиране на връзка"
 }

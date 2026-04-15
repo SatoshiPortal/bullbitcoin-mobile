@@ -4496,8 +4496,9 @@
   "coreScreensUnexpectedError": "Неочікувана помилка: {message}.",
   "coreScreensNoServersAvailable": "Немає доступних серверів Electrum.",
   "addressViewerTitle": "Адреса",
-  "addressViewerTapToCopy": "Натисніть для копіювання",
-  "addressViewerViewInExplorer": "Переглянути в оглядачі",
-  "bullEyeTransactionTitle": "ID транзакції",
-  "bullEyeInvoiceTitle": "Рахунок"
+  "viewerTapToCopy": "Натисніть для копіювання",
+  "viewerViewInExplorer": "Переглянути в оглядачі",
+  "transactionViewerTitle": "ID транзакції",
+  "invoiceViewerTitle": "Рахунок",
+  "viewerCopyLink": "Копіювати посилання"
 }

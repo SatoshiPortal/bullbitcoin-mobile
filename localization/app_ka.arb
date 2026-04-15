@@ -302,9 +302,10 @@
   "coreScreensParseFailed": "Failed to parse transaction: {message}.",
   "coreScreensUnexpectedError": "Unexpected error: {message}.",
   "coreScreensNoServersAvailable": "No Electrum servers available.",
-  "addressViewerTitle": "Address",
-  "addressViewerTapToCopy": "Tap to copy",
-  "addressViewerViewInExplorer": "View in explorer",
-  "bullEyeTransactionTitle": "Transaction ID",
-  "bullEyeInvoiceTitle": "Invoice"
+  "addressViewerTitle": "მისამართი",
+  "viewerTapToCopy": "კოპირებისთვის შეეხეთ ღილაკს",
+  "viewerViewInExplorer": "Დათვალიერება ექსპლორერში",
+  "transactionViewerTitle": "ტრანსაქციის ID ",
+  "invoiceViewerTitle": "ინვოისი",
+  "viewerCopyLink": "ბმულის კოპირება"
 }

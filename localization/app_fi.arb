@@ -4491,8 +4491,9 @@
   "coreScreensUnexpectedError": "Odottamaton virhe: {message}.",
   "coreScreensNoServersAvailable": "Electrum-palvelimia ei ole saatavilla.",
   "addressViewerTitle": "Osoite",
-  "addressViewerTapToCopy": "Kopioi napauttamalla",
-  "addressViewerViewInExplorer": "Näytä selaimessa",
-  "bullEyeTransactionTitle": "Tapahtuman tunnus",
-  "bullEyeInvoiceTitle": "Lasku"
+  "viewerTapToCopy": "Kopioi napauttamalla",
+  "viewerViewInExplorer": "Näytä selaimessa",
+  "transactionViewerTitle": "Tapahtuman tunnus",
+  "invoiceViewerTitle": "Lasku",
+  "viewerCopyLink": "Kopioi linkki"
 }

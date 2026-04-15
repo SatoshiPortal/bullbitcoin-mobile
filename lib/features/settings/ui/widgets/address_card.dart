@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bull_eye.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +40,7 @@ class AddressCard extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            BullEye.address(
+            AddressViewer(
               address,
               style: context.font.headlineMedium,
               color: context.appColors.primary,

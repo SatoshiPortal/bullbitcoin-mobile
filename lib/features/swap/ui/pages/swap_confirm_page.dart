@@ -78,26 +78,33 @@ class SwapConfirmPage extends StatelessWidget {
                         selector: (state) => state.isSameChainTransfer,
                         builder: (context, isSameChainTransfer) {
                           if (isSameChainTransfer) {
-                            final formattedFiatEquivalent = context.select(
-                              (TransferBloc bloc) {
-                                final amount = bloc.state.inputAmountSat;
-                                final rate = bloc.state.exchangeRate ?? 0.0;
-                                final currency = bloc.state.fiatCurrencyCode ?? 'CAD';
-                                if (rate == 0.0) return '';
-                                final fiatAmount = amount * rate / 100000000;
-                                return '${fiatAmount.toStringAsFixed(2)} $currency';
-                              },
-                            );
+                            final formattedFiatEquivalent = context.select((
+                              TransferBloc bloc,
+                            ) {
+                              final amount = bloc.state.inputAmountSat;
+                              final rate = bloc.state.exchangeRate ?? 0.0;
+                              final currency =
+                                  bloc.state.fiatCurrencyCode ?? 'CAD';
+                              if (rate == 0.0) return '';
+                              final fiatAmount = amount * rate / 100000000;
+                              return '${fiatAmount.toStringAsFixed(2)} $currency';
+                            });
                             final selectedFeeOptionTitle = context.select(
-                              (TransferBloc bloc) => bloc.state.selectedFeeOption.title(),
+                              (TransferBloc bloc) =>
+                                  bloc.state.selectedFeeOption.title(),
                             );
                             final toWalletLabel = context.select(
-                              (TransferBloc bloc) => bloc.state.toWallet?.displayLabel(context) ?? '',
+                              (TransferBloc bloc) =>
+                                  bloc.state.toWallet?.displayLabel(context) ??
+                                  '',
                             );
                             return CommonOnchainSendInfoSection(
-                              sendWalletLabel: fromWallet!.displayLabel(context),
+                              sendWalletLabel: fromWallet!.displayLabel(
+                                context,
+                              ),
                               receiveWalletLabel: toWalletLabel,
-                              formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
+                              formattedBitcoinAmount:
+                                  formattedConfirmedAmountBitcoin,
                               formattedFiatEquivalent: formattedFiatEquivalent,
                               absoluteFees: absoluteFeesFormatted,
                               selectedFeeOptionTitle: selectedFeeOptionTitle,
@@ -111,7 +118,9 @@ class SwapConfirmPage extends StatelessWidget {
                                 ).then((selected) {
                                   if (selected != null && context.mounted) {
                                     try {
-                                      final fee = FeeSelectionName.fromString(selected);
+                                      final fee = FeeSelectionName.fromString(
+                                        selected,
+                                      );
                                       context.read<TransferBloc>().add(
                                         TransferEvent.feeOptionSelected(fee),
                                       );
@@ -127,9 +136,12 @@ class SwapConfirmPage extends StatelessWidget {
                                 ? null
                                 : toWallet?.displayLabel(context);
                             return CommonChainSwapSendInfoSection(
-                              sendWalletLabel: fromWallet!.displayLabel(context),
+                              sendWalletLabel: fromWallet!.displayLabel(
+                                context,
+                              ),
                               receiveWalletLabel: receiveWalletLabel,
-                              formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
+                              formattedBitcoinAmount:
+                                  formattedConfirmedAmountBitcoin,
                               swap: swap!,
                               absoluteFeesFormatted: absoluteFeesFormatted,
                               absoluteFees: absoluteFees,
