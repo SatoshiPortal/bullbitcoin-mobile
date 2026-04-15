@@ -116,10 +116,9 @@ class RecipientsListTile extends StatelessWidget {
                 label: 'Phone',
                 value: recipient.phoneNumber,
               ),
-              // TODO: Handle this case.
-              RecipientType.cbuCvuArgentina => const _InfoRow(
+              RecipientType.bankAccountArgentina => _InfoRow(
                 label: 'CBU/CVU',
-                value: null,
+                value: recipient.bankAccount,
               ),
               // TODO: Handle this case.
               RecipientType.pseColombia => _InfoRow(

@@ -22,7 +22,7 @@ class BullbitcoinApiKeyDatasource {
       final jsonString = jsonEncode(apiKey.toJson());
       final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
       await _secureStorage.saveValue(key: key, value: jsonString);
-      log.fine('API key stored successfully');
+      log.fine('Exchange API key stored successfully');
     } catch (e) {
       log.severe(
         message: 'Error storing API key',
@@ -39,7 +39,7 @@ class BullbitcoinApiKeyDatasource {
       final jsonString = await _secureStorage.getValue(key);
 
       if (jsonString == null || jsonString.isEmpty) {
-        log.warning('No API key found in storage');
+        log.warning('User not logged in exchange (no API key)');
         return null;
       }
 

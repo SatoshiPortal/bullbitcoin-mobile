@@ -15,7 +15,7 @@ import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
@@ -38,6 +38,7 @@ import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -73,7 +74,8 @@ class AppRouter {
               onPopInvokedWithResult: (didPop, _) {
                 context.goNamed(WalletRoute.walletHome.name);
               },
-              child: BackupWarningOverlay(
+              child: LegacyStorageWarningOverlay(
+                child: BackupWarningOverlay(
                 child: Scaffold(
                   // The app bar of the exchange tab is done with a sliver app bar
                   // on the ExchangeHomeScreen itself.
@@ -128,7 +130,8 @@ class AppRouter {
                 ),
               ),
             ),
-          );
+          ),
+        );
         },
         routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
       ),
@@ -142,7 +145,7 @@ class AppRouter {
       SendRouter.route,
       SwapRouter.route,
       ...BuyRouter.routes,
-      FundExchangeRouter.route,
+      ...FundExchangeRouter.routes,
       SellRouter.route,
       WithdrawRouter.route,
       PayRouter.route,

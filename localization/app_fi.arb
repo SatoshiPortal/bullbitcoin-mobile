@@ -69,6 +69,7 @@
   "pinCodeCheckingStatus": "Tarkistetaan PIN-tilaa",
   "pinCodeProcessing": "Käsitellään",
   "pinCodeSettingUp": "PIN-koodin käyttöönotto",
+  "pinCodeBackupRequiredWarning": "Suorita lompakkosi varmuuskopiointi ennen PIN-koodin asettamista",
   "settingsCurrencyTitle": "Valuutta",
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
@@ -4454,5 +4455,29 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "LOMPAKKO ON VARMUUSKOPIOITAVA NYT",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Lompakkosi käyttää vanhentunutta tallennuskirjastoa eikä sillä ole varmuuskopiota. Sinun on varmuuskopioitava siemenlauseesi välittömästi ja poistettava ja asennettava sovellus uudelleen.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Vanhentunut tallennus havaittu",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Napauta varmuuskopioidaksesi lompakkosi nyt ja asentaaksesi sovelluksen uudelleen.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Varmuuskopioi nyt",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Myöhemmin",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   }
 }

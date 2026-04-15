@@ -41,8 +41,6 @@ sealed class WalletModel with _$WalletModel {
     return buffer.toString();
   }
 
-  String get dbName => hexId;
-
   factory WalletModel.fromMetadata(WalletMetadataModel metadata) {
     if (metadata.isBitcoin) {
       return WalletModel.publicBdk(

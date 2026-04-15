@@ -3309,6 +3309,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "Endereço líquido",
   "backupWalletSuccessTestButton": "Teste de backup",
   "pinCodeSettingUp": "Configurando seu código PIN",
+  "pinCodeBackupRequiredWarning": "Por favor, conclua uma cópia de segurança da carteira antes de definir um PIN",
   "replaceByFeeErrorFeeRateTooLow": "Você precisa aumentar a taxa de taxa em pelo menos 1 sat/vbyte em comparação com a transação original",
   "payPriority": "Prioridade",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Transferir fundos em Costa Rican Colón (CRC)",
@@ -4517,5 +4518,29 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "A CARTEIRA DEVE SER SALVA AGORA",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Sua carteira está em uma biblioteca de armazenamento obsoleta e não tem backup. Você deve fazer backup de sua frase semente imediatamente e depois excluir e reinstalar o aplicativo.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Armazenamento obsoleto detectado",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Toque para fazer backup da sua carteira agora e reinstalar o aplicativo.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Fazer backup agora",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Mais tarde",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   }
 }

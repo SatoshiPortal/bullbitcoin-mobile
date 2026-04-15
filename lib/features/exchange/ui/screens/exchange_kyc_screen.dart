@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -95,8 +94,8 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
           onHttpAuthRequest: (HttpAuthRequest request) {
             request.onProceed(
               WebViewCredential(
-                user: dotenv.env['BASIC_AUTH_USERNAME'] ?? '',
-                password: dotenv.env['BASIC_AUTH_PASSWORD'] ?? '',
+                user: ApiServiceConstants.basicAuthUsername,
+                password: ApiServiceConstants.basicAuthPassword,
               ),
             );
           },

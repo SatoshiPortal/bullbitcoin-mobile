@@ -55,7 +55,7 @@ sealed class RecipientViewModel with _$RecipientViewModel {
       phoneNumber: dto.details.phoneNumber,
       debitcard: dto.details.debitcard,
       isOwner: dto.isOwner,
-      bankAccount: dto.details.bankAccount,
+      bankAccount: dto.details.bankAccount ?? dto.details.claveUniform,
     );
   }
 
@@ -152,7 +152,9 @@ sealed class RecipientViewModel with _$RecipientViewModel {
         if (ownerName != null && ownerName!.isNotEmpty) return ownerName!;
         if (label != null && label!.isNotEmpty) return label!;
         return null;
-      case RecipientType.cbuCvuArgentina:
+      case RecipientType.bankAccountArgentina:
+        if (name != null && name!.isNotEmpty) return name!;
+        if (label != null && label!.isNotEmpty) return label!;
         return null;
       case RecipientType.pseColombia:
         return name;

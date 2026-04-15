@@ -69,14 +69,22 @@ class Schema11To12 {
         .update(schema12.autoSwap)
         .write(RawValuesInsertable({'show_warning': const Constant<int>(1)}));
 
-    // MempoolServers table: add enableSsl column
-    final mempoolServers = schema12.mempoolServers;
-    await m.addColumn(mempoolServers, mempoolServers.enableSsl);
+    // MempoolServers table: add enableSsl column (idempotent)
+    try {
+      final mempoolServers = schema12.mempoolServers;
+      await m.addColumn(mempoolServers, mempoolServers.enableSsl);
+    } catch (e) {
+      if (!e.toString().contains('duplicate column')) rethrow;
+    }
 
-    // Settings table: add isErrorReportingEnabled column
-    await m.addColumn(
-      schema12.settings,
-      schema12.settings.isErrorReportingEnabled,
-    );
+    // Settings table: add isErrorReportingEnabled column (idempotent)
+    try {
+      await m.addColumn(
+        schema12.settings,
+        schema12.settings.isErrorReportingEnabled,
+      );
+    } catch (e) {
+      if (!e.toString().contains('duplicate column')) rethrow;
+    }
   }
 }

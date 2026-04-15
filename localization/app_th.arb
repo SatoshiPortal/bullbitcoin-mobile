@@ -10112,6 +10112,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "กรุณาสำรองข้อมูลกระเป๋าเงินก่อนตั้ง PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -12475,5 +12479,29 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "ต้องสำรองข้อมูลกระเป๋าเงินตอนนี้",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "กระเป๋าเงินของคุณอยู่ในไลบรารีพื้นที่จัดเก็บที่เลิกใช้แล้วและไม่มีข้อมูลสำรอง คุณต้องสำรองข้อมูล seed phrase ทันที จากนั้นลบและติดตั้งแอปใหม่",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "ตรวจพบพื้นที่จัดเก็บที่เลิกใช้",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "แตะเพื่อสำรองข้อมูลกระเป๋าเงินของคุณตอนนี้และติดตั้งแอปใหม่",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "สำรองข้อมูลตอนนี้",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "ภายหลัง",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   }
 }

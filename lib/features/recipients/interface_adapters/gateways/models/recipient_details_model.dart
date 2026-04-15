@@ -44,7 +44,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
     String? debitcard,
     String? ownerName,
     String? phoneNumber,
-    String? cbuCvu,
+    String? claveUniform,
     String? bankCode,
     String? accountType,
     String? bankAccount,
@@ -194,14 +194,14 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
         );
       }(),
 
-      RecipientType.cbuCvuArgentina => () {
-        final d = details as CbuCvuArgentinaDetails;
+      RecipientType.bankAccountArgentina => () {
+        final d = details as BankAccountArgentinaDetails;
         return RecipientDetailsModel(
           recipientTypeFiat: type.value,
           isOwner: d.isOwner,
           label: d.label,
           isDefault: d.isDefault,
-          cbuCvu: d.cbuCvu,
+          claveUniform: d.claveUniform,
           name: d.name,
         );
       }(),
@@ -267,7 +267,7 @@ sealed class RecipientDetailsModel with _$RecipientDetailsModel {
       debitcard: debitcard,
       ownerName: ownerName,
       phoneNumber: phoneNumber,
-      //cbuCvu: cbuCvu,
+      claveUniform: claveUniform,
       bankCode: bankCode,
       accountType: accountType,
       bankAccount: bankAccount,

@@ -3333,6 +3333,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "流动资金",
   "backupWalletSuccessTestButton": "退约",
   "pinCodeSettingUp": "1. 制定您的《个人资料》",
+  "pinCodeBackupRequiredWarning": "请在设置PIN之前完成钱包备份",
   "replaceByFeeErrorFeeRateTooLow": "您需要将收费率提高到至少1分之一的CO/vbyte,而不是原来的交易",
   "payPriority": "优先程度",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "哥斯达黎加哥伦的转移资金",
@@ -4462,5 +4463,29 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "必须立即备份钱包",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "您的钱包使用已弃用的存储库且没有备份。您必须立即备份助记词，然后删除并重新安装应用。",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "检测到已弃用的存储",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "点击立即备份您的钱包并重新安装应用。",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "立即备份",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "稍后",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   }
 }

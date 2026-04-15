@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/pay/ui/widgets/sinpe_receipt_bottom_sheet.dart';
 import 'package:bb_mobile/features/replace_by_fee/router.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
@@ -152,6 +153,24 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const LoadingBoxContent(height: 400)
                 else
                   const TransactionDetailsTable(),
+                if (tx?.order is FiatPaymentOrder &&
+                    (tx!.order! as FiatPaymentOrder).payoutMethod ==
+                        OrderPaymentMethod.sinpe &&
+                    (tx.order! as FiatPaymentOrder).payoutCurrency ==
+                        'CRC') ...[
+                  const Gap(16),
+                  BBButton.big(
+                    label: context.loc.payViewReceipt,
+                    onPressed: () {
+                      showSinpeReceiptBottomSheet(
+                        context,
+                        tx.order! as FiatPaymentOrder,
+                      );
+                    },
+                    bgColor: context.appColors.secondary,
+                    textColor: context.appColors.onSecondary,
+                  ),
+                ],
                 if (swap != null && swap.requiresAction) ...[
                   const Gap(16),
                   BBButton.big(
@@ -168,7 +187,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                     textColor: context.appColors.onPrimary,
                   ),
                 ],
-                const Gap(32),
+                const Gap(16),
                 if (tx?.isOngoingPayjoinSender == true &&
                     !isPayjoinCompleted) ...[
                   const SenderBroadcastPayjoinOriginalTxButton(),

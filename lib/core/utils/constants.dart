@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Device {
   static late Size screen;
@@ -98,19 +97,23 @@ class ApiServiceConstants {
   static const boltzReferralId = 'BULL';
 
   // BullBitcoin API
-  static String bbApiUrl =
-      dotenv.env['BB_API_URL'] ?? 'https://api.bullbitcoin.com';
-  static String bbApiTestUrl =
-      dotenv.env['BB_API_TEST_URL'] ?? 'https://api05.bullbitcoin.dev';
-  static String bbAuthUrl = 'https://${dotenv.env['BB_AUTH_URL']}';
-  static String bbAuthTestUrl = 'https://${dotenv.env['BB_AUTH_TEST_URL']}';
-  static String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
-  static String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
-  static String googleDriveClientId =
-      dotenv.env['GOOGLE_DRIVE_CLIENT_ID'] ?? '';
+  static const String bbApiUrl = 'https://api.bullbitcoin.com';
+  static const String bbApiTestUrl = 'https://api05.bullbitcoin.dev';
+  static const String bbAuthUrl = 'https://accounts.bullbitcoin.com';
+  static const String bbAuthTestUrl = 'https://accounts05.bullbitcoin.dev';
+  static const String bbAppUrl = 'https://app.bullbitcoin.com';
+  static const String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
+  static const String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
+  static const String googleDriveClientId =
+      '97584343569-0mc4e5q9q1qino4vvo97mqomdi89sae5.apps.googleusercontent.com';
 
   // Error reports
-  static String sentryDsn = dotenv.env['SENTRY_DSN'] ?? '';
+  static const String sentryDsn =
+      'https://b6a8d5134da043eda72f231891c6e51a@cc.bullbitcoin.com/1';
+
+  // Exchange basic auth
+  static const String basicAuthUsername = 'bbadmin';
+  static const String basicAuthPassword = 'We are staging 05!';
 }
 
 class LocatorInstanceNameConstants {
