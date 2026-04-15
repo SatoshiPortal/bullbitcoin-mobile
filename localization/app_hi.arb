@@ -12503,5 +12503,21 @@
   "legacyStorageWarningLater": "बाद में",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "लेन-देन इनपुट हल किए जा रहे हैं...",
+  "coreScreensFeeRateLabel": "शुल्क दर",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "परिवर्तन आउटपुट अज्ञात — सभी आउटपुट समान रूप से दिखाए गए",
+  "coreScreensUnknown": "अज्ञात",
+  "coreScreensFetchFailed": "Electrum से लेन-देन {txid} प्राप्त नहीं हो सका।",
+  "coreScreensInputResolutionFailed": "इनपुट नहीं मिला: {parentTxId} का आउटपुट {vout} मौजूद नहीं है।",
+  "coreScreensParseFailed": "लेन-देन पार्स करने में विफल: {message}।",
+  "coreScreensUnexpectedError": "अप्रत्याशित त्रुटि: {message}।",
+  "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।",
+  "addressViewerTitle": "पता",
+  "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
+  "viewerViewInExplorer": "एक्सप्लोरर में देखें",
+  "transactionViewerTitle": "लेन-देन आईडी",
+  "invoiceViewerTitle": "चालान",
+  "viewerCopyLink": "प्रतिरूप जोड़ना"
 }

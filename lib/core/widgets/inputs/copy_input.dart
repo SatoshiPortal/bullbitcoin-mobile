@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
@@ -101,53 +102,52 @@ class CopyInput extends StatelessWidget {
 
   void _onShowValueModal(BuildContext context, {required bool canCopy}) {
     final theme = context.theme;
-    showDialog(
+    BlurredDialog.show(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: context.appColors.surface,
-            title:
-                modalTitle != null
-                    ? Text(
-                      modalTitle!,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontSize: 20,
-                        fontWeight: .w700,
-                      ),
-                      textAlign: .center,
-                    )
-                    : null,
-
-            content: SingleChildScrollView(
-              child: SelectableText(
-                modalContent ?? text,
-                style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
-              ),
-            ),
-            actions: [
-              if (canCopy)
-                TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: context.appColors.secondary,
-                    textStyle: theme.textTheme.bodyLarge,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.appColors.surface,
+        title:
+            modalTitle != null
+                ? Text(
+                  modalTitle!,
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontSize: 20,
+                    fontWeight: .w700,
                   ),
-                  onPressed: () {
-                    Clipboard.setData(
-                      ClipboardData(text: clipboardText ?? text),
-                    );
-                  },
-                  child: Text('Copy', style: theme.textTheme.bodyLarge),
-                ),
-              TextButton(
-                style: TextButton.styleFrom(
-                  foregroundColor: context.appColors.primary,
-                  textStyle: theme.textTheme.bodyLarge,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text('Close', style: theme.textTheme.bodyLarge),
-              ),
-            ],
+                  textAlign: .center,
+                )
+                : null,
+
+        content: SingleChildScrollView(
+          child: SelectableText(
+            modalContent ?? text,
+            style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
           ),
+        ),
+        actions: [
+          if (canCopy)
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: context.appColors.secondary,
+                textStyle: theme.textTheme.bodyLarge,
+              ),
+              onPressed: () {
+                Clipboard.setData(
+                  ClipboardData(text: clipboardText ?? text),
+                );
+              },
+              child: Text('Copy', style: theme.textTheme.bodyLarge),
+            ),
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: context.appColors.primary,
+              textStyle: theme.textTheme.bodyLarge,
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text('Close', style: theme.textTheme.bodyLarge),
+          ),
+        ],
+      ),
     );
   }
 }

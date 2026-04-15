@@ -12503,5 +12503,21 @@
   "legacyStorageWarningLater": "بعداً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
+  "coreScreensFeeRateLabel": "نرخ کارمزد",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "خروجی باقی‌مانده نامشخص است — همه خروجی‌ها به طور مساوی نمایش داده می‌شوند",
+  "coreScreensUnknown": "نامشخص",
+  "coreScreensFetchFailed": "دریافت تراکنش {txid} از Electrum ناموفق بود.",
+  "coreScreensInputResolutionFailed": "ورودی یافت نشد: خروجی {vout} از {parentTxId} وجود ندارد.",
+  "coreScreensParseFailed": "تحلیل تراکنش ناموفق بود: {message}.",
+  "coreScreensUnexpectedError": "خطای غیرمنتظره: {message}.",
+  "coreScreensNoServersAvailable": "هیچ سرور Electrum در دسترس نیست.",
+  "addressViewerTitle": "آدرس",
+  "viewerTapToCopy": "برای کپی ضربه بزنید",
+  "viewerViewInExplorer": "مشاهده در اکسپلورر",
+  "transactionViewerTitle": "شناسه تراکنش",
+  "invoiceViewerTitle": "صورتحساب",
+  "viewerCopyLink": "لینک را کپی کنید"
 }

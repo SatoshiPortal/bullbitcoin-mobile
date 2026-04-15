@@ -154,16 +154,16 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
   }
 
   Future<void> broadcastTransaction() async {
+    if (state.isBroadcasting || state.transaction == null) return;
+    emit(state.copyWith(isBroadcasting: true));
     try {
-      if (state.transaction == null) return;
-
       await _broadcastBitcoinTransactionUsecase.execute(
         state.transaction!.data,
         isPsbt: state.transaction!.format == TxFormat.psbt,
       );
-      emit(state.copyWith(isBroadcasted: true));
+      emit(state.copyWith(isBroadcasted: true, isBroadcasting: false));
     } catch (e) {
-      emit(state.copyWith(error: UnexpectedError(e)));
+      emit(state.copyWith(error: UnexpectedError(e), isBroadcasting: false));
     }
   }
 }

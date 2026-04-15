@@ -4493,5 +4493,21 @@
   "legacyStorageWarningLater": "Más tarde",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "Resolviendo entradas de la transacción...",
+  "coreScreensFeeRateLabel": "Tasa de comisión",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Salida de cambio desconocida — todas las salidas se muestran por igual",
+  "coreScreensUnknown": "Desconocido",
+  "coreScreensFetchFailed": "No se pudo obtener la transacción {txid} de Electrum.",
+  "coreScreensInputResolutionFailed": "Entrada no encontrada: la salida {vout} de {parentTxId} no existe.",
+  "coreScreensParseFailed": "Error al analizar la transacción: {message}.",
+  "coreScreensUnexpectedError": "Error inesperado: {message}.",
+  "coreScreensNoServersAvailable": "No hay servidores Electrum disponibles.",
+  "addressViewerTitle": "Dirección",
+  "viewerTapToCopy": "Toca para copiar",
+  "viewerViewInExplorer": "Ver en explorador",
+  "transactionViewerTitle": "ID de transacción",
+  "invoiceViewerTitle": "Factura",
+  "viewerCopyLink": "Copiar enlace"
 }

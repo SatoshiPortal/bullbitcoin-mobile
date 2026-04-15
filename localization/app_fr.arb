@@ -4476,5 +4476,21 @@
   "legacyStorageWarningLater": "Plus tard",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "Résolution des entrées de la transaction...",
+  "coreScreensFeeRateLabel": "Taux de frais",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Sortie de monnaie inconnue — toutes les sorties sont affichées de manière égale",
+  "coreScreensUnknown": "Inconnu",
+  "coreScreensFetchFailed": "Impossible de récupérer la transaction {txid} depuis Electrum.",
+  "coreScreensInputResolutionFailed": "Entrée introuvable : la sortie {vout} de {parentTxId} n'existe pas.",
+  "coreScreensParseFailed": "Échec de l'analyse de la transaction : {message}.",
+  "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
+  "coreScreensNoServersAvailable": "Aucun serveur Electrum disponible.",
+  "addressViewerTitle": "Adresse",
+  "viewerTapToCopy": "Appuyez pour copier",
+  "viewerViewInExplorer": "Voir dans l'explorateur",
+  "transactionViewerTitle": "ID de transaction",
+  "invoiceViewerTitle": "Facture",
+  "viewerCopyLink": "Copier le lien"
 }
