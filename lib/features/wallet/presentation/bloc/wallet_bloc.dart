@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
@@ -54,6 +55,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required DeleteWalletUsecase deleteWalletUsecase,
     required GetArkWalletUsecase getArkWalletUsecase,
     required CheckArkWalletSetupUsecase checkArkWalletSetupUsecase,
+    required SeedStoreTypeDatasource seedStoreTypeDatasource,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -73,6 +75,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _deleteWalletUsecase = deleteWalletUsecase,
        _getArkWalletUsecase = getArkWalletUsecase,
        _checkArkWalletSetupUsecase = checkArkWalletSetupUsecase,
+       _seedStoreTypeDatasource = seedStoreTypeDatasource,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -88,6 +91,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
     on<DisableAutoSwap>(_onDisableAutoSwap);
     on<DismissBackupWarning>(_onDismissBackupWarning);
+    on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -108,6 +112,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final DeleteWalletUsecase _deleteWalletUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
+  final SeedStoreTypeDatasource _seedStoreTypeDatasource;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -143,11 +148,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
               isSyncing, // If global sync is true, all wallets are syncing
       };
 
+      final seedStoreType = await _seedStoreTypeDatasource.read();
+      final isOnLegacyStorage =
+          seedStoreType?.toEntity().isLegacyStorage ?? false;
+
       emit(
         WalletState(
           status: WalletStatus.success,
           wallets: wallets,
           syncStatus: syncStatus,
+          isOnLegacyStorage: isOnLegacyStorage,
         ),
       );
 
@@ -636,5 +646,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) {
     emit(state.copyWith(backupWarningDismissed: true));
+  }
+
+  void _onDismissLegacyStorageWarning(
+    DismissLegacyStorageWarning event,
+    Emitter<WalletState> emit,
+  ) {
+    emit(state.copyWith(legacyStorageWarningDismissed: true));
   }
 }

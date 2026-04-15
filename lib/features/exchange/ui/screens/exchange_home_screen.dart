@@ -237,7 +237,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                         label: context.loc.exchangeHomeDepositButton,
                         iconFirst: true,
                         onPressed: () => context.pushNamed(
-                          FundExchangeRoute.fundExchangeAccount.name,
+                          FundExchangeRoute.fundExchange.name,
                         ),
                         bgColor: context.appColors.secondaryFixed,
                         textColor: context.appColors.onSecondaryFixed,

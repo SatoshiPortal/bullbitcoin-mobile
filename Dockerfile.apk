@@ -1,0 +1,42 @@
+FROM bull-mobile
+
+# Build configuration arguments
+# MODE: flutter build mode: debug or release
+ARG MODE=debug
+# FORMAT: output format: apk or aab
+ARG FORMAT=apk
+# GRADLE_HEAP: JVM heap size for Gradle (e.g. 2g, 4g, 6g)
+ARG GRADLE_HEAP=4g
+COPY --chown=$USER:$USER . /app/
+
+WORKDIR /app
+
+# Install Flutter version specified in .fvmrc (no-op if it matches base image)
+RUN fvm install
+
+# Setup the project
+RUN fvm flutter pub get
+RUN fvm dart run build_runner build --delete-conflicting-outputs
+RUN fvm flutter gen-l10n
+
+
+# Configure Gradle for containerized builds
+RUN mkdir -p $HOME/.gradle && \
+    echo "org.gradle.daemon=false" > $HOME/.gradle/gradle.properties && \
+    echo "org.gradle.jvmargs=-Xmx${GRADLE_HEAP} -XX:+HeapDumpOnOutOfMemoryError" >> $HOME/.gradle/gradle.properties
+
+# Build the app
+# SOURCE_DATE_EPOCH: makes OpenSSL use a deterministic build timestamp instead of wall-clock time
+# CARGO_ENCODED_RUSTFLAGS: remaps absolute paths so they don't differ between machines
+RUN SOURCE_DATE_EPOCH=$(git -C /app log -1 --format=%ct) && \
+    CARGO_ENCODED_RUSTFLAGS=$(printf '%s\037%s\037%s' \
+        "--remap-path-prefix=$HOME/.cargo=/cargo" \
+        "--remap-path-prefix=$HOME/.rustup=/rustup" \
+        "--remap-path-prefix=/app=/build") && \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 && \
+    export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS && \
+    if [ "$FORMAT" = "aab" ]; then \
+        fvm flutter build appbundle --${MODE}; \
+    else \
+        fvm flutter build apk --${MODE}; \
+    fi

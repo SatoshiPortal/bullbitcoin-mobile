@@ -53,5 +53,30 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
-  }
+  },
+  "homeLegacyStorageWithNoBackupTitle": "ԴՐԱՄԱՊԱՆԱԿԸ ՀԻՄԱ ՊԵՏՔ Է ԿՐԿՆՕՐԻՆԱԿՎԻ",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Ձեր դրամապանակը գտնվում է հնացած պահпанման գրадарानум и кркноринак չуни: Дуз пет э анмиджапес кркноринакэл дзер seed артаhайтутюне, апа джнджэл ев верататэgадрэл hавелваце:",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Հայтнабервел э hнацad пахпанум",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Hпэл՝ hima кркноринакелу дзер драмапанакы ев верататэgадрелу hавелвацы:",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Կրկnоrinakel hima",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Aveli ush",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ"
 }

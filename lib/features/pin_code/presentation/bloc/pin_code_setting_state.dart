@@ -1,6 +1,7 @@
 part of 'pin_code_setting_bloc.dart';
 
 enum PinCodeSettingStatus {
+  backupRequired,
   initializing,
   unlock,
   settings,

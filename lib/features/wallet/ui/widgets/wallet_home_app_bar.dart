@@ -35,8 +35,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
       _hasTriggeredFetch = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final cubit = context.read<ExchangeCubit>();
-        if (cubit.state.userSummary == null &&
-            cubit.state.apiKeyException == null) {
+        if (cubit.state.userSummary == null) {
           cubit.fetchUserSummary();
         }
       });

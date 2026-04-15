@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'bitcoin_tx.freezed.dart';
@@ -29,13 +29,13 @@ class BitcoinTx {
   });
 
   static Future<BitcoinTx> fromBytes(List<int> bytes) async {
-    final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
+    final bdkTx = bdk.Transaction(transactionBytes: Uint8List.fromList(bytes));
 
-    final txid = bdkTx.txid();
+    final txid = bdkTx.computeTxid().toString();
     final version = bdkTx.version();
     final vsize = bdkTx.vsize();
-    final size = bdkTx.size();
-    final locktime = bdkTx.lockTime().field0;
+    final size = bdkTx.totalSize();
+    final locktime = bdkTx.lockTime();
     final inputs = bdkTx.input();
     final outputs = bdkTx.output();
 
@@ -49,8 +49,8 @@ class BitcoinTx {
     return BitcoinTx(
       txid: txid,
       version: version,
-      size: size,
-      vsize: vsize,
+      size: BigInt.from(size),
+      vsize: BigInt.from(vsize),
       locktime: locktime,
       vin: inputs.map(_mapInput).toList(),
       vout: vout,
@@ -58,27 +58,25 @@ class BitcoinTx {
   }
 
   static Future<BitcoinTx> fromPsbt(String psbtBase64) async {
-    final psbt = await bdk.PartiallySignedTransaction.fromString(psbtBase64);
+    final psbt = bdk.Psbt(psbtBase64: psbtBase64);
     final txBytes = psbt.extractTx().serialize();
     return fromBytes(txBytes);
   }
 
   static TxVin _mapInput(bdk.TxIn input) {
     return TxVin(
-      txid: input.previousOutput.txid,
+      txid: input.previousOutput.txid.toString(),
       vout: input.previousOutput.vout,
       sequence: input.sequence,
-      scriptSig: input.scriptSig != null
-          ? TxScriptSig(bytes: input.scriptSig!.bytes)
-          : null,
+      scriptSig: TxScriptSig(bytes: input.scriptSig.toBytes()),
     );
   }
 
   static TxVout _mapOutput(bdk.TxOut output, int index) {
     return TxVout(
-      value: output.value,
+      value: BigInt.from(output.value.toSat()),
       n: index,
-      scriptPubKey: TxScriptSig(bytes: output.scriptPubkey.bytes),
+      scriptPubKey: TxScriptSig(bytes: output.scriptPubkey.toBytes()),
     );
   }
 
@@ -89,11 +87,13 @@ class BitcoinTx {
     int totalAmount = 0;
     for (final output in vout) {
       final scriptPubkey = output.scriptPubKey;
-      final outputAddress = await bdk.Address.fromScript(
-        script: bdk.ScriptBuf(bytes: Uint8List.fromList(scriptPubkey.bytes)),
+      final outputAddress = bdk.Address.fromScript(
+        script: bdk.Script(
+          rawOutputScript: Uint8List.fromList(scriptPubkey.bytes),
+        ),
         network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
       );
-      if (outputAddress.asString() == address) {
+      if (outputAddress.toString() == address) {
         totalAmount += output.value.toInt();
       }
     }

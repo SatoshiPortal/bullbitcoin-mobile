@@ -1,17 +1,17 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.8.0+172
+version: 6.9.0+176
 
 environment:
   sdk: ">=3.10.0 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter
-  bdk_flutter:
+  bdk_dart:
     git:
-      url: https://github.com/SatoshiPortal/bdk-flutter
-      ref: 3024b3452b4b0e5982d737f82ff461024a881ae7
+      url: https://github.com/ethicnology/bdk-dart
+      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -21,10 +21,16 @@ dependencies:
   google_fonts: ^6.3.3
   flutter_secure_storage:
     git:
-      url: https://github.com/iosifpeterfi/flutter_secure_storage
-      ref: f0d4b6cd96b5fbc43d125cd25fb2d38c0241fe9c
+      url: https://github.com/SatoshiPortal/flutter_secure_storage
+      ref: 47ad06f
+      path: flutter_secure_storage
+  flutter_secure_storage_legacy:
+    git:
+      url: https://github.com/SatoshiPortal/flutter_secure_storage_legacy
+      ref: c32db29
       path: flutter_secure_storage
   path_provider: ^2.1.5
+  shared_preferences: ^2.3.0
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-flutter
@@ -40,7 +46,6 @@ dependencies:
     git:
       url: https://github.com/SatoshiPortal/bitbox-dart
       ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
-  flutter_dotenv: ^6.0.0
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1
@@ -52,8 +57,8 @@ dependencies:
   hive: ^2.2.3
   boltz:
     git:
-      url: https://github.com/SatoshiPortal/boltz-dart
-      ref: e09ab48e5d67db898279a33c4a3c71164fcd7ab9
+      url: https://github.com/SatoshiPortal/boltz-dart.git
+      ref: 80d6f1a4b307717bc8eb1ad110d85f0a2ee5e5a4
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
@@ -104,8 +109,8 @@ dependencies:
   logging_colorful: ^1.3.2
   satoshifier:
     git:
-      url: https://github.com/SatoshiPortal/satoshifier-dart
-      ref: a6e4133331d84381163f3788b17bb760e0bf79fc
+      url: https://github.com/SatoshiPortal/dart-satoshifier
+      ref: c1dd6d76639eaa79a8e6c40ff1c05c78e9c4bae5
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
@@ -156,7 +161,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
     - assets/
     - assets/icons/
     - assets/logos/

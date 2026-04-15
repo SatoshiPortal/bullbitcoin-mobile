@@ -52,5 +52,30 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
-  }
+  },
+  "homeLegacyStorageWithNoBackupTitle": "ৱালেট এতিয়াই বেকআপ কৰিব লাগিব",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "আপোনাৰ ৱালেট এটা পুৰণি ষ্ট'ৰেজ লাইব্ৰেৰীত আছে আৰু কোনো বেকআপ নাই। আপুনি তৎক্ষণাৎ আপোনাৰ ছিড ফ্ৰেজ বেকআপ কৰিব লাগিব, তাৰ পিছত এপটো মচি পুনৰায় ইনষ্টল কৰিব লাগিব।",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "পুৰণি ষ্ট'ৰেজ চিনাক্ত কৰা হৈছে",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "এতিয়া আপোনাৰ ৱালেট বেকআপ কৰিবলৈ আৰু এপটো পুনৰায় ইনষ্টল কৰিবলৈ টেপ কৰক।",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "এতিয়াই বেকআপ কৰক",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "পিছত",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক"
 }

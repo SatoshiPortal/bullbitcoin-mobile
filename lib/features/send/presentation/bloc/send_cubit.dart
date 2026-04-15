@@ -41,12 +41,15 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
     Wallet? wallet,
+    required LabelsFacade labelsFacade,
     required SelectBestWalletUsecase bestWalletUsecase,
     required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
     required GetSettingsUsecase getSettingsUsecase,
@@ -80,6 +83,7 @@ class SendCubit extends Cubit<SendState> {
     required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
     required VerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase,
   }) : _wallet = wallet,
+       _labelsFacade = labelsFacade,
        _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
@@ -114,6 +118,7 @@ class SendCubit extends Cubit<SendState> {
 
   // ignore: unused_field
   final Wallet? _wallet;
+  final LabelsFacade _labelsFacade;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
@@ -317,6 +322,17 @@ class SendCubit extends Cubit<SendState> {
           });
 
       final sendType = SendType.from(state.paymentRequest!);
+
+      // Pre-populate label from the embedded invoice description or BIP21 label
+      // if the user hasn't manually set one already.
+      final embeddedLabel = switch (state.paymentRequest!) {
+        Bolt11PaymentRequest(description: final d) when d.isNotEmpty => d,
+        Bip21PaymentRequest(label: final l) when l.isNotEmpty => l,
+        _ => null,
+      };
+      if (embeddedLabel != null && state.label.isEmpty) {
+        emit(state.copyWith(label: embeddedLabel));
+      }
 
       emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
       await loadFees();
@@ -1484,6 +1500,16 @@ class SendCubit extends Cubit<SendState> {
           network: state.selectedWallet!.network,
           absoluteFees:
               0, // TODO (ishi): removed until server fees are implemented
+        );
+      }
+
+      if (state.label.isNotEmpty) {
+        await _labelsFacade.store(
+          NewLabel.tx(
+            transactionId: state.txId!,
+            label: state.label,
+            origin: state.selectedWallet!.id,
+          ),
         );
       }
 

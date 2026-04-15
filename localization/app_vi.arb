@@ -53,5 +53,30 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
-  }
+  },
+  "homeLegacyStorageWithNoBackupTitle": "VÍ PHẢI ĐƯỢC SAO LƯU NGAY BÂY GIỜ",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Ví của bạn đang sử dụng thư viện lưu trữ lỗi thời và không có bản sao lưu. Bạn phải sao lưu cụm từ hạt giống ngay lập tức, sau đó xóa và cài đặt lại ứng dụng.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Phát hiện bộ nhớ lỗi thời",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Nhấn để sao lưu ví của bạn ngay bây giờ và cài đặt lại ứng dụng.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Sao lưu ngay",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Sau",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN"
 }
