@@ -33,7 +33,7 @@ dependencies:
   shared_preferences: ^2.3.0
   payjoin_flutter:
     git:
-      url: https://github.com/SatoshiPortal/payjoin-flutter
+      url: https://github.com/SatoshiPortal/payjoin-dart
       ref: 913812dba120703ce9738fa330c5203e1d11f2fa
   qr_flutter: ^4.1.0
   dio: ^5.9.0
