@@ -4346,7 +4346,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "Dies sendet eine Anforderung zur Kontolöschung an unser Support-Team. Ihr Konto wird innerhalb von 5 Werktagen gelöscht.",
+  "deleteAccountConfirmationDescription": "Dies löscht Ihr Bull Bitcoin-Konto und alle zugehörigen Daten dauerhaft. Ihr Konto wird innerhalb von 5 Werktagen dauerhaft gelöscht.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -4358,11 +4358,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Konto-Löschung angefordert",
+  "deleteAccountSuccessTitle": "Kontolöschung eingereicht",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Ihre Anfrage zur Kontolöschung wurde eingegangen. Sie wird innerhalb von 5 Werktagen bearbeitet.",
+  "deleteAccountSuccessDescription": "Ihre Anfrage zur Kontolöschung wurde eingereicht. Ihr Konto wird innerhalb von 5 Werktagen dauerhaft gelöscht.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },

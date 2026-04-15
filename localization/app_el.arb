@@ -12456,7 +12456,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Αυτό θα διαγράψει μόνιμα τον λογαριασμό σας στο Bull Bitcoin και όλα τα σχετικά δεδομένα. Ο λογαριασμός σας θα διαγραφεί μόνιμα εντός 5 εργάσιμων ημερών.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12468,11 +12468,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Αίτηση διαγραφής λογαριασμού υποβλήθηκε",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Το αίτημα διαγραφής του λογαριασμού σας έχει υποβληθεί. Ο λογαριασμός σας θα διαγραφεί μόνιμα εντός 5 εργάσιμων ημερών.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },

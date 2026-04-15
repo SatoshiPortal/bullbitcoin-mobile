@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/announcement_banner.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/dca_list_tile.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_kyc_card.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
@@ -148,8 +147,8 @@ class ExchangeHomeScreen extends StatelessWidget {
                                               .notLoggedIn;
                                           if (notLoggedIn) {
                                             context.pushNamed(
-                                              ExchangeRoute
-                                                  .exchangeLoginForSupport
+                                              ExchangeSupportChatRoute
+                                                  .loginForSupport
                                                   .name,
                                             );
                                           } else {

@@ -12456,7 +12456,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "यह आपके Bull Bitcoin खाते और सभी संबंधित डेटा को स्थायी रूप से हटा देगा। आपका खाता 5 कार्यदिवसों के भीतर स्थायी रूप से हटा दिया जाएगा।",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -12468,11 +12468,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "खाता हटाने का अनुरोध सबमिट किया गया",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "आपका खाता हटाने का अनुरोध सबमिट कर दिया गया है। आपका खाता 5 कार्यदिवसों के भीतर स्थायी रूप से हटा दिया जाएगा।",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },

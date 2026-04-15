@@ -7,7 +7,6 @@ import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_landing_screen_v2.dart';
-import 'package:bb_mobile/features/exchange/ui/screens/exchange_support_login_screen.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -18,7 +17,6 @@ import 'package:go_router/go_router.dart';
 enum ExchangeRoute {
   exchangeHome('/exchange'),
   exchangeLanding('/exchange/landing'),
-  exchangeLoginForSupport('/exchange/login-support'),
   exchangeAuth('/exchange/auth'),
   exchangeKyc('kyc');
 
@@ -82,22 +80,10 @@ class ExchangeRouter {
       },
     ),
     GoRoute(
-      name: ExchangeRoute.exchangeLoginForSupport.name,
-      path: ExchangeRoute.exchangeLoginForSupport.path,
-      pageBuilder: (context, state) {
-        return NoTransitionPage(
-          key: state.pageKey,
-          child: const ExchangeSupportLoginScreen(),
-        );
-      },
-    ),
-    ExchangeSupportChatRouter.route,
-    GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
       pageBuilder: (context, state) {
-        final fromSupport =
-            state.uri.queryParameters['from'] == 'support';
+        final fromSupport = state.uri.queryParameters['from'] == 'support';
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
@@ -105,13 +91,10 @@ class ExchangeRouter {
                 previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, exchangeState) {
               if (fromSupport) {
-                final isIOSNonSuperuser = Platform.isIOS &&
-                    !(context.read<SettingsCubit>().state.isSuperuser ?? false);
-                context.goNamed(
-                  ExchangeSupportChatRoute.supportChat.name,
-                  queryParameters:
-                      isIOSNonSuperuser ? {} : {'from': 'exchange'},
-                );
+                // Navigate to support chat (top-level route, outside the shell).
+                // Back from support chat goes to wallet home — non-superusers
+                // can never accidentally land on the exchange home this way.
+                context.go(ExchangeSupportChatRoute.supportChat.path);
                 return;
               }
               final isSuperuser =

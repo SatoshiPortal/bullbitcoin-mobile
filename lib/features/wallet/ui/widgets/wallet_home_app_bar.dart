@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
-import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -98,7 +97,7 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                             .notLoggedIn;
                         if (notLoggedIn) {
                           context.pushNamed(
-                            ExchangeRoute.exchangeLoginForSupport.name,
+                            ExchangeSupportChatRoute.loginForSupport.name,
                           );
                         } else {
                           context.pushNamed(

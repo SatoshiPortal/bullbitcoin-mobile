@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/dca/ui/dca_router.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/mempool_settings/router.dart';
 import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:bb_mobile/features/import_coldcard_q/router.dart';
@@ -64,9 +65,6 @@ class AppRouter {
           final tabIndex = location.startsWith(ExchangeRoute.exchangeHome.path)
               ? 1
               : 0;
-          final isSupportChat = location.contains('/support-chat') ||
-              location.contains('/login-support');
-
           return BlocProvider(
             create: (_) => locator<PriceChartCubit>(),
             child: PopScope(
@@ -82,9 +80,7 @@ class AppRouter {
                   appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
                   extendBodyBehindAppBar: true,
                   body: child,
-                  bottomNavigationBar: isSupportChat
-                      ? null
-                      : BottomNavigationBar(
+                  bottomNavigationBar: BottomNavigationBar(
                           currentIndex: tabIndex,
                           onTap: (index) {
                             if (index == 0) {
@@ -135,6 +131,10 @@ class AppRouter {
         },
         routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
       ),
+      // Support routes live outside the ShellRoute so they can be pushed
+      // from any context (settings, wallet home) without duplicate page key errors.
+      ExchangeSupportChatRouter.loginForSupportRoute,
+      ExchangeSupportChatRouter.supportChatRoute,
       OnboardingRouter.route,
       AppUnlockRouter.route,
       WalletRouter.walletDetailRoute,

@@ -30,7 +30,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "Thao tác này sẽ xóa vĩnh viễn tài khoản Bull Bitcoin và tất cả dữ liệu liên quan của bạn. Tài khoản của bạn sẽ bị xóa vĩnh viễn trong vòng 5 ngày làm việc.",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -42,11 +42,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "Yêu cầu xóa tài khoản đã được gửi",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "Yêu cầu xóa tài khoản của bạn đã được gửi. Tài khoản của bạn sẽ bị xóa vĩnh viễn trong vòng 5 ngày làm việc.",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },

@@ -29,7 +29,7 @@
   "@deleteAccountConfirmationTitle": {
     "description": "Title for the delete account confirmation bottom sheet"
   },
-  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "deleteAccountConfirmationDescription": "এইটোৱে আপোনাৰ Bull Bitcoin একাউণ্ট আৰু সকলো সংশ্লিষ্ট তথ্য স্থায়ীভাৱে মচি দিব। আপোনাৰ একাউণ্ট ৫টা কাৰ্যদিনৰ ভিতৰত স্থায়ীভাৱে মচি দিয়া হ'ব।",
   "@deleteAccountConfirmationDescription": {
     "description": "Description for the delete account confirmation bottom sheet"
   },
@@ -41,11 +41,11 @@
   "@deleteAccountConfirmationDelete": {
     "description": "Delete button label for delete account confirmation"
   },
-  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "deleteAccountSuccessTitle": "একাউণ্ট মচি দিয়াৰ অনুৰোধ দাখিল কৰা হৈছে",
   "@deleteAccountSuccessTitle": {
     "description": "Title for the delete account success bottom sheet"
   },
-  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "deleteAccountSuccessDescription": "আপোনাৰ একাউণ্ট মচি দিয়াৰ অনুৰোধ দাখিল কৰা হৈছে। আপোনাৰ একাউণ্ট ৫টা কাৰ্যদিনৰ ভিতৰত স্থায়ীভাৱে মচি দিয়া হ'ব।",
   "@deleteAccountSuccessDescription": {
     "description": "Description for the delete account success bottom sheet"
   },
