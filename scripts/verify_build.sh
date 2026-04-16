@@ -5,8 +5,11 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+APP_ID="com.bullbitcoin.mobile"
+GITHUB_REPO="SatoshiPortal/bullbitcoin-mobile"
+BASE_IMAGE="bull-mobile"
 
 # Colors
 RED='\033[1;31m'
@@ -19,9 +22,6 @@ on_error() {
     local exit_code=$?
     local line_no=$1
     echo -e "${RED}Script failed at line $line_no with exit code $exit_code${NC}"
-    if [[ -n "${container_name:-}" ]]; then
-        $CONTAINER_CMD rm -f "$container_name" 2>/dev/null || true
-    fi
 }
 trap 'on_error $LINENO' ERR
 
@@ -35,9 +35,10 @@ containerApktool() {
     local appFile=$(basename "$app")
 
     $CONTAINER_CMD run --rm \
+        $USERNS_ARGS \
         -v "$targetFolderParent":/tfp \
         -v "$appFolder":/af:ro \
-        $VERIFY_TOOLS_IMAGE \
+        "$BASE_IMAGE" \
         sh -c "apktool d -f -o /tfp/$targetFolderBase /af/$appFile"
 }
 
@@ -123,10 +124,34 @@ else
     exit 1
 fi
 
-# Build verification tools container
-VERIFY_TOOLS_IMAGE="bullbitcoin-verify-tools:latest"
-echo "Building verification tools container..."
-$CONTAINER_CMD build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
+# Rootless podman remaps uids by default, so the container user can't write to
+# host-owned bind mounts. --userns=keep-id maps the container user to the host
+# uid. Docker has no such flag — with docker the container user uid (1000)
+# usually matches the desktop host uid, so no remap is needed.
+USERNS_ARGS=""
+if [[ "$CONTAINER_CMD" == "podman" ]]; then
+    USERNS_ARGS="--userns=keep-id"
+fi
+
+# Build the base image (toolchain only; source enters via bind-mount at build time).
+# Mirrors the `docker-build` target in the makefile — inlined here to keep host
+# deps at curl/git/podman-docker only.
+echo "Building $BASE_IMAGE base image..."
+flutterVersion=$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$/,"",s); print s; exit }' "$REPO_ROOT/.fvmrc")
+jvmTarget=$(grep 'android.jvmTarget' "$REPO_ROOT/android/gradle.properties" | cut -d= -f2)
+androidApiLevel=$(grep 'android.compileSdk' "$REPO_ROOT/android/gradle.properties" | cut -d= -f2)
+androidBuildTools=$(grep 'android.buildToolsVersion' "$REPO_ROOT/android/gradle.properties" | cut -d= -f2)
+androidNdk=$(grep 'android.ndkVersion' "$REPO_ROOT/android/gradle.properties" | cut -d= -f2)
+
+$CONTAINER_CMD build \
+    --network=host \
+    -t "$BASE_IMAGE" \
+    --build-arg FLUTTER_VERSION="$flutterVersion" \
+    --build-arg JVM_TARGET="$jvmTarget" \
+    --build-arg ANDROID_API_LEVEL="$androidApiLevel" \
+    --build-arg ANDROID_BUILD_TOOLS="$androidBuildTools" \
+    --build-arg ANDROID_NDK="$androidNdk" \
+    "$REPO_ROOT"
 
 # Determine verification mode
 verificationMode=""
@@ -175,7 +200,7 @@ if [[ -z "$appVersion" ]]; then
 fi
 
 # Setup workspace
-workDir="$SCRIPT_DIR/bullbitcoin_${appVersion}_verification"
+workDir="$REPO_ROOT/bullbitcoin_${appVersion}_verification"
 if [[ -d "$workDir" ]]; then
     echo -e "${YELLOW}Workspace exists. Remove first: rm -rf $workDir${NC}"
     exit 1
@@ -185,7 +210,6 @@ workDir=$(cd "$workDir" && pwd)
 echo "Workspace: $workDir"
 
 # Extract metadata from official APK (device mode)
-appId="com.bullbitcoin.mobile"
 officialVersion="$appVersion"
 versionCode=""
 appHash=""
@@ -195,19 +219,19 @@ if [[ "$verificationMode" == "device" ]]; then
     tempDir=$(mktemp -d)
     containerApktool "$tempDir" "$apkDir/base.apk"
 
-    appId=$(grep 'package=' "$tempDir/AndroidManifest.xml" | sed 's/.*package="//g' | sed 's/".*//g')
+    extractedAppId=$(grep 'package=' "$tempDir/AndroidManifest.xml" | sed 's/.*package="//g' | sed 's/".*//g')
     officialVersion=$(grep 'versionName' "$tempDir/apktool.yml" | awk '{print $2}' | tr -d "'")
     versionCode=$(grep 'versionCode' "$tempDir/apktool.yml" | awk '{print $2}' | tr -d "'")
     rm -rf "$tempDir"
 
-    if [[ "$appId" != "com.bullbitcoin.mobile" ]]; then
-        echo -e "${RED}Error: Unexpected appId: $appId${NC}"
+    if [[ "$extractedAppId" != "$APP_ID" ]]; then
+        echo -e "${RED}Error: Unexpected appId: $extractedAppId${NC}"
         exit 2
     fi
 
     appHash=$(sha256sum "$apkDir/base.apk" | awk '{print $1}')
 
-    echo "App ID: $appId"
+    echo "App ID: $APP_ID"
     echo "Version: $officialVersion ($versionCode)"
     echo "Hash: $appHash"
 fi
@@ -253,8 +277,8 @@ fi
 if [[ "$verificationMode" == "github" && -z "$apkDir" ]]; then
     echo "Downloading official APK from GitHub..."
     apkDir="$workDir"
-    releaseJson=$(curl -sL "https://api.github.com/repos/SatoshiPortal/bullbitcoin-mobile/releases/tags/v${appVersion}")
-    apkUrl=$(echo "$releaseJson" | grep -o "https://github.com/SatoshiPortal/bullbitcoin-mobile/releases/download/v${appVersion}/[^\"]*\\.apk" | head -n1)
+    releaseJson=$(curl -sL "https://api.github.com/repos/${GITHUB_REPO}/releases/tags/v${appVersion}")
+    apkUrl=$(echo "$releaseJson" | grep -o "https://github.com/${GITHUB_REPO}/releases/download/v${appVersion}/[^\"]*\\.apk" | head -n1)
 
     if [[ -z "$apkUrl" ]]; then
         echo -e "${RED}Error: APK not found in GitHub release v${appVersion}${NC}"
@@ -296,48 +320,33 @@ else
 fi
 echo "Gradle heap size: $gradle_heap (based on ${available_mem_gb}GB available)"
 
-# Build using two-stage Dockerfiles
+# Build the app (mirrors the `build` target in the makefile — inlined to keep host
+# deps at curl/git/podman-docker only). Source comes from the bind-mount, so no
+# keystore or secrets ever enter image layers. Release mode with no KEYSTORE env
+# var falls back to debug-signed APK via build.sh — which is fine because
+# signatures are stripped from the diff.
 echo "=== Building from source ==="
 echo "This may take 30-60 minutes..."
 
-buildFormat="apk"
-[[ "$verificationMode" == "device" ]] && buildFormat="aab"
-
-# Stage 1: Build base toolchain image
-echo "Building base toolchain image..."
-$CONTAINER_CMD build \
+rm -rf "$REPO_ROOT/build"
+$CONTAINER_CMD run --rm \
+    $USERNS_ARGS \
     --network=host \
     --ulimit nofile=65536:65536 \
-    -t bull-mobile \
-    "$REPO_ROOT"
-
-# Stage 2: Build the app
-echo "Building app..."
-$CONTAINER_CMD build \
-    --network=host \
-    --ulimit nofile=65536:65536 \
-    -f "$REPO_ROOT/Dockerfile.apk" \
-    --build-arg MODE=release \
-    --build-arg FORMAT="$buildFormat" \
-    --build-arg GRADLE_HEAP="$gradle_heap" \
-    -t bullbitcoin-verify:v${appVersion} \
-    "$REPO_ROOT"
+    -v "$REPO_ROOT:/app" \
+    -e MODE=release \
+    -e GRADLE_HEAP="$gradle_heap" \
+    "$BASE_IMAGE" \
+    bash /app/scripts/build.sh
 
 echo "Build complete"
 
-# Extract built artifact
-echo "Extracting built artifact..."
-container_name="bullbitcoin_extract_$$"
-$CONTAINER_CMD create --name "$container_name" bullbitcoin-verify:v${appVersion} > /dev/null
-
+# Pick up artifacts from the bind-mounted repo root (produced by build.sh).
 if [[ "$verificationMode" == "github" ]]; then
-    $CONTAINER_CMD cp "$container_name:/app/build/app/outputs/flutter-apk/app-release.apk" "$workDir/built.apk"
+    cp "$REPO_ROOT/app-release.apk" "$workDir/built.apk"
 else
-    $CONTAINER_CMD cp "$container_name:/app/build/app/outputs/bundle/release/app-release.aab" "$workDir/built.aab"
+    cp "$REPO_ROOT/app-release.aab" "$workDir/built.aab"
 fi
-
-$CONTAINER_CMD rm -f "$container_name" > /dev/null
-container_name=""
 
 commit=$(git -C "$REPO_ROOT" rev-parse HEAD)
 echo "Built from commit: $commit"
@@ -360,18 +369,28 @@ if [[ "$verificationMode" == "github" ]]; then
     [[ -z "$diff_output" ]] && total_diffs=0
     [[ -n "$diff_output" ]] && echo "$diff_output" > "$workDir/diff.txt"
 else
-    # Split APK comparison using bundletool
+    # Split APK comparison using bundletool.
+    # The AAB from build.sh (no KEYSTORE env) is unsigned; pass the committed
+    # debug keystore so bundletool can sign the generated split APKs. Signatures
+    # are stripped from the diff anyway, so any key works.
     echo "Extracting splits from AAB using bundletool..."
 
+    cp "$REPO_ROOT/android/app/debug.keystore" "$workDir/debug.keystore"
+
     $CONTAINER_CMD run --rm \
+        $USERNS_ARGS \
         -v "$workDir":/work \
-        $VERIFY_TOOLS_IMAGE \
+        "$BASE_IMAGE" \
         sh -c "
             bundletool build-apks \
                 --bundle=/work/built.aab \
                 --output=/work/built.apks \
                 --device-spec=/work/device-spec.json \
-                --mode=default
+                --mode=default \
+                --ks=/work/debug.keystore \
+                --ks-pass=pass:android \
+                --ks-key-alias=androiddebugkey \
+                --key-pass=pass:android
             mkdir -p /work/built-splits
             unzip -qq /work/built.apks -d /work/built-splits-raw
             cp /work/built-splits-raw/splits/*.apk /work/built-splits/ 2>/dev/null || true
@@ -420,7 +439,7 @@ fi
 # Results
 echo ""
 echo "===== Verification Results ====="
-echo "appId:          $appId"
+echo "appId:          $APP_ID"
 echo "apkVersionName: $officialVersion"
 echo "apkVersionCode: ${versionCode:-unknown}"
 echo "appHash:        $appHash"
@@ -450,7 +469,7 @@ cat > "$workDir/RESULTS.md" <<EOF
 | Field          | Value |
 |----------------|-------|
 | date           | $(date -u +"%Y-%m-%dT%H:%M:%SZ") |
-| appId          | $appId |
+| appId          | $APP_ID |
 | versionName    | $officialVersion |
 | versionCode    | ${versionCode:-unknown} |
 | appHash        | $appHash |

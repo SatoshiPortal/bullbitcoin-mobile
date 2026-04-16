@@ -28,5 +28,5 @@
         "SSH_AUTH_SOCK": "/ssh-agent"
     },
     "postCreateCommand": "flutter config --no-analytics && dart --disable-analytics",
-    "postStartCommand": "sudo chown -R --no-dereference ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.ssh || true; chmod 700 /home/${localEnv:USER}/.ssh; find /home/${localEnv:USER}/.ssh -maxdepth 1 -type f -exec chmod 600 {} + 2>/dev/null || true"
+    "postStartCommand": "chown -R --no-dereference ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.ssh || true; chmod 700 /home/${localEnv:USER}/.ssh; find /home/${localEnv:USER}/.ssh -maxdepth 1 -type f -exec chmod 600 {} + 2>/dev/null || true"
 }
