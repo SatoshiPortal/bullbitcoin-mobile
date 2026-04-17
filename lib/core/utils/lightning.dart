@@ -1,4 +1,4 @@
-import 'package:boltz/boltz.dart';
+import 'package:bull_sdk/boltz.dart';
 
 Future<String> invoiceFromLnAddress({
   required String lnAddress,

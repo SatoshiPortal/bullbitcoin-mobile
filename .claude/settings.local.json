@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(sort -t'|' -k2 -rn)",
+      "Bash(grep -l:*)",
+      "Bash(python3 -c 'import json; json.load\\(open\\('\\\\''__TRACKED_VAR__'\\\\''\\)\\)')",
+      "Bash(flutter_rust_bridge_codegen generate:*)",
+      "Bash(cargo check:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter test *)",
+      "Bash(melos list *)",
+      "Bash(find packages *)",
+      "Bash(MELOS_DEBUG=true melos list)",
+      "Bash(melos analyze *)",
+      "Bash(dart pub *)"
+    ]
+  }
+}

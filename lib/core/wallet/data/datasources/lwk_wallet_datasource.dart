@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:flutter/material.dart';
-import 'package:lwk/lwk.dart' as lwk;
+import 'package:bull_sdk/lwk.dart' as lwk;
 
 class LwkWalletDatasource {
   @visibleForTesting
@@ -261,8 +261,8 @@ class LwkWalletDatasource {
 
   String _lBtcAssetId(Network network) {
     return network == Network.liquidTestnet
-        ? lwk.lTestAssetId
-        : lwk.lBtcAssetId;
+        ? lwk.getLtestAssetId()
+        : lwk.getLbtcAssetId();
   }
 
   Future<List<WalletTransactionModel>> getTransactions({

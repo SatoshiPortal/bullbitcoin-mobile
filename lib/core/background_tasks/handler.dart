@@ -7,7 +7,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:get_it/get_it.dart';
-import 'package:lwk/lwk.dart';
 import 'package:workmanager/workmanager.dart';
 
 @pragma('vm:entry-point')
@@ -21,7 +20,7 @@ Future<bool> tasksHandler(String task) async {
   final startTime = DateTime.now();
 
   await Bull.initLogs();
-  await LibLwk.init();
+  await Bull.initFlutterRustBridgeDependencies();
 
   try {
     final driftIsolate = await SqliteDatabase.createIsolateWithSpawn();
