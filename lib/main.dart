@@ -5,6 +5,8 @@ import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
+import 'package:bb_mobile/core/notifications/notifications_service.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
@@ -42,8 +44,32 @@ class Bull {
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator();
+    await initNotifications();
     await initErrorReporting();
     await initWorkmanager();
+  }
+
+  static Future<void> initNotifications() async {
+    final notifications = locator<NotificationsService>();
+    await notifications.init();
+    notifications.setOnSwapNotificationTap((tap) {
+      AppRouter.router.goNamed(
+        TransactionsRoute.swapTransactionDetails.name,
+        pathParameters: {'swapId': tap.swapId},
+        queryParameters: {'walletId': tap.walletId},
+      );
+    });
+    final launchTap = await notifications.getLaunchTap();
+    if (launchTap != null) {
+      // Route to the swap details on next frame, once the router is alive.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AppRouter.router.goNamed(
+          TransactionsRoute.swapTransactionDetails.name,
+          pathParameters: {'swapId': launchTap.swapId},
+          queryParameters: {'walletId': launchTap.walletId},
+        );
+      });
+    }
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
@@ -79,6 +105,19 @@ class Bull {
       frequency: const Duration(minutes: 15),
       constraints: Constraints(
         requiresBatteryNotLow: true,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        requiresCharging: false,
+      ),
+    );
+    // Notify-only pass for Boltz swaps (no wallet access — safe wrt #1891).
+    await Workmanager().registerPeriodicTask(
+      BackgroundTask.swapsSync.id,
+      BackgroundTask.swapsSync.name,
+      frequency: const Duration(minutes: 15),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+        requiresBatteryNotLow: false,
         requiresStorageNotLow: false,
         requiresDeviceIdle: false,
         requiresCharging: false,
