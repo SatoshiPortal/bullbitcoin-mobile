@@ -6,6 +6,8 @@ import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/notifications/notifications_service.dart';
+import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -52,23 +54,11 @@ class Bull {
   static Future<void> initNotifications() async {
     final notifications = locator<NotificationsService>();
     await notifications.init();
-    notifications.setOnSwapNotificationTap((tap) {
-      AppRouter.router.goNamed(
-        TransactionsRoute.swapTransactionDetails.name,
-        pathParameters: {'swapId': tap.swapId},
-        queryParameters: {'walletId': tap.walletId},
-      );
-    });
+    // If the app was launched by tapping a notification while killed, stash
+    // the tap so AppStartupListener can consume it after the PIN unlock.
     final launchTap = await notifications.getLaunchTap();
     if (launchTap != null) {
-      // Route to the swap details on next frame, once the router is alive.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        AppRouter.router.goNamed(
-          TransactionsRoute.swapTransactionDetails.name,
-          pathParameters: {'swapId': launchTap.swapId},
-          queryParameters: {'walletId': launchTap.walletId},
-        );
-      });
+      notifications.pushPendingTap(launchTap);
     }
   }
 
@@ -188,6 +178,7 @@ class BullBitcoinWalletApp extends StatefulWidget {
 
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
+  StreamSubscription<SwapNotificationTap>? _tapSub;
   // final router = AppRouter.router;
 
   @override
@@ -196,14 +187,37 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
     // Initialize the AppLifecycleListener class and pass callbacks
     _listener = AppLifecycleListener(onStateChange: _onStateChanged);
+    _tapSub = locator<NotificationsService>().pendingTapStream.listen(
+      _onSwapNotificationTap,
+    );
   }
 
   @override
   void dispose() {
+    _tapSub?.cancel();
     // Do not forget to dispose the listener
     _listener.dispose();
 
     super.dispose();
+  }
+
+  /// Warm-tap handler. If the app is currently on the unlock screen (or still
+  /// in startup loading), leave the tap stashed — AppStartupListener's
+  /// post-unlock navigator will consume it. Otherwise the user is already in
+  /// the main app, so navigate directly.
+  void _onSwapNotificationTap(SwapNotificationTap tap) {
+    final matches =
+        AppRouter.router.routerDelegate.currentConfiguration.matches;
+    if (matches.isEmpty) return;
+    final location = matches.last.matchedLocation;
+    if (location.startsWith(AppUnlockRoute.appUnlock.path)) return;
+    if (location.startsWith(OnboardingRoute.onboarding.path)) return;
+    locator<NotificationsService>().takePendingTap();
+    AppRouter.router.goNamed(
+      TransactionsRoute.swapTransactionDetails.name,
+      pathParameters: {'swapId': tap.swapId},
+      queryParameters: {'walletId': tap.walletId},
+    );
   }
 
   // Listen to the app lifecycle state changes

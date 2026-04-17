@@ -18,7 +18,9 @@ class NotificationsService {
   final Future<SharedPreferences> Function() _prefsFactory;
 
   bool _initialized = false;
-  void Function(SwapNotificationTap tap)? _onTap;
+  SwapNotificationTap? _pendingTap;
+  final StreamController<SwapNotificationTap> _tapController =
+      StreamController<SwapNotificationTap>.broadcast();
 
   NotificationsService({
     FlutterLocalNotificationsPlugin? plugin,
@@ -26,15 +28,35 @@ class NotificationsService {
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
        _prefsFactory = prefsFactory ?? SharedPreferences.getInstance;
 
-  /// Register the callback invoked when the user taps a swap notification.
-  /// Call this from the foreground isolate once the router is available.
-  /// Background isolates should not call this — they never handle taps.
-  void setOnSwapNotificationTap(void Function(SwapNotificationTap tap) onTap) {
-    _onTap = onTap;
+  /// Fires when the user taps a swap notification. The tap is also stashed in
+  /// [pendingTap] so late subscribers (e.g. the startup listener after PIN
+  /// unlock) can consume it via [takePendingTap].
+  ///
+  /// NotificationsService deliberately does NOT navigate itself — callers
+  /// decide when it's safe to navigate (after startup + unlock).
+  Stream<SwapNotificationTap> get pendingTapStream => _tapController.stream;
+
+  SwapNotificationTap? get pendingTap => _pendingTap;
+
+  /// Returns and clears the currently stashed pending tap, if any.
+  SwapNotificationTap? takePendingTap() {
+    final tap = _pendingTap;
+    _pendingTap = null;
+    return tap;
   }
 
-  /// Returns tap details for a notification that launched the app from
-  /// a killed state (so the foreground can navigate on startup).
+  /// Stashes a tap and broadcasts it on [pendingTapStream]. Used both by the
+  /// foreground tap callback and by startup code to replay a tap that launched
+  /// the app from killed state.
+  void pushPendingTap(SwapNotificationTap tap) {
+    _pendingTap = tap;
+    _tapController.add(tap);
+  }
+
+  /// If this launch was triggered by the user tapping a notification while the
+  /// app process was not running, returns the parsed tap. Call once at
+  /// startup; the result should then be forwarded via [pushPendingTap] once
+  /// the router is wired up.
   Future<SwapNotificationTap?> getLaunchTap() async {
     final launchDetails = await _plugin.getNotificationAppLaunchDetails();
     if (launchDetails == null ||
@@ -119,6 +141,7 @@ class NotificationsService {
   Future<bool> _shouldFire(String swapId) async {
     try {
       final prefs = await _prefsFactory();
+      await _pruneExpiredDedupKeys(prefs);
       final last = prefs.getInt('$_dedupPrefsPrefix$swapId');
       if (last == null) return true;
       final elapsed = DateTime.now().millisecondsSinceEpoch - last;
@@ -126,6 +149,22 @@ class NotificationsService {
     } catch (e) {
       log.warning('NotificationsService dedup check failed: $e');
       return true;
+    }
+  }
+
+  Future<void> _pruneExpiredDedupKeys(SharedPreferences prefs) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final windowMs = _dedupWindow.inMilliseconds;
+    final expired = prefs
+        .getKeys()
+        .where((k) => k.startsWith(_dedupPrefsPrefix))
+        .where((k) {
+          final ts = prefs.getInt(k);
+          return ts == null || (now - ts) >= windowMs;
+        })
+        .toList();
+    for (final k in expired) {
+      await prefs.remove(k);
     }
   }
 
@@ -143,11 +182,10 @@ class NotificationsService {
 
   void _handleTap(NotificationResponse response) {
     final payload = response.payload;
-    final onTap = _onTap;
-    if (payload == null || onTap == null) return;
+    if (payload == null) return;
     final tap = _parsePayload(payload);
     if (tap == null) return;
-    onTap(tap);
+    pushPendingTap(tap);
   }
 
   SwapNotificationTap? _parsePayload(String payload) {

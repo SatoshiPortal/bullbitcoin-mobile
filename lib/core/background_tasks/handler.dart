@@ -104,10 +104,12 @@ Future<void> _runSwapsNotifyPass(GetIt locator) async {
   // time to flush state updates into storage.
   await Future<void>.delayed(const Duration(seconds: 10));
 
+  // `getSwapsNeedingUserAction()` (not `getOngoingSwaps`) also surfaces
+  // failed LnSendSwaps — those are excluded from the "ongoing" view but the
+  // user still needs to refund their on-chain lockup.
   final toNotify = <Swap>[];
   for (final repo in repos) {
-    final latest = await repo.getOngoingSwaps();
-    toNotify.addAll(latest.where((s) => s.requiresAction));
+    toNotify.addAll(await repo.getSwapsNeedingUserAction());
   }
 
   if (toNotify.isEmpty) {
@@ -115,17 +117,38 @@ Future<void> _runSwapsNotifyPass(GetIt locator) async {
     return;
   }
 
+  var notified = 0;
   for (final swap in toNotify) {
+    final walletId = _notificationWalletId(swap);
+    if (walletId == null) continue; // external chain swap with no in-app claim
     await notifications.showSwapNeedsAttention(
       swapId: swap.id,
-      walletId: swap.walletId,
+      walletId: walletId,
       title: _titleFor(swap),
       body: _bodyFor(swap),
     );
+    notified++;
   }
-  log.info('swapsSync: notified ${toNotify.length} swap(s) needing action');
+  log.info('swapsSync: notified $notified swap(s) needing action');
 }
 
+/// Picks the wallet whose detail view is most useful for the current swap
+/// status. `Swap.walletId` is action-agnostic (always sendWalletId for
+/// ChainSwap), which sends the user to the wrong screen on `claimable`
+/// chain swaps. For external chain swaps there is no in-app claim path;
+/// we return null so the caller skips the notification.
+String? _notificationWalletId(Swap swap) {
+  if (swap is ChainSwap && swap.status == SwapStatus.claimable) {
+    return swap.receiveWalletId; // null for external chain swaps
+  }
+  return swap.walletId;
+}
+
+// TODO: localize these strings. The background isolate has no BuildContext,
+// so routing through context.loc.* doesn't work here. The plan is to load
+// `AppLocalizations` via `AppLocalizations.delegate.load(settings.language.locale)`
+// after reading the persisted `SettingsRepository.language`. Deferred from
+// this PR to keep it narrow; tracked as a follow-up.
 String _titleFor(Swap swap) {
   switch (swap.status) {
     case SwapStatus.claimable:
