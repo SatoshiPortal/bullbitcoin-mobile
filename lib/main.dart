@@ -54,6 +54,8 @@ class Bull {
   static Future<void> initNotifications() async {
     final notifications = locator<NotificationsService>();
     await notifications.init();
+    // Permission request is foreground-only: the bg isolate has no Activity.
+    await notifications.requestPermissionsIfNeeded();
     // If the app was launched by tapping a notification while killed, stash
     // the tap so AppStartupListener can consume it after the PIN unlock.
     final launchTap = await notifications.getLaunchTap();

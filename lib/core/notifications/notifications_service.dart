@@ -100,10 +100,22 @@ class NotificationsService {
           importance: Importance.high,
         ),
       );
-      await androidPlugin?.requestNotificationsPermission();
     }
 
     _initialized = true;
+  }
+
+  /// Requests POST_NOTIFICATIONS on Android 13+. Must only be called from the
+  /// foreground (attached Activity) path — the Workmanager background isolate
+  /// has no Activity and requesting permission there is a no-op at best and a
+  /// crash at worst.
+  Future<void> requestPermissionsIfNeeded() async {
+    if (!Platform.isAndroid) return;
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    await androidPlugin?.requestNotificationsPermission();
   }
 
   /// Shows (at most once per [_dedupWindow] per swapId) a notification prompting

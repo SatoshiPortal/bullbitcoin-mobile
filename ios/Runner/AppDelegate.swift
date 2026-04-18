@@ -9,6 +9,17 @@ import workmanager_apple
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
+
+    // Register plugins on the background Flutter engine that workmanager_apple
+    // spins up to run our Dart `backgroundTasksHandler`. Without this, calls
+    // from the handler into flutter_local_notifications, shared_preferences,
+    // path_provider, etc. throw MissingPluginException on iOS and the whole
+    // Workmanager task fails silently. Android's workmanager wires this up
+    // itself; on iOS the host app has to register explicitly.
+    WorkmanagerPlugin.setPluginRegistrantCallback { registry in
+      GeneratedPluginRegistrant.register(with: registry)
+    }
+
     WorkmanagerPlugin.registerPeriodicTask(
       withIdentifier: "com.bullbitcoin.mobile.bitcoin-sync-id",
       frequency: NSNumber(value: 20 * 60)

@@ -570,18 +570,6 @@ class BoltzSwapRepository {
     _boltz.subscribeToSwaps(swapIds);
   }
 
-  /// Swaps whose `requiresAction` getter is true, regardless of whether they
-  /// appear in `getOngoingSwaps`. Includes failed LnSendSwaps (which need the
-  /// user to refund an on-chain lockup) — those are filtered out of the
-  /// "ongoing" view but still need a notification.
-  Future<List<Swap>> getSwapsNeedingUserAction() async {
-    final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
-    return allSwapModels
-        .map((m) => m.toEntity())
-        .where((s) => s.requiresAction)
-        .toList();
-  }
-
   Future<List<Swap>> getOngoingSwaps({String? walletId}) async {
     final allSwapModels = await _boltz.storage.fetchAll(isTestnet: _isTestnet);
 
