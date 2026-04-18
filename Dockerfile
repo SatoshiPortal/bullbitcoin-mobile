@@ -3,6 +3,7 @@ FROM --platform=linux/amd64 debian:trixie
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME="bull"
+ARG RUST_VERSION="1.94.0"
 ENV USER=$USERNAME
 ARG FVM_VERSION=4.0.5
 ARG FLUTTER_VERSION=3.38.5
@@ -40,7 +41,7 @@ USER $USER
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
-RUN sh /tmp/rustup.sh -y
+RUN sh /tmp/rustup.sh -y --default-toolchain ${RUST_VERSION}
 RUN rm /tmp/rustup.sh
 ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 
