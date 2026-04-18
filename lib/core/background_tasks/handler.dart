@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' show Locale;
 
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'package:boltz/boltz.dart' as boltz_pkg;
 import 'package:get_it/get_it.dart';
 import 'package:lwk/lwk.dart';
 import 'package:workmanager/workmanager.dart';
@@ -65,68 +67,62 @@ Future<bool> tasksHandler(String task) async {
   }
 }
 
-/// Notify-only pass for Boltz swaps. Does NOT touch any wallet (BDK/LWK) code —
-/// only reads persisted swap state, pokes the Boltz WebSocket for fresh status,
-/// and fires a local notification for any swap that still requires user action.
+/// Notify-only pass for Boltz swaps. Strictly read-only with respect to the
+/// shared app SQLite DB — we read ongoing swaps, open short-lived Boltz
+/// WebSocket connections of our own to fetch fresh status in memory, and
+/// fire local notifications. Never touches LWK/BDK, never writes to the
+/// swaps table.
 ///
-/// This is the safe counterpart to full background claims, which would need
-/// wallet access and risk reintroducing the LWK concurrency bug (#1891).
+/// The stricter read-only stance (vs. going through `BoltzSwapRepository`,
+/// which would trigger `_processWebSocketEvent` → SQLite writes) matches
+/// the architectural invariant flagged by project maintainers: background
+/// tasks should not collide with the app on shared databases. See #1891
+/// for the broader context on sync-in-background.
 Future<void> _runSwapsNotifyPass(GetIt locator) async {
   final notifications = locator.get<NotificationsService>();
   await notifications.init();
   final loc = await _loadLocalizations(locator);
 
-  final repos = [
-    locator.get<BoltzSwapRepository>(
-      instanceName:
-          LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-    ),
-    locator.get<BoltzSwapRepository>(
-      instanceName:
-          LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
-    ),
-  ];
+  // Partition swaps by network using the two repo instances (each already
+  // filters its storage query by isTestnet).
+  final mainnetRepo = locator.get<BoltzSwapRepository>(
+    instanceName: LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+  );
+  final testnetRepo = locator.get<BoltzSwapRepository>(
+    instanceName:
+        LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+  );
 
-  final initialOngoingPerRepo = <List<Swap>>[];
-  for (final repo in repos) {
-    initialOngoingPerRepo.add(await repo.getOngoingSwaps());
-  }
-  final allInitial = initialOngoingPerRepo.expand((s) => s).toList();
-  if (allInitial.isEmpty) {
-    log.fine('swapsSync: no ongoing swaps');
+  final mainnetSwaps = await _collectCandidateSwaps(mainnetRepo);
+  final testnetSwaps = await _collectCandidateSwaps(testnetRepo);
+  if (mainnetSwaps.isEmpty && testnetSwaps.isEmpty) {
+    log.fine('swapsSync: no candidate swaps');
     return;
   }
 
-  // Ask Boltz for the current status of each ongoing swap. The WebSocket
-  // replies with current state on subscribe, and _processWebSocketEvent in
-  // BoltzDatasource updates persisted SwapModel rows — no wallet code runs.
-  for (var i = 0; i < repos.length; i++) {
-    final swaps = initialOngoingPerRepo[i];
-    if (swaps.isEmpty) continue;
-    repos[i].subscribeToSwaps(swaps.map((s) => s.id).toList());
-  }
-
-  // Give the WebSocket round-trip + 2s debounce in _initializeBoltzWebSocket
-  // time to flush state updates into storage.
-  await Future<void>.delayed(const Duration(seconds: 10));
-
-  // `getSwapsNeedingUserAction()` (not `getOngoingSwaps`) also surfaces
-  // failed LnSendSwaps — those are excluded from the "ongoing" view but the
-  // user still needs to refund their on-chain lockup.
-  final toNotify = <Swap>[];
-  for (final repo in repos) {
-    toNotify.addAll(await repo.getSwapsNeedingUserAction());
-  }
-
-  if (toNotify.isEmpty) {
-    log.fine('swapsSync: no swaps require user action');
-    return;
-  }
+  // Open own WebSockets per network, subscribe for status, collect in memory.
+  // No writes to any shared datastore happen from these.
+  final freshStatuses = <String, boltz_pkg.SwapStatus>{};
+  final results = await Future.wait([
+    _collectFreshBoltzStatuses(
+      baseUrl: ApiServiceConstants.boltzMainnetUrlPath,
+      swapIds: mainnetSwaps.map((s) => s.id).toList(),
+      timeout: const Duration(seconds: 8),
+    ),
+    _collectFreshBoltzStatuses(
+      baseUrl: ApiServiceConstants.boltzTestnetUrlPath,
+      swapIds: testnetSwaps.map((s) => s.id).toList(),
+      timeout: const Duration(seconds: 8),
+    ),
+  ]);
+  freshStatuses.addAll(results[0]);
+  freshStatuses.addAll(results[1]);
 
   var notified = 0;
-  for (final swap in toNotify) {
+  for (final swap in [...mainnetSwaps, ...testnetSwaps]) {
+    if (!_requiresActionNow(swap, freshStatuses[swap.id])) continue;
     final walletId = _notificationWalletId(swap);
-    if (walletId == null) continue; // external chain swap with no in-app claim
+    if (walletId == null) continue; // external chain swap — no in-app claim
     await notifications.showSwapNeedsAttention(
       swapId: swap.id,
       walletId: walletId,
@@ -136,6 +132,117 @@ Future<void> _runSwapsNotifyPass(GetIt locator) async {
     notified++;
   }
   log.info('swapsSync: notified $notified swap(s) needing action');
+}
+
+/// Union of `getOngoingSwaps()` (pending/paid/canCoop/claimable/refundable)
+/// and `getSwapsNeedingUserAction()` (adds failed LnSendSwaps that still need
+/// an on-chain refund). Deduped by id.
+Future<List<Swap>> _collectCandidateSwaps(BoltzSwapRepository repo) async {
+  final ongoing = await repo.getOngoingSwaps();
+  final needing = await repo.getSwapsNeedingUserAction();
+  final byId = <String, Swap>{};
+  for (final s in [...ongoing, ...needing]) {
+    byId[s.id] = s;
+  }
+  return byId.values.toList();
+}
+
+/// Opens an ephemeral Boltz WebSocket, subscribes to the given swap ids,
+/// collects the latest status per id for up to [timeout], then disposes.
+/// Returns a map of swap id → latest Boltz status observed.
+///
+/// Deliberately does NOT go through `BoltzDatasource` / `BoltzSwapRepository`
+/// because those persist status updates back to SQLite via
+/// `_processWebSocketEvent`. This pass must be zero-write.
+Future<Map<String, boltz_pkg.SwapStatus>> _collectFreshBoltzStatuses({
+  required String baseUrl,
+  required List<String> swapIds,
+  required Duration timeout,
+}) async {
+  if (swapIds.isEmpty) return {};
+  final latest = <String, boltz_pkg.SwapStatus>{};
+  final ws = boltz_pkg.BoltzWebSocket.create(baseUrl);
+  StreamSubscription<boltz_pkg.SwapStreamStatus>? sub;
+  try {
+    sub = ws.stream.listen(
+      (event) {
+        if (event.id.isEmpty) return; // global error frames have empty id
+        latest[event.id] = event.status;
+      },
+      onError: (Object e) {
+        log.warning(
+          'Boltz WS error during background status pull ($baseUrl): $e',
+        );
+      },
+    );
+    ws.subscribe(swapIds);
+    await Future<void>.delayed(timeout);
+  } catch (e) {
+    log.warning('Boltz WS setup failed ($baseUrl): $e');
+  } finally {
+    await sub?.cancel();
+    try {
+      ws.dispose();
+    } catch (_) {}
+  }
+  return latest;
+}
+
+/// Decides whether [swap] currently requires user action, combining the
+/// persisted state with an optional fresh Boltz status event.
+///
+/// Invariant: we trust the persisted `requiresAction` first (no round-trip
+/// needed when the swap is already known-actionable). If a fresh Boltz
+/// status arrived, we also detect transitions into actionable states that
+/// haven't been written to storage yet.
+bool _requiresActionNow(Swap swap, boltz_pkg.SwapStatus? fresh) {
+  if (swap.requiresAction) return true;
+  if (fresh == null) return false;
+  switch (swap) {
+    case LnReceiveSwap s:
+      // Reverse swap: claimable once the server-side HTLC is visible.
+      final isLiquid = s.type == SwapType.lightningToLiquid;
+      if (s.receiveTxid != null) return false;
+      if (fresh == boltz_pkg.SwapStatus.invoiceSettled) return true;
+      if (isLiquid && fresh == boltz_pkg.SwapStatus.txnMempool) return true;
+      if (!isLiquid && fresh == boltz_pkg.SwapStatus.txnConfirmed) return true;
+      return false;
+    case LnSendSwap s:
+      // canCoop as soon as invoice is paid / claim is pending.
+      if (fresh == boltz_pkg.SwapStatus.invoicePaid) return true;
+      if (fresh == boltz_pkg.SwapStatus.txnClaimPending) return true;
+      // Refundable once a failure lands with funds still locked on-chain.
+      final canRefund = s.sendTxid != null && s.refundTxid == null;
+      if (!canRefund) return false;
+      return _isFailureStatus(fresh);
+    case ChainSwap s:
+      // Claimable once Boltz has locked funds on the user's receive leg.
+      final isLiquidTarget = s.type == SwapType.bitcoinToLiquid;
+      final claimPending = s.receiveTxid == null;
+      if (claimPending &&
+          fresh == boltz_pkg.SwapStatus.txnServerMempool &&
+          isLiquidTarget) {
+        return true;
+      }
+      if (claimPending && fresh == boltz_pkg.SwapStatus.txnServerConfirmed) {
+        return true;
+      }
+      if (claimPending && fresh == boltz_pkg.SwapStatus.txnClaimed) return true;
+      final canRefund = s.sendTxid != null && s.refundTxid == null;
+      if (!canRefund) return false;
+      return _isFailureStatus(fresh);
+  }
+}
+
+bool _isFailureStatus(boltz_pkg.SwapStatus fresh) {
+  return fresh == boltz_pkg.SwapStatus.invoiceFailedToPay ||
+      fresh == boltz_pkg.SwapStatus.txnLockupFailed ||
+      fresh == boltz_pkg.SwapStatus.txnFailed ||
+      fresh == boltz_pkg.SwapStatus.txnRefunded ||
+      fresh == boltz_pkg.SwapStatus.swapExpired ||
+      fresh == boltz_pkg.SwapStatus.invoiceExpired ||
+      fresh == boltz_pkg.SwapStatus.swapError ||
+      fresh == boltz_pkg.SwapStatus.swapRefunded;
 }
 
 /// Picks the wallet whose detail view is most useful for the current swap
