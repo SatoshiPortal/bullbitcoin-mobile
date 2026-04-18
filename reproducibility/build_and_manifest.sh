@@ -25,7 +25,7 @@ org.gradle.caching=true
 EOF
 
 # Build
-fvm flutter build "$FORMAT" --"$MODE" --no-pub
+fvm flutter build "$FORMAT" --"$MODE"
 
 # Naming
 SHORT_COMMIT=$(git -C /app rev-parse --short HEAD)
