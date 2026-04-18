@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "Daha sonra",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Swap talep edilmeye hazır",
+  "notificationSwapClaimableBody": "Swap'ın süresi dolmadan önce paranızı talep etmek için Bull Bitcoin'i açın.",
+  "notificationSwapRefundableTitle": "Swap iade edilmeye hazır",
+  "notificationSwapRefundableBody": "Swap'ın süresi dolmadan önce paranızı iade etmek için Bull Bitcoin'i açın.",
+  "notificationSwapCanCoopTitle": "Swap işbirlikçi kapatma gerektiriyor",
+  "notificationSwapCanCoopBody": "Swap'ın süresi dolmadan önce işbirlikçi kapatmayı tamamlamak için Bull Bitcoin'i açın.",
+  "notificationSwapFailedTitle": "Swap başarısız oldu — eylem gerekli",
+  "notificationSwapFailedBody": "Paranızı kurtarmak için Bull Bitcoin'i açın.",
+  "notificationSwapAttentionTitle": "Swap dikkatinizi gerektiriyor",
+  "notificationSwapAttentionBody": "Swap'ı süresi dolmadan tamamlamak için Bull Bitcoin'i açın."
 }

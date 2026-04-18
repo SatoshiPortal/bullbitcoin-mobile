@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "ภายหลัง",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Swap พร้อมเรียกร้อง",
+  "notificationSwapClaimableBody": "เปิด Bull Bitcoin เพื่อเรียกร้องเงินของคุณก่อนที่ swap จะหมดอายุ",
+  "notificationSwapRefundableTitle": "Swap พร้อมคืนเงิน",
+  "notificationSwapRefundableBody": "เปิด Bull Bitcoin เพื่อคืนเงินของคุณก่อนที่ swap จะหมดอายุ",
+  "notificationSwapCanCoopTitle": "Swap ต้องการการปิดแบบร่วมมือ",
+  "notificationSwapCanCoopBody": "เปิด Bull Bitcoin เพื่อทำการปิดแบบร่วมมือให้เสร็จก่อนที่ swap จะหมดอายุ",
+  "notificationSwapFailedTitle": "Swap ล้มเหลว — ต้องดำเนินการ",
+  "notificationSwapFailedBody": "เปิด Bull Bitcoin เพื่อกู้คืนเงินของคุณ",
+  "notificationSwapAttentionTitle": "Swap ต้องการความสนใจของคุณ",
+  "notificationSwapAttentionBody": "เปิด Bull Bitcoin เพื่อทำ swap ให้เสร็จก่อนที่จะหมดอายุ"
 }

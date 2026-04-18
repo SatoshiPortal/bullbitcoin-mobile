@@ -78,5 +78,15 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ"
+  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
+  "notificationSwapClaimableTitle": "Սվապը պատրաստ է պահանջելու",
+  "notificationSwapClaimableBody": "Բացեք Bull Bitcoin-ը՝ սվապի ժամկետի լրանալուց առաջ ձեր միջոցները պահանջելու համար։",
+  "notificationSwapRefundableTitle": "Սվապը պատրաստ է վերադարձման",
+  "notificationSwapRefundableBody": "Բացեք Bull Bitcoin-ը՝ սվապի ժամկետի լրանալուց առաջ ձեր միջոցները վերադարձնելու համար։",
+  "notificationSwapCanCoopTitle": "Սվապը պահանջում է համատեղ փակում",
+  "notificationSwapCanCoopBody": "Բացեք Bull Bitcoin-ը՝ սվապի ժամկետի լրանալուց առաջ համատեղ փակումը ավարտելու համար։",
+  "notificationSwapFailedTitle": "Սվապը ձախողվեց — անհրաժեշտ է գործողություն",
+  "notificationSwapFailedBody": "Բացեք Bull Bitcoin-ը՝ ձեր միջոցները վերականգնելու համար։",
+  "notificationSwapAttentionTitle": "Սվապը պահանջում է ձեր ուշադրությունը",
+  "notificationSwapAttentionBody": "Բացեք Bull Bitcoin-ը՝ սվապը ավարտելու համար ժամկետի լրանալուց առաջ։"
 }

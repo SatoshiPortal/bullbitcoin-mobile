@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "बाद में",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "स्वैप दावा करने के लिए तैयार",
+  "notificationSwapClaimableBody": "स्वैप समाप्त होने से पहले अपने धन का दावा करने के लिए Bull Bitcoin खोलें।",
+  "notificationSwapRefundableTitle": "स्वैप वापसी के लिए तैयार",
+  "notificationSwapRefundableBody": "स्वैप समाप्त होने से पहले अपने धन की वापसी के लिए Bull Bitcoin खोलें।",
+  "notificationSwapCanCoopTitle": "स्वैप को सहकारी समापन की आवश्यकता है",
+  "notificationSwapCanCoopBody": "स्वैप समाप्त होने से पहले सहकारी समापन पूरा करने के लिए Bull Bitcoin खोलें।",
+  "notificationSwapFailedTitle": "स्वैप विफल — कार्रवाई आवश्यक",
+  "notificationSwapFailedBody": "अपने धन की पुनर्प्राप्ति के लिए Bull Bitcoin खोलें।",
+  "notificationSwapAttentionTitle": "स्वैप को आपका ध्यान चाहिए",
+  "notificationSwapAttentionBody": "स्वैप समाप्त होने से पहले उसे पूरा करने के लिए Bull Bitcoin खोलें।"
 }

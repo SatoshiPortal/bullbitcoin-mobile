@@ -1,10 +1,15 @@
+import 'dart:ui' show Locale;
+
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/notifications/notifications_service.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:get_it/get_it.dart';
@@ -69,6 +74,7 @@ Future<bool> tasksHandler(String task) async {
 Future<void> _runSwapsNotifyPass(GetIt locator) async {
   final notifications = locator.get<NotificationsService>();
   await notifications.init();
+  final loc = await _loadLocalizations(locator);
 
   final repos = [
     locator.get<BoltzSwapRepository>(
@@ -124,8 +130,8 @@ Future<void> _runSwapsNotifyPass(GetIt locator) async {
     await notifications.showSwapNeedsAttention(
       swapId: swap.id,
       walletId: walletId,
-      title: _titleFor(swap),
-      body: _bodyFor(swap),
+      title: _titleFor(loc, swap),
+      body: _bodyFor(loc, swap),
     );
     notified++;
   }
@@ -144,33 +150,49 @@ String? _notificationWalletId(Swap swap) {
   return swap.walletId;
 }
 
-// TODO: localize these strings. The background isolate has no BuildContext,
-// so routing through context.loc.* doesn't work here. The plan is to load
-// `AppLocalizations` via `AppLocalizations.delegate.load(settings.language.locale)`
-// after reading the persisted `SettingsRepository.language`. Deferred from
-// this PR to keep it narrow; tracked as a follow-up.
-String _titleFor(Swap swap) {
+/// Loads `AppLocalizations` for the user's persisted language. Falls back to
+/// English if SettingsRepository can't be reached or the language is unset —
+/// English notifications are strictly better than no notifications.
+Future<AppLocalizations> _loadLocalizations(GetIt locator) async {
+  Locale locale = const Locale('en', 'US');
+  try {
+    final settings = await locator.get<SettingsRepository>().fetch();
+    final language = settings.language;
+    if (language != null) {
+      locale = language.locale;
+    }
+  } catch (e) {
+    log.warning('Failed to read language from settings: $e');
+  }
+  return AppLocalizations.delegate.load(locale);
+}
+
+String _titleFor(AppLocalizations loc, Swap swap) {
   switch (swap.status) {
     case SwapStatus.claimable:
-      return 'Swap ready to claim';
+      return loc.notificationSwapClaimableTitle;
     case SwapStatus.refundable:
-      return 'Swap ready to refund';
+      return loc.notificationSwapRefundableTitle;
     case SwapStatus.canCoop:
-      return 'Swap needs cooperative close';
+      return loc.notificationSwapCanCoopTitle;
     case SwapStatus.failed:
-      return 'Swap failed — action needed';
+      return loc.notificationSwapFailedTitle;
     default:
-      return 'Swap needs your attention';
+      return loc.notificationSwapAttentionTitle;
   }
 }
 
-String _bodyFor(Swap swap) {
-  final action = switch (swap.status) {
-    SwapStatus.claimable => 'claim your funds',
-    SwapStatus.refundable => 'refund your funds',
-    SwapStatus.canCoop => 'complete the cooperative close',
-    SwapStatus.failed => 'recover your funds',
-    _ => 'complete the swap',
-  };
-  return 'Open Bull Bitcoin to $action before the swap expires.';
+String _bodyFor(AppLocalizations loc, Swap swap) {
+  switch (swap.status) {
+    case SwapStatus.claimable:
+      return loc.notificationSwapClaimableBody;
+    case SwapStatus.refundable:
+      return loc.notificationSwapRefundableBody;
+    case SwapStatus.canCoop:
+      return loc.notificationSwapCanCoopBody;
+    case SwapStatus.failed:
+      return loc.notificationSwapFailedBody;
+    default:
+      return loc.notificationSwapAttentionBody;
+  }
 }

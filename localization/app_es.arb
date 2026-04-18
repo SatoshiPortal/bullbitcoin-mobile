@@ -4493,5 +4493,15 @@
   "legacyStorageWarningLater": "Más tarde",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Swap listo para reclamar",
+  "notificationSwapClaimableBody": "Abre Bull Bitcoin para reclamar tus fondos antes de que expire el swap.",
+  "notificationSwapRefundableTitle": "Swap listo para reembolsar",
+  "notificationSwapRefundableBody": "Abre Bull Bitcoin para reembolsar tus fondos antes de que expire el swap.",
+  "notificationSwapCanCoopTitle": "El swap necesita un cierre cooperativo",
+  "notificationSwapCanCoopBody": "Abre Bull Bitcoin para completar el cierre cooperativo antes de que expire el swap.",
+  "notificationSwapFailedTitle": "Swap fallido — se requiere acción",
+  "notificationSwapFailedBody": "Abre Bull Bitcoin para recuperar tus fondos.",
+  "notificationSwapAttentionTitle": "El swap requiere tu atención",
+  "notificationSwapAttentionBody": "Abre Bull Bitcoin para completar el swap antes de que expire."
 }

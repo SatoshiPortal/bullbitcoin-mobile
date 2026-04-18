@@ -12220,5 +12220,15 @@
   "legacyStorageWarningLater": "পরে",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "সোয়াপ দাবি করার জন্য প্রস্তুত",
+  "notificationSwapClaimableBody": "সোয়াপ শেষ হওয়ার আগে আপনার তহবিল দাবি করতে Bull Bitcoin খুলুন।",
+  "notificationSwapRefundableTitle": "সোয়াপ ফেরত দেওয়ার জন্য প্রস্তুত",
+  "notificationSwapRefundableBody": "সোয়াপ শেষ হওয়ার আগে আপনার তহবিল ফেরত দিতে Bull Bitcoin খুলুন।",
+  "notificationSwapCanCoopTitle": "সোয়াপ-এর সহযোগী বন্ধ প্রয়োজন",
+  "notificationSwapCanCoopBody": "সোয়াপ শেষ হওয়ার আগে সহযোগী বন্ধ সম্পূর্ণ করতে Bull Bitcoin খুলুন।",
+  "notificationSwapFailedTitle": "সোয়াপ ব্যর্থ — পদক্ষেপ প্রয়োজন",
+  "notificationSwapFailedBody": "আপনার তহবিল পুনরুদ্ধার করতে Bull Bitcoin খুলুন।",
+  "notificationSwapAttentionTitle": "সোয়াপ আপনার মনোযোগ প্রয়োজন",
+  "notificationSwapAttentionBody": "সোয়াপ শেষ হওয়ার আগে এটি সম্পূর্ণ করতে Bull Bitcoin খুলুন।"
 }

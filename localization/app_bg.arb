@@ -9513,5 +9513,15 @@
   "legacyStorageWarningLater": "По-късно",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Суапът е готов за претендиране",
+  "notificationSwapClaimableBody": "Отворете Bull Bitcoin, за да претендирате средствата си преди суапът да изтече.",
+  "notificationSwapRefundableTitle": "Суапът е готов за възстановяване",
+  "notificationSwapRefundableBody": "Отворете Bull Bitcoin, за да възстановите средствата си преди суапът да изтече.",
+  "notificationSwapCanCoopTitle": "Суапът изисква кооперативно затваряне",
+  "notificationSwapCanCoopBody": "Отворете Bull Bitcoin, за да завършите кооперативното затваряне преди суапът да изтече.",
+  "notificationSwapFailedTitle": "Суапът се провали — необходимо е действие",
+  "notificationSwapFailedBody": "Отворете Bull Bitcoin, за да възстановите средствата си.",
+  "notificationSwapAttentionTitle": "Суапът изисква вниманието ви",
+  "notificationSwapAttentionBody": "Отворете Bull Bitcoin, за да завършите суапа преди да изтече."
 }
