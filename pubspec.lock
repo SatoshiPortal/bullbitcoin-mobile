@@ -86,7 +86,7 @@ packages:
     description:
       path: "."
       ref: "fix/reproducible-build"
-      resolved-ref: a636c33e9762775eb8dc618a4a88d5f8169d6ae3
+      resolved-ref: "76695446cd57f94802327f6ab50392f651c49b63"
       url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
@@ -143,7 +143,7 @@ packages:
     description:
       path: "packages/bitbox-transport"
       ref: main
-      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
+      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -201,7 +201,7 @@ packages:
     description:
       path: "packages/boltz-stream"
       ref: main
-      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
+      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -290,7 +290,7 @@ packages:
     description:
       path: "packages/bull_sdk"
       ref: main
-      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
+      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1474,7 +1474,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: "8276b9271e94aa400bdc43dffa953418d6152b1e"
+      resolved-ref: "66eb7287b7b2ff55ca22e4b32e2222ccc2ea64fb"
       url: "https://github.com/SatoshiPortal/payjoin-dart"
     source: git
     version: "0.23.0"
@@ -1651,8 +1651,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
-      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
+      ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
+      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.0.1"
