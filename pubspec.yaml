@@ -46,10 +46,8 @@ dependencies:
     path: /Users/azad/Repos/bull-sdk/packages/bull_sdk
   boltz_stream:
     path: /Users/azad/Repos/bull-sdk/packages/boltz-stream
-  bitbox_flutter:
-    git:
-      url: https://github.com/SatoshiPortal/bitbox-dart
-      ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
+  bitbox_transport:
+    path: /Users/azad/Repos/bull-sdk/packages/bitbox-transport
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1

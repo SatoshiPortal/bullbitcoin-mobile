@@ -22,7 +22,7 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bitbox_flutter/bitbox_flutter.dart';
+import 'package:bitbox_transport/bitbox_transport.dart';
 import 'package:bull_sdk/bull_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +47,7 @@ class Bull {
     final initTasks = [
       BullSdk.init(),
       PConfig.initializeApp(),
-      if (Platform.isAndroid) BitBoxFlutterApi.initialize(),
+      if (Platform.isAndroid) BitBoxApi.initialize(),
     ];
 
     await Future.wait(initTasks);
