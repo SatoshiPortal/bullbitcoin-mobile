@@ -34,7 +34,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-dart
-      ref: 913812dba120703ce9738fa330c5203e1d11f2fa
+      ref: develop
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
@@ -45,17 +45,17 @@ dependencies:
   bull_sdk:
     git:
       url: https://github.com/ethicnology/bull_sdk
-      ref: 6e85d809f6e75ec9420721dc44139d9d8714617e
+      ref: main
       path: packages/bull_sdk
   boltz_stream:
     git:
       url: https://github.com/ethicnology/bull_sdk
-      ref: 6e85d809f6e75ec9420721dc44139d9d8714617e
+      ref: main
       path: packages/boltz-stream
   bitbox_transport:
     git:
       url: https://github.com/ethicnology/bull_sdk
-      ref: 6e85d809f6e75ec9420721dc44139d9d8714617e
+      ref: main
       path: packages/bitbox-transport
   hex: ^0.2.0
   auto_size_text: ^3.0.0
@@ -109,7 +109,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/satoshifier-dart
-      ref: dacafa2
+      ref: migrate-to-bull-sdk
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
@@ -136,9 +136,6 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.10.0
-
-dependency_overrides:
-  flutter_rust_bridge: 2.12.0
 
 dev_dependencies:
   build_runner: ^2.10.4

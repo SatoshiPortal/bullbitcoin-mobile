@@ -142,8 +142,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bitbox-transport"
-      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
-      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      ref: main
+      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -200,8 +200,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/boltz-stream"
-      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
-      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      ref: main
+      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -289,8 +289,8 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/bull_sdk"
-      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
-      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      ref: main
+      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -322,10 +322,10 @@ packages:
     dependency: transitive
     description:
       name: camera_platform_interface
-      sha256: "98cfc9357e04bad617671b4c1f78a597f25f08003089dd94050709ae54effc63"
+      sha256: "7ac852d77699acee79f0d438b793feee26721841e50973576419ff5c6d95e9b7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.12.0"
+    version: "2.13.0"
   camera_web:
     dependency: transitive
     description:
@@ -734,7 +734,7 @@ packages:
     source: hosted
     version: "2.0.34"
   flutter_rust_bridge:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: flutter_rust_bridge
       sha256: e87d6b9ee934dcd24a128ccb2bd91905d2d5fe5c06245d6a8f5477d4907a437a
@@ -915,10 +915,18 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "48fb2f42ad057476fa4b733cb95e9f9ea7b0b010bb349ea491dca7dbdb18ffc4"
+      sha256: "5540e4a3f416dd4a93458257b908eb88353cbd0fb5b0a3d1bd7d849ba1e88735"
       url: "https://pub.dev"
     source: hosted
-    version: "17.2.0"
+    version: "17.2.1"
+  google_cloud:
+    dependency: transitive
+    description:
+      name: google_cloud
+      sha256: fbcde933b2d8600c3cdb2328f8f4c47628ec29a39e9cef85dee535c7868993c4
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   google_fonts:
     dependency: "direct main"
     description:
@@ -987,10 +995,10 @@ packages:
     dependency: transitive
     description:
       name: googleapis_auth
-      sha256: b81fe352cc4a330b3710d2b7ad258d9bcef6f909bb759b306bf42973a7d046db
+      sha256: "661738b763d3e524de69df53bf4e03943e4e01e98265cebcc6684871b06a5379"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.3.0"
   graphs:
     dependency: transitive
     description:
@@ -1465,8 +1473,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
-      resolved-ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
+      ref: develop
+      resolved-ref: "0a7769535e9b61cc314a29e60f1b17912a04b6e5"
       url: "https://github.com/SatoshiPortal/payjoin-dart"
     source: git
     version: "0.23.0"
@@ -1643,8 +1651,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
-      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
+      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1660,8 +1668,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: dacafa2
-      resolved-ref: dacafa276afceec39cf84ab1261c9ca14f35da3c
+      ref: migrate-to-bull-sdk
+      resolved-ref: d55b14cce982ccd96e613f866313ad9a0f7beaf2
       url: "https://github.com/SatoshiPortal/satoshifier-dart"
     source: git
     version: "0.0.1"
@@ -1669,18 +1677,18 @@ packages:
     dependency: transitive
     description:
       name: sentry
-      sha256: "682360642a7b14b36daef3b5574b7269164e7763512ac92cdafd55b695bd2183"
+      sha256: "8c07a413ce5691db5b299024498f1ad6376e015f61b6d8fc8819b042f65df6c7"
       url: "https://pub.dev"
     source: hosted
-    version: "9.16.1"
+    version: "9.18.0"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
-      sha256: cf4944d02daa952aeb0e1ab01ddb3db8bfc6b7e16e9811edacf05d9eed276fda
+      sha256: "0c98ca79261325806c4eccc47274910306e2d914dfefc598650819677ce2b484"
       url: "https://pub.dev"
     source: hosted
-    version: "9.16.1"
+    version: "9.18.0"
   share_plus:
     dependency: "direct main"
     description:
@@ -2148,10 +2156,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "45caa6c5917fa127b5dbcfbd1fa60b14e583afdc08bfc96dda38886ca252eb60"
+      sha256: "046d3928e16fa4dc46e8350415661755ab759d9fc97fc21b5ab295f71e4f0499"
       url: "https://pub.dev"
     source: hosted
-    version: "15.0.2"
+    version: "15.1.0"
   watcher:
     dependency: transitive
     description:
