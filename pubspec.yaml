@@ -11,7 +11,7 @@ dependencies:
   bdk_dart:
     git:
       url: https://github.com/ethicnology/bdk-dart
-      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
+      ref: fix/reproducible-build
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1

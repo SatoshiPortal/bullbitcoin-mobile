@@ -85,8 +85,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
-      resolved-ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
+      ref: "fix/reproducible-build"
+      resolved-ref: a636c33e9762775eb8dc618a4a88d5f8169d6ae3
       url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
@@ -143,7 +143,7 @@ packages:
     description:
       path: "packages/bitbox-transport"
       ref: main
-      resolved-ref: b44365f8d41d838d59a98870a40f230570f2e10e
+      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -201,7 +201,7 @@ packages:
     description:
       path: "packages/boltz-stream"
       ref: main
-      resolved-ref: b44365f8d41d838d59a98870a40f230570f2e10e
+      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -290,7 +290,7 @@ packages:
     description:
       path: "packages/bull_sdk"
       ref: main
-      resolved-ref: b44365f8d41d838d59a98870a40f230570f2e10e
+      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1651,8 +1651,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: b44365f8d41d838d59a98870a40f230570f2e10e
-      resolved-ref: b44365f8d41d838d59a98870a40f230570f2e10e
+      ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
+      resolved-ref: "6a025564dcceab8aebf11b862506a91a0b0445a3"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.0.1"
@@ -1669,7 +1669,7 @@ packages:
     description:
       path: "."
       ref: migrate-to-bull-sdk
-      resolved-ref: d55b14cce982ccd96e613f866313ad9a0f7beaf2
+      resolved-ref: "95ca457dcaa370e682da943e9c706fe618351064"
       url: "https://github.com/SatoshiPortal/satoshifier-dart"
     source: git
     version: "0.0.1"
