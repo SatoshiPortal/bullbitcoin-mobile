@@ -143,7 +143,7 @@ packages:
     description:
       path: "packages/bitbox-transport"
       ref: main
-      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
+      resolved-ref: "9f814593bf71b748705b7448683cc4b0f093dad9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -201,7 +201,7 @@ packages:
     description:
       path: "packages/boltz-stream"
       ref: main
-      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
+      resolved-ref: "9f814593bf71b748705b7448683cc4b0f093dad9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -290,7 +290,7 @@ packages:
     description:
       path: "packages/bull_sdk"
       ref: main
-      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
+      resolved-ref: "9f814593bf71b748705b7448683cc4b0f093dad9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1651,8 +1651,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
-      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
+      ref: "9f814593bf71b748705b7448683cc4b0f093dad9"
+      resolved-ref: "9f814593bf71b748705b7448683cc4b0f093dad9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.0.1"

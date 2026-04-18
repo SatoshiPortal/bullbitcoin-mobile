@@ -89,17 +89,27 @@ release debug:
 
 apk: container-app
 	@echo "🔨 Building $(FORMAT) ($(MODE)) via Podman"
-	@podman build -f Containerfile.build \
-		--build-arg MODE=$(MODE) \
-		--build-arg FORMAT=$(FORMAT) \
-		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
-		-t bull-build .
-	@podman rm -f bull-apk-extract > /dev/null 2>&1 || true
-	@podman create --name bull-apk-extract bull-build > /dev/null
-	@podman cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
-	@podman rm bull-apk-extract > /dev/null
-	@echo "✅ APK extracted: ./app-$(MODE).apk"
-	@sha256sum ./app-$(MODE).apk
+	@mkdir -p output
+	@podman run --rm \
+		-v $$(pwd)/output:/output \
+		bull-app \
+		sh -c '\
+			SOURCE_DATE_EPOCH=$$(git -C /app log -1 --format=%ct) && \
+			CARGO_ENCODED_RUSTFLAGS=$$(printf "%s\037%s\037%s" \
+				"--remap-path-prefix=$$HOME/.cargo=/cargo" \
+				"--remap-path-prefix=$$HOME/.rustup=/rustup" \
+				"--remap-path-prefix=/app=/build") && \
+			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS && \
+			mkdir -p $$HOME/.gradle && \
+			echo "org.gradle.daemon=false" > $$HOME/.gradle/gradle.properties && \
+			echo "org.gradle.jvmargs=-Xmx$(or $(GRADLE_HEAP),4g)" >> $$HOME/.gradle/gradle.properties && \
+			echo "org.gradle.parallel=true" >> $$HOME/.gradle/gradle.properties && \
+			echo "org.gradle.caching=true" >> $$HOME/.gradle/gradle.properties && \
+			fvm flutter build $(FORMAT) --$(MODE) --no-pub && \
+			cp build/app/outputs/flutter-apk/app-$(MODE).apk /output/ \
+		'
+	@echo "✅ APK: ./output/app-$(MODE).apk"
+	@sha256sum ./output/app-$(MODE).apk
 
 verify:
 	@echo "🔍 Verifying reproducible build"
