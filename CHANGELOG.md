@@ -4,6 +4,9 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ## [X.X.X] - To be released
 
+### New Features
+- **Background swap notifications** ([#2004](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2004), [#2006](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2006)): The app now runs a lightweight 15-minute background pass that fires a local notification when a Boltz swap needs attention (claimable, refundable, cooperative close, or a failed send that still has funds locked). Tap the notification to land on the swap details — taps go through PIN unlock when a PIN is set. The background pass is strictly read-only with respect to app storage and does not touch Bitcoin/Liquid wallets. Notifications are localized to all 26 supported app languages.
+
 ### Bug Fixes
 - **Transaction note now saved to database** ([#1173](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/1173)): Fixed an issue where notes added during a send were stored in state but never persisted. Notes embedded in Bolt11 invoice descriptions or BIP21 label parameters are also automatically pre-populated if the user has not set one manually
 

@@ -141,6 +141,7 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.10.0
+  flutter_local_notifications: ^21.0.0
 
 dev_dependencies:
   build_runner: ^2.10.4

@@ -30,6 +30,8 @@
 
     <!-- Background tasks -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Required on Android 13+ to show swap-needs-action notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.usb.host"

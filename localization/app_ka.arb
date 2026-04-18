@@ -290,5 +290,15 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი"
+  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
+  "notificationSwapClaimableTitle": "სვაპი მზად არის მოთხოვნისთვის",
+  "notificationSwapClaimableBody": "გახსენით Bull Bitcoin სვაპის ვადის ამოწურვამდე თქვენი თანხების მოსათხოვად.",
+  "notificationSwapRefundableTitle": "სვაპი მზად არის დაბრუნებისთვის",
+  "notificationSwapRefundableBody": "გახსენით Bull Bitcoin სვაპის ვადის ამოწურვამდე თქვენი თანხების დასაბრუნებლად.",
+  "notificationSwapCanCoopTitle": "სვაპს სჭირდება კოოპერაციული დახურვა",
+  "notificationSwapCanCoopBody": "გახსენით Bull Bitcoin სვაპის ვადის ამოწურვამდე კოოპერაციული დახურვის დასასრულებლად.",
+  "notificationSwapFailedTitle": "სვაპი ვერ შესრულდა — საჭიროა მოქმედება",
+  "notificationSwapFailedBody": "გახსენით Bull Bitcoin თქვენი თანხების აღსადგენად.",
+  "notificationSwapAttentionTitle": "სვაპს სჭირდება თქვენი ყურადღება",
+  "notificationSwapAttentionBody": "გახსენით Bull Bitcoin სვაპის ვადის ამოწურვამდე მის დასასრულებლად."
 }

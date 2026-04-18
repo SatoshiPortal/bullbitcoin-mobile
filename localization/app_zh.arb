@@ -4487,5 +4487,15 @@
   "legacyStorageWarningLater": "稍后",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Swap 准备好领取",
+  "notificationSwapClaimableBody": "请在 swap 过期之前打开 Bull Bitcoin 领取您的资金。",
+  "notificationSwapRefundableTitle": "Swap 准备好退款",
+  "notificationSwapRefundableBody": "请在 swap 过期之前打开 Bull Bitcoin 退还您的资金。",
+  "notificationSwapCanCoopTitle": "Swap 需要协作关闭",
+  "notificationSwapCanCoopBody": "请在 swap 过期之前打开 Bull Bitcoin 完成协作关闭。",
+  "notificationSwapFailedTitle": "Swap 失败 — 需要采取行动",
+  "notificationSwapFailedBody": "请打开 Bull Bitcoin 恢复您的资金。",
+  "notificationSwapAttentionTitle": "Swap 需要您的注意",
+  "notificationSwapAttentionBody": "请在 swap 过期之前打开 Bull Bitcoin 完成 swap。"
 }
