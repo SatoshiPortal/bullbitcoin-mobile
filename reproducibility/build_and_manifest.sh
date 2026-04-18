@@ -27,16 +27,24 @@ EOF
 # Build
 fvm flutter build "$FORMAT" --"$MODE"
 
-# Naming
-SHORT_COMMIT=$(git -C /app rev-parse --short HEAD)
+# Info
+SHORT_COMMIT=$(git -C /app rev-parse --short=7 HEAD)
 BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 APK_PATH="build/app/outputs/flutter-apk/app-${MODE}.apk"
+APK_SHA256=$(sha256sum "$APK_PATH" | awk '{print $1}')
 
-# Copy APK
-cp "$APK_PATH" "/output/BULL-${SHORT_COMMIT}-${MODE}.apk"
+echo ""
+echo "=========================================="
+echo "✅ SHA256: $APK_SHA256"
+echo "=========================================="
+echo ""
+
+# Output to /app/output (container-owned, no permission issues)
+mkdir -p /app/output
+cp "$APK_PATH" "/app/output/BULL-${SHORT_COMMIT}-${MODE}.apk"
 
 # Generate manifest
-cat > "/output/${BUILD_DATE}-${SHORT_COMMIT}-manifest.json" << EOF
+cat > "/app/output/${BUILD_DATE}-${SHORT_COMMIT}-manifest.json" << EOF
 {
   "git_commit": "$(git -C /app rev-parse HEAD)",
   "git_branch": "$(git -C /app rev-parse --abbrev-ref HEAD)",
@@ -52,10 +60,9 @@ cat > "/output/${BUILD_DATE}-${SHORT_COMMIT}-manifest.json" << EOF
   "android_build_tools": "$(ls "$ANDROID_HOME"/build-tools/ 2>/dev/null | head -1)",
   "pubspec_lock_sha256": "$(sha256sum /app/pubspec.lock | awk '{print $1}')",
   "source_date_epoch": "${SOURCE_DATE_EPOCH}",
-  "apk_sha256": "$(sha256sum "/app/${APK_PATH}" | awk '{print $1}')"
+  "apk_sha256": "${APK_SHA256}"
 }
 EOF
 
-echo "Build complete:"
-echo "  APK: /output/BULL-${SHORT_COMMIT}-${MODE}.apk"
-echo "  Manifest: /output/${BUILD_DATE}-${SHORT_COMMIT}-manifest.json"
+echo "  APK:      BULL-${SHORT_COMMIT}-${MODE}.apk"
+echo "  Manifest: ${BUILD_DATE}-${SHORT_COMMIT}-manifest.json"

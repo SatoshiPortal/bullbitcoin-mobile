@@ -90,13 +90,12 @@ release debug:
 
 apk: container-app
 	@echo "🔨 Building $(FORMAT) ($(MODE)) via Podman"
-	@mkdir -p output
-	@podman run --rm \
-		-v $$(pwd)/output:/output \
+	@podman rm -f bull-build 2>/dev/null || true
+	@podman run --name bull-build \
 		bull-app \
 		bash /app/reproducibility/build_and_manifest.sh $(MODE) $(FORMAT) $(or $(GRADLE_HEAP),4g)
-	@echo "✅ Build complete"
-	@ls -1 output/BULL-*-$(MODE).apk output/*-manifest.json 2>/dev/null | tail -2
+	@podman cp bull-build:/app/output/. .
+	@podman rm bull-build > /dev/null
 
 reproduce:
 	@if [ -z "$(filter-out reproduce,$(MAKECMDGOALS))" ]; then echo "Usage: make reproduce <manifest.json>"; exit 1; fi
