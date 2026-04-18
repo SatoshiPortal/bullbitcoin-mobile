@@ -141,9 +141,11 @@ packages:
   bitbox_transport:
     dependency: "direct main"
     description:
-      path: "/Users/azad/Repos/bull-sdk/packages/bitbox-transport"
-      relative: false
-    source: path
+      path: "packages/bitbox-transport"
+      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      url: "https://github.com/ethicnology/bull_sdk"
+    source: git
     version: "0.1.0"
   bitcoin_base:
     dependency: "direct main"
@@ -197,9 +199,11 @@ packages:
   boltz_stream:
     dependency: "direct main"
     description:
-      path: "/Users/azad/Repos/bull-sdk/packages/boltz-stream"
-      relative: false
-    source: path
+      path: "packages/boltz-stream"
+      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      url: "https://github.com/ethicnology/bull_sdk"
+    source: git
     version: "0.1.0"
   boolean_selector:
     dependency: transitive
@@ -284,9 +288,11 @@ packages:
   bull_sdk:
     dependency: "direct main"
     description:
-      path: "/Users/azad/Repos/bull-sdk/packages/bull_sdk"
-      relative: false
-    source: path
+      path: "packages/bull_sdk"
+      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      url: "https://github.com/ethicnology/bull_sdk"
+    source: git
     version: "1.0.0+1"
   camera:
     dependency: transitive
@@ -1636,9 +1642,11 @@ packages:
   rust_lib_bull_sdk:
     dependency: transitive
     description:
-      path: "../bull-sdk/packages/bull_sdk/rust_builder"
-      relative: true
-    source: path
+      path: "packages/bull_sdk/rust_builder"
+      ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      resolved-ref: "6e85d809f6e75ec9420721dc44139d9d8714617e"
+      url: "https://github.com/ethicnology/bull_sdk"
+    source: git
     version: "0.0.1"
   rxdart:
     dependency: transitive
@@ -1651,9 +1659,11 @@ packages:
   satoshifier:
     dependency: "direct main"
     description:
-      path: "/Users/azad/Repos/bull-sdk/packages/satoshifier"
-      relative: false
-    source: path
+      path: "."
+      ref: dacafa2
+      resolved-ref: dacafa276afceec39cf84ab1261c9ca14f35da3c
+      url: "https://github.com/SatoshiPortal/satoshifier-dart"
+    source: git
     version: "0.0.1"
   sentry:
     dependency: transitive

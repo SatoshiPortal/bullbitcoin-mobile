@@ -43,11 +43,20 @@ dependencies:
   image_picker: ^1.1.2
   file_picker: 10.3.6
   bull_sdk:
-    path: /Users/azad/Repos/bull-sdk/packages/bull_sdk
+    git:
+      url: https://github.com/ethicnology/bull_sdk
+      ref: 6e85d809f6e75ec9420721dc44139d9d8714617e
+      path: packages/bull_sdk
   boltz_stream:
-    path: /Users/azad/Repos/bull-sdk/packages/boltz-stream
+    git:
+      url: https://github.com/ethicnology/bull_sdk
+      ref: 6e85d809f6e75ec9420721dc44139d9d8714617e
+      path: packages/boltz-stream
   bitbox_transport:
-    path: /Users/azad/Repos/bull-sdk/packages/bitbox-transport
+    git:
+      url: https://github.com/ethicnology/bull_sdk
+      ref: 6e85d809f6e75ec9420721dc44139d9d8714617e
+      path: packages/bitbox-transport
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1
@@ -98,7 +107,9 @@ dependencies:
   sliver_tools: ^0.2.12
   logging_colorful: ^1.3.2
   satoshifier:
-    path: /Users/azad/Repos/bull-sdk/packages/satoshifier
+    git:
+      url: https://github.com/SatoshiPortal/satoshifier-dart
+      ref: dacafa2
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
