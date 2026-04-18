@@ -1,7 +1,7 @@
 {
     "name": "${localWorkspaceFolderBasename}",
     "build": {
-        "dockerfile": "../Dockerfile",
+        "dockerfile": "../Containerfile.app",
         "args": {
             "USERNAME": "${localEnv:USER}"
         }

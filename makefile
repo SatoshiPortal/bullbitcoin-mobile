@@ -60,15 +60,19 @@ ios-sqlite-update:
 	@echo "Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
 
-docker-build:
-	@echo "🏗️ Building Docker image"
-	@docker build -t bull-mobile \
+container-tools:
+	@echo "🔧 Building tools image"
+	@podman build -f Containerfile.tools -t bull-tools \
 		--build-arg FLUTTER_VERSION=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc) \
 		--build-arg JVM_TARGET=$$(grep 'android.jvmTarget' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_API_LEVEL=$$(grep 'android.compileSdk' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_BUILD_TOOLS=$$(grep 'android.buildToolsVersion' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
 		.
+
+container-app: container-tools
+	@echo "📦 Building app image"
+	@podman build -f Containerfile.app -t bull-app .
 
 MODE ?= debug
 FORMAT ?= apk
@@ -83,17 +87,17 @@ endif
 release debug:
 	@:
 
-apk: docker-build
-	@echo "🔨 Building $(FORMAT) ($(MODE)) via Docker"
-	@docker build -f Dockerfile.apk \
+apk: container-app
+	@echo "🔨 Building $(FORMAT) ($(MODE)) via Podman"
+	@podman build -f Containerfile.build \
 		--build-arg MODE=$(MODE) \
 		--build-arg FORMAT=$(FORMAT) \
 		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
-		-t bull-mobile-apk .
-	@docker rm -f bull-apk-extract > /dev/null 2>&1 || true
-	@docker create --name bull-apk-extract bull-mobile-apk > /dev/null
-	@docker cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
-	@docker rm bull-apk-extract > /dev/null
+		-t bull-build .
+	@podman rm -f bull-apk-extract > /dev/null 2>&1 || true
+	@podman create --name bull-apk-extract bull-build > /dev/null
+	@podman cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
+	@podman rm bull-apk-extract > /dev/null
 	@echo "✅ APK extracted: ./app-$(MODE).apk"
 	@sha256sum ./app-$(MODE).apk
 

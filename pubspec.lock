@@ -143,7 +143,7 @@ packages:
     description:
       path: "packages/bitbox-transport"
       ref: main
-      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
+      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -201,7 +201,7 @@ packages:
     description:
       path: "packages/boltz-stream"
       ref: main
-      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
+      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.1.0"
@@ -290,7 +290,7 @@ packages:
     description:
       path: "packages/bull_sdk"
       ref: main
-      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
+      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "1.0.0+1"
@@ -1474,7 +1474,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: "0a7769535e9b61cc314a29e60f1b17912a04b6e5"
+      resolved-ref: "87443b4aa70e8162c074c1ceabc581e722fe869b"
       url: "https://github.com/SatoshiPortal/payjoin-dart"
     source: git
     version: "0.23.0"
@@ -1651,8 +1651,8 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
-      resolved-ref: "3d9e66b1a3756d7ccaa135a2088604ec97e01167"
+      ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
+      resolved-ref: "6f524f63cc350e9db8d3cb8243c174fc1070fdf9"
       url: "https://github.com/ethicnology/bull_sdk"
     source: git
     version: "0.0.1"

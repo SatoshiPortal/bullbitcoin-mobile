@@ -42,7 +42,7 @@ VERIFY_TOOLS_IMAGE="bullbitcoin-verify-tools:latest"
 
 # Build verification tools container
 echo "Building verification tools container..."
-$CTR build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
+$CTR build -q -f "$SCRIPT_DIR/Containerfile" -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
 
 # --- Build 1 ---
 echo ""
@@ -50,7 +50,7 @@ echo -e "${YELLOW}=== Build 1 ===${NC}"
 cd "$REPO_ROOT"
 make apk "$MODE"
 
-$CTR create --name repro_build1_$$ bull-mobile-apk > /dev/null
+$CTR create --name repro_build1_$$ bull-build > /dev/null
 $CTR cp "repro_build1_$$:/app/$APK_PATH" "$WORK_DIR/build1.apk"
 $CTR rm repro_build1_$$ > /dev/null
 
@@ -60,11 +60,11 @@ sha256sum "$WORK_DIR/build1.apk"
 # --- Build 2 (no cache) ---
 echo ""
 echo -e "${YELLOW}=== Build 2 (no cache) ===${NC}"
-$CTR rmi bull-mobile-apk > /dev/null 2>&1 || true
+$CTR rmi bull-build > /dev/null 2>&1 || true
 
 make apk "$MODE"
 
-$CTR create --name repro_build2_$$ bull-mobile-apk > /dev/null
+$CTR create --name repro_build2_$$ bull-build > /dev/null
 $CTR cp "repro_build2_$$:/app/$APK_PATH" "$WORK_DIR/build2.apk"
 $CTR rm repro_build2_$$ > /dev/null
 
