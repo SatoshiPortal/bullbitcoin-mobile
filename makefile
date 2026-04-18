@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app apk reproduce verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -68,6 +68,7 @@ container-tools:
 		--build-arg ANDROID_API_LEVEL=$$(grep 'android.compileSdk' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_BUILD_TOOLS=$$(grep 'android.buildToolsVersion' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
+		$(if $(EXPECTED_RUST_VERSION),--build-arg EXPECTED_RUST_VERSION=$(EXPECTED_RUST_VERSION)) \
 		.
 
 container-app: container-tools
@@ -93,23 +94,17 @@ apk: container-app
 	@podman run --rm \
 		-v $$(pwd)/output:/output \
 		bull-app \
-		sh -c '\
-			SOURCE_DATE_EPOCH=$$(git -C /app log -1 --format=%ct) && \
-			CARGO_ENCODED_RUSTFLAGS=$$(printf "%s\037%s\037%s" \
-				"--remap-path-prefix=$$HOME/.cargo=/cargo" \
-				"--remap-path-prefix=$$HOME/.rustup=/rustup" \
-				"--remap-path-prefix=/app=/build") && \
-			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS && \
-			mkdir -p $$HOME/.gradle && \
-			echo "org.gradle.daemon=false" > $$HOME/.gradle/gradle.properties && \
-			echo "org.gradle.jvmargs=-Xmx$(or $(GRADLE_HEAP),4g)" >> $$HOME/.gradle/gradle.properties && \
-			echo "org.gradle.parallel=true" >> $$HOME/.gradle/gradle.properties && \
-			echo "org.gradle.caching=true" >> $$HOME/.gradle/gradle.properties && \
-			fvm flutter build $(FORMAT) --$(MODE) --no-pub && \
-			cp build/app/outputs/flutter-apk/app-$(MODE).apk /output/ \
-		'
-	@echo "✅ APK: ./output/app-$(MODE).apk"
-	@sha256sum ./output/app-$(MODE).apk
+		bash /app/reproducibility/build_and_manifest.sh $(MODE) $(FORMAT) $(or $(GRADLE_HEAP),4g)
+	@echo "✅ Build complete"
+	@ls -1 output/BULL-*-$(MODE).apk output/*-manifest.json 2>/dev/null | tail -2
+
+reproduce:
+	@if [ -z "$(filter-out reproduce,$(MAKECMDGOALS))" ]; then echo "Usage: make reproduce <manifest.json>"; exit 1; fi
+	@./reproducibility/reproduce.sh $(filter-out reproduce,$(MAKECMDGOALS))
+
+# Accept any .json file as a target (no-op, handled by reproduce)
+%.json:
+	@:
 
 verify:
 	@echo "🔍 Verifying reproducible build"

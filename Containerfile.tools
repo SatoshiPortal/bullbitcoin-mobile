@@ -53,6 +53,17 @@ RUN rustup target add x86_64-linux-android
 RUN rustup target add i686-linux-android
 RUN rustc --version && cargo --version
 
+# Optional: abort if stable doesn't match expected version (used by reproduce)
+ARG EXPECTED_RUST_VERSION=""
+RUN if [ -n "$EXPECTED_RUST_VERSION" ]; then \
+      INSTALLED=$(rustc --version | awk '{print $2}'); \
+      if [ "$INSTALLED" != "$EXPECTED_RUST_VERSION" ]; then \
+        echo "ERROR: Expected Rust $EXPECTED_RUST_VERSION but current stable is $INSTALLED"; \
+        echo "Cargokit uses stable toolchain — all FRB crates will build with $INSTALLED, not $EXPECTED_RUST_VERSION"; \
+        exit 1; \
+      fi; \
+    fi
+
 # Install FVM
 RUN curl -fsSL https://fvm.app/install.sh -o /tmp/fvm-install.sh
 RUN bash /tmp/fvm-install.sh ${FVM_VERSION}
