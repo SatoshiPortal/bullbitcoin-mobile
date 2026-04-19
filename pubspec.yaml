@@ -44,17 +44,17 @@ dependencies:
   file_picker: 10.3.6
   bull_sdk:
     git:
-      url: https://github.com/ethicnology/bull_sdk
+      url: https://github.com/SatoshiPortal/bull_sdk
       ref: main
       path: packages/bull_sdk
   boltz_stream:
     git:
-      url: https://github.com/ethicnology/bull_sdk
+      url: https://github.com/SatoshiPortal/bull_sdk
       ref: main
       path: packages/boltz-stream
   bitbox_transport:
     git:
-      url: https://github.com/ethicnology/bull_sdk
+      url: https://github.com/SatoshiPortal/bull_sdk
       ref: main
       path: packages/bitbox-transport
   hex: ^0.2.0

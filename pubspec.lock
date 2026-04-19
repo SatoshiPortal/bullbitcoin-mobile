@@ -143,8 +143,8 @@ packages:
     description:
       path: "packages/bitbox-transport"
       ref: main
-      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
-      url: "https://github.com/ethicnology/bull_sdk"
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
   bitcoin_base:
@@ -201,8 +201,8 @@ packages:
     description:
       path: "packages/boltz-stream"
       ref: main
-      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
-      url: "https://github.com/ethicnology/bull_sdk"
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
   boolean_selector:
@@ -290,8 +290,8 @@ packages:
     description:
       path: "packages/bull_sdk"
       ref: main
-      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
-      url: "https://github.com/ethicnology/bull_sdk"
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "1.0.0+1"
   camera:
@@ -1651,9 +1651,9 @@ packages:
     dependency: transitive
     description:
       path: "packages/bull_sdk/rust_builder"
-      ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
-      resolved-ref: "0eeb83d38743e2a429ec764e968136d0b0e67fce"
-      url: "https://github.com/ethicnology/bull_sdk"
+      ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.0.1"
   rxdart:
@@ -1669,7 +1669,7 @@ packages:
     description:
       path: "."
       ref: migrate-to-bull-sdk
-      resolved-ref: "95ca457dcaa370e682da943e9c706fe618351064"
+      resolved-ref: "4002c00154301f77a3855c8f6c5d41675dbb87f0"
       url: "https://github.com/SatoshiPortal/satoshifier-dart"
     source: git
     version: "0.0.1"
