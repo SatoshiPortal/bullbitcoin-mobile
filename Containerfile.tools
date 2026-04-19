@@ -3,8 +3,9 @@ FROM --platform=linux/amd64 debian:trixie
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME="bull"
-# Rust version pinned via --default-toolchain stable
-# For local dev, version is pinned in bull-sdk/rust-toolchain.toml
+# Rust toolchain is always "stable" — cargokit forces stable regardless of what we install.
+# Reproducibility is enforced by EXPECTED_RUST_VERSION (build-arg guard below) + the
+# rust version recorded in the manifest, not by the install step.
 ENV USER=$USERNAME
 ARG FVM_VERSION="4.0.5"
 ARG FLUTTER_VERSION="3.38.5"

@@ -296,7 +296,7 @@ else
 fi
 echo "Gradle heap size: $gradle_heap (based on ${available_mem_gb}GB available)"
 
-# Build using three-stage Containerfiles
+# Build using two Containerfiles + build script
 echo "=== Building from source ==="
 echo "This may take 30-60 minutes..."
 
@@ -321,25 +321,20 @@ $CONTAINER_CMD build \
     -t bull-app \
     "$REPO_ROOT"
 
-# Stage 3: Build the APK/AAB
+# Stage 3: Run the build script inside the app image
 echo "Building release..."
-$CONTAINER_CMD build \
+container_name="bullbitcoin_build_$$"
+$CONTAINER_CMD rm -f "$container_name" 2>/dev/null || true
+$CONTAINER_CMD run --name "$container_name" \
     --network=host \
     --ulimit nofile=65536:65536 \
-    -f "$REPO_ROOT/Containerfile.build" \
-    --build-arg MODE=release \
-    --build-arg FORMAT="$buildFormat" \
-    --build-arg GRADLE_HEAP="$gradle_heap" \
-    -t bullbitcoin-verify:v${appVersion} \
-    "$REPO_ROOT"
+    bull-app \
+    bash /app/reproducibility/build_and_manifest.sh release "$buildFormat" "$gradle_heap"
 
 echo "Build complete"
 
 # Extract built artifact
 echo "Extracting built artifact..."
-container_name="bullbitcoin_extract_$$"
-$CONTAINER_CMD create --name "$container_name" bullbitcoin-verify:v${appVersion} > /dev/null
-
 if [[ "$verificationMode" == "github" ]]; then
     $CONTAINER_CMD cp "$container_name:/app/build/app/outputs/flutter-apk/app-release.apk" "$workDir/built.apk"
 else

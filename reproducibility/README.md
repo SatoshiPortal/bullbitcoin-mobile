@@ -4,7 +4,7 @@ Scripts for verifying that the published Bull Bitcoin Mobile app matches a build
 
 ## How it works
 
-Four components work together:
+Two Containerfiles build cached layers, one script does the actual build, and one tools image is used only for diffing APKs.
 
 ### `../Containerfile.tools` (root)
 
@@ -14,9 +14,9 @@ Builds the base toolchain image with Rust, Flutter via FVM, Android SDK, and NDK
 
 Copies dependency manifests first (pubspec.yaml, pubspec.lock) for cached `flutter pub get`, then copies full source and runs code generation (build_runner, gen-l10n). Used by devcontainers for development.
 
-### `../Containerfile.build` (root)
+### `build_and_manifest.sh` (this directory)
 
-Builds the APK/AAB from the app image. Two environment variables are set at build time to eliminate sources of non-determinism:
+Runs inside the `bull-app` image via `podman run` and produces the APK/AAB plus a paired manifest in `/app/output/`. Artifacts are named `bull-{mode}-{YYYYMMDD}-{commit7}.{apk,json}` and share a stem so they pair unambiguously. Two environment variables are set before invoking `flutter build` to eliminate sources of non-determinism:
 
 - `SOURCE_DATE_EPOCH` — set to the timestamp of the latest git commit (`git log -1 --format=%ct`). OpenSSL embeds a wall-clock build timestamp in compiled binaries by default; setting this variable makes it use a fixed value instead, so any `.so` that links against OpenSSL is identical across builds.
 - `CARGO_ENCODED_RUSTFLAGS` — three `--remap-path-prefix` flags that rewrite absolute paths baked into Rust binaries at compile time (home directory, `.cargo`, `.rustup`) to fixed strings (`/cargo`, `/rustup`, `/build`). cargokit reads `CARGO_ENCODED_RUSTFLAGS` rather than `RUSTFLAGS`; flags are separated by the ASCII unit separator `\x1f` (octal `\037`).
@@ -31,7 +31,7 @@ Orchestrates the full verification:
 
 1. Builds the verification tools image from `Containerfile`
 2. Optionally downloads the official APK from the GitHub release, or uses a locally provided APK or split APK directory
-3. Builds the app from the current repo checkout using the three-stage Containerfiles (tools → app → build)
+3. Builds the app from the current repo checkout: `Containerfile.tools` → `Containerfile.app` → `build_and_manifest.sh` inside the `bull-app` container
 4. Extracts the built artifact from the container image
 5. Decodes both APKs with apktool (inside the tools container)
 6. Diffs the decoded output excluding `META-INF` (signatures are not part of reproducibility)

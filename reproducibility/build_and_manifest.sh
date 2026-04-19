@@ -31,12 +31,16 @@ fvm flutter build "$FORMAT" --"$MODE"
 SHORT_COMMIT=$(git -C /app rev-parse --short=7 HEAD)
 BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 BUILD_DATE_SHORT=$(date -u +%Y%m%d)
-APK_PATH="build/app/outputs/flutter-apk/app-${MODE}.apk"
-APK_SHA256=$(sha256sum "$APK_PATH" | awk '{print $1}')
+if [ "$FORMAT" = "aab" ]; then
+    ARTIFACT_PATH="build/app/outputs/bundle/${MODE}/app-${MODE}.aab"
+else
+    ARTIFACT_PATH="build/app/outputs/flutter-apk/app-${MODE}.apk"
+fi
+ARTIFACT_SHA256=$(sha256sum "$ARTIFACT_PATH" | awk '{print $1}')
 
 echo ""
 echo "=========================================="
-echo " SHA256: $APK_SHA256"
+echo " SHA256: $ARTIFACT_SHA256"
 echo "=========================================="
 echo ""
 
@@ -44,7 +48,7 @@ STEM="bull-${MODE}-${BUILD_DATE_SHORT}-${SHORT_COMMIT}"
 
 # Output to /app/output (container-owned, no permission issues)
 mkdir -p /app/output
-cp "$APK_PATH" "/app/output/${STEM}.apk"
+cp "$ARTIFACT_PATH" "/app/output/${STEM}.${FORMAT}"
 
 # Generate manifest
 cat > "/app/output/${STEM}.json" << EOF
@@ -63,9 +67,9 @@ cat > "/app/output/${STEM}.json" << EOF
   "android_build_tools": "$(ls "$ANDROID_HOME"/build-tools/ 2>/dev/null | head -1)",
   "pubspec_lock_sha256": "$(sha256sum /app/pubspec.lock | awk '{print $1}')",
   "source_date_epoch": "${SOURCE_DATE_EPOCH}",
-  "apk_sha256": "${APK_SHA256}"
+  "artifact_sha256": "${ARTIFACT_SHA256}"
 }
 EOF
 
-echo "✅  APK:      ${STEM}.apk"
+echo "✅  Artifact: ${STEM}.${FORMAT}"
 echo "✅  Manifest: ${STEM}.json"
