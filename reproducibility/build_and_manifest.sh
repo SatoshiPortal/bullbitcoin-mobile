@@ -30,21 +30,24 @@ fvm flutter build "$FORMAT" --"$MODE"
 # Info
 SHORT_COMMIT=$(git -C /app rev-parse --short=7 HEAD)
 BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+BUILD_DATE_SHORT=$(date -u +%Y%m%d)
 APK_PATH="build/app/outputs/flutter-apk/app-${MODE}.apk"
 APK_SHA256=$(sha256sum "$APK_PATH" | awk '{print $1}')
 
 echo ""
 echo "=========================================="
-echo "✅ SHA256: $APK_SHA256"
+echo " SHA256: $APK_SHA256"
 echo "=========================================="
 echo ""
 
+STEM="bull-${MODE}-${BUILD_DATE_SHORT}-${SHORT_COMMIT}"
+
 # Output to /app/output (container-owned, no permission issues)
 mkdir -p /app/output
-cp "$APK_PATH" "/app/output/BULL-${SHORT_COMMIT}-${MODE}.apk"
+cp "$APK_PATH" "/app/output/${STEM}.apk"
 
 # Generate manifest
-cat > "/app/output/${BUILD_DATE}-${SHORT_COMMIT}-manifest.json" << EOF
+cat > "/app/output/${STEM}.json" << EOF
 {
   "git_commit": "$(git -C /app rev-parse HEAD)",
   "git_branch": "$(git -C /app rev-parse --abbrev-ref HEAD)",
@@ -64,5 +67,5 @@ cat > "/app/output/${BUILD_DATE}-${SHORT_COMMIT}-manifest.json" << EOF
 }
 EOF
 
-echo "  APK:      BULL-${SHORT_COMMIT}-${MODE}.apk"
-echo "  Manifest: ${BUILD_DATE}-${SHORT_COMMIT}-manifest.json"
+echo "✅  APK:      ${STEM}.apk"
+echo "✅  Manifest: ${STEM}.json"
