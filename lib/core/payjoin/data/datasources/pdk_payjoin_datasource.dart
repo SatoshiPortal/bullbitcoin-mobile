@@ -817,3 +817,72 @@ class PayjoinExpiredException extends BullException {
 class OhttpRelaysUnavailableException extends BullException {
   OhttpRelaysUnavailableException(super.message);
 }
+
+class InMemoryJsonReceiverSessionPersister
+    implements pj.JsonReceiverSessionPersister {
+  final List<String> _events;
+  bool _closed;
+
+  InMemoryJsonReceiverSessionPersister([List<String>? initial])
+    : _events = [...?initial],
+      _closed = false;
+
+  factory InMemoryJsonReceiverSessionPersister.fromJson(String? raw) {
+    return InMemoryJsonReceiverSessionPersister(_decodeEvents(raw));
+  }
+
+  List<String> get events => List.unmodifiable(_events);
+
+  bool get isClosed => _closed;
+
+  String toJson() => jsonEncode(_events);
+
+  @override
+  void save(String event) => _events.add(event);
+
+  @override
+  List<String> load() => List<String>.from(_events);
+
+  @override
+  void close() => _closed = true;
+}
+
+class InMemoryJsonSenderSessionPersister
+    implements pj.JsonSenderSessionPersister {
+  final List<String> _events;
+  bool _closed;
+
+  InMemoryJsonSenderSessionPersister([List<String>? initial])
+    : _events = [...?initial],
+      _closed = false;
+
+  factory InMemoryJsonSenderSessionPersister.fromJson(String? raw) {
+    return InMemoryJsonSenderSessionPersister(_decodeEvents(raw));
+  }
+
+  List<String> get events => List.unmodifiable(_events);
+
+  bool get isClosed => _closed;
+
+  String toJson() => jsonEncode(_events);
+
+  @override
+  void save(String event) => _events.add(event);
+
+  @override
+  List<String> load() => List<String>.from(_events);
+
+  @override
+  void close() => _closed = true;
+}
+
+List<String> _decodeEvents(String? raw) {
+  if (raw == null || raw.isEmpty) return const [];
+  try {
+    final decoded = jsonDecode(raw);
+    if (decoded is List) {
+      return decoded.cast<String>();
+    }
+  } catch (_) {}
+  return const [];
+}
