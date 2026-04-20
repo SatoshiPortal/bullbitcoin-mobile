@@ -18,7 +18,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -498,16 +497,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
       if (freshModel == null) throw Exception('Payjoin receiver not found');
 
-      final bdkWallet = await BdkFacade.createWallet(wallet);
-
+      final isMineSync = await _bdkWallet.createIsMineChecker(wallet: wallet);
+      final signPsbtSync = await _bdkWallet.createPsbtSigner(wallet: wallet);
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
-        hasOwnedInputs: (script) =>
-            _bdkWallet.isMine(script, wallet: wallet, bdkWallet: bdkWallet),
-        hasReceiverOutput: (script) =>
-            _bdkWallet.isMine(script, wallet: wallet, bdkWallet: bdkWallet),
+        hasOwnedInputs: isMineSync,
+        hasReceiverOutput: isMineSync,
         inputPairs: inputPairs,
-        processPsbt: (psbt) => _bdkWallet.signPsbt(psbt, wallet: wallet),
+        processPsbt: signPsbtSync,
       );
 
       await _localPayjoinDatasource.update(updatedModel);
