@@ -4453,19 +4453,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "LE PORTEFEUILLE DOIT ÊTRE SAUVEGARDÉ MAINTENANT",
+  "homeLegacyStorageWithNoBackupTitle": "Urgent : Sauvegarde et réinstallation requises",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Votre portefeuille utilise une bibliothèque de stockage obsolète et n'a pas de sauvegarde. Vous devez sauvegarder votre phrase de récupération immédiatement, puis supprimer et réinstaller l'application.",
+  "homeLegacyStorageWithNoBackupDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Stockage obsolète détecté",
+  "homeLegacyStorageTitle": "Action requise : Réinstaller l'application",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Appuyez pour sauvegarder votre portefeuille maintenant et réinstaller l'application.",
+  "homeLegacyStorageDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

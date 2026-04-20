@@ -780,8 +780,8 @@ packages:
     dependency: "direct main"
     description:
       path: flutter_secure_storage
-      ref: c32db29
-      resolved-ref: c32db29224ff4728c2532191b8ab649ac23e1926
+      ref: 01ed2ee04192f4ecda8bbf68198baceb6386f1e6
+      resolved-ref: 01ed2ee04192f4ecda8bbf68198baceb6386f1e6
       url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
     source: git
     version: "9.2.3"
@@ -789,8 +789,8 @@ packages:
     dependency: transitive
     description:
       path: flutter_secure_storage_platform_interface
-      ref: c32db29224ff4728c2532191b8ab649ac23e1926
-      resolved-ref: c32db29224ff4728c2532191b8ab649ac23e1926
+      ref: 01ed2ee04192f4ecda8bbf68198baceb6386f1e6
+      resolved-ref: 01ed2ee04192f4ecda8bbf68198baceb6386f1e6
       url: "https://github.com/SatoshiPortal/flutter_secure_storage_legacy"
     source: git
     version: "1.1.2"
@@ -1494,7 +1494,7 @@ packages:
       path: "."
       ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
       resolved-ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
-      url: "https://github.com/SatoshiPortal/payjoin-flutter"
+      url: "https://github.com/SatoshiPortal/payjoin-dart"
     source: git
     version: "0.23.0"
   permission_handler:

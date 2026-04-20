@@ -12480,19 +12480,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "ต้องสำรองข้อมูลกระเป๋าเงินตอนนี้",
+  "homeLegacyStorageWithNoBackupTitle": "เร่งด่วน: จำเป็นต้องสำรองข้อมูลและติดตั้งแอปใหม่",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "กระเป๋าเงินของคุณอยู่ในไลบรารีพื้นที่จัดเก็บที่เลิกใช้แล้วและไม่มีข้อมูลสำรอง คุณต้องสำรองข้อมูล seed phrase ทันที จากนั้นลบและติดตั้งแอปใหม่",
+  "homeLegacyStorageWithNoBackupDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "ตรวจพบพื้นที่จัดเก็บที่เลิกใช้",
+  "homeLegacyStorageTitle": "จำเป็นต้องดำเนินการ: ติดตั้งแอปใหม่",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "แตะเพื่อสำรองข้อมูลกระเป๋าเงินของคุณตอนนี้และติดตั้งแอปใหม่",
+  "homeLegacyStorageDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

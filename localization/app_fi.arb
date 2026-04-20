@@ -4456,19 +4456,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "LOMPAKKO ON VARMUUSKOPIOITAVA NYT",
+  "homeLegacyStorageWithNoBackupTitle": "Kiireellinen: Varmuuskopio ja uudelleenasennus vaaditaan",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Lompakkosi käyttää vanhentunutta tallennuskirjastoa eikä sillä ole varmuuskopiota. Sinun on varmuuskopioitava siemenlauseesi välittömästi ja poistettava ja asennettava sovellus uudelleen.",
+  "homeLegacyStorageWithNoBackupDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Vanhentunut tallennus havaittu",
+  "homeLegacyStorageTitle": "Toimenpide vaaditaan: Asenna sovellus uudelleen",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Napauta varmuuskopioidaksesi lompakkosi nyt ja asentaaksesi sovelluksen uudelleen.",
+  "homeLegacyStorageDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

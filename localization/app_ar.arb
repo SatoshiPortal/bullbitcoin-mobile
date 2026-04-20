@@ -12483,19 +12483,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "يجب نسخ المحفظة احتياطياً الآن",
+  "homeLegacyStorageWithNoBackupTitle": "عاجل: النسخ الاحتياطي وإعادة التثبيت مطلوبان",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "محفظتك على مكتبة تخزين قديمة وليس لديها نسخة احتياطية. يجب عليك نسخ عبارة البذور احتياطياً فوراً، ثم حذف التطبيق وإعادة تثبيته.",
+  "homeLegacyStorageWithNoBackupDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "تم اكتشاف مخزن قديم",
+  "homeLegacyStorageTitle": "إجراء مطلوب: إعادة تثبيت التطبيق",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "اضغط لنسخ محفظتك احتياطياً الآن وإعادة تثبيت التطبيق.",
+  "homeLegacyStorageDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

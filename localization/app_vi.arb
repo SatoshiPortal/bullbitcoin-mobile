@@ -54,19 +54,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "VÍ PHẢI ĐƯỢC SAO LƯU NGAY BÂY GIỜ",
+  "homeLegacyStorageWithNoBackupTitle": "Khẩn cấp: Cần sao lưu và cài đặt lại",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Ví của bạn đang sử dụng thư viện lưu trữ lỗi thời và không có bản sao lưu. Bạn phải sao lưu cụm từ hạt giống ngay lập tức, sau đó xóa và cài đặt lại ứng dụng.",
+  "homeLegacyStorageWithNoBackupDescription": "Ứng dụng bạn đang sử dụng đang chạy trên phần mềm sẽ sớm bị ngừng hỗ trợ. Vui lòng thực hiện các bước sau:\n\n1. Sao lưu ví của bạn\n2. Gỡ cài đặt ứng dụng. Xóa hoàn toàn khỏi điện thoại của bạn.\n3. Cài đặt lại phiên bản mới nhất của ứng dụng\n4. Sử dụng tùy chọn khôi phục thay vì \"tạo ví mới\".\n\nTài sản của bạn an toàn và bạn có thể tiếp tục sử dụng ứng dụng ngay bây giờ, nhưng hãy thực hiện điều này càng sớm càng tốt để tránh ứng dụng bị hỏng trong tương lai gần.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Phát hiện bộ nhớ lỗi thời",
+  "homeLegacyStorageTitle": "Cần thực hiện: Cài đặt lại ứng dụng",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Nhấn để sao lưu ví của bạn ngay bây giờ và cài đặt lại ứng dụng.",
+  "homeLegacyStorageDescription": "Ứng dụng bạn đang sử dụng đang chạy trên phần mềm sẽ sớm bị ngừng hỗ trợ. Vui lòng thực hiện các bước sau:\n\n1. Sao lưu ví của bạn\n2. Gỡ cài đặt ứng dụng. Xóa hoàn toàn khỏi điện thoại của bạn.\n3. Cài đặt lại phiên bản mới nhất của ứng dụng\n4. Sử dụng tùy chọn khôi phục thay vì \"tạo ví mới\".\n\nTài sản của bạn an toàn và bạn có thể tiếp tục sử dụng ứng dụng ngay bây giờ, nhưng hãy thực hiện điều này càng sớm càng tốt để tránh ứng dụng bị hỏng trong tương lai gần.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

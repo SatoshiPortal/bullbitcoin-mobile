@@ -12480,19 +12480,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "کیف‌پول باید همین الان پشتیبان‌گیری شود",
+  "homeLegacyStorageWithNoBackupTitle": "فوری: پشتیبان‌گیری و نصب مجدد الزامی است",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "کیف‌پول شما از یک کتابخانه ذخیره‌سازی منسوخ استفاده می‌کند و پشتیبانی ندارد. باید فوراً از عبارت seed خود پشتیبان تهیه کنید، سپس برنامه را حذف و دوباره نصب کنید.",
+  "homeLegacyStorageWithNoBackupDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "ذخیره‌سازی منسوخ شناسایی شد",
+  "homeLegacyStorageTitle": "اقدام لازم: نصب مجدد برنامه",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "برای پشتیبان‌گیری از کیف‌پول خود اکنون و نصب مجدد برنامه ضربه بزنید.",
+  "homeLegacyStorageDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

@@ -12480,19 +12480,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "지금 즉시 지갑을 백업해야 합니다",
+  "homeLegacyStorageWithNoBackupTitle": "긴급: 백업 및 재설치 필요",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "지갑이 더 이상 사용되지 않는 저장소 라이브러리에 있으며 백업이 없습니다. 시드 문구를 즉시 백업한 후 앱을 삭제하고 재설치해야 합니다.",
+  "homeLegacyStorageWithNoBackupDescription": "사용 중인 앱은 곧 지원이 중단될 소프트웨어를 사용하고 있습니다. 다음 단계를 따라 주세요:\n\n1. 지갑을 백업하세요\n2. 앱을 삭제하세요. 폰에서 완전히 제거하세요.\n3. 최신 버전의 앱을 재설치하세요\n4. \"새 지갑 만들기\" 대신 복구 옵션을 사용하세요.\n\n자금은 안전하며 지금 당장 앱을 계속 사용할 수 있지만, 가까운 미래에 앱이 작동하지 않게 되는 것을 방지하려면 가능한 한 빨리 이 작업을 수행하세요.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "더 이상 사용되지 않는 저장소 감지됨",
+  "homeLegacyStorageTitle": "조치 필요: 앱 재설치",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "탭하여 지금 지갑을 백업하고 앱을 재설치하세요.",
+  "homeLegacyStorageDescription": "사용 중인 앱은 곧 지원이 중단될 소프트웨어를 사용하고 있습니다. 다음 단계를 따라 주세요:\n\n1. 지갑을 백업하세요\n2. 앱을 삭제하세요. 폰에서 완전히 제거하세요.\n3. 최신 버전의 앱을 재설치하세요\n4. \"새 지갑 만들기\" 대신 복구 옵션을 사용하세요.\n\n자금은 안전하며 지금 당장 앱을 계속 사용할 수 있지만, 가까운 미래에 앱이 작동하지 않게 되는 것을 방지하려면 가능한 한 빨리 이 작업을 수행하세요.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

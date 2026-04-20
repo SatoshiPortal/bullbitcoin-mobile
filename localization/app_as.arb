@@ -53,19 +53,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "ৱালেট এতিয়াই বেকআপ কৰিব লাগিব",
+  "homeLegacyStorageWithNoBackupTitle": "জৰুৰী: বেকআপ আৰু পুনৰায় ইনষ্টল কৰা প্ৰয়োজন",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "আপোনাৰ ৱালেট এটা পুৰণি ষ্ট'ৰেজ লাইব্ৰেৰীত আছে আৰু কোনো বেকআপ নাই। আপুনি তৎক্ষণাৎ আপোনাৰ ছিড ফ্ৰেজ বেকআপ কৰিব লাগিব, তাৰ পিছত এপটো মচি পুনৰায় ইনষ্টল কৰিব লাগিব।",
+  "homeLegacyStorageWithNoBackupDescription": "আপুনি ব্যৱহাৰ কৰা এপটো এনে চফটৱেৰ ব্যৱহাৰ কৰিছে যি শীঘ্ৰে পুৰণি হৈ পৰিব। অনুগ্ৰহ কৰি এই পদক্ষেপবোৰ অনুসৰণ কৰক:\n\n1. আপোনাৰ ৱালেট বেকআপ কৰক\n2. এপটো আনইনষ্টল কৰক। আপোনাৰ ফোনৰ পৰা সম্পূৰ্ণকৈ মচি পেলাওক।\n3. এপৰ শেহতীয়া সংস্কৰণ পুনৰায় ইনষ্টল কৰক\n4. \"নতুন ৱালেট তৈয়াৰ কৰক\" ৰ সলনি পুনৰুদ্ধাৰ বিকল্প ব্যৱহাৰ কৰক।\n\nআপোনাৰ ধন সুৰক্ষিত আছে আৰু আপুনি এতিয়া এপটো ব্যৱহাৰ কৰি থাকিব পাৰে, কিন্তু ভৱিষ্যতে এপটো বিকল হোৱাৰ আগতে যিমান সোনকালে পাৰে এইটো কৰক।",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "পুৰণি ষ্ট'ৰেজ চিনাক্ত কৰা হৈছে",
+  "homeLegacyStorageTitle": "পদক্ষেপ প্ৰয়োজন: এপ পুনৰায় ইনষ্টল কৰক",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "এতিয়া আপোনাৰ ৱালেট বেকআপ কৰিবলৈ আৰু এপটো পুনৰায় ইনষ্টল কৰিবলৈ টেপ কৰক।",
+  "homeLegacyStorageDescription": "আপুনি ব্যৱহাৰ কৰা এপটো এনে চফটৱেৰ ব্যৱহাৰ কৰিছে যি শীঘ্ৰে পুৰণি হৈ পৰিব। অনুগ্ৰহ কৰি এই পদক্ষেপবোৰ অনুসৰণ কৰক:\n\n1. আপোনাৰ ৱালেট বেকআপ কৰক\n2. এপটো আনইনষ্টল কৰক। আপোনাৰ ফোনৰ পৰা সম্পূৰ্ণকৈ মচি পেলাওক।\n3. এপৰ শেহতীয়া সংস্কৰণ পুনৰায় ইনষ্টল কৰক\n4. \"নতুন ৱালেট তৈয়াৰ কৰক\" ৰ সলনি পুনৰুদ্ধাৰ বিকল্প ব্যৱহাৰ কৰক।\n\nআপোনাৰ ধন সুৰক্ষিত আছে আৰু আপুনি এতিয়া এপটো ব্যৱহাৰ কৰি থাকিব পাৰে, কিন্তু ভৱিষ্যতে এপটো বিকল হোৱাৰ আগতে যিমান সোনকালে পাৰে এইটো কৰক।",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

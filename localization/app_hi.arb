@@ -12480,19 +12480,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "वॉलेट का अभी बैकअप लेना जरूरी है",
+  "homeLegacyStorageWithNoBackupTitle": "अत्यावश्यक: बैकअप और पुनः इंस्टॉलेशन आवश्यक",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "आपका वॉलेट एक पुरानी स्टोरेज लाइब्रेरी पर है और इसका कोई बैकअप नहीं है। आपको तुरंत अपनी सीड फ्रेज का बैकअप लेना होगा, फिर ऐप को डिलीट करके फिर से इंस्टॉल करना होगा।",
+  "homeLegacyStorageWithNoBackupDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "पुरानी स्टोरेज पाई गई",
+  "homeLegacyStorageTitle": "कार्रवाई आवश्यक: ऐप पुनः इंस्टॉल करें",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "अभी अपने वॉलेट का बैकअप लेने और ऐप को फिर से इंस्टॉल करने के लिए टैप करें।",
+  "homeLegacyStorageDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

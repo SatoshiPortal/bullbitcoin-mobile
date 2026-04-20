@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.9.0+176
+version: 6.9.1+177
 
 environment:
   sdk: ">=3.10.0 <4.0.0"
@@ -27,7 +27,7 @@ dependencies:
   flutter_secure_storage_legacy:
     git:
       url: https://github.com/SatoshiPortal/flutter_secure_storage_legacy
-      ref: c32db29
+      ref: 01ed2ee04192f4ecda8bbf68198baceb6386f1e6
       path: flutter_secure_storage
   path_provider: ^2.1.5
   shared_preferences: ^2.3.0
