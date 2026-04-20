@@ -3,16 +3,19 @@ FROM --platform=linux/amd64 debian:trixie
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME="bull"
+# Rust toolchain is always "stable" — cargokit forces stable regardless of what we install.
+# Reproducibility is enforced by EXPECTED_RUST_VERSION (build-arg guard below) + the
+# rust version recorded in the manifest, not by the install step.
 ENV USER=$USERNAME
-ARG FVM_VERSION=4.0.5
-ARG FLUTTER_VERSION=3.38.5
-ARG ANDROID_CMDLINE_TOOLS_VERSION=14742923
+ARG FVM_VERSION="4.0.5"
+ARG FLUTTER_VERSION="3.38.5"
+ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
 
 # Android versions (passed via --build-arg from Makefile, defaults as fallback)
-ARG JVM_TARGET=21
-ARG ANDROID_API_LEVEL=36
-ARG ANDROID_BUILD_TOOLS=36.0.0
-ARG ANDROID_NDK=29.0.14206865
+ARG JVM_TARGET="21"
+ARG ANDROID_API_LEVEL="36"
+ARG ANDROID_BUILD_TOOLS="36.0.0"
+ARG ANDROID_NDK="29.0.14206865"
 
 ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
@@ -40,7 +43,7 @@ USER $USER
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
-RUN sh /tmp/rustup.sh -y
+RUN sh /tmp/rustup.sh -y --default-toolchain stable
 RUN rm /tmp/rustup.sh
 ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 
@@ -50,6 +53,17 @@ RUN rustup target add armv7-linux-androideabi
 RUN rustup target add x86_64-linux-android
 RUN rustup target add i686-linux-android
 RUN rustc --version && cargo --version
+
+# Optional: abort if stable doesn't match expected version (used by reproduce)
+ARG EXPECTED_RUST_VERSION=""
+RUN if [ -n "$EXPECTED_RUST_VERSION" ]; then \
+      INSTALLED=$(rustc --version | awk '{print $2}'); \
+      if [ "$INSTALLED" != "$EXPECTED_RUST_VERSION" ]; then \
+        echo "ERROR: Expected Rust $EXPECTED_RUST_VERSION but current stable is $INSTALLED"; \
+        echo "Cargokit uses stable toolchain — all FRB crates will build with $INSTALLED, not $EXPECTED_RUST_VERSION"; \
+        exit 1; \
+      fi; \
+    fi
 
 # Install FVM
 RUN curl -fsSL https://fvm.app/install.sh -o /tmp/fvm-install.sh
@@ -78,3 +92,6 @@ RUN sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_API_LEVEL}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"
+
+# Pre-cache Flutter engine artifacts
+RUN fvm flutter precache --android

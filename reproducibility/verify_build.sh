@@ -126,7 +126,7 @@ fi
 # Build verification tools container
 VERIFY_TOOLS_IMAGE="bullbitcoin-verify-tools:latest"
 echo "Building verification tools container..."
-$CONTAINER_CMD build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
+$CONTAINER_CMD build -q -f "$SCRIPT_DIR/Containerfile" -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
 
 # Determine verification mode
 verificationMode=""
@@ -296,40 +296,45 @@ else
 fi
 echo "Gradle heap size: $gradle_heap (based on ${available_mem_gb}GB available)"
 
-# Build using two-stage Dockerfiles
+# Build using two Containerfiles + build script
 echo "=== Building from source ==="
 echo "This may take 30-60 minutes..."
 
 buildFormat="apk"
 [[ "$verificationMode" == "device" ]] && buildFormat="aab"
 
-# Stage 1: Build base toolchain image
-echo "Building base toolchain image..."
+# Stage 1: Build tools image
+echo "Building tools image..."
 $CONTAINER_CMD build \
     --network=host \
     --ulimit nofile=65536:65536 \
-    -t bull-mobile \
+    -f "$REPO_ROOT/Containerfile.tools" \
+    -t bull-tools \
     "$REPO_ROOT"
 
-# Stage 2: Build the app
-echo "Building app..."
+# Stage 2: Build app image
+echo "Building app image..."
 $CONTAINER_CMD build \
     --network=host \
     --ulimit nofile=65536:65536 \
-    -f "$REPO_ROOT/Dockerfile.apk" \
-    --build-arg MODE=release \
-    --build-arg FORMAT="$buildFormat" \
-    --build-arg GRADLE_HEAP="$gradle_heap" \
-    -t bullbitcoin-verify:v${appVersion} \
+    -f "$REPO_ROOT/Containerfile.app" \
+    -t bull-app \
     "$REPO_ROOT"
+
+# Stage 3: Run the build script inside the app image
+echo "Building release..."
+container_name="bullbitcoin_build_$$"
+$CONTAINER_CMD rm -f "$container_name" 2>/dev/null || true
+$CONTAINER_CMD run --name "$container_name" \
+    --network=host \
+    --ulimit nofile=65536:65536 \
+    bull-app \
+    bash /app/reproducibility/build_and_manifest.sh release "$buildFormat" "$gradle_heap"
 
 echo "Build complete"
 
 # Extract built artifact
 echo "Extracting built artifact..."
-container_name="bullbitcoin_extract_$$"
-$CONTAINER_CMD create --name "$container_name" bullbitcoin-verify:v${appVersion} > /dev/null
-
 if [[ "$verificationMode" == "github" ]]; then
     $CONTAINER_CMD cp "$container_name:/app/build/app/outputs/flutter-apk/app-release.apk" "$workDir/built.apk"
 else

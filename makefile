@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app apk reproduce verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -60,15 +60,20 @@ ios-sqlite-update:
 	@echo "Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
 
-docker-build:
-	@echo "🏗️ Building Docker image"
-	@docker build -t bull-mobile \
+container-tools:
+	@echo "🔧 Building tools image"
+	@podman build -f Containerfile.tools -t bull-tools \
 		--build-arg FLUTTER_VERSION=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc) \
 		--build-arg JVM_TARGET=$$(grep 'android.jvmTarget' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_API_LEVEL=$$(grep 'android.compileSdk' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_BUILD_TOOLS=$$(grep 'android.buildToolsVersion' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
+		$(if $(EXPECTED_RUST_VERSION),--build-arg EXPECTED_RUST_VERSION=$(EXPECTED_RUST_VERSION)) \
 		.
+
+container-app: container-tools
+	@echo "📦 Building app image"
+	@podman build -f Containerfile.app -t bull-app .
 
 MODE ?= debug
 FORMAT ?= apk
@@ -83,25 +88,28 @@ endif
 release debug:
 	@:
 
-apk: docker-build
-	@echo "🔨 Building $(FORMAT) ($(MODE)) via Docker"
-	@docker build -f Dockerfile.apk \
-		--build-arg MODE=$(MODE) \
-		--build-arg FORMAT=$(FORMAT) \
-		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
-		-t bull-mobile-apk .
-	@docker rm -f bull-apk-extract > /dev/null 2>&1 || true
-	@docker create --name bull-apk-extract bull-mobile-apk > /dev/null
-	@docker cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
-	@docker rm bull-apk-extract > /dev/null
-	@echo "✅ APK extracted: ./app-$(MODE).apk"
-	@sha256sum ./app-$(MODE).apk
+apk: container-app
+	@echo "🔨 Building $(FORMAT) ($(MODE)) via Podman"
+	@podman rm -f bull-build 2>/dev/null || true
+	@podman run --name bull-build \
+		bull-app \
+		bash /app/reproducibility/build_and_manifest.sh $(MODE) $(FORMAT) $(or $(GRADLE_HEAP),4g)
+	@podman cp bull-build:/app/output/. .
+	@podman rm bull-build > /dev/null
+
+reproduce:
+	@if [ -z "$(filter-out reproduce,$(MAKECMDGOALS))" ]; then echo "Usage: make reproduce <manifest.json>"; exit 1; fi
+	@./reproducibility/reproduce.sh $(filter-out reproduce,$(MAKECMDGOALS))
+
+# Accept any .json file as a target (no-op, handled by reproduce)
+%.json:
+	@:
 
 verify:
 	@echo "🔍 Verifying reproducible build"
 	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
 
-devcontainer:
+devcontainer: container-tools
 	@echo "🏗️ Building Dev Container"
 	@devcontainer up --workspace-folder . --config ./.devcontainer/devcontainer.json
 

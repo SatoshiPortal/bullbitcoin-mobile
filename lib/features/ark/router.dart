@@ -1,4 +1,4 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bull_sdk/ark.dart' as ark_wallet;
 import 'package:bb_mobile/core/ark/errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
@@ -79,7 +79,7 @@ class ArkRouter {
         name: ArkRoute.arkTransactionDetails.name,
         path: ArkRoute.arkTransactionDetails.path,
         builder: (context, state) {
-          final transaction = state.extra! as ark_wallet.Transaction;
+          final transaction = state.extra! as ark_wallet.ArkTransaction;
           return ArkTransactionDetailsPage(transaction: transaction);
         },
       ),
