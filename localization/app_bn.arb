@@ -12197,19 +12197,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "এখনই ওয়ালেট ব্যাকআপ করতে হবে",
+  "homeLegacyStorageWithNoBackupTitle": "জরুরি: ব্যাকআপ ও পুনরায় ইনস্টল প্রয়োজন",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "আপনার ওয়ালেট একটি পুরানো স্টোরেজ লাইব্রেরিতে আছে এবং কোনো ব্যাকআপ নেই। আপনাকে অবিলম্বে আপনার সিড ফ্রেজ ব্যাকআপ করতে হবে, তারপর অ্যাপটি মুছে পুনরায় ইনস্টল করতে হবে।",
+  "homeLegacyStorageWithNoBackupDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "পুরানো স্টোরেজ সনাক্ত করা হয়েছে",
+  "homeLegacyStorageTitle": "পদক্ষেপ প্রয়োজন: অ্যাপ পুনরায় ইনস্টল করুন",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "এখন আপনার ওয়ালেট ব্যাকআপ করতে এবং অ্যাপ পুনরায় ইনস্টল করতে ট্যাপ করুন।",
+  "homeLegacyStorageDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

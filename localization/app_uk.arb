@@ -4461,19 +4461,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "ГАМАНЕЦЬ НЕОБХІДНО ЗАРЕЗЕРВУВАТИ ЗАРАЗ",
+  "homeLegacyStorageWithNoBackupTitle": "Терміново: необхідне резервне копіювання та переустановлення",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Ваш гаманець використовує застарілу бібліотеку зберігання і не має резервної копії. Вам необхідно негайно зробити резервну копію вашої seed-фрази, а потім видалити та переустановити додаток.",
+  "homeLegacyStorageWithNoBackupDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Виявлено застаріле сховище",
+  "homeLegacyStorageTitle": "Необхідна дія: Перевстановіть додаток",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Натисніть, щоб зробити резервну копію гаманця зараз і переустановити додаток.",
+  "homeLegacyStorageDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

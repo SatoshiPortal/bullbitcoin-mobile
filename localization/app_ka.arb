@@ -266,19 +266,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "საფულე ახლავე უნდა დაიბექაფოს",
+  "homeLegacyStorageWithNoBackupTitle": "სასწრაფო: საჭიროა სარეზერვო ასლი და ხელახლა ინსტალაცია",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "თქვენი საფულე მოძველებულ საცავის ბიბლიოთეკაზეა და სარეზერვო ასლი არ აქვს. დაუყოვნებლივ უნდა შექმნათ სარეზერვო ასლი თქვენი სიდ ფრაზისთვის, შემდეგ წაშალეთ და ხელახლა დააინსტალირეთ აპლიკაცია.",
+  "homeLegacyStorageWithNoBackupDescription": "თქვენ მიერ გამოყენებული აპლიკაცია მუშაობს პროგრამულ უზრუნველყოფაზე, რომელიც მალე მოძველდება. გთხოვთ, მიჰყვეთ ამ ნაბიჯებს:\n\n1. შექმენით სარეზერვო ასლი თქვენი საფულიდან\n2. წაშალეთ აპლიკაცია. სრულად წაშალეთ ის თქვენი ტელეფონიდან.\n3. ხელახლა დააინსტალირეთ აპლიკაციის უახლესი ვერსია\n4. გამოიყენეთ აღდგენის ვარიანტი \"ახალი საფულის შექმნის\" ნაცვლად.\n\nთქვენი სახსრები უსაფრთხოა და შეგიძლიათ გამოიყენოთ აპლიკაცია ახლავე, მაგრამ გააკეთეთ ეს რაც შეიძლება მალე, რათა თავიდან აიცილოთ აპლიკაციის გამართულობის დარღვევა მომავალში.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "აღმოჩენილია მოძველებული საცავი",
+  "homeLegacyStorageTitle": "საჭიროა მოქმედება: ხელახლა დააინსტალირეთ აპლიკაცია",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "შეეხეთ ახლავე საფულის სარეზერვო ასლის შესაქმნელად და აპლიკაციის ხელახლა დასაინსტალირებლად.",
+  "homeLegacyStorageDescription": "თქვენ მიერ გამოყენებული აპლიკაცია მუშაობს პროგრამულ უზრუნველყოფაზე, რომელიც მალე მოძველდება. გთხოვთ, მიჰყვეთ ამ ნაბიჯებს:\n\n1. შექმენით სარეზერვო ასლი თქვენი საფულიდან\n2. წაშალეთ აპლიკაცია. სრულად წაშალეთ ის თქვენი ტელეფონიდან.\n3. ხელახლა დააინსტალირეთ აპლიკაციის უახლესი ვერსია\n4. გამოიყენეთ აღდგენის ვარიანტი \"ახალი საფულის შექმნის\" ნაცვლად.\n\nთქვენი სახსრები უსაფრთხოა და შეგიძლიათ გამოიყენოთ აპლიკაცია ახლავე, მაგრამ გააკეთეთ ეს რაც შეიძლება მალე, რათა თავიდან აიცილოთ აპლიკაციის გამართულობის დარღვევა მომავალში.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

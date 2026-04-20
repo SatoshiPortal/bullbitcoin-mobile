@@ -4464,19 +4464,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "IL PORTAFOGLIO DEVE ESSERE SALVATO ORA",
+  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstallazione richiesti",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Il tuo portafoglio si trova su una libreria di archiviazione obsoleta e non ha backup. Devi eseguire immediatamente il backup della tua frase seed, quindi eliminare e reinstallare l'app.",
+  "homeLegacyStorageWithNoBackupDescription": "L'app che stai usando utilizza un software che sarà presto deprecato. Segui questi passaggi:\n\n1. Esegui il backup del tuo portafoglio\n2. Disinstalla l'app. Eliminala completamente dal tuo telefono.\n3. Reinstalla l'ultima versione dell'app\n4. Usa l'opzione di recupero invece di \"crea nuovo portafoglio\".\n\nI tuoi fondi sono al sicuro e puoi continuare a usare l'app adesso, ma fallo il prima possibile per evitare che l'app smetta di funzionare nel prossimo futuro.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Archiviazione obsoleta rilevata",
+  "homeLegacyStorageTitle": "Azione richiesta: Reinstalla l'app",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Tocca per eseguire il backup del tuo portafoglio ora e reinstallare l'app.",
+  "homeLegacyStorageDescription": "L'app che stai usando utilizza un software che sarà presto deprecato. Segui questi passaggi:\n\n1. Esegui il backup del tuo portafoglio\n2. Disinstalla l'app. Eliminala completamente dal tuo telefono.\n3. Reinstalla l'ultima versione dell'app\n4. Usa l'opzione di recupero invece di \"crea nuovo portafoglio\".\n\nI tuoi fondi sono al sicuro e puoi continuare a usare l'app adesso, ma fallo il prima possibile per evitare che l'app smetta di funzionare nel prossimo futuro.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },
