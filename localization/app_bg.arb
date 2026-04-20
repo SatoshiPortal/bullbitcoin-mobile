@@ -9490,19 +9490,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "ПОРТФЕЙЛЪТ ТРЯБВА ДА БЪДЕ АРХИВИРАН СЕГА",
+  "homeLegacyStorageWithNoBackupTitle": "Спешно: Необходимо е архивиране и преинсталиране",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Вашият портфейл използва остаряла библиотека за съхранение и няма резервно копие. Трябва незабавно да архивирате seed фразата си, след което да изтриете и преинсталирате приложението.",
+  "homeLegacyStorageWithNoBackupDescription": "Приложението, което използвате, работи на софтуер, който скоро ще бъде прекратен. Моля, следвайте тези стъпки:\n\n1. Архивирайте портфейла си\n2. Деинсталирайте приложението. Изтрийте го напълно от телефона си.\n3. Инсталирайте отново най-новата версия на приложението\n4. Използвайте опцията за възстановяване вместо \"създаване на нов портфейл\".\n\nВашите средства са в безопасност и можете да продължите да използвате приложението сега, но го направете възможно най-скоро, за да предотвратите срив на приложението в близко бъдеще.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Открито остаряло хранилище",
+  "homeLegacyStorageTitle": "Необходимо действие: Преинсталирайте приложението",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Докоснете, за да архивирате портфейла си сега и да преинсталирате приложението.",
+  "homeLegacyStorageDescription": "Приложението, което използвате, работи на софтуер, който скоро ще бъде прекратен. Моля, следвайте тези стъпки:\n\n1. Архивирайте портфейла си\n2. Деинсталирайте приложението. Изтрийте го напълно от телефона си.\n3. Инсталирайте отново най-новата версия на приложението\n4. Използвайте опцията за възстановяване вместо \"създаване на нов портфейл\".\n\nВашите средства са в безопасност и можете да продължите да използвате приложението сега, но го направете възможно най-скоро, за да предотвратите срив на приложението в близко бъдеще.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

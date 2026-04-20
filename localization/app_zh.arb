@@ -4464,19 +4464,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "必须立即备份钱包",
+  "homeLegacyStorageWithNoBackupTitle": "紧急：需要备份并重新安装",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "您的钱包使用已弃用的存储库且没有备份。您必须立即备份助记词，然后删除并重新安装应用。",
+  "homeLegacyStorageWithNoBackupDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "检测到已弃用的存储",
+  "homeLegacyStorageTitle": "需要操作：重新安装应用程序",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "点击立即备份您的钱包并重新安装应用。",
+  "homeLegacyStorageDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

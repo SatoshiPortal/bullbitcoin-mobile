@@ -4519,19 +4519,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "A CARTEIRA DEVE SER SALVA AGORA",
+  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstalação necessários",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Sua carteira está em uma biblioteca de armazenamento obsoleta e não tem backup. Você deve fazer backup de sua frase semente imediatamente e depois excluir e reinstalar o aplicativo.",
+  "homeLegacyStorageWithNoBackupDescription": "A aplicação que está a usar utiliza um software que em breve ficará obsoleto. Por favor, siga estes passos:\n\n1. Faça uma cópia de segurança da sua carteira\n2. Desinstale a aplicação. Elimine-a completamente do seu telemóvel.\n3. Reinstale a versão mais recente da aplicação\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nOs seus fundos estão seguros e pode continuar a usar a aplicação agora, mas faça isso o mais rapidamente possível para evitar que a aplicação deixe de funcionar num futuro próximo.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Armazenamento obsoleto detectado",
+  "homeLegacyStorageTitle": "Ação necessária: Reinstalar a aplicação",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Toque para fazer backup da sua carteira agora e reinstalar o aplicativo.",
+  "homeLegacyStorageDescription": "A aplicação que está a usar utiliza um software que em breve ficará obsoleto. Por favor, siga estes passos:\n\n1. Faça uma cópia de segurança da sua carteira\n2. Desinstale a aplicação. Elimine-a completamente do seu telemóvel.\n3. Reinstale a versão mais recente da aplicação\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nOs seus fundos estão seguros e pode continuar a usar a aplicação agora, mas faça isso o mais rapidamente possível para evitar que a aplicação deixe de funcionar num futuro próximo.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

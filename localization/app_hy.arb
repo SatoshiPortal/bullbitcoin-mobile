@@ -54,19 +54,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "ԴՐԱՄԱՊԱՆԱԿԸ ՀԻՄԱ ՊԵՏՔ Է ԿՐԿՆՕՐԻՆԱԿՎԻ",
+  "homeLegacyStorageWithNoBackupTitle": "Շտապ. Անհրաժեշտ է կրկնօրինակել և վերատեղադրել",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Ձեր դրամապանակը գտնվում է հնացած պահпанման գրадарानум и кркноринак չуни: Дуз пет э анмиджапес кркноринакэл дзер seed артаhайтутюне, апа джнджэл ев верататэgадрэл hавелваце:",
+  "homeLegacyStorageWithNoBackupDescription": "Ձeр кoghmiц охадvar hавelваcн аshхатum е ծраграйин апаhовман вра, вором шутов кhнана. Хndrum ек hетевел hетевял каyllerin.\n\n1. Крkнорinакете дзер драмапанакы\n2. Апателhадрум hавелвацы. Амбоghутьямб джнджек айн дзер hераховос.\n3. Верателhадрум hавелвацы верджин тарберакы\n4. Огtвек веракангнман чнтранутюниц \"нор драмапанак ствцел\" похарен.\n\nДзер мидзоцнере апаhов ен ев карог ек шарункакнел огтвел hавелвацум hима, сайн да арек hним колкин hнараvор мжамад, арнатесел hавелвацун мот апайцум.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Հայтнабервел э hнацad пахпанум",
+  "homeLegacyStorageTitle": "Անhраժешт е горцогутюн. Верателhадрете hавелвацы",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Hпэл՝ hima кркноринакелу дзер драмапанакы ев верататэgадрелу hавелвацы:",
+  "homeLegacyStorageDescription": "Ձeр кoghmiц охадvar hавelваcн аshхатum е ծраграйин апаhовман вра, вором шутов кhнана. Хndrum ек hетевел hетевял каyllerin.\n\n1. Крkнорinакете дзер драмапанакы\n2. Апателhадрум hавелвацы. Амбоghутьямб джнджек айн дзер hераховос.\n3. Верателhадрум hавелвацы верджин тарберакы\n4. Огtвек веракангнман чнтранутюниц \"нор драмапанак ствцел\" похарен.\n\nДзер мидзоцнере апаhов ен ев карог ек шарункакнел огтвел hавелвацум hима, сайн да арек hним колкин hнараvор мжамад, арнатесел hавелвацун мот апайцум.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

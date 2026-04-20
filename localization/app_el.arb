@@ -12480,19 +12480,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "ΤΟ ΠΟΡΤΟΦΟΛΙ ΠΡΕΠΕΙ ΝΑ ΔΗΜΙΟΥΡΓΗΘΕΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΡΑ",
+  "homeLegacyStorageWithNoBackupTitle": "Επείγον: Απαιτείται αντίγραφο ασφαλείας και επανεγκατάσταση",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Το πορτοφόλι σας βρίσκεται σε μια παρωχημένη βιβλιοθήκη αποθήκευσης και δεν έχει αντίγραφο ασφαλείας. Πρέπει να δημιουργήσετε αντίγραφο ασφαλείας της φράσης seed αμέσως, στη συνέχεια διαγράψτε και επανεγκαταστήστε την εφαρμογή.",
+  "homeLegacyStorageWithNoBackupDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Εντοπίστηκε παρωχημένη αποθήκευση",
+  "homeLegacyStorageTitle": "Απαιτείται ενέργεια: Επανεγκατάσταση εφαρμογής",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Πατήστε για να δημιουργήσετε αντίγραφο ασφαλείας του πορτοφολιού σας τώρα και να επανεγκαταστήσετε την εφαρμογή.",
+  "homeLegacyStorageDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

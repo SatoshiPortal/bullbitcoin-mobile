@@ -4473,19 +4473,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "КОШЕЛЁК НЕОБХОДИМО СОЗДАТЬ РЕЗЕРВНУЮ КОПИЮ СЕЙЧАС",
+  "homeLegacyStorageWithNoBackupTitle": "Срочно: требуется резервное копирование и переустановка",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Ваш кошелёк использует устаревшую библиотеку хранения и не имеет резервной копии. Вам необходимо немедленно создать резервную копию вашей seed-фразы, а затем удалить и переустановить приложение.",
+  "homeLegacyStorageWithNoBackupDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Обнаружено устаревшее хранилище",
+  "homeLegacyStorageTitle": "Требуется действие: Переустановите приложение",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Нажмите, чтобы создать резервную копию кошелька сейчас и переустановить приложение.",
+  "homeLegacyStorageDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

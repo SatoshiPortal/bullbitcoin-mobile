@@ -67,12 +67,27 @@ class _LegacyStorageWarningBlocker extends StatelessWidget {
                     color: context.appColors.onSurface,
                   ),
                   const Gap(16),
-                  BBText(
-                    hasNoBackup
-                        ? context.loc.homeLegacyStorageWithNoBackupDescription
-                        : context.loc.homeLegacyStorageDescription,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.onSurface,
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        for (final (i, line) in (hasNoBackup
+                                ? context
+                                    .loc
+                                    .homeLegacyStorageWithNoBackupDescription
+                                : context.loc.homeLegacyStorageDescription)
+                            .split('\n')
+                            .indexed)
+                          TextSpan(
+                            text: i == 0 ? line : '\n$line',
+                            style: context.font.bodyMedium?.copyWith(
+                              color: context.appColors.onSurface,
+                              fontWeight: line.startsWith('1.')
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                   const Gap(24),
                   BBButton.big(

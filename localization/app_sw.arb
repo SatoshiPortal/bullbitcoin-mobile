@@ -74,19 +74,19 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "POCHI LAZIMA ISALIMIWE SASA",
+  "homeLegacyStorageWithNoBackupTitle": "Haraka: Nakala Rudufu na Usakinishaji Upya Unahitajika",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Pochi yako iko kwenye maktaba ya uhifadhi iliyopitwa na wakati na haina nakala ya akiba. Lazima uhifadhi msemo wako wa mbegu mara moja, kisha ufute na usakinishe upya programu.",
+  "homeLegacyStorageWithNoBackupDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Uhifadhi uliochakaa umegunduliwa",
+  "homeLegacyStorageTitle": "Hatua Inahitajika: Sakinisha Upya Programu",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Gonga ili kuhifadhi pochi yako sasa na kusakinisha upya programu.",
+  "homeLegacyStorageDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },

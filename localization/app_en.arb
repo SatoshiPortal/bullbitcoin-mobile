@@ -12802,23 +12802,23 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "WALLET MUST BE BACKED UP NOW",
+  "homeLegacyStorageWithNoBackupTitle": "Urgent: Backup & Reinstall Required",
   "@homeLegacyStorageWithNoBackupTitle": {
     "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageWithNoBackupDescription": "Your wallet is on a deprecated storage library and has no backup. You must back up your seed phrase immediately, then delete and reinstall the app.",
+  "homeLegacyStorageWithNoBackupDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
   "@homeLegacyStorageWithNoBackupDescription": {
     "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
   },
-  "homeLegacyStorageTitle": "Deprecated storage detected",
+  "homeLegacyStorageTitle": "Action Required: Reinstall App",
   "@homeLegacyStorageTitle": {
     "description": "Warning card title when the wallet is on deprecated storage but has a backup"
   },
-  "homeLegacyStorageDescription": "Tap to backup your wallet now and reinstall the app.",
+  "homeLegacyStorageDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
   "@homeLegacyStorageDescription": {
     "description": "Warning card description when the wallet is on deprecated storage but has a backup"
   },
-  "legacyStorageWarningBackupNow": "Back Up Now",
+  "legacyStorageWarningBackupNow": "Backup Now",
   "@legacyStorageWarningBackupNow": {
     "description": "Primary action button on the legacy storage warning overlay"
   },
