@@ -140,6 +140,38 @@ class BdkWalletDatasource {
     return isMine;
   }
 
+  /// Returns a synchronous `isMine` check bound to a pre-loaded bdk wallet.
+  Future<bool Function(Uint8List)> createIsMineChecker({
+    required WalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createWallet(wallet);
+    return (Uint8List scriptBytes) =>
+        bdkWallet.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
+  }
+
+  /// Returns a synchronous PSBT signer bound to a pre-loaded private bdk
+  /// wallet.
+  Future<String Function(String)> createPsbtSigner({
+    required PrivateBdkWalletModel wallet,
+  }) async {
+    final bdkWallet = await BdkFacade.createPrivateWallet(wallet);
+    return (String psbtBase64) {
+      final psbt = bdk.Psbt(psbtBase64: psbtBase64);
+      bdkWallet.sign(
+        psbt: psbt,
+        signOptions: bdk.SignOptions(
+          trustWitnessUtxo: true,
+          assumeHeight: null,
+          allowAllSighashes: true,
+          tryFinalize: true,
+          signWithTapInternalKey: false,
+          allowGrinding: true,
+        ),
+      );
+      return psbt.serialize();
+    };
+  }
+
   Future<bool> isAddressMine(
     String address, {
     required WalletModel wallet,
