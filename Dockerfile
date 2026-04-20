@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 debian:trixie
+FROM --platform=linux/amd64 debian:trixie-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -19,24 +19,50 @@ ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-too
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    sudo \
     ca-certificates \
     curl \
     git \
     unzip \
     xz-utils \
     zip \
-    wget \
     make \
     openjdk-${JVM_TARGET}-jdk-headless \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Create user
-RUN adduser --disabled-password --gecos '' $USER
-RUN adduser $USER sudo
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# Reproducibility / release tooling
+# Installed as root so they land in /usr/local/bin before we drop privileges.
+
+ARG APKTOOL_VERSION=3.0.1
+ARG APKTOOL_SHA256=b947b945b4bc455609ba768d071b64d9e63834079898dbaae15b67bf03bcd362
+ARG BUNDLETOOL_VERSION=1.18.3
+ARG BUNDLETOOL_SHA256=a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+
+RUN curl -fsSL \
+        https://github.com/iBotPeaches/Apktool/releases/download/v${APKTOOL_VERSION}/apktool_${APKTOOL_VERSION}.jar \
+        -o /usr/local/bin/apktool.jar \
+    && echo "${APKTOOL_SHA256}  /usr/local/bin/apktool.jar" | sha256sum -c - \
+    && printf '#!/bin/sh\nexec java -jar /usr/local/bin/apktool.jar "$@"\n' \
+        > /usr/local/bin/apktool \
+    && chmod +x /usr/local/bin/apktool
+
+RUN curl -fsSL \
+        https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar \
+        -o /usr/local/bin/bundletool.jar \
+    && echo "${BUNDLETOOL_SHA256}  /usr/local/bin/bundletool.jar" | sha256sum -c - \
+    && printf '#!/bin/sh\nexec java -jar /usr/local/bin/bundletool.jar "$@"\n' \
+        > /usr/local/bin/bundletool \
+    && chmod +x /usr/local/bin/bundletool
+
+# Create user and pre-chown toolchain dirs, then drop privileges for good.
+# Pin UID/GID to 1000 so the makefile's --userns=keep-id:uid=1000,gid=1000
+# maps the host user onto `bull` regardless of what UID the host user has.
+RUN adduser --uid 1000 --disabled-password --gecos '' $USER \
+    && mkdir -p $ANDROID_HOME \
+    && chown -R $USER $ANDROID_HOME
+
 USER $USER
+WORKDIR /home/$USER
 
 # Install Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
@@ -62,15 +88,12 @@ RUN fvm install ${FLUTTER_VERSION}
 RUN fvm global ${FLUTTER_VERSION}
 ENV PATH="/home/$USER/fvm/default/bin:${PATH}"
 
-# Download Android cmdline-tools
-RUN sudo wget -q https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -O /tmp/android-cmdline-tools.zip
-
 # Set up Android SDK
-RUN sudo mkdir -p ${ANDROID_HOME}/cmdline-tools
-RUN sudo unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
-RUN sudo mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
-RUN sudo rm /tmp/android-cmdline-tools.zip
-RUN sudo chown -R $USER ${ANDROID_HOME}
+RUN curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_CMDLINE_TOOLS_VERSION}_latest.zip -o /tmp/android-cmdline-tools.zip
+RUN mkdir -p ${ANDROID_HOME}/cmdline-tools
+RUN unzip -q /tmp/android-cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
+RUN mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
+RUN rm /tmp/android-cmdline-tools.zip
 
 # Install Android SDK components
 RUN yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses
@@ -78,3 +101,9 @@ RUN sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_API_LEVEL}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
 RUN sdkmanager --sdk_root=${ANDROID_HOME} "ndk;${ANDROID_NDK}"
+
+# Pre-download Flutter artifacts (Dart SDK, sky_engine, flutter_patched_sdk,
+# Gradle wrapper, Material fonts, Android build-tools glue) so the first
+# `flutter pub get` / `flutter build` inside the container doesn't hit the network.
+RUN fvm flutter precache --android --universal \
+    --no-ios --no-linux --no-macos --no-windows --no-fuchsia --no-web

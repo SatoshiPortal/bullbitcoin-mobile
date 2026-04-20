@@ -5,3 +5,7 @@ android/.gradle/
 ios/
 .idea/
 *.iml
+
+# Secrets — must never enter image layers. debug.keystore is kept (public test key).
+android/key.properties
+**/*.jks

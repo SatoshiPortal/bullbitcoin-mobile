@@ -4,6 +4,10 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+dependencyLocking {
+    lockAllConfigurations()
+}
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
