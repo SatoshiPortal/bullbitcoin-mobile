@@ -87,42 +87,32 @@ class PdkPayjoinDatasource {
         throw Exception('All OHTTP relays failed');
       }
 
-      final newReceiver = NewReceiver.create(
-        address: address,
-        network: isTestnet ? Network.testnet : Network.bitcoin,
-        directory: _payjoinDirectoryUrl,
-        ohttpKeys: ohttpKeys,
-        expireAfter: BigInt.from(expireAfterSec),
-      );
+      var receiverBuilder =
+          pj.ReceiverBuilder(
+                address: address,
+                directory: _payjoinDirectoryUrl,
+                ohttpKeys: ohttpKeys,
+              )
+              .withExpiration(expiration: expireAfterSec)
+              .withMaxFeeRate(
+                maxEffectiveFeeRateSatPerVb: maxFeeRateSatPerVb.toInt(),
+              );
 
-      final imp = InMemoryReceiverPersister();
-      final noOpPersister = DartReceiverPersister(
-        save: (receiver) async {
-          logger.log.info('SAVING RECEIVER');
-          final token = await imp.save(receiver: receiver);
-          return token;
-        },
-        load: (token) async {
-          final receiver = await imp.load(token: token);
-          return receiver;
-        },
-      );
-      final token = await newReceiver.persist(persister: noOpPersister);
-
-      final receiver = await Receiver.load(
-        token: token,
-        persister: noOpPersister,
-      );
+      final persister = InMemoryJsonReceiverSessionPersister();
+      final initialized = receiverBuilder.build().save(persister: persister);
+      final pjUri = initialized.pjUri().asString();
+      // Derive the receiver ID from pjUri
+      final id = sha256.convert(utf8.encode(pjUri)).toString().substring(0, 16);
 
       // Create and store the model to keep track of the payjoin session
       final model =
           PayjoinModel.receiver(
-                id: receiver.id(),
+                id: id,
                 address: address,
                 isTestnet: isTestnet,
-                receiver: receiver.toJson(),
+                receiver: persister.toJson(),
                 walletId: walletId,
-                pjUri: (await receiver.pjUri()).asString(),
+                pjUri: pjUri,
                 maxFeeRateSatPerVb: maxFeeRateSatPerVb,
                 createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
                 expireAfterSec: expireAfterSec,
