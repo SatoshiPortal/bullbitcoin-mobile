@@ -214,105 +214,328 @@ class PdkPayjoinDatasource {
 
   Future<PayjoinReceiverModel> proposePayjoin({
     required PayjoinReceiverModel receiverModel,
-    required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
-    required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
+    required bool Function(Uint8List) hasOwnedInputs,
+    required bool Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
-    required FutureOr<String> Function(String) processPsbt,
+    required String Function(String) processPsbt,
   }) async {
-    final receiver = Receiver.fromJson(json: receiverModel.receiver);
-    final request = await getRequest(receiver: receiver, dio: _dio);
-
-    if (request == null) {
-      throw Exception('No request found');
-    }
-
-    final interactiveReceiver = await request.assumeInteractiveReceiver();
-    final inputsNotOwned = await interactiveReceiver.checkInputsNotOwned(
-      isOwned: hasOwnedInputs,
+    final persister = InMemoryJsonReceiverSessionPersister.fromJson(
+      receiverModel.receiver,
     );
-    final inputsNotSeen = await inputsNotOwned.checkNoInputsSeenBefore(
-      isKnown: (_) =>
-          false, // Assume the wallet has not seen the inputs since it is an interactive wallet
-    );
-    final receiverOutputs = await inputsNotSeen.identifyReceiverOutputs(
-      isReceiverOutput: hasReceiverOutput,
-    );
-    final committedOutputs = await receiverOutputs.commitOutputs();
+    final state = pj.replayReceiverEventLog(persister: persister).state();
 
-    final candidateInputs = await Future.wait(
-      inputPairs.map(
-        (input) async => await InputPair.newInstance(
-          txin: TxIn(
-            previousOutput: OutPoint(txid: input.txId, vout: input.vout),
-            scriptSig: await Script.newInstance(
-              rawOutputScript: input.scriptSigRawOutputScript,
-            ),
-            sequence: input.sequence,
-            witness: input.witness,
-          ),
-          psbtin: PsbtInput(
-            witnessUtxo: TxOut(
-              value: input.value!,
-              scriptPubkey: input.scriptPubkey,
-            ),
-            redeemScript: input.redeemScriptRawOutputScript.isEmpty
-                ? null
-                : await Script.newInstance(
-                    rawOutputScript: input.redeemScriptRawOutputScript,
-                  ),
-            witnessScript: input.witnessScriptRawOutputScript.isEmpty
-                ? null
-                : await Script.newInstance(
-                    rawOutputScript: input.witnessScriptRawOutputScript,
-                  ),
-          ),
-        ),
-      ),
-    );
-
-    // Try to select a privacy preserving input pair, else just stick with the
-    //  first possible input pair.
-    InputPair inputPair = candidateInputs.first;
-    try {
-      inputPair = await committedOutputs.tryPreservingPrivacy(
-        candidateInputs: candidateInputs,
-      );
-    } catch (e) {
-      logger.log.severe(
-        message: 'Failed to preserve privacy: Using first input pair.',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-
-    final inputsContributed = await committedOutputs.contributeInputs(
-      replacementInputs: [inputPair],
-    );
-    final inputsCommitted = await inputsContributed.commitInputs();
-    final proposal = await inputsCommitted.finalizeProposal(
+    final result = await processReceiveSession(
+      state: state,
+      persister: persister,
+      hasOwnedInputs: hasOwnedInputs,
+      hasReceiverOutput: hasReceiverOutput,
+      inputPairs: inputPairs,
+      receiverModel: receiverModel,
       processPsbt: processPsbt,
-      maxFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb,
     );
-
-    // Now that the request is processed and the proposal is ready, send it to
-    //  the sender through the payjoin directory
-    await _sendPayjoinProposal(proposal);
 
     // Update the model with the proposal psbt so it can be known a proposal has
     //  been sent
-    final proposalPsbt = await proposal.psbt();
+    final proposalPsbt = result.psbt;
 
     final updatedModel = receiverModel.copyWith(
-      receiver: receiver.toJson(),
+      receiver: persister.toJson(),
       proposalPsbt: proposalPsbt,
       txId: (await BitcoinTx.fromPsbt(proposalPsbt)).txid,
     );
 
     logger.log.info(
-      'Payjoin request processed and proposal sent for ${receiver.id()}: $proposalPsbt',
+      'Payjoin request processed and proposal sent for ${receiverModel.id}: $proposalPsbt',
     );
 
     return updatedModel;
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> processReceiveSession({
+    required pj.ReceiveSession state,
+    required InMemoryJsonReceiverSessionPersister persister,
+    required bool Function(Uint8List) hasOwnedInputs,
+    required bool Function(Uint8List) hasReceiverOutput,
+    required List<PayjoinInputPairModel> inputPairs,
+    required PayjoinReceiverModel receiverModel,
+    required String Function(String) processPsbt,
+  }) async {
+    if (state is pj.InitializedReceiveSession) {
+      throw StateError('Original PSBT is retrieved in the receiver isolate');
+    } else if (state is pj.UncheckedOriginalPayloadReceiveSession) {
+      return _checkProposal(
+        state.inner,
+        persister,
+        hasOwnedInputs,
+        hasReceiverOutput,
+        inputPairs,
+        receiverModel,
+        processPsbt,
+      );
+    } else if (state is pj.MaybeInputsOwnedReceiveSession) {
+      return _checkInputsNotOwned(
+        state.inner,
+        persister,
+        hasOwnedInputs,
+        hasReceiverOutput,
+        inputPairs,
+        receiverModel,
+        processPsbt,
+      );
+    } else if (state is pj.MaybeInputsSeenReceiveSession) {
+      return _checkNoInputsSeenBefore(
+        state.inner,
+        persister,
+        hasReceiverOutput,
+        inputPairs,
+        receiverModel,
+        processPsbt,
+      );
+    } else if (state is pj.OutputsUnknownReceiveSession) {
+      return _identifyReceiverOutputs(
+        state.inner,
+        persister,
+        hasReceiverOutput,
+        inputPairs,
+        receiverModel,
+        processPsbt,
+      );
+    } else if (state is pj.WantsOutputsReceiveSession) {
+      return _commitOutputs(
+        state.inner,
+        persister,
+        inputPairs,
+        receiverModel,
+        processPsbt,
+      );
+    } else if (state is pj.WantsInputsReceiveSession) {
+      return _contributeInputs(
+        state.inner,
+        persister,
+        inputPairs,
+        receiverModel,
+        processPsbt,
+      );
+    } else if (state is pj.WantsFeeRangeReceiveSession) {
+      return _applyFeeRange(state.inner, persister, receiverModel, processPsbt);
+    } else if (state is pj.ProvisionalProposalReceiveSession) {
+      return _finalizeProposal(state.inner, persister, processPsbt);
+    } else if (state is pj.PayjoinProposalReceiveSession) {
+      return _sendPayjoinProposal(state.inner, persister);
+    } else if (state is pj.HasReplyableExceptionReceiveSession) {
+      throw StateError('Receive session has a replyable exception');
+    } else if (state is pj.MonitorReceiveSession) {
+      throw StateError('Receive session is monitoring; proposal already sent');
+    } else if (state is pj.ClosedReceiveSession) {
+      throw StateError('Receive session is closed');
+    } else {
+      throw StateError('Unexpected receive session state: $state');
+    }
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _checkProposal(
+    pj.UncheckedOriginalPayload inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    bool Function(Uint8List) hasOwnedInputs,
+    bool Function(Uint8List) hasReceiverOutput,
+    List<PayjoinInputPairModel> inputPairs,
+    PayjoinReceiverModel receiverModel,
+    String Function(String) processPsbt,
+  ) async {
+    final next = inner.assumeInteractiveReceiver().save(persister: persister);
+    return _checkInputsNotOwned(
+      next,
+      persister,
+      hasOwnedInputs,
+      hasReceiverOutput,
+      inputPairs,
+      receiverModel,
+      processPsbt,
+    );
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _checkInputsNotOwned(
+    pj.MaybeInputsOwned inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    bool Function(Uint8List) hasOwnedInputs,
+    bool Function(Uint8List) hasReceiverOutput,
+    List<PayjoinInputPairModel> inputPairs,
+    PayjoinReceiverModel receiverModel,
+    String Function(String) processPsbt,
+  ) async {
+    final next = inner
+        .checkInputsNotOwned(isOwned: _IsScriptOwned(hasOwnedInputs))
+        .save(persister: persister);
+    return _checkNoInputsSeenBefore(
+      next,
+      persister,
+      hasReceiverOutput,
+      inputPairs,
+      receiverModel,
+      processPsbt,
+    );
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _checkNoInputsSeenBefore(
+    pj.MaybeInputsSeen inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    bool Function(Uint8List) hasReceiverOutput,
+    List<PayjoinInputPairModel> inputPairs,
+    PayjoinReceiverModel receiverModel,
+    String Function(String) processPsbt,
+  ) async {
+    final next = inner
+        .checkNoInputsSeenBefore(isKnown: _AssumeUnseen())
+        .save(persister: persister);
+    return _identifyReceiverOutputs(
+      next,
+      persister,
+      hasReceiverOutput,
+      inputPairs,
+      receiverModel,
+      processPsbt,
+    );
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _identifyReceiverOutputs(
+    pj.OutputsUnknown inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    bool Function(Uint8List) hasReceiverOutput,
+    List<PayjoinInputPairModel> inputPairs,
+    PayjoinReceiverModel receiverModel,
+    String Function(String) processPsbt,
+  ) async {
+    final next = inner
+        .identifyReceiverOutputs(
+          isReceiverOutput: _IsScriptOwned(hasReceiverOutput),
+        )
+        .save(persister: persister);
+    return _commitOutputs(
+      next,
+      persister,
+      inputPairs,
+      receiverModel,
+      processPsbt,
+    );
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _commitOutputs(
+    pj.WantsOutputs inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    List<PayjoinInputPairModel> inputPairs,
+    PayjoinReceiverModel receiverModel,
+    String Function(String) processPsbt,
+  ) async {
+    final next = inner.commitOutputs().save(persister: persister);
+    return _contributeInputs(
+      next,
+      persister,
+      inputPairs,
+      receiverModel,
+      processPsbt,
+    );
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _contributeInputs(
+    pj.WantsInputs inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    List<PayjoinInputPairModel> inputPairs,
+    PayjoinReceiverModel receiverModel,
+    String Function(String) processPsbt,
+  ) async {
+    final candidates = inputPairs.map(_buildInputPair).toList();
+    pj.InputPair? chosen;
+    try {
+      chosen = inner.tryPreservingPrivacy(candidateInputs: candidates);
+    } catch (e) {
+      throw StateError('No inputs available to contribute to payjoin');
+    }
+    final next = inner
+        .contributeInputs(replacementInputs: [chosen])
+        .commitInputs()
+        .save(persister: persister);
+    return _applyFeeRange(next, persister, receiverModel, processPsbt);
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _applyFeeRange(
+    pj.WantsFeeRange inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    PayjoinReceiverModel receiverModel,
+    String Function(String) processPsbt,
+  ) async {
+    final next = inner
+        .applyFeeRange(
+          minFeeRateSatPerVb: null,
+          maxEffectiveFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb.toInt(),
+        )
+        .save(persister: persister);
+    return _finalizeProposal(next, persister, processPsbt);
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _finalizeProposal(
+    pj.ProvisionalProposal inner,
+    InMemoryJsonReceiverSessionPersister persister,
+    String Function(String) processPsbt,
+  ) async {
+    final next = inner
+        .finalizeProposal(processPsbt: _ProcessPsbt(processPsbt))
+        .save(persister: persister);
+    return _sendPayjoinProposal(next, persister);
+  }
+
+  Future<({pj.Monitor monitor, String psbt})> _sendPayjoinProposal(
+    pj.PayjoinProposal proposal,
+    InMemoryJsonReceiverSessionPersister persister,
+  ) async {
+    Object? lastError;
+    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        final req = proposal.createPostRequest(ohttpRelay: relay);
+        final body = await _postBytes(
+          _dio,
+          req.request.url,
+          req.request.body,
+          req.request.contentType,
+        );
+        // Capture the proposal PSBT here, as it's not available on the monitor typestate.
+        final psbt = proposal.psbt();
+        final monitor = proposal
+            .processResponse(body: body, ohttpContext: req.clientResponse)
+            .save(persister: persister);
+        return (monitor: monitor, psbt: psbt);
+      } catch (e) {
+        log('proposal post via $relay failed: $e');
+        lastError = e;
+        continue;
+      }
+    }
+    throw PayjoinNotFoundException(
+      'Failed to post payjoin proposal: $lastError',
+    );
+  }
+
+  pj.InputPair _buildInputPair(PayjoinInputPairModel input) {
+    return pj.InputPair(
+      txin: pj.PlainTxIn(
+        previousOutput: pj.PlainOutPoint(txid: input.txId, vout: input.vout),
+        scriptSig: Uint8List.fromList(input.scriptSigRawOutputScript),
+        sequence: input.sequence,
+        witness: input.witness,
+      ),
+      psbtin: pj.PlainPsbtInput(
+        witnessUtxo: pj.PlainTxOut(
+          valueSat: (input.value ?? BigInt.zero).toInt(),
+          scriptPubkey: input.scriptPubkey,
+        ),
+        redeemScript: input.redeemScriptRawOutputScript.isEmpty
+            ? null
+            : Uint8List.fromList(input.redeemScriptRawOutputScript),
+        witnessScript: input.witnessScriptRawOutputScript.isEmpty
+            ? null
+            : Uint8List.fromList(input.witnessScriptRawOutputScript),
+      ),
+      expectedWeight: null,
+    );
   }
 
   Future<void> startListeningForRequest(PayjoinReceiverModel payjoin) async {
@@ -617,36 +840,6 @@ class PdkPayjoinDatasource {
       }
       return null;
     }
-  }
-
-  Future<void> _sendPayjoinProposal(PayjoinProposal proposal) async {
-    (Request, ClientResponse)? request;
-    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
-      try {
-        request = await proposal.extractReq(ohttpRelay: ohttpRelayUrl);
-        break;
-      } catch (e) {
-        log('proposal extractReq exception: $e with relay $ohttpRelayUrl');
-        continue;
-      }
-    }
-    if (request == null) {
-      throw PayjoinNotFoundException('No payjoin proposal found');
-    }
-
-    final (req, ohttpCtx) = request;
-    final res = await _dio.post(
-      req.url.asString(),
-      data: req.body,
-      options: Options(
-        headers: {'Content-Type': req.contentType},
-        responseType: ResponseType.bytes,
-      ),
-    );
-    await proposal.processRes(
-      res: res.data as List<int>,
-      ohttpContext: ohttpCtx,
-    );
   }
 
   static Future<String?> getProposalPsbt({
