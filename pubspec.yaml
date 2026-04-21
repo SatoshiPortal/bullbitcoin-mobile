@@ -11,7 +11,7 @@ dependencies:
   bdk_dart:
     git:
       url: https://github.com/ethicnology/bdk-dart
-      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
+      ref: 76695446cd57f94802327f6ab50392f651c49b63
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -34,7 +34,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-dart
-      ref: 913812dba120703ce9738fa330c5203e1d11f2fa
+      ref: 028a85f73b5a68c0c86ee4ddeacdab888b5ef1ec
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
@@ -45,7 +45,7 @@ dependencies:
   bitbox_flutter:
     git:
       url: https://github.com/SatoshiPortal/bitbox-dart
-      ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
+      ref: f65b2288c025bc6643c8cd5bfa00c0ec6aec808c
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1
@@ -58,11 +58,11 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: 80d6f1a4b307717bc8eb1ad110d85f0a2ee5e5a4
+      ref: a33984312dcc6e181641469868ede9fb435b800a
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
-      ref: 2e10deb2fbaa76e888bda7be6a2128ce2c05173d
+      ref: 5bd93986abb86cb13c108184ee44df7fe62d3f60
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -104,13 +104,13 @@ dependencies:
   dart_bbqr:
     git:
       url: https://github.com/SatoshiPortal/bbqr-dart
-      ref: 170873e1d59a0b037f2dfac4d26bf900cd539532
+      ref: c1bb2f43a560b53666838bbcd3f27e9c23cce997
   sliver_tools: ^0.2.12
   logging_colorful: ^1.3.2
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/dart-satoshifier
-      ref: c1dd6d76639eaa79a8e6c40ff1c05c78e9c4bae5
+      ref: 99c3b045c8e80c9429cf1c35bb662fff8a598841
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
@@ -127,7 +127,7 @@ dependencies:
   ark_wallet:
     git:
       url: https://github.com/SatoshiPortal/ark-wallet-dart
-      ref: 847342ecd4a2d70bea5a0755e4152d1cb7e68493
+      ref: b48601c2df25032888a300f67d6a5dc7b2520c44
   socks5_proxy: ^2.1.1
   tor:
     git:
