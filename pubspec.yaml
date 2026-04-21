@@ -34,7 +34,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/SatoshiPortal/payjoin-dart
-      ref: 028a85f73b5a68c0c86ee4ddeacdab888b5ef1ec
+      ref: e939cf5128b61d02aefca725f6de80cbb8818e09
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
@@ -45,7 +45,7 @@ dependencies:
   bitbox_flutter:
     git:
       url: https://github.com/SatoshiPortal/bitbox-dart
-      ref: f65b2288c025bc6643c8cd5bfa00c0ec6aec808c
+      ref: 23f91b6e708e853358a0b03774d0f8033aa82502
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1
@@ -58,11 +58,11 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: a33984312dcc6e181641469868ede9fb435b800a
+      ref: 42c03082d5d97764fbfedc43a72125963f54dba6
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
-      ref: 5bd93986abb86cb13c108184ee44df7fe62d3f60
+      ref: 40287f063fc87293625b15f653290d4be2f5acc5
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -104,13 +104,13 @@ dependencies:
   dart_bbqr:
     git:
       url: https://github.com/SatoshiPortal/bbqr-dart
-      ref: c1bb2f43a560b53666838bbcd3f27e9c23cce997
+      ref: c7831bfa2059c01650940b4f2d99eef9931119eb
   sliver_tools: ^0.2.12
   logging_colorful: ^1.3.2
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/dart-satoshifier
-      ref: 99c3b045c8e80c9429cf1c35bb662fff8a598841
+      ref: df6e385d30eb266242099883fed06c462a159b3e
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
@@ -127,7 +127,7 @@ dependencies:
   ark_wallet:
     git:
       url: https://github.com/SatoshiPortal/ark-wallet-dart
-      ref: b48601c2df25032888a300f67d6a5dc7b2520c44
+      ref: f3264ce66c8fec8438a0f9670da3eccfde757b9e
   socks5_proxy: ^2.1.1
   tor:
     git:

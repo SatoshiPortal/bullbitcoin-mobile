@@ -53,8 +53,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: b48601c2df25032888a300f67d6a5dc7b2520c44
-      resolved-ref: b48601c2df25032888a300f67d6a5dc7b2520c44
+      ref: f3264ce66c8fec8438a0f9670da3eccfde757b9e
+      resolved-ref: f3264ce66c8fec8438a0f9670da3eccfde757b9e
       url: "https://github.com/SatoshiPortal/ark-wallet-dart"
     source: git
     version: "0.0.1"
@@ -151,8 +151,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: f65b2288c025bc6643c8cd5bfa00c0ec6aec808c
-      resolved-ref: f65b2288c025bc6643c8cd5bfa00c0ec6aec808c
+      ref: "23f91b6e708e853358a0b03774d0f8033aa82502"
+      resolved-ref: "23f91b6e708e853358a0b03774d0f8033aa82502"
       url: "https://github.com/SatoshiPortal/bitbox-dart"
     source: git
     version: "0.1.0"
@@ -209,8 +209,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: a33984312dcc6e181641469868ede9fb435b800a
-      resolved-ref: a33984312dcc6e181641469868ede9fb435b800a
+      ref: "42c03082d5d97764fbfedc43a72125963f54dba6"
+      resolved-ref: "42c03082d5d97764fbfedc43a72125963f54dba6"
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
     version: "0.2.1"
@@ -482,8 +482,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: c1bb2f43a560b53666838bbcd3f27e9c23cce997
-      resolved-ref: c1bb2f43a560b53666838bbcd3f27e9c23cce997
+      ref: c7831bfa2059c01650940b4f2d99eef9931119eb
+      resolved-ref: c7831bfa2059c01650940b4f2d99eef9931119eb
       url: "https://github.com/SatoshiPortal/bbqr-dart"
     source: git
     version: "0.0.1"
@@ -1282,8 +1282,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "5bd93986abb86cb13c108184ee44df7fe62d3f60"
-      resolved-ref: "5bd93986abb86cb13c108184ee44df7fe62d3f60"
+      ref: "40287f063fc87293625b15f653290d4be2f5acc5"
+      resolved-ref: "40287f063fc87293625b15f653290d4be2f5acc5"
       url: "https://github.com/SatoshiPortal/lwk-dart"
     source: git
     version: "0.2.2"
@@ -1483,8 +1483,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "028a85f73b5a68c0c86ee4ddeacdab888b5ef1ec"
-      resolved-ref: "028a85f73b5a68c0c86ee4ddeacdab888b5ef1ec"
+      ref: e939cf5128b61d02aefca725f6de80cbb8818e09
+      resolved-ref: e939cf5128b61d02aefca725f6de80cbb8818e09
       url: "https://github.com/SatoshiPortal/payjoin-dart"
     source: git
     version: "0.23.0"
@@ -1669,8 +1669,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "99c3b045c8e80c9429cf1c35bb662fff8a598841"
-      resolved-ref: "99c3b045c8e80c9429cf1c35bb662fff8a598841"
+      ref: df6e385d30eb266242099883fed06c462a159b3e
+      resolved-ref: df6e385d30eb266242099883fed06c462a159b3e
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"
