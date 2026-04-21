@@ -13,7 +13,8 @@ import 'package:bb_mobile/core/utils/logger.dart' as logger;
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:payjoin/payjoin.dart';
-import 'package:payjoin_flutter/bitcoin_ffi.dart';
+import 'package:payjoin/http.dart' show fetchOhttpKeys;
+import 'packapayjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
@@ -53,25 +54,21 @@ class PdkPayjoinDatasource {
 
   Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
 
-  Future<(OhttpKeys?, Url?)> fetchOhttpKeyAndRelay({
+  Future<(OhttpKeys?, String?)> fetchOhttpKeyAndRelay({
     required String payjoinDirectory,
   }) async {
-    Url? ohttpRelay;
-    OhttpKeys? ohttpKeys;
     for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
       try {
-        final relay = await Url.fromStr(ohttpRelayUrl);
-        ohttpKeys = await fetchOhttpKeys(
-          ohttpRelay: ohttpRelayUrl,
-          payjoinDirectory: payjoinDirectory,
+        final ohttpKeys = await fetchOhttpKeys(
+          ohttpRelayUrl: ohttpRelayUrl,
+          directoryUrl: payjoinDirectory,
         );
-        ohttpRelay = relay;
-        break;
+        return (ohttpKeys, ohttpRelayUrl);
       } catch (e) {
         continue;
       }
     }
-    return (ohttpKeys, ohttpRelay);
+    return (null, null);
   }
 
   Future<PayjoinReceiverModel> createReceiver({
