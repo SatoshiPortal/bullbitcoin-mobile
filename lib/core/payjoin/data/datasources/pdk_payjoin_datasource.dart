@@ -133,43 +133,37 @@ class PdkPayjoinDatasource {
     int? expireAfterSec,
   }) async {
     final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
-    final uri = await Uri.fromStr(bip21);
 
-    PjUri pjUri;
+    pj.PjUri pjUri;
+    final pj.Uri parsedUri;
     try {
-      pjUri = uri.checkPjSupported();
+      parsedUri = pj.Uri.parse(uri: bip21);
+      pjUri = parsedUri.checkPjSupported();
     } catch (e) {
       throw NoValidPayjoinBip21Exception(e.toString());
     }
 
-    final minFeeRateSatPerKwu = BigInt.from(networkFeesSatPerVb * 250);
-    final senderBuilder = await SenderBuilder.fromPsbtAndUri(
-      psbtBase64: originalPsbt,
-      pjUri: pjUri,
-    );
-    final newSender = await senderBuilder.buildRecommended(
-      minFeeRate: minFeeRateSatPerKwu,
-    );
-    final imp = InMemorySenderPersister();
-    final persister = DartSenderPersister(
-      save: (sender) async {
-        return await imp.save(sender: sender);
-      },
-      load: (token) async {
-        return await imp.load(token: token);
-      },
-    );
-    final token = await newSender.persist(persister: persister);
-    final sender = await Sender.load(token: token, persister: persister);
-    final senderJson = sender.toJson();
+    var sendBuilder = pj.SenderBuilder(psbt: originalPsbt, uri: pjUri);
+    final persister = InMemoryJsonSenderSessionPersister();
+    final minFeeRateSatPerKwu = (networkFeesSatPerVb * 250).round();
+    pj.WithReplyKey? withReplyKey;
+    try {
+      withReplyKey = sendBuilder
+          .buildRecommended(minFeeRate: minFeeRateSatPerKwu)
+          .save(persister: persister);
+    } catch (e) {
+      throw SendCreationException(e.toString());
+    }
+
+    await postOriginalProposal(withReplyKey, persister);
 
     // Create and store the model with the data needed to keep track of the
-    //  payjoin session
+    // payjoin session
     final model =
         PayjoinModel.sender(
-              uri: uri.asString(),
+              uri: parsedUri.asString(),
               isTestnet: isTestnet,
-              sender: senderJson,
+              sender: persister.toJson(),
               walletId: walletId,
               originalPsbt: originalPsbt,
               originalTxId: (await BitcoinTx.fromPsbt(originalPsbt)).txid,
@@ -183,6 +177,39 @@ class PdkPayjoinDatasource {
     await startListeningForProposal(model);
 
     return model;
+  }
+
+  Future<void> postOriginalProposal(
+    pj.WithReplyKey withReplyKey,
+    InMemoryJsonSenderSessionPersister persister,
+  ) async {
+    Object? lastError;
+    var posted = false;
+    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        final reqCtx = withReplyKey.createV2PostRequest(ohttpRelay: relay);
+        final body = await _postBytes(
+          _dio,
+          reqCtx.request.url,
+          reqCtx.request.body,
+          reqCtx.request.contentType,
+        );
+        withReplyKey
+            .processResponse(response: body, postCtx: reqCtx.ohttpCtx)
+            .save(persister: persister);
+        posted = true;
+        break;
+      } catch (e) {
+        log('sender v2 post via $relay failed: $e');
+        lastError = e;
+        continue;
+      }
+    }
+    if (!posted) {
+      throw SendCreationException(
+        'Failed to post original PSBT to any OHTTP relay: $lastError',
+      );
+    }
   }
 
   Future<PayjoinReceiverModel> proposePayjoin({
@@ -620,56 +647,6 @@ class PdkPayjoinDatasource {
       res: res.data as List<int>,
       ohttpContext: ohttpCtx,
     );
-  }
-
-  static Future<V2GetContext> request({
-    required Sender sender,
-    required Dio dio,
-  }) async {
-    (Request, V2PostContext)? result;
-
-    for (final ohttpProxyUrl in PayjoinConstants.ohttpRelayUrls) {
-      try {
-        log(
-          '[Senders Isolate] Extracting V2 request from sender with relay: $ohttpProxyUrl',
-        );
-        result = await sender.extractV2(
-          ohttpProxyUrl: await Url.fromStr(ohttpProxyUrl),
-        );
-        break;
-      } catch (e) {
-        final msg = (e as dynamic).msg ?? e.toString();
-        log('[Senders Isolate] request error: $msg');
-        log('[Senders Isolate] Continuing to next OHTTP relay');
-        continue;
-      }
-    }
-
-    if (result == null) {
-      log('[Senders Isolate] All OHTTP relays failed');
-      throw Exception('All OHTTP relays failed');
-    }
-
-    final (req, context) = result;
-
-    log('[Senders Isolate] Sending V2 request to ${req.url.asString()}');
-    final res = await dio.post(
-      req.url.asString(),
-      data: req.body,
-      options: Options(
-        headers: {'Content-Type': req.contentType},
-        responseType: ResponseType.bytes,
-      ),
-    );
-    log('[Senders Isolate] Received response from ${req.url.asString()}');
-
-    final getCtx = await context.processResponse(
-      response: res.data as List<int>,
-    );
-
-    log('[Senders Isolate] Processed response for V2 request: $getCtx');
-
-    return getCtx;
   }
 
   static Future<String?> getProposalPsbt({
