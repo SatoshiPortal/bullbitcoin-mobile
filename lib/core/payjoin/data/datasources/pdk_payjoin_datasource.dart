@@ -14,11 +14,6 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:payjoin/http.dart' show fetchOhttpKeys;
 import 'package:payjoin/payjoin.dart' as pj;
-import 'package:payjoin_flutter/bitcoin_ffi.dart';
-import 'package:payjoin_flutter/common.dart';
-import 'package:payjoin_flutter/receive.dart';
-import 'package:payjoin_flutter/send.dart';
-import 'package:payjoin_flutter/uri.dart';
 
 class PdkPayjoinDatasource {
   final String _payjoinDirectoryUrl;
@@ -379,8 +374,6 @@ class PdkPayjoinDatasource {
 
   static Future<void> _receiversIsolateEntryPoint(SendPort sendPort) async {
     log('[Receivers Isolate] Started _receiversIsolateEntryPoint');
-    // Initialize core library in the isolate too for the native pdk library
-    await PConfig.initializeApp();
 
     final receivePort = ReceivePort();
     sendPort.send(receivePort.sendPort);
@@ -470,8 +463,6 @@ class PdkPayjoinDatasource {
 
   static Future<void> _sendersIsolateEntryPoint(SendPort sendPort) async {
     log('[Senders Isolate] Started _sendersIsolateEntryPoint');
-    // Initialize core library in the isolate too for the native pdk library
-    await PConfig.initializeApp();
 
     final receivePort = ReceivePort();
     sendPort.send(receivePort.sendPort);
