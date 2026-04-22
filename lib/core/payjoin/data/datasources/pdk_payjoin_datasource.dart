@@ -636,28 +636,34 @@ class PdkPayjoinDatasource {
       final receiverModel = PayjoinReceiverModel.fromJson(
         data as Map<String, dynamic>,
       );
-      final receiver = Receiver.fromJson(json: receiverModel.receiver);
 
       // Start checking for a payjoin request from the sender periodically
       Timer.periodic(const Duration(seconds: PayjoinConstants.directoryPollingInterval), (
         Timer timer,
       ) async {
-        log(
-          '[Receivers Isolate] Checking for request in receivers isolate for '
-          '${receiver.id()}',
-        );
+        log('[Receivers Isolate] Checking for request for ${receiverModel.id}');
         try {
-          final request = await getRequest(receiver: receiver, dio: dio);
-          if (request != null) {
-            requests.putIfAbsent(receiver.id(), () async {
-              log(
-                '[Receivers Isolate] Request found in receivers isolate for '
-                '${receiver.id()}',
-              );
+          final persister = InMemoryJsonReceiverSessionPersister.fromJson(
+            receiverModel.receiver,
+          );
+          final state = pj.replayReceiverEventLog(persister: persister).state();
+          if (state is! pj.InitializedReceiveSession) return;
+
+          final unchecked = await _getUncheckedOriginalPayload(
+            state.inner,
+            persister,
+            dio,
+          );
+          if (unchecked != null) {
+            requests.putIfAbsent(receiverModel.id, () async {
+              log('[Receivers Isolate] Request found for ${receiverModel.id}');
+              final maybeInputsOwned = unchecked
+                  .assumeInteractiveReceiver()
+                  .save(persister: persister);
               // The original tx bytes are needed in the main isolate for
-              //  further processing so extract them here and pass them through
-              //  the model
-              final originalTxBytes = await request
+              //  further processing so extract them here and pass them
+              //  through the model
+              final originalTxBytes = maybeInputsOwned
                   .extractTxToScheduleBroadcast();
               final originalTx = await BitcoinTx.fromBytes(originalTxBytes);
               final originalTxId = originalTx.txid;
@@ -667,12 +673,12 @@ class PdkPayjoinDatasource {
               );
               log(
                 '[Receivers Isolate] Request original Tx ID: $originalTxId and amount: $amountSat for '
-                '${receiver.id()}',
+                '${receiverModel.id}',
               );
               final updatedModel = receiverModel.copyWith(
-                receiver: receiver.toJson(),
+                receiver: persister.toJson(),
                 originalTxBytes: originalTxBytes,
-                originalTxId: originalTxId,
+                originalTxId: originalTx.txid,
                 amountSat: amountSat,
               );
 
@@ -681,23 +687,22 @@ class PdkPayjoinDatasource {
 
               // Cancel the timer since the request has been received
               log(
-                '[Receivers Isolate] cancelling timer in receivers isolate for ${receiver.id()}',
+                '[Receivers Isolate] cancelling timer in receivers isolate for ${receiverModel.id}',
               );
               timer.cancel();
               log(
-                '[Receivers Isolate] timer cancelled in receivers isolate for ${receiver.id()}',
+                '[Receivers Isolate] timer cancelled in receivers isolate for ${receiverModel.id}',
               );
             });
           } else {
             log(
               '[Receivers Isolate] No valid request found in receivers isolate for '
-              '${receiver.id()}',
+              '${receiverModel.id}',
             );
           }
         } catch (e) {
           log(
-            '[Receivers Isolate] periodic timer get request exception: $e for '
-            '${receiver.id()}',
+            '[Receivers Isolate] periodic timer get request exception: $e for ${receiverModel.id}',
           );
           if (e is PayjoinExpiredException) {
             // If the request returns an expiry error, mark the receiver as
@@ -780,66 +785,40 @@ class PdkPayjoinDatasource {
     });
   }
 
-  static Future<UncheckedProposal?> getRequest({
-    required Receiver receiver,
-    required Dio dio,
-  }) async {
-    // The use of ffiError here is a hack, we should change it once payjoin-flutter
-    //  exposes different exceptions for specific errors
-    Object? ffiError;
-    try {
-      receiver.id();
-      (Request, ClientResponse)? request;
-      for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
-        try {
-          request = await receiver.extractReq(ohttpRelay: ohttpRelay);
-          ffiError = null;
-          log('[${receiver.id()}] receiver extractReq success');
-          break;
-        } catch (e) {
-          log('[${receiver.id()}] receiver extractReq exception: $e');
-          ffiError = e;
-          continue;
-        }
-      }
-
-      if (request == null) {
-        if (ffiError != null) {
-          throw ffiError;
-        }
-        throw PayjoinNotFoundException(
-          '[${receiver.id()}] No payjoin request found',
+  static Future<pj.UncheckedOriginalPayload?> _getUncheckedOriginalPayload(
+    pj.Initialized initialized,
+    InMemoryJsonReceiverSessionPersister persister,
+    Dio dio,
+  ) async {
+    Object? lastError;
+    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        final poll = initialized.createPollRequest(ohttpRelay: relay);
+        final body = await _postBytes(
+          dio,
+          poll.request.url,
+          poll.request.body,
+          poll.request.contentType,
         );
+        final outcome = initialized
+            .processResponse(body: body, ctx: poll.clientResponse)
+            .save(persister: persister);
+        if (outcome is pj.StasisInitializedTransitionOutcome) return null;
+        return (outcome as pj.ProgressInitializedTransitionOutcome).inner;
+      } on pj.ReceiverException catch (e) {
+        if (_isExpiredString(e)) {
+          throw PayjoinExpiredException('Payjoin receiver expired: $e');
+        }
+        log('receiver createPollRequest via $relay failed: $e');
+        lastError = e;
+        continue;
+      } catch (e) {
+        log('receiver poll via $relay failed: $e');
+        lastError = e;
+        continue;
       }
-
-      log('[${receiver.id()}] request != null');
-      final (req, context) = request;
-      final ohttpResponse = await dio.post(
-        req.url.asString(),
-        data: req.body,
-        options: Options(
-          headers: {'Content-Type': req.contentType},
-          responseType: ResponseType.bytes,
-        ),
-      );
-      log('[${receiver.id()}] processing request...');
-      final proposal = await receiver.processRes(
-        body: ohttpResponse.data as List<int>,
-        ctx: context,
-      );
-      log('[${receiver.id()}] request processed');
-      return proposal;
-    } catch (e) {
-      log('[${receiver.id()}] getRequest exception: $e');
-      if (e == ffiError) {
-        // TODO: Check for the correct error.
-        //  We just assume the error is an expired error for now.
-        throw PayjoinExpiredException(
-          'Payjoin receiver $receiver.id() expired',
-        );
-      }
-      return null;
     }
+    throw PayjoinNotFoundException('Failed to poll receiver: $lastError');
   }
 
   static Future<String?> getProposalPsbt({
@@ -900,6 +879,10 @@ class PdkPayjoinDatasource {
       return null;
     }
   }
+  // "Expired" variants aren't exposed publicly as a distinct subtype.
+  // Tighten to a typed check if the payjoin bindings start exposing variants.
+  static bool _isExpiredString(Object error) =>
+      error.toString().toLowerCase().contains('expired');
 
   static Future<Uint8List> _postBytes(
     Dio dio,
