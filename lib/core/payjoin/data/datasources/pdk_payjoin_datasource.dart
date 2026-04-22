@@ -731,20 +731,13 @@ class PdkPayjoinDatasource {
     sendPort.send(receivePort.sendPort);
 
     final dio = Dio();
-    // Listen for and register new receivers sent from the main isolate
+    // Listen for and register new senders sent from the main isolate
     receivePort.listen((data) async {
       try {
         log('[Senders Isolate] Received data in senders isolate: $data');
         final senderModel = PayjoinSenderModel.fromJson(
           data as Map<String, dynamic>,
         );
-        final sender = Sender.fromJson(json: senderModel.sender);
-        log('[Senders Isolate] Requesting payjoin...');
-        final context = await PdkPayjoinDatasource.request(
-          sender: sender,
-          dio: dio,
-        );
-        log('[Senders Isolate] Payjoin requested.');
 
         // Periodically check for a proposal from the receiver
         Timer.periodic(
@@ -752,9 +745,18 @@ class PdkPayjoinDatasource {
           (Timer timer) async {
             log('[Senders Isolate]Checking for proposal in senders isolate');
             try {
-              final proposalPsbt = await PdkPayjoinDatasource.getProposalPsbt(
-                context: context,
-                dio: dio,
+              final persister = InMemoryJsonSenderSessionPersister.fromJson(
+                senderModel.sender,
+              );
+              final state = pj
+                  .replaySenderEventLog(persister: persister)
+                  .state();
+              if (state is! PollingForProposalSendSession) return;
+
+              final proposalPsbt = await _getProposalPsbt(
+                state.inner,
+                persister,
+                dio,
               );
 
               if (proposalPsbt != null) {
@@ -764,6 +766,7 @@ class PdkPayjoinDatasource {
                 //  further processing so send it through the model as well as
                 //  its txId.
                 final updatedModel = senderModel.copyWith(
+                  sender: persister.toJson(),
                   proposalPsbt: proposalPsbt,
                   txId: txId,
                 );
@@ -829,63 +832,43 @@ class PdkPayjoinDatasource {
     throw PayjoinNotFoundException('Failed to poll receiver: $lastError');
   }
 
-  static Future<String?> getProposalPsbt({
-    required V2GetContext context,
-    required Dio dio,
-  }) async {
-    // The use of ffiError here is a hack, we should change it once payjoin-flutter
-    //  exposes different exceptions for specific errors
-    Object? ffiError;
-    try {
-      (Request, ClientResponse)? result;
-      for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
-        try {
-          result = await context.extractReq(ohttpRelay: ohttpRelay);
-          ffiError = null;
-          log(
-            'context extract request success: $result with relay $ohttpRelay',
-          );
-          break;
-        } catch (e) {
-          log('context extract request exception: $e with relay $ohttpRelay');
-          ffiError = e;
-          continue;
+  static Future<String?> _getProposalPsbt(
+    PollingForProposal polling,
+    InMemoryJsonSenderSessionPersister persister,
+    Dio dio,
+  ) async {
+    Object? lastError;
+    for (final relay in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        final poll = polling.createPollRequest(ohttpRelay: relay);
+        final body = await _postBytes(
+          dio,
+          poll.request.url,
+          poll.request.body,
+          poll.request.contentType,
+        );
+        final outcome = polling
+            .processResponse(response: body, ohttpCtx: poll.ohttpCtx)
+            .save(persister: persister);
+        if (outcome is StasisPollingForProposalTransitionOutcome) {
+          return null;
         }
-      }
-
-      if (result == null) {
-        if (ffiError != null) {
-          throw ffiError;
+        return (outcome as ProgressPollingForProposalTransitionOutcome)
+            .psbtBase64;
+      } on CreateRequestException catch (e) {
+        if (_isExpiredString(e)) {
+          throw PayjoinExpiredException('Payjoin sender expired: $e');
         }
-        throw Exception('All OHTTP relays failed');
+        log('sender createPollRequest via $relay failed: $e');
+        lastError = e;
+        continue;
+      } catch (e) {
+        log('sender poll via $relay failed: $e');
+        lastError = e;
+        continue;
       }
-
-      final (req, reqCtx) = result;
-
-      final res = await dio.post(
-        req.url.asString(),
-        data: req.body,
-        options: Options(
-          headers: {'Content-Type': req.contentType},
-          responseType: ResponseType.bytes,
-        ),
-      );
-
-      final proposalPsbt = await context.processResponse(
-        response: res.data as List<int>,
-        ohttpCtx: reqCtx,
-      );
-
-      return proposalPsbt;
-    } catch (e) {
-      log('getProposalPsbt exception: $e');
-      if (e == ffiError) {
-        // TODO: Check for the correct error.
-        //  We just assume the error is an expired error for now.
-        throw PayjoinExpiredException('Payjoin sender expired');
-      }
-      return null;
     }
+    throw PayjoinNotFoundException('Failed to poll sender: $lastError');
   }
 
   // "Expired" variants aren't exposed publicly as a distinct subtype.
