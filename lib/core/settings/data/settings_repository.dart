@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as domain;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/prefs_keys.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
@@ -128,5 +130,9 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setErrorReportingEnabled(bool enabled) async {
     await _settingsDatasource.setErrorReportingEnabled(enabled);
+    // Mirror into SharedPreferences so the next cold start's Sentry init can
+    // read consent before the locator is available.
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(PrefsKeys.errorReportingEnabled, enabled);
   }
 }

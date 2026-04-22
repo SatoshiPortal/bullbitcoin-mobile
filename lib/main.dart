@@ -13,6 +13,9 @@ import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecas
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/migration_reporter.dart';
+import 'package:bb_mobile/core/utils/prefs_keys.dart';
+import 'package:bb_mobile/core/utils/sentry_event_filter.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -20,6 +23,8 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
+import 'package:bb_mobile/features/wizard/wizard_gate.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
@@ -30,20 +35,62 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lwk/lwk.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
 class Bull {
+  /// Read by [SentryFlutter.init]'s `beforeSend` to decide whether a
+  /// non-migration event should reach the server. Seeded from the wizard's
+  /// pending answer or a [SharedPreferences] mirror before Sentry is up, then
+  /// refreshed from the SQLite source of truth once the locator is ready.
+  static bool _userConsent = false;
+
   static Future<void> init() async {
     await initLogs();
-    await initFlutterRustBridgeDependencies();
-    // The Locator setup might depend on the initialization of the libraries above
-    //  so it's important to call it after the initialization
-    await initLocator();
+    _userConsent = await _readSeedConsent();
+    // Populate the in-memory app-version holder BEFORE [initLocator] so
+    // migration events fired from inside locator setup (FSS fallback,
+    // drift schema migrations) carry from/to version tags.
+    await _populateAppVersionContext();
     await initErrorReporting();
+    await initFlutterRustBridgeDependencies();
+    await initLocator();
+    await applyWizardResult();
+    _userConsent = await locator<SettingsRepository>().fetch().then(
+      (s) => s.isErrorReportingEnabled,
+    );
     await initWorkmanager();
+    await _reportAppUpgradeTransitionIfAny();
+  }
+
+  /// Reads the best-known value for user consent before the locator is
+  /// available. The wizard's pending answer wins when present (freshest);
+  /// otherwise fall back to the [SharedPreferences] mirror written by
+  /// `SettingsRepository.setErrorReportingEnabled` on previous launches.
+  static Future<bool> _readSeedConsent() async {
+    final pending = await WizardGate.readPending();
+    if (pending != null) return pending.errorReporting;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(PrefsKeys.errorReportingEnabled) ?? false;
+  }
+
+  /// Flushes answers captured by the install/upgrade wizard (stored in
+  /// [SharedPreferences] because the wizard runs before the locator is
+  /// ready) into the SQLite settings repository, then marks the wizard as
+  /// complete. Safe to call when no wizard answers are pending.
+  static Future<void> applyWizardResult() async {
+    final choices = await WizardGate.readPending();
+    if (choices == null) return;
+    final settings = locator<SettingsRepository>();
+    await settings.setLanguage(choices.language);
+    await settings.setThemeMode(choices.themeMode);
+    await settings.setErrorReportingEnabled(choices.errorReporting);
+    await WizardGate.clearPending();
+    await WizardGate.markComplete();
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
@@ -86,33 +133,64 @@ class Bull {
     );
   }
 
+  /// Populates [MigrationReporter.currentFromAppVersion] and
+  /// [MigrationReporter.currentToAppVersion] so any migration event fired
+  /// later in `Bull.init` (including FSS fallback and drift schema errors)
+  /// carries from/to app-version tags. Does not touch Sentry or the
+  /// persisted marker — that's [_reportAppUpgradeTransitionIfAny].
+  static Future<void> _populateAppVersionContext() async {
+    final info = await PackageInfo.fromPlatform();
+    // Include the build number so within-version rebuilds (6.9.1+177 vs
+    // 6.9.1+178) also register as upgrades.
+    final current = '${info.version}+${info.buildNumber}';
+    final prefs = await SharedPreferences.getInstance();
+    MigrationReporter.currentFromAppVersion = prefs.getString(
+      PrefsKeys.lastSeenAppVersion,
+    );
+    MigrationReporter.currentToAppVersion = current;
+  }
+
+  /// Fires a `migration_app_upgrade` transition event when we detect the
+  /// app has moved to a new version, then advances the persisted marker.
+  /// Only the second half (marker write) is deferred until after a
+  /// successful init so a mid-init crash retries the transition next launch.
+  static Future<void> _reportAppUpgradeTransitionIfAny() async {
+    final previous = MigrationReporter.currentFromAppVersion;
+    final current = MigrationReporter.currentToAppVersion;
+    if (current == null) return;
+    if (previous != null && previous != current) {
+      await MigrationReporter.reportTransition(
+        transitionType: 'app_upgrade',
+        fromAppVersion: previous,
+        toAppVersion: current,
+      );
+    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(PrefsKeys.lastSeenAppVersion, current);
+  }
+
   static Future<void> initErrorReporting() async {
-    // Error reports for users that gave consent in the app settings (default disabled)
-    // Empty DSN if no consent or debug mode - Sentry won't send anything
-    final isErrorReportingEnabled = await locator<SettingsRepository>()
-        .fetch()
-        .then((settings) => settings.isErrorReportingEnabled);
-    final dsnSentry = isErrorReportingEnabled && kReleaseMode
-        ? ApiServiceConstants.sentryDsn
-        : ''; // "If an empty string is used, the SDK will not send any events."
-
     await SentryFlutter.init((options) {
-      options.dsn = dsnSentry;
+      options.dsn = kReleaseMode ? ApiServiceConstants.sentryDsn : '';
       options.compressPayload = true;
-      options.beforeSend = (event, hint) {
-        // Before sending the error report, anonymize the exception value
-        // to avoid sending potentially sensitive information (txid, addresses…)
-        final exceptions = event.exceptions;
-        if (exceptions != null && exceptions.isNotEmpty) {
-          final anonymizedExceptions = exceptions.map((e) {
-            e.value = null;
-            return e;
-          }).toList();
-          event.exceptions = anonymizedExceptions;
-        }
 
-        return event;
-      };
+      // Silence non-explicit transport activity. Keep native crash + ANR +
+      // watchdog handlers on for everyone — migration telemetry bypasses
+      // user consent by product decision.
+      options.enableAutoSessionTracking = false;
+      options.enableAutoNativeBreadcrumbs = false;
+      options.enableUserInteractionBreadcrumbs = false;
+      options.enableUserInteractionTracing = false;
+      options.enableAutoPerformanceTracing = false;
+      options.captureFailedRequests = false;
+      options.sendClientReports = false;
+      options.tracesSampleRate = 0;
+
+      // Invariant lives in [filterSentryEvent] and is unit-tested. Migration
+      // events (tagged `category=migration` via [MigrationReporter]) ALWAYS
+      // reach Sentry regardless of [_userConsent]; everything else is gated.
+      options.beforeSend = (event, hint) =>
+          filterSentryEvent(event, userConsent: _userConsent);
     });
   }
 }
@@ -122,6 +200,19 @@ Future main() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
+        if (await WizardGate.shouldShow()) {
+          final completer = Completer<void>();
+          runApp(
+            WizardApp(
+              onDone: (choices) async {
+                await WizardGate.savePending(choices);
+                completer.complete();
+              },
+            ),
+          );
+          await completer.future;
+        }
+
         await Bull.init();
       } catch (error, stackTrace) {
         log.severe(error: error, trace: stackTrace);

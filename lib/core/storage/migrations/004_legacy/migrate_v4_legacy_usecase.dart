@@ -17,11 +17,12 @@ class MigrateToV4LegacyUsecase {
       }
       final isV4 = await legacyMigrateToV4(fromVersion);
       return isV4;
-    } catch (e) {
-      log.severe(
+    } catch (e, s) {
+      await log.migration(
+        level: Level.SEVERE,
         message: 'legacy migration failed',
-        error: e,
-        trace: StackTrace.current,
+        exception: e,
+        stackTrace: s,
       );
       return false;
     }

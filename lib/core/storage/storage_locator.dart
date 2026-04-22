@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/migration_reporter.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -146,14 +147,24 @@ class StorageLocator {
               ),
             );
             log.fine('StorageLocator: fss9 fallback verified and flag written');
+            // FSS10 attempted and failed, FSS9 fallback succeeded — this is a
+            // silent failure mode we need to know about. Bypasses user
+            // consent via the migration tag.
+            await MigrationReporter.reportTransition(
+              transitionType: 'fss_fallback',
+            );
           } catch (fss9Error) {
-            log.severe(
+            // Await the log before rethrowing so the Sentry native SDK can
+            // persist the envelope to its outbox before the isolate tears
+            // down — otherwise the event may be lost on crash.
+            await log.migration(
+              level: Level.SEVERE,
               message:
                   'StorageLocator: both fss10 and fss9 failed. '
                   'fss10: ${fss10Error.runtimeType}, '
                   'fss9: ${fss9Error.runtimeType}',
-              error: fss9Error,
-              trace: StackTrace.current,
+              exception: fss9Error,
+              stackTrace: StackTrace.current,
             );
             rethrow;
           }
@@ -209,10 +220,29 @@ class StorageLocator {
     locator.registerLazySingleton<MigrationSecureStorageDatasource>(
       () => MigrationSecureStorageDatasource(secureStorageDatasource),
     );
-    final oldHiveBox = await OldHiveDatasource.getBox(secureStorageDatasource);
+    final oldHiveBox = await _openOldHiveBox(secureStorageDatasource);
     locator.registerLazySingleton<OldHiveDatasource>(
       () => OldHiveDatasource(oldHiveBox),
     );
+  }
+
+  /// Opens the legacy Hive box used by the Hive → SQLite migration. Wrapped
+  /// so that a failure surfaces to Sentry via the always-on migration
+  /// channel before the rethrow kills init.
+  static Future<dynamic> _openOldHiveBox(
+    KeyValueStorageDatasource<String> secureStorageDatasource,
+  ) async {
+    try {
+      return await OldHiveDatasource.getBox(secureStorageDatasource);
+    } catch (e, s) {
+      await log.migration(
+        level: Level.SEVERE,
+        message: 'StorageLocator: failed to open legacy Hive box',
+        exception: e,
+        stackTrace: s,
+      );
+      rethrow;
+    }
   }
 
   static void registerRepositories(GetIt locator) {

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
+import 'package:bb_mobile/core/storage/drift_schema_version.dart';
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
@@ -74,7 +76,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => kDriftSchemaVersion;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -104,21 +106,62 @@ class SqliteDatabase extends _$SqliteDatabase {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onCreate: Schema0To1.onCreate,
+      onCreate: _reportingOnCreate(Schema0To1.onCreate),
       onUpgrade: stepByStep(
-        from1To2: Schema1To2.migrate,
-        from2To3: Schema2To3.migrate,
-        from3To4: Schema3To4.migrate,
-        from4To5: Schema4To5.migrate,
-        from5To6: Schema5To6.migrate,
-        from6To7: Schema6To7.migrate,
-        from7To8: Schema7To8.migrate,
-        from8To9: Schema8To9.migrate,
-        from9To10: Schema9To10.migrate,
-        from10To11: Schema10To11.migrate,
-        from11To12: Schema11To12.migrate,
+        from1To2: _reportingStep('from1To2', Schema1To2.migrate),
+        from2To3: _reportingStep('from2To3', Schema2To3.migrate),
+        from3To4: _reportingStep('from3To4', Schema3To4.migrate),
+        from4To5: _reportingStep('from4To5', Schema4To5.migrate),
+        from5To6: _reportingStep('from5To6', Schema5To6.migrate),
+        from6To7: _reportingStep('from6To7', Schema6To7.migrate),
+        from7To8: _reportingStep('from7To8', Schema7To8.migrate),
+        from8To9: _reportingStep('from8To9', Schema8To9.migrate),
+        from9To10: _reportingStep('from9To10', Schema9To10.migrate),
+        from10To11: _reportingStep('from10To11', Schema10To11.migrate),
+        from11To12: _reportingStep('from11To12', Schema11To12.migrate),
       ),
     );
+  }
+
+  /// Wraps a per-version drift migration step so a failure is surfaced to
+  /// Sentry via the always-on migration channel before the rethrow aborts
+  /// init. Drift migrations run lazily on first query, so wrapping the step
+  /// fn (not the constructor) is what actually catches failures.
+  static Future<void> Function(Migrator, Schema) _reportingStep<Schema>(
+    String name,
+    Future<void> Function(Migrator, Schema) fn,
+  ) {
+    return (m, schema) async {
+      try {
+        await fn(m, schema);
+      } catch (e, s) {
+        await log.migration(
+          level: Level.SEVERE,
+          message: 'drift migration step $name failed',
+          exception: e,
+          stackTrace: s,
+        );
+        rethrow;
+      }
+    };
+  }
+
+  static Future<void> Function(Migrator) _reportingOnCreate(
+    Future<void> Function(Migrator) fn,
+  ) {
+    return (m) async {
+      try {
+        await fn(m);
+      } catch (e, s) {
+        await log.migration(
+          level: Level.SEVERE,
+          message: 'drift onCreate failed',
+          exception: e,
+          stackTrace: s,
+        );
+        rethrow;
+      }
+    };
   }
 
   Future<void> clearCacheTables() async {

@@ -9,7 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 class TranslationWarningBottomSheet extends StatelessWidget {
   const TranslationWarningBottomSheet({super.key});
 
-  static const String _weblateUrl = 'https://hosted.weblate.org/engage/bull/';
+  static const String _contributeUrl =
+      'https://github.com/SatoshiPortal/bullbitcoin-mobile';
   static bool _hasBeenShown = false;
 
   static Future<void> show(BuildContext context) {
@@ -22,8 +23,8 @@ class TranslationWarningBottomSheet extends StatelessWidget {
     );
   }
 
-  Future<void> _openWeblate() async {
-    final url = Uri.parse(_weblateUrl);
+  Future<void> _openContributeLink() async {
+    final url = Uri.parse(_contributeUrl);
     await launchUrl(url, mode: LaunchMode.externalApplication);
   }
 
@@ -73,7 +74,7 @@ class TranslationWarningBottomSheet extends StatelessWidget {
                 label: context.loc.translationWarningContributeButton,
                 onPressed: () async {
                   Navigator.of(context).pop();
-                  await _openWeblate();
+                  await _openContributeLink();
                 },
                 bgColor: context.appColors.secondary,
                 textColor: context.appColors.onSecondary,

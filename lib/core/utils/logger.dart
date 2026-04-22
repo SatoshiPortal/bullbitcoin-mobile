@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/migration_reporter.dart';
 import 'package:bb_mobile/core/utils/report.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
@@ -170,6 +171,20 @@ class Logger {
     final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
     final tsvLine = sanitizedContent.join('\t');
     _queueWrite(tsvLine);
+
+    // Severe migration errors are always reported to Sentry regardless of
+    // the user's general error-reporting consent. The caller MUST await
+    // this method before rethrowing so the native Sentry SDK has time to
+    // persist the envelope to its on-disk outbox before the isolate tears
+    // down (there is no public `flush` in sentry_flutter 9 — durability
+    // comes from that outbox, which retransmits on the next launch).
+    if (level == dep.Level.SEVERE && exception != null && stackTrace != null) {
+      await MigrationReporter.reportError(
+        message: message,
+        exception: exception,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   Future<void> deleteLogs() async {

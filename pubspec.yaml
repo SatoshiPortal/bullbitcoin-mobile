@@ -16,6 +16,7 @@ dependencies:
   freezed: ^3.2.3
   get_it: ^9.1.1
   flutter_animate: ^4.5.2
+  flutter_svg: ^2.2.4
   gap: ^3.0.1
   go_router: ^17.0.0
   google_fonts: ^6.3.3
@@ -167,6 +168,7 @@ flutter:
     - assets/backgrounds/
     - assets/animations/
     - assets/misc/
+    - assets/wizard/
 
 flutter_native_splash:
   background_image: "assets/logos/bb-logo-white-splash.png"

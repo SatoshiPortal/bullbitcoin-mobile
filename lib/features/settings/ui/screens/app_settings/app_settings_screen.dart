@@ -1,11 +1,12 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/translation_warning_bottom_sheet.dart';
+import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -103,6 +104,22 @@ class AppSettingsScreen extends StatelessWidget {
                   icon: Icons.bug_report,
                   title: context.loc.settingsErrorReportingTitle,
                   trailing: const ErrorReportingSwitch(),
+                ),
+                SettingsEntryItem(
+                  icon: Icons.sync_problem,
+                  title: context.loc.errorReportingMigrationTitle,
+                  trailing: Switch(
+                    value: true,
+                    // Read-only — tapping surfaces the snackbar.
+                    onChanged: (_) => SnackBarUtils.showSnackBar(
+                      context,
+                      context.loc.errorReportingMigrationSnackbar,
+                    ),
+                  ),
+                  onTap: () => SnackBarUtils.showSnackBar(
+                    context,
+                    context.loc.errorReportingMigrationSnackbar,
+                  ),
                 ),
               ],
             ),
