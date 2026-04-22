@@ -37,7 +37,7 @@
   },
   "translationWarningContributeButton": "ความช่วยเหลือ",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "รหัส",
   "@transactionLabelSwapId": {
@@ -945,7 +945,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "การแปลส่วนใหญ่ในแอปนี้ถูกสร้างขึ้นโดยใช้ AI และอาจมีการเปลี่ยนแปลง หากคุณสังเกตเห็นข้อผิดพลาดใด ๆ หรือต้องช่วยปรับปรุงการแปลคุณสามารถมีส่วนร่วมผ่านแพลตฟอร์มพันธมิตรของเรา.",
+  "translationWarningDescription": "การแปลส่วนใหญ่ในแอปนี้สร้างขึ้นโดยใช้ AI และอาจมีข้อผิดพลาด หากคุณพบข้อผิดพลาดหรือต้องการช่วยปรับปรุงการแปล คุณสามารถส่งการแก้ไขได้ที่คลัง GitHub ของเรา",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },

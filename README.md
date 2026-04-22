@@ -18,7 +18,7 @@ Both these wallets are able to send and receive Lightning Network payments via t
 
 ### Translations
 
-[![Translation status](https://hosted.weblate.org/widget/bull/open-graph.png)](https://hosted.weblate.org/engage/bull/)
+Translations are AI-generated and community-reviewed. To fix or improve translations, submit a pull request to the [localization folder](https://github.com/SatoshiPortal/bullbitcoin-mobile/tree/develop/localization).
 
 ### [Dependencies](https://github.com/SatoshiPortal/bullbitcoin-mobile/blob/develop/pubspec.yaml#L9)
 

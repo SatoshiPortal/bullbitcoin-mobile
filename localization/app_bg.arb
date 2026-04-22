@@ -3,13 +3,13 @@
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
   },
-  "translationWarningDescription": "Повечето преводи в това приложение са генерирани с помощта на изкуствен интелект и могат да съдържат неточности. Ако забележите грешки или желаете да помогнете за подобряване на преводите, можете да допринесете чрез нашата платформа за превод от общността.",
+  "translationWarningDescription": "Повечето преводи в това приложение са генерирани с помощта на AI и може да съдържат неточности. Ако забележите грешки или искате да помогнете за подобряване на преводите, можете да изпратите корекция в нашето GitHub хранилище.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "translationWarningContributeButton": "Помогнете да се подобрят преводите",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "translationWarningDismissButton": "Разбрах",
   "@translationWarningDismissButton": {
