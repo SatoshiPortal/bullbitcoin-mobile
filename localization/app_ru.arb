@@ -4496,5 +4496,69 @@
   "legacyStorageWarningLater": "Позже",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Назад",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Начать",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Светлая",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Тёмная",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Системная",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Я участвую",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Я не участвую",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "Журналы миграции",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Всегда включено — позволяет нам видеть, безопасно ли мигрирует ваш кошелёк между версиями приложения.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "Журналы миграции нельзя отключить. Они нужны нам, чтобы узнать, успешно ли пользователи мигрируют между версиями приложения.",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Используйте резервную копию",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Благодаря резервной копии ваши средства в безопасности.\nВы можете восстановить кошелёк, переустановив приложение.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Нет резервной копии?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не удаляйте приложение.\nНаша команда поддержки может попытаться помочь вам, но успех не гарантирован, только резервная копия может защитить ваши средства.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Связаться с поддержкой",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Показать подробности ошибки",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

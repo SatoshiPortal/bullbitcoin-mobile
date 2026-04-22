@@ -12220,5 +12220,69 @@
   "legacyStorageWarningLater": "পরে",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "পিছনে",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "শুরু করুন",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "হালকা",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "গাঢ়",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "সিস্টেম",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "আমি অবদান রাখি",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "আমি অবদান রাখি না",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "মাইগ্রেশন লগ",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "সবসময় সক্রিয় — অ্যাপের সংস্করণগুলির মধ্যে আপনার ওয়ালেট নিরাপদে মাইগ্রেট হচ্ছে কিনা তা আমাদের দেখতে দেয়।",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "মাইগ্রেশন লগ নিষ্ক্রিয় করা যাবে না। ব্যবহারকারীরা অ্যাপ সংস্করণগুলির মধ্যে সফলভাবে মাইগ্রেট করছে কিনা তা জানার জন্য আমাদের এগুলি প্রয়োজন।",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "আপনার ব্যাকআপ ব্যবহার করুন",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "আপনার ব্যাকআপের কারণে, আপনার তহবিল নিরাপদ।\nঅ্যাপটি পুনরায় ইনস্টল করে আপনি আপনার ওয়ালেট পুনরুদ্ধার করতে পারেন।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "কোনো ব্যাকআপ নেই?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "অ্যাপটি মুছে ফেলবেন না।\nআমাদের সহায়তা দল আপনাকে উদ্ধার করার চেষ্টা করতে পারে, সাফল্যের গ্যারান্টি নেই, শুধুমাত্র ব্যাকআপই আপনার তহবিল সুরক্ষিত করতে পারে।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "সহায়তার সাথে যোগাযোগ করুন",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "ত্রুটির বিবরণ দেখান",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

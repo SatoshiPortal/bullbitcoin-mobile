@@ -4393,5 +4393,69 @@
   "legacyStorageWarningLater": "Später",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Zurück",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Loslegen",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Hell",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Dunkel",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Ich nehme teil",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Ich nehme nicht teil",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "Migrationsprotokolle",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Immer aktiv — ermöglicht uns zu sehen, ob deine Wallet sicher zwischen App-Versionen migriert.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "Migrationsprotokolle können nicht deaktiviert werden. Wir benötigen sie, um zu erfahren, ob Benutzer erfolgreich zwischen App-Versionen migrieren.",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Nutze dein Backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Dank deines Backups sind deine Mittel sicher.\nDu kannst deine Wallet wiederherstellen, indem du die App neu installierst.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Kein Backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Lösche die App nicht.\nUnser Support-Team kann versuchen, dich zu retten, doch der Erfolg ist nicht garantiert, nur ein Backup kann deine Mittel sichern.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Support kontaktieren",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Fehlerdetails anzeigen",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

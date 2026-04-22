@@ -4487,5 +4487,69 @@
   "legacyStorageWarningLater": "稍后",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "返回",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "开始",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "浅色",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "深色",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "系统",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "我愿意参与",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "我不参与",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "迁移日志",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "始终开启 — 让我们能看到您的钱包在应用版本之间是否安全迁移。",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "无法禁用迁移日志。我们需要它们来了解用户是否能够在应用版本之间成功迁移。",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "使用您的备份",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "感谢您的备份,您的资金很安全。\n您可以通过重新安装应用程序来恢复钱包。",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "没有备份?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "请勿删除应用程序。\n我们的支持团队可以尝试帮助您,无法保证成功,只有备份才能保证您的资金安全。",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "联系支持",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "显示错误详情",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

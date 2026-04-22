@@ -12503,5 +12503,69 @@
   "legacyStorageWarningLater": "بعداً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "بازگشت",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "شروع کنید",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "روشن",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "تیره",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "سیستم",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "مشارکت می‌کنم",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "مشارکت نمی‌کنم",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "گزارش‌های مهاجرت",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "همیشه روشن — به ما اجازه می‌دهد ببینیم آیا کیف پول شما به‌طور ایمن بین نسخه‌های برنامه منتقل می‌شود.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "گزارش‌های مهاجرت را نمی‌توان غیرفعال کرد. ما به آن‌ها نیاز داریم تا بدانیم آیا کاربران با موفقیت بین نسخه‌های برنامه منتقل می‌شوند یا نه.",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "از نسخه پشتیبان خود استفاده کنید",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "به لطف نسخه پشتیبان شما، دارایی‌هایتان در امان است.\nمی‌توانید با نصب مجدد برنامه، کیف پول خود را بازیابی کنید.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "نسخه پشتیبان ندارید؟",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "برنامه را حذف نکنید.\nتیم پشتیبانی ما می‌تواند تلاش کند تا شما را نجات دهد، اما موفقیت تضمین نیست، فقط یک نسخه پشتیبان می‌تواند دارایی شما را ایمن نگه دارد.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "تماس با پشتیبانی",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "نمایش جزئیات خطا",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

@@ -12503,5 +12503,69 @@
   "legacyStorageWarningLater": "나중에",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "뒤로",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "시작하기",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "밝게",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "어둡게",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "시스템",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "참여하기",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "참여하지 않기",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "마이그레이션 로그",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "항상 켜짐 — 앱 버전 간에 지갑이 안전하게 마이그레이션되는지 확인할 수 있게 해줍니다.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "마이그레이션 로그는 비활성화할 수 없습니다. 사용자가 앱 버전 간에 성공적으로 마이그레이션되는지 확인하기 위해 필요합니다.",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "백업을 사용하세요",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "백업 덕분에 자금이 안전합니다.\n앱을 재설치하여 지갑을 복구할 수 있습니다.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "백업이 없나요?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "앱을 삭제하지 마세요.\n지원팀이 도와드릴 수 있지만 성공이 보장되지는 않습니다. 백업만이 자금을 안전하게 지킬 수 있습니다.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "지원 문의",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "오류 세부 정보 표시",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }
