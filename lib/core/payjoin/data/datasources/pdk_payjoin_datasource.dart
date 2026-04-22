@@ -751,53 +751,6 @@ class PdkPayjoinDatasource {
   }
 }
 
-class InMemoryReceiverPersister {
-  final Map<String, Receiver> _store = {};
-
-  Future<ReceiverToken> save({required Receiver receiver}) async {
-    final token = receiver.key();
-    _store[token.toBytes().toString()] = receiver;
-    return token;
-  }
-
-  Future<Receiver> load({required ReceiverToken token}) async {
-    logger.log.info('LOADING RECEIVER');
-    final receiver = _store[token.toBytes().toString()];
-    if (receiver == null) {
-      throw Exception('Receiver not found for the provided token.');
-    }
-    return receiver;
-  }
-}
-
-class InMemorySenderPersister implements DartSenderPersister {
-  final Map<String, Sender> _store = {};
-
-  Future<SenderToken> save({required Sender sender}) async {
-    final token = sender.key();
-    logger.log.info('TOKEN SAVE}');
-    _store[token.toBytes().toString()] = sender;
-    return token;
-  }
-
-  Future<Sender> load({required SenderToken token}) async {
-    logger.log.info('TOKEN LOAD}');
-    final sender = _store[token.toBytes().toString()];
-    if (sender == null) {
-      throw Exception('Sender not found for the provided token.');
-    }
-    return sender;
-  }
-
-  @override
-  void dispose() {
-    _store.clear();
-  }
-
-  @override
-  bool get isDisposed => _store.isEmpty;
-}
-
 class PayjoinNotFoundException extends BullException {
   PayjoinNotFoundException(super.message);
 }
