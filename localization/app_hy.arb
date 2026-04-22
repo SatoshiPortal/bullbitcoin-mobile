@@ -131,7 +131,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Մի ջնջեք հավելվածը։\nՄեր աջակցության թիմը կարող է փորձել օգնել ձեզ, սակայն հաջողությունը երաշխավորված չէ, միայն պահուստը կարող է ապահովել ձեր միջոցները։",
+  "appInitErrorNoBackupMessage": "Մի ջնջեք հավելվածը։\nԿապվեք մեր աջակցության թիմի հետ՝ փրկության փորձ կատարելու համար։",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

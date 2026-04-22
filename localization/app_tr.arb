@@ -12556,7 +12556,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Uygulamayı silmeyin.\nDestek ekibimiz size yardımcı olmaya çalışabilir, başarı garanti değildir, yalnızca bir yedek paranızı güvence altına alabilir.",
+  "appInitErrorNoBackupMessage": "Uygulamayı silmeyin.\nKurtarma girişimi için destek ekibimizle iletişime geçin.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

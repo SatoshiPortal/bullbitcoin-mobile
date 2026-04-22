@@ -12556,7 +12556,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "ऐप को न हटाएं।\nहमारी सहायता टीम आपको बचाने का प्रयास कर सकती है, सफलता की गारंटी नहीं है, केवल एक बैकअप ही आपकी धनराशि सुरक्षित कर सकता है।",
+  "appInitErrorNoBackupMessage": "ऐप को न हटाएं।\nबचाव के प्रयास के लिए हमारी सहायता टीम से संपर्क करें।",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

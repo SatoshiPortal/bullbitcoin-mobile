@@ -64,6 +64,14 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
     );
   }
 
+  Future<void> _deleteLogs(BuildContext context, AppLocalizations loc) async {
+    await log.deleteLogs();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(loc.logsDeletedMessage)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final loc = lookupAppLocalizations(_locale);
@@ -108,31 +116,34 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                       message: loc.appInitErrorNoBackupMessage,
                     ),
                     const Gap(32),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: BBButton.big(
-                            label: loc.appInitErrorContactSupportButton,
-                            iconData: Icons.open_in_new,
-                            bgColor: context.appColors.primary,
-                            textColor: context.appColors.onPrimary,
-                            onPressed: _contactSupport,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: BBButton.big(
-                            label: loc.appInitErrorShareLogsButton,
-                            iconData: Icons.share,
-                            iconFirst: true,
-                            bgColor: context.appColors.surface,
-                            textColor: context.appColors.text,
-                            borderColor: context.appColors.border,
-                            outlined: true,
-                            onPressed: () => _shareLogs(context),
-                          ),
-                        ),
-                      ],
+                    BBButton.big(
+                      label: loc.appInitErrorContactSupportButton,
+                      iconData: Icons.open_in_new,
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
+                      onPressed: _contactSupport,
+                    ),
+                    const Gap(12),
+                    BBButton.big(
+                      label: loc.appInitErrorShareLogsButton,
+                      iconData: Icons.share,
+                      iconFirst: true,
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.text,
+                      borderColor: context.appColors.border,
+                      outlined: true,
+                      onPressed: () => _shareLogs(context),
+                    ),
+                    const Gap(12),
+                    BBButton.big(
+                      label: loc.deleteLogsTitle,
+                      iconData: Icons.delete_outline,
+                      iconFirst: true,
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.error,
+                      borderColor: context.appColors.error,
+                      outlined: true,
+                      onPressed: () => _deleteLogs(context, loc),
                     ),
                     const Gap(16),
                     _ErrorDetails(
@@ -239,25 +250,61 @@ class _BackupSection extends StatelessWidget {
   }
 }
 
-class _ErrorDetails extends StatelessWidget {
+class _ErrorDetails extends StatefulWidget {
   const _ErrorDetails({required this.error, required this.label});
 
   final Object error;
   final String label;
 
   @override
+  State<_ErrorDetails> createState() => _ErrorDetailsState();
+}
+
+class _ErrorDetailsState extends State<_ErrorDetails> {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Theme(
-      // Strip ExpansionTile's default divider + padding.
-      data: theme.copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: const EdgeInsets.only(top: 8),
-        iconColor: theme.colorScheme.onSurface,
-        collapsedIconColor: theme.colorScheme.onSurface,
-        title: Text(label, style: theme.textTheme.bodyMedium),
-        children: [
+    return Column(
+      children: [
+        InkWell(
+          onTap: () => setState(() => _expanded = !_expanded),
+          borderRadius: BorderRadius.circular(2),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border.all(color: theme.colorScheme.outline),
+              borderRadius: BorderRadius.circular(2),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.bug_report_outlined,
+                    size: 18,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    widget.label,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: theme.colorScheme.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (_expanded) ...[
+          const SizedBox(height: 12),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
@@ -267,12 +314,12 @@ class _ErrorDetails extends StatelessWidget {
               border: Border.all(color: context.appColors.border),
             ),
             child: SelectableText(
-              error.toString(),
+              widget.error.toString(),
               style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
             ),
           ),
         ],
-      ),
+      ],
     );
   }
 }

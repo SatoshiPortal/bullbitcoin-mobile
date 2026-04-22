@@ -106,33 +106,30 @@ class _WizardScreenState extends State<WizardScreen> {
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              child: Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: IgnorePointer(
-                      ignoring: _page == 0,
-                      child: Opacity(
-                        opacity: _page == 0 ? 0 : 1,
-                        child: BBButton.big(
-                          label: context.loc.backButton,
-                          onPressed: _back,
-                          bgColor: context.appColors.surface,
-                          textColor: context.appColors.text,
-                          borderColor: context.appColors.border,
-                          outlined: true,
-                        ),
-                      ),
-                    ),
+                  BBButton.big(
+                    label: isLast
+                        ? context.loc.getStartedButton
+                        : context.loc.continueButton,
+                    onPressed: () => _next(steps.length),
+                    bgColor: context.appColors.primary,
+                    textColor: context.appColors.onPrimary,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: BBButton.big(
-                      label: isLast
-                          ? context.loc.getStartedButton
-                          : context.loc.continueButton,
-                      onPressed: () => _next(steps.length),
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
+                  const SizedBox(height: 12),
+                  IgnorePointer(
+                    ignoring: _page == 0,
+                    child: Opacity(
+                      opacity: _page == 0 ? 0 : 1,
+                      child: BBButton.big(
+                        label: context.loc.backButton,
+                        onPressed: _back,
+                        bgColor: context.appColors.surface,
+                        textColor: context.appColors.text,
+                        borderColor: context.appColors.border,
+                        outlined: true,
+                      ),
                     ),
                   ),
                 ],

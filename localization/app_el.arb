@@ -12556,7 +12556,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Μη διαγράψετε την εφαρμογή.\nΗ ομάδα υποστήριξής μας μπορεί να προσπαθήσει να σας βοηθήσει, αλλά η επιτυχία δεν είναι εγγυημένη, μόνο ένα αντίγραφο ασφαλείας μπορεί να προστατέψει τα κεφάλαιά σας.",
+  "appInitErrorNoBackupMessage": "Μη διαγράψετε την εφαρμογή.\nΕπικοινωνήστε με την ομάδα υποστήριξης για μια προσπάθεια διάσωσης.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

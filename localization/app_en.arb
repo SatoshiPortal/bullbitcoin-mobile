@@ -12878,7 +12878,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Do not delete the app.\nOur support team can attempt to rescue you, success is not guaranteed, only a backup can secure your funds.",
+  "appInitErrorNoBackupMessage": "Do not delete the app.\nContact our support team to attempt a rescue.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

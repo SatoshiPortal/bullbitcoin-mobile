@@ -343,7 +343,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "არ წაშალოთ აპი.\nჩვენი მხარდაჭერის გუნდი შეიძლება შეეცადოს დაგეხმაროთ, წარმატება არ არის გარანტირებული, მხოლოდ სარეზერვო ასლს შეუძლია უზრუნველყოს თქვენი სახსრები.",
+  "appInitErrorNoBackupMessage": "არ წაშალოთ აპი.\nდაუკავშირდით ჩვენს მხარდაჭერის გუნდს გადარჩენის მცდელობისთვის.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

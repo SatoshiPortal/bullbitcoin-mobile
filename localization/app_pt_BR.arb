@@ -12552,7 +12552,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Não exclua o aplicativo.\nNossa equipe de suporte pode tentar ajudá-lo, o sucesso não é garantido, apenas um backup pode proteger seus fundos.",
+  "appInitErrorNoBackupMessage": "Não exclua o aplicativo.\nEntre em contato com nossa equipe de suporte para tentar um resgate.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

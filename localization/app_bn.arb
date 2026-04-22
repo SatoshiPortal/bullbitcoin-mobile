@@ -12273,7 +12273,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "অ্যাপটি মুছে ফেলবেন না।\nআমাদের সহায়তা দল আপনাকে উদ্ধার করার চেষ্টা করতে পারে, সাফল্যের গ্যারান্টি নেই, শুধুমাত্র ব্যাকআপই আপনার তহবিল সুরক্ষিত করতে পারে।",
+  "appInitErrorNoBackupMessage": "অ্যাপটি মুছে ফেলবেন না।\nউদ্ধার প্রচেষ্টার জন্য আমাদের সহায়তা দলের সাথে যোগাযোগ করুন।",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

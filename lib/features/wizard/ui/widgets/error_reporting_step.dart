@@ -14,6 +14,8 @@ class ErrorReportingStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final outline = Theme.of(context).colorScheme.outline;
+    final shape = StadiumBorder(side: BorderSide(color: outline));
     return Column(
       children: [
         Text(
@@ -24,12 +26,14 @@ class ErrorReportingStep extends StatelessWidget {
         SwitchListTile(
           value: enabled,
           onChanged: onChanged,
+          shape: shape,
           title: Text(
             enabled
                 ? context.loc.errorReportingIContribute
                 : context.loc.errorReportingIDoNotContribute,
           ),
         ),
+        const SizedBox(height: 8),
         SwitchListTile(
           value: true,
           // The callback fires but `value` is hardcoded true, so the switch
@@ -38,8 +42,8 @@ class ErrorReportingStep extends StatelessWidget {
             context,
             context.loc.errorReportingMigrationSnackbar,
           ),
+          shape: shape,
           title: Text(context.loc.errorReportingMigrationTitle),
-          subtitle: Text(context.loc.errorReportingMigrationSubtitle),
         ),
       ],
     );

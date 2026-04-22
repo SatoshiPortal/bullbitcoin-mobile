@@ -9566,7 +9566,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Не изтривайте приложението.\nНашият екип за поддръжка може да се опита да ви спаси, успехът не е гарантиран — само резервно копие може да осигури средствата ви.",
+  "appInitErrorNoBackupMessage": "Не изтривайте приложението.\nСвържете се с нашия екип за поддръжка за опит за спасяване.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

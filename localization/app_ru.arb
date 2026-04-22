@@ -4549,7 +4549,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Не удаляйте приложение.\nНаша команда поддержки может попытаться помочь вам, но успех не гарантирован, только резервная копия может защитить ваши средства.",
+  "appInitErrorNoBackupMessage": "Не удаляйте приложение.\nСвяжитесь с нашей командой поддержки для попытки восстановления.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

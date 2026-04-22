@@ -12556,7 +12556,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "อย่าลบแอป\nทีมสนับสนุนของเราสามารถพยายามช่วยคุณได้ แต่ไม่รับประกันความสำเร็จ มีเพียงข้อมูลสำรองเท่านั้นที่สามารถปกป้องเงินของคุณได้",
+  "appInitErrorNoBackupMessage": "อย่าลบแอป\nติดต่อทีมสนับสนุนของเราเพื่อพยายามกู้คืน",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

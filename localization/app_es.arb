@@ -4546,7 +4546,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "No elimines la aplicación.\nNuestro equipo de soporte puede intentar ayudarte, el éxito no está garantizado, solo una copia de seguridad puede proteger tus fondos.",
+  "appInitErrorNoBackupMessage": "No elimines la aplicación.\nContacta con nuestro equipo de soporte para intentar un rescate.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

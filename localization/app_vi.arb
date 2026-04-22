@@ -131,7 +131,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Đừng xóa ứng dụng.\nĐội hỗ trợ của chúng tôi có thể cố gắng giúp bạn, thành công không được đảm bảo, chỉ có bản sao lưu mới có thể bảo vệ tiền của bạn.",
+  "appInitErrorNoBackupMessage": "Đừng xóa ứng dụng.\nLiên hệ với đội hỗ trợ của chúng tôi để thử giải cứu.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

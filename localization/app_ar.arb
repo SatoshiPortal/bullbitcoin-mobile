@@ -12559,7 +12559,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "لا تحذف التطبيق.\nيمكن لفريق الدعم محاولة إنقاذك، لكن النجاح غير مضمون، فقط النسخة الاحتياطية تضمن أمان أموالك.",
+  "appInitErrorNoBackupMessage": "لا تحذف التطبيق.\nاتصل بفريق الدعم لمحاولة الإنقاذ.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

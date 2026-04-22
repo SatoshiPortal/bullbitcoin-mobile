@@ -1,12 +1,12 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/error_reporting_switch.dart';
-import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,27 +36,10 @@ class AppSettingsScreen extends StatelessWidget {
                 SettingsEntryItem(
                   icon: Icons.language,
                   title: context.loc.settingsLanguageTitle,
-                  trailing: DropdownButton<Language>(
+                  trailing: AppLanguagePicker(
                     value: currentLanguage,
-                    underline: const SizedBox.shrink(),
-                    items: Language.values
-                        .map(
-                          (language) => DropdownMenuItem<Language>(
-                            value: language,
-                            child: Text(language.label),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (Language? newLanguage) {
-                      if (newLanguage != null) {
-                        context.read<SettingsCubit>().changeLanguage(
-                          newLanguage,
-                        );
-                        if (newLanguage != Language.unitedStatesEnglish) {
-                          TranslationWarningBottomSheet.show(context);
-                        }
-                      }
-                    },
+                    onChanged: (lang) =>
+                        context.read<SettingsCubit>().changeLanguage(lang),
                   ),
                 ),
                 SettingsEntryItem(

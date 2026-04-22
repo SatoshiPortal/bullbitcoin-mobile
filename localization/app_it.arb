@@ -4540,7 +4540,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Non eliminare l'app.\nIl nostro team di supporto può tentare di aiutarti, il successo non è garantito, solo un backup può proteggere i tuoi fondi.",
+  "appInitErrorNoBackupMessage": "Non eliminare l'app.\nContatta il nostro team di supporto per tentare un recupero.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

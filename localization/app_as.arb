@@ -130,7 +130,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "এপটো মচি নেপেলাব।\nআমাৰ সহায় দলে আপোনাক উদ্ধাৰ কৰাৰ চেষ্টা কৰিব পাৰে, কিন্তু সফলতাৰ নিশ্চয়তা নাই, কেৱল বেকআপেহে আপোনাৰ ধন সুৰক্ষিত কৰিব পাৰে।",
+  "appInitErrorNoBackupMessage": "এপটো মচি নেপেলাব।\nৰেস্কিউৰ চেষ্টা কৰিবলৈ আমাৰ সহায় দলৰ সৈতে যোগাযোগ কৰক।",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

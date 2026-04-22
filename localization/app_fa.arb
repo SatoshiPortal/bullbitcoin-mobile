@@ -12556,7 +12556,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "برنامه را حذف نکنید.\nتیم پشتیبانی ما می‌تواند تلاش کند تا شما را نجات دهد، اما موفقیت تضمین نیست، فقط یک نسخه پشتیبان می‌تواند دارایی شما را ایمن نگه دارد.",
+  "appInitErrorNoBackupMessage": "برنامه را حذف نکنید.\nبرای تلاش برای نجات با تیم پشتیبانی ما تماس بگیرید.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

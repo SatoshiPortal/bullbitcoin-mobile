@@ -151,7 +151,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Usifute programu.\nTimu yetu ya usaidizi inaweza kujaribu kukuokoa, mafanikio hayajahakikishwa, ni nakala rudufu pekee inayoweza kulinda fedha zako.",
+  "appInitErrorNoBackupMessage": "Usifute programu.\nWasiliana na timu yetu ya usaidizi kwa jaribio la kuokoa.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

@@ -4532,7 +4532,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Älä poista sovellusta.\nTukitiimimme voi yrittää pelastaa sinut, onnistumista ei taata, vain varmuuskopio voi turvata varasi.",
+  "appInitErrorNoBackupMessage": "Älä poista sovellusta.\nOta yhteyttä tukitiimiimme pelastusyritystä varten.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },

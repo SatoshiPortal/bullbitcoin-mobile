@@ -12556,7 +12556,7 @@
   "@appInitErrorNoBackupTitle": {
     "description": "Headline for the no-backup section of the init-error screen"
   },
-  "appInitErrorNoBackupMessage": "Aplikaci nemazejte.\nNáš tým podpory se vás může pokusit zachránit, úspěch není zaručen, pouze záloha může zajistit vaše prostředky.",
+  "appInitErrorNoBackupMessage": "Aplikaci nemazejte.\nKontaktujte náš tým podpory pro pokus o záchranu.",
   "@appInitErrorNoBackupMessage": {
     "description": "Body asking users without a backup to reach out to support before touching the app"
   },
