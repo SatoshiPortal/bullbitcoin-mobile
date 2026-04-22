@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
@@ -20,18 +21,7 @@ class AppInitErrorScreen extends StatefulWidget {
 }
 
 class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
-  Locale _locale = const Locale('en');
-
-  String _localeName(Locale locale) {
-    final match = Language.values.where(
-      (l) =>
-          l.languageCode == locale.languageCode &&
-          (locale.countryCode == null || l.countryCode == locale.countryCode),
-    );
-    return match.isNotEmpty
-        ? match.first.label
-        : locale.languageCode.toUpperCase();
-  }
+  Language _language = Language.unitedStatesEnglish;
 
   Future<void> _shareLogs(BuildContext context) async {
     try {
@@ -51,9 +41,9 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
         trace: StackTrace.current,
       );
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to share logs: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to share logs: $e')));
     }
   }
 
@@ -74,10 +64,13 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = lookupAppLocalizations(_locale);
+    final loc = lookupAppLocalizations(_language.locale);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData(AppThemeType.dark),
+      locale: _language.locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
           return Scaffold(
@@ -98,7 +91,11 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        _buildLocalePicker(context),
+                        AppLanguagePicker(
+                          value: _language,
+                          onChanged: (lang) =>
+                              setState(() => _language = lang),
+                        ),
                       ],
                     ),
                     const Gap(24),
@@ -156,51 +153,6 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildLocalePicker(BuildContext context) {
-    final theme = Theme.of(context);
-    return PopupMenuButton<Locale>(
-      onSelected: (locale) => setState(() => _locale = locale),
-      constraints: const BoxConstraints(maxHeight: 300),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
-      itemBuilder: (context) => AppLocalizations.supportedLocales.map((locale) {
-        return PopupMenuItem<Locale>(
-          value: locale,
-          child: Text(
-            _localeName(locale),
-            style: theme.textTheme.bodyMedium,
-          ),
-        );
-      }).toList(),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border.all(color: theme.colorScheme.outline),
-          borderRadius: BorderRadius.circular(2),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.language, size: 18, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
-              ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 120),
-                child: Text(
-                  _localeName(_locale),
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(Icons.arrow_drop_down, color: theme.colorScheme.primary),
-            ],
-          ),
-        ),
       ),
     );
   }
