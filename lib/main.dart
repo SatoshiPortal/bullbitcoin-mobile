@@ -31,7 +31,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:payjoin_flutter/common.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -50,7 +49,6 @@ class Bull {
     final initTasks = [
       LibLwk.init(),
       BoltzCore.init(),
-      PConfig.initializeApp(),
       LibBbqr.init(),
       LibArk.init(),
       if (Platform.isAndroid) BitBoxFlutterApi.initialize(),
