@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -5,10 +6,9 @@ import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_de
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_xpub_usecase.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:satoshifier/satoshifier.dart' as satoshifier;
 
-class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
+class ImportWatchOnlyCubit extends SafeCubit<ImportWatchOnlyState> {
   final ImportWatchOnlyDescriptorUsecase _importWatchOnlyDescriptorUsecase;
   final ImportWatchOnlyXpubUsecase _importWatchOnlyXpubUsecase;
 

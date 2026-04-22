@@ -1,13 +1,13 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'backup_settings_cubit.freezed.dart';
 part 'backup_settings_state.dart';
 
-class BackupSettingsCubit extends Cubit<BackupSettingsState> {
+class BackupSettingsCubit extends SafeCubit<BackupSettingsState> {
   BackupSettingsCubit({
     required GetWalletsUsecase getWalletsUsecase,
     required SettingsRepository settingsRepository,

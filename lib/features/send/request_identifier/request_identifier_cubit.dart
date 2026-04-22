@@ -1,8 +1,8 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/send/request_identifier/request_identifier_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class RequestIdentifierCubit extends Cubit<RequestIdentifierState> {
+class RequestIdentifierCubit extends SafeCubit<RequestIdentifierState> {
   RequestIdentifierCubit() : super(const RequestIdentifierState());
 
   void onScanned(String data) {

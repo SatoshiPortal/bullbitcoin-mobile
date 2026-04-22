@@ -1,15 +1,15 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/delete_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/process_and_separate_seeds_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'all_seed_view_cubit.freezed.dart';
 part 'all_seed_view_state.dart';
 
-class AllSeedViewCubit extends Cubit<AllSeedViewState> {
+class AllSeedViewCubit extends SafeCubit<AllSeedViewState> {
   AllSeedViewCubit({
     required GetAllSeedsUsecase getAllSeedsUsecase,
     required GetWalletsUsecase getWalletsUsecase,

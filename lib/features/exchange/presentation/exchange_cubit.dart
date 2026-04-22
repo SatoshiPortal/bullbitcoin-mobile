@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
@@ -10,10 +11,9 @@ import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_us
 import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 
-class ExchangeCubit extends Cubit<ExchangeState> {
+class ExchangeCubit extends SafeCubit<ExchangeState> {
   ExchangeCubit({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required SaveExchangeApiKeyUsecase saveExchangeApiKeyUsecase,

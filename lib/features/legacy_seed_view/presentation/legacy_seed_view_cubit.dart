@@ -1,12 +1,12 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_seed.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'legacy_seed_view_cubit.freezed.dart';
 part 'legacy_seed_view_state.dart';
 
-class LegacySeedViewCubit extends Cubit<LegacySeedViewState> {
+class LegacySeedViewCubit extends SafeCubit<LegacySeedViewState> {
   LegacySeedViewCubit({required GetOldSeedsUsecase getOldSeedsUsecase})
     : _getOldSeedsUsecase = getOldSeedsUsecase,
       super(const LegacySeedViewState());
