@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:typed_data';
@@ -9,7 +10,9 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart' as logger;
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:payjoin/payjoin.dart' as pj;
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
@@ -749,6 +752,23 @@ class PdkPayjoinDatasource {
       return null;
     }
   }
+
+  static Future<Uint8List> _postBytes(
+    Dio dio,
+    String url,
+    Uint8List body,
+    String contentType,
+  ) async {
+    final response = await dio.post<List<int>>(
+      url,
+      data: body,
+      options: Options(
+        headers: {'Content-Type': contentType},
+        responseType: ResponseType.bytes,
+      ),
+    );
+    return Uint8List.fromList(response.data ?? const []);
+  }
 }
 
 class PayjoinNotFoundException extends BullException {
@@ -769,6 +789,32 @@ class PayjoinExpiredException extends BullException {
 
 class OhttpRelaysUnavailableException extends BullException {
   OhttpRelaysUnavailableException(super.message);
+}
+
+class SendCreationException extends BullException {
+  SendCreationException(super.message);
+}
+
+class _IsScriptOwned implements pj.IsScriptOwned {
+  final bool Function(Uint8List) _fn;
+  _IsScriptOwned(this._fn);
+
+  @override
+  bool callback(Uint8List script) => _fn(script);
+}
+
+/// Assume the wallet has not seen the inputs since it is an interactive wallet
+class _AssumeUnseen implements pj.IsOutputKnown {
+  @override
+  bool callback(pj.PlainOutPoint outpoint) => false;
+}
+
+class _ProcessPsbt implements pj.ProcessPsbt {
+  final String Function(String) _sign;
+  _ProcessPsbt(this._sign);
+
+  @override
+  String callback(String psbt) => _sign(psbt);
 }
 
 class InMemoryJsonReceiverSessionPersister
