@@ -49,15 +49,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.7.0"
-  ark_wallet:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "847342ecd4a2d70bea5a0755e4152d1cb7e68493"
-      resolved-ref: "847342ecd4a2d70bea5a0755e4152d1cb7e68493"
-      url: "https://github.com/SatoshiPortal/ark-wallet-dart"
-    source: git
-    version: "0.0.1"
   async:
     dependency: "direct main"
     description:
@@ -94,20 +85,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
-      resolved-ref: ebf4a6675ede8f7337ab18121157717dc9dc9751
+      ref: "fix/reproducible-build"
+      resolved-ref: "76695446cd57f94802327f6ab50392f651c49b63"
       url: "https://github.com/ethicnology/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
-  bdk_flutter:
-    dependency: transitive
-    description:
-      path: "."
-      ref: "3024b3452b4b0e5982d737f82ff461024a881ae7"
-      resolved-ref: "3024b3452b4b0e5982d737f82ff461024a881ae7"
-      url: "https://github.com/SatoshiPortal/bdk-flutter"
-    source: git
-    version: "0.31.3"
   bech32:
     dependency: transitive
     description:
@@ -156,13 +138,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
-  bitbox_flutter:
+  bitbox_transport:
     dependency: "direct main"
     description:
-      path: "."
-      ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
-      resolved-ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
-      url: "https://github.com/SatoshiPortal/bitbox-dart"
+      path: "packages/bitbox-transport"
+      ref: main
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
     version: "0.1.0"
   bitcoin_base:
@@ -214,15 +196,15 @@ packages:
       url: "https://github.com/fusion44/dart_bolt11_decoder"
     source: git
     version: "1.0.2"
-  boltz:
+  boltz_stream:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "80d6f1a4b307717bc8eb1ad110d85f0a2ee5e5a4"
-      resolved-ref: "80d6f1a4b307717bc8eb1ad110d85f0a2ee5e5a4"
-      url: "https://github.com/SatoshiPortal/boltz-dart.git"
+      path: "packages/boltz-stream"
+      ref: main
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
     source: git
-    version: "0.2.1"
+    version: "0.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -303,6 +285,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.12.5"
+  bull_sdk:
+    dependency: "direct main"
+    description:
+      path: "packages/bull_sdk"
+      ref: main
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
+    source: git
+    version: "1.0.0+1"
   camera:
     dependency: transitive
     description:
@@ -331,10 +322,10 @@ packages:
     dependency: transitive
     description:
       name: camera_platform_interface
-      sha256: "98cfc9357e04bad617671b4c1f78a597f25f08003089dd94050709ae54effc63"
+      sha256: "7ac852d77699acee79f0d438b793feee26721841e50973576419ff5c6d95e9b7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.12.0"
+    version: "2.13.0"
   camera_web:
     dependency: transitive
     description:
@@ -487,15 +478,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.5"
-  dart_bbqr:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "170873e1d59a0b037f2dfac4d26bf900cd539532"
-      resolved-ref: "170873e1d59a0b037f2dfac4d26bf900cd539532"
-      url: "https://github.com/SatoshiPortal/bbqr-dart"
-    source: git
-    version: "0.0.1"
   dart_mappable:
     dependency: transitive
     description:
@@ -755,10 +737,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_rust_bridge
-      sha256: "37ef40bc6f863652e865f0b2563ea07f0d3c58d8efad803cc01933a4b2ee067e"
+      sha256: e87d6b9ee934dcd24a128ccb2bd91905d2d5fe5c06245d6a8f5477d4907a437a
       url: "https://pub.dev"
     source: hosted
-    version: "2.11.1"
+    version: "2.12.0"
   flutter_secure_storage:
     dependency: "direct main"
     description:
@@ -933,10 +915,18 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "48fb2f42ad057476fa4b733cb95e9f9ea7b0b010bb349ea491dca7dbdb18ffc4"
+      sha256: "5540e4a3f416dd4a93458257b908eb88353cbd0fb5b0a3d1bd7d849ba1e88735"
       url: "https://pub.dev"
     source: hosted
-    version: "17.2.0"
+    version: "17.2.1"
+  google_cloud:
+    dependency: transitive
+    description:
+      name: google_cloud
+      sha256: fbcde933b2d8600c3cdb2328f8f4c47628ec29a39e9cef85dee535c7868993c4
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   google_fonts:
     dependency: "direct main"
     description:
@@ -1005,10 +995,10 @@ packages:
     dependency: transitive
     description:
       name: googleapis_auth
-      sha256: b81fe352cc4a330b3710d2b7ad258d9bcef6f909bb759b306bf42973a7d046db
+      sha256: "661738b763d3e524de69df53bf4e03943e4e01e98265cebcc6684871b06a5379"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.3.0"
   graphs:
     dependency: transitive
     description:
@@ -1287,15 +1277,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.2"
-  lwk:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "2e10deb2fbaa76e888bda7be6a2128ce2c05173d"
-      resolved-ref: "2e10deb2fbaa76e888bda7be6a2128ce2c05173d"
-      url: "https://github.com/SatoshiPortal/lwk-dart"
-    source: git
-    version: "0.2.2"
   matcher:
     dependency: transitive
     description:
@@ -1492,8 +1473,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
-      resolved-ref: "913812dba120703ce9738fa330c5203e1d11f2fa"
+      ref: develop
+      resolved-ref: "66eb7287b7b2ff55ca22e4b32e2222ccc2ea64fb"
       url: "https://github.com/SatoshiPortal/payjoin-dart"
     source: git
     version: "0.23.0"
@@ -1666,6 +1647,15 @@ packages:
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"
+  rust_lib_bull_sdk:
+    dependency: transitive
+    description:
+      path: "packages/bull_sdk/rust_builder"
+      ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      resolved-ref: "26ed72d1a5ab383932fa9d59a36b2148c11a1c24"
+      url: "https://github.com/SatoshiPortal/bull_sdk"
+    source: git
+    version: "0.0.1"
   rxdart:
     dependency: transitive
     description:
@@ -1678,27 +1668,27 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: c1dd6d76639eaa79a8e6c40ff1c05c78e9c4bae5
-      resolved-ref: c1dd6d76639eaa79a8e6c40ff1c05c78e9c4bae5
-      url: "https://github.com/SatoshiPortal/dart-satoshifier"
+      ref: migrate-to-bull-sdk
+      resolved-ref: "4002c00154301f77a3855c8f6c5d41675dbb87f0"
+      url: "https://github.com/SatoshiPortal/satoshifier-dart"
     source: git
     version: "0.0.1"
   sentry:
     dependency: transitive
     description:
       name: sentry
-      sha256: "682360642a7b14b36daef3b5574b7269164e7763512ac92cdafd55b695bd2183"
+      sha256: "8c07a413ce5691db5b299024498f1ad6376e015f61b6d8fc8819b042f65df6c7"
       url: "https://pub.dev"
     source: hosted
-    version: "9.16.1"
+    version: "9.18.0"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
-      sha256: cf4944d02daa952aeb0e1ab01ddb3db8bfc6b7e16e9811edacf05d9eed276fda
+      sha256: "0c98ca79261325806c4eccc47274910306e2d914dfefc598650819677ce2b484"
       url: "https://pub.dev"
     source: hosted
-    version: "9.16.1"
+    version: "9.18.0"
   share_plus:
     dependency: "direct main"
     description:
@@ -2166,10 +2156,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "45caa6c5917fa127b5dbcfbd1fa60b14e583afdc08bfc96dda38886ca252eb60"
+      sha256: "046d3928e16fa4dc46e8350415661755ab759d9fc97fc21b5ab295f71e4f0499"
       url: "https://pub.dev"
     source: hosted
-    version: "15.0.2"
+    version: "15.1.0"
   watcher:
     dependency: transitive
     description:
@@ -2324,5 +2314,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.10.3 <4.0.0"
+  dart: ">=3.10.4 <4.0.0"
   flutter: ">=3.38.4"

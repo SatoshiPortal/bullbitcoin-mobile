@@ -89,8 +89,8 @@ class ArkWalletDetailPage extends StatelessWidget {
                         padding: const EdgeInsets.all(13.0),
                         child: BBButton.big(
                           label: context.loc.arkSettleTransactions,
-                          onPressed:
-                              () => SettleBottomSheet.show(context, cubit),
+                          onPressed: () =>
+                              SettleBottomSheet.show(context, cubit),
                           bgColor: context.appColors.primary,
                           textColor: context.appColors.onPrimary,
                         ),

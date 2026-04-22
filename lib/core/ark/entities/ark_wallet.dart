@@ -1,4 +1,4 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bull_sdk/ark.dart' as ark_wallet;
 import 'package:bb_mobile/core/ark/ark.dart';
 import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
@@ -70,7 +70,7 @@ class ArkWalletEntity {
     }
   }
 
-  Future<List<ark_wallet.Transaction>> get transactions =>
+  Future<List<ark_wallet.ArkTransaction>> get transactions =>
       wallet.transactionHistory();
 
   Future<void> settle(bool selectRecoverableVtxos) =>

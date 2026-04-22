@@ -2,11 +2,26 @@
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_transaction.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
-import 'package:boltz/boltz.dart';
+import 'dart:convert';
+
+import 'package:bull_sdk/boltz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'old_swap.freezed.dart';
 part 'old_swap.g.dart';
+
+class SwapStreamStatusConverter
+    implements JsonConverter<SwapStreamStatus, Map<String, dynamic>> {
+  const SwapStreamStatusConverter();
+
+  @override
+  SwapStreamStatus fromJson(Map<String, dynamic> json) =>
+      SwapStreamStatus.fromJson(json: jsonEncode(json));
+
+  @override
+  Map<String, dynamic> toJson(SwapStreamStatus object) =>
+      jsonDecode(object.toJson()) as Map<String, dynamic>;
+}
 
 class OldBBNetworkConverter implements JsonConverter<OldBBNetwork, String> {
   const OldBBNetworkConverter();
@@ -89,7 +104,7 @@ abstract class OldSwapTx with _$OldSwapTx {
     String? claimTxid, // reverse + chain.self
     String? lockupTxid, // submarine + chain.sendSwap + chain.sendSwap
     String? label,
-    SwapStreamStatus? status, // should this be SwapStaus?
+    @SwapStreamStatusConverter() SwapStreamStatus? status,
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
