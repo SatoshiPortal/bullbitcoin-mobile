@@ -2,16 +2,16 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gap/gap.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppInitErrorScreen extends StatefulWidget {
-  const AppInitErrorScreen({
-    super.key,
-    required this.error,
-  });
+  const AppInitErrorScreen({super.key, required this.error});
 
   final Object error;
 
@@ -57,145 +57,87 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
     }
   }
 
+  Future<void> _contactSupport() async {
+    await launchUrl(
+      Uri.parse(SettingsConstants.webSupportLink),
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Look up translations directly — avoids MaterialApp locale async resolution
     final loc = lookupAppLocalizations(_locale);
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: AppTheme.themeData(AppThemeType.dark),
       home: Builder(
         builder: (context) {
-          final theme = Theme.of(context);
           return Scaffold(
             body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: PopupMenuButton<Locale>(
-                        onSelected: (locale) =>
-                            setState(() => _locale = locale),
-                        constraints: const BoxConstraints(maxHeight: 300),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        itemBuilder: (context) =>
-                            AppLocalizations.supportedLocales.map((locale) {
-                              final name = _localeName(locale);
-                              return PopupMenuItem<Locale>(
-                                value: locale,
-                                child: Text(
-                                  name,
-                                  style: theme.textTheme.bodyMedium,
-                                ),
-                              );
-                            }).toList(),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: theme.colorScheme.outline,
-                            ),
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                          child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.language,
-                                size: 18,
-                                color: theme.colorScheme.primary,
-                              ),
-                              const SizedBox(width: 8),
-                              ConstrainedBox(
-                                constraints:
-                                    const BoxConstraints(minWidth: 120),
-                                child: Text(
-                                  _localeName(_locale),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                Icons.arrow_drop_down,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ],
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            loc.appInitErrorTitle,
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ),
-                        ),
-                      ),
+                        const SizedBox(width: 12),
+                        _buildLocalePicker(context),
+                      ],
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      loc.appInitErrorTitle,
-                      style: theme.textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                    const Gap(24),
+                    _BackupSection(
+                      asset: 'assets/misc/undraw_secure-usb-drive.svg',
+                      title: loc.appInitErrorHasBackupTitle,
+                      message: loc.appInitErrorHasBackupMessage,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      loc.appInitErrorMessage,
-                      style: theme.textTheme.bodyMedium,
+                    const Gap(32),
+                    Divider(color: context.appColors.border),
+                    const Gap(32),
+                    _BackupSection(
+                      asset: 'assets/misc/undraw_forgot-password.svg',
+                      title: loc.appInitErrorNoBackupTitle,
+                      message: loc.appInitErrorNoBackupMessage,
                     ),
-                    const SizedBox(height: 8),
-                    GestureDetector(
-                      onTap: () => launchUrl(
-                        Uri.parse(SettingsConstants.webSupportLink),
-                        mode: LaunchMode.externalApplication,
-                      ),
-                      child: Text(
-                        SettingsConstants.webSupportLink.replaceFirst(
-                          'https://',
-                          '',
-                        ),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          decoration: TextDecoration.underline,
-                          decorationColor: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.errorContainer,
-                            borderRadius: BorderRadius.circular(4.0),
-                            border: Border.all(
-                              color: theme.colorScheme.error,
-                            ),
-                          ),
-                          child: SelectableText(
-                            widget.error.toString(),
-                            style: TextStyle(
-                              color: theme.colorScheme.onErrorContainer,
-                              fontFamily: 'monospace',
-                              fontSize: 12,
-                            ),
+                    const Gap(32),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: BBButton.big(
+                            label: loc.appInitErrorContactSupportButton,
+                            iconData: Icons.open_in_new,
+                            bgColor: context.appColors.primary,
+                            textColor: context.appColors.onPrimary,
+                            onPressed: _contactSupport,
                           ),
                         ),
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: BBButton.big(
+                            label: loc.appInitErrorShareLogsButton,
+                            iconData: Icons.share,
+                            iconFirst: true,
+                            bgColor: context.appColors.surface,
+                            textColor: context.appColors.text,
+                            borderColor: context.appColors.border,
+                            outlined: true,
+                            onPressed: () => _shareLogs(context),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: () => _shareLogs(context),
-                        icon: const Icon(Icons.share),
-                        label: Text(loc.appInitErrorShareLogsButton),
-                      ),
+                    const Gap(16),
+                    _ErrorDetails(
+                      error: widget.error,
+                      label: loc.appInitErrorDetailsToggle,
                     ),
                   ],
                 ),
@@ -203,6 +145,133 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildLocalePicker(BuildContext context) {
+    final theme = Theme.of(context);
+    return PopupMenuButton<Locale>(
+      onSelected: (locale) => setState(() => _locale = locale),
+      constraints: const BoxConstraints(maxHeight: 300),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+      itemBuilder: (context) => AppLocalizations.supportedLocales.map((locale) {
+        return PopupMenuItem<Locale>(
+          value: locale,
+          child: Text(
+            _localeName(locale),
+            style: theme.textTheme.bodyMedium,
+          ),
+        );
+      }).toList(),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(color: theme.colorScheme.outline),
+          borderRadius: BorderRadius.circular(2),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.language, size: 18, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 120),
+                child: Text(
+                  _localeName(_locale),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.arrow_drop_down, color: theme.colorScheme.primary),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BackupSection extends StatelessWidget {
+  const _BackupSection({
+    required this.asset,
+    required this.title,
+    required this.message,
+  });
+
+  final String asset;
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: SvgPicture.asset(
+            asset,
+            height: 120,
+            fit: BoxFit.contain,
+            placeholderBuilder: (_) => const SizedBox(height: 120),
+          ),
+        ),
+        const Gap(16),
+        Text(
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const Gap(8),
+        Text(
+          message,
+          style: theme.textTheme.bodyMedium,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class _ErrorDetails extends StatelessWidget {
+  const _ErrorDetails({required this.error, required this.label});
+
+  final Object error;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Theme(
+      // Strip ExpansionTile's default divider + padding.
+      data: theme.copyWith(dividerColor: Colors.transparent),
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: const EdgeInsets.only(top: 8),
+        iconColor: theme.colorScheme.onSurface,
+        collapsedIconColor: theme.colorScheme.onSurface,
+        title: Text(label, style: theme.textTheme.bodyMedium),
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: context.appColors.surfaceContainer,
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: context.appColors.border),
+            ),
+            child: SelectableText(
+              error.toString(),
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            ),
+          ),
+        ],
       ),
     );
   }
