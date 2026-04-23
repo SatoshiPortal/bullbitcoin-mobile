@@ -14,10 +14,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 /// Extracted from `beforeSend` so the invariant can be unit-tested in
 /// isolation. Do not weaken without updating the wizard and settings
 /// disclosure copy.
-SentryEvent? filterSentryEvent(
-  SentryEvent event, {
-  required bool userConsent,
-}) {
+SentryEvent? filterSentryEvent(SentryEvent event, {required bool userConsent}) {
   final isMigration = event.tags?['category'] == 'migration';
   if (!isMigration && !userConsent) return null;
   final exceptions = event.exceptions;

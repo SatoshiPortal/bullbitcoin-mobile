@@ -64,7 +64,7 @@ class Bull {
       (s) => s.isErrorReportingEnabled,
     );
     await initWorkmanager();
-    await _reportAppUpgradeTransitionIfAny();
+    await _reportLaunchTransition();
   }
 
   /// Reads the best-known value for user consent before the locator is
@@ -137,7 +137,7 @@ class Bull {
   /// [MigrationReporter.currentToAppVersion] so any migration event fired
   /// later in `Bull.init` (including FSS fallback and drift schema errors)
   /// carries from/to app-version tags. Does not touch Sentry or the
-  /// persisted marker — that's [_reportAppUpgradeTransitionIfAny].
+  /// persisted marker — that's [_reportLaunchTransition].
   static Future<void> _populateAppVersionContext() async {
     final info = await PackageInfo.fromPlatform();
     // Include the build number so within-version rebuilds (6.9.1+177 vs
@@ -150,17 +150,29 @@ class Bull {
     MigrationReporter.currentToAppVersion = current;
   }
 
-  /// Fires a `migration_app_upgrade` transition event when we detect the
-  /// app has moved to a new version, then advances the persisted marker.
-  /// Only the second half (marker write) is deferred until after a
-  /// successful init so a mid-init crash retries the transition next launch.
-  static Future<void> _reportAppUpgradeTransitionIfAny() async {
+  /// Fires one of two transition events at launch, then advances the
+  /// persisted marker:
+  ///
+  /// - `fresh_install` — no previous version seen (first successful init
+  ///   on this install). Carries `to_app_version` only.
+  /// - `app_version_change` — previous version differs from current (any
+  ///   direction: upgrade, downgrade, same-version rebuild). Carries both
+  ///   `from_app_version` and `to_app_version`.
+  ///
+  /// The marker write is deferred until after the transition fires so a
+  /// mid-init crash retries the event on the next launch.
+  static Future<void> _reportLaunchTransition() async {
     final previous = MigrationReporter.currentFromAppVersion;
     final current = MigrationReporter.currentToAppVersion;
     if (current == null) return;
-    if (previous != null && previous != current) {
+    if (previous == null) {
       await MigrationReporter.reportTransition(
-        transitionType: 'app_upgrade',
+        transitionType: 'fresh_install',
+        toAppVersion: current,
+      );
+    } else if (previous != current) {
+      await MigrationReporter.reportTransition(
+        transitionType: 'app_version_change',
         fromAppVersion: previous,
         toAppVersion: current,
       );

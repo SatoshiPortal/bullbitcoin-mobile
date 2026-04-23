@@ -172,9 +172,8 @@ class Logger {
     final tsvLine = sanitizedContent.join('\t');
     _queueWrite(tsvLine);
 
-    // Severe migration errors are always reported to Sentry regardless of
-    // the user's general error-reporting consent. The caller MUST await
-    // this method before rethrowing so the native Sentry SDK has time to
+    // Severe migration errors are always reported to Sentry.
+    // The caller MUST await this method before rethrowing so the native Sentry SDK has time to
     // persist the envelope to its on-disk outbox before the isolate tears
     // down (there is no public `flush` in sentry_flutter 9 — durability
     // comes from that outbox, which retransmits on the next launch).

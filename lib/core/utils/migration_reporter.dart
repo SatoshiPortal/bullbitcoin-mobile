@@ -93,9 +93,7 @@ class MigrationReporter {
     final docsDir = await getApplicationDocumentsDirectory();
     // OldHiveDatasource opens a box named 'store' — Hive stores it on disk as
     // 'store.hive' alongside a 'store.lock' file under the app docs directory.
-    final hivePresent = await File(
-      p.join(docsDir.path, 'store.hive'),
-    ).exists();
+    final hivePresent = await File(p.join(docsDir.path, 'store.hive')).exists();
     return {
       'fss_library': fssLibrary,
       'drift_schema_version': kDriftSchemaVersion.toString(),
