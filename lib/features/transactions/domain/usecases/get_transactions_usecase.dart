@@ -12,29 +12,23 @@ import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final BoltzSwapRepository _mainnetBoltzSwapRepository;
-  final BoltzSwapRepository _testnetBoltzSwapRepository;
+  final BoltzSwapRepository _boltzSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _mainnetOrderRepository;
-  final ExchangeOrderRepository _testnetOrderRepository;
+  final ExchangeOrderRepository _orderRepository;
   final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
 
   GetTransactionsUsecase({
     required SettingsRepository settingsRepository,
     required WalletTransactionRepository walletTransactionRepository,
-    required BoltzSwapRepository mainnetBoltzSwapRepository,
-    required BoltzSwapRepository testnetBoltzSwapRepository,
+    required BoltzSwapRepository boltzSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository mainnetOrderRepository,
-    required ExchangeOrderRepository testnetOrderRepository,
+    required ExchangeOrderRepository orderRepository,
     required LabelExchangeOrdersUsecase labelExchangeOrdersUsecase,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
-       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
-       _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
+       _boltzSwapRepository = boltzSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _mainnetOrderRepository = mainnetOrderRepository,
-       _testnetOrderRepository = testnetOrderRepository,
+       _orderRepository = orderRepository,
        _labelExchangeOrdersUsecase = labelExchangeOrdersUsecase;
 
   Future<List<Transaction>> execute({
@@ -44,12 +38,6 @@ class GetTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final swapRepository = environment.isTestnet
-          ? _testnetBoltzSwapRepository
-          : _mainnetBoltzSwapRepository;
-      final orderRepository = environment.isTestnet
-          ? _testnetOrderRepository
-          : _mainnetOrderRepository;
 
       // Fetch wallet transactions, payjoins, orders and swaps
       final (walletTransactions, payjoins, orders, swaps) = await (
@@ -62,8 +50,8 @@ class GetTransactionsUsecase {
           walletId: walletId,
           environment: environment,
         ),
-        orderRepository.getOrders(),
-        swapRepository.getAllSwaps(walletId: walletId),
+        _orderRepository.getOrders(),
+        _boltzSwapRepository.getAllSwaps(walletId: walletId),
       ).wait;
 
       if (orders.isNotEmpty) await _labelExchangeOrdersUsecase.execute();

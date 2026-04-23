@@ -2,17 +2,12 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 
 class GetAutoSwapSettingsUsecase {
-  final BoltzSwapRepository _mainnetRepository;
-  final BoltzSwapRepository _testnetRepository;
+  final BoltzSwapRepository _repository;
 
-  GetAutoSwapSettingsUsecase({
-    required BoltzSwapRepository mainnetRepository,
-    required BoltzSwapRepository testnetRepository,
-  }) : _mainnetRepository = mainnetRepository,
-       _testnetRepository = testnetRepository;
+  GetAutoSwapSettingsUsecase({required BoltzSwapRepository repository})
+    : _repository = repository;
 
-  Future<AutoSwap> execute({required bool isTestnet}) async {
-    final repository = isTestnet ? _testnetRepository : _mainnetRepository;
-    return await repository.getAutoSwapParams();
+  Future<AutoSwap> execute() async {
+    return _repository.getAutoSwapParams();
   }
 }

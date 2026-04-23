@@ -75,10 +75,6 @@ class SendLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
       ),
@@ -88,10 +84,6 @@ class SendLocator {
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -116,10 +108,6 @@ class SendLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
       ),
     );
     locator.registerFactory<UpdateSendSwapLockupFeesUsecase>(
@@ -127,10 +115,6 @@ class SendLocator {
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
