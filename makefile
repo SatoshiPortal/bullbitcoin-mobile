@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build build verify test unit-test integration-test fvm-check lock-android-deps
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -71,9 +71,8 @@ docker-build:
 		.
 
 MODE ?= debug
-FORMAT ?= apk
 
-# Allow "make apk release" or "make apk debug" syntax
+# Allow "make build release" or "make build debug" syntax
 ifneq (,$(filter release,$(MAKECMDGOALS)))
   MODE := release
 endif
@@ -83,23 +82,44 @@ endif
 release debug:
 	@:
 
-apk: docker-build
-	@echo "🔨 Building $(FORMAT) ($(MODE)) via Docker"
-	@docker build -f Dockerfile.apk \
-		--build-arg MODE=$(MODE) \
-		--build-arg FORMAT=$(FORMAT) \
-		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
-		-t bull-mobile-apk .
-	@docker rm -f bull-apk-extract > /dev/null 2>&1 || true
-	@docker create --name bull-apk-extract bull-mobile-apk > /dev/null
-	@docker cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
-	@docker rm bull-apk-extract > /dev/null
-	@echo "✅ APK extracted: ./app-$(MODE).apk"
-	@sha256sum ./app-$(MODE).apk
+build: docker-build
+	@if [ -n "$$KEYSTORE" ]; then \
+		if [ -z "$$KEYSTORE_PASS" ] || [ -z "$$KEY_ALIAS" ] || [ -z "$$KEY_PASS" ]; then \
+			echo "❌ Signed builds require all of: KEYSTORE, KEYSTORE_PASS, KEY_ALIAS, KEY_PASS"; exit 1; \
+		fi; \
+		if [ ! -f "$$KEYSTORE" ]; then echo "❌ Keystore file not found: $$KEYSTORE"; exit 1; fi; \
+	fi
+	@echo "🔨 Building AAB + universal APK ($(MODE))"
+	@EXTRA_ARGS=""; \
+	if [ -n "$$KEYSTORE" ]; then \
+		KEYSTORE_ABS=$$(realpath "$$KEYSTORE"); \
+		case "$$KEYSTORE_ABS" in *[[:space:]]*) echo "❌ KEYSTORE path must not contain spaces"; exit 1 ;; esac; \
+		EXTRA_ARGS="-v $$(dirname $$KEYSTORE_ABS):/keys:ro \
+			-e KEYSTORE_FILE=$$(basename $$KEYSTORE_ABS) \
+			-e KEYSTORE_PASS -e KEY_ALIAS -e KEY_PASS"; \
+	fi; \
+	USERNS_ARGS=""; \
+	if docker --version 2>/dev/null | grep -qi podman \
+	   || readlink -f "$$(command -v docker 2>/dev/null)" 2>/dev/null | grep -qi podman; then \
+		USERNS_ARGS="--userns=keep-id:uid=1000,gid=1000"; \
+	fi; \
+	docker run --rm \
+		$$USERNS_ARGS \
+		-v "$(CURDIR):/app" \
+		-e MODE=$(MODE) \
+		-e GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
+		$$EXTRA_ARGS \
+		bull-mobile \
+		bash /app/scripts/build.sh
 
 verify:
 	@echo "🔍 Verifying reproducible build"
-	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
+	@./scripts/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
+
+lock-android-deps: fvm-check
+	@echo "🔒 Generating Android Gradle lockfile"
+	@fvm flutter pub get
+	@./android/gradlew -p android :app:dependencies --write-locks
 
 devcontainer:
 	@echo "🏗️ Building Dev Container"

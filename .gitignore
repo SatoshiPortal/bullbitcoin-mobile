@@ -101,3 +101,6 @@ today.md
 
 CLAUDE.md
 .zed/
+
+# Reproducible build verification workspaces
+bullbitcoin_*_verification/
