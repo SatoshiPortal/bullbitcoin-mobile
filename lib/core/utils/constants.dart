@@ -50,9 +50,10 @@ class AssetConstants {
 class PayjoinConstants {
   static List<String> get ohttpRelayUrls {
     final list = [
-      'https://ohttp.achow101.com',
+      // 'https://ohttp.achow101.com',
+      // 'https://ohttp.cakewallet.com',
       'https://pj.bobspacebkk.com',
-      'https://ohttp.cakewallet.com',
+      'https://pj.benalleng.com'
     ];
     list.shuffle(Random.secure());
     return list;
@@ -84,6 +85,7 @@ class ApiServiceConstants {
   // BB test currently not operational
   static const bbElectrumTestUrl = 'ssl://wes.bullbitcoin.com:60002';
   static const publicElectrumTestUrl = 'ssl://blockstream.info:993';
+  static const publicElectrumTestUrlTwo = 'ssl://testnet.aranguren.org:51002';
 
   // Liquid Electrum servers - lwk does not accept ssl:// prefix
   static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';
