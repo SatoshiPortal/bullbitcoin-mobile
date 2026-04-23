@@ -77,5 +77,69 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক"
+  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
+  "backButton": "উভতি যাওক",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "আৰম্ভ কৰক",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "পোহৰ",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "আন্ধাৰ",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "চিষ্টেম",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "মই অৱদান দিওঁ",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "মই অৱদান নিদিওঁ",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "মাইগ্ৰেশ্বন লগ",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "সদায় সক্ৰিয় — এই ফিচাৰে এপৰ সংস্কৰণসমূহৰ মাজত আপোনাৰ ৱালেটৰ সুৰক্ষিত স্থানান্তৰ নিশ্চিত কৰে।",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "মাইগ্ৰেশ্বন লগ নিষ্ক্ৰিয় কৰিব নোৱাৰি। ব্যৱহাৰকাৰীসকলে এপৰ সংস্কৰণসমূহৰ মাজত সফলভাৱে স্থানান্তৰ কৰে নে নাই জানিবলৈ আমাক ইয়াৰ প্ৰয়োজন।",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "আপোনাৰ বেকআপ ব্যৱহাৰ কৰক",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "আপোনাৰ বেকআপৰ বাবে, আপোনাৰ ধন সুৰক্ষিত।\nএপটো পুনৰ ইনষ্টল কৰি আপুনি আপোনাৰ ৱালেট পুনৰুদ্ধাৰ কৰিব পাৰে।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "কোনো বেকআপ নাই?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "এপটো মচি নেপেলাব।\nৰেস্কিউৰ চেষ্টা কৰিবলৈ আমাৰ সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "সহায় দলৰ সৈতে যোগাযোগ কৰক",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "ভুলৰ বিৱৰণ দেখুৱাওক",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

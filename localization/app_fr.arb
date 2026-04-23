@@ -4476,5 +4476,69 @@
   "legacyStorageWarningLater": "Plus tard",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Retour",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Commencer",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Clair",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Sombre",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Système",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Je participe",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Je ne participe pas",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingMigrationTitle": "Journaux de migration",
+  "@errorReportingMigrationTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Toujours actif — nous permet de vérifier que votre portefeuille migre en toute sécurité entre les versions de l'application.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingMigrationSnackbar": "Les journaux de migration ne peuvent pas être désactivés. Nous en avons besoin pour savoir si les utilisateurs migrent correctement entre les versions de l'application.",
+  "@errorReportingMigrationSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Utilisez votre sauvegarde",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Grâce à votre sauvegarde, vos fonds sont en sécurité.\nVous pouvez récupérer votre portefeuille en réinstallant l'application.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Pas de sauvegarde ?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Ne supprimez pas l'application.\nContactez notre équipe de support pour tenter un sauvetage.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contacter le support",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Afficher les détails de l'erreur",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }
