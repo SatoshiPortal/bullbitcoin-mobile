@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/report.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 export 'package:logging_colorful/logging_colorful.dart';
@@ -145,7 +144,6 @@ class Logger {
     required Object error,
   }) {
     logger.severe(message ?? error.toString(), error, trace);
-    Report.error(message: message, exception: error, stackTrace: trace);
   }
 
   /// Logs critical errors that could crash the app or make it unusable.

@@ -5,92 +5,33 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/share_logs_widget.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/seed_recovery_screen.dart';
-import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AppStartupWidget extends StatefulWidget {
-  const AppStartupWidget({super.key, required this.app});
-
-  final Widget app;
-
-  @override
-  State<AppStartupWidget> createState() => _AppStartupWidgetState();
-}
-
-class _AppStartupWidgetState extends State<AppStartupWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return AppStartupListener(
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: BlocBuilder<AppStartupBloc, AppStartupState>(
-          builder: (context, state) {
-            if (state is AppStartupInitial) {
-              return const OnboardingSplash(loading: true);
-            } else if (state is AppStartupLoadingInProgress) {
-              return const OnboardingSplash(loading: true);
-              // show status of migration
-            } else if (state is AppStartupSuccess) {
-              // if (!state.hasDefaultWallets) return const OnboardingScreen();
-              // if (state.isPinCodeSet) return const PinCodeUnlockScreen();
-              // return const HomeScreen();
-              return widget.app;
-            } else if (state is AppStartupFailure) {
-              return AppStartupFailureScreen(
-                hasBackup: state.hasBackup,
-                e: state.e,
-              );
-            }
-
-            // TODO: remove this when all states are handled and return the
-            //  appropriate widget
-            return const SizedBox.shrink();
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class AppStartupListener extends StatelessWidget {
-  const AppStartupListener({super.key, required this.child});
-
-  final Widget child;
+class AppStartupWidget extends StatelessWidget {
+  const AppStartupWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<AppStartupBloc, AppStartupState>(
-          listenWhen: (previous, current) =>
-              current is AppStartupSuccess && previous != current,
-          listener: (context, state) {
-            if (state is AppStartupSuccess && state.isPinCodeSet) {
-              AppRouter.router.go(AppUnlockRoute.appUnlock.path);
-            }
-
-            if (state is AppStartupSuccess && !state.hasDefaultWallets) {
-              AppRouter.router.go(OnboardingRoute.onboarding.path);
-            }
-          },
-        ),
-      ],
-      child: child,
+    return BlocBuilder<AppStartupBloc, AppStartupState>(
+      builder: (context, state) {
+        if (state is AppStartupFailure) {
+          return AppStartupFailureScreen(e: state.e);
+        }
+        return const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 }
 
 class AppStartupFailureScreen extends StatelessWidget {
-  const AppStartupFailureScreen({super.key, this.e, required this.hasBackup});
+  const AppStartupFailureScreen({super.key, this.e});
 
   final Object? e;
-  final bool hasBackup;
 
   @override
   Widget build(BuildContext context) {
@@ -101,8 +42,8 @@ class AppStartupFailureScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Column(
-                mainAxisAlignment: .center,
-                mainAxisSize: .min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(
                     contentPadding: const EdgeInsets.symmetric(
@@ -131,7 +72,7 @@ class AppStartupFailureScreen extends StatelessWidget {
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
-                        'This is a special recovery build created to help users who forgot to backup their mnemonic and were affected by a flutter_secure_storage migration bug that may have wiped wallet data.\n\nUse "Wallet Recovery" below to attempt recovery of your funds.',
+                        'This is a special recovery build created to help users who forgot to backup their mnemonic and were affected by the flutter_secure_storage migration bug that may have failed.\n\nUse "Wallet Recovery" below to attempt recovery of your funds.',
                         style: context.font.bodyMedium?.copyWith(
                           color: context.appColors.secondary.withValues(
                             alpha: 0.7,
@@ -143,18 +84,12 @@ class AppStartupFailureScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   BBButton.big(
                     onPressed: () {
-                      print('DEBUG: Wallet Recovery button pressed');
-                      try {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SeedRecoveryScreen(),
-                          ),
-                        );
-                        print('DEBUG: Navigator.push called');
-                      } catch (e) {
-                        print('DEBUG: Error during navigation: $e');
-                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SeedRecoveryScreen(),
+                        ),
+                      );
                     },
                     label: 'Wallet Recovery',
                     bgColor: context.appColors.error,
@@ -166,7 +101,6 @@ class AppStartupFailureScreen extends StatelessWidget {
                       final url = Uri.parse(
                         SettingsConstants.telegramSupportLink,
                       );
-                      // ignore: deprecated_member_use
                       launchUrl(url, mode: LaunchMode.externalApplication);
                     },
                     label: context.loc.appStartupContactSupportButton,

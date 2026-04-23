@@ -199,18 +199,6 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
     }
   }
 
-  void _copySeed() {
-    if (_recoveredSeeds != null && _currentSeedIndex < _seedKeys.length) {
-      final currentKey = _seedKeys[_currentSeedIndex];
-      final seedValue = _recoveredSeeds![currentKey];
-      if (seedValue != null) {
-        Clipboard.setData(ClipboardData(text: seedValue));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Seed copied to clipboard')),
-        );
-      }
-    }
-  }
 
   Future<void> _exportRawBackup() async {
     // Show warning dialog first
@@ -425,7 +413,7 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
                     Text(
                       'Trying all algorithm combinations',
                       style: context.font.bodySmall?.copyWith(
-                        color: context.appColors.onSurface.withOpacity(0.6),
+                        color: context.appColors.onSurface.withValues(alpha: 0.6),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -457,7 +445,7 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
                     BBButton.big(
                       onPressed: _exportRawBackup,
                       label: 'Export Encrypted Backup',
-                      bgColor: context.appColors.error.withOpacity(0.2),
+                      bgColor: context.appColors.error.withValues(alpha: 0.2),
                       textColor: context.appColors.error,
                     ),
                     const SizedBox(height: 16),
@@ -497,9 +485,7 @@ class _SeedRecoveryScreenState extends State<SeedRecoveryScreen> {
                           Text(
                             _seedKeys[_currentSeedIndex],
                             style: context.font.bodySmall?.copyWith(
-                              color: context.appColors.onSurface.withOpacity(
-                                0.6,
-                              ),
+                              color: context.appColors.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],

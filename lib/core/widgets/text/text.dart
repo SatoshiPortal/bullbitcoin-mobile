@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class BBText extends StatelessWidget {
@@ -21,7 +20,7 @@ class BBText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AutoSizeText(
+    return Text(
       text,
       style: style?.copyWith(color: color),
       maxLines: maxLines,

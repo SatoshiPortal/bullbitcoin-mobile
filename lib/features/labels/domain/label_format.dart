@@ -1,1 +1,0 @@
-enum LabelFormat { bip329 }
