@@ -174,17 +174,21 @@ class Bull {
       options.dsn = kReleaseMode ? ApiServiceConstants.sentryDsn : '';
       options.compressPayload = true;
 
-      // Silence non-explicit transport activity. Keep native crash + ANR +
-      // watchdog handlers on for everyone — migration telemetry bypasses
-      // user consent by product decision.
-      options.enableAutoSessionTracking = false;
-      options.enableAutoNativeBreadcrumbs = false;
+      // Set to true by default
+      // SDK error reports — helps diagnose  issues.
+      options.sendClientReports = true;
+      // Crash counters per session
+      options.enableAutoSessionTracking = true;
+
+      // Depending on user consent to the reporting program
+      options.enableAutoPerformanceTracing = _userConsent;
+      options.tracesSampleRate = _userConsent ? 1.0 : 0;
+      options.enableAutoNativeBreadcrumbs = _userConsent;
+
+      // Set to false by default
+      options.captureFailedRequests = false;
       options.enableUserInteractionBreadcrumbs = false;
       options.enableUserInteractionTracing = false;
-      options.enableAutoPerformanceTracing = false;
-      options.captureFailedRequests = false;
-      options.sendClientReports = false;
-      options.tracesSampleRate = 0;
 
       // Invariant lives in [filterSentryEvent] and is unit-tested. Migration
       // events (tagged `category=migration` via [MigrationReporter]) ALWAYS
