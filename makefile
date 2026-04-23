@@ -89,6 +89,7 @@ apk: docker-build
 		--build-arg MODE=$(MODE) \
 		--build-arg FORMAT=$(FORMAT) \
 		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
+		--ulimit nofile=65536:65536 \
 		-t bull-mobile-apk .
 	@docker rm -f bull-apk-extract > /dev/null 2>&1 || true
 	@docker create --name bull-apk-extract bull-mobile-apk > /dev/null
