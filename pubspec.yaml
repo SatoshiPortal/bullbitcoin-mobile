@@ -21,8 +21,8 @@ dependencies:
   google_fonts: ^6.3.3
   flutter_secure_storage:
     git:
-      url: https://github.com/SatoshiPortal/flutter_secure_storage
-      ref: 47ad06f
+      url: https://github.com/iosifpeterfi/flutter_secure_storage
+      ref: 6530befdff51aa106efc38c54feb856b3831689f
       path: flutter_secure_storage
   flutter_secure_storage_legacy:
     git:

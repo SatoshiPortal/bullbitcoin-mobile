@@ -754,9 +754,9 @@ packages:
     dependency: "direct main"
     description:
       path: flutter_secure_storage
-      ref: "47ad06f"
-      resolved-ref: "47ad06fd643b5b04e9af103eadfc35e4347b9391"
-      url: "https://github.com/SatoshiPortal/flutter_secure_storage"
+      ref: "6530befdff51aa106efc38c54feb856b3831689f"
+      resolved-ref: "6530befdff51aa106efc38c54feb856b3831689f"
+      url: "https://github.com/iosifpeterfi/flutter_secure_storage"
     source: git
     version: "10.0.0"
   flutter_secure_storage_darwin:
