@@ -143,7 +143,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Shukrani kwa nakala rudufu yako, fedha zako ziko salama.\nUnaweza kurejesha pochi yako kwa kusakinisha programu upya.",
+  "appInitErrorHasBackupMessage": "Kutokana na hifadhi rudufu yako, fedha zako ziko salama.\nKwanza jaribu kuanzisha upya programu; ikiwa bado inashindwa, isakinishe upya na urudishe kwa kutumia hifadhi rudufu yako.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

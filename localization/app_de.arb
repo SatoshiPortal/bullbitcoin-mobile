@@ -4438,7 +4438,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Dank deines Backups sind deine Mittel sicher.\nDu kannst deine Wallet wiederherstellen, indem du die App neu installierst.",
+  "appInitErrorHasBackupMessage": "Dank deiner Sicherung sind deine Mittel sicher.\nVersuche zuerst, die App neu zu starten; wenn sie weiterhin nicht startet, installiere sie neu und stelle sie mit deiner Sicherung wieder her.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

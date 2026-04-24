@@ -12548,7 +12548,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "백업 덕분에 자금이 안전합니다.\n앱을 재설치하여 지갑을 복구할 수 있습니다.",
+  "appInitErrorHasBackupMessage": "백업 덕분에 자금은 안전합니다.\n먼저 앱을 다시 시작해 보세요. 여전히 실행되지 않으면 앱을 재설치하고 백업으로 복구하세요.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

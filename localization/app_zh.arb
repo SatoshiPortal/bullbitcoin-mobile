@@ -4532,7 +4532,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "感谢您的备份,您的资金很安全。\n您可以通过重新安装应用程序来恢复钱包。",
+  "appInitErrorHasBackupMessage": "多亏了您的备份，您的资金是安全的。\n请先尝试重启应用，如果仍然无法启动，请重新安装并使用您的备份恢复。",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

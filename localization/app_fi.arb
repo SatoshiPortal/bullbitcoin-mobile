@@ -4524,7 +4524,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Varmuuskopion ansiosta varasi ovat turvassa.\nVoit palauttaa lompakkosi asentamalla sovelluksen uudelleen.",
+  "appInitErrorHasBackupMessage": "Varmuuskopiosi ansiosta varasi ovat turvassa.\nYritä ensin käynnistää sovellus uudelleen; jos se ei vieläkään toimi, asenna se uudelleen ja palauta varmuuskopion avulla.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

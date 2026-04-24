@@ -122,7 +122,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "আপোনাৰ বেকআপৰ বাবে, আপোনাৰ ধন সুৰক্ষিত।\nএপটো পুনৰ ইনষ্টল কৰি আপুনি আপোনাৰ ৱালেট পুনৰুদ্ধাৰ কৰিব পাৰে।",
+  "appInitErrorHasBackupMessage": "আপোনাৰ বেকআপৰ বাবে আপোনাৰ ধন সুৰক্ষিত।\nপ্ৰথমে এপটো পুনৰ আৰম্ভ কৰাৰ চেষ্টা কৰক, যদি এতিয়াও ব্যৰ্থ হয়, পুনৰ ইনষ্টল কৰক আৰু আপোনাৰ বেকআপৰ সৈতে উদ্ধাৰ কৰক।",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

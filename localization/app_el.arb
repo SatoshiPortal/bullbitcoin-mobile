@@ -12548,7 +12548,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Χάρη στο αντίγραφο ασφαλείας σας, τα κεφάλαιά σας είναι ασφαλή.\nΜπορείτε να ανακτήσετε το πορτοφόλι σας επανεγκαθιστώντας την εφαρμογή.",
+  "appInitErrorHasBackupMessage": "Χάρη στο αντίγραφο ασφαλείας σας, τα χρήματά σας είναι ασφαλή.\nΔοκιμάστε πρώτα να επανεκκινήσετε την εφαρμογή· αν εξακολουθεί να αποτυγχάνει, επανεγκαταστήστε την και επαναφέρετε με το αντίγραφο ασφαλείας σας.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

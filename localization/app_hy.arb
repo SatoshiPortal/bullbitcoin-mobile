@@ -123,7 +123,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Ձեր պահուստի շնորհիվ՝ ձեր միջոցները ապահով են։\nԴուք կարող եք վերականգնել ձեր դրամապանակը հավելվածը վերատեղադրելով։",
+  "appInitErrorHasBackupMessage": "Ձեր կրկնօրինակի շնորհիվ ձեր միջոցները անվտանգ են։\nՍկզբում փորձեք վերագործարկել հավելվածը. եթե այն դեռևս չի աշխատում, վերատեղադրեք այն և վերականգնեք ձեր կրկնօրինակի միջոցով։",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

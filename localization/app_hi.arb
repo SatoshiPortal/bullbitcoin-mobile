@@ -12548,7 +12548,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "आपके बैकअप की वजह से, आपकी धनराशि सुरक्षित है।\nऐप को फिर से इंस्टॉल करके आप अपना वॉलेट पुनर्प्राप्त कर सकते हैं।",
+  "appInitErrorHasBackupMessage": "आपके बैकअप की वजह से आपके फंड सुरक्षित हैं।\nपहले ऐप को पुनः आरंभ करने का प्रयास करें; यदि फिर भी विफल हो, तो पुनः इंस्टॉल करें और अपने बैकअप से पुनर्प्राप्त करें।",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

@@ -4587,7 +4587,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Graças à sua cópia de segurança, os seus fundos estão seguros.\nPode recuperar a sua carteira reinstalando a aplicação.",
+  "appInitErrorHasBackupMessage": "Graças à sua cópia de segurança, os seus fundos estão seguros.\nTente primeiro reiniciar a aplicação; se continuar a falhar, reinstale-a e recupere com a sua cópia de segurança.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

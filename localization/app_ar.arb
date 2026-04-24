@@ -12551,7 +12551,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "بفضل نسختك الاحتياطية، أموالك بأمان.\nيمكنك استعادة محفظتك بإعادة تثبيت التطبيق.",
+  "appInitErrorHasBackupMessage": "أموالك آمنة بفضل نسختك الاحتياطية.\nحاول إعادة تشغيل التطبيق أولاً، وإذا استمر الفشل، أعد تثبيته واسترجع محفظتك باستخدام نسختك الاحتياطية.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

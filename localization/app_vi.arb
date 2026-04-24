@@ -123,7 +123,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Nhờ bản sao lưu của bạn, tiền của bạn an toàn.\nBạn có thể khôi phục ví bằng cách cài đặt lại ứng dụng.",
+  "appInitErrorHasBackupMessage": "Nhờ bản sao lưu, tiền của bạn vẫn an toàn.\nTrước tiên hãy thử khởi động lại ứng dụng; nếu vẫn không chạy, gỡ cài đặt và cài lại rồi khôi phục bằng bản sao lưu.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

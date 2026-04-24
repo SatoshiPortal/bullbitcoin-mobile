@@ -9558,7 +9558,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Благодарение на резервното копие, средствата ви са в безопасност.\nМожете да възстановите портфейла си, като преинсталирате приложението.",
+  "appInitErrorHasBackupMessage": "Благодарение на резервното копие, средствата ви са в безопасност.\nПърво опитайте да рестартирате приложението; ако все още не работи, преинсталирайте го и възстановете с резервното копие.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

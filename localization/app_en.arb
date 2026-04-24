@@ -12866,7 +12866,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Thanks to your backup, your funds are safe.\nYou can recover your wallet by reinstalling the app.",
+  "appInitErrorHasBackupMessage": "Thanks to your backup, your funds are safe.\nTry restarting the app first, if it still fails, reinstall and recover with your backup.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

@@ -12548,7 +12548,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "به لطف نسخه پشتیبان شما، دارایی‌هایتان در امان است.\nمی‌توانید با نصب مجدد برنامه، کیف پول خود را بازیابی کنید.",
+  "appInitErrorHasBackupMessage": "به لطف پشتیبان‌گیری شما، وجوهتان در امان است.\nابتدا راه‌اندازی مجدد برنامه را امتحان کنید؛ اگر همچنان با خطا مواجه شد، برنامه را دوباره نصب کرده و با پشتیبان خود بازیابی کنید.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

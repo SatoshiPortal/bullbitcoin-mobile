@@ -4529,7 +4529,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Завдяки резервній копії ваші кошти в безпеці.\nВи можете відновити гаманець, перевстановивши застосунок.",
+  "appInitErrorHasBackupMessage": "Завдяки резервній копії ваші кошти в безпеці.\nСпочатку спробуйте перезапустити застосунок; якщо він усе ще не запускається, перевстановіть його та відновіть за допомогою резервної копії.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

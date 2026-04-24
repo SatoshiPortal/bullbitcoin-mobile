@@ -12548,7 +12548,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Yedeğiniz sayesinde paranız güvende.\nUygulamayı yeniden kurarak cüzdanınızı kurtarabilirsiniz.",
+  "appInitErrorHasBackupMessage": "Yedeğiniz sayesinde fonlarınız güvende.\nÖnce uygulamayı yeniden başlatmayı deneyin; yine başlamazsa kaldırıp yeniden yükleyin ve yedeğinizle kurtarın.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

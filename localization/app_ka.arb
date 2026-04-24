@@ -335,7 +335,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "თქვენი სარეზერვო ასლის წყალობით, თქვენი სახსრები უსაფრთხოდაა.\nშეგიძლიათ საფულე აღადგინოთ აპის ხელახალი ინსტალაციით.",
+  "appInitErrorHasBackupMessage": "თქვენი სარეზერვო ასლის წყალობით თქვენი სახსრები დაცულია.\nჯერ სცადეთ აპლიკაციის გადატვირთვა; თუ ის კვლავ არ მუშაობს, ხელახლა დააინსტალირეთ და აღადგინეთ თქვენი სარეზერვო ასლით.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

@@ -12544,7 +12544,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Graças ao seu backup, seus fundos estão seguros.\nVocê pode recuperar sua carteira reinstalando o aplicativo.",
+  "appInitErrorHasBackupMessage": "Graças ao seu backup, seus fundos estão seguros.\nPrimeiro tente reiniciar o aplicativo; se ainda falhar, reinstale e recupere com seu backup.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

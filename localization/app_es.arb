@@ -4538,7 +4538,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Gracias a tu copia de seguridad, tus fondos están a salvo.\nPuedes recuperar tu monedero reinstalando la aplicación.",
+  "appInitErrorHasBackupMessage": "Gracias a tu copia de seguridad, tus fondos están a salvo.\nPrimero intenta reiniciar la app; si sigue fallando, reinstálala y recupera con tu copia de seguridad.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

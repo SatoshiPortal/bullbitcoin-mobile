@@ -4521,7 +4521,7 @@
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
   },
-  "appInitErrorHasBackupMessage": "Grâce à votre sauvegarde, vos fonds sont en sécurité.\nVous pouvez récupérer votre portefeuille en réinstallant l'application.",
+  "appInitErrorHasBackupMessage": "Grâce à votre sauvegarde, vos fonds sont en sécurité.\nEssayez d'abord de redémarrer l'application ; si elle échoue toujours, réinstallez-la et récupérez votre portefeuille avec votre sauvegarde.",
   "@appInitErrorHasBackupMessage": {
     "description": "Reassurance body explaining the user's funds can be recovered via backup"
   },

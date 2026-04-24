@@ -25,8 +25,6 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
   Language _language = Language.fromKeyboard();
 
   Future<void> _shareLogs(BuildContext context) async {
-    Device.init(context);
-
     try {
       final logs = await log.readLogs();
       if (!context.mounted) return;
@@ -72,6 +70,9 @@ class _AppInitErrorScreenState extends State<AppInitErrorScreen> {
       supportedLocales: AppLocalizations.supportedLocales,
       home: Builder(
         builder: (context) {
+          // Seed Device.screen so AppLanguagePicker / TranslationWarningBottomSheet
+          // (which read it synchronously) work on this pre-init screen.
+          Device.init(context);
           return Scaffold(
             body: SafeArea(
               child: SingleChildScrollView(
