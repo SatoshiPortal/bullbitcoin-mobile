@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/wizard/wizard_choices.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +30,21 @@ class WizardGate {
   static Future<void> markComplete() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_versionKey, kCurrentWizardVersion);
+  }
+
+  /// Applies answers captured by the install/upgrade wizard (stored in
+  /// [SharedPreferences] because the wizard runs before the locator is
+  /// ready) to the SQLite settings repository, clears the pending keys,
+  /// then marks the wizard as complete. Safe to call when no wizard
+  /// answers are pending.
+  static Future<void> apply(SettingsRepository settings) async {
+    final choices = await readPending();
+    if (choices == null) return;
+    await settings.setLanguage(choices.language);
+    await settings.setThemeMode(choices.themeMode);
+    await settings.setErrorReportingEnabled(choices.errorReporting);
+    await clearPending();
+    await markComplete();
   }
 
   static Future<void> savePending(WizardChoices choices) async {
