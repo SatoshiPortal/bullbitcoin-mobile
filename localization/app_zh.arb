@@ -4516,16 +4516,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "迁移日志",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "关键日志",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "始终开启 — 让我们能看到您的钱包在应用版本之间是否安全迁移。",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "无法禁用迁移日志。我们需要它们来了解用户是否能够在应用版本之间成功迁移。",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "关键日志无法禁用。它们会报告失败的升级、迁移和应用启动错误，以便我们可以修复可能影响他人的问题。",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "使用您的备份",

@@ -4525,16 +4525,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Журналы миграции",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Критические журналы",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Всегда включено — позволяет нам видеть, безопасно ли мигрирует ваш кошелёк между версиями приложения.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Журналы миграции нельзя отключить. Они нужны нам, чтобы узнать, успешно ли пользователи мигрируют между версиями приложения.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Критические журналы нельзя отключить. Они сообщают о неудачных обновлениях, миграциях и ошибках запуска приложения, чтобы мы могли устранить проблемы, которые могут затронуть других.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Используйте резервную копию",

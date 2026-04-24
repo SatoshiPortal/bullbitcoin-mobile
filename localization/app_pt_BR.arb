@@ -12528,16 +12528,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Logs de migração",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Logs críticos",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Sempre ativo — permite que vejamos se sua carteira migra com segurança entre versões do aplicativo.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Os logs de migração não podem ser desativados. Precisamos deles para saber se os usuários migram com sucesso entre versões do aplicativo.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Os logs críticos não podem ser desativados. Eles relatam atualizações, migrações e erros de inicialização do aplicativo que falharam para que possamos corrigir problemas que possam afetar outros.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Use seu backup",

@@ -90,18 +90,18 @@ class AppSettingsScreen extends StatelessWidget {
                 ),
                 SettingsEntryItem(
                   icon: Icons.sync_problem,
-                  title: context.loc.errorReportingMigrationTitle,
+                  title: context.loc.errorReportingCriticalTitle,
                   trailing: Switch(
                     value: true,
                     // Read-only — tapping surfaces the snackbar.
                     onChanged: (_) => SnackBarUtils.showSnackBar(
                       context,
-                      context.loc.errorReportingMigrationSnackbar,
+                      context.loc.errorReportingCriticalSnackbar,
                     ),
                   ),
                   onTap: () => SnackBarUtils.showSnackBar(
                     context,
-                    context.loc.errorReportingMigrationSnackbar,
+                    context.loc.errorReportingCriticalSnackbar,
                   ),
                 ),
               ],

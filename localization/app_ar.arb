@@ -12535,16 +12535,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "سجلات الترحيل",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "السجلات الحرجة",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "مفعّل دائمًا — يتيح لنا التأكد من انتقال محفظتك بأمان بين إصدارات التطبيق.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "لا يمكن تعطيل سجلات الترحيل. نحتاجها لمعرفة ما إذا كان المستخدمون ينتقلون بنجاح بين إصدارات التطبيق.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "لا يمكن تعطيل السجلات الحرجة. فهي تُبلّغ عن حالات فشل الترقية والترحيل وأخطاء بدء تشغيل التطبيق حتى نتمكن من إصلاح المشكلات التي قد تؤثر على الآخرين.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "استخدم نسختك الاحتياطية",

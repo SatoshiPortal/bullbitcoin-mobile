@@ -319,16 +319,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "მიგრაციის ჟურნალები",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "კრიტიკული ჟურნალები",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "ყოველთვის ჩართული — საშუალებას გვაძლევს ვნახოთ, თქვენი საფულე უსაფრთხოდ გადადის აპის ვერსიებს შორის თუ არა.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "მიგრაციის ჟურნალების გამორთვა შეუძლებელია. ისინი გვჭირდება, რომ გავიგოთ, მომხმარებლები წარმატებით გადადიან თუ არა აპის ვერსიებს შორის.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "კრიტიკული ჟურნალების გამორთვა შეუძლებელია. ისინი აფიქსირებენ წარუმატებელ განახლებებს, მიგრაციებსა და აპლიკაციის გაშვების შეცდომებს, რათა შევძლოთ იმ პრობლემების გადაჭრა, რომლებმაც შესაძლოა სხვებზე იმოქმედოს.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "გამოიყენეთ თქვენი სარეზერვო ასლი",

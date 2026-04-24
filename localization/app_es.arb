@@ -4522,16 +4522,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Registros de migración",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Registros críticos",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Siempre activo — nos permite saber si tu monedero migra de forma segura entre versiones de la aplicación.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Los registros de migración no se pueden desactivar. Los necesitamos para saber si los usuarios migran con éxito entre versiones de la aplicación.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Los registros críticos no se pueden desactivar. Informan sobre actualizaciones, migraciones y errores de inicio fallidos para que podamos solucionar problemas que puedan afectar a otros usuarios.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Usa tu copia de seguridad",

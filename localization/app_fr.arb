@@ -4505,16 +4505,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Journaux de migration",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Journaux critiques",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Toujours actif — nous permet de vérifier que votre portefeuille migre en toute sécurité entre les versions de l'application.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Les journaux de migration ne peuvent pas être désactivés. Nous en avons besoin pour savoir si les utilisateurs migrent correctement entre les versions de l'application.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Les journaux critiques ne peuvent pas être désactivés. Ils signalent les échecs de mises à jour, de migrations et les erreurs de démarrage de l'application afin que nous puissions corriger les problèmes susceptibles d'affecter d'autres utilisateurs.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Utilisez votre sauvegarde",

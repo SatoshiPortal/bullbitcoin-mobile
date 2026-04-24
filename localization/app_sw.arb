@@ -127,16 +127,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Rekodi za uhamiaji",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Rekodi muhimu",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Inaendelea kuwashwa — inatuwezesha kuona kama pochi yako inahama kwa usalama kati ya matoleo ya programu.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Rekodi za uhamiaji haziwezi kuzimwa. Tunazihitaji ili kujua kama watumiaji wanahama kwa mafanikio kati ya matoleo ya programu.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Rekodi muhimu haziwezi kuzimwa. Zinaripoti maboresho, uhamiaji na hitilafu za kuanzisha programu zilizoshindwa ili tuweze kurekebisha matatizo yanayoweza kuwaathiri wengine.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Tumia nakala rudufu yako",

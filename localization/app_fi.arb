@@ -4508,16 +4508,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Siirtolokit",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Kriittiset lokit",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Aina päällä — näemme, siirtyykö lompakkosi turvallisesti sovellusversioiden välillä.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Siirtolokeja ei voi poistaa käytöstä. Tarvitsemme niitä tietääksemme, siirtyvätkö käyttäjät onnistuneesti sovellusversioiden välillä.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Kriittisiä lokeja ei voi poistaa käytöstä. Ne raportoivat epäonnistuneista päivityksistä, siirroista ja sovelluksen käynnistysvirheistä, jotta voimme korjata ongelmia, jotka saattavat vaikuttaa muihin.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Käytä varmuuskopiotasi",

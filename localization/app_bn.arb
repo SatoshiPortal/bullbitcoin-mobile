@@ -12249,16 +12249,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "মাইগ্রেশন লগ",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "গুরুতর লগ",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "সবসময় সক্রিয় — অ্যাপের সংস্করণগুলির মধ্যে আপনার ওয়ালেট নিরাপদে মাইগ্রেট হচ্ছে কিনা তা আমাদের দেখতে দেয়।",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "মাইগ্রেশন লগ নিষ্ক্রিয় করা যাবে না। ব্যবহারকারীরা অ্যাপ সংস্করণগুলির মধ্যে সফলভাবে মাইগ্রেট করছে কিনা তা জানার জন্য আমাদের এগুলি প্রয়োজন।",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "গুরুতর লগ নিষ্ক্রিয় করা যাবে না। তারা ব্যর্থ আপগ্রেড, মাইগ্রেশন এবং অ্যাপ শুরুর ত্রুটিগুলি রিপোর্ট করে যাতে আমরা অন্যদের প্রভাবিত করতে পারে এমন সমস্যাগুলি ঠিক করতে পারি।",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "আপনার ব্যাকআপ ব্যবহার করুন",

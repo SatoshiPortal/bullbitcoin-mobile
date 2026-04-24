@@ -4571,16 +4571,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Registos de migração",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Registos críticos",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Sempre ativo — permite-nos ver se a sua carteira migra em segurança entre versões da aplicação.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Os registos de migração não podem ser desativados. Precisamos deles para saber se os utilizadores migram com sucesso entre versões da aplicação.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Os registos críticos não podem ser desativados. Comunicam atualizações, migrações e erros de arranque da aplicação falhados para que possamos corrigir problemas que possam afetar outros utilizadores.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Use a sua cópia de segurança",

@@ -12532,16 +12532,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Geçiş günlükleri",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Kritik günlükler",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Her zaman açık — cüzdanınızın uygulama sürümleri arasında güvenle taşınıp taşınmadığını görmemizi sağlar.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Geçiş günlükleri devre dışı bırakılamaz. Kullanıcıların uygulama sürümleri arasında başarıyla geçiş yapıp yapmadığını bilmek için bunlara ihtiyacımız var.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Kritik günlükler devre dışı bırakılamaz. Başarısız yükseltmeleri, geçişleri ve uygulama başlatma hatalarını bildirirler; böylece başkalarını etkileyebilecek sorunları giderebiliriz.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Yedeğinizi kullanın",

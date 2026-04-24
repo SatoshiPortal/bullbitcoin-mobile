@@ -12532,16 +12532,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Αρχεία μετεγκατάστασης",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "Κρίσιμα αρχεία καταγραφής",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "Πάντα ενεργό — μας επιτρέπει να βλέπουμε αν το πορτοφόλι σας μεταφέρεται με ασφάλεια μεταξύ εκδόσεων της εφαρμογής.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "Τα αρχεία μετεγκατάστασης δεν μπορούν να απενεργοποιηθούν. Τα χρειαζόμαστε για να γνωρίζουμε αν οι χρήστες μεταφέρονται με επιτυχία μεταξύ εκδόσεων της εφαρμογής.",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "Τα κρίσιμα αρχεία καταγραφής δεν μπορούν να απενεργοποιηθούν. Αναφέρουν αποτυχημένες αναβαθμίσεις, μετεγκαταστάσεις και σφάλματα εκκίνησης της εφαρμογής, ώστε να μπορούμε να διορθώνουμε προβλήματα που ενδέχεται να επηρεάσουν άλλους.",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Χρησιμοποιήστε το αντίγραφο ασφαλείας σας",

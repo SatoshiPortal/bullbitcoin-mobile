@@ -106,16 +106,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "মাইগ্ৰেশ্বন লগ",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "জটিল লগসমূহ",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "সদায় সক্ৰিয় — এই ফিচাৰে এপৰ সংস্কৰণসমূহৰ মাজত আপোনাৰ ৱালেটৰ সুৰক্ষিত স্থানান্তৰ নিশ্চিত কৰে।",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "মাইগ্ৰেশ্বন লগ নিষ্ক্ৰিয় কৰিব নোৱাৰি। ব্যৱহাৰকাৰীসকলে এপৰ সংস্কৰণসমূহৰ মাজত সফলভাৱে স্থানান্তৰ কৰে নে নাই জানিবলৈ আমাক ইয়াৰ প্ৰয়োজন।",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "জটিল লগসমূহ নিষ্ক্ৰিয় কৰিব নোৱাৰি। ই বিফল আপগ্ৰেড, মাইগ্ৰেশ্বন, আৰু এপ আৰম্ভণিৰ ত্ৰুটিসমূহ ৰিপৰ্ট কৰে যাতে আমি আনক প্ৰভাৱিত কৰিব পৰা সমস্যাসমূহ সমাধান কৰিব পাৰোঁ।",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "আপোনাৰ বেকআপ ব্যৱহাৰ কৰক",

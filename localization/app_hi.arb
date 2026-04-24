@@ -12532,16 +12532,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "माइग्रेशन लॉग",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "गंभीर लॉग",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "हमेशा चालू — हमें यह देखने देता है कि आपका वॉलेट ऐप संस्करणों के बीच सुरक्षित रूप से माइग्रेट होता है या नहीं।",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "माइग्रेशन लॉग को बंद नहीं किया जा सकता। हमें यह जानने के लिए इनकी आवश्यकता है कि उपयोगकर्ता ऐप संस्करणों के बीच सफलतापूर्वक माइग्रेट करते हैं या नहीं।",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "गंभीर लॉग को बंद नहीं किया जा सकता। ये असफल अपग्रेड, माइग्रेशन और ऐप स्टार्टअप त्रुटियों की रिपोर्ट करते हैं ताकि हम उन समस्याओं को ठीक कर सकें जो दूसरों को प्रभावित कर सकती हैं।",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "अपने बैकअप का उपयोग करें",

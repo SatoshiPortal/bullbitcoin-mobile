@@ -12532,16 +12532,16 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "บันทึกการย้ายข้อมูล",
-  "@errorReportingMigrationTitle": {
+  "errorReportingCriticalTitle": "บันทึกสำคัญ",
+  "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"
   },
   "errorReportingMigrationSubtitle": "เปิดอยู่เสมอ — ช่วยให้เราเห็นว่ากระเป๋าเงินของคุณย้ายข้อมูลระหว่างเวอร์ชันแอปอย่างปลอดภัยหรือไม่",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
-  "errorReportingMigrationSnackbar": "ไม่สามารถปิดการใช้งานบันทึกการย้ายข้อมูลได้ เราจำเป็นต้องใช้เพื่อทราบว่าผู้ใช้ย้ายข้อมูลระหว่างเวอร์ชันแอปสำเร็จหรือไม่",
-  "@errorReportingMigrationSnackbar": {
+  "errorReportingCriticalSnackbar": "ไม่สามารถปิดบันทึกสำคัญได้ บันทึกเหล่านี้รายงานการอัปเกรด การย้ายข้อมูล และข้อผิดพลาดในการเริ่มต้นแอปที่ล้มเหลว เพื่อให้เราสามารถแก้ไขปัญหาที่อาจส่งผลกระทบต่อผู้อื่นได้",
+  "@errorReportingCriticalSnackbar": {
     "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",

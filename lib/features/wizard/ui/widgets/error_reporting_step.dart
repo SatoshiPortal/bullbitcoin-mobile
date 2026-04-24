@@ -41,10 +41,10 @@ class ErrorReportingStep extends StatelessWidget {
           // never visually flips. Tapping surfaces the snackbar instead.
           onChanged: (_) => SnackBarUtils.showSnackBar(
             context,
-            context.loc.errorReportingMigrationSnackbar,
+            context.loc.errorReportingCriticalSnackbar,
           ),
           shape: shape,
-          title: Text(context.loc.errorReportingMigrationTitle),
+          title: Text(context.loc.errorReportingCriticalTitle),
         ),
       ],
     );

@@ -12722,7 +12722,7 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Help us improve Bull by contributing to our error reporting program.\n\nBull Bitcoin sends anonymized error reports when something breaks. This lets us see how many users each bug affects and prioritize fixes accordingly — without it, we have no way to measure impact. Reports go only to Bull's server, never to third parties. Bull Bitcoin is open source, so you can verify what is sent.",
+  "errorReportingProgramDescription": "Help us improve Bull by contributing to our error reporting program.\n\nBull Bitcoin sends anonymized error reports when something breaks. This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.\n\nReports go only to Bull's server, never to third parties. Bull Bitcoin is open source, so you can verify what is sent.",
   "@errorReportingProgramDescription": {
     "description": "Description of the error reporting program"
   },
@@ -12854,17 +12854,13 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
-  "errorReportingMigrationTitle": "Migration logs",
-  "@errorReportingMigrationTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  "errorReportingCriticalTitle": "Critical logs",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only critical logs switch shown in the wizard and settings"
   },
-  "errorReportingMigrationSubtitle": "Always on — lets us see if your wallet migrates safely between app versions.",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingMigrationSnackbar": "Migration logs can't be disabled. We need them to know whether users successfully migrate between app versions.",
-  "@errorReportingMigrationSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  "errorReportingCriticalSnackbar": "Critical logs can't be disabled. They report failed upgrades, migrations, and app startup errors so we can fix problems that may affect others.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled critical logs switch"
   },
   "appInitErrorHasBackupTitle": "Use your backup",
   "@appInitErrorHasBackupTitle": {
