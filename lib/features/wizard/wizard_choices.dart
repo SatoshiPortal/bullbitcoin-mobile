@@ -4,22 +4,22 @@ class WizardChoices {
   const WizardChoices({
     this.language = Language.unitedStatesEnglish,
     this.themeMode = AppThemeMode.system,
-    this.errorReporting = true,
+    this.reportingConsent = true,
   });
 
   final Language language;
   final AppThemeMode themeMode;
-  final bool errorReporting;
+  final bool reportingConsent;
 
   WizardChoices copyWith({
     Language? language,
     AppThemeMode? themeMode,
-    bool? errorReporting,
+    bool? reportingConsent,
   }) {
     return WizardChoices(
       language: language ?? this.language,
       themeMode: themeMode ?? this.themeMode,
-      errorReporting: errorReporting ?? this.errorReporting,
+      reportingConsent: reportingConsent ?? this.reportingConsent,
     );
   }
 }

@@ -90,8 +90,8 @@ class _WizardScreenState extends State<WizardScreen> {
         title: context.loc.errorReportingProgramTitle,
         image: 'assets/wizard/undraw_upload-warning.svg',
         child: ErrorReportingStep(
-          enabled: c.errorReporting,
-          onChanged: (v) => widget.onChange(c.copyWith(errorReporting: v)),
+          enabled: c.reportingConsent,
+          onChanged: (v) => widget.onChange(c.copyWith(reportingConsent: v)),
         ),
       ),
     ];
@@ -161,11 +161,7 @@ class _WizardScreenState extends State<WizardScreen> {
 }
 
 class _Step {
-  const _Step({
-    required this.title,
-    required this.image,
-    required this.child,
-  });
+  const _Step({required this.title, required this.image, required this.child});
 
   final String title;
   final String image;

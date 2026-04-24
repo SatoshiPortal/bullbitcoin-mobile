@@ -42,7 +42,7 @@ class WizardGate {
     if (choices == null) return;
     await settings.setLanguage(choices.language);
     await settings.setThemeMode(choices.themeMode);
-    await settings.setErrorReportingEnabled(choices.errorReporting);
+    await settings.setErrorReportingEnabled(choices.reportingConsent);
     await clearPending();
     await markComplete();
   }
@@ -51,7 +51,7 @@ class WizardGate {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_pendingLanguageKey, choices.language.name);
     await prefs.setString(_pendingThemeKey, choices.themeMode.name);
-    await prefs.setBool(_pendingErrorReportingKey, choices.errorReporting);
+    await prefs.setBool(_pendingErrorReportingKey, choices.reportingConsent);
   }
 
   static Future<WizardChoices?> readPending() async {
@@ -70,7 +70,7 @@ class WizardGate {
       themeMode: themeName == null
           ? AppThemeMode.system
           : AppThemeMode.fromName(themeName),
-      errorReporting: errorReporting ?? true,
+      reportingConsent: errorReporting ?? true,
     );
   }
 

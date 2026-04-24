@@ -87,7 +87,9 @@ class StorageLocator {
           // means FSS10 couldn't decrypt the existing entries but didn't throw.
           if (data.isEmpty) {
             final docsDir = await getApplicationDocumentsDirectory();
-            final dbFile = File(p.join(docsDir.path, 'bullbitcoin_sqlite.sqlite'));
+            final dbFile = File(
+              p.join(docsDir.path, 'bullbitcoin_sqlite.sqlite'),
+            );
             if (await dbFile.exists()) {
               log.warning(
                 'StorageLocator: fss10 readAll returned empty but database '
@@ -98,7 +100,9 @@ class StorageLocator {
                 'but readAll returned 0 entries',
               );
             }
-            log.fine('StorageLocator: readAll empty + no database = fresh install');
+            log.fine(
+              'StorageLocator: readAll empty + no database = fresh install',
+            );
           }
 
           secureStorageDatasource = SecureStorageDatasourceImpl(storage);
@@ -147,7 +151,7 @@ class StorageLocator {
             );
             log.fine('StorageLocator: fss9 fallback verified and flag written');
           } catch (fss9Error) {
-            log.severe(
+            log.shout(
               message:
                   'StorageLocator: both fss10 and fss9 failed. '
                   'fss10: ${fss10Error.runtimeType}, '
