@@ -60,6 +60,14 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     log.info('FiatCurrenciesStarted');
 
     try {
+      emit(
+        state.copyWith(
+          loadingPrice: true,
+          startupFailed: false,
+          error: null,
+        ),
+      );
+
       final settings = await _getSettingsUsecase.execute();
       final currency = event.currency ?? settings.currencyCode;
       final availableCurrencies = await _getAvailableCurrenciesUsecase
@@ -69,6 +77,18 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         currencyCode: currency,
       );
 
+      if (price <= 0) {
+        log.warning('Fiat rate invalid or zero for $currency');
+        emit(
+          state.copyWith(
+            loadingPrice: false,
+            startupFailed: true,
+            error: null,
+          ),
+        );
+        return;
+      }
+
       emit(
         BitcoinPriceState(
           currency: currency,
@@ -76,11 +96,18 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           bitcoinPrice: price,
           startupFailed: false,
           error: null,
+          loadingPrice: false,
         ),
       );
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      emit(state.copyWith(error: e, startupFailed: true));
+      emit(
+        state.copyWith(
+          error: e,
+          startupFailed: true,
+          loadingPrice: false,
+        ),
+      );
     }
   }
 
@@ -98,7 +125,18 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           currencyCode: currency,
         );
 
-        emit(state.copyWith(bitcoinPrice: price));
+        if (price <= 0) {
+          emit(state.copyWith(error: StateError('Invalid fiat rate')));
+          return;
+        }
+
+        emit(
+          state.copyWith(
+            bitcoinPrice: price,
+            error: null,
+            startupFailed: false,
+          ),
+        );
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
@@ -119,19 +157,47 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     log.info('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
 
     try {
-      // The state should be in the success state, otherwise try to start the bloc
-      //  again with the new currency in the event.
-      // final successState = state as BitcoinPriceSuccess;
+      emit(state.copyWith(loadingPrice: true));
+
       final currency = event.currencyCode;
-      // Get the exchange rate for the new currency
       final price = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
 
-      emit(state.copyWith(currency: currency, bitcoinPrice: price));
+      if (price <= 0) {
+        log.warning('Fiat rate invalid or zero after currency change to $currency');
+        emit(
+          state.copyWith(
+            bitcoinPrice: null,
+            currency: currency,
+            loadingPrice: false,
+            error: StateError('Invalid fiat rate'),
+            startupFailed: false,
+          ),
+        );
+        return;
+      }
+
+      emit(
+        state.copyWith(
+          currency: currency,
+          bitcoinPrice: price,
+          loadingPrice: false,
+          error: null,
+          startupFailed: false,
+        ),
+      );
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      emit(state.copyWith(error: e));
+      emit(
+        state.copyWith(
+          bitcoinPrice: null,
+          currency: event.currencyCode,
+          loadingPrice: false,
+          error: e,
+          startupFailed: false,
+        ),
+      );
     }
   }
 }
