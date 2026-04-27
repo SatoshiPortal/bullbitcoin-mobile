@@ -4479,5 +4479,69 @@
   "legacyStorageWarningLater": "Myöhemmin",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Takaisin",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Aloita",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Vaalea",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Tumma",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Järjestelmä",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Osallistun",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "En osallistu",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingCriticalTitle": "Kriittiset lokit",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Aina päällä — näemme, siirtyykö lompakkosi turvallisesti sovellusversioiden välillä.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Kriittisiä lokeja ei voi poistaa käytöstä. Ne raportoivat epäonnistuneista päivityksistä, siirroista ja sovelluksen käynnistysvirheistä, jotta voimme korjata ongelmia, jotka saattavat vaikuttaa muihin.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Käytä varmuuskopiotasi",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Varmuuskopiosi ansiosta varasi ovat turvassa.\nYritä ensin käynnistää sovellus uudelleen; jos se ei vieläkään toimi, asenna se uudelleen ja palauta varmuuskopion avulla.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Ei varmuuskopiota?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Älä poista sovellusta.\nOta yhteyttä tukitiimiimme pelastusyritystä varten.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Ota yhteyttä tukeen",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Näytä virheen tiedot",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

@@ -12722,7 +12722,7 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Help us improve Bull Bitcoin by participating in our error reporting program. It directly helps us make Bull Bitcoin better for everyone.\n\nWhen enabled, we automatically send error reports when issues occur in the app. This data helps us understand what's happening for our users worldwide and prioritize fixes accordingly.\n\nWe do not share this information with any third parties. We use Sentry's open-source client with our own self-hosted backend server.",
+  "errorReportingProgramDescription": "Help us improve Bull by contributing to our error reporting program.\n\nBull Bitcoin sends anonymized error reports when something breaks. This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.\n\nReports go only to Bull's server, never to third parties. Bull Bitcoin is open source, so you can verify what is sent.",
   "@errorReportingProgramDescription": {
     "description": "Description of the error reporting program"
   },
@@ -12825,5 +12825,65 @@
   "legacyStorageWarningLater": "Later",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Back",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Get started",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "I contribute",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "I do not contribute",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingCriticalTitle": "Critical logs",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only critical logs switch shown in the wizard and settings"
+  },
+  "errorReportingCriticalSnackbar": "Critical logs can't be disabled. They report failed upgrades, migrations, and app startup errors so we can fix problems that may affect others.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled critical logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Use your backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Thanks to your backup, your funds are safe.\nTry restarting the app first, if it still fails, reinstall and recover with your backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "No backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Do not delete the app.\nContact our support team to attempt a rescue.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contact support",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Show error details",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

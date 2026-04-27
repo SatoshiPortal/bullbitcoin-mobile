@@ -9513,5 +9513,69 @@
   "legacyStorageWarningLater": "По-късно",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Назад",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Започнете",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Светла",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Тъмна",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Системна",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Участвам",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Не участвам",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingCriticalTitle": "Критични логове",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Винаги активно — ни позволява да видим дали портфейлът ви мигрира безопасно между версиите на приложението.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Критичните логове не могат да бъдат изключени. Те докладват за неуспешни надстройки, миграции и грешки при стартиране на приложението, за да можем да отстраним проблеми, които биха могли да засегнат други потребители.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Използвайте резервното си копие",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Благодарение на резервното копие, средствата ви са в безопасност.\nПърво опитайте да рестартирате приложението; ако все още не работи, преинсталирайте го и възстановете с резервното копие.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Няма резервно копие?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не изтривайте приложението.\nСвържете се с нашия екип за поддръжка за опит за спасяване.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Свържете се с поддръжката",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Покажи подробности за грешката",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }
