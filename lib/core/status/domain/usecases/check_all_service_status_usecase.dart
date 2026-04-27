@@ -19,8 +19,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class CheckAllServiceStatusUsecase {
   final ElectrumConnectivityPort _electrumConnectivityPort;
-  final BoltzSwapRepository _mainnetBoltzSwapRepository;
-  final BoltzSwapRepository _testnetBoltzSwapRepository;
+  final BoltzSwapRepository _boltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
   final PayjoinRepository _payjoinRepository;
   final FeesRepository _feesRepository;
@@ -32,8 +31,7 @@ class CheckAllServiceStatusUsecase {
 
   CheckAllServiceStatusUsecase({
     required ElectrumConnectivityPort electrumConnectivityPort,
-    required BoltzSwapRepository mainnetBoltzSwapRepository,
-    required BoltzSwapRepository testnetBoltzSwapRepository,
+    required BoltzSwapRepository boltzSwapRepository,
     required ExchangeRateRepository exchangeRateRepository,
     required PayjoinRepository payjoinRepository,
     required FeesRepository feesRepository,
@@ -43,8 +41,7 @@ class CheckAllServiceStatusUsecase {
     required FetchArkSecretUsecase fetchArkSecretUsecase,
     required TorStatusUsecase torStatusUsecase,
   }) : _electrumConnectivityPort = electrumConnectivityPort,
-       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
-       _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
+       _boltzSwapRepository = boltzSwapRepository,
        _exchangeRateRepository = exchangeRateRepository,
        _payjoinRepository = payjoinRepository,
        _feesRepository = feesRepository,
@@ -140,11 +137,7 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkBoltzService(Network network) async {
     try {
-      final boltzRepository = network == Network.bitcoinMainnet
-          ? _mainnetBoltzSwapRepository
-          : _testnetBoltzSwapRepository;
-
-      await boltzRepository.updateSwapLimitsAndFees(
+      await _boltzSwapRepository.updateSwapLimitsAndFees(
         SwapType.bitcoinToLightning,
       );
 

@@ -48,18 +48,6 @@ class SwapsLocator {
   static void registerRepositories(GetIt locator) {
     locator.registerLazySingleton<BoltzSwapRepository>(
       () => BoltzSwapRepository(
-        boltz: BoltzDatasource(
-          url: ApiServiceConstants.boltzTestnetUrlPath,
-          boltzStore: locator<BoltzStorageDatasource>(),
-        ),
-        isTestnet: true,
-      ),
-      instanceName:
-          LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
-    );
-
-    locator.registerLazySingleton<BoltzSwapRepository>(
-      () => BoltzSwapRepository(
         boltz: BoltzDatasource(boltzStore: locator<BoltzStorageDatasource>()),
         isTestnet: false,
       ),
@@ -90,45 +78,23 @@ class SwapsLocator {
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
-
-    locator.registerLazySingleton<SwapWatcherService>(
-      () => SwapWatcherService(
-        boltzRepo: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
-        walletAddressRepository: locator<WalletAddressRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-        feesRepository: locator<FeesRepository>(),
-      ),
-      instanceName:
-          LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
-    );
   }
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<DecodeInvoiceUsecase>(
       () => DecodeInvoiceUsecase(
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
 
     locator.registerFactory<GetSwapLimitsUsecase>(
       () => GetSwapLimitsUsecase(
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -144,29 +110,19 @@ class SwapsLocator {
 
     locator.registerFactory<GetSwapUsecase>(
       () => GetSwapUsecase(
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
-        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<GetSwapsUsecase>(
       () => GetSwapsUsecase(
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
-        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
@@ -184,69 +140,45 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
       ),
     );
     locator.registerFactory<GetAutoSwapSettingsUsecase>(
       () => GetAutoSwapSettingsUsecase(
-        mainnetRepository: locator<BoltzSwapRepository>(
+        repository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
     locator.registerFactory<SaveAutoSwapSettingsUsecase>(
       () => SaveAutoSwapSettingsUsecase(
-        mainnetRepository: locator<BoltzSwapRepository>(
+        repository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
     locator.registerFactory<DisableAutoswapWarningUsecase>(
       () => DisableAutoswapWarningUsecase(
-        mainnetRepository: locator<BoltzSwapRepository>(
+        repository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
     locator.registerFactory<DisableAutoswapUsecase>(
       () => DisableAutoswapUsecase(
-        mainnetRepository: locator<BoltzSwapRepository>(
+        repository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
     locator.registerFactory<AutoSwapExecutionUsecase>(
       () => AutoSwapExecutionUsecase(
-        mainnetRepository: locator<BoltzSwapRepository>(
+        repository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
         walletRepository: locator<WalletRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
@@ -264,10 +196,6 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
       ),
     );
     locator.registerFactory<CreateChainSwapToExternalUsecase>(
@@ -277,10 +205,6 @@ class SwapsLocator {
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

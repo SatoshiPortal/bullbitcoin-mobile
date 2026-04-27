@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,7 +15,10 @@ class TestnetModeSwitch extends StatelessWidget {
     return Switch(
       value: isTestnetMode,
       onChanged: (value) {
-        context.read<SettingsCubit>().toggleTestnetMode(value);
+        SnackBarUtils.showSnackBar(
+          context,
+          'Testnet mode is not supported anymore',
+        );
       },
     );
   }

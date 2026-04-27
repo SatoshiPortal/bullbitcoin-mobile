@@ -14,8 +14,7 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter/foundation.dart';
 
 class AutoSwapExecutionUsecase {
-  final BoltzSwapRepository _mainnetRepository;
-  final BoltzSwapRepository _testnetRepository;
+  final BoltzSwapRepository _repository;
   final WalletRepository _walletRepository;
   final LiquidWalletRepository _liquidWalletRepository;
   final BlockchainPort _blockchainPort;
@@ -24,16 +23,14 @@ class AutoSwapExecutionUsecase {
   final LabelsFacade _labelsFacade;
 
   AutoSwapExecutionUsecase({
-    required BoltzSwapRepository mainnetRepository,
-    required BoltzSwapRepository testnetRepository,
+    required BoltzSwapRepository repository,
     required WalletRepository walletRepository,
     required LiquidWalletRepository liquidWalletRepository,
     required BlockchainPort blockchainPort,
     required SeedRepository seedRepository,
     required WalletTransactionRepository walletTxRepository,
     required LabelsFacade labelsFacade,
-  }) : _mainnetRepository = mainnetRepository,
-       _testnetRepository = testnetRepository,
+  }) : _repository = repository,
        _walletRepository = walletRepository,
        _liquidWalletRepository = liquidWalletRepository,
        _blockchainPort = blockchainPort,
@@ -41,11 +38,8 @@ class AutoSwapExecutionUsecase {
        _walletTxRepository = walletTxRepository,
        _labelsFacade = labelsFacade;
 
-  Future<Swap> execute({
-    required bool isTestnet,
-    required bool feeBlock,
-  }) async {
-    final swapRepository = isTestnet ? _testnetRepository : _mainnetRepository;
+  Future<Swap> execute({required bool feeBlock}) async {
+    final swapRepository = _repository;
     final autoSwapSettings = await swapRepository.getAutoSwapParams();
     // check if recipient wallet id is set
 
@@ -54,9 +48,8 @@ class AutoSwapExecutionUsecase {
         'Auto swap is disabled/warning not disabled yet.',
       );
     }
-    final environment = isTestnet ? Environment.testnet : Environment.mainnet;
     final wallets = await _walletRepository.getWallets(
-      environment: environment,
+      environment: Environment.mainnet,
     );
     final defaultBitcoinWallet = wallets
         .where((w) => w.isDefault && !w.isLiquid)
