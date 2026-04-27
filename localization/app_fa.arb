@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "بعداً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "سواپ آماده دریافت است",
+  "notificationSwapClaimableBody": "Bull Bitcoin را باز کنید تا قبل از انقضای سواپ، وجوه خود را دریافت کنید.",
+  "notificationSwapRefundableTitle": "سواپ آماده بازپرداخت است",
+  "notificationSwapRefundableBody": "Bull Bitcoin را باز کنید تا قبل از انقضای سواپ، وجوه خود را بازپرداخت کنید.",
+  "notificationSwapCanCoopTitle": "سواپ نیاز به بستن مشارکتی دارد",
+  "notificationSwapCanCoopBody": "Bull Bitcoin را باز کنید تا قبل از انقضای سواپ، بستن مشارکتی را تکمیل کنید.",
+  "notificationSwapFailedTitle": "سواپ ناموفق بود — اقدام لازم است",
+  "notificationSwapFailedBody": "Bull Bitcoin را باز کنید تا وجوه خود را بازیابی کنید.",
+  "notificationSwapAttentionTitle": "سواپ نیاز به توجه شما دارد",
+  "notificationSwapAttentionBody": "Bull Bitcoin را باز کنید تا قبل از انقضا، سواپ را تکمیل کنید."
 }

@@ -12506,5 +12506,15 @@
   "legacyStorageWarningLater": "لاحقاً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "السواب جاهز للمطالبة",
+  "notificationSwapClaimableBody": "افتح Bull Bitcoin للمطالبة بأموالك قبل انتهاء صلاحية السواب.",
+  "notificationSwapRefundableTitle": "السواب جاهز للاسترداد",
+  "notificationSwapRefundableBody": "افتح Bull Bitcoin لاسترداد أموالك قبل انتهاء صلاحية السواب.",
+  "notificationSwapCanCoopTitle": "السواب يحتاج إلى إغلاق تعاوني",
+  "notificationSwapCanCoopBody": "افتح Bull Bitcoin لإكمال الإغلاق التعاوني قبل انتهاء صلاحية السواب.",
+  "notificationSwapFailedTitle": "فشل السواب — يلزم اتخاذ إجراء",
+  "notificationSwapFailedBody": "افتح Bull Bitcoin لاستعادة أموالك.",
+  "notificationSwapAttentionTitle": "يتطلب السواب انتباهك",
+  "notificationSwapAttentionBody": "افتح Bull Bitcoin لإكمال السواب قبل انتهاء صلاحيته."
 }

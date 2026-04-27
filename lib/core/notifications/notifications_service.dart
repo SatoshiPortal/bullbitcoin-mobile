@@ -1,0 +1,222 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io' show Platform;
+
+import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class NotificationsService {
+  static const String _swapChannelId = 'swap_alerts';
+  static const String _swapChannelName = 'Swap Alerts';
+  static const String _swapChannelDescription =
+      'Notifies when a Boltz swap needs your attention';
+  static const String _dedupPrefsPrefix = 'notif_swap_last_fired_';
+  static const Duration _dedupWindow = Duration(hours: 1);
+
+  final FlutterLocalNotificationsPlugin _plugin;
+  final Future<SharedPreferences> Function() _prefsFactory;
+
+  bool _initialized = false;
+  SwapNotificationTap? _pendingTap;
+  final StreamController<SwapNotificationTap> _tapController =
+      StreamController<SwapNotificationTap>.broadcast();
+
+  NotificationsService({
+    FlutterLocalNotificationsPlugin? plugin,
+    Future<SharedPreferences> Function()? prefsFactory,
+  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
+       _prefsFactory = prefsFactory ?? SharedPreferences.getInstance;
+
+  /// Fires when the user taps a swap notification. The tap is also stashed in
+  /// [pendingTap] so late subscribers (e.g. the startup listener after PIN
+  /// unlock) can consume it via [takePendingTap].
+  ///
+  /// NotificationsService deliberately does NOT navigate itself — callers
+  /// decide when it's safe to navigate (after startup + unlock).
+  Stream<SwapNotificationTap> get pendingTapStream => _tapController.stream;
+
+  SwapNotificationTap? get pendingTap => _pendingTap;
+
+  /// Returns and clears the currently stashed pending tap, if any.
+  SwapNotificationTap? takePendingTap() {
+    final tap = _pendingTap;
+    _pendingTap = null;
+    return tap;
+  }
+
+  /// Stashes a tap and broadcasts it on [pendingTapStream]. Used both by the
+  /// foreground tap callback and by startup code to replay a tap that launched
+  /// the app from killed state.
+  void pushPendingTap(SwapNotificationTap tap) {
+    _pendingTap = tap;
+    _tapController.add(tap);
+  }
+
+  /// If this launch was triggered by the user tapping a notification while the
+  /// app process was not running, returns the parsed tap. Call once at
+  /// startup; the result should then be forwarded via [pushPendingTap] once
+  /// the router is wired up.
+  Future<SwapNotificationTap?> getLaunchTap() async {
+    final launchDetails = await _plugin.getNotificationAppLaunchDetails();
+    if (launchDetails == null ||
+        !launchDetails.didNotificationLaunchApp ||
+        launchDetails.notificationResponse?.payload == null) {
+      return null;
+    }
+    return _parsePayload(launchDetails.notificationResponse!.payload!);
+  }
+
+  Future<void> init() async {
+    if (_initialized) return;
+
+    const androidInit = AndroidInitializationSettings('@mipmap/launcher_icon');
+    const darwinInit = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
+    const initSettings = InitializationSettings(
+      android: androidInit,
+      iOS: darwinInit,
+      macOS: darwinInit,
+    );
+
+    await _plugin.initialize(
+      settings: initSettings,
+      onDidReceiveNotificationResponse: _handleTap,
+    );
+
+    if (Platform.isAndroid) {
+      final androidPlugin = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      await androidPlugin?.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _swapChannelId,
+          _swapChannelName,
+          description: _swapChannelDescription,
+          importance: Importance.high,
+        ),
+      );
+    }
+
+    _initialized = true;
+  }
+
+  /// Requests POST_NOTIFICATIONS on Android 13+. Must only be called from the
+  /// foreground (attached Activity) path — the Workmanager background isolate
+  /// has no Activity and requesting permission there is a no-op at best and a
+  /// crash at worst.
+  Future<void> requestPermissionsIfNeeded() async {
+    if (!Platform.isAndroid) return;
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    await androidPlugin?.requestNotificationsPermission();
+  }
+
+  /// Shows (at most once per [_dedupWindow] per swapId) a notification prompting
+  /// the user to open the app to complete a Boltz swap action.
+  Future<void> showSwapNeedsAttention({
+    required String swapId,
+    required String walletId,
+    required String title,
+    required String body,
+  }) async {
+    if (!await _shouldFire(swapId)) return;
+
+    final payload = jsonEncode({'swapId': swapId, 'walletId': walletId});
+    final notificationId = swapId.hashCode & 0x7fffffff;
+
+    await _plugin.show(
+      id: notificationId,
+      title: title,
+      body: body,
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          _swapChannelId,
+          _swapChannelName,
+          channelDescription: _swapChannelDescription,
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentSound: true),
+      ),
+      payload: payload,
+    );
+    await _recordFired(swapId);
+  }
+
+  Future<bool> _shouldFire(String swapId) async {
+    try {
+      final prefs = await _prefsFactory();
+      await _pruneExpiredDedupKeys(prefs);
+      final last = prefs.getInt('$_dedupPrefsPrefix$swapId');
+      if (last == null) return true;
+      final elapsed = DateTime.now().millisecondsSinceEpoch - last;
+      return elapsed >= _dedupWindow.inMilliseconds;
+    } catch (e) {
+      log.warning('NotificationsService dedup check failed: $e');
+      return true;
+    }
+  }
+
+  Future<void> _pruneExpiredDedupKeys(SharedPreferences prefs) async {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final windowMs = _dedupWindow.inMilliseconds;
+    final expired = prefs
+        .getKeys()
+        .where((k) => k.startsWith(_dedupPrefsPrefix))
+        .where((k) {
+          final ts = prefs.getInt(k);
+          return ts == null || (now - ts) >= windowMs;
+        })
+        .toList();
+    for (final k in expired) {
+      await prefs.remove(k);
+    }
+  }
+
+  Future<void> _recordFired(String swapId) async {
+    try {
+      final prefs = await _prefsFactory();
+      await prefs.setInt(
+        '$_dedupPrefsPrefix$swapId',
+        DateTime.now().millisecondsSinceEpoch,
+      );
+    } catch (e) {
+      log.warning('NotificationsService dedup write failed: $e');
+    }
+  }
+
+  void _handleTap(NotificationResponse response) {
+    final payload = response.payload;
+    if (payload == null) return;
+    final tap = _parsePayload(payload);
+    if (tap == null) return;
+    pushPendingTap(tap);
+  }
+
+  SwapNotificationTap? _parsePayload(String payload) {
+    try {
+      final map = jsonDecode(payload) as Map<String, dynamic>;
+      final swapId = map['swapId'] as String?;
+      final walletId = map['walletId'] as String?;
+      if (swapId == null || walletId == null) return null;
+      return SwapNotificationTap(swapId: swapId, walletId: walletId);
+    } catch (e) {
+      log.warning('NotificationsService tap parse failed: $e');
+      return null;
+    }
+  }
+}
+
+class SwapNotificationTap {
+  final String swapId;
+  final String walletId;
+
+  const SwapNotificationTap({required this.swapId, required this.walletId});
+}

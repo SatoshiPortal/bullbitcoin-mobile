@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "Αργότερα",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Το swap είναι έτοιμο για διεκδίκηση",
+  "notificationSwapClaimableBody": "Ανοίξτε το Bull Bitcoin για να διεκδικήσετε τα κεφάλαιά σας πριν λήξει το swap.",
+  "notificationSwapRefundableTitle": "Το swap είναι έτοιμο για επιστροφή",
+  "notificationSwapRefundableBody": "Ανοίξτε το Bull Bitcoin για να επιστρέψετε τα κεφάλαιά σας πριν λήξει το swap.",
+  "notificationSwapCanCoopTitle": "Το swap απαιτεί συνεργατικό κλείσιμο",
+  "notificationSwapCanCoopBody": "Ανοίξτε το Bull Bitcoin για να ολοκληρώσετε το συνεργατικό κλείσιμο πριν λήξει το swap.",
+  "notificationSwapFailedTitle": "Το swap απέτυχε — απαιτείται ενέργεια",
+  "notificationSwapFailedBody": "Ανοίξτε το Bull Bitcoin για να ανακτήσετε τα κεφάλαιά σας.",
+  "notificationSwapAttentionTitle": "Το swap απαιτεί την προσοχή σας",
+  "notificationSwapAttentionBody": "Ανοίξτε το Bull Bitcoin για να ολοκληρώσετε το swap πριν λήξει."
 }

@@ -4484,5 +4484,15 @@
   "legacyStorageWarningLater": "Пізніше",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Свап готовий до отримання",
+  "notificationSwapClaimableBody": "Відкрийте Bull Bitcoin, щоб отримати кошти до закінчення свапу.",
+  "notificationSwapRefundableTitle": "Свап готовий до повернення",
+  "notificationSwapRefundableBody": "Відкрийте Bull Bitcoin, щоб повернути кошти до закінчення свапу.",
+  "notificationSwapCanCoopTitle": "Свап потребує спільного закриття",
+  "notificationSwapCanCoopBody": "Відкрийте Bull Bitcoin, щоб завершити спільне закриття до закінчення свапу.",
+  "notificationSwapFailedTitle": "Свап не вдався — потрібна дія",
+  "notificationSwapFailedBody": "Відкрийте Bull Bitcoin, щоб повернути свої кошти.",
+  "notificationSwapAttentionTitle": "Свап потребує вашої уваги",
+  "notificationSwapAttentionBody": "Відкрийте Bull Bitcoin, щоб завершити свап до його закінчення."
 }

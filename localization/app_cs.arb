@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "Později",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Swap připraven k vyzvednutí",
+  "notificationSwapClaimableBody": "Otevřete Bull Bitcoin pro vyzvednutí prostředků před vypršením swapu.",
+  "notificationSwapRefundableTitle": "Swap připraven k vrácení",
+  "notificationSwapRefundableBody": "Otevřete Bull Bitcoin pro vrácení prostředků před vypršením swapu.",
+  "notificationSwapCanCoopTitle": "Swap vyžaduje kooperativní uzavření",
+  "notificationSwapCanCoopBody": "Otevřete Bull Bitcoin pro dokončení kooperativního uzavření před vypršením swapu.",
+  "notificationSwapFailedTitle": "Swap selhal — vyžaduje akci",
+  "notificationSwapFailedBody": "Otevřete Bull Bitcoin pro obnovení vašich prostředků.",
+  "notificationSwapAttentionTitle": "Swap vyžaduje vaši pozornost",
+  "notificationSwapAttentionBody": "Otevřete Bull Bitcoin pro dokončení swapu před jeho vypršením."
 }

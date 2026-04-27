@@ -98,5 +98,15 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN"
+  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
+  "notificationSwapClaimableTitle": "Swap iko tayari kudai",
+  "notificationSwapClaimableBody": "Fungua Bull Bitcoin kudai pesa zako kabla ya swap kuisha muda.",
+  "notificationSwapRefundableTitle": "Swap iko tayari kurudisha",
+  "notificationSwapRefundableBody": "Fungua Bull Bitcoin kurudisha pesa zako kabla ya swap kuisha muda.",
+  "notificationSwapCanCoopTitle": "Swap inahitaji kufungwa kwa ushirikiano",
+  "notificationSwapCanCoopBody": "Fungua Bull Bitcoin kukamilisha kufungwa kwa ushirikiano kabla ya swap kuisha muda.",
+  "notificationSwapFailedTitle": "Swap imeshindwa — hatua inahitajika",
+  "notificationSwapFailedBody": "Fungua Bull Bitcoin kurejesha pesa zako.",
+  "notificationSwapAttentionTitle": "Swap inahitaji uangalifu wako",
+  "notificationSwapAttentionBody": "Fungua Bull Bitcoin kukamilisha swap kabla haijaisha muda."
 }

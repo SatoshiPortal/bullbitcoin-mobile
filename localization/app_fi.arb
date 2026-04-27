@@ -4479,5 +4479,15 @@
   "legacyStorageWarningLater": "Myöhemmin",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "Swap valmis lunastettavaksi",
+  "notificationSwapClaimableBody": "Avaa Bull Bitcoin lunastaaksesi varat ennen swapin vanhenemista.",
+  "notificationSwapRefundableTitle": "Swap valmis palautettavaksi",
+  "notificationSwapRefundableBody": "Avaa Bull Bitcoin palauttaaksesi varat ennen swapin vanhenemista.",
+  "notificationSwapCanCoopTitle": "Swap vaatii yhteistoiminnallisen sulkemisen",
+  "notificationSwapCanCoopBody": "Avaa Bull Bitcoin viimeistelläksesi yhteistoiminnallisen sulkemisen ennen swapin vanhenemista.",
+  "notificationSwapFailedTitle": "Swap epäonnistui — toimenpide vaaditaan",
+  "notificationSwapFailedBody": "Avaa Bull Bitcoin palauttaaksesi varasi.",
+  "notificationSwapAttentionTitle": "Swap vaatii huomiosi",
+  "notificationSwapAttentionBody": "Avaa Bull Bitcoin viimeistelläksesi swapin ennen sen vanhenemista."
 }

@@ -77,5 +77,15 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক"
+  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
+  "notificationSwapClaimableTitle": "Swap দাবী কৰিবলৈ সাজু",
+  "notificationSwapClaimableBody": "Swap মেয়াদ উকলাৰ আগতে আপোনাৰ পুঁজি দাবী কৰিবলৈ Bull Bitcoin খোলক।",
+  "notificationSwapRefundableTitle": "Swap ঘূৰাই দিবলৈ সাজু",
+  "notificationSwapRefundableBody": "Swap মেয়াদ উকলাৰ আগতে আপোনাৰ পুঁজি ঘূৰাই দিবলৈ Bull Bitcoin খোলক।",
+  "notificationSwapCanCoopTitle": "Swap-এ সহযোগিতামূলক বন্ধ কৰাৰ প্ৰয়োজন",
+  "notificationSwapCanCoopBody": "Swap মেয়াদ উকলাৰ আগতে সহযোগিতামূলক বন্ধ সম্পূৰ্ণ কৰিবলৈ Bull Bitcoin খোলক।",
+  "notificationSwapFailedTitle": "Swap বিফল — কাৰ্য প্ৰয়োজন",
+  "notificationSwapFailedBody": "আপোনাৰ পুঁজি পুনৰুদ্ধাৰ কৰিবলৈ Bull Bitcoin খোলক।",
+  "notificationSwapAttentionTitle": "Swap-এ আপোনাৰ মনোযোগ বিচাৰে",
+  "notificationSwapAttentionBody": "Swap মেয়াদ উকলাৰ আগতে ইয়াক সম্পূৰ্ণ কৰিবলৈ Bull Bitcoin খোলক।"
 }

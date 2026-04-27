@@ -12825,5 +12825,45 @@
   "legacyStorageWarningLater": "Later",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "notificationSwapClaimableTitle": "Swap ready to claim",
+  "@notificationSwapClaimableTitle": {
+    "description": "Title for the local notification fired when a Boltz swap is claimable."
+  },
+  "notificationSwapClaimableBody": "Open Bull Bitcoin to claim your funds before the swap expires.",
+  "@notificationSwapClaimableBody": {
+    "description": "Body for the local notification fired when a Boltz swap is claimable."
+  },
+  "notificationSwapRefundableTitle": "Swap ready to refund",
+  "@notificationSwapRefundableTitle": {
+    "description": "Title for the local notification fired when a Boltz swap is refundable."
+  },
+  "notificationSwapRefundableBody": "Open Bull Bitcoin to refund your funds before the swap expires.",
+  "@notificationSwapRefundableBody": {
+    "description": "Body for the local notification fired when a Boltz swap is refundable."
+  },
+  "notificationSwapCanCoopTitle": "Swap needs cooperative close",
+  "@notificationSwapCanCoopTitle": {
+    "description": "Title for the local notification fired when a Boltz swap needs cooperative close."
+  },
+  "notificationSwapCanCoopBody": "Open Bull Bitcoin to complete the cooperative close before the swap expires.",
+  "@notificationSwapCanCoopBody": {
+    "description": "Body for the local notification fired when a Boltz swap needs cooperative close."
+  },
+  "notificationSwapFailedTitle": "Swap failed — action needed",
+  "@notificationSwapFailedTitle": {
+    "description": "Title for the local notification fired when a Boltz swap has failed and needs user action."
+  },
+  "notificationSwapFailedBody": "Open Bull Bitcoin to recover your funds.",
+  "@notificationSwapFailedBody": {
+    "description": "Body for the local notification fired when a Boltz swap has failed and needs user action."
+  },
+  "notificationSwapAttentionTitle": "Swap needs your attention",
+  "@notificationSwapAttentionTitle": {
+    "description": "Generic title for the local notification fired when a Boltz swap needs user attention."
+  },
+  "notificationSwapAttentionBody": "Open Bull Bitcoin to complete the swap before it expires.",
+  "@notificationSwapAttentionBody": {
+    "description": "Generic body for the local notification fired when a Boltz swap needs user attention."
   }
 }

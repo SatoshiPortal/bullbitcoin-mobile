@@ -12503,5 +12503,15 @@
   "legacyStorageWarningLater": "나중에",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "notificationSwapClaimableTitle": "스왑 청구 준비 완료",
+  "notificationSwapClaimableBody": "스왑이 만료되기 전에 자금을 청구하려면 Bull Bitcoin을 여세요.",
+  "notificationSwapRefundableTitle": "스왑 환불 준비 완료",
+  "notificationSwapRefundableBody": "스왑이 만료되기 전에 자금을 환불하려면 Bull Bitcoin을 여세요.",
+  "notificationSwapCanCoopTitle": "스왑에 협력적 종료가 필요합니다",
+  "notificationSwapCanCoopBody": "스왑이 만료되기 전에 협력적 종료를 완료하려면 Bull Bitcoin을 여세요.",
+  "notificationSwapFailedTitle": "스왑 실패 — 조치 필요",
+  "notificationSwapFailedBody": "자금을 복구하려면 Bull Bitcoin을 여세요.",
+  "notificationSwapAttentionTitle": "스왑에 주의가 필요합니다",
+  "notificationSwapAttentionBody": "만료되기 전에 스왑을 완료하려면 Bull Bitcoin을 여세요."
 }
