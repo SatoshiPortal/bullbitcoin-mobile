@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/utils/generic_extensions.dart';
 import 'package:bb_mobile/features/labels/domain/formatted_labels.dart';
 import 'package:bb_mobile/features/labels/domain/label_format.dart';
@@ -7,9 +8,8 @@ import 'package:bb_mobile/features/labels/application/usecases/export_labels_use
 import 'package:bb_mobile/features/labels/application/usecases/import_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/presentation/state.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class Bip329LabelsCubit extends Cubit<Bip329LabelsState> {
+class Bip329LabelsCubit extends SafeCubit<Bip329LabelsState> {
   final ExportLabelsUsecase _exportLabelsUsecase;
   final ImportLabelsUsecase _importLabelsUsecase;
 

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
 import 'package:bb_mobile/core/bitbox/domain/repositories/bitbox_device_repository.dart';
@@ -6,9 +7,8 @@ import 'package:bb_mobile/core/bitbox/domain/usecases/scan_bitbox_devices_usecas
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/bitbox/presentation/cubit/bitbox_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
+class BitBoxOperationCubit extends SafeCubit<BitBoxOperationState> {
   final ScanBitBoxDevicesUsecase _scanBitBoxDevicesUsecase;
   final ConnectBitBoxDeviceUsecase _connectBitBoxDeviceUsecase;
   final BitBoxDeviceRepository _repository;

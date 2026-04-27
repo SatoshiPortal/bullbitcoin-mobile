@@ -1,16 +1,16 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/update_tor_settings_usecase.dart';
 import 'package:bb_mobile/features/tor_settings/domain/usecases/check_tor_proxy_connection_usecase.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tor_settings_cubit.freezed.dart';
 part 'tor_settings_state.dart';
 
-class TorSettingsCubit extends Cubit<TorSettingsState> {
+class TorSettingsCubit extends SafeCubit<TorSettingsState> {
   TorSettingsCubit({
     required GetSettingsUsecase getSettingsUsecase,
     required UpdateTorSettingsUsecase updateTorSettingsUsecase,

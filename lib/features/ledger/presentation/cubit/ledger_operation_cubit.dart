@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/entities/ledger_device_entity.dart';
 import 'package:bb_mobile/core/ledger/domain/errors/ledger_errors.dart';
@@ -7,9 +8,8 @@ import 'package:bb_mobile/core/ledger/domain/usecases/scan_ledger_devices_usecas
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/ledger/presentation/cubit/ledger_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LedgerOperationCubit extends Cubit<LedgerOperationState> {
+class LedgerOperationCubit extends SafeCubit<LedgerOperationState> {
   final ScanLedgerDevicesUsecase _scanLedgerDevicesUsecase;
   final ConnectLedgerDeviceUsecase _connectLedgerDeviceUsecase;
   final LedgerDeviceRepository _repository;

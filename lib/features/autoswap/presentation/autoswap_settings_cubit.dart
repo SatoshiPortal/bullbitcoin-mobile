@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/bloc/safe_cubit.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -8,14 +9,13 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 @freezed
 part 'autoswap_settings_cubit.freezed.dart';
 part 'autoswap_settings_state.dart';
 
-class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
+class AutoSwapSettingsCubit extends SafeCubit<AutoSwapSettingsState> {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
