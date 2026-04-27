@@ -17,7 +17,7 @@ class TestnetModeSwitch extends StatelessWidget {
       onChanged: (value) {
         SnackBarUtils.showSnackBar(
           context,
-          'Boltz does not support testnet anymore',
+          'Testnet mode is not supported anymore',
         );
       },
     );
