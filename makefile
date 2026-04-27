@@ -12,7 +12,7 @@ fvm-check:
 all: setup
 	@echo "✨ All tasks completed!"
 
-setup: fvm-check clean deps build-runner translations hooks ios-pod-update
+setup: fvm-check clean deps hooks ios-pod-update
 	@echo "🚀 Setup complete!"
 
 clean:
@@ -49,9 +49,13 @@ drift-migrations:
 	fvm dart run drift_dev make-migrations
 
 ios-pod-update:
-	@echo " Fetching dependencies"
-	@fvm flutter precache --ios
-	@cd ios && pod install --repo-update && cd -
+	@if [ "$$(uname)" != "Darwin" ]; then \
+		echo "⏭️  Skipping ios-pod-update (not on macOS)"; \
+	else \
+		echo " Fetching dependencies"; \
+		fvm flutter precache --ios; \
+		cd ios && pod install --repo-update && cd -; \
+	fi
 
 ios-sqlite-update:
 	@echo "🔄 Updating SQLite"
