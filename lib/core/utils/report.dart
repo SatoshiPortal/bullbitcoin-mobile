@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:async';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,11 +117,10 @@ class Report {
       () => Sentry.captureException(
         exception,
         stackTrace: stackTrace,
-        hint: Hint.withMap({
-          'message': message ?? exception.runtimeType.toString(),
-          'runtimeType': exception.runtimeType.toString(),
-        }),
-        withScope: (s) => _applyTags(s, critical: false),
+        withScope: (s) {
+          if (message != null) _applyContexts(s, message);
+          _applyTags(s, critical: false);
+        },
       ),
     );
   }
@@ -144,11 +142,10 @@ class Report {
         await Sentry.captureException(
           exception,
           stackTrace: stackTrace,
-          hint: Hint.withMap({
-            'message': message,
-            'runtimeType': exception.runtimeType.toString(),
-          }),
-          withScope: (s) => _applyTags(s, critical: true),
+          withScope: (s) {
+            _applyContexts(s, message);
+            _applyTags(s, critical: true);
+          },
         );
       } else {
         await Sentry.captureMessage(
@@ -173,5 +170,9 @@ class Report {
       if (fromVersion != null) scope.setTag('from_version', fromVersion!);
       if (toVersion != null) scope.setTag('to_version', toVersion!);
     }
+  }
+
+  static void _applyContexts(Scope scope, String message) {
+    scope.setContexts('bull', {'dev_message': message});
   }
 }
