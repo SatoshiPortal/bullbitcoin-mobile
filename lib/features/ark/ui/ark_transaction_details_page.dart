@@ -1,20 +1,18 @@
 import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table.dart';
 import 'package:bb_mobile/core/widgets/tables/details_table_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ArkTransactionDetailsPage extends StatelessWidget {
   const ArkTransactionDetailsPage({super.key, required this.transaction});
@@ -103,31 +101,14 @@ class ArkTransactionDetailsPage extends StatelessWidget {
                     DetailsTableItem(
                       label: context.loc.arkTransactionId,
                       displayValue: StringFormatting.truncateMiddle(txid),
-                      copyValue: txid,
-                      displayWidget:
-                          isBoarding
-                              ? GestureDetector(
-                                onTap: () async {
-                                  final mempoolUrlBuilder =
-                                      locator<MempoolUrlBuilder>();
-
-                                  final mempoolUrl =
-                                      await mempoolUrlBuilder.bitcoinTxidUrl(
-                                    txid,
-                                    isTestnet: false,
-                                  );
-
-                                  await launchUrl(Uri.parse(mempoolUrl));
-                                },
-                                child: Text(
-                                  StringFormatting.truncateMiddle(txid),
-                                  style: TextStyle(
-                                    color: context.appColors.primary,
-                                  ),
-                                  textAlign: TextAlign.end,
-                                ),
-                              )
-                              : null,
+                      displayWidget: TransactionViewer.ark(
+                        txid,
+                        style: TextStyle(
+                          color: isBoarding
+                              ? context.appColors.primary
+                              : context.appColors.onSurface,
+                        ),
+                      ),
                     ),
                     DetailsTableItem(label: context.loc.arkType, displayValue: type),
                     DetailsTableItem(

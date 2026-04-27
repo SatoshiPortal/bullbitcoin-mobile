@@ -12503,5 +12503,21 @@
   "legacyStorageWarningLater": "Později",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "Načítání vstupů transakce...",
+  "coreScreensFeeRateLabel": "Sazba poplatku",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Výstup drobných neznámý — všechny výstupy zobrazeny stejně",
+  "coreScreensUnknown": "Neznámé",
+  "coreScreensFetchFailed": "Nepodařilo se načíst transakci {txid} z Electrum.",
+  "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
+  "coreScreensParseFailed": "Analýza transakce selhala: {message}.",
+  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
+  "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
+  "addressViewerTitle": "Adresa",
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "viewerViewInExplorer": "Zobrazit v prohlížeči",
+  "transactionViewerTitle": "ID transakce",
+  "invoiceViewerTitle": "Faktura",
+  "viewerCopyLink": "Kopírovat odkaz"
 }

@@ -1,12 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
@@ -449,8 +451,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 currencyCode,
                               );
                             },
-                            error:
-                                balanceError != null
+                            error: balanceError != null
                                 ? context
                                       .loc
                                       .sendErrorInsufficientBalanceForPayment
@@ -470,7 +471,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             Padding(
                               padding: const EdgeInsets.only(top: 6),
                               child: BBText(
-                                context.loc.sendErrorAmountBelowSwapLimitsBitcoin,
+                                context
+                                    .loc
+                                    .sendErrorAmountBelowSwapLimitsBitcoin,
                                 style: context.font.bodySmall,
                                 color: context.appColors.error,
                                 maxLines: 3,
@@ -604,6 +607,9 @@ class SendConfirmScreen extends StatelessWidget {
     final isChainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap != null,
     );
+    final isLiquid = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.isLiquid ?? false,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -639,8 +645,10 @@ class SendConfirmScreen extends StatelessWidget {
                       const _LnSwapSendInfoSection()
                     else if (isChainSwap)
                       const _ChainSwapSendInfoSection()
+                    else if (isLiquid)
+                      const _LiquidOnchainSendInfoSection()
                     else
-                      const _OnchainSendInfoSection(),
+                      const _OnchainTransactionReview(),
                     const Gap(40),
                     const _SendError(),
                     const _BottomButtons(),
@@ -821,11 +829,13 @@ class ConfirmSendButton extends StatelessWidget {
   }
 }
 
-class _OnchainSendInfoSection extends StatelessWidget {
-  const _OnchainSendInfoSection();
-  Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.appColors.secondaryFixedDim);
-  }
+/// Bitcoin onchain send info section.
+///
+/// Reads directly from [SendState] — all data (amount, address, fees) is
+/// already available after [createTransaction] + [signTransaction].
+/// Uses [CommonOnchainSendInfoSection] for the layout, same as Liquid.
+class _OnchainTransactionReview extends StatelessWidget {
+  const _OnchainTransactionReview();
 
   @override
   Widget build(BuildContext context) {
@@ -841,13 +851,12 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
+    );
     final hasFinalizedTx = context.select(
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
-    // final selectedFees = context.select(
-    //   (SendCubit cubit) => cubit.state.selectedFee,
-    // );
-
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
@@ -857,167 +866,85 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
     );
-    final formattedAbsoluteFees = context.select(
-      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
-    );
     final isToSelf = context.select(
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          InfoRow(
-            title: context.loc.sendFrom,
-            details: BBText(
-              selectedWallet!.displayLabel(context),
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
-            ),
-          ),
-          _divider(context),
-          InfoRow(
-            title: context.loc.sendTo,
-            details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
-              children: [
-                Expanded(
-                  child: BBText(
-                    paymentRequestAddress,
-                    maxLines: 5,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                    textAlign: .end,
-                  ),
-                ),
-                const Gap(8),
-                InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
-                  onTap: () {
-                    Clipboard.setData(
-                      ClipboardData(text: paymentRequestAddress),
-                    );
-                  },
-                ),
-              ],
-            ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
-          ),
-          if (isToSelf) ...[
-            _divider(context),
-            InfoRow(
-              title: context.loc.sendSelfTransfer,
-              details: Align(
-                alignment: Alignment.centerRight,
-                child: Icon(
-                  Icons.check,
-                  color: context.appColors.secondary,
-                  size: 20,
-                ),
-              ),
-            ),
-          ],
-          _divider(context),
-          InfoRow(
-            title: context.loc.sendAmount,
-            details: Column(
-              crossAxisAlignment: .end,
-              children: [
-                BBText(
-                  formattedBitcoinAmount,
-                  style: context.font.bodyLarge,
-                  color: context.appColors.secondary,
-                ),
-                BBText(
-                  '~$formattedFiatEquivalent',
-                  style: context.font.labelSmall,
-                  color: context.appColors.onSurfaceVariant,
-                ),
-              ],
-            ),
-          ),
 
-          _divider(context),
-          InfoRow(
-            title: context.loc.sendNetworkFees,
-            details: BBText(
-              formattedAbsoluteFees,
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
-            ),
-          ),
-          if (!selectedWallet.isLiquid) ...[
-            _divider(context),
-            InfoRow(
-              title: context.loc.sendFeePriority,
-              details: InkWell(
-                onTap: hasFinalizedTx
-                    ? null
-                    : () async {
-                        final selected = await _showFeeOptions(context);
-
-                        if (selected != null) {
-                          final fee = FeeSelectionName.fromString(selected);
-                          // ignore: use_build_context_synchronously
-                          await context.read<SendCubit>().feeOptionSelected(
-                            fee,
-                          );
-                        }
-                      },
-                child: Row(
-                  mainAxisAlignment: .end,
-                  children: [
-                    BBText(
-                      selectedFeeOption.title(),
-                      style: context.font.bodyLarge,
-                      color: context.appColors.primary,
-                      textAlign: .end,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CommonOnchainSendInfoSection(
+          sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
+          receiveWalletLabel: paymentRequestAddress,
+          formattedBitcoinAmount: formattedBitcoinAmount,
+          formattedFiatEquivalent: '~$formattedFiatEquivalent',
+          absoluteFees: formattedAbsoluteFees,
+          selectedFeeOptionTitle: selectedFeeOption.title(),
+          isToSelf: isToSelf,
+          onFeePriorityTap: hasFinalizedTx
+              ? null
+              : () async {
+                  final sendCubit = context.read<SendCubit>();
+                  final selected = await BlurredBottomSheet.show<String>(
+                    context: context,
+                    child: BlocProvider.value(
+                      value: sendCubit,
+                      child: FeeOptionsModal(),
                     ),
-                    const Gap(4),
-                    Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      color: context.appColors.primary,
-                      weight: 100,
-                      size: 12,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-          if (showFeeWarning == true) ...[
-            const Gap(16),
-            _HighFeeWarning(feePercent),
-          ],
+                  );
+                  if (selected != null) {
+                    final fee = FeeSelectionName.fromString(selected);
+                    await context.read<SendCubit>().feeOptionSelected(fee);
+                  }
+                },
+        ),
+        if (showFeeWarning == true) ...[
+          const Gap(16),
+          _HighFeeWarning(feePercent),
         ],
-      ),
+      ],
     );
   }
+}
 
-  Future<String?> _showFeeOptions(BuildContext context) async {
-    final sendCubit = context.read<SendCubit>();
+/// Liquid onchain send info section.
+///
+/// For Liquid wallets, `walletTransaction` is not populated during the confirm
+/// step (only `unsignedPsbt` and `liquidAbsoluteFees` are set). Instead of
+/// using [TransactionScreen] (which requires a [TransactionEntity]), this
+/// widget reads directly from [SendState] and delegates to
+/// [CommonOnchainSendInfoSection].
+class _LiquidOnchainSendInfoSection extends StatelessWidget {
+  const _LiquidOnchainSendInfoSection();
 
-    final selected = await BlurredBottomSheet.show<String>(
-      context: context,
-      child: BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
+  @override
+  Widget build(BuildContext context) {
+    final selectedWallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
+    );
+    final paymentRequestAddress = context.select(
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
+    );
+    final formattedBitcoinAmount = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+    final formattedFiatEquivalent = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
 
-    return selected;
+    return CommonOnchainSendInfoSection(
+      sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
+      receiveWalletLabel: paymentRequestAddress,
+      formattedBitcoinAmount: formattedBitcoinAmount,
+      formattedFiatEquivalent: '~$formattedFiatEquivalent',
+      absoluteFees: formattedAbsoluteFees,
+      selectedFeeOptionTitle: '',
+      // Liquid has fixed fees — no fee priority selector
+      onFeePriorityTap: null,
+    );
   }
 }
 
@@ -1036,9 +963,6 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
-    final paymentRequest = context.select(
-      (SendCubit cubit) => cubit.state.paymentRequest,
-    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1076,34 +1000,28 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendTo,
             details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: BBText(
-                    paymentRequest!.isLnAddress
-                        ? paymentRequestAddress
-                        : StringFormatting.truncateMiddle(
-                            paymentRequestAddress,
-                          ),
+                  child: AddressViewer(
+                    paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
-                    textAlign: .end,
-                    maxLines: 10,
                   ),
                 ),
                 const Gap(4),
                 InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
                   onTap: () {
                     Clipboard.setData(
                       ClipboardData(text: paymentRequestAddress),
                     );
                   },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
                 ),
               ],
             ),
@@ -1337,41 +1255,31 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendTo,
             details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: BBText(
+                  child: AddressViewer(
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
-                    textAlign: .end,
-                    maxLines: 10,
                   ),
                 ),
                 const Gap(4),
                 InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
                   onTap: () {
                     Clipboard.setData(
                       ClipboardData(text: paymentRequestAddress),
                     );
                   },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
                 ),
               ],
             ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
           ),
           _divider(context),
           InfoRow(
