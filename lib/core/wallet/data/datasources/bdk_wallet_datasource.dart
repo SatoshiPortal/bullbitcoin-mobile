@@ -750,7 +750,12 @@ Future<void> _performFullScan(_SyncParams params) async {
   );
 
   final bdkWallet = await BdkFacade.createWallet(wallet);
-  final blockchain = bdk.ElectrumClient(
+  // Guard against a rustls CryptoProvider install race across concurrent
+  // sync isolates. electrum-client's install_default check+install is not
+  // atomic, so two isolates can both see "not installed" and the loser
+  // fails. On retry the provider is already installed and the check
+  // short-circuits.
+  bdk.ElectrumClient buildClient() => bdk.ElectrumClient(
     url: params.electrumUrl,
     socks5: params.electrumSocks5?.isNotEmpty == true
         ? params.electrumSocks5
@@ -759,6 +764,16 @@ Future<void> _performFullScan(_SyncParams params) async {
     retry: params.electrumRetry.clamp(0, 255),
     validateDomain: params.electrumValidateDomain,
   );
+  bdk.ElectrumClient blockchain;
+  try {
+    blockchain = buildClient();
+  } on bdk.CouldNotCreateConnectionElectrumException catch (e) {
+    if (e.errorMessage.contains('Failed to install CryptoProvider')) {
+      blockchain = buildClient();
+    } else {
+      rethrow;
+    }
+  }
   final scanRequest = bdkWallet.startFullScan().build();
   final update = blockchain.fullScan(
     request: scanRequest,
