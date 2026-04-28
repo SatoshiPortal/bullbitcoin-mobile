@@ -40,12 +40,15 @@ class ElectrumConnectivityAdapter implements ElectrumConnectivityPort {
     final customServers = servers.where((s) => s.isCustom).toList();
     final serversToCheck = customServers.isNotEmpty ? customServers : servers;
 
-    // Check all servers concurrently using the Electrum protocol handshake
-    // (server.version) — works on all implementations (ElectrumX, Fulcrum, electrs).
-    // Online if at least one server responds correctly.
+    // Check all servers concurrently by fetching a known historical tx —
+    // proves the server actually serves chain data, not just that it speaks
+    // the Electrum protocol. Online if at least one server responds correctly.
     final statuses = await Future.wait(
       serversToCheck.map(
-        (server) => _serverStatusPort.checkProtocol(url: server.url),
+        (server) => _serverStatusPort.checkElectrum(
+          url: server.url,
+          network: serverNetwork,
+        ),
       ),
     );
 

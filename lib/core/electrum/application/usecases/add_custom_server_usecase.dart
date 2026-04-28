@@ -52,9 +52,11 @@ class AddCustomServerUsecase {
       return ElectrumServerStatus.offline;
     }
 
-    // Step 2: verify the server speaks the Electrum protocol (server.version handshake)
-    final protocolStatus = await _serverStatusPort.checkProtocol(
+    // Step 2: verify the server actually serves chain data by fetching a
+    // known historical tx (falls back to server.version on testnets).
+    final protocolStatus = await _serverStatusPort.checkElectrum(
       url: server.url,
+      network: server.network,
     );
     if (protocolStatus == ElectrumServerStatus.offline) {
       return ElectrumServerStatus.offline;

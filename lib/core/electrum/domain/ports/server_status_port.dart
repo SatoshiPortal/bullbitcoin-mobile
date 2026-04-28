@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 
 abstract class ServerStatusPort {
@@ -8,12 +9,14 @@ abstract class ServerStatusPort {
     int torProxyPort = 9050,
   });
 
-  /// Verifies the server speaks the Electrum protocol by sending a
-  /// `server.version` request. Works on all implementations (ElectrumX,
-  /// Fulcrum, electrs). Returns [ElectrumServerStatus.online] if the server
-  /// responds with a valid result, [ElectrumServerStatus.offline] otherwise.
-  Future<ElectrumServerStatus> checkProtocol({
+  /// Verifies the server actually serves real chain data by fetching a known
+  /// historical transaction via `blockchain.transaction.get`. A server that
+  /// only responds to `server.version` can still be desynced, pruned, or
+  /// otherwise broken — fetching a real tx proves it can answer wallet
+  /// queries. Falls back to `server.version` on testnets (no stable txid).
+  Future<ElectrumServerStatus> checkElectrum({
     required String url,
+    required ElectrumServerNetwork network,
     int? timeout,
   });
 }

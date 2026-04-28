@@ -3,11 +3,20 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class ServerStatusAdapter implements ServerStatusPort {
   const ServerStatusAdapter();
+
+  /// Bitcoin pizza day — first real-world BTC purchase, May 22 2010.
+  static const _bitcoinMainnetProbeTxid =
+      'cca7507897abc89628f450e8b1e0c6fca4ec3f7b34cccf55f3f531c659ff4d79';
+
+  /// First quantum-proof signature on Liquid mainnet.
+  static const _liquidMainnetProbeTxid =
+      'e079f31c58655e7b37477c6bb8f23aafaa942a86fe8c47f2970840a2c0829239';
 
   @override
   Future<ElectrumServerStatus> checkSocket({
@@ -46,8 +55,9 @@ class ServerStatusAdapter implements ServerStatusPort {
   }
 
   @override
-  Future<ElectrumServerStatus> checkProtocol({
+  Future<ElectrumServerStatus> checkElectrum({
     required String url,
+    required ElectrumServerNetwork network,
     int? timeout,
   }) async {
     try {
@@ -57,22 +67,45 @@ class ServerStatusAdapter implements ServerStatusPort {
       if (uri == null) return ElectrumServerStatus.offline;
 
       final effectiveTimeout = _resolveTimeout(uri, timeout);
+      final probeTxid = _probeTxidFor(network);
 
-      final response = await _sendVersionRequest(
+      // Testnet has no stable probe tx — fall back to a server.version
+      // handshake which only proves protocol compliance, not chain data.
+      final request = probeTxid == null
+          ? '{"id":1,"method":"server.version","params":["bb-mobile","1.4"]}\n'
+          : '{"id":1,"method":"blockchain.transaction.get","params":["$probeTxid",false]}\n';
+
+      final response = await _sendRequest(
         uri: uri,
+        request: request,
         timeoutSeconds: effectiveTimeout,
       );
 
       if (response.isEmpty) return ElectrumServerStatus.offline;
 
       final json = jsonDecode(response) as Map<String, dynamic>;
-      final isAlive = json.containsKey('result') && json['result'] != null;
+      final result = json['result'];
+      final isAlive = probeTxid == null
+          ? result != null
+          : result is String && result.isNotEmpty;
       return isAlive
           ? ElectrumServerStatus.online
           : ElectrumServerStatus.offline;
     } catch (e) {
       log.warning('Electrum protocol check failed for $url - $e');
       return ElectrumServerStatus.offline;
+    }
+  }
+
+  String? _probeTxidFor(ElectrumServerNetwork network) {
+    switch (network) {
+      case ElectrumServerNetwork.bitcoinMainnet:
+        return _bitcoinMainnetProbeTxid;
+      case ElectrumServerNetwork.liquidMainnet:
+        return _liquidMainnetProbeTxid;
+      case ElectrumServerNetwork.bitcoinTestnet:
+      case ElectrumServerNetwork.liquidTestnet:
+        return null;
     }
   }
 
@@ -95,16 +128,14 @@ class ServerStatusAdapter implements ServerStatusPort {
     return timeout ?? (isOnion ? 30 : 5);
   }
 
-  /// Sends a `server.version` JSON-RPC request and returns the raw response
-  /// line. [SecureSocket] extends [Socket], so both branches share the same
+  /// Sends a JSON-RPC request and returns the raw response line.
+  /// [SecureSocket] extends [Socket], so both branches share the same
   /// write/read logic after construction.
-  Future<String> _sendVersionRequest({
+  Future<String> _sendRequest({
     required Uri uri,
+    required String request,
     required int timeoutSeconds,
   }) async {
-    const request =
-        '{"id":1,"method":"server.version","params":["bb-mobile","1.4"]}\n';
-
     final Socket socket = uri.scheme == 'ssl'
         ? await SecureSocket.connect(
             uri.host,
