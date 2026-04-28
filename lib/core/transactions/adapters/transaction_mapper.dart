@@ -79,7 +79,7 @@ class TransactionMapper {
         ),
         network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
       ).toString();
-    } on Exception {
+    } catch (_) {
       // Non-standard or unrecognized script — address left null
     }
 
