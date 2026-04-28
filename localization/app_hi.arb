@@ -12503,5 +12503,73 @@
   "legacyStorageWarningLater": "बाद में",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "वापस",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "शुरू करें",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "हल्का",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "गहरा",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "सिस्टम",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "मैं योगदान करता हूँ",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "मैं योगदान नहीं करता",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "मानक लॉग",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "गंभीर लॉग",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "हमेशा चालू — हमें यह देखने देता है कि आपका वॉलेट ऐप संस्करणों के बीच सुरक्षित रूप से माइग्रेट होता है या नहीं।",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "गंभीर लॉग को बंद नहीं किया जा सकता। ये असफल अपग्रेड, माइग्रेशन और ऐप स्टार्टअप त्रुटियों की रिपोर्ट करते हैं ताकि हम उन समस्याओं को ठीक कर सकें जो दूसरों को प्रभावित कर सकती हैं।",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "अपने बैकअप का उपयोग करें",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "आपके बैकअप की वजह से आपके फंड सुरक्षित हैं।\nपहले ऐप को पुनः आरंभ करने का प्रयास करें; यदि फिर भी विफल हो, तो पुनः इंस्टॉल करें और अपने बैकअप से पुनर्प्राप्त करें।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "कोई बैकअप नहीं?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "ऐप को न हटाएं।\nबचाव के प्रयास के लिए हमारी सहायता टीम से संपर्क करें।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "सहायता से संपर्क करें",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "त्रुटि विवरण दिखाएं",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

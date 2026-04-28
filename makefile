@@ -26,11 +26,11 @@ deps:
 
 build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --delete-conflicting-outputs
+	@fvm dart run build_runner build --delete-conflicting-outputs --force-jit
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
-	@fvm dart run build_runner watch --delete-conflicting-outputs
+	@fvm dart run build_runner watch --delete-conflicting-outputs --force-jit
 
 translations:
 	@echo "🌐 Generating translations files"

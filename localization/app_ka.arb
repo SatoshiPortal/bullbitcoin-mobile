@@ -290,5 +290,73 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი"
+  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
+  "backButton": "უკან",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "დაწყება",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "ღია",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "მუქი",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "სისტემა",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "წვლილს შევიტან",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "არ შევიტან წვლილს",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "სტანდარტული ჟურნალები",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "კრიტიკული ჟურნალები",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "ყოველთვის ჩართული — საშუალებას გვაძლევს ვნახოთ, თქვენი საფულე უსაფრთხოდ გადადის აპის ვერსიებს შორის თუ არა.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "კრიტიკული ჟურნალების გამორთვა შეუძლებელია. ისინი აფიქსირებენ წარუმატებელ განახლებებს, მიგრაციებსა და აპლიკაციის გაშვების შეცდომებს, რათა შევძლოთ იმ პრობლემების გადაჭრა, რომლებმაც შესაძლოა სხვებზე იმოქმედოს.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "გამოიყენეთ თქვენი სარეზერვო ასლი",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "თქვენი სარეზერვო ასლის წყალობით თქვენი სახსრები დაცულია.\nჯერ სცადეთ აპლიკაციის გადატვირთვა; თუ ის კვლავ არ მუშაობს, ხელახლა დააინსტალირეთ და აღადგინეთ თქვენი სარეზერვო ასლით.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "სარეზერვო ასლი არ გაქვთ?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "არ წაშალოთ აპი.\nდაუკავშირდით ჩვენს მხარდაჭერის გუნდს გადარჩენის მცდელობისთვის.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "მხარდაჭერასთან დაკავშირება",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "შეცდომის დეტალების ჩვენება",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

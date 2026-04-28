@@ -148,33 +148,24 @@ class Logger {
     Report.error(message: message, exception: error, stackTrace: trace);
   }
 
-  /// Logs critical errors that could crash the app or make it unusable.
-  /// Use for the most severe errors that require immediate intervention.
-  void shout(Object? message, {Object? error, StackTrace? trace}) {
-    logger.shout(message, error, trace);
-  }
-
-  Future<void> migration({
-    required dep.Level level,
+  /// Logs critical events that must reach Sentry regardless of user
+  /// consent. [error] and [trace] are optional so `shout` can also record
+  /// info milestones (`log.shout(message: 'migration_install')`, FSS
+  /// fallback started, feature-flag flip, etc.). [message] is required —
+  /// every always-on event carries a human-readable label for the Sentry
+  /// UI and the on-disk TSV log.
+  void shout({
     required String message,
-    Map<String, dynamic>? context,
-    Object? exception,
-    StackTrace? stackTrace,
-  }) async {
-    final now = DateTime.now().toIso8601String();
-    final content = [now, level.name, message];
-    content.add(context?.toString() ?? '');
-    content.add(exception?.toString() ?? '');
-    content.add(stackTrace?.toString() ?? '');
-
-    final sanitizedContent = content.map((e) => logger.sanitize(e)).toList();
-    final tsvLine = sanitizedContent.join('\t');
-    _queueWrite(tsvLine);
+    Object? error,
+    StackTrace? trace,
+  }) {
+    logger.shout(message, error, trace);
+    Report.critical(message: message, exception: error, stackTrace: trace);
   }
 
   Future<void> deleteLogs() async {
     await logsFile.writeAsString('');
-    log.shout('Logs deleted');
+    log.config('Logs deleted');
   }
 
   String _sanitize(String input) {

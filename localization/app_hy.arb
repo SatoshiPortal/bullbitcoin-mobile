@@ -78,5 +78,73 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ"
+  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
+  "backButton": "Ետ",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Սկսել",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Լույս",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Մուգ",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Համակարգ",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Ես մասնակցում եմ",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Ես չեմ մասնակցում",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Ստանդարտ գրառումներ",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Կարևոր գրառումներ",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Միշտ միացված — թույլ է տալիս տեսնել՝ ձեր դրամապանակը ապահով է տեղափոխվում հավելվածի տարբերակների միջև։",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Կարևոր գրառումները չեն կարող անջատվել։ Դրանք զեկուցում են ձախողված թարմացումների, միգրացիաների և հավելվածի գործարկման սխալների մասին, որպեսզի մենք կարողանանք լուծել խնդիրները, որոնք կարող են ազդել ուրիշների վրա։",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Օգտագործեք ձեր պահուստը",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Ձեր կրկնօրինակի շնորհիվ ձեր միջոցները անվտանգ են։\nՍկզբում փորձեք վերագործարկել հավելվածը. եթե այն դեռևս չի աշխատում, վերատեղադրեք այն և վերականգնեք ձեր կրկնօրինակի միջոցով։",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Պահուստ չկա՞",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Մի ջնջեք հավելվածը։\nԿապվեք մեր աջակցության թիմի հետ՝ փրկության փորձ կատարելու համար։",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Կապվել աջակցության հետ",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Ցույց տալ սխալի մանրամասները",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

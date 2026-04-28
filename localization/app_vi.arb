@@ -78,5 +78,73 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN"
+  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
+  "backButton": "Quay lại",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Bắt đầu",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Sáng",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Tối",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Hệ thống",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Tôi đóng góp",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Tôi không đóng góp",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Nhật ký tiêu chuẩn",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Nhật ký quan trọng",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Luôn bật — giúp chúng tôi biết ví của bạn có di chuyển an toàn giữa các phiên bản ứng dụng hay không.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Không thể tắt nhật ký quan trọng. Chúng báo cáo các bản nâng cấp, di chuyển và lỗi khởi động ứng dụng không thành công để chúng tôi có thể khắc phục các sự cố có thể ảnh hưởng đến những người khác.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Sử dụng bản sao lưu của bạn",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Nhờ bản sao lưu, tiền của bạn vẫn an toàn.\nTrước tiên hãy thử khởi động lại ứng dụng; nếu vẫn không chạy, gỡ cài đặt và cài lại rồi khôi phục bằng bản sao lưu.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Không có bản sao lưu?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Đừng xóa ứng dụng.\nLiên hệ với đội hỗ trợ của chúng tôi để thử giải cứu.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Liên hệ hỗ trợ",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Hiển thị chi tiết lỗi",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

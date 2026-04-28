@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart'
     as domain;
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/report.dart';
 
 class SettingsRepository implements domain.SettingsRepository {
   final SettingsDatasource _settingsDatasource;
@@ -128,5 +129,8 @@ class SettingsRepository implements domain.SettingsRepository {
   @override
   Future<void> setErrorReportingEnabled(bool enabled) async {
     await _settingsDatasource.setErrorReportingEnabled(enabled);
+    // Sync [Report]'s boot-time mirror so the next cold start's Sentry
+    // init can seed consent before the locator is available.
+    await Report.updateConsent(enabled);
   }
 }

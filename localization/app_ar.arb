@@ -12506,5 +12506,73 @@
   "legacyStorageWarningLater": "لاحقاً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "رجوع",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "ابدأ",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "فاتح",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "داكن",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "النظام",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "أنا أساهم",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "لا أساهم",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "السجلات القياسية",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "السجلات الحرجة",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "مفعّل دائمًا — يتيح لنا التأكد من انتقال محفظتك بأمان بين إصدارات التطبيق.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "لا يمكن تعطيل السجلات الحرجة. فهي تُبلّغ عن حالات فشل الترقية والترحيل وأخطاء بدء تشغيل التطبيق حتى نتمكن من إصلاح المشكلات التي قد تؤثر على الآخرين.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "استخدم نسختك الاحتياطية",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "أموالك آمنة بفضل نسختك الاحتياطية.\nحاول إعادة تشغيل التطبيق أولاً، وإذا استمر الفشل، أعد تثبيته واسترجع محفظتك باستخدام نسختك الاحتياطية.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "لا توجد نسخة احتياطية؟",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "لا تحذف التطبيق.\nاتصل بفريق الدعم لمحاولة الإنقاذ.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "اتصل بالدعم",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "إظهار تفاصيل الخطأ",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

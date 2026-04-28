@@ -20,34 +20,28 @@ class GetOldSeedsUsecase {
       final oldWallets = await _oldWalletRepository.fetch();
       if (oldWallets.isEmpty) return [];
 
-      final oldMainnetDefaultWallets =
-          oldWallets
-              .where(
-                (e) =>
-                    e.type == OldBBWalletType.main &&
-                    e.network == OldBBNetwork.Mainnet,
-              )
-              .toList();
+      final oldMainnetDefaultWallets = oldWallets
+          .where(
+            (e) =>
+                e.type == OldBBWalletType.main &&
+                e.network == OldBBNetwork.Mainnet,
+          )
+          .toList();
 
-      await log.migration(
-        level: Level.INFO,
-        message:
-            'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
+      log.fine(
+        'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
       );
 
-      final oldMainnetExternalSignerWallets =
-          oldWallets
-              .where(
-                (e) =>
-                    e.type == OldBBWalletType.words &&
-                    e.network == OldBBNetwork.Mainnet,
-              )
-              .toList();
+      final oldMainnetExternalSignerWallets = oldWallets
+          .where(
+            (e) =>
+                e.type == OldBBWalletType.words &&
+                e.network == OldBBNetwork.Mainnet,
+          )
+          .toList();
 
-      await log.migration(
-        level: Level.INFO,
-        message:
-            'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
+      log.fine(
+        'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
       );
 
       final oldMainnetSignerWallets =
@@ -61,11 +55,10 @@ class GetOldSeedsUsecase {
       }
       return oldSeeds;
     } catch (e) {
-      await log.migration(
-        level: Level.SEVERE,
+      log.shout(
         message: 'Migration failed',
-        exception: e,
-        stackTrace: StackTrace.current,
+        error: e,
+        trace: StackTrace.current,
       );
       rethrow;
     }
