@@ -4373,9 +4373,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Aidez-nous à améliorer Bull Bitcoin en participant à notre programme de signalement d'erreurs. Cela nous aide directement à faire de Bull Bitcoin un meilleur service pour tous.\n\nLorsqu'elle est activée, nous envoyons automatiquement des rapports d'erreurs lorsque des problèmes surviennent dans l'application. Ces données nous aident à comprendre ce qui se passe pour nos utilisateurs du monde entier et à prioriser les correctifs en conséquence.\n\nNous ne partageons pas ces informations avec des tiers. Nous utilisons le client open-source de Sentry avec notre propre serveur backend auto-hébergé.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Aidez-nous à améliorer Bull Bitcoin en participant à notre programme de signalement d'erreurs. Cela nous aide directement à faire de Bull Bitcoin un meilleur service pour tous.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Lorsqu'elle est activée, nous envoyons automatiquement des rapports d'erreurs lorsque des problèmes surviennent dans l'application.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Ces données nous aident à comprendre ce qui se passe pour nos utilisateurs du monde entier et à prioriser les correctifs en conséquence.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Nous ne partageons pas ces informations avec des tiers.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Nous utilisons le client open-source de Sentry avec notre propre serveur backend auto-hébergé.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Accepter",
   "@errorReportingAcceptButton": {
@@ -4504,6 +4520,10 @@
   "errorReportingIDoNotContribute": "Je ne participe pas",
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Journaux standard",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
   },
   "errorReportingCriticalTitle": "Journaux critiques",
   "@errorReportingCriticalTitle": {

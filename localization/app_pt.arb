@@ -4439,9 +4439,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Ajude-nos a melhorar o Bull Bitcoin participando do nosso programa de relatório de erros. Isso nos ajuda diretamente a tornar o Bull Bitcoin melhor para todos.\n\nQuando ativado, enviamos automaticamente relatórios de erros quando ocorrem problemas no aplicativo. Esses dados nos ajudam a entender o que está acontecendo com nossos usuários em todo o mundo e a priorizar as correções de acordo.\n\nNão compartilhamos essas informações com terceiros. Usamos o cliente de código aberto do Sentry com nosso próprio servidor backend auto-hospedado.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Ajude-nos a melhorar o Bull Bitcoin participando do nosso programa de relatório de erros. Isso nos ajuda diretamente a tornar o Bull Bitcoin melhor para todos.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Quando ativado, enviamos automaticamente relatórios de erros quando ocorrem problemas no aplicativo.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Esses dados nos ajudam a entender o que está acontecendo com nossos usuários em todo o mundo e a priorizar as correções de acordo.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Não compartilhamos essas informações com terceiros.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Usamos o cliente de código aberto do Sentry com nosso próprio servidor backend auto-hospedado.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Aceitar",
   "@errorReportingAcceptButton": {
@@ -4570,6 +4586,10 @@
   "errorReportingIDoNotContribute": "Não contribuo",
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Registos padrão",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
   },
   "errorReportingCriticalTitle": "Registos críticos",
   "@errorReportingCriticalTitle": {

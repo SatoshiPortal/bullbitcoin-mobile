@@ -216,43 +216,17 @@ class _ErrorDetailsState extends State<_ErrorDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       children: [
-        InkWell(
-          onTap: () => setState(() => _expanded = !_expanded),
-          borderRadius: BorderRadius.circular(2),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.outline),
-              borderRadius: BorderRadius.circular(2),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.bug_report_outlined,
-                    size: 18,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.label,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                    color: theme.colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
-          ),
+        BBButton.big(
+          label: widget.label,
+          iconData: _expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+          iconFirst: true,
+          outlined: true,
+          bgColor: context.appColors.surface,
+          textColor: context.appColors.text,
+          borderColor: context.appColors.border,
+          onPressed: () => setState(() => _expanded = !_expanded),
         ),
         if (_expanded) ...[
           const SizedBox(height: 12),

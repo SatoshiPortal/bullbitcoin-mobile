@@ -251,10 +251,10 @@ packages:
     dependency: transitive
     description:
       name: build
-      sha256: aadd943f4f8cc946882c954c187e6115a84c98c81ad1d9c6cbf0895a8c85da9c
+      sha256: a156715e7cd728130c592f30552575908aae5b100005fbc1f0fb16b3c03a3d10
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.5"
+    version: "4.0.6"
   build_cli_annotations:
     dependency: transitive
     description:
@@ -283,10 +283,10 @@ packages:
     dependency: "direct dev"
     description:
       name: build_runner
-      sha256: "521daf8d189deb79ba474e43a696b41c49fb3987818dbacf3308f1e03673a75e"
+      sha256: "22fdcc3cfeb9d974d7408718c4be15ec5e9b1b350088f3a6c88f154e74dd700d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.13.1"
+    version: "2.14.1"
   built_collection:
     dependency: transitive
     description:
@@ -331,10 +331,10 @@ packages:
     dependency: transitive
     description:
       name: camera_platform_interface
-      sha256: "98cfc9357e04bad617671b4c1f78a597f25f08003089dd94050709ae54effc63"
+      sha256: "7ac852d77699acee79f0d438b793feee26721841e50973576419ff5c6d95e9b7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.12.0"
+    version: "2.13.0"
   camera_web:
     dependency: transitive
     description:
@@ -500,10 +500,10 @@ packages:
     dependency: transitive
     description:
       name: dart_mappable
-      sha256: "97526bd5e1b1739be5c7379c51d391d074b6bbd109e6e92be49028ecb1a9853c"
+      sha256: "960746478faaa68ed6b9d3c6fd03c87c7b8614e6c33e75fe1b0c6d7a60adcf29"
       url: "https://pub.dev"
     source: hosted
-    version: "4.7.0"
+    version: "4.8.0"
   dart_style:
     dependency: transitive
     description:
@@ -694,18 +694,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_gen_core
-      sha256: "22b3198a4cb1255841a3662b41adad35d36d9037fcd9d129858240030417e0b1"
+      sha256: "1413fbd0b67f76ac17800989013438caec3b64564c9ffd1eea6cd7e170d9b0e5"
       url: "https://pub.dev"
     source: hosted
-    version: "5.13.0+1"
+    version: "5.14.1"
   flutter_gen_runner:
     dependency: "direct dev"
     description:
       name: flutter_gen_runner
-      sha256: "83fd55f5472a955725c5912819847e9770c4f295cd0ae4bdd26d99853f8a6546"
+      sha256: db00922dd5f4c1aa33aeab7f74117f1cd224e7a1e8bea1e312b8d09b8101a909
       url: "https://pub.dev"
     source: hosted
-    version: "5.13.0+1"
+    version: "5.14.1"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -941,10 +941,18 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "48fb2f42ad057476fa4b733cb95e9f9ea7b0b010bb349ea491dca7dbdb18ffc4"
+      sha256: "08b742eef4f71c9df5af543751cd0b7f1c679c4088488f4223ecaddc1a813b79"
       url: "https://pub.dev"
     source: hosted
-    version: "17.2.0"
+    version: "17.2.2"
+  google_cloud:
+    dependency: transitive
+    description:
+      name: google_cloud
+      sha256: fbcde933b2d8600c3cdb2328f8f4c47628ec29a39e9cef85dee535c7868993c4
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
   google_fonts:
     dependency: "direct main"
     description:
@@ -1013,10 +1021,10 @@ packages:
     dependency: transitive
     description:
       name: googleapis_auth
-      sha256: b81fe352cc4a330b3710d2b7ad258d9bcef6f909bb759b306bf42973a7d046db
+      sha256: "661738b763d3e524de69df53bf4e03943e4e01e98265cebcc6684871b06a5379"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.3.0"
   graphs:
     dependency: transitive
     description:
@@ -1053,10 +1061,10 @@ packages:
     dependency: transitive
     description:
       name: hooks
-      sha256: e79ed1e8e1929bc6ecb6ec85f0cb519c887aa5b423705ded0d0f2d9226def388
+      sha256: "025f060e86d2d4c3c47b56e33caf7f93bf9283340f26d23424ebcfccf34f621e"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.3"
   html:
     dependency: transitive
     description:
@@ -1364,10 +1372,10 @@ packages:
     dependency: transitive
     description:
       name: native_toolchain_rust
-      sha256: e53ef1025e2c190333ec61f638513c890c1becf11222e27b115b03bac369c6be
+      sha256: "26d4dcae954328af4ebfa8fc56cca0bf74b9ae8b4a6132de5da2071ac3d237b3"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.3"
+    version: "1.0.4"
   ndef:
     dependency: transitive
     description:
@@ -1665,6 +1673,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  record_use:
+    dependency: transitive
+    description:
+      name: record_use
+      sha256: "2551bd8eecfe95d14ae75f6021ad0248be5c27f138c2ec12fcb52b500b3ba1ed"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   recoverbull:
     dependency: "direct main"
     description:
@@ -2182,10 +2198,10 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-      sha256: "45caa6c5917fa127b5dbcfbd1fa60b14e583afdc08bfc96dda38886ca252eb60"
+      sha256: "046d3928e16fa4dc46e8350415661755ab759d9fc97fc21b5ab295f71e4f0499"
       url: "https://pub.dev"
     source: hosted
-    version: "15.0.2"
+    version: "15.1.0"
   watcher:
     dependency: transitive
     description:
@@ -2271,10 +2287,10 @@ packages:
     dependency: "direct main"
     description:
       name: webview_flutter_wkwebview
-      sha256: e15d8828e014291324a4d0cf6e272090167f4fa5673ffcf8fe446f4a4cd35861
+      sha256: a68868ac4828a5f012bf81e8bd25d879f3cec5bd5301575466caafbf9a320a65
       url: "https://pub.dev"
     source: hosted
-    version: "3.24.3"
+    version: "3.24.5"
   win32:
     dependency: transitive
     description:

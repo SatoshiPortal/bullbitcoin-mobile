@@ -4384,9 +4384,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。\n\n启用后，当应用程序发生问题时，我们会自动发送错误报告。这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。\n\n我们不会与第三方分享此信息。我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "启用后，当应用程序发生问题时，我们会自动发送错误报告。",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "我们不会与第三方分享此信息。",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "接受",
   "@errorReportingAcceptButton": {
@@ -4515,6 +4531,10 @@
   "errorReportingIDoNotContribute": "我不参与",
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "标准日志",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
   },
   "errorReportingCriticalTitle": "关键日志",
   "@errorReportingCriticalTitle": {

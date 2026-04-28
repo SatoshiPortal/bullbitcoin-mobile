@@ -12532,6 +12532,10 @@
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
   },
+  "errorReportingStandardLogsTitle": "گزارش‌های استاندارد",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
   "errorReportingCriticalTitle": "گزارش‌های حیاتی",
   "@errorReportingCriticalTitle": {
     "description": "Title of the read-only migration logs switch shown in the wizard and settings"

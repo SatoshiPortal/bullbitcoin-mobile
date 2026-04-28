@@ -12722,9 +12722,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Help us improve Bull by contributing to our error reporting program.\n\nBull Bitcoin sends anonymized error reports when something breaks. This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.\n\nReports go only to Bull's server, never to third parties. Bull Bitcoin is open source, so you can verify what is sent.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Accept",
   "@errorReportingAcceptButton": {
@@ -12853,6 +12869,10 @@
   "errorReportingIDoNotContribute": "I do not contribute",
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Standard logs",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch shown in the wizard and settings"
   },
   "errorReportingCriticalTitle": "Critical logs",
   "@errorReportingCriticalTitle": {

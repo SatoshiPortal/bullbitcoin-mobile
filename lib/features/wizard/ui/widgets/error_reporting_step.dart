@@ -20,19 +20,37 @@ class ErrorReportingStep extends StatelessWidget {
     return Column(
       children: [
         Text(
-          context.loc.errorReportingProgramDescription,
+          context.loc.errorReportingProgramDescriptionP1,
           textAlign: TextAlign.center,
+        ),
+        SizedBox(height: Device.screen.height * 0.01),
+        Text(
+          context.loc.errorReportingProgramDescriptionP2,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        SizedBox(height: Device.screen.height * 0.01),
+        Text(
+          context.loc.errorReportingProgramDescriptionP3,
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: Device.screen.height * 0.01),
+        Text(
+          context.loc.errorReportingProgramDescriptionP4,
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: Device.screen.height * 0.01),
+        Text(
+          context.loc.errorReportingProgramDescriptionP5,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(height: Device.screen.height * 0.015),
         SwitchListTile(
           value: enabled,
           onChanged: onChanged,
           shape: shape,
-          title: Text(
-            enabled
-                ? context.loc.errorReportingIContribute
-                : context.loc.errorReportingIDoNotContribute,
-          ),
+          title: Text(context.loc.errorReportingStandardLogsTitle),
         ),
         SizedBox(height: Device.screen.height * 0.01),
         SwitchListTile(

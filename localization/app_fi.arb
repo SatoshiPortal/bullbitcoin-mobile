@@ -4376,9 +4376,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.\n\nKun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista. Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.\n\nEmme jaa näitä tietoja kolmansien osapuolten kanssa. Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Kun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Emme jaa näitä tietoja kolmansien osapuolten kanssa.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Hyväksy",
   "@errorReportingAcceptButton": {
@@ -4507,6 +4523,10 @@
   "errorReportingIDoNotContribute": "En osallistu",
   "@errorReportingIDoNotContribute": {
     "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Peruslokit",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
   },
   "errorReportingCriticalTitle": "Kriittiset lokit",
   "@errorReportingCriticalTitle": {
