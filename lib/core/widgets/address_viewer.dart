@@ -104,15 +104,9 @@ class AddressViewer extends StatelessWidget {
     final builder = locator<MempoolUrlBuilder>();
     final parsed = await Satoshifier.tryParse(data);
     if (parsed is BitcoinAddress) {
-      return builder.bitcoinAddressUrl(
-        data,
-        isTestnet: parsed.network.isTestnet,
-      );
+      return builder.bitcoinAddress(data, isTestnet: parsed.network.isTestnet);
     } else if (parsed is LiquidAddress) {
-      return builder.liquidAddressUrl(
-        data,
-        isTestnet: parsed.network.isTestnet,
-      );
+      return builder.liquidAddress(data, isTestnet: parsed.network.isTestnet);
     }
     return null;
   }
@@ -148,8 +142,7 @@ class _AddressDetailSheet extends StatelessWidget {
   List<String> get _groups {
     final groups = <String>[];
     for (int i = 0; i < data.length; i += _groupSize) {
-      final end =
-          i + _groupSize > data.length ? data.length : i + _groupSize;
+      final end = i + _groupSize > data.length ? data.length : i + _groupSize;
       groups.add(data.substring(i, end));
     }
     return groups;
