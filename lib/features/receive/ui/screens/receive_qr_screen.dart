@@ -30,9 +30,6 @@ class ReceiveQrPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isBitcoin = context.select(
-      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.bitcoin,
-    );
     final isLightning = context.select(
       (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
@@ -54,10 +51,6 @@ class ReceiveQrPage extends StatelessWidget {
           const Gap(10),
           ReceiveInfoDetails(wallet: wallet),
           const Gap(16),
-          if (isBitcoin)
-            // The switch to only copy/scan the address is only for Bitcoin since
-            // the other networks don't have payjoin bip21 uri's
-            const Column(children: [ReceiveCopyAddress(), Gap(10)]),
           if (isLedger) const Column(children: [VerifyAddressOnLedgerButton()]),
           if (isBitBox) const Column(children: [VerifyAddressOnBitBoxButton()]),
           if (!isLightning) const ReceiveNewAddressButton(),
@@ -85,9 +78,6 @@ class ReceiveQRDetails extends StatelessWidget {
     );
     final addressOrInvoiceOnly = context.select(
       (ReceiveBloc bloc) => bloc.state.addressOrInvoiceOnly,
-    );
-    final isPayjoinAvailable = context.select(
-      (ReceiveBloc bloc) => bloc.state.isPayjoinAvailable,
     );
     final selectedWallet = context.watch<ReceiveBloc>().state.wallet;
     final wallets = context.select((ReceiveBloc bloc) => bloc.state.wallets);
@@ -141,14 +131,7 @@ class ReceiveQRDetails extends StatelessWidget {
             ),
           const Gap(20),
           Center(child: QrDisplayWidget(data: qrData)),
-          if (isPayjoinAvailable) ...[
-            const Gap(16),
-            BBText(
-              context.loc.receivePayjoinActivated,
-              style: context.font.bodyLarge,
-              textAlign: .center,
-            ),
-          ],
+          const _PayjoinSwitch(),
           const Gap(20),
           Column(
             crossAxisAlignment: .stretch,
@@ -643,38 +626,75 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
   }
 }
 
-class ReceiveCopyAddress extends StatelessWidget {
-  const ReceiveCopyAddress({super.key});
+class _PayjoinSwitch extends StatelessWidget {
+  const _PayjoinSwitch();
 
   @override
   Widget build(BuildContext context) {
+    final canUsePayjoin = context.select<ReceiveBloc, bool>(
+      (bloc) =>
+          bloc.state.type == ReceiveType.bitcoin &&
+          (bloc.state.wallet?.signsLocally ?? false),
+    );
+    if (!canUsePayjoin) return const SizedBox.shrink();
+
+    final hasUtxos = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.hasUtxos,
+    );
+    final isAddressOnly = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.isAddressOnly,
+    );
+    final isOn = !isAddressOnly && hasUtxos;
+
+    void toggle() {
+      final turnOn = !isOn;
+      if (turnOn && !hasUtxos) {
+        SnackBarUtils.showSnackBar(
+          context,
+          context.loc.receivePayjoinNoUtxos,
+        );
+        return;
+      }
+      context.read<ReceiveBloc>().add(
+        ReceiveEvent.receiveAddressOnlyToggled(!turnOn),
+      );
+    }
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16 + 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  context.loc.receiveCopyAddressOnly,
-                  style: context.font.headlineSmall,
-                ),
-              ],
+      padding: const EdgeInsets.only(top: 16),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: toggle,
+          borderRadius: BorderRadius.circular(8),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: context.appColors.onSecondary,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: context.appColors.secondaryFixedDim),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 4,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: BBText(
+                      context.loc.receivePayjoinActivated,
+                      style: context.font.bodyLarge,
+                      color: context.appColors.secondary,
+                    ),
+                  ),
+                  AbsorbPointer(
+                    child: Switch(value: isOn, onChanged: (_) {}),
+                  ),
+                ],
+              ),
             ),
           ),
-          const Gap(8),
-          Switch(
-            value: context.select<ReceiveBloc, bool>(
-              (bloc) =>
-                  bloc.state.type == ReceiveType.bitcoin &&
-                  bloc.state.isAddressOnly,
-            ),
-            onChanged: (addressOnly) => context.read<ReceiveBloc>().add(
-              ReceiveEvent.receiveAddressOnlyToggled(addressOnly),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

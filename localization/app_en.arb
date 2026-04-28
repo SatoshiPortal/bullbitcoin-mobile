@@ -1448,6 +1448,10 @@
   "@receiveSave": {
     "description": "Button label for saving receive details"
   },
+  "receivePayjoinNoUtxos": "Receive funds first to enable it.\nUTXOs are required to use payjoin.",
+  "@receivePayjoinNoUtxos": {
+    "description": "Snackbar shown when user tries to enable payjoin on a wallet without any UTXOs"
+  },
   "receivePayjoinActivated": "Payjoin activated",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
