@@ -12714,6 +12714,14 @@
   "@invoiceViewerTitle": {
     "description": "Title shown in the invoice viewer detail dialog"
   },
+  "viewerAddressTab": "Address",
+  "@viewerAddressTab": {
+    "description": "Segment label to show/copy the bare address in the address viewer dialog"
+  },
+  "viewerPaymentUriTab": "Payment URI",
+  "@viewerPaymentUriTab": {
+    "description": "Segment label to show/copy the BIP21 payment URI in the address viewer dialog"
+  },
   "recoverbullErrorRejected": "Rejected by the Key Server",
   "@recoverbullErrorRejected": {
     "description": "Error message when request is rejected by the key server"

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart'
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
+import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/locator.dart';
@@ -124,7 +125,7 @@ class AddressViewer extends StatelessWidget {
   }
 }
 
-class _AddressDetailSheet extends StatelessWidget {
+class _AddressDetailSheet extends StatefulWidget {
   const _AddressDetailSheet({
     required this.data,
     required this.clipboardText,
@@ -137,13 +138,31 @@ class _AddressDetailSheet extends StatelessWidget {
   final BuildContext dialogContext;
   final Future<String?> Function() getExplorerUrl;
 
+  @override
+  State<_AddressDetailSheet> createState() => _AddressDetailSheetState();
+}
+
+class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   static const int _groupSize = 4;
 
-  List<String> get _groups {
+  late bool _showUri;
+  late final bool _hasBip21;
+
+  @override
+  void initState() {
+    super.initState();
+    _hasBip21 = widget.clipboardText != widget.data;
+    _showUri = _hasBip21;
+  }
+
+  String get _activeText =>
+      _showUri ? widget.clipboardText : widget.data;
+
+  List<String> _groupsOf(String text) {
     final groups = <String>[];
-    for (int i = 0; i < data.length; i += _groupSize) {
-      final end = i + _groupSize > data.length ? data.length : i + _groupSize;
-      groups.add(data.substring(i, end));
+    for (int i = 0; i < text.length; i += _groupSize) {
+      final end = i + _groupSize > text.length ? text.length : i + _groupSize;
+      groups.add(text.substring(i, end));
     }
     return groups;
   }
@@ -155,39 +174,73 @@ class _AddressDetailSheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          BBText(
-            context.loc.addressViewerTitle,
-            style: context.font.titleSmall,
-            color: context.appColors.onSurface,
-          ),
+          if (_hasBip21)
+            BBSegmentFull(
+              items: {
+                context.loc.viewerAddressTab,
+                context.loc.viewerPaymentUriTab,
+              },
+              initialValue: _showUri
+                  ? context.loc.viewerPaymentUriTab
+                  : context.loc.viewerAddressTab,
+              onSelected: (selected) {
+                setState(
+                  () => _showUri = selected == context.loc.viewerPaymentUriTab,
+                );
+              },
+            )
+          else
+            BBText(
+              context.loc.addressViewerTitle,
+              style: context.font.titleSmall,
+              color: context.appColors.onSurface,
+            ),
           const Gap(16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 6,
-            alignment: WrapAlignment.center,
-            children: [
-              for (int i = 0; i < _groups.length; i++)
-                Text(
-                  _groups[i],
-                  style: context.font.bodyLarge?.copyWith(
-                    color: i.isOdd
-                        ? context.appColors.textMuted
-                        : context.appColors.secondary,
-                    fontWeight: i.isOdd ? FontWeight.w700 : null,
-                    fontFeatures: [const FontFeature.tabularFigures()],
-                    letterSpacing: 1.2,
-                  ),
-                ),
-            ],
-          ),
+          _buildBody(context),
           const Gap(24),
           _buildCopyAction(context),
-          const Gap(16),
-          _buildCopyLinkAction(context),
-          const Gap(16),
-          _buildOpenLinkAction(context),
+          if (!_showUri) ...[
+            const Gap(16),
+            _buildCopyLinkAction(context),
+            const Gap(16),
+            _buildOpenLinkAction(context),
+          ],
         ],
       ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    if (_showUri) {
+      return SelectableText(
+        _activeText,
+        style: context.font.bodyLarge?.copyWith(
+          color: context.appColors.secondary,
+          letterSpacing: 1.2,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
+
+    final groups = _groupsOf(_activeText);
+    return Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      alignment: WrapAlignment.center,
+      children: [
+        for (int i = 0; i < groups.length; i++)
+          Text(
+            groups[i],
+            style: context.font.bodyLarge?.copyWith(
+              color: i.isOdd
+                  ? context.appColors.textMuted
+                  : context.appColors.secondary,
+              fontWeight: i.isOdd ? FontWeight.w700 : null,
+              fontFeatures: [const FontFeature.tabularFigures()],
+              letterSpacing: 1.2,
+            ),
+          ),
+      ],
     );
   }
 
@@ -195,9 +248,9 @@ class _AddressDetailSheet extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        Clipboard.setData(ClipboardData(text: clipboardText));
-        Navigator.of(dialogContext).pop();
-        SnackBarUtils.showCopiedSnackBar(dialogContext);
+        Clipboard.setData(ClipboardData(text: _activeText));
+        Navigator.of(widget.dialogContext).pop();
+        SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -218,12 +271,12 @@ class _AddressDetailSheet extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () async {
-        final url = await getExplorerUrl();
+        final url = await widget.getExplorerUrl();
         if (url == null) return;
         Clipboard.setData(ClipboardData(text: url));
-        if (dialogContext.mounted) {
-          Navigator.of(dialogContext).pop();
-          SnackBarUtils.showCopiedSnackBar(dialogContext);
+        if (widget.dialogContext.mounted) {
+          Navigator.of(widget.dialogContext).pop();
+          SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
         }
       },
       child: Row(
@@ -245,10 +298,10 @@ class _AddressDetailSheet extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () async {
-        final url = await getExplorerUrl();
+        final url = await widget.getExplorerUrl();
         if (url == null) return;
-        if (dialogContext.mounted) {
-          Navigator.of(dialogContext).pop();
+        if (widget.dialogContext.mounted) {
+          Navigator.of(widget.dialogContext).pop();
         }
         await launchUrl(Uri.parse(url));
       },
