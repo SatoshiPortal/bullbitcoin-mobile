@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -192,7 +193,12 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
   @override
   void initState() {
     super.initState();
-    _transaction = TransactionMapper.fromBitcoinTx(widget.bitcoinTx);
+    final isTestnet =
+        context.read<SettingsCubit>().state.environment?.isTestnet ?? false;
+    _transaction = TransactionMapper.fromBitcoinTx(
+      widget.bitcoinTx,
+      isTestnet: isTestnet,
+    );
     context.read<TransactionCubit>().loadFromTransaction(_transaction);
   }
 

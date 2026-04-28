@@ -29,9 +29,9 @@ class TransactionViewer extends StatelessWidget {
     this.color,
     this.clipboardText,
     required bool isTestnet,
-  })  : _network = _TransactionNetwork.bitcoin,
-        _isTestnet = isTestnet,
-        _unblindedUrl = null;
+  }) : _network = _TransactionNetwork.bitcoin,
+       _isTestnet = isTestnet,
+       _unblindedUrl = null;
 
   const TransactionViewer.liquid(
     this.data, {
@@ -41,9 +41,9 @@ class TransactionViewer extends StatelessWidget {
     this.clipboardText,
     required bool isTestnet,
     String? unblindedUrl,
-  })  : _network = _TransactionNetwork.liquid,
-        _isTestnet = isTestnet,
-        _unblindedUrl = unblindedUrl;
+  }) : _network = _TransactionNetwork.liquid,
+       _isTestnet = isTestnet,
+       _unblindedUrl = unblindedUrl;
 
   const TransactionViewer.ark(
     this.data, {
@@ -51,9 +51,10 @@ class TransactionViewer extends StatelessWidget {
     this.style,
     this.color,
     this.clipboardText,
-  })  : _network = _TransactionNetwork.ark,
-        _isTestnet = false,
-        _unblindedUrl = null;
+    bool isTestnet = false,
+  }) : _network = _TransactionNetwork.ark,
+       _isTestnet = isTestnet,
+       _unblindedUrl = null;
 
   final String data;
   final TextStyle? style;
@@ -135,14 +136,16 @@ class TransactionViewer extends StatelessWidget {
     switch (_network) {
       case _TransactionNetwork.bitcoin:
         final builder = locator<MempoolUrlBuilder>();
-        return builder.bitcoinTxidUrl(data, isTestnet: _isTestnet);
+        return builder.bitcoinTxid(data, isTestnet: _isTestnet);
       case _TransactionNetwork.liquid:
         final builder = locator<MempoolUrlBuilder>();
-        return builder.liquidTxidUrl(
-          _unblindedUrl ?? data,
+        return builder.liquidTxid(
+          data,
           isTestnet: _isTestnet,
+          unblindedUrl: _unblindedUrl,
         );
       case _TransactionNetwork.ark:
+        // TODO(ark): no public testnet explorer; both networks resolve to mainnet for now
         return 'https://explorer.arkade.sh/tx/$data';
     }
   }
