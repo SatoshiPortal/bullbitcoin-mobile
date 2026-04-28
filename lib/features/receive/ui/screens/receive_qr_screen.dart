@@ -3,7 +3,8 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -160,24 +161,56 @@ class ReceiveQRDetails extends StatelessWidget {
                 color: context.appColors.secondary,
               ),
               const Gap(6),
-              // TODO: We should probably just make a specific widget for the
-              //  address and invoice instead of using CopyInput.
-              CopyInput(
-                text: addressOrInvoiceOnly,
-                clipboardText: clipboardData,
-                overflow: .ellipsis,
-                canShowValueModal: true,
-                modalTitle: isLightning
-                    ? context.loc.receiveLightningInvoice
-                    : context.loc.receiveAddress,
-                modalContent: isLightning
-                    ? addressOrInvoiceOnly
-                    : addressOrInvoiceOnly
-                          .replaceAllMapped(
-                            RegExp('.{1,4}'),
-                            (match) => '${match.group(0)} ',
-                          )
-                          .trim(),
+              Container(
+                decoration: BoxDecoration(
+                  color: context.appColors.onSecondary,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: context.appColors.secondaryFixedDim,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Gap(15),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        child: isLightning
+                            ? InvoiceViewer(
+                                addressOrInvoiceOnly,
+                                clipboardText: clipboardData,
+                                style: context.font.bodyLarge,
+                                color: context.appColors.secondary,
+                              )
+                            : AddressViewer(
+                                addressOrInvoiceOnly,
+                                clipboardText: clipboardData,
+                                style: context.font.bodyLarge,
+                                color: context.appColors.secondary,
+                              ),
+                      ),
+                    ),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      iconSize: 20,
+                      icon: Icon(
+                        Icons.copy_sharp,
+                        color: context.appColors.secondary,
+                      ),
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: clipboardData.isNotEmpty
+                                ? clipboardData
+                                : addressOrInvoiceOnly,
+                          ),
+                        );
+                        SnackBarUtils.showCopiedSnackBar(context);
+                      },
+                    ),
+                    const Gap(8),
+                  ],
+                ),
               ),
             ],
           ),

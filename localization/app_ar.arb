@@ -12506,5 +12506,21 @@
   "legacyStorageWarningLater": "لاحقاً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
+  "coreScreensFeeRateLabel": "معدل الرسوم",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "مخرج الباقي غير معروف — يتم عرض جميع المخرجات بالتساوي",
+  "coreScreensUnknown": "غير معروف",
+  "coreScreensFetchFailed": "تعذر جلب المعاملة {txid} من Electrum.",
+  "coreScreensInputResolutionFailed": "المدخل غير موجود: المخرج {vout} من {parentTxId} غير موجود.",
+  "coreScreensParseFailed": "فشل تحليل المعاملة: {message}.",
+  "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
+  "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
+  "addressViewerTitle": "العنوان",
+  "viewerTapToCopy": "انقر للنسخ",
+  "viewerViewInExplorer": "عرض في المستكشف",
+  "transactionViewerTitle": "معرف المعاملة",
+  "invoiceViewerTitle": "فاتورة",
+  "viewerCopyLink": "انسخ الرابط"
 }

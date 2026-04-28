@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -275,11 +275,10 @@ class CommonCoinSelectTile extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: BBText(
-                          StringFormatting.truncateMiddle(address),
-                          style: context.font.labelLarge?.copyWith(
-                            color: context.appColors.onSurface,
-                          ),
+                        child: AddressViewer(
+                          address,
+                          style: context.font.labelLarge,
+                          color: context.appColors.onSurface,
                         ),
                       ),
                       BBText(
