@@ -125,6 +125,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
+      final isWalletChange =
+          event.wallet != null && state.wallet?.id != event.wallet!.id;
+      if (isWalletChange) {
+        // Clear the previous wallet's payjoin receiver and stop watching it
+        // so the URI does not embed a payjoin link from the old wallet.
+        await _payjoinSubscription?.cancel();
+        emit(state.copyWith(payjoin: null, receivePayjoinException: null));
+      }
+
       if (state.wallet != null && !state.wallet!.isBitcoin) {
         emit(state.copyWith(wallet: null, bitcoinAddress: null));
       } else {

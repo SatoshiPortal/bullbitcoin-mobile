@@ -88,7 +88,7 @@ abstract class ReceiveState with _$ReceiveState {
           return '';
         }
         if (isAddressOnly ||
-            (confirmedAmountSat == null && note.isEmpty && payjoin == null)) {
+            (confirmedAmountSat == null && note.isEmpty && !canPayjoin)) {
           return bitcoinAddress!.address;
         }
 
@@ -102,7 +102,7 @@ abstract class ReceiveState with _$ReceiveState {
         );
 
         // Add payjoin parameters if available
-        if (payjoin != null) {
+        if (canPayjoin) {
           final pjUri = Uri.parse(payjoin!.pjUri);
           final queryParameters = {
             if (bip21Uri.queryParameters.isNotEmpty)
@@ -244,6 +244,12 @@ abstract class ReceiveState with _$ReceiveState {
     }
     return false;
   }
+
+  bool get hasUtxos => (wallet?.balanceSat ?? BigInt.zero) > BigInt.zero;
+
+  // Payjoin is only useful if the wallet has UTXOs to contribute as inputs in
+  // the receiver's BIP78 PSBT — without UTXOs the proposal cannot be built.
+  bool get canPayjoin => payjoin != null && hasUtxos;
 
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;
