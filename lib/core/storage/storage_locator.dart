@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_store_type_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed_store_type.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/get_all_seeds_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/secure_storage_legacy_datasource_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
@@ -20,11 +17,7 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart' as fss10;
-import 'package:flutter_secure_storage_legacy/flutter_secure_storage.dart'
-    as fss9;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
 class StorageLocator {
@@ -39,170 +32,23 @@ class StorageLocator {
 
     log.info('SeedStoreType flag on startup: $existingLibrary');
 
-    late final KeyValueStorageDatasource<String> secureStorageDatasource;
+    final storage = FlutterSecureStorage(
+      aOptions: const AndroidOptions(
+        resetOnError: false,
+        migrateOnAlgorithmChange: false,
+      ),
+      iOptions: const IOSOptions(
+        accessibility: KeychainAccessibility.first_unlock_this_device,
+      ),
+    );
+    final secureStorageDatasource = SecureStorageDatasourceImpl(storage);
 
-    switch (existingLibrary) {
-      case null:
-        // No flag — fresh install or first run of 6.9.0.
-        // Try FSS10 first, verify it can actually read data, then fallback to FSS9.
-        log.fine('StorageLocator: no existing flag — attempting fss10 init');
-        try {
-          final storage = fss10.FlutterSecureStorage(
-            aOptions: const fss10.AndroidOptions(
-              // Never silently delete data on errors. Without this, any read
-              // failure would wipe all entries and return the string
-              // "Data has been reset" as a success value.
-              resetOnError: false,
-              // Create _BACKUP copies of all keys before attempting migration.
-              // Backups are stored in the same SharedPreferences files
-              // (FlutterSecureStorage, FlutterSecureKeyStorage) with a
-              // _BACKUP suffix. These are compatible with FSS9 ESP recovery.
-              migrateWithBackup: true,
-              // Allow re-encryption when the cipher algorithm changes between
-              // versions (e.g. AES_CBC → AES_GCM). Without this, an algorithm
-              // mismatch calls onSuccess(null) without setting storageCipher,
-              // causing silent read failures.
-              migrateOnAlgorithmChange: true,
-              // On migration failure: restore original data from _BACKUP keys,
-              // delete new cipher keys, set _MIGRATION_FAILED flag, and throw
-              // MigrationFailedException to Dart. This keeps data intact and
-              // lets our catch block fall back to FSS9. Default is true, but
-              // set explicitly for clarity.
-              rollbackOnFailure: true,
-            ),
-            iOptions: const fss10.IOSOptions(
-              accessibility:
-                  fss10.KeychainAccessibility.first_unlock_this_device,
-            ),
-          );
-          // Trigger actual native init + migration by reading.
-          // The constructor alone never throws — failures only surface on data access.
-          final data = await storage.readAll();
-          log.fine(
-            'StorageLocator: fss10 readAll returned ${data.length} entries',
-          );
-
-          // Detect silent migration failure: FSS10 returns empty but the app
-          // has prior data (SQLite DB exists from a previous version). This
-          // means FSS10 couldn't decrypt the existing entries but didn't throw.
-          if (data.isEmpty) {
-            final docsDir = await getApplicationDocumentsDirectory();
-            final dbFile = File(
-              p.join(docsDir.path, 'bullbitcoin_sqlite.sqlite'),
-            );
-            if (await dbFile.exists()) {
-              log.warning(
-                'StorageLocator: fss10 readAll returned empty but database '
-                'exists — silent migration failure detected, falling back to fss9',
-              );
-              throw Exception(
-                'FSS10 silent migration failure: prior install data exists '
-                'but readAll returned 0 entries',
-              );
-            }
-            log.fine(
-              'StorageLocator: readAll empty + no database = fresh install',
-            );
-          }
-
-          secureStorageDatasource = SecureStorageDatasourceImpl(storage);
-          // Only write flag AFTER a successful read confirms FSS10 works.
-          await seedStoreTypeDatasource.write(
-            SeedStoreTypeModel.fromEntity(
-              const SeedStoreType(storageLibrary: SeedStorageLibrary.fss10),
-            ),
-          );
-          log.fine('StorageLocator: fss10 verified and flag written');
-        } catch (fss10Error) {
-          log.warning(
-            'StorageLocator: fss10 readAll failed — falling back to fss9. '
-            'Error: ${fss10Error.runtimeType}: $fss10Error',
-            error: fss10Error,
-          );
-
-          try {
-            final storage = fss9.FlutterSecureStorage(
-              aOptions: const fss9.AndroidOptions(
-                // Never silently delete data on errors.
-                resetOnError: false,
-                // Use Android EncryptedSharedPreferences (AES256-SIV keys +
-                // AES256-GCM values via MasterKey). FSS9 also auto-migrates
-                // older cipher-chain entries (RSA+AES in plain SharedPrefs)
-                // into ESP via checkAndMigrateToEncrypted() on init.
-                encryptedSharedPreferences: true,
-              ),
-              iOptions: const fss9.IOSOptions(
-                accessibility:
-                    fss9.KeychainAccessibility.first_unlock_this_device,
-              ),
-            );
-            // Verify FSS9 can also read before committing to it.
-            final data = await storage.readAll();
-            log.fine(
-              'StorageLocator: fss9 readAll returned ${data.length} entries',
-            );
-            secureStorageDatasource = SecureStorageLegacyDatasourceImpl(
-              storage,
-            );
-            await seedStoreTypeDatasource.write(
-              SeedStoreTypeModel.fromEntity(
-                const SeedStoreType(storageLibrary: SeedStorageLibrary.fss9),
-              ),
-            );
-            log.fine('StorageLocator: fss9 fallback verified and flag written');
-          } catch (fss9Error) {
-            log.shout(
-              message:
-                  'StorageLocator: both fss10 and fss9 failed. '
-                  'fss10: ${fss10Error.runtimeType}, '
-                  'fss9: ${fss9Error.runtimeType}',
-              error: fss9Error,
-              trace: StackTrace.current,
-            );
-            rethrow;
-          }
-        }
-
-      case SeedStorageLibrary.fss9:
-        // User is on FSS9 — either FSS10 migration failed and we fell back,
-        // or a previous session already committed to FSS9. The app will show
-        // a LegacyStorageWarningOverlay prompting the user to backup and
-        // reinstall to get onto FSS10/oubliette.
-        log.fine(
-          'StorageLocator: existing flag is fss9 — using legacy storage',
-        );
-        final storage = fss9.FlutterSecureStorage(
-          aOptions: const fss9.AndroidOptions(
-            resetOnError: false,
-            encryptedSharedPreferences: true,
-          ),
-          iOptions: const fss9.IOSOptions(
-            accessibility: fss9.KeychainAccessibility.first_unlock_this_device,
-          ),
-        );
-        secureStorageDatasource = SecureStorageLegacyDatasourceImpl(storage);
-        log.fine('StorageLocator: fss9 legacy storage initialized from flag');
-
-      case SeedStorageLibrary.fss10:
-        // User already migrated to FSS10 successfully on a previous session.
-        // Keep the same options for consistency — migrateWithBackup and
-        // rollbackOnFailure protect against any future algorithm changes.
-        log.fine(
-          'StorageLocator: existing flag is fss10 — using current storage',
-        );
-        final storage = fss10.FlutterSecureStorage(
-          aOptions: const fss10.AndroidOptions(
-            resetOnError: false,
-            migrateWithBackup: true,
-            migrateOnAlgorithmChange: true,
-            rollbackOnFailure: true,
-          ),
-          iOptions: const fss10.IOSOptions(
-            accessibility: fss10.KeychainAccessibility.first_unlock_this_device,
-          ),
-        );
-        secureStorageDatasource = SecureStorageDatasourceImpl(storage);
-        log.fine('StorageLocator: fss10 storage initialized from flag');
+    if (existingLibrary != SeedStorageLibrary.fss10) {
+      await seedStoreTypeDatasource.write(
+        SeedStoreTypeModel.fromEntity(
+          const SeedStoreType(storageLibrary: SeedStorageLibrary.fss10),
+        ),
+      );
     }
 
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
