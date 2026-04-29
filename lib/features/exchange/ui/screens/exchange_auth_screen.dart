@@ -114,6 +114,15 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
             final url = change.url;
             if (url == null) return;
 
+            // During sign-up, the bb_session cookie is set before email
+            // verification. Skip processing on these paths so the WebView
+            // stays open and the user can complete email verification. Once
+            // done, the auth app navigates away and the API key is generated
+            // on the next URL change.
+            if (url.contains('/registration') || url.contains('/verification')) {
+              return;
+            }
+
             // Check if the URL contains the bb_session cookie
             final bbSessionCookie = await _tryGetBBSessionCookie(change.url!);
             // If no bb_session cookie is found, do nothing as the user is not
