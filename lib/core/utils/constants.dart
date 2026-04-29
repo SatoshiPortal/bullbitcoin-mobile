@@ -93,7 +93,6 @@ class ApiServiceConstants {
 
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';
-  static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
   static const boltzReferralId = 'BULL';
 
   // BullBitcoin API
@@ -121,13 +120,8 @@ class LocatorInstanceNameConstants {
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
-  static const boltzTestnetSwapRepositoryInstanceName =
-      'boltzTestnetSwapRepository';
   static const boltzSwapWatcherInstanceName = 'boltzSwapWatcher';
-  static const boltzTestnetSwapWatcherInstanceName = 'boltzTestnetSwapWatcher';
   static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';
-  static const boltzTestnetAutoSwapTimerInstanceName =
-      'boltzTestnetAutoSwapTimer';
   static const String labelsHiveStorageDatasourceInstanceName =
       'labelsHiveStorageDatasource';
   static const String labelByRefHiveStorageDatasourceInstanceName =

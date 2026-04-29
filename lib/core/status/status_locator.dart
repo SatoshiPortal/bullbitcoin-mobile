@@ -29,14 +29,9 @@ class StatusLocator {
     // Usecase
     locator.registerFactory<CheckAllServiceStatusUsecase>(
       () => CheckAllServiceStatusUsecase(
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
         ),
         exchangeRateRepository: locator<ExchangeRateRepository>(
           instanceName: 'mainnetExchangeRateRepository',

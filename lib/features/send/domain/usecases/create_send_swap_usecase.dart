@@ -9,17 +9,14 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateSendSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateSendSwapUsecase({
     required WalletRepository walletRepository,
     required BoltzSwapRepository swapRepository,
-    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
-       _swapRepositoryTestnet = swapRepositoryTestnet,
        _seedRepository = seedRepository;
 
   Future<LnSendSwap> execute({
@@ -48,10 +45,7 @@ class CreateSendSwapUsecase {
         throw Exception('Wallet not found');
       }
 
-      final swapRepository =
-          wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
-
-      final existingSwap = await swapRepository.getSendSwapByInvoice(
+      final existingSwap = await _swapRepository.getSendSwapByInvoice(
         invoice: finalInvoice,
       );
       if (existingSwap != null) return existingSwap;
@@ -82,7 +76,7 @@ class CreateSendSwapUsecase {
 
       switch (type) {
         case SwapType.bitcoinToLightning:
-          return await swapRepository.createBitcoinToLightningSwap(
+          return await _swapRepository.createBitcoinToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
             mnemonic: mnemonic.mnemonicWords.join(' '),
@@ -90,7 +84,7 @@ class CreateSendSwapUsecase {
           );
 
         case SwapType.liquidToLightning:
-          return await swapRepository.createLiquidToLightningSwap(
+          return await _swapRepository.createLiquidToLightningSwap(
             walletId: walletId,
             invoice: finalInvoice,
             mnemonic: mnemonic.mnemonicWords.join(' '),
@@ -104,5 +98,3 @@ class CreateSendSwapUsecase {
     }
   }
 }
-
-// _$BoltzErrorImpl (BoltzError(kind: HTTP, message: "a swap with this invoice exists already"))

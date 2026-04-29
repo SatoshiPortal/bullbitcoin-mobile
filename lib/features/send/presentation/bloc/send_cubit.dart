@@ -276,7 +276,6 @@ class SendCubit extends Cubit<SendState> {
         final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
         final invoice = await _decodeInvoiceUsecase.execute(
           invoice: paymentRequest.invoice,
-          isTestnet: state.paymentRequest!.isTestnet,
         );
         if (invoice.sats == 0) {
           emit(
@@ -634,14 +633,8 @@ class SendCubit extends Cubit<SendState> {
         (liquidSwapLimits, liquidSwapFees),
         (bitcoinSwapLimits, bitcoinSwapFees),
       ) = await (
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.liquidToLightning,
-        ),
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.bitcoinToLightning,
-        ),
+        _getSwapLimitsUsecase.execute(type: SwapType.liquidToLightning),
+        _getSwapLimitsUsecase.execute(type: SwapType.bitcoinToLightning),
       ).wait;
       emit(
         state.copyWith(
@@ -657,14 +650,8 @@ class SendCubit extends Cubit<SendState> {
         (lbtcToBtcSwapLimits, lbtcToBtcSwapFees),
         (btcToLbtcSwapLimits, btcToLbtcSwapFees),
       ) = await (
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.liquidToBitcoin,
-        ),
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.bitcoinToLiquid,
-        ),
+        _getSwapLimitsUsecase.execute(type: SwapType.liquidToBitcoin),
+        _getSwapLimitsUsecase.execute(type: SwapType.bitcoinToLiquid),
       ).wait;
       emit(
         state.copyWith(
@@ -733,7 +720,6 @@ class SendCubit extends Cubit<SendState> {
         // final swapLimits = state.swapLimits!.;
         final invoice = await _decodeInvoiceUsecase.execute(
           invoice: state.paymentRequestAddress,
-          isTestnet: wallet.network.isTestnet,
         );
         final invoiceAmount = invoice.sats;
         final feeEstimate =
@@ -1169,13 +1155,8 @@ class SendCubit extends Cubit<SendState> {
           pset: pset,
         );
         if (state.chainSwap != null) {
-          final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
             swapId: state.chainSwap!.id,
-            network: Network.fromEnvironment(
-              isTestnet: settings.environment == Environment.testnet,
-              isLiquid: true,
-            ),
             lockupFees: absoluteFees,
           );
           emit(
@@ -1187,13 +1168,8 @@ class SendCubit extends Cubit<SendState> {
             ),
           );
         } else if (state.lightningSwap != null) {
-          final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
             swapId: state.lightningSwap!.id,
-            network: Network.fromEnvironment(
-              isTestnet: settings.environment == Environment.testnet,
-              isLiquid: true,
-            ),
             lockupFees: absoluteFees,
           );
           emit(
@@ -1269,13 +1245,8 @@ class SendCubit extends Cubit<SendState> {
                 psbt: signedPsbtAndTxSize.signedPsbt,
               );
           if (state.chainSwap != null) {
-            final settings = await _getSettingsUsecase.execute();
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.chainSwap!.id,
-              network: Network.fromEnvironment(
-                isTestnet: settings.environment == Environment.testnet,
-                isLiquid: false,
-              ),
               lockupFees: bitcoinAbsoluteFeesSat,
             );
             emit(
@@ -1289,13 +1260,8 @@ class SendCubit extends Cubit<SendState> {
               ),
             );
           } else if (state.lightningSwap != null) {
-            final settings = await _getSettingsUsecase.execute();
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.lightningSwap!.id,
-              network: Network.fromEnvironment(
-                isTestnet: settings.environment == Environment.testnet,
-                isLiquid: false,
-              ),
               lockupFees: bitcoinAbsoluteFeesSat,
             );
             emit(
@@ -1418,13 +1384,8 @@ class SendCubit extends Cubit<SendState> {
                 await _calculateBitcoinAbsoluteFeesUsecase.execute(
                   psbt: signedPsbtAndTxSize.signedPsbt,
                 );
-            final settings = await _getSettingsUsecase.execute();
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.chainSwap!.id,
-              network: Network.fromEnvironment(
-                isTestnet: settings.environment == Environment.testnet,
-                isLiquid: false,
-              ),
               lockupFees: bitcoinAbsoluteFeesSat,
             );
             emit(
@@ -1489,7 +1450,6 @@ class SendCubit extends Cubit<SendState> {
         await _updatePaidSendSwapUsecase.execute(
           txid: state.txId!,
           swapId: state.lightningSwap!.id,
-          network: state.selectedWallet!.network,
           absoluteFees: state.absoluteFees!,
         );
       }
@@ -1497,7 +1457,6 @@ class SendCubit extends Cubit<SendState> {
         await _updatePaidSendSwapUsecase.execute(
           txid: state.txId!,
           swapId: state.chainSwap!.id,
-          network: state.selectedWallet!.network,
           absoluteFees:
               0, // TODO (ishi): removed until server fees are implemented
         );

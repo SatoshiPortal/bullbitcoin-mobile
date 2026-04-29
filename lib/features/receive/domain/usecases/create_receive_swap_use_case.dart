@@ -10,7 +10,6 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final LabelsFacade _labelsFacade;
@@ -18,13 +17,11 @@ class CreateReceiveSwapUsecase {
   CreateReceiveSwapUsecase({
     required WalletRepository walletRepository,
     required BoltzSwapRepository swapRepository,
-    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required LabelsFacade labelsFacade,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
-       _swapRepositoryTestnet = swapRepositoryTestnet,
        _seedRepository = seedRepository,
        _getReceiveAddressUsecase = getReceiveAddressUsecase,
        _labelsFacade = labelsFacade;
@@ -42,9 +39,7 @@ class CreateReceiveSwapUsecase {
         throw Exception('Wallet not found');
       }
 
-      final swapRepository = wallet.network.isTestnet
-          ? _swapRepositoryTestnet
-          : _swapRepository;
+      final swapRepository = _swapRepository;
       final (limits, fees) = await _swapRepository.getSwapLimitsAndFees(type);
       if (amountSat < limits.min) {
         throw Exception('Minimum Swap Amount: $limits.min sats');

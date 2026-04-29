@@ -4,29 +4,20 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 
 class GetSwapLimitsUsecase {
-  final BoltzSwapRepository _mainnetBoltzSwapRepository;
-  final BoltzSwapRepository _testnetBoltzSwapRepository;
+  final BoltzSwapRepository _boltzSwapRepository;
 
-  GetSwapLimitsUsecase({
-    required BoltzSwapRepository mainnetBoltzSwapRepository,
-    required BoltzSwapRepository testnetBoltzSwapRepository,
-  }) : _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
-       _testnetBoltzSwapRepository = testnetBoltzSwapRepository;
+  GetSwapLimitsUsecase({required BoltzSwapRepository boltzSwapRepository})
+    : _boltzSwapRepository = boltzSwapRepository;
 
   Future<(SwapLimits, SwapFees)> execute({
     required SwapType type,
-    bool isTestnet = false,
     bool updateLimitsAndFees = true,
   }) async {
     try {
-      final swapRepository = isTestnet
-          ? _testnetBoltzSwapRepository
-          : _mainnetBoltzSwapRepository;
       if (updateLimitsAndFees) {
-        await swapRepository.updateSwapLimitsAndFees(type);
+        await _boltzSwapRepository.updateSwapLimitsAndFees(type);
       }
-      final result = await swapRepository.getSwapLimitsAndFees(type);
-      return result;
+      return await _boltzSwapRepository.getSwapLimitsAndFees(type);
     } catch (e) {
       log.severe(
         message: 'Error getting swap limits',
