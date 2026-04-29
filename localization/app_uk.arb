@@ -191,12 +191,14 @@
   "pinCodeCheckingStatus": "Перевірка стану PIN",
   "pinCodeProcessing": "Переробка",
   "pinCodeSettingUp": "Налаштування коду PIN",
+  "pinCodeBackupRequiredWarning": "Будь ласка, виконайте резервне копіювання гаманця перед встановленням PIN-коду",
   "settingsCurrencyTitle": "Ціна",
   "settingsAppSettingsTitle": "Налаштування додатків",
   "settingsTermsOfServiceTitle": "Умови надання послуг",
   "settingsAppVersionLabel": "Версія додатка: ",
   "settingsTelegramLabel": "Телеграма",
   "settingsGithubLabel": "Гитуб",
+  "settingsGetHelpLabel": "Отримати допомогу",
   "settingsServicesStatusTitle": "Статус на сервери",
   "settingsTorSettingsTitle": "Налаштування Tor",
   "settingsRecoverbullTitle": "Реcoverbull",
@@ -717,6 +719,7 @@
   "fundExchangeWarningTactic7": "Не хвилюйтеся про це попередження",
   "fundExchangeWarningConfirmation": "Я підтверджу, що я не зажадав купити Біткойн іншим.",
   "fundExchangeContinueButton": "Продовжити",
+  "fundExchangeScamConsentError": "Не вдалося зареєструвати вашу згоду. Будь ласка, спробуйте ще раз.",
   "fundExchangeDoneButton": "Сонце",
   "fundExchangeJurisdictionCanada": "Українська",
   "fundExchangeJurisdictionEurope": "浜у 涓 蹇",
@@ -2212,6 +2215,7 @@
   "swapProgressCompleted": "Трансфер завершено",
   "keystoneStep2": "Натисніть сканування",
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
+  "sendErrorInvoiceMustContainAmount": "Рахунок повинен містити суму",
   "arkNoBalanceData": "Немає даних балансу",
   "autoswapWarningCardTitle": "Автообмін увімкнено.",
   "autoswapMaxBalance": "Max Миттєвий баланс гаманця",
@@ -3378,6 +3382,7 @@
   "dcaSetupFundAccount": "Оберіть Ваш рахунок",
   "coldcardStep10": "Натисніть кнопку, щоб записати операцію на холодильнику.",
   "sendErrorAmountBelowSwapLimits": "Сума нижче лімітів закрутки",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Розгляньте поповнення Миттєвих Платежів для менших платежів.",
   "labelErrorNotFound": "Етикетка \"X7X\" не знайдено.",
   "@labelErrorNotFound": {
     "placeholders": {
@@ -3556,9 +3561,7 @@
   "payInvoiceDetails": "Деталі вступу",
   "exchangeLandingLoginButton": "Увійти",
   "exchangeLandingLoginToUseSupport": "Будь ласка, увійдіть або зареєструйтесь, щоб використовувати чат підтримки для питань, пов'язаних з біржею.",
-  "exchangeSupportLoginSubtitle": "Підключитися до облікового запису підтримки Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "У вас буде доступ лише до функції чату підтримки.",
-  "exchangeSupportLoginAccountInfo": "Ви створите обліковий запис на bullbitcoin.com, до якого завжди зможете отримати доступ через наш веб-додаток.",
+  "exchangeSupportLoginChatRequired": "Щоб отримати підтримку від живого оператора, спершу потрібно увійти у свій обліковий запис Bull Bitcoin. Це абсолютно безкоштовно, KYC не потрібен — лише адреса електронної пошти.",
   "torSettingsEnableProxy": "Увімкнути Tor Proxy",
   "bitboxScreenAddressToVerify": "Адреса для перевірки:",
   "bitboxErrorPermissionDenied": "Для підключення до пристроїв BitBox потрібні дозволи на USB.",
@@ -4378,9 +4381,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Допоможіть нам поліпшити Bull Bitcoin, беручи участь у нашій програмі звітування про помилки. Це безпосередньо допомагає нам зробити Bull Bitcoin кращим для всіх.\n\nКоли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми. Ці дані допомагають нам зрозуміти, що відбувається у наших користувачів по всьому світу, та відповідно розставити пріоритети для випралення.\n\nМи не діліться цією інформацією з третіми сторонами. Ми використовуємо клієнт з відкритим вихідним кодом Sentry з власним самостійно розміщеним серверним сервером.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Допоможіть нам поліпшити Bull Bitcoin, беручи участь у нашій програмі звітування про помилки. Це безпосередньо допомагає нам зробити Bull Bitcoin кращим для всіх.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Коли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Ці дані допомагають нам зрозуміти, що відбувається у наших користувачів по всьому світу, та відповідно розставити пріоритети для виправлення.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Ми не ділимось цією інформацією з третіми сторонами.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Ми використовуємо клієнт з відкритим вихідним кодом Sentry з власним самостійно розміщеним серверним сервером.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Прийняти",
   "@errorReportingAcceptButton": {
@@ -4393,6 +4412,18 @@
   "errorReportingRestartSnackbar": "Перезапустіть програму, щоб застосувати цю зміну",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "Не вдалося запустити додаток",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Під час запуску виникла помилка. Будь ласка, перезапустіть додаток. Якщо проблема не зникне, поділіться журналами та зверніться до служби підтримки.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Поділитися журналами",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ГАМАНЦЯ ЗАРАЗ",
   "@backupWarningTitle": {
@@ -4410,5 +4441,133 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
-  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує"
+  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Терміново: необхідне резервне копіювання та переустановлення",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Необхідна дія: Перевстановіть додаток",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Зробити копію зараз",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Пізніше",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Назад",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Почати",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Світла",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Темна",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Системна",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Я долучаюсь",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Я не долучаюсь",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Стандартні журнали",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Критичні журнали",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Завжди ввімкнено — дозволяє нам бачити, чи ваш гаманець безпечно переходить між версіями застосунку.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Критичні журнали не можна вимкнути. Вони повідомляють про невдалі оновлення, міграції та помилки запуску застосунку, щоб ми могли виправити проблеми, які можуть вплинути на інших.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Використайте резервну копію",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Завдяки резервній копії ваші кошти в безпеці.\nСпочатку спробуйте перезапустити застосунок; якщо він усе ще не запускається, перевстановіть його та відновіть за допомогою резервної копії.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Немає резервної копії?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не видаляйте застосунок.\nЗв'яжіться з нашою командою підтримки, щоб спробувати відновлення.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Звернутися до підтримки",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Показати деталі помилки",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

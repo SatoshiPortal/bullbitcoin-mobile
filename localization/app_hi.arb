@@ -829,6 +829,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "मानवीय सहायता प्राप्त करने के लिए, आपको पहले अपने Bull Bitcoin खाते में लॉग इन करना होगा। यह पूरी तरह से निःशुल्क है और किसी KYC की आवश्यकता नहीं है, केवल एक ईमेल पता।",
   "seedsignerStep12": "बुल बिटकॉइन वॉलेट आपको बीजगणक पर क्यूआर कोड को स्कैन करने के लिए कहता है। इसे स्कैन करें।।",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2585,6 +2586,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "सहायता प्राप्त करें",
   "exchangeStatisticsOrderStats": "आदेश सांख्यिकी",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3711,10 +3713,6 @@
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
   },
-  "exchangeSupportLoginAccountInfo": "आप हमेशा हमारे वेब ऐप के माध्यम से एक्सेस कर सकते हैं।।",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "electrumAdvancedOptions": "उन्नत विकल्प",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -4765,6 +4763,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "स्वैप बनाने में विफल रहा।।",
+  "sendErrorInvoiceMustContainAmount": "इनवॉइस में एक राशि होनी चाहिए",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -10121,6 +10120,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "PIN सेट करने से पहले कृपया एक वॉलेट बैकअप पूरा करें",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "आपको मूल लेन-देन की तुलना में कम से कम 1 sat/vbyte द्वारा शुल्क दर बढ़ाने की आवश्यकता है",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -11646,10 +11649,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "आपके पास केवल समर्थन चैट सुविधा तक पहुंच होगी।।",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "स्तर 1 सीमा: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -12016,10 +12015,6 @@
   "swapProgressPendingMessage": "स्थानांतरण प्रगति पर है। बिटकॉइन लेनदेन की पुष्टि करने में कुछ समय लग सकता है। आप घर लौट सकते हैं और इंतजार कर सकते हैं।।",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Bull Bitcoin समर्थन खाता",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "नेटवर्क",
   "@walletDetailsNetworkLabel": {
@@ -12437,5 +12432,145 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
-  "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है"
+  "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
+  "appInitErrorTitle": "ऐप शुरू नहीं हो सका",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "स्टार्टअप के दौरान एक त्रुटि हुई। कृपया ऐप को पुनः शुरू करें। यदि समस्या बनी रहती है, तो अपने लॉग साझा करें और सहायता से संपर्क करें।",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "लॉग साझा करें",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "अत्यावश्यक: बैकअप और पुनः इंस्टॉलेशन आवश्यक",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "कार्रवाई आवश्यक: ऐप पुनः इंस्टॉल करें",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "अभी बैकअप करें",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "बाद में",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "वापस",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "शुरू करें",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "हल्का",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "गहरा",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "सिस्टम",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "मैं योगदान करता हूँ",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "मैं योगदान नहीं करता",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "मानक लॉग",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "गंभीर लॉग",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "हमेशा चालू — हमें यह देखने देता है कि आपका वॉलेट ऐप संस्करणों के बीच सुरक्षित रूप से माइग्रेट होता है या नहीं।",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "गंभीर लॉग को बंद नहीं किया जा सकता। ये असफल अपग्रेड, माइग्रेशन और ऐप स्टार्टअप त्रुटियों की रिपोर्ट करते हैं ताकि हम उन समस्याओं को ठीक कर सकें जो दूसरों को प्रभावित कर सकती हैं।",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "अपने बैकअप का उपयोग करें",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "आपके बैकअप की वजह से आपके फंड सुरक्षित हैं।\nपहले ऐप को पुनः आरंभ करने का प्रयास करें; यदि फिर भी विफल हो, तो पुनः इंस्टॉल करें और अपने बैकअप से पुनर्प्राप्त करें।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "कोई बैकअप नहीं?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "ऐप को न हटाएं।\nबचाव के प्रयास के लिए हमारी सहायता टीम से संपर्क करें।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "सहायता से संपर्क करें",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "त्रुटि विवरण दिखाएं",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

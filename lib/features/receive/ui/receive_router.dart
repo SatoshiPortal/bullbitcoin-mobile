@@ -90,7 +90,11 @@ class ReceiveRouter {
                   if (type == ReceiveType.lightning) {
                     // For a Lightning receive, show the payment received screen
                     //  when the payment is received.
-                    context.goNamed(
+                    // Use pushReplacementNamed to only replace lightningPaymentInProgress
+                    // on the root navigator, without rebuilding the entire route stack.
+                    // Using goNamed would evict any routes pushed before the receive
+                    // flow (e.g. wallet detail) and cause layout errors mid-transition.
+                    context.pushReplacementNamed(
                       ReceiveRoute.lightningPaymentReceived.name,
                       extra: bloc,
                     );

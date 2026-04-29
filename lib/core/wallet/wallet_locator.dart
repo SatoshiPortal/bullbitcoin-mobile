@@ -165,14 +165,9 @@ class WalletLocator {
     locator.registerFactory<DeleteWalletUsecase>(
       () => DeleteWalletUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-        mainnetSwapRepository: locator<BoltzSwapRepository>(
+        swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

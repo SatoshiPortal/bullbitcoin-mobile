@@ -61,16 +61,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
+      if (apiKeyModel == null || !apiKeyModel.isActive) {
+        return null;
       }
 
       final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries(
@@ -106,16 +98,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         isTestnet: _isTestnet,
       );
 
-      if (apiKeyModel == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
-      }
-
-      if (!apiKeyModel.isActive) {
-        throw ApiKeyException(
-          'API key is inactive. Please login again to your Bull Bitcoin account.',
-        );
+      if (apiKeyModel == null || !apiKeyModel.isActive) {
+        return [];
       }
 
       final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries(

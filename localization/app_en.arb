@@ -336,6 +336,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Please complete a wallet backup before setting a PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "settingsCurrencyTitle": "Currency",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -359,6 +363,10 @@
   "settingsGithubLabel": "Github",
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
+  },
+  "settingsGetHelpLabel": "Get Help",
+  "@settingsGetHelpLabel": {
+    "description": "Label for the Get Help support chat link in settings"
   },
   "settingsServicesStatusTitle": "Services Status",
   "@settingsServicesStatusTitle": {
@@ -2435,6 +2443,14 @@
   "@payViewDetails": {
     "description": "Button to view order details"
   },
+  "payViewReceipt": "View receipt",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
   "payCompleted": "Payment Completed!",
   "@payCompleted": {
     "description": "Title for payment completed screen"
@@ -3438,6 +3454,10 @@
   "@fundExchangeContinueButton": {
     "description": "Button label to continue from warning screen to payment method details"
   },
+  "fundExchangeScamConsentError": "Failed to register your consent. Please try again.",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
   "fundExchangeDoneButton": "Done",
   "@fundExchangeDoneButton": {
     "description": "Button label to finish and exit the funding flow"
@@ -3461,6 +3481,10 @@
   "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
   "@fundExchangeJurisdictionArgentina": {
     "description": "Dropdown option for Argentina jurisdiction"
+  },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
   },
   "fundExchangeMethodEmailETransfer": "Email E-Transfer",
   "@fundExchangeMethodEmailETransfer": {
@@ -7072,6 +7096,10 @@
   "@sendBroadcastingTransaction": {
     "description": "Message shown while broadcasting transaction to network"
   },
+  "sendCoordinatingPayjoinTransaction": "Coordinating a Payjoin transaction.",
+  "@sendCoordinatingPayjoinTransaction": {
+    "description": "Message shown while coordinating Payjoin send transaction"
+  },
   "sendSwapInProgressInvoice": "The swap is in progress. The invoice will be paid in a few seconds.",
   "@sendSwapInProgressInvoice": {
     "description": "Message for Liquid swap in progress"
@@ -7165,6 +7193,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
   "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
@@ -7188,6 +7220,10 @@
   "sendErrorAmountBelowSwapLimits": "Amount is below swap limits",
   "@sendErrorAmountBelowSwapLimits": {
     "description": "Error when amount is below minimum swap limit"
+  },
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Consider funding Instant Payments to make smaller payments.",
+  "@sendErrorAmountBelowSwapLimitsBitcoin": {
+    "description": "Suggestion to fund Instant Payment wallet for smaller Lightning payments"
   },
   "sendErrorAmountAboveSwapLimits": "Amount is above swap limits",
   "@sendErrorAmountAboveSwapLimits": {
@@ -10359,17 +10395,9 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
-  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support Account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
-  },
-  "exchangeSupportLoginAccessMessage": "You will only have access to the support chat feature.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
-  "exchangeSupportLoginAccountInfo": "You will be creating an account with bullbitcoin.com that you can always access via our web app.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
+  "exchangeSupportLoginChatRequired": "To get human support, you must first log in to your Bull Bitcoin account. It's 100% free and no KYC is required, only an email address.",
+  "@exchangeSupportLoginChatRequired": {
+    "description": "Message on chat preview overlay prompting login to access support chat"
   },
   "exchangeHomeDeposit": "Deposit",
   "@exchangeHomeDeposit": {
@@ -10586,6 +10614,50 @@
   "fundExchangeBankTransferSubtitle": "Send a bank transfer from your bank account",
   "@fundExchangeBankTransferSubtitle": {
     "description": "Bank transfer subtitle"
+  },
+  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "@fundExchangeCopDailyLimitWarning": {
+    "description": "Warning about daily transaction limit for COP bank transfer"
+  },
+  "fundExchangeCopSenderName": "Sender Name",
+  "@fundExchangeCopSenderName": {
+    "description": "Label for sender name field in COP bank transfer"
+  },
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "@fundExchangeCopIssuingBank": {
+    "description": "Label for issuing bank dropdown in COP bank transfer"
+  },
+  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "@fundExchangeCopSelectBankError": {
+    "description": "Validation error when no bank is selected"
+  },
+  "fundExchangeCopAmount": "Amount",
+  "@fundExchangeCopAmount": {
+    "description": "Label for amount field in COP bank transfer"
+  },
+  "fundExchangeCopEnterAmountError": "Please enter an amount",
+  "@fundExchangeCopEnterAmountError": {
+    "description": "Validation error when amount is empty"
+  },
+  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "@fundExchangeCopValidAmountError": {
+    "description": "Validation error when amount is invalid"
+  },
+  "fundExchangeCopGeneratePaymentLink": "Generate Payment Link",
+  "@fundExchangeCopGeneratePaymentLink": {
+    "description": "Button label to generate COP payment link"
+  },
+  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "@fundExchangeCopRedirectMessage": {
+    "description": "Message about redirect to external payment page"
+  },
+  "fundExchangeCopOpenPaymentLink": "Open Payment Link",
+  "@fundExchangeCopOpenPaymentLink": {
+    "description": "Button label to open COP payment link"
+  },
+  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
+  "@fundExchangeCopFailedToOpenLink": {
+    "description": "Error shown when the COP payment link fails to open"
   },
   "dcaSetupTitle": "Set Recurring Buy",
   "@dcaSetupTitle": {
@@ -12650,9 +12722,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Help us improve Bull Bitcoin by participating in our error reporting program. It directly helps us make Bull Bitcoin better for everyone.\n\nWhen enabled, we automatically send error reports when issues occur in the app. This data helps us understand what's happening for our users worldwide and prioritize fixes accordingly.\n\nWe do not share this information with any third parties. We use Sentry's open-source client with our own self-hosted backend server.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Accept",
   "@errorReportingAcceptButton": {
@@ -12665,6 +12753,18 @@
   "errorReportingRestartSnackbar": "Restart the app to apply this change",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "App failed to start",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "An error occurred during startup. Please restart the app. If the problem persists, share your logs and contact support.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Share Logs",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "BACKUP YOUR WALLET NOW",
   "@backupWarningTitle": {
@@ -12685,5 +12785,129 @@
   "importMnemonicDuplicateError": "This mnemonic already exists",
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Urgent: Backup & Reinstall Required",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Action Required: Reinstall App",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Backup Now",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Later",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Back",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Get started",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "I contribute",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "I do not contribute",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Standard logs",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch shown in the wizard and settings"
+  },
+  "errorReportingCriticalTitle": "Critical logs",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only critical logs switch shown in the wizard and settings"
+  },
+  "errorReportingCriticalSnackbar": "Critical logs can't be disabled. They report failed upgrades, migrations, and app startup errors so we can fix problems that may affect others.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled critical logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Use your backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Thanks to your backup, your funds are safe.\nTry restarting the app first, if it still fails, reinstall and recover with your backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "No backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Do not delete the app.\nContact our support team to attempt a rescue.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contact support",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Show error details",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

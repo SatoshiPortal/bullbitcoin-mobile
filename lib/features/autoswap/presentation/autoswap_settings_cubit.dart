@@ -40,9 +40,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       emit(state.copyWith(loading: true, error: null));
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
-        isTestnet: isTestnet,
-      );
+      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
 
       // Load Bitcoin wallets for selection
       final environment = isTestnet ? Environment.testnet : Environment.mainnet;
@@ -105,7 +103,6 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     try {
       emit(state.copyWith(saving: true, error: null, successfullySaved: false));
       final settings = await _getSettingsUsecase.execute();
-      final isTestnet = settings.environment == Environment.testnet;
 
       // Validate recipient wallet selection if auto swap is enabled
       if (state.enabledToggle && state.selectedBitcoinWalletId == null) {
@@ -177,7 +174,6 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
               ? state.settings?.showWarning ?? true
               : false,
         ),
-        isTestnet: isTestnet,
       );
       emit(
         state.copyWith(
@@ -304,7 +300,6 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     try {
       emit(state.copyWith(saving: true, error: null, successfullySaved: false));
       final settings = await _getSettingsUsecase.execute();
-      final isTestnet = settings.environment == Environment.testnet;
 
       // Convert amount based on unit
       final currentUnit = state.bitcoinUnit ?? settings.bitcoinUnit;
@@ -366,7 +361,6 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           recipientWalletId: state.selectedBitcoinWalletId,
           showWarning: false,
         ),
-        isTestnet: isTestnet,
       );
 
       emit(

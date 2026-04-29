@@ -7,11 +7,14 @@ import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/report.dart';
+
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -19,37 +22,47 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
+import 'package:bb_mobile/features/wizard/wizard_gate.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bitbox_flutter/bitbox_flutter.dart';
 import 'package:boltz/boltz.dart';
 import 'package:dart_bbqr/bbqr.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+
 import 'package:workmanager/workmanager.dart';
 
 class Bull {
   static Future<void> init() async {
     await initLogs();
+    // Wizard pending (freshest) wins over the prefs mirror — the user
+    // may have just answered consent in the wizard on this launch.
+    final pending = await WizardGate.readPending();
+    await Report.init(wizardConsent: pending?.reportingConsent);
     await initFlutterRustBridgeDependencies();
-
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator();
-
-    await initErrorReporting();
+    final settings = locator<SettingsRepository>();
+    await WizardGate.apply(settings);
+    // Refresh from the SQLite source of truth now that the locator is up
+    // (the wizard may have flipped consent in apply above).
+    Report.consent = (await settings.fetch()).isErrorReportingEnabled;
+    await initWorkmanager();
+    // Emits the install/upgrade transition event (no-op on a normal
+    // launch) and advances the persisted version marker.
+    await Report.versionChange();
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
-      dotenv.load(isOptional: true),
       LibLwk.init(),
       BoltzCore.init(),
       PConfig.initializeApp(),
@@ -72,69 +85,54 @@ class Bull {
     Bloc.observer = AppBlocObserver();
   }
 
-  static Future<void> initErrorReporting() async {
-    // Error reports for users that gave consent in the app settings (default disabled)
-    // Empty DSN if no consent or debug mode - Sentry won't send anything
-    final isErrorReportingEnabled = await locator<SettingsRepository>()
-        .fetch()
-        .then((settings) => settings.isErrorReportingEnabled);
-    final dsnSentry = isErrorReportingEnabled && kReleaseMode
-        ? ApiServiceConstants.sentryDsn
-        : ''; // "If an empty string is used, the SDK will not send any events."
-
-    await SentryFlutter.init((options) {
-      options.dsn = dsnSentry;
-      options.compressPayload = true;
-      options.beforeSend = (event, hint) {
-        // Before sending the error report, anonymize the exception value
-        // to avoid sending potentially sensitive information (txid, addresses…)
-        final exceptions = event.exceptions;
-        if (exceptions != null && exceptions.isNotEmpty) {
-          final anonymizedExceptions = exceptions.map((e) {
-            e.value = null;
-            return e;
-          }).toList();
-          event.exceptions = anonymizedExceptions;
-        }
-
-        return event;
-      };
-    });
+  static Future<void> initWorkmanager() async {
+    await Workmanager().initialize(backgroundTasksHandler);
+    await Workmanager().cancelAll();
+    await Workmanager().registerPeriodicTask(
+      BackgroundTask.logsPrune.id,
+      BackgroundTask.logsPrune.name,
+      frequency: const Duration(minutes: 15),
+      constraints: Constraints(
+        requiresBatteryNotLow: true,
+        requiresStorageNotLow: false,
+        requiresDeviceIdle: false,
+        requiresCharging: false,
+      ),
+    );
   }
 }
 
 Future main() async {
   await runZonedGuarded(
     () async {
-      WidgetsFlutterBinding.ensureInitialized();
-
-      // Initialize the background tasks before anything else
-      await Workmanager().initialize(backgroundTasksHandler);
-      await Workmanager().cancelAll();
-
-      await Bull.init();
-
-      int delay = 0;
-      for (final task in BackgroundTask.values) {
-        await Workmanager().registerPeriodicTask(
-          task.id,
-          task.name,
-          frequency: Duration(minutes: 15 + delay),
-          constraints: Constraints(
-            networkType: NetworkType.connected,
-            requiresBatteryNotLow: true,
-            requiresStorageNotLow: false,
-            requiresDeviceIdle: false,
-            requiresCharging: false,
-          ),
-        );
-        delay++;
+      try {
+        WidgetsFlutterBinding.ensureInitialized();
+        if (await WizardGate.shouldShow()) {
+          final completer = Completer<void>();
+          runApp(
+            WizardApp(
+              onDone: (choices) async {
+                await WizardGate.savePending(choices);
+                completer.complete();
+              },
+            ),
+          );
+          await completer.future;
+        }
+        await Bull.init();
+      } catch (error, stackTrace) {
+        log.shout(message: 'App Init Error', error: error, trace: stackTrace);
+        runApp(AppInitErrorScreen(error: error));
+        return;
       }
-
       runApp(const BullBitcoinWalletApp());
     },
-    (error, stackTrace) async {
-      log.severe(error: error, trace: stackTrace);
+    (error, stackTrace) {
+      log.severe(
+        message: 'Global Unhandled Error',
+        error: error,
+        trace: stackTrace,
+      );
     },
   );
 }

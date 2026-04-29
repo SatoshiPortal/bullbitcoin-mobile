@@ -999,6 +999,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "Para obter suporte humano, você precisa primeiro fazer login na sua conta Bull Bitcoin. É 100% gratuito e não é necessário KYC, apenas um endereço de e-mail.",
   "receiveShareInvoice": "Compartilhar Fatura",
   "@receiveShareInvoice": {
     "description": "Button to share invoice"
@@ -2272,6 +2273,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Obter ajuda",
   "fundExchangeCrIbanUsdLabelIban": "Número da conta IBAN (apenas dólares americanos)",
   "@fundExchangeCrIbanUsdLabelIban": {
     "description": "Label for IBAN number field for USD only"
@@ -3575,10 +3577,6 @@
   "@withdrawAmountContinue": {
     "description": "Continue button on amount screen"
   },
-  "exchangeSupportLoginAccountInfo": "Você estará criando uma conta com o bullbitcoin.com que você sempre pode acessar através do nosso aplicativo web.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "fundExchangeLabelBankCountry": "Países Baixos",
   "@fundExchangeLabelBankCountry": {
     "description": "Label for bank country field"
@@ -4128,6 +4126,7 @@
     "description": "Label showing source wallet"
   },
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -10257,6 +10256,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Por favor, conclua um backup da carteira antes de definir um PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "bitboxScreenActionFailed": "{action}",
   "@bitboxScreenActionFailed": {
     "description": "Main text when action fails",
@@ -11272,10 +11275,6 @@
   "@passportStep9": {
     "description": "Passport instruction for signing"
   },
-  "exchangeSupportLoginSubtitle": "Conecte-se à conta de suporte Bull Bitcoin",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
-  },
   "arkTxBoarding": "Quadro",
   "@arkTxBoarding": {
     "description": "Transaction type label for Ark boarding transactions"
@@ -11357,10 +11356,6 @@
   "backupSettingsEncryptedVault": "Vault criptografado",
   "@backupSettingsEncryptedVault": {
     "description": "Label for encrypted vault backup status row"
-  },
-  "exchangeSupportLoginAccessMessage": "Você só terá acesso ao recurso de chat de suporte.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
   },
   "payLabelHint": "Digite um rótulo para este destinatário",
   "@payLabelHint": {
@@ -12433,5 +12428,145 @@
   "@buyInsufficientFundsError": {
     "description": "Error message for insufficient funds during buy"
   },
-  "importMnemonicDuplicateError": "Esta mnemônica já existe"
+  "importMnemonicDuplicateError": "Esta mnemônica já existe",
+  "appInitErrorTitle": "Falha ao iniciar o aplicativo",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Ocorreu um erro durante a inicialização. Por favor, reinicie o aplicativo. Se o problema persistir, compartilhe seus registros e entre em contato com o suporte.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Compartilhar registros",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstalação necessários",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "O aplicativo que você está usando utiliza um software que em breve será descontinuado. Por favor, siga estas etapas:\n\n1. Faça backup da sua carteira\n2. Desinstale o aplicativo. Delete-o completamente do seu celular.\n3. Reinstale a versão mais recente do aplicativo\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nSeus fundos estão seguros e você pode continuar usando o aplicativo agora, mas faça isso o mais rápido possível para evitar que o aplicativo pare de funcionar em breve.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Ação necessária: Reinstalar aplicativo",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "O aplicativo que você está usando utiliza um software que em breve será descontinuado. Por favor, siga estas etapas:\n\n1. Faça backup da sua carteira\n2. Desinstale o aplicativo. Delete-o completamente do seu celular.\n3. Reinstale a versão mais recente do aplicativo\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nSeus fundos estão seguros e você pode continuar usando o aplicativo agora, mas faça isso o mais rápido possível para evitar que o aplicativo pare de funcionar em breve.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Fazer backup agora",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Mais tarde",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Voltar",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Começar",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Claro",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Escuro",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Sistema",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Contribuo",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Não contribuo",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Logs padrão",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Logs críticos",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Sempre ativo — permite que vejamos se sua carteira migra com segurança entre versões do aplicativo.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Os logs críticos não podem ser desativados. Eles relatam atualizações, migrações e erros de inicialização do aplicativo que falharam para que possamos corrigir problemas que possam afetar outros.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Use seu backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Graças ao seu backup, seus fundos estão seguros.\nPrimeiro tente reiniciar o aplicativo; se ainda falhar, reinstale e recupere com seu backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Sem backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Não exclua o aplicativo.\nEntre em contato com nossa equipe de suporte para tentar um resgate.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contatar suporte",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostrar detalhes do erro",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

@@ -28,7 +28,7 @@ class RecipientTypeText extends StatelessWidget {
       RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
       RecipientType.sinpeMovilCrc => 'SINPE Móvil',
       // ARGENTINA types
-      RecipientType.cbuCvuArgentina => 'CBU/CVU Argentina',
+      RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
       RecipientType.pseColombia => 'Bank Account COP',
       RecipientType.nequiColombia => 'Nequi',
     }, style: style);

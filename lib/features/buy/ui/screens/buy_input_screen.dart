@@ -10,7 +10,7 @@ import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_amount_input_fields.dart';
 import 'package:bb_mobile/features/buy/ui/widgets/buy_destination_input_fields.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/fund_exchange_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -36,8 +36,8 @@ class BuyInputScreen extends StatelessWidget {
       final error = bloc.state.createOrderBuyError;
       return error is AboveMaxAmountBuyError ? error : null;
     });
-    final isFullyVerifiedKycLevel = context.select(
-      (BuyBloc bloc) => bloc.state.isFullyVerifiedKycLevel,
+    final needsKycUpgrade = context.select(
+      (BuyBloc bloc) => bloc.state.needsKycUpgrade(bloc.state.amount ?? 0),
     );
     final showInsufficientBalanceError = context.select(
       (BuyBloc bloc) => bloc.state.showInsufficientBalanceError,
@@ -47,15 +47,14 @@ class BuyInputScreen extends StatelessWidget {
       appBar: AppBar(
         // Adding the leading icon button here manually since we are in the first
         // route of a shellroute and so no back button is provided by default.
-        leading:
-            context.canPop()
-                ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    context.pop();
-                  },
-                )
-                : null,
+        leading: context.canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  context.pop();
+                },
+              )
+            : null,
         title: Text(context.loc.buyInputTitle),
       ),
       body: SafeArea(
@@ -100,7 +99,7 @@ class BuyInputScreen extends StatelessWidget {
 
                 const Gap(16),
                 if (isStarted) ...[
-                  if (!isFullyVerifiedKycLevel) ...[
+                  if (needsKycUpgrade) ...[
                     InfoCard(
                       title: context.loc.buyInputKycPending,
                       description: context.loc.buyInputKycMessage,
@@ -135,7 +134,7 @@ class BuyInputScreen extends StatelessWidget {
                       label: context.loc.buyInputFundAccount,
                       onPressed: () {
                         context.pushReplacementNamed(
-                          FundExchangeRoute.fundExchangeAccount.name,
+                          FundExchangeRoute.fundExchange.name,
                         );
                       },
                       bgColor: context.appColors.primary,

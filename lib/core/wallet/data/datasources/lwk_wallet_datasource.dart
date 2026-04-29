@@ -60,6 +60,10 @@ class LwkWalletDatasource {
       return balance;
     } catch (e) {
       if (e is lwk.LwkError) {
+        if (e.toString().contains('UpdateOnDifferentStatus') ||
+            e.msg.contains('UpdateOnDifferentStatus')) {
+          await delete(wallet: wallet);
+        }
         throw e.msg;
       } else {
         rethrow;
@@ -87,6 +91,9 @@ class LwkWalletDatasource {
         //debugPrint('[Sync] Sync completed for wallet: ${wallet.id}');
       } catch (e) {
         if (e is lwk.LwkError) {
+          if (e.msg.contains('UpdateOnDifferentStatus')) {
+            await delete(wallet: wallet);
+          }
           throw e.msg;
         } else {
           rethrow;
@@ -185,51 +192,6 @@ class LwkWalletDatasource {
         confidential: addressInfo.confidential,
       );
       return address;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
-  Future<List<({String standard, String confidential, int index})>>
-  getReceiveAddresses({
-    required WalletModel wallet,
-    required int limit,
-    required int offset,
-  }) async {
-    try {
-      final lwkWallet = await LwkFacade.createPublicWallet(wallet);
-      final addresses = <({String standard, String confidential, int index})>[];
-      for (int i = offset; i < offset + limit; i++) {
-        final addressInfo = await lwkWallet.address(index: i);
-        final address = (
-          index: addressInfo.index!,
-          standard: addressInfo.standard,
-          confidential: addressInfo.confidential,
-        );
-        addresses.add(address);
-      }
-      return addresses;
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
-      }
-    }
-  }
-
-  Future<List<({String standard, String confidential, int index})>>
-  getChangeAddresses({
-    required WalletModel wallet,
-    required int limit,
-    required int offset,
-  }) async {
-    try {
-      return [];
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;

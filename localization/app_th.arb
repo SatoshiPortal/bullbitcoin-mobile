@@ -829,6 +829,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "หากต้องการความช่วยเหลือจากเจ้าหน้าที่ คุณต้องเข้าสู่ระบบบัญชี Bull Bitcoin ของคุณก่อน ฟรี 100% ไม่ต้องยืนยันตัวตน (KYC) ใช้เพียงที่อยู่อีเมลเท่านั้น",
   "seedsignerStep12": "กระเป๋าเงิน Bitcoin จะขอให้คุณสแกนรหัส QR บนเมล็ดพันธุ์ การสแกน.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2585,6 +2586,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "ขอความช่วยเหลือ",
   "exchangeStatisticsOrderStats": "ข้อมูล",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3711,10 +3713,6 @@
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
   },
-  "exchangeSupportLoginAccountInfo": "คุณจะสร้างบัญชีกับ Tangbitcoin.com ที่คุณสามารถเข้าถึงผ่านทางเว็บของเรา.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "electrumAdvancedOptions": "ตัวเลือกขั้นสูง",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -4765,6 +4763,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "จัดเรียงเพื่อสร้างการเชื่อมต่อ.",
+  "sendErrorInvoiceMustContainAmount": "ใบแจ้งหนี้ต้องมีจำนวนเงิน",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -10113,6 +10112,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "กรุณาสำรองข้อมูลกระเป๋าเงินก่อนตั้ง PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -11638,10 +11641,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "คุณจะเข้าถึงคุณสมบัติแชท.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "ระดับ 1: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -12008,10 +12007,6 @@
   "swapProgressPendingMessage": "ถ่ายโอนในความคืบหน้า การทําธุรกรรม Bitcoin สามารถฝากเงินได้ คุณสามารถคืนบ้านและรอ.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "เชื่อมต่อบัญชี Bitcoin",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "เครือข่ายเครือข่าย",
   "@walletDetailsNetworkLabel": {
@@ -12437,5 +12432,145 @@
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
   },
-  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว"
+  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
+  "appInitErrorTitle": "แอปเริ่มต้นล้มเหลว",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "เกิดข้อผิดพลาดระหว่างการเริ่มต้น กรุณาเริ่มต้นแอปใหม่ หากปัญหายังคงมีอยู่ โปรดแชร์บันทึกของคุณและติดต่อฝ่ายสนับสนุน",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "แชร์บันทึก",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "เร่งด่วน: จำเป็นต้องสำรองข้อมูลและติดตั้งแอปใหม่",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "จำเป็นต้องดำเนินการ: ติดตั้งแอปใหม่",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "สำรองข้อมูลตอนนี้",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "ภายหลัง",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "ย้อนกลับ",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "เริ่มต้น",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "สว่าง",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "มืด",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "ระบบ",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "ฉันมีส่วนร่วม",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "ฉันไม่มีส่วนร่วม",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "บันทึกทั่วไป",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "บันทึกสำคัญ",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "เปิดอยู่เสมอ — ช่วยให้เราเห็นว่ากระเป๋าเงินของคุณย้ายข้อมูลระหว่างเวอร์ชันแอปอย่างปลอดภัยหรือไม่",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "ไม่สามารถปิดบันทึกสำคัญได้ บันทึกเหล่านี้รายงานการอัปเกรด การย้ายข้อมูล และข้อผิดพลาดในการเริ่มต้นแอปที่ล้มเหลว เพื่อให้เราสามารถแก้ไขปัญหาที่อาจส่งผลกระทบต่อผู้อื่นได้",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "เงินของคุณปลอดภัยเพราะคุณมีข้อมูลสำรอง\nลองรีสตาร์ทแอปก่อน หากยังใช้งานไม่ได้ ให้ติดตั้งใหม่และกู้คืนด้วยข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "ไม่มีข้อมูลสำรอง?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "อย่าลบแอป\nติดต่อทีมสนับสนุนของเราเพื่อพยายามกู้คืน",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "ติดต่อฝ่ายสนับสนุน",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "แสดงรายละเอียดข้อผิดพลาด",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

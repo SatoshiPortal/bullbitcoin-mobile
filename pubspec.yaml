@@ -1,30 +1,41 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.7.0+146
+version: 6.9.1+177
 
 environment:
   sdk: ">=3.10.0 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter
-  bdk_flutter:
+  bdk_dart:
     git:
-      url: https://github.com/SatoshiPortal/bdk-flutter
-      ref: 3024b3452b4b0e5982d737f82ff461024a881ae7
+      url: https://github.com/ethicnology/bdk-dart
+      ref: 76695446cd57f94802327f6ab50392f651c49b63
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
   flutter_animate: ^4.5.2
+  flutter_svg: ^2.2.4
   gap: ^3.0.1
   go_router: ^17.0.0
   google_fonts: ^6.3.3
-  flutter_secure_storage: ^10.0.0
+  flutter_secure_storage:
+    git:
+      url: https://github.com/iosifpeterfi/flutter_secure_storage
+      ref: 6530befdff51aa106efc38c54feb856b3831689f
+      path: flutter_secure_storage
+  flutter_secure_storage_legacy:
+    git:
+      url: https://github.com/SatoshiPortal/flutter_secure_storage_legacy
+      ref: 01ed2ee04192f4ecda8bbf68198baceb6386f1e6
+      path: flutter_secure_storage
   path_provider: ^2.1.5
+  shared_preferences: ^2.3.0
   payjoin_flutter:
     git:
-      url: https://github.com/SatoshiPortal/payjoin-flutter
-      ref: 913812dba120703ce9738fa330c5203e1d11f2fa
+      url: https://github.com/SatoshiPortal/payjoin-dart
+      ref: e939cf5128b61d02aefca725f6de80cbb8818e09
   qr_flutter: ^4.1.0
   dio: ^5.9.0
   timeago: ^3.7.1
@@ -35,8 +46,7 @@ dependencies:
   bitbox_flutter:
     git:
       url: https://github.com/SatoshiPortal/bitbox-dart
-      ref: d44d96983a39896fdc02a2d320036a5ef340e5eb
-  flutter_dotenv: ^6.0.0
+      ref: 23f91b6e708e853358a0b03774d0f8033aa82502
   hex: ^0.2.0
   auto_size_text: ^3.0.0
   no_screenshot: ^0.3.1
@@ -48,12 +58,12 @@ dependencies:
   hive: ^2.2.3
   boltz:
     git:
-      url: https://github.com/SatoshiPortal/boltz-dart
-      ref: 5344da8a75b59e696856901ca5885bd6fe352269
+      url: https://github.com/SatoshiPortal/boltz-dart.git
+      ref: 42c03082d5d97764fbfedc43a72125963f54dba6
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart
-      ref: 2e10deb2fbaa76e888bda7be6a2128ce2c05173d
+      ref: 40287f063fc87293625b15f653290d4be2f5acc5
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -95,13 +105,13 @@ dependencies:
   dart_bbqr:
     git:
       url: https://github.com/SatoshiPortal/bbqr-dart
-      ref: 170873e1d59a0b037f2dfac4d26bf900cd539532
+      ref: c7831bfa2059c01650940b4f2d99eef9931119eb
   sliver_tools: ^0.2.12
   logging_colorful: ^1.3.2
   satoshifier:
     git:
-      url: https://github.com/SatoshiPortal/satoshifier-dart
-      ref: 4eacd2aa741b79ef203fd7cd67addf3060a4e646
+      url: https://github.com/SatoshiPortal/dart-satoshifier
+      ref: df6e385d30eb266242099883fed06c462a159b3e
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
@@ -118,7 +128,7 @@ dependencies:
   ark_wallet:
     git:
       url: https://github.com/SatoshiPortal/ark-wallet-dart
-      ref: 847342ecd4a2d70bea5a0755e4152d1cb7e68493
+      ref: f3264ce66c8fec8438a0f9670da3eccfde757b9e
   socks5_proxy: ^2.1.1
   tor:
     git:
@@ -131,7 +141,7 @@ dependencies:
   lints: ^6.0.0
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
-  sentry_flutter: ^9.10.0
+  sentry_flutter: ^9.19.0
 
 dev_dependencies:
   build_runner: ^2.10.4
@@ -152,13 +162,13 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
     - assets/
     - assets/icons/
     - assets/logos/
     - assets/backgrounds/
     - assets/animations/
     - assets/misc/
+    - assets/wizard/
 
 flutter_native_splash:
   background_image: "assets/logos/bb-logo-white-splash.png"

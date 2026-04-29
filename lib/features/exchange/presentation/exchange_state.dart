@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/announcement.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
@@ -12,7 +11,6 @@ part 'exchange_state.freezed.dart';
 abstract class ExchangeState with _$ExchangeState {
   const factory ExchangeState({
     UserSummary? userSummary,
-    ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
     SaveExchangeApiKeyException? saveApiKeyException,
     DeleteExchangeApiKeyException? deleteApiKeyException,
@@ -28,10 +26,8 @@ abstract class ExchangeState with _$ExchangeState {
   const ExchangeState._();
 
   bool get isFetchingUserSummary =>
-      userSummary == null &&
-      getUserSummaryException == null &&
-      apiKeyException == null;
-  bool get notLoggedIn => apiKeyException != null || !hasUser;
+      userSummary == null && getUserSummaryException == null;
+  bool get notLoggedIn => !hasUser;
   bool get hasUser => userSummary != null;
 
   bool get isFullyVerifiedKycLevel =>

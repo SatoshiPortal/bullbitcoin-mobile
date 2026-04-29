@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
@@ -54,6 +55,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required DeleteWalletUsecase deleteWalletUsecase,
     required GetArkWalletUsecase getArkWalletUsecase,
     required CheckArkWalletSetupUsecase checkArkWalletSetupUsecase,
+    required SeedStoreTypeDatasource seedStoreTypeDatasource,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -73,6 +75,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _deleteWalletUsecase = deleteWalletUsecase,
        _getArkWalletUsecase = getArkWalletUsecase,
        _checkArkWalletSetupUsecase = checkArkWalletSetupUsecase,
+       _seedStoreTypeDatasource = seedStoreTypeDatasource,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -88,6 +91,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<DismissAutoSwapWarning>(_onDismissAutoSwapWarning);
     on<DisableAutoSwap>(_onDisableAutoSwap);
     on<DismissBackupWarning>(_onDismissBackupWarning);
+    on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -108,6 +112,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final DeleteWalletUsecase _deleteWalletUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
+  final SeedStoreTypeDatasource _seedStoreTypeDatasource;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -143,11 +148,16 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
               isSyncing, // If global sync is true, all wallets are syncing
       };
 
+      final seedStoreType = await _seedStoreTypeDatasource.read();
+      final isOnLegacyStorage =
+          seedStoreType?.toEntity().isLegacyStorage ?? false;
+
       emit(
         WalletState(
           status: WalletStatus.success,
           wallets: wallets,
           syncStatus: syncStatus,
+          isOnLegacyStorage: isOnLegacyStorage,
         ),
       );
 
@@ -201,9 +211,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       AutoSwap? autoSwapSettings;
       if (defaultLiquidWallet != null) {
         try {
-          autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
-            isTestnet: defaultLiquidWallet.isTestnet,
-          );
+          autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
         } catch (e) {
           log.fine('Failed to load autoswap settings: $e');
         }
@@ -417,14 +425,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
-      final isTestnet = defaultLiquidWallet.isTestnet;
-      final currentSettings = await _getAutoSwapSettingsUsecase.execute(
-        isTestnet: isTestnet,
-      );
+      final currentSettings = await _getAutoSwapSettingsUsecase.execute();
 
       await _saveAutoSwapSettingsUsecase.execute(
         currentSettings.copyWith(blockTillNextExecution: true),
-        isTestnet: isTestnet,
       );
 
       // Update the state with the new settings
@@ -452,18 +456,13 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(autoSwapExecuting: true));
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
-        isTestnet: defaultLiquidWallet.isTestnet,
-      );
+      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
       emit(state.copyWith(autoSwapSettings: autoSwapSettings));
       if (!autoSwapSettings.enabled) {
         emit(state.copyWith(autoSwapExecuting: false));
         return;
       }
-      await _autoSwapExecutionUsecase.execute(
-        isTestnet: defaultLiquidWallet.isTestnet,
-        feeBlock: true,
-      );
+      await _autoSwapExecutionUsecase.execute(feeBlock: true);
 
       emit(
         state.copyWith(
@@ -485,11 +484,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     } catch (e) {
       emit(state.copyWith(autoSwapExecuting: false));
-      log.severe(
-        message: '[WalletBloc] Failed to execute auto swap',
-        error: e,
-        trace: StackTrace.current,
-      );
+      if (e is AutoSwapDisabledException) {
+        log.fine('[WalletBloc] Auto swap skipped: ${e.message}');
+      } else {
+        log.severe(
+          message: '[WalletBloc] Failed to execute auto swap',
+          error: e,
+          trace: StackTrace.current,
+        );
+      }
     }
   }
 
@@ -507,19 +510,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
-        isTestnet: defaultLiquidWallet.isTestnet,
-      );
+      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute();
       emit(state.copyWith(autoSwapSettings: autoSwapSettings));
       if (!autoSwapSettings.enabled) {
         emit(state.copyWith(autoSwapExecuting: false));
         return;
       }
 
-      await _autoSwapExecutionUsecase.execute(
-        isTestnet: defaultLiquidWallet.isTestnet,
-        feeBlock: false,
-      );
+      await _autoSwapExecutionUsecase.execute(feeBlock: false);
       emit(
         state.copyWith(
           autoSwapFeeLimitExceeded: false,
@@ -591,9 +589,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
-      final updatedSettings = await _disableAutoswapWarningUsecase.execute(
-        isTestnet: defaultLiquidWallet.isTestnet,
-      );
+      final updatedSettings =
+          await _disableAutoswapWarningUsecase.execute();
 
       emit(state.copyWith(autoSwapSettings: updatedSettings));
     } catch (e) {
@@ -613,9 +610,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
-      final updatedSettings = await _disableAutoswapUsecase.execute(
-        isTestnet: defaultLiquidWallet.isTestnet,
-      );
+      final updatedSettings = await _disableAutoswapUsecase.execute();
 
       emit(state.copyWith(autoSwapSettings: updatedSettings));
     } catch (e) {
@@ -632,5 +627,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) {
     emit(state.copyWith(backupWarningDismissed: true));
+  }
+
+  void _onDismissLegacyStorageWarning(
+    DismissLegacyStorageWarning event,
+    Emitter<WalletState> emit,
+  ) {
+    emit(state.copyWith(legacyStorageWarningDismissed: true));
   }
 }

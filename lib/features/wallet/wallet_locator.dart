@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/ark/usecases/check_ark_wallet_setup_usecase.dart';
 import 'package:bb_mobile/core/ark/usecases/get_ark_wallet_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_store_type_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
@@ -26,14 +26,9 @@ class WalletLocator {
     // Usecase
     locator.registerFactory<GetUnconfirmedIncomingBalanceUsecase>(
       () => GetUnconfirmedIncomingBalanceUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -63,6 +58,7 @@ class WalletLocator {
         disableAutoswapUsecase: locator<DisableAutoswapUsecase>(),
         autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
+        seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
       ),
     );
   }

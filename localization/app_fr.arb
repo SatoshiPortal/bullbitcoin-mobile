@@ -107,12 +107,14 @@
   "pinCodeCheckingStatus": "Vérification du statut du code PIN",
   "pinCodeProcessing": "Traitement",
   "pinCodeSettingUp": "Configuration de votre code PIN",
+  "pinCodeBackupRequiredWarning": "Veuillez effectuer une sauvegarde du portefeuille avant de définir un code PIN",
   "settingsCurrencyTitle": "Devise",
   "settingsAppSettingsTitle": "Paramètres de l'application",
   "settingsTermsOfServiceTitle": "Conditions d'utilisation",
   "settingsAppVersionLabel": "Version de l'application : ",
   "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Obtenir de l'aide",
   "settingsServicesStatusTitle": "État des services",
   "settingsTorSettingsTitle": "Paramètres Tor",
   "settingsRecoverbullTitle": "Recoverbull",
@@ -827,6 +829,7 @@
   "fundExchangeWarningTactic8": "Ils vous pressent d'agir rapidement",
   "fundExchangeWarningConfirmation": "Je confirme que personne ne me demande d'acheter du Bitcoin.",
   "fundExchangeContinueButton": "Continuer",
+  "fundExchangeScamConsentError": "Échec de l'enregistrement de votre consentement. Veuillez réessayer.",
   "fundExchangeDoneButton": "Terminé",
   "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
   "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",
@@ -2134,12 +2137,14 @@
   "sendEnterRelativeFee": "Entrer les frais relatifs en sats/vB",
   "sendErrorArkExperimentalOnly": "Les demandes de paiement ARK ne sont disponibles que depuis la fonctionnalité expérimentale Ark.",
   "sendErrorSwapCreationFailed": "Échec de la création de l'échange.",
+  "sendErrorInvoiceMustContainAmount": "La facture doit contenir un montant",
   "sendErrorInsufficientBalanceForPayment": "Solde insuffisant pour couvrir ce paiement",
   "sendErrorInvalidAddressOrInvoice": "Adresse de paiement Bitcoin ou facture invalide",
   "sendErrorBuildFailed": "Échec de la construction",
   "sendErrorConfirmationFailed": "Échec de la confirmation",
   "sendErrorInsufficientBalanceForSwap": "Solde insuffisant pour payer cet échange via Liquid et hors des limites d'échange pour payer via Bitcoin.",
   "sendErrorAmountBelowSwapLimits": "Le montant est inférieur aux limites d'échange",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Pensez à alimenter Paiements Instantanés pour effectuer des paiements plus petits.",
   "sendErrorAmountAboveSwapLimits": "Le montant est supérieur aux limites d'échange",
   "sendErrorAmountBelowMinimum": "Montant inférieur à la limite d'échange minimale : {minLimit} sats",
   "@sendErrorAmountBelowMinimum": {
@@ -3282,9 +3287,7 @@
   "exchangeLandingRestriction": "L'accès aux services d'échange sera restreint aux pays où Bull Bitcoin peut légalement opérer et peut nécessiter une vérification KYC.",
   "exchangeLandingLoginButton": "Se connecter ou s'inscrire",
   "exchangeLandingLoginToUseSupport": "Veuillez vous connecter ou vous inscrire pour utiliser le chat de support pour les problèmes liés à l'échange.",
-  "exchangeSupportLoginSubtitle": "Se connecter au compte de support Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "Vous aurez uniquement accès à la fonctionnalité de chat de support.",
-  "exchangeSupportLoginAccountInfo": "Vous allez créer un compte avec bullbitcoin.com auquel vous pourrez toujours accéder via notre application web.",
+  "exchangeSupportLoginChatRequired": "Pour obtenir de l'aide humaine, vous devez d'abord vous connecter à votre compte Bull Bitcoin. C'est 100 % gratuit et aucun KYC n'est requis, seulement une adresse courriel.",
   "exchangeHomeDeposit": "Déposer",
   "exchangeHomeWithdraw": "Retirer",
   "exchangeKycLight": "Léger",
@@ -4370,9 +4373,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Aidez-nous à améliorer Bull Bitcoin en participant à notre programme de signalement d'erreurs. Cela nous aide directement à faire de Bull Bitcoin un meilleur service pour tous.\n\nLorsqu'elle est activée, nous envoyons automatiquement des rapports d'erreurs lorsque des problèmes surviennent dans l'application. Ces données nous aident à comprendre ce qui se passe pour nos utilisateurs du monde entier et à prioriser les correctifs en conséquence.\n\nNous ne partageons pas ces informations avec des tiers. Nous utilisons le client open-source de Sentry avec notre propre serveur backend auto-hébergé.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Aidez-nous à améliorer Bull Bitcoin en participant à notre programme de signalement d'erreurs. Cela nous aide directement à faire de Bull Bitcoin un meilleur service pour tous.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Lorsqu'elle est activée, nous envoyons automatiquement des rapports d'erreurs lorsque des problèmes surviennent dans l'application.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Ces données nous aident à comprendre ce qui se passe pour nos utilisateurs du monde entier et à prioriser les correctifs en conséquence.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Nous ne partageons pas ces informations avec des tiers.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Nous utilisons le client open-source de Sentry avec notre propre serveur backend auto-hébergé.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Accepter",
   "@errorReportingAcceptButton": {
@@ -4385,6 +4404,18 @@
   "errorReportingRestartSnackbar": "Relancez l'application pour appliquer ce changement",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "Impossible de démarrer l'application",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Une erreur s'est produite au démarrage. Veuillez redémarrer l'application. Si le problème persiste, partagez vos journaux et contactez le support.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Partager les journaux",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT",
   "@backupWarningTitle": {
@@ -4402,5 +4433,133 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
-  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà"
+  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Urgent : Sauvegarde et réinstallation requises",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Action requise : Réinstaller l'application",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Sauvegarder maintenant",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Plus tard",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Retour",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Commencer",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Clair",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Sombre",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Système",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Je participe",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Je ne participe pas",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Journaux standard",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Journaux critiques",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Toujours actif — nous permet de vérifier que votre portefeuille migre en toute sécurité entre les versions de l'application.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Les journaux critiques ne peuvent pas être désactivés. Ils signalent les échecs de mises à jour, de migrations et les erreurs de démarrage de l'application afin que nous puissions corriger les problèmes susceptibles d'affecter d'autres utilisateurs.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Utilisez votre sauvegarde",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Grâce à votre sauvegarde, vos fonds sont en sécurité.\nEssayez d'abord de redémarrer l'application ; si elle échoue toujours, réinstallez-la et récupérez votre portefeuille avec votre sauvegarde.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Pas de sauvegarde ?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Ne supprimez pas l'application.\nContactez notre équipe de support pour tenter un sauvetage.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contacter le support",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Afficher les détails de l'erreur",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

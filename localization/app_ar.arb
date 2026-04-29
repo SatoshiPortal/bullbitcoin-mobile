@@ -801,6 +801,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "للحصول على دعم بشري، يجب عليك أولاً تسجيل الدخول إلى حساب Bull Bitcoin الخاص بك. الخدمة مجانية 100% ولا يتطلب الأمر أي KYC، فقط عنوان بريد إلكتروني.",
   "seedsignerStep12": "محفظة (بول بيتكين) ستطلب منك فحص شفرة (كيو آر) على (بريد سيغنر) افحصه.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -2427,6 +2428,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "الحصول على مساعدة",
   "exchangeStatisticsOrderStats": "النظام الإحصائي",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -3497,10 +3499,6 @@
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
   },
-  "exchangeSupportLoginAccountInfo": "سوف تخلقين حساباً مع (بولبيتكوين) و يمكنك دائماً الوصول عبر تطبيقنا على الإنترنت.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "electrumAdvancedOptions": "الخيارات المتقدمة",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -4505,6 +4503,10 @@
   "sendErrorSwapCreationFailed": "فشل في إحداث تبادل.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
+  },
+  "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
   },
   "arkNoBalanceData": "لا توجد بيانات عن الرصيد",
   "@arkNoBalanceData": {
@@ -9459,6 +9461,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "يرجى إكمال نسخة احتياطية للمحفظة قبل تعيين رمز PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "تحتاج إلى زيادة معدل الرسوم على الأقل 1 سات/فبيت بالمقارنة مع الصفقة الأصلية",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -10916,10 +10922,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "سيكون لديك فقط الوصول إلى ملامح الدردشة الدعم.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "الحد الأدنى للمستوى 1: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -11260,10 +11262,6 @@
   "swapProgressPendingMessage": "عملية النقل جارية صفقات (بيتكوين) قد تستغرق وقتاً لتأكيدها يمكنك العودة للمنزل والانتظار.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Connect to Bull Bitcoin Support account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "الشبكة",
   "@walletDetailsNetworkLabel": {
@@ -12437,5 +12435,145 @@
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
   },
-  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل"
+  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
+  "appInitErrorTitle": "فشل تشغيل التطبيق",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "حدث خطأ أثناء بدء التشغيل. يرجى إعادة تشغيل التطبيق. إذا استمر المشكل، شارك سجلاتك وتواصل مع الدعم.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "مشاركة السجلات",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "عاجل: النسخ الاحتياطي وإعادة التثبيت مطلوبان",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "إجراء مطلوب: إعادة تثبيت التطبيق",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "احتياطي الآن",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "لاحقاً",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "رجوع",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "ابدأ",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "فاتح",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "داكن",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "النظام",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "أنا أساهم",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "لا أساهم",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "السجلات القياسية",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "السجلات الحرجة",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "مفعّل دائمًا — يتيح لنا التأكد من انتقال محفظتك بأمان بين إصدارات التطبيق.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "لا يمكن تعطيل السجلات الحرجة. فهي تُبلّغ عن حالات فشل الترقية والترحيل وأخطاء بدء تشغيل التطبيق حتى نتمكن من إصلاح المشكلات التي قد تؤثر على الآخرين.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "استخدم نسختك الاحتياطية",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "أموالك آمنة بفضل نسختك الاحتياطية.\nحاول إعادة تشغيل التطبيق أولاً، وإذا استمر الفشل، أعد تثبيته واسترجع محفظتك باستخدام نسختك الاحتياطية.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "لا توجد نسخة احتياطية؟",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "لا تحذف التطبيق.\nاتصل بفريق الدعم لمحاولة الإنقاذ.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "اتصل بالدعم",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "إظهار تفاصيل الخطأ",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

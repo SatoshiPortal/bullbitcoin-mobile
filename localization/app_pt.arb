@@ -665,6 +665,7 @@
   "payCalculating": "Cálculo...",
   "transactionDetailLabelTransferId": "ID de transferência",
   "fundExchangeContinueButton": "Continue",
+  "fundExchangeScamConsentError": "Falha ao registrar seu consentimento. Por favor, tente novamente.",
   "currencySettingsDefaultFiatCurrencyLabel": "Moeda de fiat padrão",
   "payRecipient": "Recipiente",
   "fundExchangeCrIbanUsdRecipientNameHelp": "Use nosso nome corporativo oficial. Não use \"Bull Bitcoin\".",
@@ -872,6 +873,7 @@
     }
   },
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Obter ajuda",
   "sellTransactionFee": "Taxa de transação",
   "coldcardStep5": "Se você tiver problemas de digitalização:",
   "buyExpressWithdrawal": "Retirada expressa",
@@ -1560,6 +1562,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "arkNoBalanceData": "Sem dados de equilíbrio disponíveis",
   "autoswapWarningCardTitle": "O Autoswap está ativado.",
   "coreSwapsChainCompletedSuccess": "A transferência é concluída com sucesso.",
@@ -3106,6 +3109,7 @@
   "payEmail": "Email",
   "coldcardStep10": "Clique nos botões para assinar a transação no seu Coldcard.",
   "sendErrorAmountBelowSwapLimits": "O valor está abaixo dos limites de swap",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Considere financiar Pagamentos Instantâneos para fazer pagamentos menores.",
   "labelErrorNotFound": "Label \"{label}\" não encontrado.",
   "@labelErrorNotFound": {
     "placeholders": {
@@ -3305,6 +3309,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "Endereço líquido",
   "backupWalletSuccessTestButton": "Teste de backup",
   "pinCodeSettingUp": "Configurando seu código PIN",
+  "pinCodeBackupRequiredWarning": "Por favor, conclua uma cópia de segurança da carteira antes de definir um PIN",
   "replaceByFeeErrorFeeRateTooLow": "Você precisa aumentar a taxa de taxa em pelo menos 1 sat/vbyte em comparação com a transação original",
   "payPriority": "Prioridade",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "Transferir fundos em Costa Rican Colón (CRC)",
@@ -3354,9 +3359,7 @@
   "payInvoiceDetails": "Detalhes da fatura",
   "exchangeLandingLoginButton": "Login Ou Inscreva-se",
   "exchangeLandingLoginToUseSupport": "Por favor, faça login ou inscreva-se para usar o chat de suporte para questões relacionadas à exchange.",
-  "exchangeSupportLoginSubtitle": "Conectar à conta de suporte Bull Bitcoin",
-  "exchangeSupportLoginAccessMessage": "Você terá acesso apenas ao recurso de chat de suporte.",
-  "exchangeSupportLoginAccountInfo": "Você estará criando uma conta com bullbitcoin.com que poderá sempre acessar através do nosso aplicativo web.",
+  "exchangeSupportLoginChatRequired": "Para obter suporte humano, deve primeiro iniciar sessão na sua conta Bull Bitcoin. É 100 % gratuito e não é necessário KYC, apenas um endereço de email.",
   "torSettingsEnableProxy": "Ativar Proxy Tor",
   "bitboxScreenAddressToVerify": "Endereço para verificar:",
   "payConfirmPayment": "Confirmar pagamento",
@@ -4436,9 +4439,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Ajude-nos a melhorar o Bull Bitcoin participando do nosso programa de relatório de erros. Isso nos ajuda diretamente a tornar o Bull Bitcoin melhor para todos.\n\nQuando ativado, enviamos automaticamente relatórios de erros quando ocorrem problemas no aplicativo. Esses dados nos ajudam a entender o que está acontecendo com nossos usuários em todo o mundo e a priorizar as correções de acordo.\n\nNão compartilhamos essas informações com terceiros. Usamos o cliente de código aberto do Sentry com nosso próprio servidor backend auto-hospedado.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Ajude-nos a melhorar o Bull Bitcoin participando do nosso programa de relatório de erros. Isso nos ajuda diretamente a tornar o Bull Bitcoin melhor para todos.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Quando ativado, enviamos automaticamente relatórios de erros quando ocorrem problemas no aplicativo.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Esses dados nos ajudam a entender o que está acontecendo com nossos usuários em todo o mundo e a priorizar as correções de acordo.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Não compartilhamos essas informações com terceiros.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Usamos o cliente de código aberto do Sentry com nosso próprio servidor backend auto-hospedado.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Aceitar",
   "@errorReportingAcceptButton": {
@@ -4451,6 +4470,18 @@
   "errorReportingRestartSnackbar": "Reinicie o aplicativo para aplicar essa mudança",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "Falha ao iniciar o aplicativo",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Ocorreu um erro durante a inicialização. Por favor, reinicie o aplicativo. Se o problema persistir, compartilhe seus registros e entre em contato com o suporte.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Compartilhar registros",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "FAÇA BACKUP DA SUA CARTEIRA AGORA",
   "@backupWarningTitle": {
@@ -4468,5 +4499,133 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
-  "importMnemonicDuplicateError": "Esta mnemônica já existe"
+  "importMnemonicDuplicateError": "Esta mnemônica já existe",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstalação necessários",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "A aplicação que está a usar utiliza um software que em breve ficará obsoleto. Por favor, siga estes passos:\n\n1. Faça uma cópia de segurança da sua carteira\n2. Desinstale a aplicação. Elimine-a completamente do seu telemóvel.\n3. Reinstale a versão mais recente da aplicação\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nOs seus fundos estão seguros e pode continuar a usar a aplicação agora, mas faça isso o mais rapidamente possível para evitar que a aplicação deixe de funcionar num futuro próximo.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Ação necessária: Reinstalar a aplicação",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "A aplicação que está a usar utiliza um software que em breve ficará obsoleto. Por favor, siga estes passos:\n\n1. Faça uma cópia de segurança da sua carteira\n2. Desinstale a aplicação. Elimine-a completamente do seu telemóvel.\n3. Reinstale a versão mais recente da aplicação\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nOs seus fundos estão seguros e pode continuar a usar a aplicação agora, mas faça isso o mais rapidamente possível para evitar que a aplicação deixe de funcionar num futuro próximo.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Fazer backup agora",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Mais tarde",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Voltar",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Começar",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Claro",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Escuro",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Sistema",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Contribuo",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Não contribuo",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Registos padrão",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Registos críticos",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Sempre ativo — permite-nos ver se a sua carteira migra em segurança entre versões da aplicação.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Os registos críticos não podem ser desativados. Comunicam atualizações, migrações e erros de arranque da aplicação falhados para que possamos corrigir problemas que possam afetar outros utilizadores.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Use a sua cópia de segurança",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Graças à sua cópia de segurança, os seus fundos estão seguros.\nTente primeiro reiniciar a aplicação; se continuar a falhar, reinstale-a e recupere com a sua cópia de segurança.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Sem cópia de segurança?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Não elimine a aplicação.\nContacte a nossa equipa de suporte para tentar um resgate.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contactar o suporte",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostrar detalhes do erro",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

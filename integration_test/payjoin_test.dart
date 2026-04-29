@@ -16,8 +16,9 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
+import 'dart:io' show Platform;
+
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
 import 'package:test/test.dart';
 
@@ -36,8 +37,8 @@ Future<void> main({bool isInitialized = false}) async {
   final sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
   final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
-  final receiverMnemonic = dotenv.env['TEST_ALICE_MNEMONIC'];
-  final senderMnemonic = dotenv.env['TEST_BOB_MNEMONIC'];
+  final receiverMnemonic = Platform.environment['TEST_ALICE_MNEMONIC'];
+  final senderMnemonic = Platform.environment['TEST_BOB_MNEMONIC'];
 
   if (receiverMnemonic == null || receiverMnemonic.isEmpty) {
     throw Exception('TEST_ALICE_MNEMONIC environment variable is not set');

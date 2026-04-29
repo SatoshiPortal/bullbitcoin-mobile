@@ -8,17 +8,14 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateChainSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateChainSwapUsecase({
     required WalletRepository walletRepository,
     required BoltzSwapRepository swapRepository,
-    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
-       _swapRepositoryTestnet = swapRepositoryTestnet,
        _seedRepository = seedRepository;
 
   Future<ChainSwap> execute({
@@ -49,18 +46,16 @@ class CreateChainSwapUsecase {
         );
       }
 
-      final isTestnet = bitcoinWallet.network.isTestnet;
-      final swapRepository =
-          isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final swapRepository = _swapRepository;
 
       final btcElectrumUrl =
           bitcoinWallet.network.isTestnet
-              ? ApiServiceConstants.bbElectrumTestUrl
+              ? ApiServiceConstants.publicElectrumTestUrl
               : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl =
           liquidWallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
+              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
               : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {

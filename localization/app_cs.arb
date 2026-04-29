@@ -219,6 +219,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Před nastavením PIN dokončete zálohu peněženky",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "settingsCurrencyTitle": "Čeština",
   "@settingsCurrencyTitle": {
     "description": "Title for the currency settings section in the settings menu"
@@ -243,6 +247,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "Získat pomoc",
   "settingsTorSettingsTitle": "Nastavení Tor",
   "@settingsTorSettingsTitle": {
     "description": "Title for the Tor settings section in app settings"
@@ -1103,6 +1108,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "Pro získání lidské podpory se musíte nejprve přihlásit ke svému účtu Bull Bitcoin. Je to zcela zdarma a není vyžadováno žádné KYC, pouze e-mailová adresa.",
   "seedsignerStep12": "Bull Bitcoin peněženku vás požádá o skenování QR kódu na SeedSigner. Skenovat.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -3828,10 +3834,6 @@
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
   },
-  "exchangeSupportLoginAccountInfo": "Vytvoříte účet s bulbitcoin.com, který můžete vždy přistupovat prostřednictvím naší webové aplikace.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "electrumAdvancedOptions": "Pokročilé možnosti",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -4818,6 +4820,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Neúspěšné vytvořit swap.",
+  "sendErrorInvoiceMustContainAmount": "Faktura musí obsahovat částku",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -11347,10 +11350,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "Budete mít přístup k funkcím podpory chatu.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "Úroveň 1 limit: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -11709,10 +11708,6 @@
   "swapProgressPendingMessage": "Přenos je v průběhu. Bitcoin transakce může trvat, než potvrdit. Můžete se vrátit domů a čekat.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "Připojte se k účtu Bull Bitcoin Support",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "Čeština",
   "@walletDetailsNetworkLabel": {
@@ -12437,5 +12432,145 @@
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
   },
-  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje"
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
+  "appInitErrorTitle": "Aplikaci se nepodařilo spustit",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Při spuštění došlo k chybě. Restartujte prosím aplikaci. Pokud problém přetrvává, sdílejte protokoly a kontaktujte podporu.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Sdílet protokoly",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Naléhavé: Je vyžadována záloha a přeinstalace",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Aplikace, kterou používáte, využívá software, který bude brzy ukončen. Postupujte prosím podle těchto kroků:\n\n1. Zálohujte svou peněženku\n2. Odinstalujte aplikaci. Zcela ji smažte ze svého telefonu.\n3. Přeinstalujte nejnovější verzi aplikace\n4. Použijte možnost obnovení místo \"vytvoření nové peněženky\".\n\nVaše prostředky jsou v bezpečí a aplikaci můžete nyní nadále používat, ale proveďte to co nejdříve, abyste zabránili selhání aplikace v blízké budoucnosti.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Vyžadována akce: Přeinstalujte aplikaci",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Aplikace, kterou používáte, využívá software, který bude brzy ukončen. Postupujte prosím podle těchto kroků:\n\n1. Zálohujte svou peněženku\n2. Odinstalujte aplikaci. Zcela ji smažte ze svého telefonu.\n3. Přeinstalujte nejnovější verzi aplikace\n4. Použijte možnost obnovení místo \"vytvoření nové peněženky\".\n\nVaše prostředky jsou v bezpečí a aplikaci můžete nyní nadále používat, ale proveďte to co nejdříve, abyste zabránili selhání aplikace v blízké budoucnosti.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Zálohovat nyní",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Později",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Zpět",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Začít",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Světlý",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Tmavý",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Systémový",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Přispívám",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Nepřispívám",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Standardní protokoly",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Kritické protokoly",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Vždy zapnuto — umožňuje nám vidět, zda se vaše peněženka bezpečně migruje mezi verzemi aplikace.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Kritické protokoly nelze vypnout. Hlásí neúspěšné upgrady, migrace a chyby při spouštění aplikace, abychom mohli opravit problémy, které by se mohly týkat ostatních.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Použijte svou zálohu",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Díky vaší záloze jsou vaše prostředky v bezpečí.\nNejprve zkuste restartovat aplikaci; pokud stále selhává, přeinstalujte ji a obnovte pomocí zálohy.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Žádná záloha?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Aplikaci nemazejte.\nKontaktujte náš tým podpory pro pokus o záchranu.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Kontaktovat podporu",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Zobrazit podrobnosti chyby",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

@@ -1991,6 +1991,7 @@
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
   },
+  "exchangeSupportLoginChatRequired": "برای دریافت پشتیبانی انسانی، ابتدا باید وارد حساب Bull Bitcoin خود شوید. کاملاً رایگان است و نیازی به KYC نیست، فقط یک آدرس ایمیل.",
   "seedsignerStep12": "کیف پول بیت کوین بول از شما می خواهد کد QR را در SeedSigner اسکن کنید. آن را اسکن کنید.",
   "@seedsignerStep12": {
     "description": "SeedSigner instruction for scanning signed PSBT"
@@ -3408,6 +3409,7 @@
   "@settingsGithubLabel": {
     "description": "Label for the Github link in settings"
   },
+  "settingsGetHelpLabel": "دریافت کمک",
   "exchangeStatisticsOrderStats": "آمار سفارش",
   "@exchangeStatisticsOrderStats": {
     "description": "Title for order statistics section"
@@ -4385,10 +4387,6 @@
   "@walletNetworkBitcoin": {
     "description": "Network label for Bitcoin mainnet"
   },
-  "exchangeSupportLoginAccountInfo": "شما یک حساب با بولدوزرcoin.com ایجاد خواهید کرد که شما همیشه می توانید از طریق برنامه وب ما دسترسی داشته باشید.",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
-  },
   "electrumAdvancedOptions": "گزینه های پیشرفته",
   "@electrumAdvancedOptions": {
     "description": "Advanced options button label"
@@ -5289,6 +5287,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "شکست برای ایجاد مبادله.",
+  "sendErrorInvoiceMustContainAmount": "فاکتور باید حاوی مبلغ باشد",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
@@ -9606,6 +9605,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "لطفاً قبل از تنظیم PIN، یک پشتیبان‌گیری از کیف پول انجام دهید",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "شما نیاز به افزایش نرخ هزینه با حداقل 1 نشست/vbyte در مقایسه با معامله اصلی",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -10901,10 +10904,6 @@
   "@testBackupErrorSelectAllWords": {
     "description": "Error when not all words are selected"
   },
-  "exchangeSupportLoginAccessMessage": "شما فقط به ویژگی چت پشتیبانی دسترسی خواهید داشت.",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
   "buyLevel1Limit": "سطح ۱: {amount}",
   "@buyLevel1Limit": {
     "description": "Purchase limit for basic KYC",
@@ -11221,10 +11220,6 @@
   "swapProgressPendingMessage": "انتقال در حال پیشرفت است. معاملات بیت کوین می تواند مدتی طول بکشد تا تایید شود. می توانید به خانه برگردید و صبر کنید.",
   "@swapProgressPendingMessage": {
     "description": "Pending transfer message"
-  },
-  "exchangeSupportLoginSubtitle": "ارتباط با Bitcoin Support Account",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
   },
   "walletDetailsNetworkLabel": "شبکه Network",
   "@walletDetailsNetworkLabel": {
@@ -12437,5 +12432,145 @@
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
-  "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد"
+  "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
+  "appInitErrorTitle": "برنامه راه‌اندازی نشد",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "خطایی در هنگام راه‌اندازی رخ داد. لطفاً برنامه را مجدداً راه‌اندازی کنید. اگر مشکل ادامه دارد، گزارش‌های خود را به اشتراک بگذارید و با پشتیبانی تماس بگیرید.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "اشتراک‌گذاری گزارش‌ها",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "فوری: پشتیبان‌گیری و نصب مجدد الزامی است",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "اقدام لازم: نصب مجدد برنامه",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "برنامه‌ای که استفاده می‌کنید از نرم‌افزاری استفاده می‌کند که به زودی منسوخ خواهد شد. لطفاً این مراحل را دنبال کنید:\n\n1. از کیف‌پول خود پشتیبان‌گیری کنید\n2. برنامه را حذف کنید. آن را به‌طور کامل از گوشی خود پاک کنید.\n3. آخرین نسخه برنامه را مجدداً نصب کنید\n4. به جای \"ایجاد کیف‌پول جدید\" از گزینه بازیابی استفاده کنید.\n\nدارایی‌های شما در امنیت هستند و می‌توانید همین الان به استفاده از برنامه ادامه دهید، اما این کار را هرچه زودتر انجام دهید تا از خرابی برنامه در آینده نزدیک جلوگیری شود.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "اکنون پشتیبان بگیر",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "بعداً",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "بازگشت",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "شروع کنید",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "روشن",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "تیره",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "سیستم",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "مشارکت می‌کنم",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "مشارکت نمی‌کنم",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "گزارش‌های استاندارد",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "گزارش‌های حیاتی",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "همیشه روشن — به ما اجازه می‌دهد ببینیم آیا کیف پول شما به‌طور ایمن بین نسخه‌های برنامه منتقل می‌شود.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "گزارش‌های حیاتی را نمی‌توان غیرفعال کرد. آن‌ها ارتقاها، مهاجرت‌ها و خطاهای راه‌اندازی برنامه ناموفق را گزارش می‌دهند تا بتوانیم مشکلاتی را که ممکن است بر دیگران تأثیر بگذارد برطرف کنیم.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "از نسخه پشتیبان خود استفاده کنید",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "به لطف پشتیبان‌گیری شما، وجوهتان در امان است.\nابتدا راه‌اندازی مجدد برنامه را امتحان کنید؛ اگر همچنان با خطا مواجه شد، برنامه را دوباره نصب کرده و با پشتیبان خود بازیابی کنید.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "نسخه پشتیبان ندارید؟",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "برنامه را حذف نکنید.\nبرای تلاش برای نجات با تیم پشتیبانی ما تماس بگیرید.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "تماس با پشتیبانی",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "نمایش جزئیات خطا",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

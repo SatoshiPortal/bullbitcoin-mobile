@@ -1,3 +1,150 @@
 {
-  "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান"
+  "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
+  "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "আৰম্ভণিৰ সময়ত এটা ত্ৰুটি ঘটিছে। অনুগ্ৰহ কৰি এপটো পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, আপোনাৰ লগ শ্বেয়াৰ কৰক আৰু সহায়ৰ সৈতে যোগাযোগ কৰক।",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "লগ শ্বেয়াৰ কৰক",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
+  "settingsGetHelpLabel": "সহায় লওক",
+  "exchangeSupportLoginChatRequired": "মানৱ সহায়তা পাবলৈ, আপুনি প্ৰথমে আপোনাৰ Bull Bitcoin একাউণ্টত লগ ইন কৰিব লাগিব। ই সম্পূৰ্ণ বিনামূলীয়া আৰু কোনো KYC প্ৰয়োজন নাই, কেৱল এটা ইমেইল ঠিকনা।",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "জৰুৰী: বেকআপ আৰু পুনৰায় ইনষ্টল কৰা প্ৰয়োজন",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "আপুনি ব্যৱহাৰ কৰা এপটো এনে চফটৱেৰ ব্যৱহাৰ কৰিছে যি শীঘ্ৰে পুৰণি হৈ পৰিব। অনুগ্ৰহ কৰি এই পদক্ষেপবোৰ অনুসৰণ কৰক:\n\n1. আপোনাৰ ৱালেট বেকআপ কৰক\n2. এপটো আনইনষ্টল কৰক। আপোনাৰ ফোনৰ পৰা সম্পূৰ্ণকৈ মচি পেলাওক।\n3. এপৰ শেহতীয়া সংস্কৰণ পুনৰায় ইনষ্টল কৰক\n4. \"নতুন ৱালেট তৈয়াৰ কৰক\" ৰ সলনি পুনৰুদ্ধাৰ বিকল্প ব্যৱহাৰ কৰক।\n\nআপোনাৰ ধন সুৰক্ষিত আছে আৰু আপুনি এতিয়া এপটো ব্যৱহাৰ কৰি থাকিব পাৰে, কিন্তু ভৱিষ্যতে এপটো বিকল হোৱাৰ আগতে যিমান সোনকালে পাৰে এইটো কৰক।",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "পদক্ষেপ প্ৰয়োজন: এপ পুনৰায় ইনষ্টল কৰক",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "আপুনি ব্যৱহাৰ কৰা এপটো এনে চফটৱেৰ ব্যৱহাৰ কৰিছে যি শীঘ্ৰে পুৰণি হৈ পৰিব। অনুগ্ৰহ কৰি এই পদক্ষেপবোৰ অনুসৰণ কৰক:\n\n1. আপোনাৰ ৱালেট বেকআপ কৰক\n2. এপটো আনইনষ্টল কৰক। আপোনাৰ ফোনৰ পৰা সম্পূৰ্ণকৈ মচি পেলাওক।\n3. এপৰ শেহতীয়া সংস্কৰণ পুনৰায় ইনষ্টল কৰক\n4. \"নতুন ৱালেট তৈয়াৰ কৰক\" ৰ সলনি পুনৰুদ্ধাৰ বিকল্প ব্যৱহাৰ কৰক।\n\nআপোনাৰ ধন সুৰক্ষিত আছে আৰু আপুনি এতিয়া এপটো ব্যৱহাৰ কৰি থাকিব পাৰে, কিন্তু ভৱিষ্যতে এপটো বিকল হোৱাৰ আগতে যিমান সোনকালে পাৰে এইটো কৰক।",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "এতিয়াই বেকআপ কৰক",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "পিছত",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
+  "backButton": "উভতি যাওক",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "আৰম্ভ কৰক",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "পোহৰ",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "আন্ধাৰ",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "চিষ্টেম",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "মই অৱদান দিওঁ",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "মই অৱদান নিদিওঁ",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "মানক লগসমূহ",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "জটিল লগসমূহ",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "সদায় সক্ৰিয় — এই ফিচাৰে এপৰ সংস্কৰণসমূহৰ মাজত আপোনাৰ ৱালেটৰ সুৰক্ষিত স্থানান্তৰ নিশ্চিত কৰে।",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "জটিল লগসমূহ নিষ্ক্ৰিয় কৰিব নোৱাৰি। ই বিফল আপগ্ৰেড, মাইগ্ৰেশ্বন, আৰু এপ আৰম্ভণিৰ ত্ৰুটিসমূহ ৰিপৰ্ট কৰে যাতে আমি আনক প্ৰভাৱিত কৰিব পৰা সমস্যাসমূহ সমাধান কৰিব পাৰোঁ।",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "আপোনাৰ বেকআপ ব্যৱহাৰ কৰক",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "আপোনাৰ বেকআপৰ বাবে আপোনাৰ ধন সুৰক্ষিত।\nপ্ৰথমে এপটো পুনৰ আৰম্ভ কৰাৰ চেষ্টা কৰক, যদি এতিয়াও ব্যৰ্থ হয়, পুনৰ ইনষ্টল কৰক আৰু আপোনাৰ বেকআপৰ সৈতে উদ্ধাৰ কৰক।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "কোনো বেকআপ নাই?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "এপটো মচি নেপেলাব।\nৰেস্কিউৰ চেষ্টা কৰিবলৈ আমাৰ সহায় দলৰ সৈতে যোগাযোগ কৰক।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "সহায় দলৰ সৈতে যোগাযোগ কৰক",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "ভুলৰ বিৱৰণ দেখুৱাওক",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

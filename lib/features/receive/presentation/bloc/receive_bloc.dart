@@ -323,7 +323,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           type: wallet.isLiquid
               ? SwapType.lightningToLiquid
               : SwapType.lightningToBitcoin,
-          isTestnet: wallet.network.isTestnet,
         );
         emit(state.copyWith(swapLimits: swapLimits));
       }
@@ -696,15 +695,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
       final walletId = state.wallet!.id;
 
-      final address = await _getAddressAtIndexUsecase.execute(
-        walletId: walletId,
-        index: currentAddress.index + 1,
-      );
-
+      WalletAddress address;
       switch (state.type) {
         case ReceiveType.bitcoin:
           PayjoinReceiver? payjoin;
           Object? error;
+          address = await _getReceiveAddressUsecase.execute(
+            walletId: walletId,
+            generateNew: true,
+          );
           // If a new address is generated, we need to update the payjoin receiver as well,
           // but only if the wallet is not watch only.
           if (state.wallet!.signsLocally) {
@@ -734,9 +733,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           );
 
         case ReceiveType.liquid:
+          address = await _getAddressAtIndexUsecase.execute(
+            walletId: walletId,
+            index: currentAddress.index + 1,
+          );
           emit(state.copyWith(liquidAddress: address));
         default:
-          break;
+          // No other receive types have addresses, so we don't need to do anything here.
+          return;
       }
 
       // We have to start listening for transactions to this new address now

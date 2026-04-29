@@ -41,12 +41,15 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
     Wallet? wallet,
+    required LabelsFacade labelsFacade,
     required SelectBestWalletUsecase bestWalletUsecase,
     required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
     required GetSettingsUsecase getSettingsUsecase,
@@ -80,6 +83,7 @@ class SendCubit extends Cubit<SendState> {
     required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
     required VerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase,
   }) : _wallet = wallet,
+       _labelsFacade = labelsFacade,
        _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
@@ -114,6 +118,7 @@ class SendCubit extends Cubit<SendState> {
 
   // ignore: unused_field
   final Wallet? _wallet;
+  final LabelsFacade _labelsFacade;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
@@ -181,7 +186,9 @@ class SendCubit extends Cubit<SendState> {
     } else if (state.step == SendStep.amount) {
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.confirm) {
-      emit(state.copyWith(step: SendStep.amount));
+      emit(
+        state.copyWith(step: SendStep.amount, buildTransactionException: null),
+      );
     }
   }
 
@@ -269,8 +276,16 @@ class SendCubit extends Cubit<SendState> {
         final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
         final invoice = await _decodeInvoiceUsecase.execute(
           invoice: paymentRequest.invoice,
-          isTestnet: state.paymentRequest!.isTestnet,
         );
+        if (invoice.sats == 0) {
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              swapCreationException: AmountlessInvoiceException('Invoice has no amount'),
+            ),
+          );
+          return;
+        }
         if (invoice.magicBip21 != null) {
           final updatedRequest = await _detectBitcoinStringUsecase.execute(
             data: invoice.magicBip21!,
@@ -306,6 +321,17 @@ class SendCubit extends Cubit<SendState> {
           });
 
       final sendType = SendType.from(state.paymentRequest!);
+
+      // Pre-populate label from the embedded invoice description or BIP21 label
+      // if the user hasn't manually set one already.
+      final embeddedLabel = switch (state.paymentRequest!) {
+        Bolt11PaymentRequest(description: final d) when d.isNotEmpty => d,
+        Bip21PaymentRequest(label: final l) when l.isNotEmpty => l,
+        _ => null,
+      };
+      if (embeddedLabel != null && state.label.isEmpty) {
+        emit(state.copyWith(label: embeddedLabel));
+      }
 
       emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
       await loadFees();
@@ -359,12 +385,15 @@ class SendCubit extends Cubit<SendState> {
         await loadSwapLimits();
 
         if (state.swapAmountBelowLimit) {
+          final swapMinimum = state.swapMinimum;
           if (!state.selectedWallet!.isLiquid) {
             emit(
               state.copyWith(
                 creatingSwap: false,
-                insufficientBalanceException: InsufficientBalanceException(
-                  'Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.',
+                swapLimitsException: SwapLimitsException(
+                  'Amount is below swap limits of $swapMinimum sats.',
+                  minLimit: swapMinimum,
+                  suggestInstantPayments: true,
                 ),
                 loadingBestWallet: false,
               ),
@@ -375,7 +404,8 @@ class SendCubit extends Cubit<SendState> {
               state.copyWith(
                 creatingSwap: false,
                 swapLimitsException: SwapLimitsException(
-                  'Amount is below swap limits',
+                  'Amount is below swap limit of $swapMinimum sats.',
+                  minLimit: swapMinimum,
                 ),
                 loadingBestWallet: false,
               ),
@@ -389,6 +419,7 @@ class SendCubit extends Cubit<SendState> {
               creatingSwap: false,
               swapLimitsException: SwapLimitsException(
                 'Amount is above swap limits',
+                maxLimit: state.selectedSwapLimits?.max,
               ),
               loadingBestWallet: false,
             ),
@@ -415,10 +446,17 @@ class SendCubit extends Cubit<SendState> {
           // updateSwapLockupFees();
           return;
         } catch (e) {
+          log.severe(
+            message: 'Failed to create swap',
+            error: e,
+            trace: StackTrace.current,
+          );
           emit(
             state.copyWith(
               creatingSwap: false,
-              swapCreationException: SwapCreationException(e.toString()),
+              swapCreationException: SwapCreationException(
+                'Something went wrong. Please try again.',
+              ),
               loadingBestWallet: false,
             ),
           );
@@ -512,6 +550,7 @@ class SendCubit extends Cubit<SendState> {
             state.copyWith(
               swapLimitsException: SwapLimitsException(
                 'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
+                minLimit: state.selectedSwapLimits!.min,
               ),
               amountConfirmedClicked: false,
             ),
@@ -523,6 +562,7 @@ class SendCubit extends Cubit<SendState> {
             state.copyWith(
               swapLimitsException: SwapLimitsException(
                 'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
+                maxLimit: state.selectedSwapLimits!.max,
               ),
               amountConfirmedClicked: false,
             ),
@@ -593,14 +633,8 @@ class SendCubit extends Cubit<SendState> {
         (liquidSwapLimits, liquidSwapFees),
         (bitcoinSwapLimits, bitcoinSwapFees),
       ) = await (
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.liquidToLightning,
-        ),
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.bitcoinToLightning,
-        ),
+        _getSwapLimitsUsecase.execute(type: SwapType.liquidToLightning),
+        _getSwapLimitsUsecase.execute(type: SwapType.bitcoinToLightning),
       ).wait;
       emit(
         state.copyWith(
@@ -616,14 +650,8 @@ class SendCubit extends Cubit<SendState> {
         (lbtcToBtcSwapLimits, lbtcToBtcSwapFees),
         (btcToLbtcSwapLimits, btcToLbtcSwapFees),
       ) = await (
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.liquidToBitcoin,
-        ),
-        _getSwapLimitsUsecase.execute(
-          isTestnet: state.selectedWallet!.network.isTestnet,
-          type: SwapType.bitcoinToLiquid,
-        ),
+        _getSwapLimitsUsecase.execute(type: SwapType.liquidToBitcoin),
+        _getSwapLimitsUsecase.execute(type: SwapType.bitcoinToLiquid),
       ).wait;
       emit(
         state.copyWith(
@@ -692,7 +720,6 @@ class SendCubit extends Cubit<SendState> {
         // final swapLimits = state.swapLimits!.;
         final invoice = await _decodeInvoiceUsecase.execute(
           invoice: state.paymentRequestAddress,
-          isTestnet: wallet.network.isTestnet,
         );
         final invoiceAmount = invoice.sats;
         final feeEstimate =
@@ -913,6 +940,8 @@ class SendCubit extends Cubit<SendState> {
           state.copyWith(
             swapLimitsException: SwapLimitsException(
               'Amount below minimum swap limit: $minLimit sats',
+              minLimit: minLimit,
+              suggestInstantPayments: !isLiquidToLightning,
             ),
             amountConfirmedClicked: false,
           ),
@@ -924,6 +953,18 @@ class SendCubit extends Cubit<SendState> {
           state.copyWith(
             swapLimitsException: SwapLimitsException(
               'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
+              maxLimit: state.selectedSwapLimits!.max,
+            ),
+            amountConfirmedClicked: false,
+          ),
+        );
+        return;
+      }
+      if (!await hasBalance()) {
+        emit(
+          state.copyWith(
+            insufficientBalanceException: InsufficientBalanceException(
+              'Not enough funds to cover amount and fees',
             ),
             amountConfirmedClicked: false,
           ),
@@ -1068,7 +1109,10 @@ class SendCubit extends Cubit<SendState> {
   Future<void> createTransaction() async {
     try {
       if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
-        throw 'Fees not loaded';
+        await loadFees();
+        if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
+          return;
+        }
       }
       clearAllExceptions();
       await loadUtxos();
@@ -1111,13 +1155,8 @@ class SendCubit extends Cubit<SendState> {
           pset: pset,
         );
         if (state.chainSwap != null) {
-          final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
             swapId: state.chainSwap!.id,
-            network: Network.fromEnvironment(
-              isTestnet: settings.environment == Environment.testnet,
-              isLiquid: true,
-            ),
             lockupFees: absoluteFees,
           );
           emit(
@@ -1129,13 +1168,8 @@ class SendCubit extends Cubit<SendState> {
             ),
           );
         } else if (state.lightningSwap != null) {
-          final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
             swapId: state.lightningSwap!.id,
-            network: Network.fromEnvironment(
-              isTestnet: settings.environment == Environment.testnet,
-              isLiquid: true,
-            ),
             lockupFees: absoluteFees,
           );
           emit(
@@ -1211,13 +1245,8 @@ class SendCubit extends Cubit<SendState> {
                 psbt: signedPsbtAndTxSize.signedPsbt,
               );
           if (state.chainSwap != null) {
-            final settings = await _getSettingsUsecase.execute();
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.chainSwap!.id,
-              network: Network.fromEnvironment(
-                isTestnet: settings.environment == Environment.testnet,
-                isLiquid: false,
-              ),
               lockupFees: bitcoinAbsoluteFeesSat,
             );
             emit(
@@ -1231,13 +1260,8 @@ class SendCubit extends Cubit<SendState> {
               ),
             );
           } else if (state.lightningSwap != null) {
-            final settings = await _getSettingsUsecase.execute();
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.lightningSwap!.id,
-              network: Network.fromEnvironment(
-                isTestnet: settings.environment == Environment.testnet,
-                isLiquid: false,
-              ),
               lockupFees: bitcoinAbsoluteFeesSat,
             );
             emit(
@@ -1360,13 +1384,8 @@ class SendCubit extends Cubit<SendState> {
                 await _calculateBitcoinAbsoluteFeesUsecase.execute(
                   psbt: signedPsbtAndTxSize.signedPsbt,
                 );
-            final settings = await _getSettingsUsecase.execute();
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.chainSwap!.id,
-              network: Network.fromEnvironment(
-                isTestnet: settings.environment == Environment.testnet,
-                isLiquid: false,
-              ),
               lockupFees: bitcoinAbsoluteFeesSat,
             );
             emit(
@@ -1431,7 +1450,6 @@ class SendCubit extends Cubit<SendState> {
         await _updatePaidSendSwapUsecase.execute(
           txid: state.txId!,
           swapId: state.lightningSwap!.id,
-          network: state.selectedWallet!.network,
           absoluteFees: state.absoluteFees!,
         );
       }
@@ -1439,9 +1457,18 @@ class SendCubit extends Cubit<SendState> {
         await _updatePaidSendSwapUsecase.execute(
           txid: state.txId!,
           swapId: state.chainSwap!.id,
-          network: state.selectedWallet!.network,
           absoluteFees:
               0, // TODO (ishi): removed until server fees are implemented
+        );
+      }
+
+      if (state.label.isNotEmpty) {
+        await _labelsFacade.store(
+          NewLabel.tx(
+            transactionId: state.txId!,
+            label: state.label,
+            origin: state.selectedWallet!.id,
+          ),
         );
       }
 
@@ -1468,7 +1495,8 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           confirmTransactionException: ConfirmTransactionException(
-            'Failed to broadcast transaction. Check your network connection and try again.',
+            'BroadcastTransactionException',
+            isBroadcastFailure: true,
           ),
           broadcastingTransaction: false,
         ),
@@ -1678,6 +1706,7 @@ class SendCubit extends Cubit<SendState> {
           state.copyWith(
             swapLimitsException: SwapLimitsException(
               'Balance too low for minimum swap amount',
+              minLimit: swapLimits.min,
             ),
           ),
         );
@@ -1688,6 +1717,7 @@ class SendCubit extends Cubit<SendState> {
           state.copyWith(
             swapLimitsException: SwapLimitsException(
               'Amount exceeds maximum swap amount',
+              maxLimit: swapLimits.max,
             ),
           ),
         );

@@ -69,12 +69,14 @@
   "pinCodeCheckingStatus": "Tarkistetaan PIN-tilaa",
   "pinCodeProcessing": "Käsitellään",
   "pinCodeSettingUp": "PIN-koodin käyttöönotto",
+  "pinCodeBackupRequiredWarning": "Suorita lompakkosi varmuuskopiointi ennen PIN-koodin asettamista",
   "settingsCurrencyTitle": "Valuutta",
   "settingsAppSettingsTitle": "Sovellusasetukset",
   "settingsTermsOfServiceTitle": "Käyttöehdot",
   "settingsAppVersionLabel": "Sovellusversio: ",
   "settingsTelegramLabel": "Telegram",
   "settingsGithubLabel": "Github",
+  "settingsGetHelpLabel": "Pyydä apua",
   "settingsServicesStatusTitle": "Palveluiden tila",
   "settingsTorSettingsTitle": "Tor-asetukset",
   "settingsRecoverbullTitle": "Recoverbull",
@@ -789,6 +791,7 @@
   "fundExchangeWarningTactic8": "He painostavat sinua toimimaan nopeasti",
   "fundExchangeWarningConfirmation": "Vahvistan, että kukaan ei pakota minua ostamaan Bitcoinia.",
   "fundExchangeContinueButton": "Jatka",
+  "fundExchangeScamConsentError": "Suostumuksesi rekisteröinti epäonnistui. Ole hyvä ja yritä uudelleen.",
   "fundExchangeDoneButton": "Valmis",
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
   "fundExchangeJurisdictionEurope": "🇪🇺 Eurooppa (SEPA)",
@@ -2084,12 +2087,14 @@
   "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
   "sendErrorArkExperimentalOnly": "ARK-maksupyyntöjä on saatavilla vain kokeellisesta Ark-ominaisuudesta.",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
+  "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
   "sendErrorInsufficientBalanceForPayment": "Saldo ei riitä tämän maksun kattamiseen",
   "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
   "sendErrorBuildFailed": "Rakentaminen epäonnistui",
   "sendErrorConfirmationFailed": "Vahvistus epäonnistui",
   "sendErrorInsufficientBalanceForSwap": "Saldo ei riitä maksamaan tätä vaihtoa Liquidin kautta eikä se ole swap-rajoissa maksamiseen Bitcoinin kautta.",
   "sendErrorAmountBelowSwapLimits": "Määrä on swap-rajojen alapuolella",
+  "sendErrorAmountBelowSwapLimitsBitcoin": "Harkitse Pikamaksun rahoittamista pienempiä maksuja varten.",
   "sendErrorAmountAboveSwapLimits": "Määrä ylittää swap-rajat",
   "sendErrorAmountBelowMinimum": "Määrä alle minimirajan: {minLimit} sat",
   "@sendErrorAmountBelowMinimum": {
@@ -3228,9 +3233,7 @@
   "exchangeLandingRestriction": "Pörssipalvelujen käyttö on rajoitettua maihin, joissa Bull Bitcoin voi toimia laillisesti, ja se voi edellyttää KYC-tunnistusta.",
   "exchangeLandingLoginButton": "Kirjaudu tai rekisteröidy",
   "exchangeLandingLoginToUseSupport": "Ole hyvä ja kirjaudu sisään tai rekisteröidy käyttääksesi tukichattia pörssiongelmiin.",
-  "exchangeSupportLoginSubtitle": "Yhdistä Bull Bitcoin -tukitiliin",
-  "exchangeSupportLoginAccessMessage": "Sinulla on pääsy vain tukichat-ominaisuuteen.",
-  "exchangeSupportLoginAccountInfo": "Luot tilin osoitteeseen bullbitcoin.com, johon voit aina käyttää verkkosovelluksemme kautta.",
+  "exchangeSupportLoginChatRequired": "Saadaksesi henkilökohtaista tukea sinun on ensin kirjauduttava Bull Bitcoin -tilillesi. Se on 100 % ilmaista eikä KYC:tä vaadita, ainoastaan sähköpostiosoite.",
   "exchangeHomeDeposit": "Talleta",
   "exchangeHomeWithdraw": "Nosta",
   "exchangeKycLight": "Kevyt",
@@ -4373,9 +4376,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.\n\nKun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista. Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.\n\nEmme jaa näitä tietoja kolmansien osapuolten kanssa. Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Kun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Emme jaa näitä tietoja kolmansien osapuolten kanssa.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Hyväksy",
   "@errorReportingAcceptButton": {
@@ -4388,6 +4407,18 @@
   "errorReportingRestartSnackbar": "Käynnistä sovellus uudelleen ottaaksesi muutoksen käyttöön",
   "@errorReportingRestartSnackbar": {
     "description": "Snackbar message when error reporting setting is changed"
+  },
+  "appInitErrorTitle": "Sovelluksen käynnistys epäonnistui",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Käynnistyksen aikana tapahtui virhe. Käynnistä sovellus uudelleen. Jos ongelma jatkuu, jaa lokitiedostosi ja ota yhteyttä tukeen.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Jaa lokit",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
   },
   "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
   "@backupWarningTitle": {
@@ -4405,5 +4436,133 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
-  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa"
+  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Kiireellinen: Varmuuskopio ja uudelleenasennus vaaditaan",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Toimenpide vaaditaan: Asenna sovellus uudelleen",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Varmuuskopioi nyt",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Myöhemmin",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Takaisin",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Aloita",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Vaalea",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Tumma",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Järjestelmä",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Osallistun",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "En osallistu",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Peruslokit",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Kriittiset lokit",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Aina päällä — näemme, siirtyykö lompakkosi turvallisesti sovellusversioiden välillä.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Kriittisiä lokeja ei voi poistaa käytöstä. Ne raportoivat epäonnistuneista päivityksistä, siirroista ja sovelluksen käynnistysvirheistä, jotta voimme korjata ongelmia, jotka saattavat vaikuttaa muihin.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Käytä varmuuskopiotasi",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Varmuuskopiosi ansiosta varasi ovat turvassa.\nYritä ensin käynnistää sovellus uudelleen; jos se ei vieläkään toimi, asenna se uudelleen ja palauta varmuuskopion avulla.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Ei varmuuskopiota?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Älä poista sovellusta.\nOta yhteyttä tukitiimiimme pelastusyritystä varten.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Ota yhteyttä tukeen",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Näytä virheen tiedot",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

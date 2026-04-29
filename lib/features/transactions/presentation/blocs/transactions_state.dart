@@ -183,9 +183,9 @@ abstract class TransactionsState with _$TransactionsState {
           TransactionsFilter.send => tx.isOutgoing,
           TransactionsFilter.receive => tx.isIncoming,
           TransactionsFilter.swap =>
-            tx.isSwap && !shouldFilterOutgoingChainSwap,
+            tx.isSwap && !tx.isPayjoin && !shouldFilterOutgoingChainSwap,
           TransactionsFilter.payjoin =>
-            tx.isPayjoin && !shouldFilterOutgoingChainSwap,
+            tx.isPayjoin && !tx.isSwap && !shouldFilterOutgoingChainSwap,
           TransactionsFilter.sell => tx.isSellOrder,
           TransactionsFilter.buy => tx.isBuyOrder,
           TransactionsFilter.withdraw => tx.isWithdrawOrder,

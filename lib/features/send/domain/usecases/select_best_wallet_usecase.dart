@@ -78,7 +78,11 @@ class SelectBestWalletUsecase {
 
       throw NotEnoughFundsException();
     } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
+      if (e is NotEnoughFundsException) {
+        log.warning('Not enough funds available', error: e);
+      } else {
+        log.severe(error: e, trace: StackTrace.current);
+      }
       rethrow;
     }
   }

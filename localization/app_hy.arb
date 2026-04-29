@@ -1,4 +1,151 @@
 {
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
-  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի"
+  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի",
+  "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Գործարկման ժամանակ սխալ է տեղի ունեցել: Խնդրում ենք վերագործարկել հավելվածը: Եթե խնդիրը շարունակվում է, կիսվեք ձեր մատյաններով և կապ հաստատեք աջակցության հետ:",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Կիսվել մատյաններով",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "sendErrorInvoiceMustContainAmount": "Հաշիվ-ապրանքագիրը պետք է պարունակի գումար",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
+  "settingsGetHelpLabel": "Ստանալ օգնություն",
+  "exchangeSupportLoginChatRequired": "Մարդկային աջակցություն ստանալու համար նախ պետք է մուտք գործեք ձեր Bull Bitcoin հաշիվը։ Ամբողջովին անվճար է և KYC չի պահանջվում, միայն էլեկտրոնային փոստի հասցե:",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Շտապ. Անհրաժեշտ է կրկնօրինակել և վերատեղադրել",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Ձeр кoghmiц охадvar hавelваcн аshхатum е ծраграйин апаhовман вра, вором шутов кhнана. Хndrum ек hетевел hетевял каyllerin.\n\n1. Крkнорinакете дзер драмапанакы\n2. Апателhадрум hавелвацы. Амбоghутьямб джнджек айн дзер hераховос.\n3. Верателhадрум hавелвацы верджин тарберакы\n4. Огtвек веракангнман чнтранутюниц \"нор драмапанак ствцел\" похарен.\n\nДзер мидзоцнере апаhов ен ев карог ек шарункакнел огтвел hавелвацум hима, сайн да арек hним колкин hнараvор мжамад, арнатесел hавелвацун мот апайцум.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Անhраժешт е горцогутюн. Верателhадрете hавелвацы",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Ձeр кoghmiц охадvar hавelваcн аshхатum е ծраграйин апаhовман вра, вором шутов кhнана. Хndrum ек hетевел hетевял каyllerin.\n\n1. Крkнорinакете дзер драмапанакы\n2. Апателhадрум hавелвацы. Амбоghутьямб джнджек айн дзер hераховос.\n3. Верателhадрум hавелвацы верджин тарберакы\n4. Огtвек веракангнман чнтранутюниц \"нор драмапанак ствцел\" похарен.\n\nДзер мидзоцнере апаhов ен ев карог ек шарункакнел огтвел hавелвацум hима, сайн да арек hним колкин hнараvор мжамад, арнатесел hавелвацун мот апайцум.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Կրկnоrinakel hima",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Aveli ush",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
+  "backButton": "Ետ",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Սկսել",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Լույս",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Մուգ",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Համակարգ",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Ես մասնակցում եմ",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Ես չեմ մասնակցում",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Ստանդարտ գրառումներ",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Կարևոր գրառումներ",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Միշտ միացված — թույլ է տալիս տեսնել՝ ձեր դրամապանակը ապահով է տեղափոխվում հավելվածի տարբերակների միջև։",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Կարևոր գրառումները չեն կարող անջատվել։ Դրանք զեկուցում են ձախողված թարմացումների, միգրացիաների և հավելվածի գործարկման սխալների մասին, որպեսզի մենք կարողանանք լուծել խնդիրները, որոնք կարող են ազդել ուրիշների վրա։",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Օգտագործեք ձեր պահուստը",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Ձեր կրկնօրինակի շնորհիվ ձեր միջոցները անվտանգ են։\nՍկզբում փորձեք վերագործարկել հավելվածը. եթե այն դեռևս չի աշխատում, վերատեղադրեք այն և վերականգնեք ձեր կրկնօրինակի միջոցով։",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Պահուստ չկա՞",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Մի ջնջեք հավելվածը։\nԿապվեք մեր աջակցության թիմի հետ՝ փրկության փորձ կատարելու համար։",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Կապվել աջակցության հետ",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Ցույց տալ սխալի մանրամասները",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

@@ -2,16 +2,17 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_settings_model.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class LwkFacade {
-  static Future<String> _getDbPath(String dbName) async {
+  static Future<String> _getDbPath(String walletIdHex) async {
     try {
       final dir = await getApplicationDocumentsDirectory();
-      return '${dir.path}/$dbName';
+      return '${dir.path}/$walletIdHex';
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;
@@ -23,13 +24,15 @@ class LwkFacade {
 
   static Future<void> delete(WalletModel walletModel) async {
     try {
-      final dbPath = await _getDbPath(walletModel.dbName);
+      final dbPath = await _getDbPath(walletModel.hexId);
       final dbFile = File(dbPath);
 
       if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
-
-      await dbFile.delete();
+      log.fine('Found LwkDb');
+      await dbFile.delete(recursive: true);
     } catch (e) {
+      log.fine('Failed to delete LwkDb');
+      log.fine(e.toString());
       rethrow;
     }
   }
@@ -45,7 +48,7 @@ class LwkFacade {
       final descriptor = lwk.Descriptor(
         ctDescriptor: walletModel.combinedCtDescriptor,
       );
-      final dbPath = await _getDbPath(walletModel.dbName);
+      final dbPath = await _getDbPath(walletModel.hexId);
       final wallet = await lwk.Wallet.init(
         network: network,
         dbpath: dbPath,
@@ -73,7 +76,7 @@ class LwkFacade {
         mnemonic: walletModel.mnemonic,
         network: network,
       );
-      final dbPath = await _getDbPath(walletModel.dbName);
+      final dbPath = await _getDbPath(walletModel.hexId);
       final wallet = await lwk.Wallet.init(
         network: network,
         dbpath: dbPath,

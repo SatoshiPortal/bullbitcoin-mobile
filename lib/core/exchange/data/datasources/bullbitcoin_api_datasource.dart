@@ -3,8 +3,6 @@ import 'dart:math' show pow;
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/data/models/dca_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/funding_details_model.dart';
-import 'package:bb_mobile/core/exchange/data/models/funding_details_request_params_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
@@ -76,6 +74,32 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     } catch (e) {
       log.warning(e.toString());
       return 0.0;
+    }
+  }
+
+  Future<void> registerResponsibilityConsent(String apiKey) async {
+    try {
+      final resp = await _http.post(
+        _usersPath,
+        data: {
+          'id': 1,
+          'jsonrpc': '2.0',
+          'method': 'registerResponsibilityConsent',
+          'params': {},
+        },
+        options: Options(headers: {'X-API-Key': apiKey}),
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        throw 'Unable to register scam warning consent';
+      }
+
+      final result = resp.data['result'] as Map<String, dynamic>?;
+      if (result == null || result['success'] != true) {
+        throw 'Unexpected response from registerResponsibilityConsent';
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -271,29 +295,6 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       throw Exception('Failed to refresh order summary');
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
-  }
-
-  Future<FundingDetailsModel> getFundingDetails({
-    required String apiKey,
-    required FundingDetailsRequestParamsModel fundingDetailsRequestParams,
-  }) async {
-    final resp = await _http.post(
-      _recipientsPath,
-      data: {
-        'jsonrpc': '2.0',
-        'id': '0',
-        'method': 'getFundingDetails',
-        'params': fundingDetailsRequestParams.toJson(),
-      },
-      options: Options(headers: {'X-API-Key': apiKey}),
-    );
-    if (resp.statusCode != 200) {
-      throw Exception('Failed to get funding details');
-    }
-
-    return FundingDetailsModel.fromJson(
-      resp.data['result']['element'] as Map<String, dynamic>,
-    );
   }
 
   Future<void> saveUserPreference({

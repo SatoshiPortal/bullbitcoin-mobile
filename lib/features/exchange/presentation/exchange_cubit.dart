@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/notification_message.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/services/exchange_notification_service.dart';
@@ -8,6 +7,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_announcements_usecas
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_user_preferences_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/send_support_chat_message_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,12 +21,14 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
     required GetAnnouncementsUsecase getAnnouncementsUsecase,
     required ExchangeNotificationService exchangeNotificationService,
+    required SendSupportChatMessageUsecase sendSupportChatMessageUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
        _saveUserPreferencesUsecase = saveUserPreferencesUsecase,
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
        _getAnnouncementsUsecase = getAnnouncementsUsecase,
        _exchangeNotificationService = exchangeNotificationService,
+       _sendSupportChatMessageUsecase = sendSupportChatMessageUsecase,
        super(const ExchangeState()) {
     _notificationSubscription = _exchangeNotificationService.messageStream
         .where(
@@ -44,6 +46,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
   final GetAnnouncementsUsecase _getAnnouncementsUsecase;
   final ExchangeNotificationService _exchangeNotificationService;
+  final SendSupportChatMessageUsecase _sendSupportChatMessageUsecase;
   StreamSubscription<NotificationMessage>? _notificationSubscription;
 
   Future<void> connectWebSocket() async {
@@ -69,9 +72,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> fetchUserSummary({bool force = false}) async {
     try {
-      emit(
-        state.copyWith(apiKeyException: null, getUserSummaryException: null),
-      );
+      emit(state.copyWith(getUserSummaryException: null));
 
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
@@ -88,15 +89,10 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       }
 
       loadAnnouncements();
+    } on GetExchangeUserSummaryException catch (e) {
+      emit(state.copyWith(getUserSummaryException: e));
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      if (e is ApiKeyException) {
-        emit(state.copyWith(apiKeyException: e));
-        // Disconnect WebSocket if API key is invalid
-        disconnectWebSocket();
-      } else if (e is GetExchangeUserSummaryException) {
-        emit(state.copyWith(getUserSummaryException: e));
-      }
     }
   }
 
@@ -191,6 +187,13 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         emit(state.copyWith(deleteApiKeyException: e));
       }
     }
+  }
+
+  Future<void> deleteAccount() async {
+    await _sendSupportChatMessageUsecase.execute(
+      text: 'I want to delete my account',
+    );
+    await logout();
   }
 
   void loadAnnouncements() async {

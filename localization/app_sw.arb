@@ -20,5 +20,152 @@
     "description": "Title for Ledger troubleshooting help modal"
   },
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
-  "importMnemonicDuplicateError": "Msemo huu tayari upo"
+  "importMnemonicDuplicateError": "Msemo huu tayari upo",
+  "appInitErrorTitle": "Programu haikuweza kuanza",
+  "@appInitErrorTitle": {
+    "description": "Title shown on the fatal init error screen in main.dart"
+  },
+  "appInitErrorMessage": "Hitilafu ilitokea wakati wa kuanza. Tafadhali anzisha upya programu. Ikiwa tatizo linabaki, shiriki kumbukumbu zako na wasiliana na msaada.",
+  "@appInitErrorMessage": {
+    "description": "Body text on the fatal init error screen in main.dart"
+  },
+  "appInitErrorShareLogsButton": "Shiriki kumbukumbu",
+  "@appInitErrorShareLogsButton": {
+    "description": "Button label to share logs on the fatal init error screen"
+  },
+  "sendErrorInvoiceMustContainAmount": "Ankara lazima iwe na kiasi",
+  "@sendErrorInvoiceMustContainAmount": {
+    "description": "Error when a Lightning invoice without an amount is used"
+  },
+  "settingsGetHelpLabel": "Pata Msaada",
+  "exchangeSupportLoginChatRequired": "Ili kupata msaada wa binadamu, lazima kwanza uingie kwenye akaunti yako ya Bull Bitcoin. Ni bure kabisa na hakuna KYC inayohitajika, anwani ya barua pepe tu.",
+  "settingsAccountSettingsTitle": "Account Settings",
+  "@settingsAccountSettingsTitle": {
+    "description": "Title for the account settings screen (shown to non-superusers)"
+  },
+  "exchangeSettingsDeleteAccountTitle": "Delete Account",
+  "@exchangeSettingsDeleteAccountTitle": {
+    "description": "Label for the delete account option in exchange settings"
+  },
+  "deleteAccountConfirmationTitle": "Delete Account",
+  "@deleteAccountConfirmationTitle": {
+    "description": "Title for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationDescription": "This will send an account deletion request to our support team. Your account will be deleted within 5 working days.",
+  "@deleteAccountConfirmationDescription": {
+    "description": "Description for the delete account confirmation bottom sheet"
+  },
+  "deleteAccountConfirmationCancel": "Cancel",
+  "@deleteAccountConfirmationCancel": {
+    "description": "Cancel button label for delete account confirmation"
+  },
+  "deleteAccountConfirmationDelete": "Delete Account",
+  "@deleteAccountConfirmationDelete": {
+    "description": "Delete button label for delete account confirmation"
+  },
+  "deleteAccountSuccessTitle": "Account Deletion Requested",
+  "@deleteAccountSuccessTitle": {
+    "description": "Title for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessDescription": "Your account deletion request has been made. It will be processed within 5 working days.",
+  "@deleteAccountSuccessDescription": {
+    "description": "Description for the delete account success bottom sheet"
+  },
+  "deleteAccountSuccessClose": "Close",
+  "@deleteAccountSuccessClose": {
+    "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Haraka: Nakala Rudufu na Usakinishaji Upya Unahitajika",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Hatua Inahitajika: Sakinisha Upya Programu",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Hifadhi sasa",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Baadaye",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
+  "backButton": "Rudi",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Anza",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Nyepesi",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Nyeusi",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Mfumo",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Ninashiriki",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Sishiriki",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Rekodi za kawaida",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Rekodi muhimu",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Inaendelea kuwashwa — inatuwezesha kuona kama pochi yako inahama kwa usalama kati ya matoleo ya programu.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Rekodi muhimu haziwezi kuzimwa. Zinaripoti maboresho, uhamiaji na hitilafu za kuanzisha programu zilizoshindwa ili tuweze kurekebisha matatizo yanayoweza kuwaathiri wengine.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Tumia nakala rudufu yako",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Kutokana na hifadhi rudufu yako, fedha zako ziko salama.\nKwanza jaribu kuanzisha upya programu; ikiwa bado inashindwa, isakinishe upya na urudishe kwa kutumia hifadhi rudufu yako.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Hakuna nakala rudufu?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Usifute programu.\nWasiliana na timu yetu ya usaidizi kwa jaribio la kuokoa.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Wasiliana na usaidizi",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Onyesha maelezo ya hitilafu",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  }
 }

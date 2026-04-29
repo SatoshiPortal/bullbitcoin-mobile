@@ -195,19 +195,14 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         ),
       );
 
-      final isTestnet = settings.environment == Environment.testnet;
       final (
         lbtcToBtcSwapLimitsAndFees,
         btcToLbtcSwapLimitsAndFees,
         maxAmountSat,
       ) = await (
-        _getSwapLimitsUsecase.execute(
-          type: SwapType.liquidToBitcoin,
-          isTestnet: isTestnet,
-        ),
+        _getSwapLimitsUsecase.execute(type: SwapType.liquidToBitcoin),
         _getSwapLimitsUsecase.execute(
           type: SwapType.bitcoinToLiquid,
-          isTestnet: isTestnet,
           updateLimitsAndFees: false, // chain fees are already updated
         ),
         fromWallet != null ? getMaxAmountSat(fromWallet) : Future.value(null),
@@ -242,23 +237,55 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       return;
     }
 
-    if (newFromWallet.isLiquid == newToWallet.isLiquid) {
-      if (newFromWallet.isLiquid) {
-        return;
-      }
-    } else {
-      final isFromWalletChanged = newFromWallet != state.fromWallet;
-      if (isFromWalletChanged && newFromWallet.isLiquid) {
-        final bitcoinWallets = state.wallets.where((w) => !w.isLiquid).toList();
-        if (bitcoinWallets.isNotEmpty) {
-          newToWallet = bitcoinWallets.first;
+    final isFromWalletChanged = newFromWallet != state.fromWallet;
+
+    // Prevent selecting the same wallet for both from and to
+    if (newFromWallet.id == newToWallet.id) {
+      if (isFromWalletChanged) {
+        final opposite = state.wallets
+            .where((w) => w.isLiquid != newFromWallet.isLiquid && w.isDefault)
+            .firstOrNull;
+        if (opposite != null) {
+          newToWallet = opposite;
+        } else {
+          return;
         }
-      } else if (!isFromWalletChanged && newToWallet.isLiquid) {
-        final bitcoinWallets = state.wallets
-            .where((w) => !w.isLiquid && w.signsLocally)
-            .toList();
-        if (bitcoinWallets.isNotEmpty) {
-          newFromWallet = bitcoinWallets.first;
+      } else {
+        final opposite = state.wallets
+            .where(
+              (w) =>
+                  w.isLiquid != newToWallet.isLiquid &&
+                  w.isDefault &&
+                  w.signsLocally,
+            )
+            .firstOrNull;
+        if (opposite != null) {
+          newFromWallet = opposite;
+        } else {
+          return;
+        }
+      }
+    }
+
+    // Prevent Liquid-to-Liquid transfers (not supported)
+    if (newFromWallet.isLiquid && newToWallet.isLiquid) {
+      if (isFromWalletChanged) {
+        final btcWallet = state.wallets
+            .where((w) => !w.isLiquid && w.isDefault)
+            .firstOrNull;
+        if (btcWallet != null) {
+          newToWallet = btcWallet;
+        } else {
+          return;
+        }
+      } else {
+        final btcWallet = state.wallets
+            .where((w) => !w.isLiquid && w.isDefault && w.signsLocally)
+            .firstOrNull;
+        if (btcWallet != null) {
+          newFromWallet = btcWallet;
+        } else {
+          return;
         }
       }
     }
@@ -385,13 +412,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           );
           liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase
               .execute(pset: signedPsbt);
-          final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
             swapId: swap.id,
-            network: Network.fromEnvironment(
-              isTestnet: settings.environment == Environment.testnet,
-              isLiquid: true,
-            ),
             lockupFees: liquidAbsoluteFeesSat,
           );
           swap = updatedSwap as ChainSwap;
@@ -434,13 +456,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
               .execute(psbt: signedPsbtAndTxSize.signedPsbt);
           final bitcoinTxSize = signedPsbtAndTxSize.txSize;
-          final settings = await _getSettingsUsecase.execute();
           final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
             swapId: swap.id,
-            network: Network.fromEnvironment(
-              isTestnet: settings.environment == Environment.testnet,
-              isLiquid: false,
-            ),
             lockupFees: bitcoinAbsoluteFeesSat,
           );
           swap = updatedSwap as ChainSwap;
@@ -491,13 +508,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         bitcoinAbsoluteFeesSat = await _calculateBitcoinAbsoluteFeesUsecase
             .execute(psbt: signedPsbtAndTxSize.signedPsbt);
         final bitcoinTxSize = signedPsbtAndTxSize.txSize;
-        final settings = await _getSettingsUsecase.execute();
         final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
           swapId: swap.id,
-          network: Network.fromEnvironment(
-            isTestnet: settings.environment == Environment.testnet,
-            isLiquid: false,
-          ),
           lockupFees: bitcoinAbsoluteFeesSat,
         );
         swap = updatedSwap as ChainSwap;
@@ -538,13 +550,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         );
         liquidAbsoluteFeesSat = await _calculateLiquidAbsoluteFeesUsecase
             .execute(pset: signedPsbt);
-        final settings = await _getSettingsUsecase.execute();
         final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
           swapId: swap.id,
-          network: Network.fromEnvironment(
-            isTestnet: settings.environment == Environment.testnet,
-            isLiquid: true,
-          ),
           lockupFees: liquidAbsoluteFeesSat,
         );
         swap = updatedSwap as ChainSwap;
@@ -972,13 +979,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
               psbt: signedPsbtAndTxSize.signedPsbt,
             );
 
-        final settings = await _getSettingsUsecase.execute();
         final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
           swapId: swap.id,
-          network: Network.fromEnvironment(
-            isTestnet: settings.environment == Environment.testnet,
-            isLiquid: false,
-          ),
           lockupFees: bitcoinAbsoluteFeesSat,
         );
 
@@ -1035,8 +1037,6 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         final swap = state.swap;
         if (swap == null) return;
 
-        final settings = await _getSettingsUsecase.execute();
-        final isTestnet = settings.environment == Environment.testnet;
         if (state.fromWallet?.isLiquid == false) {
           txId = await _broadcastBitcoinTxUsecase.execute(
             signedPsbt,
@@ -1045,20 +1045,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           await _updatePaidChainSwapUsecase.execute(
             txid: txId,
             swapId: swap.id,
-            network: Network.fromEnvironment(
-              isTestnet: isTestnet,
-              isLiquid: false,
-            ),
           );
         } else {
           txId = await _broadcastLiquidTxUsecase.execute(signedPsbt);
           await _updatePaidChainSwapUsecase.execute(
             txid: txId,
             swapId: swap.id,
-            network: Network.fromEnvironment(
-              isTestnet: isTestnet,
-              isLiquid: true,
-            ),
           );
         }
       }

@@ -28,30 +28,39 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         isTestnet: _isTestnet,
       );
       if (apiKey == null) {
+        return null;
+      }
+
+      final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
+        apiKey.key,
+      );
+      if (userSummaryModel == null) {
+        return null;
+      }
+
+      return UserSummaryMapper.fromModelToEntity(userSummaryModel);
+    } catch (e) {
+      throw Exception('Failed to fetch user summary: $e');
+    }
+  }
+
+  @override
+  Future<void> registerScamWarningConsent() async {
+    try {
+      final apiKey = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
+      if (apiKey == null) {
         throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
-      try {
-        final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
-          apiKey.key,
-        );
-        if (userSummaryModel == null) {
-          return null;
-        }
-        final userSummary = UserSummaryMapper.fromModelToEntity(
-          userSummaryModel,
-        );
-
-        return userSummary;
-      } catch (e) {
-        throw Exception('Failed to fetch user summary: $e');
-      }
+      await _bullbitcoinApiDatasource.registerResponsibilityConsent(apiKey.key);
     } catch (e) {
       if (e is ApiKeyException) {
         rethrow;
       } else {
-        throw Exception('Failed to fetch user summary: $e');
+        throw Exception('Failed to register scam warning consent: $e');
       }
     }
   }
@@ -102,28 +111,18 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         isTestnet: _isTestnet,
       );
       if (apiKey == null) {
-        throw ApiKeyException(
-          'API key not found. Please login to your Bull Bitcoin account.',
-        );
+        return [];
       }
-      try {
-        final announcementDataList =
-            await _bullbitcoinApiDatasource.listAnnouncements(
-          apiKey: apiKey.key,
-        );
-        final announcements = announcementDataList
-            .map((json) => AnnouncementModel.fromJson(json).toEntity())
-            .toList();
-        return announcements;
-      } catch (e) {
-        throw Exception('Failed to fetch announcements: $e');
-      }
+
+      final announcementDataList =
+          await _bullbitcoinApiDatasource.listAnnouncements(
+        apiKey: apiKey.key,
+      );
+      return announcementDataList
+          .map((json) => AnnouncementModel.fromJson(json).toEntity())
+          .toList();
     } catch (e) {
-      if (e is ApiKeyException) {
-        rethrow;
-      } else {
-        throw Exception('Failed to fetch announcements: $e');
-      }
+      throw Exception('Failed to fetch announcements: $e');
     }
   }
 }

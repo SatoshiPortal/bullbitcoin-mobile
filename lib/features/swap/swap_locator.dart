@@ -79,10 +79,6 @@ class SwapLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
       ),
     );
     locator.registerFactory<VerifyChainSwapAmountSendUsecase>(
@@ -97,10 +93,6 @@ class SwapLocator {
         swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

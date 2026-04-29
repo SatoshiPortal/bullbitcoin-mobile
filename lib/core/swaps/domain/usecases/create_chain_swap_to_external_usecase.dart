@@ -8,17 +8,14 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 class CreateChainSwapToExternalUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
-  final BoltzSwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateChainSwapToExternalUsecase({
     required WalletRepository walletRepository,
     required BoltzSwapRepository swapRepository,
-    required BoltzSwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
-       _swapRepositoryTestnet = swapRepositoryTestnet,
        _seedRepository = seedRepository;
 
   Future<ChainSwap> execute({
@@ -34,21 +31,19 @@ class CreateChainSwapToExternalUsecase {
         throw Exception('Send wallet not found');
       }
 
-      final isTestnet = sendWallet.network.isTestnet;
-      final swapRepository =
-          isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final swapRepository = _swapRepository;
       final sendWalletMnemonic =
           await _seedRepository.get(sendWallet.masterFingerprint)
               as MnemonicSeed;
 
       final btcElectrumUrl =
           sendWallet.network.isTestnet
-              ? ApiServiceConstants.bbElectrumTestUrl
+              ? ApiServiceConstants.publicElectrumTestUrl
               : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl =
           sendWallet.network.isTestnet
-              ? ApiServiceConstants.publicElectrumTestUrl
+              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
               : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
