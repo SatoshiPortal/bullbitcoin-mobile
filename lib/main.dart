@@ -204,9 +204,15 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   void _onInactive() => log.info('inactive');
 
-  void _onHidden() => log.info('hidden');
+  Future<void> _onHidden() async {
+    log.info('hidden');
+    await log.flush();
+  }
 
-  void _onPaused() => log.info('paused');
+  Future<void> _onPaused() async {
+    log.info('paused');
+    await log.flush();
+  }
 
   @override
   Widget build(BuildContext context) {

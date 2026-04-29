@@ -200,19 +200,12 @@ class Logger {
     // while the broadcast stream is still firing — causing a "Cannot fire
     // new event" crash.
     if (_isLogging) {
-      // Bypass the broadcast stream entirely — write directly to file.
-      final time = DateTime.now().toIso8601String();
-      final line = _sanitize(
-        [
-          time,
-          'SEVERE',
-          message ?? error.toString(),
-          error.toString(),
-          trace.toString(),
-        ].join('\t'),
+      _emitDirect(
+        level: 'SEVERE',
+        message: message ?? error.toString(),
+        error: error.toString(),
+        trace: trace.toString(),
       );
-      _queueWrite(line, flush: true);
-      if (kDebugMode) debugPrint('[REENTRANT] $line');
       return;
     }
 
@@ -241,18 +234,12 @@ class Logger {
     StackTrace? trace,
   }) {
     if (_isLogging) {
-      final time = DateTime.now().toIso8601String();
-      final line = _sanitize(
-        [
-          time,
-          'SHOUT',
-          message,
-          error?.toString() ?? '',
-          trace?.toString() ?? '',
-        ].join('\t'),
+      _emitDirect(
+        level: 'SHOUT',
+        message: message,
+        error: error?.toString() ?? '',
+        trace: trace?.toString() ?? '',
       );
-      _queueWrite(line, flush: true);
-      if (kDebugMode) debugPrint('[REENTRANT] $line');
       return;
     }
 
@@ -275,6 +262,24 @@ class Logger {
 
   void _ensureSinkOpen() {
     _sink ??= logsFile.openWrite(mode: FileMode.append);
+  }
+
+  // Bypass the broadcast stream and write a TSV row directly. Used when the
+  // listener is already firing (reentrancy) or when the logger itself is in
+  // a failure path — both cases where re-entering the dependency logger
+  // would risk a "Cannot fire new event" crash.
+  void _emitDirect({
+    required String level,
+    required String message,
+    String error = '',
+    String trace = '',
+  }) {
+    final time = DateTime.now().toIso8601String();
+    final line = _sanitize(
+      [time, level, message, error, trace].join('\t'),
+    );
+    _queueWrite(line, flush: true);
+    if (kDebugMode) debugPrint('[REENTRANT] $line');
   }
 
   // Serializes all sink operations (writes, flushes, prune, delete) to avoid
@@ -314,11 +319,7 @@ class Logger {
 
     _handlingLoggerFailure = true;
     try {
-      final time = DateTime.now().toIso8601String();
-      final line = _sanitize(
-        [time, 'SEVERE', context, error.toString()].join('\t'),
-      );
-      _queueWrite(line, flush: true);
+      _emitDirect(level: 'SEVERE', message: context, error: error.toString());
       if (kDebugMode) debugPrint('[Logger internal] $context: $error');
     } finally {
       _handlingLoggerFailure = false;
