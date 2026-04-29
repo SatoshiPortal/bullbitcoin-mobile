@@ -8,7 +8,7 @@ class SnackBarUtils {
       Text(
         'Copied to clipboard',
         textAlign: .center,
-        style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
+        style: TextStyle(fontSize: 14, color: context.appColors.surface),
       ),
     );
   }
@@ -19,7 +19,7 @@ class SnackBarUtils {
       Text(
         message,
         textAlign: .center,
-        style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
+        style: TextStyle(fontSize: 14, color: context.appColors.surface),
       ),
     );
   }

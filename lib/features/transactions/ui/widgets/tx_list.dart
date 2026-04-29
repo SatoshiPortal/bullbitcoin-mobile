@@ -27,9 +27,19 @@ class TxList extends StatelessWidget {
       );
     }
 
+    final filter = context.select(
+      (TransactionsCubit cubit) => cubit.state.filter,
+    );
+
+    // Ongoing swaps are only relevant when browsing all transactions or
+    // filtering by swap — hide them under unrelated filters (payjoin, send,
+    // receive, sell, buy, …) so they don't bleed into the wrong category.
+    final showOngoingSwaps =
+        filter == TransactionsFilter.all || filter == TransactionsFilter.swap;
+
     return TransactionsByDayList(
       transactionsByDay: txsByDay,
-      ongoingSwaps: ongoingSwaps,
+      ongoingSwaps: showOngoingSwaps ? ongoingSwaps : [],
     );
   }
 }

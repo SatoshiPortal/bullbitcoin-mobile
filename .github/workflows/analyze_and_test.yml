@@ -19,7 +19,6 @@ jobs:
           echo "$HOME/fvm/bin" >> $GITHUB_PATH
 
       - run: make fvm-check
-      - run: make clean
       - run: make deps
       - run: make build-runner
       - run: make translations

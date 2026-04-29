@@ -24,6 +24,8 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isArkWalletLoading,
     @Default(false) bool isArkWalletSetup,
     @Default(false) bool backupWarningDismissed,
+    @Default(false) bool isOnLegacyStorage,
+    @Default(false) bool legacyStorageWarningDismissed,
   }) = _WalletState;
   const WalletState._();
 
@@ -57,7 +59,12 @@ sealed class WalletState with _$WalletState {
   }
 
   bool showBackupWarning() {
-    return hasNoBackup() && !backupWarningDismissed;
+    // Suppressed when on legacy storage — the legacy overlay handles both cases.
+    return hasNoBackup() && !backupWarningDismissed && !isOnLegacyStorage;
+  }
+
+  bool showLegacyStorageWarning() {
+    return isOnLegacyStorage && !legacyStorageWarningDismissed;
   }
 
   bool showAutoSwapDefaultEnabledWarning() {

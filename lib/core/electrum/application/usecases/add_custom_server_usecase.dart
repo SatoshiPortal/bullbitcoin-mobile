@@ -40,21 +40,30 @@ class AddCustomServerUsecase {
 
     // Fetch app settings to get Tor configuration
     final appSettings = await _settingsRepository.fetch();
-
-    // Save the server and check its status concurrently
-    // Use Tor proxy if enabled for Bitcoin/Testnet (not Liquid)
     final useTorProxy = !server.network.isLiquid && appSettings.useTorProxy;
-    final (_, status) =
-        await (
-          _electrumServerRepository.save(server),
-          _serverStatusPort.checkServerStatus(
-            url: server.url,
-            useTorProxy: useTorProxy,
-            torProxyPort: appSettings.torProxyPort,
-          ),
-        ).wait;
 
-    // Return the status of the newly added server so it can be known if it's online or not
-    return status;
+    // Step 1: verify the TCP/SSL socket is reachable
+    final socketStatus = await _serverStatusPort.checkSocket(
+      url: server.url,
+      useTorProxy: useTorProxy,
+      torProxyPort: appSettings.torProxyPort,
+    );
+    if (socketStatus == ElectrumServerStatus.offline) {
+      return ElectrumServerStatus.offline;
+    }
+
+    // Step 2: verify the server actually serves chain data by fetching a
+    // known historical tx (falls back to server.version on testnets).
+    final protocolStatus = await _serverStatusPort.checkElectrum(
+      url: server.url,
+      network: server.network,
+    );
+    if (protocolStatus == ElectrumServerStatus.offline) {
+      return ElectrumServerStatus.offline;
+    }
+
+    // Both checks passed — persist the server
+    await _electrumServerRepository.save(server);
+    return ElectrumServerStatus.online;
   }
 }

@@ -123,7 +123,7 @@ class Logger {
       await logsFile.writeAsString('');
       _ensureSinkOpen();
     });
-    shout('Logs deleted');
+    config('Logs deleted');
   }
 
   Future<void> migration({
@@ -229,16 +229,24 @@ class Logger {
     }
   }
 
-  /// Logs critical errors that could crash the app or make it unusable.
-  /// Use for the most severe errors that require immediate intervention.
-  void shout(Object? message, {Object? error, StackTrace? trace}) {
+  /// Logs critical events that must reach Sentry regardless of user
+  /// consent. [error] and [trace] are optional so `shout` can also record
+  /// info milestones (`log.shout(message: 'migration_install')`, FSS
+  /// fallback started, feature-flag flip, etc.). [message] is required —
+  /// every always-on event carries a human-readable label for the Sentry
+  /// UI and the on-disk TSV log.
+  void shout({
+    required String message,
+    Object? error,
+    StackTrace? trace,
+  }) {
     if (_isLogging) {
       final time = DateTime.now().toIso8601String();
       final line = _sanitize(
         [
           time,
           'SHOUT',
-          message?.toString() ?? '',
+          message,
           error?.toString() ?? '',
           trace?.toString() ?? '',
         ].join('\t'),
@@ -252,6 +260,12 @@ class Logger {
       logger.shout(message, error, trace);
     } catch (e) {
       if (kDebugMode) debugPrint('[logger.shout failed] $e');
+    }
+
+    try {
+      Report.critical(message: message, exception: error, stackTrace: trace);
+    } catch (e) {
+      if (kDebugMode) debugPrint('[Report.critical failed] $e');
     }
   }
 

@@ -40,14 +40,14 @@ class PinSettingsScreen extends StatelessWidget {
                     Text(
                       context.loc.pinCodeManageTitle,
                       style: context.font.headlineMedium?.copyWith(
-                        color: context.appColors.outlineVariant,
+                        color: context.appColors.onSurface,
                       ),
                     ),
                     const Gap(16),
                     Text(
                       context.loc.pinCodeCreateDescription,
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.appColors.outline,
+                        color: context.appColors.textMuted,
                       ),
                     ),
                   ],
@@ -59,10 +59,9 @@ class PinSettingsScreen extends StatelessWidget {
               child: Column(
                 children: [
                   BBButton.big(
-                    label:
-                        isPinCodeSet
-                            ? context.loc.pinCodeChangeButton
-                            : context.loc.pinCodeCreateButton,
+                    label: isPinCodeSet
+                        ? context.loc.pinCodeChangeButton
+                        : context.loc.pinCodeCreateButton,
                     onPressed: () => bloc.add(const PinCodeCreate()),
                     bgColor: context.appColors.secondary,
                     textColor: context.appColors.onSecondary,
@@ -72,8 +71,8 @@ class PinSettingsScreen extends StatelessWidget {
                     BBButton.big(
                       label: context.loc.pinCodeRemoveButton,
                       onPressed: () => bloc.add(const PinCodeDelete()),
-                      bgColor: context.appColors.errorContainer,
-                      textColor: context.appColors.onSecondary,
+                      bgColor: context.appColors.error,
+                      textColor: context.appColors.onError,
                     ),
                   const Gap(24),
                 ],

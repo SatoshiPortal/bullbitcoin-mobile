@@ -10256,6 +10256,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "Por favor, conclua um backup da carteira antes de definir um PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "bitboxScreenActionFailed": "{action}",
   "@bitboxScreenActionFailed": {
     "description": "Main text when action fails",
@@ -12471,5 +12475,97 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstalação necessários",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "O aplicativo que você está usando utiliza um software que em breve será descontinuado. Por favor, siga estas etapas:\n\n1. Faça backup da sua carteira\n2. Desinstale o aplicativo. Delete-o completamente do seu celular.\n3. Reinstale a versão mais recente do aplicativo\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nSeus fundos estão seguros e você pode continuar usando o aplicativo agora, mas faça isso o mais rápido possível para evitar que o aplicativo pare de funcionar em breve.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Ação necessária: Reinstalar aplicativo",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "O aplicativo que você está usando utiliza um software que em breve será descontinuado. Por favor, siga estas etapas:\n\n1. Faça backup da sua carteira\n2. Desinstale o aplicativo. Delete-o completamente do seu celular.\n3. Reinstale a versão mais recente do aplicativo\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nSeus fundos estão seguros e você pode continuar usando o aplicativo agora, mas faça isso o mais rápido possível para evitar que o aplicativo pare de funcionar em breve.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Fazer backup agora",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Mais tarde",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "Voltar",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Começar",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Claro",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Escuro",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Sistema",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Contribuo",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Não contribuo",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Logs padrão",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "Logs críticos",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "Sempre ativo — permite que vejamos se sua carteira migra com segurança entre versões do aplicativo.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "Os logs críticos não podem ser desativados. Eles relatam atualizações, migrações e erros de inicialização do aplicativo que falharam para que possamos corrigir problemas que possam afetar outros.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "Use seu backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Graças ao seu backup, seus fundos estão seguros.\nPrimeiro tente reiniciar o aplicativo; se ainda falhar, reinstale e recupere com seu backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Sem backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Não exclua o aplicativo.\nEntre em contato com nossa equipe de suporte para tentar um resgate.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contatar suporte",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostrar detalhes do erro",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

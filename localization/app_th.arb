@@ -10112,6 +10112,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "กรุณาสำรองข้อมูลกระเป๋าเงินก่อนตั้ง PIN",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "คุณต้องเพิ่มค่าธรรมเนียมภายในอย่างน้อย 1 คืน / Vbyte",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -12475,5 +12479,97 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "เร่งด่วน: จำเป็นต้องสำรองข้อมูลและติดตั้งแอปใหม่",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "จำเป็นต้องดำเนินการ: ติดตั้งแอปใหม่",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "แอปที่คุณใช้งานอยู่นี้ใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า กรุณาทำตามขั้นตอนเหล่านี้:\n\n1. สำรองข้อมูลกระเป๋าเงินของคุณ\n2. ถอนการติดตั้งแอป ลบออกจากโทรศัพท์ของคุณอย่างสมบูรณ์\n3. ติดตั้งแอปเวอร์ชันล่าสุดใหม่อีกครั้ง\n4. ใช้ตัวเลือกการกู้คืนแทน \"สร้างกระเป๋าเงินใหม่\"\n\nเงินของคุณปลอดภัยและคุณสามารถใช้แอปต่อไปได้ในตอนนี้ แต่ควรดำเนินการโดยเร็วที่สุดเพื่อป้องกันไม่ให้แอปหยุดทำงานในอนาคตอันใกล้นี้",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "สำรองข้อมูลตอนนี้",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "ภายหลัง",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "ย้อนกลับ",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "เริ่มต้น",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "สว่าง",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "มืด",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "ระบบ",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "ฉันมีส่วนร่วม",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "ฉันไม่มีส่วนร่วม",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "บันทึกทั่วไป",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "บันทึกสำคัญ",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "เปิดอยู่เสมอ — ช่วยให้เราเห็นว่ากระเป๋าเงินของคุณย้ายข้อมูลระหว่างเวอร์ชันแอปอย่างปลอดภัยหรือไม่",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "ไม่สามารถปิดบันทึกสำคัญได้ บันทึกเหล่านี้รายงานการอัปเกรด การย้ายข้อมูล และข้อผิดพลาดในการเริ่มต้นแอปที่ล้มเหลว เพื่อให้เราสามารถแก้ไขปัญหาที่อาจส่งผลกระทบต่อผู้อื่นได้",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "เงินของคุณปลอดภัยเพราะคุณมีข้อมูลสำรอง\nลองรีสตาร์ทแอปก่อน หากยังใช้งานไม่ได้ ให้ติดตั้งใหม่และกู้คืนด้วยข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "ไม่มีข้อมูลสำรอง?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "อย่าลบแอป\nติดต่อทีมสนับสนุนของเราเพื่อพยายามกู้คืน",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "ติดต่อฝ่ายสนับสนุน",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "แสดงรายละเอียดข้อผิดพลาด",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

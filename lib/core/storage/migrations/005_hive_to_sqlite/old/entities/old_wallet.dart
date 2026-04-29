@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_swap.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_transaction.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -117,8 +117,9 @@ abstract class OldWallet with _$OldWallet {
       (address) => address.state == OldAddressStatus.active,
     );
 
-    final lastIndexForGap =
-        (lastActiveIndex > lastUsedIndex) ? lastActiveIndex : lastUsedIndex;
+    final lastIndexForGap = (lastActiveIndex > lastUsedIndex)
+        ? lastActiveIndex
+        : lastUsedIndex;
     // If there's no address with status "used", return the count of all addresses as they're all unused
     if (lastIndexForGap == -1) {
       return sortedAddresses.length;
@@ -170,15 +171,14 @@ abstract class OldWallet with _$OldWallet {
   }
 
   String generateBIP329Key() {
-    final exDescDerivedKey =
-        sha256
-            .convert(
-              utf8.encode(
-                // allows passing either internal or external descriptor
-                externalPublicDescriptor,
-              ),
-            )
-            .toString();
+    final exDescDerivedKey = sha256
+        .convert(
+          utf8.encode(
+            // allows passing either internal or external descriptor
+            externalPublicDescriptor,
+          ),
+        )
+        .toString();
     return exDescDerivedKey;
   }
 
@@ -195,8 +195,9 @@ abstract class OldWallet with _$OldWallet {
   }
 
   int totalReceived() {
-    final txs =
-        transactions.where((tx) => tx.getNetAmountToPayee() > 0).toList();
+    final txs = transactions
+        .where((tx) => tx.getNetAmountToPayee() > 0)
+        .toList();
     int amt = 0;
     for (final tx in txs) {
       amt += tx.getNetAmountToPayee().abs();
@@ -205,8 +206,9 @@ abstract class OldWallet with _$OldWallet {
   }
 
   int totalSent() {
-    final txs =
-        transactions.where((tx) => tx.getNetAmountIncludingFees() < 0).toList();
+    final txs = transactions
+        .where((tx) => tx.getNetAmountIncludingFees() < 0)
+        .toList();
     int amt = 0;
     for (final tx in txs) {
       amt += tx.getNetAmountIncludingFees().abs();
@@ -406,18 +408,15 @@ abstract class OldWallet with _$OldWallet {
   }
 
   List<OldTransaction> getConfirmedTxs() {
-    final txs =
-        transactions
-            // .map((e) => e.copyWith(wallet: this))
-            .where(
-              (tx) =>
-                  tx.timestamp != 0 &&
-                  ((baseWalletType == OldBaseWalletType.Bitcoin &&
-                          !tx.isLiquid) ||
-                      (baseWalletType == OldBaseWalletType.Liquid &&
-                          tx.isLiquid)),
-            )
-            .toList();
+    final txs = transactions
+        // .map((e) => e.copyWith(wallet: this))
+        .where(
+          (tx) =>
+              tx.timestamp != 0 &&
+              ((baseWalletType == OldBaseWalletType.Bitcoin && !tx.isLiquid) ||
+                  (baseWalletType == OldBaseWalletType.Liquid && tx.isLiquid)),
+        )
+        .toList();
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
   }
@@ -503,14 +502,12 @@ abstract class OldWallet with _$OldWallet {
 
   int frozenUTXOTotal() {
     final addresses = <OldAddress>[...myAddressBook];
-    final unspendable =
-        addresses
-            .where(
-              (address) =>
-                  !address.spendable &&
-                  (address.state == OldAddressStatus.active),
-            )
-            .toList();
+    final unspendable = addresses
+        .where(
+          (address) =>
+              !address.spendable && (address.state == OldAddressStatus.active),
+        )
+        .toList();
     final totalFrozen = unspendable.fold<int>(
       0,
       (value, address) => value + address.balance,

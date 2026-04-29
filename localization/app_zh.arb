@@ -3333,6 +3333,7 @@
   "exchangeBitcoinWalletsLiquidAddressLabel": "流动资金",
   "backupWalletSuccessTestButton": "退约",
   "pinCodeSettingUp": "1. 制定您的《个人资料》",
+  "pinCodeBackupRequiredWarning": "请在设置PIN之前完成钱包备份",
   "replaceByFeeErrorFeeRateTooLow": "您需要将收费率提高到至少1分之一的CO/vbyte,而不是原来的交易",
   "payPriority": "优先程度",
   "fundExchangeCostaRicaMethodIbanCrcSubtitle": "哥斯达黎加哥伦的转移资金",
@@ -4383,9 +4384,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。\n\n启用后，当应用程序发生问题时，我们会自动发送错误报告。这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。\n\n我们不会与第三方分享此信息。我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "通过参与我们的错误报告计划来帮助改进 Bull Bitcoin。它直接帮助我们为所有人改进 Bull Bitcoin。",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "启用后，当应用程序发生问题时，我们会自动发送错误报告。",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "这些数据帮助我们了解全球用户发生了什么，并相应地优先考虑修复。",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "我们不会与第三方分享此信息。",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "我们使用 Sentry 的开源客户端和我们自己自托管的后端服务器。",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "接受",
   "@errorReportingAcceptButton": {
@@ -4462,5 +4479,97 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "紧急：需要备份并重新安装",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "需要操作：重新安装应用程序",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "立即备份",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "稍后",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "返回",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "开始",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "浅色",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "深色",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "系统",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "我愿意参与",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "我不参与",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "标准日志",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "关键日志",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "始终开启 — 让我们能看到您的钱包在应用版本之间是否安全迁移。",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "关键日志无法禁用。它们会报告失败的升级、迁移和应用启动错误，以便我们可以修复可能影响他人的问题。",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "使用您的备份",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "多亏了您的备份，您的资金是安全的。\n请先尝试重启应用，如果仍然无法启动，请重新安装并使用您的备份恢复。",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "没有备份?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "请勿删除应用程序。\n联系我们的支持团队尝试救援。",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "联系支持",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "显示错误详情",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

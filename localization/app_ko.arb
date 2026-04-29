@@ -10120,6 +10120,10 @@
   "@pinCodeSettingUp": {
     "description": "Status screen description while setting up PIN"
   },
+  "pinCodeBackupRequiredWarning": "PIN을 설정하기 전에 지갑 백업을 완료해 주세요",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
   "replaceByFeeErrorFeeRateTooLow": "원래 거래에 비해 최소 1 sat/vbyte로 수수료율을 늘릴 필요가 있습니다",
   "@replaceByFeeErrorFeeRateTooLow": {
     "description": "Error message when new fee rate is not high enough"
@@ -12475,5 +12479,97 @@
   "deleteAccountSuccessClose": "Close",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "homeLegacyStorageWithNoBackupTitle": "긴급: 백업 및 재설치 필요",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "사용 중인 앱은 곧 지원이 중단될 소프트웨어를 사용하고 있습니다. 다음 단계를 따라 주세요:\n\n1. 지갑을 백업하세요\n2. 앱을 삭제하세요. 폰에서 완전히 제거하세요.\n3. 최신 버전의 앱을 재설치하세요\n4. \"새 지갑 만들기\" 대신 복구 옵션을 사용하세요.\n\n자금은 안전하며 지금 당장 앱을 계속 사용할 수 있지만, 가까운 미래에 앱이 작동하지 않게 되는 것을 방지하려면 가능한 한 빨리 이 작업을 수행하세요.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "조치 필요: 앱 재설치",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "사용 중인 앱은 곧 지원이 중단될 소프트웨어를 사용하고 있습니다. 다음 단계를 따라 주세요:\n\n1. 지갑을 백업하세요\n2. 앱을 삭제하세요. 폰에서 완전히 제거하세요.\n3. 최신 버전의 앱을 재설치하세요\n4. \"새 지갑 만들기\" 대신 복구 옵션을 사용하세요.\n\n자금은 안전하며 지금 당장 앱을 계속 사용할 수 있지만, 가까운 미래에 앱이 작동하지 않게 되는 것을 방지하려면 가능한 한 빨리 이 작업을 수행하세요.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "지금 백업",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "나중에",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
+  "backButton": "뒤로",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "시작하기",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "밝게",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "어둡게",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "시스템",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "참여하기",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "참여하지 않기",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "기본 로그",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingCriticalTitle": "중요 로그",
+  "@errorReportingCriticalTitle": {
+    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
+  },
+  "errorReportingMigrationSubtitle": "항상 켜짐 — 앱 버전 간에 지갑이 안전하게 마이그레이션되는지 확인할 수 있게 해줍니다.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "errorReportingCriticalSnackbar": "중요 로그는 비활성화할 수 없습니다. 실패한 업그레이드, 마이그레이션, 앱 시작 오류를 보고하여 다른 사용자에게 영향을 줄 수 있는 문제를 해결할 수 있도록 합니다.",
+  "@errorReportingCriticalSnackbar": {
+    "description": "Snackbar shown when the user taps the disabled migration logs switch"
+  },
+  "appInitErrorHasBackupTitle": "백업을 사용하세요",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "백업 덕분에 자금은 안전합니다.\n먼저 앱을 다시 시작해 보세요. 여전히 실행되지 않으면 앱을 재설치하고 백업으로 복구하세요.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "백업이 없나요?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "앱을 삭제하지 마세요.\n구조를 시도하려면 지원팀에 문의하세요.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "지원 문의",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "오류 세부 정보 표시",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
   }
 }

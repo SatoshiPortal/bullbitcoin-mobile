@@ -23,17 +23,7 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '
 
 
 android {
-    compileSdk = 36
-
-    ndkVersion = "29.0.13113456"
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
-    }
-
-    kotlinOptions {
-        jvmTarget = "21"
-    }
+    ndkVersion = rootProject.properties['android.ndkVersion']
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -41,9 +31,8 @@ android {
 
     defaultConfig {
         applicationId = 'com.bullbitcoin.mobile'
-        minSdkVersion 26
-        // TODO: targetSdkVersion flutter.targetSdkVersion
-        targetSdkVersion 36
+        minSdkVersion project.properties['android.minSdk'].toInteger()
+        targetSdkVersion project.properties['android.targetSdk'].toInteger()
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
 
@@ -56,10 +45,10 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file("debug.keystore")
-            storePassword "android"
             keyAlias "androiddebugkey"
             keyPassword "android"
+            storeFile file("debug.keystore")
+            storePassword "android"
         }
         release {
             keyAlias keystoreProperties['keyAlias']
@@ -74,11 +63,12 @@ android {
             minifyEnabled false
             shrinkResources false
             signingConfig signingConfigs.debug
+            applicationIdSuffix ".debug"
         }
-        release {        
+        release {
             minifyEnabled false
             shrinkResources false
-            signingConfig signingConfigs.release         
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : null
         }
     }
 
