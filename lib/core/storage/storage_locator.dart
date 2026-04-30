@@ -55,11 +55,11 @@ class StorageLocator {
             aOptions: const fss10.AndroidOptions(
               // Never auto-delete data on errors. v10 default is true.
               resetOnError: false,
-              // Do not run any algorithm migration. Combined with the default
-              // encryptedSharedPreferences:false, devices that still have
-              // 6.5.2 ESP data on disk will throw on first read — which we
-              // catch and fall back to FSS9 below. Devices already on FSS10
-              // custom-cipher (cohort A) and fresh installs are unaffected.
+              // Never run any migration. With the fork's StorageCipherFactory
+              // patch, this also makes fresh installs initialize the cipher
+              // cleanly (saved=current when no markers exist). 6.5.2 ESP
+              // users hit the line-195 error branch and get caught into the
+              // FSS9 fallback below.
               migrateOnAlgorithmChange: false,
             ),
             iOptions: const fss10.IOSOptions(
@@ -171,7 +171,10 @@ class StorageLocator {
         log.fine('StorageLocator: fss9 legacy storage initialized from flag');
 
       case SeedStorageLibrary.fss10:
-        // Previous session committed to FSS10 (cohort A or fresh install).
+        // Previous session committed to FSS10 (cohort A, prior fresh
+        // install, or a 6.5.2 user that fell through to FSS10 after the
+        // dance — this last case shouldn't happen since fss9-flag is
+        // written for that path).
         log.fine(
           'StorageLocator: existing flag is fss10 — using current storage',
         );
