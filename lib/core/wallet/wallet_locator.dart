@@ -216,6 +216,7 @@ class WalletLocator {
       () => TheDirtyUsecase(
         locator<SettingsRepository>(),
         locator<ElectrumServerPort>(),
+        locator<BitcoinWalletRepository>(),
       ),
     );
     locator.registerFactory<TheDirtyLiquidUsecase>(

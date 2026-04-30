@@ -640,6 +640,28 @@ class BdkWalletDatasource {
     await BdkFacade.delete(wallet);
     log.fine('Deleted wallet ${wallet.id} BDK database');
   }
+
+  Future<({BigInt satoshis, int transactions})> dryScan({
+    required List<int> entropy,
+    required String passphrase,
+    required ScriptType scriptType,
+    required bool isTestnet,
+    required ElectrumServer electrumServer,
+  }) {
+    return compute(
+      _performDryScan,
+      _DryScanParams(
+        entropy: entropy,
+        passphrase: passphrase,
+        scriptType: scriptType,
+        isTestnet: isTestnet,
+        electrumUrl: electrumServer.url,
+        electrumSocks5: electrumServer.socks5,
+        electrumStopGap: electrumServer.stopGap,
+        rootIsolateToken: ServicesBinding.rootIsolateToken!,
+      ),
+    );
+  }
 }
 
 // Top-level function for isolate execution
@@ -716,4 +738,119 @@ class UnsupportedBdkNetworkException extends BullException {
 
 class NoSpendableUtxoException extends BullException {
   NoSpendableUtxoException(super.message);
+}
+
+class _DryScanParams {
+  final List<int> entropy;
+  final String passphrase;
+  final ScriptType scriptType;
+  final bool isTestnet;
+  final String electrumUrl;
+  final String? electrumSocks5;
+  final int electrumStopGap;
+  final RootIsolateToken rootIsolateToken;
+
+  _DryScanParams({
+    required this.entropy,
+    required this.passphrase,
+    required this.scriptType,
+    required this.isTestnet,
+    required this.electrumUrl,
+    required this.electrumSocks5,
+    required this.electrumStopGap,
+    required this.rootIsolateToken,
+  });
+}
+
+Future<({BigInt satoshis, int transactions})> _performDryScan(
+  _DryScanParams params,
+) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
+
+  final bdkNetwork = params.isTestnet
+      ? bdk.Network.testnet
+      : bdk.Network.bitcoin;
+
+  final bdkMnemonic = bdk.Mnemonic.fromEntropy(
+    entropy: Uint8List.fromList(params.entropy),
+  );
+
+  final descriptorSecretKey = bdk.DescriptorSecretKey(
+    network: bdkNetwork,
+    mnemonic: bdkMnemonic,
+    password: params.passphrase,
+  );
+
+  final (external, internal) = switch (params.scriptType) {
+    ScriptType.bip84 => (
+      bdk.Descriptor.newBip84(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.external_,
+        network: bdkNetwork,
+      ),
+      bdk.Descriptor.newBip84(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.internal,
+        network: bdkNetwork,
+      ),
+    ),
+    ScriptType.bip49 => (
+      bdk.Descriptor.newBip49(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.external_,
+        network: bdkNetwork,
+      ),
+      bdk.Descriptor.newBip49(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.internal,
+        network: bdkNetwork,
+      ),
+    ),
+    ScriptType.bip44 => (
+      bdk.Descriptor.newBip44(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.external_,
+        network: bdkNetwork,
+      ),
+      bdk.Descriptor.newBip44(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.internal,
+        network: bdkNetwork,
+      ),
+    ),
+  };
+
+  final wallet = bdk.Wallet(
+    descriptor: external,
+    changeDescriptor: internal,
+    network: bdkNetwork,
+    persister: bdk.Persister.newInMemory(),
+    lookahead: 0,
+  );
+
+  final blockchain = bdk.ElectrumClient(
+    url: params.electrumUrl,
+    socks5: params.electrumSocks5?.isNotEmpty == true
+        ? params.electrumSocks5
+        : null,
+  );
+
+  final scanRequest = wallet.startFullScan().build();
+  final update = blockchain.fullScan(
+    request: scanRequest,
+    stopGap: params.electrumStopGap,
+    batchSize: 50,
+    // Probe only reads balance and tx count — no fee computation needed,
+    // so we skip the per-input prev-txout fetches that dominate scan time.
+    fetchPrevTxouts: false,
+  );
+  wallet.applyUpdate(update: update);
+
+  final balance = wallet.balance();
+  final transactions = wallet.transactions();
+
+  return (
+    satoshis: BigInt.from(balance.confirmed.toSat()),
+    transactions: transactions.length,
+  );
 }
