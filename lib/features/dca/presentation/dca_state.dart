@@ -3,7 +3,6 @@ part of 'dca_bloc.dart';
 @freezed
 sealed class DcaState with _$DcaState {
   const factory DcaState.initial({
-    ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = DcaInitialState;
   const factory DcaState.buyInput({
@@ -39,7 +38,7 @@ sealed class DcaState with _$DcaState {
 
   String? get defaultLightningAddress {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => null,
+      initial: (getUserSummaryException) => null,
       buyInput:
           (defaultLightningAddress, balances, currency) =>
               defaultLightningAddress,
@@ -179,7 +178,7 @@ sealed class DcaState with _$DcaState {
 
   FiatCurrency? get currency {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => null,
+      initial: (getUserSummaryException) => null,
       buyInput: (defaultLightningAddress, balances, currency) => currency,
       walletSelection:
           (defaultLightningAddress, balances, amount, currency, frequency) =>
@@ -203,7 +202,7 @@ sealed class DcaState with _$DcaState {
   }
 
   List<UserBalance> get balances => when(
-    initial: (apiKeyException, getUserSummaryException) => [],
+    initial: (getUserSummaryException) => [],
     buyInput: (defaultLightningAddress, balances, currency) => balances,
     walletSelection:
         (defaultLightningAddress, balances, amount, currency, frequency) =>

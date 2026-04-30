@@ -5,7 +5,6 @@ sealed class BuyState with _$BuyState {
   const factory BuyState({
     @Default(false) bool isStarted,
     UserSummary? userSummary,
-    ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
     @Default({}) Map<String, double> balances,
     @Default('') String amountInput,

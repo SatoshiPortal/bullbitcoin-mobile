@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/features/fund_exchange/application/fund_exchange_application_error.dart';
@@ -55,8 +54,6 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     try {
       final summary = await _getExchangeUserSummaryUsecase.execute();
       emit(state.copyWith(userSummary: summary));
-    } on ApiKeyException catch (e) {
-      emit(state.copyWith(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
       emit(state.copyWith(getUserSummaryException: e));
     } finally {

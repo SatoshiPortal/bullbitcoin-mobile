@@ -114,10 +114,8 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
         return [];
       }
 
-      final announcementDataList =
-          await _bullbitcoinApiDatasource.listAnnouncements(
-        apiKey: apiKey.key,
-      );
+      final announcementDataList = await _bullbitcoinApiDatasource
+          .listAnnouncements(apiKey: apiKey.key);
       return announcementDataList
           .map((json) => AnnouncementModel.fromJson(json).toEntity())
           .toList();
