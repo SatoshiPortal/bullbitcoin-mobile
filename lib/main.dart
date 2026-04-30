@@ -59,7 +59,11 @@ class Bull {
     await initWorkmanager();
     // Emits the install/upgrade transition event (no-op on a normal
     // launch) and advances the persisted version marker.
-    await Report.versionChange();
+    final type = Report.migrationType;
+    if (type != null) {
+      log.shout(message: type.name);
+      await Report.commitVersion();
+    }
   }
 
   static Future<void> initFlutterRustBridgeDependencies() async {
