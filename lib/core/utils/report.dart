@@ -91,19 +91,14 @@ class Report {
     consent = enabled;
   }
 
-  /// Emits the install/upgrade milestone, then advances the persisted
-  /// `_lastVersionKey` marker. No-op on a normal launch (versions
-  /// match). The marker write is deferred until after the event
-  /// dispatches so a crash between the two retries the event on the
-  /// next launch.
-  static Future<void> versionChange() async {
+  /// Advances the persisted `_lastVersionKey` marker. Caller emits the
+  /// install/upgrade milestone via `log.shout` first so a crash between
+  /// the two retries the event on the next launch.
+  static Future<void> commitVersion() async {
     final to = toVersion;
     if (to == null) return;
-    if (migrationType != null) {
-      await critical(message: migrationType!.name);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_lastVersionKey, to);
-    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastVersionKey, to);
   }
 
   /// Consent-gated error capture. Dropped by `beforeSend` when the user
