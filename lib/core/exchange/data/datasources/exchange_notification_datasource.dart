@@ -109,6 +109,7 @@ class ExchangeNotificationDatasource {
         log.warning(
           'WebSocket endpoint not available - server may not support WebSocket on this endpoint. '
           'Disabling auto-reconnect.',
+          error: e,
         );
         _isManuallyDisconnected = true; // Prevent auto-reconnect
       }

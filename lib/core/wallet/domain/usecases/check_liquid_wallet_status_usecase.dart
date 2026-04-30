@@ -110,7 +110,7 @@ class TheDirtyLiquidUsecase {
         await file.delete();
       }
     } catch (e) {
-      log.warning('Failed to cleanup database file: $dbPath - $e');
+      log.warning('Failed to cleanup database file: $dbPath', error: e);
     }
   }
 

@@ -53,7 +53,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     try {
       await _exchangeNotificationService.connect();
     } catch (e) {
-      log.warning('WebSocket connection failed: $e');
+      log.warning('WebSocket connection failed', error: e);
     }
   }
 

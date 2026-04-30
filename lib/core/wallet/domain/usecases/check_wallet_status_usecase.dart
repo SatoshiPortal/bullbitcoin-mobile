@@ -122,7 +122,10 @@ class TheDirtyUsecase {
           wallet.applyUpdate(update: scanUpdate);
           break; // Exit the loop if sync is successful
         } catch (e) {
-          log.warning('Failed to sync with ${electrumServers[i].url}: $e');
+          log.warning(
+            'Failed to sync with ${electrumServers[i].url}',
+            error: e,
+          );
           if (i == electrumServers.length - 1) {
             throw Exception('All Electrum servers failed to sync.');
           }
