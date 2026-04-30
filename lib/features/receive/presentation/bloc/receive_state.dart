@@ -87,8 +87,7 @@ abstract class ReceiveState with _$ReceiveState {
           // address should be shown.
           return '';
         }
-        if (isAddressOnly ||
-            (confirmedAmountSat == null && note.isEmpty && !canPayjoin)) {
+        if (confirmedAmountSat == null && note.isEmpty && !canPayjoin) {
           return bitcoinAddress!.address;
         }
 
@@ -249,7 +248,9 @@ abstract class ReceiveState with _$ReceiveState {
 
   // Payjoin is only useful if the wallet has UTXOs to contribute as inputs in
   // the receiver's BIP78 PSBT — without UTXOs the proposal cannot be built.
-  bool get canPayjoin => payjoin != null && hasUtxos;
+  // Also gated on [isAddressOnly] so toggling payjoin OFF removes only the
+  // pj= param from the URI, leaving amount/message intact.
+  bool get canPayjoin => payjoin != null && hasUtxos && !isAddressOnly;
 
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;

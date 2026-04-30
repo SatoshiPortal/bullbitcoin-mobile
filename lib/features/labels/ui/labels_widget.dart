@@ -1,8 +1,9 @@
-import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/labels/domain/label_error.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
+import 'package:bb_mobile/features/labels/domain/label_error.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 
@@ -84,39 +85,51 @@ class _LabelsWidgetState extends State<LabelsWidget> {
   }
 }
 
+/// Compact chip rendering a single label string.
+///
+/// - Provide [onDelete] to render an X affordance (system labels are never
+///   deletable). Pass `isDeleting: true` to swap the X for a spinner.
+/// - Provide [onTap] to make the whole chip tappable (used for suggestion
+///   chips that fill an input on tap). [onTap] and [onDelete] may coexist.
 class LabelChip extends StatelessWidget {
   const LabelChip({
     super.key,
     required this.label,
-    required this.onDelete,
+    this.onDelete,
+    this.onTap,
     this.isDeleting = false,
   });
 
   final String label;
   final VoidCallback? onDelete;
+  final VoidCallback? onTap;
   final bool isDeleting;
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final maxWidth = screenWidth * 0.8;
+    final maxWidth = MediaQuery.of(context).size.width * 0.8;
     final isSystemLabel = LabelSystem.isSystemLabel(label);
+    final radius = BorderRadius.circular(8);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+    final body = Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: Device.screen.width * 0.03,
+        vertical: Device.screen.height * 0.01,
+      ),
       decoration: BoxDecoration(
-        color: context.appColors.border,
-        borderRadius: BorderRadius.circular(2.0),
+        color: context.appColors.onSecondary,
+        borderRadius: radius,
+        border: Border.all(color: context.appColors.secondaryFixedDim),
       ),
       constraints: BoxConstraints(maxWidth: maxWidth),
       child: Row(
-        mainAxisSize: .min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
             child: LabelText(
               label,
-              style: context.font.labelSmall?.copyWith(
-                color: context.appColors.onSurface,
+              style: context.font.bodyLarge?.copyWith(
+                color: context.appColors.secondary,
               ),
             ),
           ),
@@ -146,5 +159,10 @@ class LabelChip extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return InkWell(onTap: onTap, borderRadius: radius, child: body);
+    }
+    return body;
   }
 }

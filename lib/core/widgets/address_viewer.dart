@@ -48,7 +48,8 @@ class AddressViewer extends StatelessWidget {
     );
 
     return GestureDetector(
-      onTap: () => _showDetailDialog(context),
+      onTap: () =>
+          showDetail(context, data: data, clipboardText: clipboardText),
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: clipboardText ?? data));
         SnackBarUtils.showCopiedSnackBar(context);
@@ -101,7 +102,7 @@ class AddressViewer extends StatelessWidget {
     return width;
   }
 
-  Future<String?> _getExplorerUrl() async {
+  static Future<String?> _getExplorerUrlFor(String data) async {
     final builder = locator<MempoolUrlBuilder>();
     final parsed = await Satoshifier.tryParse(data);
     if (parsed is BitcoinAddress) {
@@ -112,14 +113,21 @@ class AddressViewer extends StatelessWidget {
     return null;
   }
 
-  void _showDetailDialog(BuildContext context) {
-    BlurredDialog.show(
+  /// Opens the address detail dialog without needing a rendered
+  /// [AddressViewer]. Use from a wrapper (e.g. a tappable tile) so the
+  /// whole region around the address triggers the same flow.
+  static Future<void> showDetail(
+    BuildContext context, {
+    required String data,
+    String? clipboardText,
+  }) {
+    return BlurredDialog.show<void>(
       context: context,
       builder: (dialogContext) => _AddressDetailSheet(
         data: data,
         clipboardText: clipboardText ?? data,
         dialogContext: dialogContext,
-        getExplorerUrl: _getExplorerUrl,
+        getExplorerUrl: () => _getExplorerUrlFor(data),
       ),
     );
   }
@@ -212,11 +220,34 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
 
   Widget _buildBody(BuildContext context) {
     if (_showUri) {
-      return SelectableText(
-        _activeText,
-        style: context.font.bodyLarge?.copyWith(
-          color: context.appColors.secondary,
-          letterSpacing: 1.2,
+      final uri = _activeText;
+      final address = widget.data;
+      final addressIdx = uri.indexOf(address);
+      final baseStyle = context.font.bodyLarge?.copyWith(
+        color: context.appColors.secondary,
+        letterSpacing: 1.2,
+      );
+      // Highlight the bare address embedded inside the BIP21 URI so the
+      // user can spot it at a glance.
+      if (addressIdx == -1) {
+        return SelectableText.rich(
+          TextSpan(text: uri, style: baseStyle),
+          textAlign: TextAlign.center,
+        );
+      }
+      return SelectableText.rich(
+        TextSpan(
+          style: baseStyle,
+          children: [
+            if (addressIdx > 0)
+              TextSpan(text: uri.substring(0, addressIdx)),
+            TextSpan(
+              text: address,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            if (addressIdx + address.length < uri.length)
+              TextSpan(text: uri.substring(addressIdx + address.length)),
+          ],
         ),
         textAlign: TextAlign.center,
       );
@@ -235,7 +266,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
               color: i.isOdd
                   ? context.appColors.textMuted
                   : context.appColors.secondary,
-              fontWeight: i.isOdd ? FontWeight.w700 : null,
+              fontWeight: FontWeight.w700,
               fontFeatures: [const FontFeature.tabularFigures()],
               letterSpacing: 1.2,
             ),

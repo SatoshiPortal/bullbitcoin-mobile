@@ -35,7 +35,10 @@ class BlurredDialog extends StatelessWidget {
     }
     return Dialog(
       backgroundColor: context.appColors.background,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: context.appColors.secondaryFixedDim),
+      ),
       child: child,
     );
   }

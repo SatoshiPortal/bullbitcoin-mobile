@@ -20,6 +20,8 @@ import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -353,7 +355,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
               },
               child: BlocBuilder<SendCubit, SendState>(
                 builder: (context, state) {
-                  final cubit = context.read<SendCubit>();
                   final balanceError = context.select(
                     (SendCubit cubit) =>
                         cubit.state.insufficientBalanceException,
@@ -444,7 +445,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 state.formattedAmountInputEquivalent,
                             availableCurrencies: availableInputCurrencies,
                             amountController: _amountController,
-                            onNoteChanged: cubit.noteChanged,
                             onCurrencyChanged: (currencyCode) {
                               _setIsMax(false);
                               context.read<SendCubit>().onCurrencyChanged(
@@ -480,6 +480,57 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 textAlign: TextAlign.center,
                               ),
                             ),
+                          Gap(Device.screen.height * 0.02),
+                          BorderedTappableTile(
+                            onTap: () async {
+                              final cubit = context.read<SendCubit>();
+                              final saved =
+                                  await LabelEntryBottomSheet.label(
+                                    context,
+                                    title:
+                                        context.loc.transactionNoteAddTitle,
+                                    initialValue: state.label.isEmpty
+                                        ? null
+                                        : state.label,
+                                    hint: context.loc.transactionNoteHint,
+                                    suggestionsFuture:
+                                        cubit.fetchDistinctLabels(),
+                                  );
+                              if (saved == null || !context.mounted) return;
+                              cubit.noteChanged(saved);
+                            },
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      BBText(
+                                        '${context.loc.receiveNote} (optional)',
+                                        style: context.font.bodyLarge,
+                                        color: context.appColors.secondary,
+                                      ),
+                                      const Gap(4),
+                                      BBText(
+                                        state.label.isEmpty
+                                            ? context.loc.receiveEnterHere
+                                            : state.label,
+                                        style: context.font.bodyMedium,
+                                        maxLines: 4,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.edit,
+                                  size: 20,
+                                  color: context.appColors.secondary,
+                                ),
+                              ],
+                            ),
+                          ),
                           const Gap(48),
                           Divider(
                             height: 1,

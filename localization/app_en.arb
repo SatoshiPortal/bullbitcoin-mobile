@@ -12718,6 +12718,10 @@
   "@invoiceViewerTitle": {
     "description": "Title shown in the invoice viewer detail dialog"
   },
+  "noteVisibleToSenderNotice": "This note will be visible to the recipient of your QR or invoice.",
+  "@noteVisibleToSenderNotice": {
+    "description": "Privacy disclosure shown in the note entry bottom sheet for counterparty-visible notes (BIP21 message, lightning swap description)."
+  },
   "viewerAddressTab": "Address",
   "@viewerAddressTab": {
     "description": "Segment label to show/copy the bare address in the address viewer dialog"

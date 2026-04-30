@@ -381,8 +381,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
   Future<Set<String>> fetchDistinctLabels() async {
     try {
-      final labels = await _labelsFacade.fetchAll();
-      return labels.map((label) => label.label).toSet();
+      return await _labelsFacade.fetchDistinctLabels();
     } catch (e) {
       log.warning('Failed to fetch distinct labels: $e');
       emit(state.copyWith(err: e));

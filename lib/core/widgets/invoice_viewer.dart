@@ -41,7 +41,8 @@ class InvoiceViewer extends StatelessWidget {
     );
 
     return GestureDetector(
-      onTap: () => _showDetailDialog(context),
+      onTap: () =>
+          showDetail(context, data: data, clipboardText: clipboardText),
       onLongPress: () {
         Clipboard.setData(ClipboardData(text: clipboardText ?? data));
         SnackBarUtils.showCopiedSnackBar(context);
@@ -94,8 +95,15 @@ class InvoiceViewer extends StatelessWidget {
     return width;
   }
 
-  void _showDetailDialog(BuildContext context) {
-    BlurredDialog.show(
+  /// Opens the invoice detail dialog without needing a rendered
+  /// [InvoiceViewer]. Use from a wrapper (e.g. a tappable tile) so the
+  /// whole region around the invoice triggers the same flow.
+  static Future<void> showDetail(
+    BuildContext context, {
+    required String data,
+    String? clipboardText,
+  }) {
+    return BlurredDialog.show<void>(
       context: context,
       builder: (dialogContext) => _InvoiceDetailSheet(
         data: data,

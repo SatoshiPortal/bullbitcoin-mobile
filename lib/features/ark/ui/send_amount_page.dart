@@ -188,7 +188,6 @@ class _SendAmountPageState extends State<SendAmountPage> {
                   amountEquivalent: _equivalentAmount,
                   availableCurrencies: _availableCurrencies,
                   onCurrencyChanged: _onCurrencyCodeChanged,
-                  onNoteChanged: null,
                   amountController: _controller,
                   focusNode: _focusNode,
                   error: _error,
