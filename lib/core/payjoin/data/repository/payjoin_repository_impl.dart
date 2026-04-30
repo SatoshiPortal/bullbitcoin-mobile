@@ -281,7 +281,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             );
           } catch (e) {
             log.warning(
-              'Error broadcasting original transaction with server ${serverToUse.url}: $e',
+              'Error broadcasting original transaction with server ${serverToUse.url}',
+              error: e,
             );
             if (i == servers.length - 1) {
               rethrow; // If it's the last server, rethrow the error

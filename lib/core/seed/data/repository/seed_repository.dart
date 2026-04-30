@@ -21,8 +21,8 @@ class SeedRepository {
       await _source.store(fingerprint: model.masterFingerprint, seed: model);
       return model.toEntity() as MnemonicSeed;
     } catch (e, stackTrace) {
-      log.info(
-        'Failed to create seed from mnemonic: $e',
+      log.severe(
+        message: 'Failed to create seed from mnemonic',
         error: e,
         trace: stackTrace,
       );
@@ -36,8 +36,8 @@ class SeedRepository {
       await _source.store(fingerprint: model.masterFingerprint, seed: model);
       return model.toEntity();
     } catch (e, stackTrace) {
-      log.info(
-        'Failed to create seed from bytes: $e',
+      log.severe(
+        message: 'Failed to create seed from bytes',
         error: e,
         trace: stackTrace,
       );
@@ -52,8 +52,8 @@ class SeedRepository {
       final entity = await compute(_toEntityInIsolate, model);
       return entity;
     } catch (e, stackTrace) {
-      log.info(
-        'Failed to get seed with fingerprint $fingerprint: $e',
+      log.severe(
+        message: 'Failed to get seed with fingerprint',
         error: e,
         trace: stackTrace,
       );
@@ -68,8 +68,8 @@ class SeedRepository {
     try {
       return await _source.exists(fingerprint);
     } catch (e, stackTrace) {
-      log.info(
-        'Failed to check if seed exists with fingerprint $fingerprint: $e',
+      log.severe(
+        message: 'Failed to check if seed exists with fingerprint',
         error: e,
         trace: stackTrace,
       );
@@ -103,8 +103,8 @@ class SeedRepository {
       // (toEntity() triggers expensive fingerprint computation)
       return await compute(convertToMnemonicSeedsInIsolate, models);
     } catch (e, stackTrace) {
-      log.info(
-        'Failed to get all mnemonic seeds: $e',
+      log.severe(
+        message: 'Failed to get all mnemonic seeds',
         error: e,
         trace: stackTrace,
       );

@@ -65,7 +65,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
         final entity = await WatchOnlyWalletEntity.parse(value);
         emit(state.copyWith(watchOnlyWallet: entity));
       } catch (e) {
-        log.info(e.toString());
+        log.warning(e.toString());
         emit(state.copyWith(error: 'Invalid watch only format'));
       }
     }

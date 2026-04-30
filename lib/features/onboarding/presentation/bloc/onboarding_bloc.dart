@@ -32,12 +32,12 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
-  Future<void> _handleError(String error, Emitter<OnboardingState> emit) async {
+  Future<void> _handleError(Object error, Emitter<OnboardingState> emit) async {
     log.severe(error: error, trace: StackTrace.current);
     emit(
       state.copyWith(
         onboardingStepStatus: OnboardingStepStatus.none,
-        statusError: error,
+        statusError: error.toString(),
       ),
     );
   }
@@ -56,7 +56,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       await _createDefaultWalletsUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
-      await _handleError(e.toString(), emit);
+      await _handleError(e, emit);
     }
   }
 
@@ -77,7 +77,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       await _completePhysicalBackupVerificationUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
-      await _handleError(e.toString(), emit);
+      await _handleError(e, emit);
     }
   }
 }

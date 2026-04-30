@@ -72,7 +72,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
       return rate;
     } catch (e) {
-      log.warning(e.toString());
+      log.warning('Pricer error', error: e);
       return 0.0;
     }
   }

@@ -31,8 +31,7 @@ class LwkFacade {
       log.fine('Found LwkDb');
       await dbFile.delete(recursive: true);
     } catch (e) {
-      log.fine('Failed to delete LwkDb');
-      log.fine(e.toString());
+      log.warning('Failed to delete LwkDb', error: e);
       rethrow;
     }
   }
