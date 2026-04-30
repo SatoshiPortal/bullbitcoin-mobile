@@ -12432,6 +12432,7 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
+  "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
   "appInitErrorTitle": "앱 시작 실패",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

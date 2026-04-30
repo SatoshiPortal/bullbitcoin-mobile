@@ -12435,6 +12435,7 @@
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
   },
+  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
   "appInitErrorTitle": "فشل تشغيل التطبيق",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

@@ -212,6 +212,7 @@
     "description": "Confirm button label in advanced options"
   },
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "importMnemonicDuplicateError": "ეს მნემონიკი უკვე არსებობს",
   "appInitErrorTitle": "აპლიკაციის გაშვება ვერ მოხერხდა",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

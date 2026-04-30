@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/check_duplicate_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/import_mnemonic/domain/import_wallet_usecase.dart';
 import 'package:bb_mobile/features/import_mnemonic/errors.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
@@ -9,21 +10,41 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
   final ImportWalletUsecase _importWalletUsecase;
   final TheDirtyUsecase _checkWalletUsecase;
+  final CheckDuplicateMnemonicUsecase _checkDuplicateMnemonicUsecase;
 
   ImportMnemonicCubit({
     required ImportWalletUsecase importWalletUsecase,
     required TheDirtyUsecase checkWalletUsecase,
+    required CheckDuplicateMnemonicUsecase checkDuplicateMnemonicUsecase,
   }) : _importWalletUsecase = importWalletUsecase,
        _checkWalletUsecase = checkWalletUsecase,
+       _checkDuplicateMnemonicUsecase = checkDuplicateMnemonicUsecase,
        super(const ImportMnemonicState());
 
   void clearError() => emit(state.copyWith(error: null));
 
   void reset() => emit(const ImportMnemonicState());
 
-  void updateMnemonic(Mnemonic mnemonic) {
-    if (mnemonic.label.isEmpty) throw EmptyMnemonicLabelError();
-    emit(state.copyWith(mnemonic: mnemonic));
+  Future<void> updateMnemonic(Mnemonic mnemonic) async {
+    try {
+      if (mnemonic.label.isEmpty) throw EmptyMnemonicLabelError();
+
+      emit(state.copyWith(isLoading: true, error: null));
+
+      await _checkDuplicateMnemonicUsecase.execute(
+        mnemonicWords: mnemonic.words,
+        passphrase: mnemonic.passphrase,
+      );
+
+      emit(state.copyWith(mnemonic: mnemonic, isLoading: false));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          error: e is Exception ? e : ImportMnemonicError(e.toString()),
+          isLoading: false,
+        ),
+      );
+    }
   }
 
   Future<void> checkWalletsStatusDirty() async {
@@ -77,6 +98,8 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
         scriptType: state.scriptType,
       );
       emit(state.copyWith(wallet: wallet, isLoading: false));
+    } on DuplicateMnemonicException catch (e) {
+      emit(state.copyWith(error: e, isLoading: false));
     } catch (e) {
       emit(
         state.copyWith(

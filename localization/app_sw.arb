@@ -20,6 +20,7 @@
     "description": "Title for Ledger troubleshooting help modal"
   },
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "importMnemonicDuplicateError": "Msemo huu tayari upo",
   "appInitErrorTitle": "Programu haikuweza kuanza",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

@@ -12786,6 +12786,10 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
+  "importMnemonicDuplicateError": "This mnemonic already exists",
+  "@importMnemonicDuplicateError": {
+    "description": "Error message when user tries to import a mnemonic that already exists"
+  },
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"

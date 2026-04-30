@@ -4499,6 +4499,7 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
+  "importMnemonicDuplicateError": "Esta mnemônica já existe",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"

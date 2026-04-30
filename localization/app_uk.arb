@@ -4441,6 +4441,7 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
+  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"

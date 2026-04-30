@@ -12149,6 +12149,7 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
+  "importMnemonicDuplicateError": "এই নেমোনিক ইতিমধ্যে বিদ্যমান",
   "appInitErrorTitle": "অ্যাপটি চালু হয়নি",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

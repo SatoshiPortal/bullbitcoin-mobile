@@ -12432,6 +12432,7 @@
   "@exchangeSettingsSecuritySettingsTitle": {
     "description": "Title for the security settings section in exchange settings"
   },
+  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
   "appInitErrorTitle": "แอปเริ่มต้นล้มเหลว",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

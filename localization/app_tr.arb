@@ -12432,6 +12432,7 @@
   "@buyUpgradeKYC": {
     "description": "Button to increase verification tier"
   },
+  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
   "appInitErrorTitle": "Uygulama başlatılamadı",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

@@ -12432,6 +12432,7 @@
   "@transactionSwapDescLnReceiveClaimable": {
     "description": "Description for claimable Lightning receive swap"
   },
+  "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
   "appInitErrorTitle": "برنامه راه‌اندازی نشد",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

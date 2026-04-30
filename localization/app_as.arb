@@ -1,4 +1,5 @@
 {
+  "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
   "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

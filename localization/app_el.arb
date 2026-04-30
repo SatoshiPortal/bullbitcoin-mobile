@@ -12432,6 +12432,7 @@
   "@autoswapRecipientWalletRequired": {
     "description": "Required field indicator asterisk"
   },
+  "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
   "appInitErrorTitle": "Αποτυχία εκκίνησης εφαρμογής",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

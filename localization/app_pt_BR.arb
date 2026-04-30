@@ -12428,6 +12428,7 @@
   "@buyInsufficientFundsError": {
     "description": "Error message for insufficient funds during buy"
   },
+  "importMnemonicDuplicateError": "Esta mnemônica já existe",
   "appInitErrorTitle": "Falha ao iniciar o aplicativo",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

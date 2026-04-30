@@ -1,5 +1,6 @@
 {
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
+  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի",
   "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

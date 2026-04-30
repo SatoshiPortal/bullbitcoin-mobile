@@ -12432,6 +12432,7 @@
   "@importMnemonicContinue": {
     "description": "Button text to proceed after entering mnemonic"
   },
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
   "appInitErrorTitle": "Aplikaci se nepodařilo spustit",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

@@ -9441,6 +9441,7 @@
   "@importWatchOnlyCancel": {
     "description": "Button to cancel watch-only import"
   },
+  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува",
   "appInitErrorTitle": "Приложението не успя да стартира",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"

@@ -4453,6 +4453,7 @@
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
   },
+  "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
   "settingsAccountSettingsTitle": "Account Settings",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"

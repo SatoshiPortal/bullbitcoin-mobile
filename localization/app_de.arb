@@ -4333,6 +4333,7 @@
   "@retry": {
     "description": "Generic retry button label"
   },
+  "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits",
   "settingsAccountSettingsTitle": "Kontoeinstellungen",
   "@settingsAccountSettingsTitle": {
     "description": "Title for the account settings screen (shown to non-superusers)"
