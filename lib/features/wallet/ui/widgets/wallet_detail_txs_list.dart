@@ -10,30 +10,18 @@ class WalletDetailTxsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        mainAxisSize: .min,
-        children: [
-          Expanded(
-            child:
-                BlocSelector<
-                  TransactionsCubit,
-                  TransactionsState,
-                  ({Map<int, List<Transaction>>? txsByDay, Object? err})
-                >(
-                  selector: (state) => (
-                    txsByDay: state.filteredTransactionsByDay,
-                    err: state.err,
-                  ),
-                  builder: (context, selected) => TransactionsByDayList(
-                    transactionsByDay: selected.txsByDay,
-                    errorMessage: selected.err != null
-                        ? context.loc.transactionListLoadingFailed
-                        : null,
-                  ),
-                ),
-          ),
-        ],
+    return BlocSelector<
+      TransactionsCubit,
+      TransactionsState,
+      ({Map<int, List<Transaction>>? txsByDay, Object? err})
+    >(
+      selector: (state) =>
+          (txsByDay: state.filteredTransactionsByDay, err: state.err),
+      builder: (context, selected) => TransactionsByDayList(
+        transactionsByDay: selected.txsByDay,
+        errorMessage: selected.err != null
+            ? context.loc.transactionListLoadingFailed
+            : null,
       ),
     );
   }

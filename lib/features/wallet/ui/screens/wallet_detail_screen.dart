@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -48,41 +49,45 @@ class WalletDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          if (wallet == null)
-            const LoadingBoxContent(height: 100)
-          else
-            BlocProvider<TransactionsCubit>(
+      body: wallet == null
+          ? const LoadingBoxContent(height: 100)
+          : BlocProvider<TransactionsCubit>(
               create: (_) =>
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
-              child: RefreshIndicator(
+              child: BBRefreshIndicator(
                 onRefresh: () async {
                   final bloc = context.read<WalletBloc>();
                   bloc.add(const WalletRefreshed());
                   await bloc.stream.firstWhere((state) => !state.isSyncing);
                 },
-                child: Column(
-                  children: [
-                    WalletDetailBalanceCard(
-                      balanceSat: wallet.balanceSat.toInt(),
-                      isLiquid: wallet.isLiquid,
-                      signer: wallet.signer,
+                child: LayoutBuilder(
+                  builder: (context, constraints) => SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: constraints.maxHeight,
+                      child: Column(
+                        children: [
+                          WalletDetailBalanceCard(
+                            balanceSat: wallet.balanceSat.toInt(),
+                            isLiquid: wallet.isLiquid,
+                            signer: wallet.signer,
+                          ),
+                          const Gap(16),
+                          const Expanded(child: WalletDetailTxsList()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 13.0,
+                              vertical: 40,
+                            ),
+                            child: WalletBottomButtons(wallet: wallet),
+                          ),
+                        ],
+                      ),
                     ),
-                    const Gap(16.0),
-                    const WalletDetailTxsList(),
-                    const Gap(96),
-                  ],
+                  ),
                 ),
               ),
             ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 40),
-            child: WalletBottomButtons(wallet: wallet),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -58,7 +59,7 @@ class _Screen extends StatelessWidget {
           ),
         const Gap(16.0),
         Expanded(
-          child: RefreshIndicator(
+          child: BBRefreshIndicator(
             onRefresh: () async {
               final bloc = context.read<WalletBloc>();
               bloc.add(const WalletRefreshed());

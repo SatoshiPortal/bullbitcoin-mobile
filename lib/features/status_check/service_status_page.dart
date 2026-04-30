@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
@@ -35,8 +36,8 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
           final serviceStatus = state.serviceStatus;
           final cubit = context.read<ServiceStatusCubit>();
 
-          return RefreshIndicator(
-            key: _refreshIndicatorKey,
+          return BBRefreshIndicator(
+            indicatorKey: _refreshIndicatorKey,
             onRefresh: () async => await cubit.checkStatus(),
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),

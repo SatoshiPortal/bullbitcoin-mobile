@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/colors.dart';
+import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
@@ -41,58 +42,58 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, _) {},
-        child: Column(
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    // Black background visible only during iOS top overscroll
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      child: ColoredBox(
-                        color: AppColors.dark.background,
-                        child: const SizedBox(height: 300),
-                      ),
+        child: Stack(
+          children: [
+            // Black background visible only during iOS top overscroll
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: ColoredBox(
+                color: AppColors.dark.background,
+                child: const SizedBox(height: 300),
+              ),
+            ),
+            BBRefreshIndicator(
+              onRefresh: () async {
+                final bloc = context.read<WalletBloc>();
+                bloc.add(const WalletRefreshed());
+                await bloc.stream.firstWhere((state) => !state.isSyncing);
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  const SliverToBoxAdapter(child: WalletHomeTopSection()),
+                  const SliverToBoxAdapter(child: HomeWarnings()),
+                  const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
+                  SliverToBoxAdapter(
+                    child: WalletCards(
+                      onTap: (w) {
+                        context.pushNamed(
+                          WalletRoute.walletDetail.name,
+                          pathParameters: {'walletId': w.id},
+                        );
+                      },
                     ),
-                    RefreshIndicator(
-                  edgeOffset: 30,
-                  onRefresh: () async {
-                    final bloc = context.read<WalletBloc>();
-                    bloc.add(const WalletRefreshed());
-                    await bloc.stream.firstWhere((state) => !state.isSyncing);
-                  },
-                  child: SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
+                  ),
+                  const SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const WalletHomeTopSection(),
-                        const HomeWarnings(),
-                        const AutoSwapFeeWarning(),
-                        WalletCards(
-                          onTap: (w) {
-                            context.pushNamed(
-                              WalletRoute.walletDetail.name,
-                              pathParameters: {'walletId': w.id},
-                            );
-                          },
+                        Spacer(),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 13.0),
+                          child: WalletBottomButtons(),
                         ),
+                        Gap(16),
                       ],
                     ),
                   ),
-                  ),
-                  ],
-                ),
+                ],
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.0),
-                child: WalletBottomButtons(),
-              ),
-              const Gap(16),
-            ],
-          ),
+            ),
+          ],
+        ),
       ),
     );
   }
