@@ -15,8 +15,11 @@ class AddressScriptConversions {
 
       return address.toString();
     } catch (e) {
-      log.severe(
-        message: 'error converting scriptPubkey to address',
+      // This is expected for non-address scripts (e.g. OP_RETURN) and
+      // not really a bug so using fine instead of severe or warning to avoid
+      // flooding the logger with it.
+      log.fine(
+        'error converting scriptPubkey to address',
         error: e,
         trace: StackTrace.current,
       );

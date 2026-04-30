@@ -132,27 +132,23 @@ class BdkWalletDatasource {
   Future<bool> isMine(
     Uint8List scriptBytes, {
     required WalletModel wallet,
+    bdk.Wallet? bdkWallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    final script = bdk.Script(rawOutputScript: scriptBytes);
-    final isMine = bdkWallet.isMine(script: script);
-
-    return isMine;
+    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
+    return w.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
   }
 
   Future<bool> isAddressMine(
     String address, {
     required WalletModel wallet,
+    bdk.Wallet? bdkWallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
     final bdkAddress = bdk.Address(
       address: address,
       network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
     );
-    final script = bdkAddress.scriptPubkey();
-    final isMine = bdkWallet.isMine(script: script);
-
-    return isMine;
+    return w.isMine(script: bdkAddress.scriptPubkey());
   }
 
   Future<String> buildPsbt({
@@ -294,7 +290,7 @@ class BdkWalletDatasource {
       signOptions: bdk.SignOptions(
         trustWitnessUtxo: true,
         assumeHeight: null,
-        allowAllSighashes: true,
+        allowAllSighashes: false,
         tryFinalize: true,
         signWithTapInternalKey: false,
         allowGrinding: true,
@@ -345,6 +341,7 @@ class BdkWalletDatasource {
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
       transactions,
       wallet: wallet,
+      bdkWallet: bdkWallet,
     );
 
     // Map the transactions to WalletTransactionModel
@@ -589,6 +586,7 @@ class BdkWalletDatasource {
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
     List<bdk.CanonicalTx> transactions, {
     required WalletModel wallet,
+    required bdk.Wallet bdkWallet,
   }) async {
     final listOfOutputs = await Future.wait(
       transactions.map((tx) async {
@@ -607,7 +605,11 @@ class BdkWalletDatasource {
             return TransactionOutputModel.bitcoin(
               txId: tx.transaction.computeTxid().toString(),
               vout: vout,
-              isOwn: await isMine(scriptPubkeyBytes, wallet: wallet),
+              isOwn: await isMine(
+                scriptPubkeyBytes,
+                wallet: wallet,
+                bdkWallet: bdkWallet,
+              ),
               value: BigInt.from(output.value.toSat()),
               scriptPubkey: scriptPubkeyBytes,
               address: address,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/lists/transactions_by_day_list.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,16 @@ class TxList extends StatelessWidget {
     final ongoingSwaps = context.select(
       (TransactionsCubit cubit) => cubit.state.ongoingSwaps,
     );
+
+    final err = context.select((TransactionsCubit cubit) => cubit.state.err);
+
+    if (err != null) {
+      return TransactionsByDayList(
+        transactionsByDay: const {},
+        ongoingSwaps: ongoingSwaps,
+        errorMessage: context.loc.transactionListLoadingFailed,
+      );
+    }
 
     final filter = context.select(
       (TransactionsCubit cubit) => cubit.state.filter,

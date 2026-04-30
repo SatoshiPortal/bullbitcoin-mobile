@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_facade.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -496,11 +497,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
       if (freshModel == null) throw Exception('Payjoin receiver not found');
 
+      final bdkWallet = await BdkFacade.createWallet(wallet);
+
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
-        hasOwnedInputs: (script) => _bdkWallet.isMine(script, wallet: wallet),
+        hasOwnedInputs: (script) =>
+            _bdkWallet.isMine(script, wallet: wallet, bdkWallet: bdkWallet),
         hasReceiverOutput: (script) =>
-            _bdkWallet.isMine(script, wallet: wallet),
+            _bdkWallet.isMine(script, wallet: wallet, bdkWallet: bdkWallet),
         inputPairs: inputPairs,
         processPsbt: (psbt) => _bdkWallet.signPsbt(psbt, wallet: wallet),
       );
