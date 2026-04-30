@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -117,14 +116,6 @@ class PayBloc extends Bloc<PayEvent, PayState> {
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
       emit(recipientSelectionState.copyWith(userSummary: userSummary));
-    } on ApiKeyException catch (e) {
-      // Handle API key error by showing error in current state
-
-      emit(
-        recipientSelectionState.copyWith(
-          error: PayError.unexpected(message: e.message),
-        ),
-      );
     } on GetExchangeUserSummaryException catch (e) {
       emit(
         recipientSelectionState.copyWith(

@@ -3,7 +3,6 @@ part of 'sell_bloc.dart';
 @freezed
 sealed class SellState with _$SellState {
   const factory SellState.initial({
-    ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = SellInitialState;
   const factory SellState.amountInput({
@@ -160,7 +159,7 @@ sealed class SellState with _$SellState {
 
   FiatCurrency get fiatCurrency {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => FiatCurrency.cad,
+      initial: (getUserSummaryException) => FiatCurrency.cad,
       amountInput:
           (userSummary, bitcoinUnit) =>
               FiatCurrency.fromCode(userSummary.currency ?? 'CAD'),
@@ -198,7 +197,7 @@ sealed class SellState with _$SellState {
 
   BitcoinUnit? get bitcoinUnit {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => null,
+      initial: (getUserSummaryException) => null,
       amountInput: (userSummary, bitcoinUnit) => bitcoinUnit,
       walletSelection:
           (
@@ -232,7 +231,7 @@ sealed class SellState with _$SellState {
 
   bool get isLimitedKycLevel {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => false,
+      initial: (getUserSummaryException) => false,
       amountInput: (userSummary, bitcoinUnit) => userSummary.isLimitedKycLevel,
       walletSelection:
           (
@@ -268,7 +267,7 @@ sealed class SellState with _$SellState {
 
   bool get isLightKycLevel {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => false,
+      initial: (getUserSummaryException) => false,
       amountInput: (userSummary, bitcoinUnit) => userSummary.isLightKycLevel,
       walletSelection:
           (
@@ -304,7 +303,7 @@ sealed class SellState with _$SellState {
 
   bool get isFullyVerifiedKycLevel {
     return when(
-      initial: (apiKeyException, getUserSummaryException) => false,
+      initial: (getUserSummaryException) => false,
       amountInput:
           (userSummary, bitcoinUnit) => userSummary.isFullyVerifiedKycLevel,
       walletSelection:
