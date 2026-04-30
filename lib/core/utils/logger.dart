@@ -28,14 +28,18 @@ class Logger {
     dep.Logger.root.onRecord.listen((record) {
       _isLogging = true;
       try {
-        final line = _recordToTsvLine(record);
+        final content = _recordToContent(record);
 
         // We skip INFO messages in the file and only emit them through the logger/debug output.
         if (record.level != dep.Level.INFO) {
-          _queueWrite(line, flush: record.level >= dep.Level.SEVERE);
+          _queueWrite(
+            content.map(_sanitize).join('\t'),
+            flush: record.level >= dep.Level.SEVERE,
+          );
         }
 
-        if (kDebugMode) debugPrint(line);
+        // Print the un-sanitized line so ANSI color codes survive to the terminal.
+        if (kDebugMode) debugPrint(content.join('\t'));
       } catch (e) {
         if (kDebugMode) debugPrint('[Logger listener failed] $e');
       } finally {
@@ -326,15 +330,15 @@ class Logger {
     }
   }
 
-  String _recordToTsvLine(dep.LogRecord record) {
-    final content = <String>[
+  List<String> _recordToContent(dep.LogRecord record) {
+    final (:String error, :String trace) = record.stringifyErrorAndTrace();
+    return [
       record.time.toIso8601String(),
       record.level.name,
       record.message,
+      error,
+      trace,
     ];
-    final (:String error, :String trace) = record.stringifyErrorAndTrace();
-    content.addAll([error, trace]);
-    return content.map(_sanitize).join('\t');
   }
 
   String _sanitize(String input) {
