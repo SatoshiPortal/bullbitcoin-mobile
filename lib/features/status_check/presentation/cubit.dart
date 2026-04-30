@@ -27,6 +27,7 @@ class ServiceStatusCubit extends Cubit<ServiceStatusState> {
         network: network,
       );
 
+      if (isClosed) return;
       emit(state.copyWith(serviceStatus: serviceStatus, isLoading: false));
     } catch (e) {
       log.severe(
@@ -34,6 +35,7 @@ class ServiceStatusCubit extends Cubit<ServiceStatusState> {
         error: e,
         trace: StackTrace.current,
       );
+      if (isClosed) return;
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
