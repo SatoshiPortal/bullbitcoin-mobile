@@ -23,40 +23,44 @@ class ImportMnemonicCubit extends Cubit<ImportMnemonicState> {
 
   void updateMnemonic(Mnemonic mnemonic) {
     if (mnemonic.label.isEmpty) throw EmptyMnemonicLabelError();
-    emit(state.copyWith(mnemonic: mnemonic));
+    emit(state.copyWith(mnemonic: mnemonic, error: null));
+    _scanAllScriptTypes(mnemonic);
   }
 
-  Future<void> checkWalletsStatusDirty() async {
+  Future<void> _scanAllScriptTypes(Mnemonic mnemonic) async {
+    final bip39Mnemonic = bip39.Mnemonic.fromWords(
+      words: mnemonic.words,
+      passphrase: mnemonic.passphrase,
+      language: mnemonic.language,
+    );
+
+    // Fire all three concurrently and emit each as it completes,
+    // so a slow/failing scan for one type doesn't block the others.
+    await Future.wait([
+      _scanOne(bip39Mnemonic, ScriptType.bip84),
+      _scanOne(bip39Mnemonic, ScriptType.bip49),
+      _scanOne(bip39Mnemonic, ScriptType.bip44),
+    ]);
+  }
+
+  Future<void> _scanOne(bip39.Mnemonic m, ScriptType scriptType) async {
     try {
-      if (state.mnemonic == null) throw MnemonicIsNullError();
-
-      emit(state.copyWith(hasCheckedWallets: true, error: null));
-
-      final mnemonic = bip39.Mnemonic.fromWords(
-        words: state.mnemonic!.words,
-        passphrase: state.mnemonic!.passphrase,
-        language: state.mnemonic!.language,
+      final result = await _checkWalletUsecase(
+        mnemonic: m,
+        scriptType: scriptType,
       );
-
-      final bip84Status = await _checkWalletUsecase(
-        mnemonic: mnemonic,
-        scriptType: ScriptType.bip84,
-      );
-      if (!isClosed) emit(state.copyWith(bip84Status: bip84Status));
-
-      final bip49Status = await _checkWalletUsecase(
-        mnemonic: mnemonic,
-        scriptType: ScriptType.bip49,
-      );
-      if (!isClosed) emit(state.copyWith(bip49Status: bip49Status));
-
-      final bip44Status = await _checkWalletUsecase(
-        mnemonic: mnemonic,
-        scriptType: ScriptType.bip44,
-      );
-      if (!isClosed) emit(state.copyWith(bip44Status: bip44Status));
-    } catch (e) {
-      emit(state.copyWith(error: e as Exception));
+      if (isClosed) return;
+      switch (scriptType) {
+        case ScriptType.bip84:
+          emit(state.copyWith(bip84Status: result));
+        case ScriptType.bip49:
+          emit(state.copyWith(bip49Status: result));
+        case ScriptType.bip44:
+          emit(state.copyWith(bip44Status: result));
+      }
+    } catch (_) {
+      // Per-script failures are intentionally not surfaced globally
+      // so the other scans can still emit their results.
     }
   }
 
