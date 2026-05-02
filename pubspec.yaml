@@ -10,8 +10,8 @@ dependencies:
     sdk: flutter
   bdk_dart:
     git:
-      url: https://github.com/ethicnology/bdk-dart
-      ref: 76695446cd57f94802327f6ab50392f651c49b63
+      url: https://github.com/i5hi/bdk-dart
+      ref: 6ddecbb360fb894068bdfd79ab0c10abf49b9fca
   flutter_bloc: ^9.1.1
   freezed: ^3.2.3
   get_it: ^9.1.1
@@ -142,6 +142,12 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.19.0
+
+dependency_overrides:
+  bdk_dart:
+    git:
+      url: https://github.com/i5hi/bdk-dart
+      ref: 6ddecbb360fb894068bdfd79ab0c10abf49b9fca
 
 dev_dependencies:
   build_runner: ^2.10.4
