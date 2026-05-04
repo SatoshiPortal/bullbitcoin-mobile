@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -16,7 +17,6 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
-import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
@@ -30,39 +30,69 @@ Future<void> main({bool isInitialized = false}) async {
   late Wallet senderWallet;
 
   final walletRepository = locator<WalletRepository>();
+  final seedRepository = locator<SeedRepository>();
   final addressRepository = locator<WalletAddressRepository>();
   final utxoRepository = locator<WalletUtxoRepository>();
   final payjoinRepository = locator<PayjoinRepository>();
+  final localPayjoinDatasource = locator<LocalPayjoinDatasource>();
   final receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
   final sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
   final prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
-  final receiverMnemonic = Platform.environment['TEST_ALICE_MNEMONIC'];
-  final senderMnemonic = Platform.environment['TEST_BOB_MNEMONIC'];
+  const receiverMnemonic = String.fromEnvironment('TEST_ALICE_MNEMONIC');
+  const senderMnemonic = String.fromEnvironment('TEST_BOB_MNEMONIC');
 
-  if (receiverMnemonic == null || receiverMnemonic.isEmpty) {
+  if (receiverMnemonic.isEmpty) {
     throw Exception('TEST_ALICE_MNEMONIC environment variable is not set');
   }
-  if (senderMnemonic == null || senderMnemonic.isEmpty) {
+  if (senderMnemonic.isEmpty) {
     throw Exception('TEST_BOB_MNEMONIC environment variable is not set');
   }
 
   setUpAll(() async {
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
-    final receiverSeedModel = SeedModel.mnemonic(
+    // Drain any persisted payjoin state so the test starts clean. Ongoing
+    // payjoins left behind by a previous (possibly crashed) run keep their
+    // inputs frozen via getUtxosFrozenByOngoingPayjoins(), which would starve
+    // the sender wallet. _resumePayjoins in PayjoinRepositoryImpl's
+    // constructor runs unawaited and writes its own updates concurrently, so
+    // we expire + recheck until the ongoing set stays empty for several polls.
+    const pollInterval = Duration(milliseconds: 500);
+    const requiredStableChecks = 3;
+    const maxIterations = 40;
+    var stableChecks = 0;
+    for (var i = 0; i < maxIterations; i++) {
+      final ongoing = await localPayjoinDatasource.fetchAll(
+        onlyUnfinished: true,
+      );
+      if (ongoing.isEmpty) {
+        stableChecks++;
+        if (stableChecks >= requiredStableChecks) break;
+      } else {
+        stableChecks = 0;
+        for (final payjoin in ongoing) {
+          await localPayjoinDatasource.update(
+            payjoin.copyWith(isExpired: true),
+          );
+        }
+      }
+      await Future.delayed(pollInterval);
+    }
+
+    final receiverSeed = await seedRepository.createFromMnemonic(
       mnemonicWords: receiverMnemonic.split(' '),
     );
-    final senderSeedModel = SeedModel.mnemonic(
+    final senderSeed = await seedRepository.createFromMnemonic(
       mnemonicWords: senderMnemonic.split(' '),
     );
     receiverWallet = await walletRepository.createWallet(
-      seed: receiverSeedModel.toEntity(),
+      seed: receiverSeed,
       network: Network.bitcoinTestnet,
       scriptType: ScriptType.bip84,
     );
     senderWallet = await walletRepository.createWallet(
-      seed: senderSeedModel.toEntity(),
+      seed: senderSeed,
       network: Network.bitcoinTestnet,
       scriptType: ScriptType.bip84,
     );
