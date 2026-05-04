@@ -39,310 +39,101 @@ sealed class SellState with _$SellState {
   }) = SellSuccessState;
   const SellState._();
 
-  SellAmountInputState? get toCleanAmountInputState {
-    return whenOrNull(
-      amountInput: (userSummary, bitcoinUnit) {
-        return SellAmountInputState(
-          userSummary: userSummary,
-          bitcoinUnit: bitcoinUnit,
-        );
-      },
-      walletSelection: (
-        userSummary,
-        bitcoinUnit,
-        orderAmount,
-        fiatCurrency,
-        isCreatingSellOrder,
-        error,
-      ) {
-        return SellAmountInputState(
-          userSummary: userSummary,
-          bitcoinUnit: bitcoinUnit,
-        );
-      },
-      payment: (
-        userSummary,
-        bitcoinUnit,
-        orderAmount,
-        fiatCurrency,
-        selectedWallet,
-        sellOrder,
-        isConfirmingPayment,
-        isPolling,
-        error,
-        absoluteFees,
-        _,
-        _,
-        _,
-        _,
-      ) {
-        return SellAmountInputState(
-          userSummary: userSummary,
-          bitcoinUnit: bitcoinUnit,
-        );
-      },
-    );
-  }
+  // Backward step: drop forward state. Same-type case resets transients.
+  SellAmountInputState? get toCleanAmountInputState => switch (this) {
+    final SellAmountInputState s => s,
+    SellWalletSelectionState(:final userSummary, :final bitcoinUnit) =>
+      SellAmountInputState(userSummary: userSummary, bitcoinUnit: bitcoinUnit),
+    SellPaymentState(:final userSummary, :final bitcoinUnit) =>
+      SellAmountInputState(userSummary: userSummary, bitcoinUnit: bitcoinUnit),
+    _ => null,
+  };
 
-  SellWalletSelectionState? get toCleanWalletSelectionState {
-    return whenOrNull(
-      walletSelection: (
-        userSummary,
-        bitcoinUnit,
-        orderAmount,
-        fiatCurrency,
-        isCreatingSellOrder,
-        error,
-      ) {
-        return SellWalletSelectionState(
-          userSummary: userSummary,
-          bitcoinUnit: bitcoinUnit,
-          orderAmount: orderAmount,
-          fiatCurrency: fiatCurrency,
-        );
-      },
-      payment:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            selectedWallet,
-            sellOrder,
-            isConfirmingPayment,
-            isPolling,
-            error,
-            absoluteFees,
-            _,
-            _,
-            _,
-            _,
-          ) => SellWalletSelectionState(
-            userSummary: userSummary,
-            bitcoinUnit: bitcoinUnit,
-            orderAmount: orderAmount,
-            fiatCurrency: fiatCurrency,
-          ),
-    );
-  }
+  SellWalletSelectionState? get toCleanWalletSelectionState => switch (this) {
+    final SellWalletSelectionState s => s.copyWith(
+      isCreatingSellOrder: false,
+      error: null,
+    ),
+    SellPaymentState(
+      :final userSummary,
+      :final bitcoinUnit,
+      :final orderAmount,
+      :final fiatCurrency,
+    ) =>
+      SellWalletSelectionState(
+        userSummary: userSummary,
+        bitcoinUnit: bitcoinUnit,
+        orderAmount: orderAmount,
+        fiatCurrency: fiatCurrency,
+      ),
+    _ => null,
+  };
 
-  SellPaymentState? get toCleanPaymentState {
-    return whenOrNull(
-      payment: (
-        userSummary,
-        bitcoinUnit,
-        orderAmount,
-        fiatCurrency,
-        selectedWallet,
-        sellOrder,
-        isConfirmingPayment,
-        isPolling,
-        error,
-        absoluteFees,
-        _,
-        _,
-        _,
-        _,
-      ) {
-        return SellPaymentState(
-          userSummary: userSummary,
-          bitcoinUnit: bitcoinUnit,
-          orderAmount: orderAmount,
-          fiatCurrency: fiatCurrency,
-          selectedWallet: selectedWallet,
-          sellOrder: sellOrder,
-          absoluteFees: absoluteFees,
-        );
-      },
-    );
-  }
+  // Same-type reset: preserve all data fields, clear only transient UI flags.
+  // Using copyWith here makes new fields safe-by-default — adding a field to
+  // SellPaymentState can no longer silently drop it (was issue #2007).
+  SellPaymentState? get toCleanPaymentState => switch (this) {
+    final SellPaymentState s => s.copyWith(
+      isConfirmingPayment: false,
+      isPolling: false,
+      error: null,
+    ),
+    _ => null,
+  };
 
-  FiatCurrency get fiatCurrency {
-    return when(
-      initial: (getUserSummaryException) => FiatCurrency.cad,
-      amountInput:
-          (userSummary, bitcoinUnit) =>
-              FiatCurrency.fromCode(userSummary.currency ?? 'CAD'),
-      walletSelection:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            isCreatingSellOrder,
-            error,
-          ) => fiatCurrency,
-      payment:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            selectedWallet,
-            sellOrder,
-            isConfirmingPayment,
-            isPolling,
-            error,
-            absoluteFees,
-            _,
-            _,
-            _,
-            _,
-          ) => fiatCurrency,
-      success:
-          (bitcoinUnit, sellOrder) =>
-              FiatCurrency.fromCode(sellOrder.payoutCurrency),
-    );
-  }
+  FiatCurrency get fiatCurrency => switch (this) {
+    SellInitialState() => FiatCurrency.cad,
+    SellAmountInputState(:final userSummary) => FiatCurrency.fromCode(
+      userSummary.currency ?? 'CAD',
+    ),
+    SellWalletSelectionState(:final fiatCurrency) => fiatCurrency,
+    SellPaymentState(:final fiatCurrency) => fiatCurrency,
+    SellSuccessState(:final sellOrder) => FiatCurrency.fromCode(
+      sellOrder.payoutCurrency,
+    ),
+  };
 
-  BitcoinUnit? get bitcoinUnit {
-    return when(
-      initial: (getUserSummaryException) => null,
-      amountInput: (userSummary, bitcoinUnit) => bitcoinUnit,
-      walletSelection:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            isCreatingSellOrder,
-            error,
-          ) => bitcoinUnit,
-      payment:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            selectedWallet,
-            sellOrder,
-            isConfirmingPayment,
-            isPolling,
-            error,
-            absoluteFees,
-            _,
-            _,
-            _,
-            _,
-          ) => bitcoinUnit,
-      success: (bitcoinUnit, sellOrder) => bitcoinUnit,
-    );
-  }
+  BitcoinUnit? get bitcoinUnit => switch (this) {
+    SellInitialState() => null,
+    SellAmountInputState(:final bitcoinUnit) => bitcoinUnit,
+    SellWalletSelectionState(:final bitcoinUnit) => bitcoinUnit,
+    SellPaymentState(:final bitcoinUnit) => bitcoinUnit,
+    SellSuccessState(:final bitcoinUnit) => bitcoinUnit,
+  };
 
-  bool get isLimitedKycLevel {
-    return when(
-      initial: (getUserSummaryException) => false,
-      amountInput: (userSummary, bitcoinUnit) => userSummary.isLimitedKycLevel,
-      walletSelection:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            isCreatingSellOrder,
-            error,
-          ) => userSummary.isLimitedKycLevel,
-      payment:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            selectedWallet,
-            sellOrder,
-            isConfirmingPayment,
-            isPolling,
-            error,
-            absoluteFees,
-            _,
-            _,
-            _,
-            _,
-          ) => userSummary.isLimitedKycLevel,
-      success:
-          (bitcoinUnit, sellOrder) =>
-              true, // Success state implies KYC was sufficient
-    );
-  }
+  bool get isLimitedKycLevel => switch (this) {
+    SellInitialState() => false,
+    SellAmountInputState(:final userSummary) => userSummary.isLimitedKycLevel,
+    SellWalletSelectionState(:final userSummary) =>
+      userSummary.isLimitedKycLevel,
+    SellPaymentState(:final userSummary) => userSummary.isLimitedKycLevel,
+    SellSuccessState() => true, // Success state implies KYC was sufficient
+  };
 
-  bool get isLightKycLevel {
-    return when(
-      initial: (getUserSummaryException) => false,
-      amountInput: (userSummary, bitcoinUnit) => userSummary.isLightKycLevel,
-      walletSelection:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            isCreatingSellOrder,
-            error,
-          ) => userSummary.isLightKycLevel,
-      payment:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            selectedWallet,
-            sellOrder,
-            isConfirmingPayment,
-            isPolling,
-            error,
-            absoluteFees,
-            _,
-            _,
-            _,
-            _,
-          ) => userSummary.isLightKycLevel,
-      success:
-          (bitcoinUnit, sellOrder) =>
-              true, // Success state implies KYC was sufficient
-    );
-  }
+  bool get isLightKycLevel => switch (this) {
+    SellInitialState() => false,
+    SellAmountInputState(:final userSummary) => userSummary.isLightKycLevel,
+    SellWalletSelectionState(:final userSummary) => userSummary.isLightKycLevel,
+    SellPaymentState(:final userSummary) => userSummary.isLightKycLevel,
+    SellSuccessState() => true, // Success state implies KYC was sufficient
+  };
 
-  bool get isFullyVerifiedKycLevel {
-    return when(
-      initial: (getUserSummaryException) => false,
-      amountInput:
-          (userSummary, bitcoinUnit) => userSummary.isFullyVerifiedKycLevel,
-      walletSelection:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            isCreatingSellOrder,
-            error,
-          ) => userSummary.isFullyVerifiedKycLevel,
-      payment:
-          (
-            userSummary,
-            bitcoinUnit,
-            orderAmount,
-            fiatCurrency,
-            selectedWallet,
-            sellOrder,
-            isConfirmingPayment,
-            isPolling,
-            error,
-            absoluteFees,
-            _,
-            _,
-            _,
-            _,
-          ) => userSummary.isFullyVerifiedKycLevel,
-      success:
-          (bitcoinUnit, sellOrder) =>
-              true, // Success state implies KYC was sufficient
-    );
-  }
+  bool get isFullyVerifiedKycLevel => switch (this) {
+    SellInitialState() => false,
+    SellAmountInputState(:final userSummary) =>
+      userSummary.isFullyVerifiedKycLevel,
+    SellWalletSelectionState(:final userSummary) =>
+      userSummary.isFullyVerifiedKycLevel,
+    SellPaymentState(:final userSummary) => userSummary.isFullyVerifiedKycLevel,
+    SellSuccessState() => true, // Success state implies KYC was sufficient
+  };
 
-  UserSummary? get _userSummary => whenOrNull(
-    amountInput: (userSummary, _) => userSummary,
-    walletSelection: (userSummary, _, _, _, _, _) => userSummary,
-    payment: (userSummary, _, _, _, _, _, _, _, _, _, _, _, _, _) => userSummary,
-  );
+  UserSummary? get _userSummary => switch (this) {
+    SellAmountInputState(:final userSummary) => userSummary,
+    SellWalletSelectionState(:final userSummary) => userSummary,
+    SellPaymentState(:final userSummary) => userSummary,
+    _ => null,
+  };
 
   /// Whether the user's KYC level permits transactions in [currency].
   /// Falls back to [fiatCurrency] when [currency] is null.
