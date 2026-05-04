@@ -4,6 +4,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecas
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
+import 'package:bb_mobile/features/pos/application/ports/pos_storage_port.dart';
+import 'package:bb_mobile/features/pos/application/usecases/watch_sales_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:get_it/get_it.dart';
@@ -34,7 +36,6 @@ Future<bool> tasksHandler(String task) async {
     final syncWalletUsecase = locator<SyncWalletUsecase>();
     final getWalletsUsecase = locator<GetWalletsUsecase>();
     final restartSwapWatcherUsecase = locator<RestartSwapWatcherUsecase>();
-
     final backgroundTask = BackgroundTask.fromName(task);
 
     switch (backgroundTask) {
@@ -56,6 +57,14 @@ Future<bool> tasksHandler(String task) async {
           log.warning('No wallets to sync');
         } else {
           await restartSwapWatcherUsecase.execute();
+        }
+      case BackgroundTask.posRelaySync:
+        final posStorage = locator<PosStoragePort>();
+        final watchSalesUsecase = locator<WatchSalesUsecase>();
+        final profiles = await posStorage.listProfiles();
+        for (final profile in profiles) {
+          await watchSalesUsecase.execute(ref: profile.ref);
+          log.fine('POS ${profile.ref.posId} relay events synced');
         }
       case BackgroundTask.logsPrune:
         await log.prune();

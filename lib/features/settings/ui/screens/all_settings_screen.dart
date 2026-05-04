@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/exchange_support_chat_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/pos/pos_router.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/router.dart';
 import 'package:flutter/material.dart';
@@ -42,9 +43,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
     );
 
     final isSuperuser =
-        context.select(
-          (SettingsCubit cubit) => cubit.state.isSuperuser,
-        ) ??
+        context.select((SettingsCubit cubit) => cubit.state.isSuperuser) ??
+        false;
+    final isDevModeEnabled =
+        context.select((SettingsCubit cubit) => cubit.state.isDevModeEnabled) ??
         false;
 
     final serviceStatusLoading = context.select(
@@ -71,8 +73,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                   onTap: () {
                     if (Platform.isIOS) {
                       if (isSuperuser) {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -81,8 +85,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                           );
                         }
                       } else {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(ExchangeRoute.exchangeLanding.name);
                         } else {
@@ -92,8 +98,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                         }
                       }
                     } else {
-                      final notLoggedIn =
-                          context.read<ExchangeCubit>().state.notLoggedIn;
+                      final notLoggedIn = context
+                          .read<ExchangeCubit>()
+                          .state
+                          .notLoggedIn;
                       if (notLoggedIn) {
                         context.goNamed(ExchangeRoute.exchangeLanding.name);
                       } else {
@@ -123,6 +131,14 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     context.pushNamed(SettingsRoute.appSettings.name);
                   },
                 ),
+                if (isSuperuser && isDevModeEnabled)
+                  SettingsEntryItem(
+                    icon: Icons.point_of_sale,
+                    title: 'Point of Sale',
+                    onTap: () {
+                      context.pushNamed(PosRoute.home.name);
+                    },
+                  ),
 
                 SettingsEntryItem(
                   icon: Icons.description,
@@ -202,8 +218,10 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
+                        final notLoggedIn = context
+                            .read<ExchangeCubit>()
+                            .state
+                            .notLoggedIn;
                         if (notLoggedIn) {
                           context.goNamed(
                             ExchangeRoute.exchangeLoginForSupport.name,

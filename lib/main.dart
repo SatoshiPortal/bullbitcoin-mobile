@@ -104,6 +104,22 @@ class Bull {
         requiresCharging: false,
       ),
     );
+    final settings = await locator<SettingsRepository>().fetch();
+    final shouldRegisterPosSync =
+        (settings.isSuperuser ?? false) && (settings.isDevModeEnabled ?? false);
+    if (shouldRegisterPosSync) {
+      await Workmanager().registerPeriodicTask(
+        BackgroundTask.posRelaySync.id,
+        BackgroundTask.posRelaySync.name,
+        frequency: const Duration(minutes: 30),
+        constraints: Constraints(
+          requiresBatteryNotLow: true,
+          requiresStorageNotLow: false,
+          requiresDeviceIdle: false,
+          requiresCharging: false,
+        ),
+      );
+    }
   }
 }
 

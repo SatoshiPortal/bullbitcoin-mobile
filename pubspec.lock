@@ -58,6 +58,14 @@ packages:
       url: "https://github.com/SatoshiPortal/ark-wallet-dart"
     source: git
     version: "0.0.1"
+  ascii_qr:
+    dependency: transitive
+    description:
+      name: ascii_qr
+      sha256: "2046e400a0fa4ea0de5df44c87b992cdd1f76403bb15e64513b89263598750ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   async:
     dependency: "direct main"
     description:
@@ -131,6 +139,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
+  bip340:
+    dependency: transitive
+    description:
+      name: bip340
+      sha256: b7bcd70a860e605046006adaa72bc4f7453f4d31d7ba74a4ad9d5de387a0fc0b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   bip39_mnemonic:
     dependency: "direct main"
     description:
@@ -346,10 +362,10 @@ packages:
     dependency: transitive
     description:
       name: characters
-      sha256: f71061c654a3380576a52b451dd5532377954cf9dbd272a78fc8479606670803
+      sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.4.1"
   charcode:
     dependency: transitive
     description:
@@ -454,6 +470,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  cryptography:
+    dependency: transitive
+    description:
+      name: cryptography
+      sha256: "3eda3029d34ec9095a27a198ac9785630fe525c0eb6a49f3d575272f8e792ef0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.9.0"
   csslib:
     dependency: transitive
     description:
@@ -575,6 +599,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.8"
+  elliptic:
+    dependency: transitive
+    description:
+      name: elliptic
+      sha256: "67931d408faa353bdebac9f7a1df0c3f6f828f4e8439cdf084573cd1601a2f4b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.12"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: "3e0141505477fd8ad55d6eb4e7776d3fe8430be8e497ccb1521370c3f21a3e2b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.8"
   extension_google_sign_in_as_googleapis_auth:
     dependency: "direct main"
     description:
@@ -1307,18 +1347,18 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: dc58c723c3c24bf8d3e2d3ad3f2f9d7bd9cf43ec6feaa64181775e60190153f2
+      sha256: dc0b7dc7651697ea4ff3e69ef44b0407ea32c487a39fff6a4004fa585e901861
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.17"
+    version: "0.12.19"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
-      sha256: f7142bb1154231d7ea5f96bc7bde4bda2a0945d2806bb11670e30b850d56bdec
+      sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
       url: "https://pub.dev"
     source: hosted
-    version: "0.11.1"
+    version: "0.13.0"
   meta:
     dependency: "direct main"
     description:
@@ -1375,6 +1415,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.0"
+  ndk:
+    dependency: transitive
+    description:
+      name: ndk
+      sha256: "4b2c2fbf8aa6883582e6c33e07e084677cb0f8cd876c4ed9d7f86cabb65a42ce"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.1"
+  ndk_bip32_keys:
+    dependency: transitive
+    description:
+      name: ndk_bip32_keys
+      sha256: "6bc311451646b6d488ca8e4c9907dc0e8486d93de752d5ab09c5c7b6c96238d8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   nested:
     dependency: transitive
     description:
@@ -1399,6 +1455,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  nostr_pos:
+    dependency: "direct main"
+    description:
+      path: "../nostr-pos/packages/nostr_pos"
+      relative: true
+    source: path
+    version: "0.1.0"
   objective_c:
     dependency: transitive
     description:
@@ -1577,7 +1640,7 @@ packages:
     source: hosted
     version: "2.1.8"
   pointycastle:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: pointycastle
       sha256: "4be0097fcf3fd3e8449e53730c631200ebc7b88016acecab2b0da2f0149222fe"
@@ -1698,6 +1761,14 @@ packages:
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"
+  sembast:
+    dependency: transitive
+    description:
+      name: sembast
+      sha256: "139cf71496105de32e7a08a4e3a1ead0f81c4a616ec9703ed07e8f0d10cdd505"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.6"
   sentry:
     dependency: transitive
     description:
@@ -1971,26 +2042,26 @@ packages:
     dependency: "direct dev"
     description:
       name: test
-      sha256: "75906bf273541b676716d1ca7627a17e4c4070a3a16272b7a3dc7da3b9f3f6b7"
+      sha256: "280d6d890011ca966ad08df7e8a4ddfab0fb3aa49f96ed6de56e3521347a9ae7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.26.3"
+    version: "1.30.0"
   test_api:
     dependency: transitive
     description:
       name: test_api
-      sha256: ab2726c1a94d3176a45960b6234466ec367179b87dd74f1611adb1f3b5fb9d55
+      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.7"
+    version: "0.7.10"
   test_core:
     dependency: transitive
     description:
       name: test_core
-      sha256: "0cc24b5ff94b38d2ae73e1eb43cc302b77964fbf67abad1e296025b78deb53d0"
+      sha256: "0381bd1585d1a924763c308100f2138205252fb90c9d4eeaf28489ee65ccde51"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.12"
+    version: "0.6.16"
   time:
     dependency: transitive
     description:
@@ -2225,6 +2296,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.3"
+  web_socket_client:
+    dependency: transitive
+    description:
+      name: web_socket_client
+      sha256: "394789177aa3bc1b7b071622a1dbf52a4631d7ce23c555c39bb2523e92316b07"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
   webdriver:
     dependency: transitive
     description:
@@ -2338,6 +2417,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.6.1"
+  xxh3:
+    dependency: transitive
+    description:
+      name: xxh3
+      sha256: "399a0438f5d426785723c99da6b16e136f4953fb1e9db0bf270bd41dd4619916"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   yaml:
     dependency: transitive
     description:
