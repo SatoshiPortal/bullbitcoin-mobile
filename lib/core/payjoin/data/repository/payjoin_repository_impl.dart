@@ -436,7 +436,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
           //  needs to listen for a payjoin request from the sender.
-          await _pdkPayjoinDatasource.startListeningForRequest(model);
+          _pdkPayjoinDatasource.startListeningForRequest(model);
         } else if (model.proposalPsbt == null) {
           // If the original tx bytes are present but the proposal psbt is not,
           //  it means the receiver has already received a payjoin request and
@@ -449,7 +449,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (model.proposalPsbt == null) {
           // If the proposal psbt is not present, it means the sender needs to
           //  listen for a payjoin proposal from the receiver.
-          await _pdkPayjoinDatasource.startListeningForProposal(model);
+          _pdkPayjoinDatasource.startListeningForProposal(model);
         } else {
           // If the proposal psbt is present, it means a payjoin proposal was
           //  already received  and it should be processed.

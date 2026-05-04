@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/errors/bull_exception.dart';
@@ -22,13 +21,9 @@ class PdkPayjoinDatasource {
   final StreamController<PayjoinSenderModel> _proposalSentController;
   final StreamController<PayjoinModel> _expiredController;
 
-  // Background processing
-  Isolate? _receiversIsolate;
-  Isolate? _sendersIsolate;
-  SendPort? _receiversIsolatePort;
-  SendPort? _sendersIsolatePort;
-  final Completer _receiversIsolateReady;
-  final Completer _sendersIsolateReady;
+  // Per-session polling timers keyed by session id
+  final Map<String, Timer> _receiverTimers = {};
+  final Map<String, Timer> _senderTimers = {};
 
   PdkPayjoinDatasource({
     String payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
@@ -37,9 +32,7 @@ class PdkPayjoinDatasource {
        _dio = dio,
        _payjoinRequestedController = StreamController.broadcast(),
        _proposalSentController = StreamController.broadcast(),
-       _expiredController = StreamController.broadcast(),
-       _receiversIsolateReady = Completer(),
-       _sendersIsolateReady = Completer();
+       _expiredController = StreamController.broadcast();
 
   Stream<PayjoinReceiverModel> get requestsForReceivers =>
       _payjoinRequestedController.stream;
@@ -114,8 +107,8 @@ class PdkPayjoinDatasource {
               )
               as PayjoinReceiverModel;
 
-      // Start listening for a payjoin request from the sender in an isolate
-      await startListeningForRequest(model);
+      // Start listening for a payjoin request from the sender
+      startListeningForRequest(model);
 
       return model;
     } catch (e) {
@@ -173,8 +166,8 @@ class PdkPayjoinDatasource {
             )
             as PayjoinSenderModel;
 
-    // Start listening for a payjoin proposal from the receiver in an isolate
-    await startListeningForProposal(model);
+    // Start listening for a payjoin proposal from the receiver
+    startListeningForProposal(model);
 
     return model;
   }
@@ -262,7 +255,9 @@ class PdkPayjoinDatasource {
   }) async {
     switch (state) {
       case InitializedReceiveSession():
-        throw StateError('Original PSBT is retrieved in the receiver isolate');
+        throw StateError(
+          'Original PSBT is retrieved in startListeningForRequest',
+        );
       case UncheckedOriginalPayloadReceiveSession():
         return _checkProposal(
           state.inner,
@@ -546,267 +541,138 @@ class PdkPayjoinDatasource {
     );
   }
 
-  Future<void> startListeningForRequest(PayjoinReceiverModel payjoin) async {
-    if (_receiversIsolate == null) {
-      // Start the isolate if it is not running yet
-      await _spawnReceiversIsolate();
-    }
-    await _receiversIsolateReady.future;
-    _receiversIsolatePort?.send(payjoin.toJson());
-  }
-
-  Future<void> startListeningForProposal(PayjoinSenderModel payjoin) async {
-    if (_sendersIsolate == null) {
-      // Start the isolate if it is not running yet
-      await _spawnSendersIsolate();
-    }
-    await _sendersIsolateReady.future;
-    _sendersIsolatePort?.send(payjoin.toJson());
-  }
-
-  /// Starts the isolate to listen for payjoin requests.
-  Future<void> _spawnReceiversIsolate() async {
-    // Receive isolate
-    final receivePort = ReceivePort();
-
-    // Listen to messages from the receive isolate
-    receivePort.listen((message) {
-      if (message is SendPort) {
-        _receiversIsolatePort = message;
-        _receiversIsolateReady.complete();
-      } else if (message is Map<String, dynamic>) {
-        logger.log.info(
-          'Received message of found payjoin request in main isolate: $message',
-        );
-        final model = PayjoinReceiverModel.fromJson(message);
-
-        // Send the updated payjoin model to the higher repository layers so it
-        //  can be stored locally and processed further
-        if (model.isExpired) {
-          _expiredController.add(model);
-        } else {
-          // If not expired, it means a request was received
-          _payjoinRequestedController.add(model);
-        }
-      }
-    });
-
-    logger.log.info('Spawning receivers isolate');
-    // Spawn the isolate
-    _receiversIsolate = await Isolate.spawn(
-      _receiversIsolateEntryPoint,
-      receivePort.sendPort,
+  void startListeningForRequest(PayjoinReceiverModel payjoin) {
+    _receiverTimers[payjoin.id]?.cancel();
+    _receiverTimers[payjoin.id] = Timer.periodic(
+      const Duration(seconds: PayjoinConstants.directoryPollingInterval),
+      (timer) => _pollReceiverOnce(payjoin, timer),
     );
   }
 
-  /// Starts the isolate to request and listen for payjoin proposals.
-  Future<void> _spawnSendersIsolate() async {
-    // Senders isolate
-    final receivePort = ReceivePort();
-
-    // Listen for messages from the senders isolate
-    receivePort.listen((message) {
-      if (message is SendPort) {
-        _sendersIsolatePort = message;
-        _sendersIsolateReady.complete();
-      } else if (message is Map<String, dynamic>) {
-        final model = PayjoinSenderModel.fromJson(message);
-
-        // Send the updated payjoin model to the higher repository layers for
-        //  processing and notification to the user
-        if (model.isExpired) {
-          _expiredController.add(model);
-        } else {
-          // If not expired, it means a proposal was received
-          _proposalSentController.add(model);
-        }
-      }
-    });
-
-    logger.log.info('Spawning senders isolate');
-    _sendersIsolate = await Isolate.spawn(
-      _sendersIsolateEntryPoint,
-      receivePort.sendPort,
+  void startListeningForProposal(PayjoinSenderModel payjoin) {
+    _senderTimers[payjoin.id]?.cancel();
+    _senderTimers[payjoin.id] = Timer.periodic(
+      const Duration(seconds: PayjoinConstants.directoryPollingInterval),
+      (timer) => _pollSenderOnce(payjoin, timer),
     );
   }
 
-  static Future<void> _receiversIsolateEntryPoint(SendPort sendPort) async {
-    log('[Receivers Isolate] Started _receiversIsolateEntryPoint');
-
-    final receivePort = ReceivePort();
-    sendPort.send(receivePort.sendPort);
-    final dio = Dio();
-    final requests = <String, Future<void>>{};
-
-    // Listen for and register new receivers sent from the main isolate
-    receivePort.listen((data) {
-      log('[Receivers Isolate] Received data in receivers isolate: $data');
-      final receiverModel = PayjoinReceiverModel.fromJson(
-        data as Map<String, dynamic>,
+  Future<void> _pollReceiverOnce(
+    PayjoinReceiverModel receiverModel,
+    Timer timer,
+  ) async {
+    log('[receiver poll] checking for request for ${receiverModel.id}');
+    try {
+      final persister = InMemoryJsonReceiverSessionPersister.fromJson(
+        receiverModel.receiver,
       );
-
-      // Start checking for a payjoin request from the sender periodically
-      Timer.periodic(const Duration(seconds: PayjoinConstants.directoryPollingInterval), (
-        Timer timer,
-      ) async {
-        log('[Receivers Isolate] Checking for request for ${receiverModel.id}');
-        try {
-          final persister = InMemoryJsonReceiverSessionPersister.fromJson(
-            receiverModel.receiver,
-          );
-          final state = replayReceiverEventLog(persister: persister).state();
-          if (state is! InitializedReceiveSession) return;
-
-          final unchecked = await _getUncheckedOriginalPayload(
-            state.inner,
-            persister,
-            dio,
-          );
-          if (unchecked != null) {
-            requests.putIfAbsent(receiverModel.id, () async {
-              log('[Receivers Isolate] Request found for ${receiverModel.id}');
-              final maybeInputsOwned = unchecked
-                  .assumeInteractiveReceiver()
-                  .save(persister: persister);
-              // The original tx bytes are needed in the main isolate for
-              //  further processing so extract them here and pass them
-              //  through the model
-              final originalTxBytes = maybeInputsOwned
-                  .extractTxToScheduleBroadcast();
-              final originalTx = await BitcoinTx.fromBytes(originalTxBytes);
-              final originalTxId = originalTx.txid;
-              final amountSat = await originalTx.getAmountReceived(
-                address: receiverModel.address,
-                isTestnet: receiverModel.isTestnet,
-              );
-              log(
-                '[Receivers Isolate] Request original Tx ID: $originalTxId and amount: $amountSat for '
-                '${receiverModel.id}',
-              );
-              final updatedModel = receiverModel.copyWith(
-                receiver: persister.toJson(),
-                originalTxBytes: originalTxBytes,
-                originalTxId: originalTx.txid,
-                amountSat: amountSat,
-              );
-
-              // Notify the main isolate so it can be processed further
-              sendPort.send(updatedModel.toJson());
-
-              // Cancel the timer since the request has been received
-              log(
-                '[Receivers Isolate] cancelling timer in receivers isolate for ${receiverModel.id}',
-              );
-              timer.cancel();
-              log(
-                '[Receivers Isolate] timer cancelled in receivers isolate for ${receiverModel.id}',
-              );
-            });
-          } else {
-            log(
-              '[Receivers Isolate] No valid request found in receivers isolate for '
-              '${receiverModel.id}',
-            );
-          }
-        } catch (e) {
-          log(
-            '[Receivers Isolate] periodic timer get request exception: $e for ${receiverModel.id}',
-          );
-          if (e is PayjoinExpiredException) {
-            // If the request returns an expiry error, mark the receiver as
-            //  expired and notify the main isolate so it stops polling
-            final updatedModel = receiverModel.copyWith(isExpired: true);
-            sendPort.send(updatedModel.toJson());
-            timer.cancel();
-          }
-        }
-      });
-    });
-  }
-
-  static Future<void> _sendersIsolateEntryPoint(SendPort sendPort) async {
-    log('[Senders Isolate] Started _sendersIsolateEntryPoint');
-
-    final receivePort = ReceivePort();
-    sendPort.send(receivePort.sendPort);
-
-    final dio = Dio();
-    // Listen for and register new senders sent from the main isolate
-    receivePort.listen((data) async {
+      final ReceiveSession state;
       try {
-        log('[Senders Isolate] Received data in senders isolate: $data');
-        final senderModel = PayjoinSenderModel.fromJson(
-          data as Map<String, dynamic>,
-        );
-
-        // Periodically check for a proposal from the receiver
-        Timer.periodic(
-          const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-          (Timer timer) async {
-            log('[Senders Isolate]Checking for proposal in senders isolate');
-            try {
-              final persister = InMemoryJsonSenderSessionPersister.fromJson(
-                senderModel.sender,
-              );
-              final state = pj
-                  .replaySenderEventLog(persister: persister)
-                  .state();
-              if (state is! PollingForProposalSendSession) return;
-
-              final proposalPsbt = await _getProposalPsbt(
-                state.inner,
-                persister,
-                dio,
-              );
-
-              if (proposalPsbt != null) {
-                log('[Senders Isolate] Proposal found in senders isolate');
-                final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
-                // The proposal psbt is needed in the main isolate for
-                //  further processing so send it through the model as well as
-                //  its txId.
-                final updatedModel = senderModel.copyWith(
-                  sender: persister.toJson(),
-                  proposalPsbt: proposalPsbt,
-                  txId: txId,
-                );
-
-                // Notify the main isolate so the payjoin can be processed further
-                sendPort.send(updatedModel.toJson());
-
-                // Cancel the timer
-                timer.cancel();
-              }
-            } catch (e) {
-              log('[Senders Isolate] periodic timer exception: $e');
-              if (e is PayjoinExpiredException) {
-                // If the request returns an expiry error, mark the receiver as
-                //  expired and notify the main isolate so it stops polling
-                final updatedModel = senderModel.copyWith(isExpired: true);
-                sendPort.send(updatedModel.toJson());
-                timer.cancel();
-              }
-            }
-          },
-        );
-      } catch (e) {
-        log('[Senders Isolate] Error in listener: $e');
-        // Optionally notify the main isolate of the failure
+        state = replayReceiverEventLog(persister: persister).state();
+      } on ReceiverReplayException catch (e) {
+        if (_isExpiredString(e)) {
+          throw PayjoinExpiredException('Payjoin receiver expired: $e');
+        }
+        rethrow;
       }
-    });
+      if (state is! InitializedReceiveSession) return;
+
+      final unchecked = await _getUncheckedOriginalPayload(
+        state.inner,
+        persister,
+      );
+      if (unchecked == null) {
+        log('[receiver poll] no request yet for ${receiverModel.id}');
+        return;
+      }
+
+      timer.cancel();
+      _receiverTimers.remove(receiverModel.id);
+
+      final maybeInputsOwned = unchecked.assumeInteractiveReceiver().save(
+        persister: persister,
+      );
+      final originalTxBytes = maybeInputsOwned.extractTxToScheduleBroadcast();
+      final originalTx = await BitcoinTx.fromBytes(originalTxBytes);
+      final amountSat = await originalTx.getAmountReceived(
+        address: receiverModel.address,
+        isTestnet: receiverModel.isTestnet,
+      );
+      log(
+        '[receiver poll] request found for ${receiverModel.id}: '
+        'txid=${originalTx.txid} amount=$amountSat',
+      );
+      final updatedModel = receiverModel.copyWith(
+        receiver: persister.toJson(),
+        originalTxBytes: originalTxBytes,
+        originalTxId: originalTx.txid,
+        amountSat: amountSat,
+      );
+      _payjoinRequestedController.add(updatedModel);
+    } on PayjoinExpiredException catch (e) {
+      logger.log.info('[receiver poll] expired for ${receiverModel.id}: $e');
+      timer.cancel();
+      _receiverTimers.remove(receiverModel.id);
+      _expiredController.add(receiverModel.copyWith(isExpired: true));
+    } catch (e) {
+      logger.log.info('[receiver poll] ${receiverModel.id}: $e');
+    }
   }
 
-  static Future<UncheckedOriginalPayload?> _getUncheckedOriginalPayload(
+  Future<void> _pollSenderOnce(
+    PayjoinSenderModel senderModel,
+    Timer timer,
+  ) async {
+    log('[sender poll] checking for proposal for ${senderModel.id}');
+    try {
+      final persister = InMemoryJsonSenderSessionPersister.fromJson(
+        senderModel.sender,
+      );
+      final SendSession state;
+      try {
+        state = replaySenderEventLog(persister: persister).state();
+      } on SenderReplayException catch (e) {
+        if (_isExpiredString(e)) {
+          throw PayjoinExpiredException('Payjoin sender expired: $e');
+        }
+        rethrow;
+      }
+      if (state is! PollingForProposalSendSession) return;
+
+      final proposalPsbt = await _getProposalPsbt(state.inner, persister);
+      if (proposalPsbt == null) return;
+
+      timer.cancel();
+      _senderTimers.remove(senderModel.id);
+
+      log('[sender poll] proposal found for ${senderModel.id}');
+      final txId = (await BitcoinTx.fromPsbt(proposalPsbt)).txid;
+      final updatedModel = senderModel.copyWith(
+        sender: persister.toJson(),
+        proposalPsbt: proposalPsbt,
+        txId: txId,
+      );
+      _proposalSentController.add(updatedModel);
+    } on PayjoinExpiredException catch (e) {
+      logger.log.info('[sender poll] expired for ${senderModel.id}: $e');
+      timer.cancel();
+      _senderTimers.remove(senderModel.id);
+      _expiredController.add(senderModel.copyWith(isExpired: true));
+    } catch (e) {
+      logger.log.info('[sender poll] ${senderModel.id}: $e');
+    }
+  }
+
+  Future<UncheckedOriginalPayload?> _getUncheckedOriginalPayload(
     Initialized initialized,
     InMemoryJsonReceiverSessionPersister persister,
-    Dio dio,
   ) async {
     Object? lastError;
     for (final relay in PayjoinConstants.ohttpRelayUrls) {
       try {
         final poll = initialized.createPollRequest(ohttpRelay: relay);
         final body = await _postBytes(
-          dio,
+          _dio,
           poll.request.url,
           poll.request.body,
           poll.request.contentType,
@@ -832,17 +698,16 @@ class PdkPayjoinDatasource {
     throw PayjoinNotFoundException('Failed to poll receiver: $lastError');
   }
 
-  static Future<String?> _getProposalPsbt(
+  Future<String?> _getProposalPsbt(
     PollingForProposal polling,
     InMemoryJsonSenderSessionPersister persister,
-    Dio dio,
   ) async {
     Object? lastError;
     for (final relay in PayjoinConstants.ohttpRelayUrls) {
       try {
         final poll = polling.createPollRequest(ohttpRelay: relay);
         final body = await _postBytes(
-          dio,
+          _dio,
           poll.request.url,
           poll.request.body,
           poll.request.contentType,
