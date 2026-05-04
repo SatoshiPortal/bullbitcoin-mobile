@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_net
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
@@ -119,6 +120,17 @@ class SqliteDatabase extends _$SqliteDatabase {
         from10To11: _reportingMigration('from10To11', Schema10To11.migrate),
         from11To12: _reportingMigration('from11To12', Schema11To12.migrate),
       ),
+      // Backfills `Report.fromVersion` for installs that predate the
+      // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).
+      // Drift sets `versionBefore` to the on-disk schema before any
+      // step runs, so this fires once on the first launch after a
+      // pre-v6.6.0 → v6.6.0+ upgrade and is a no-op otherwise.
+      beforeOpen: (details) async {
+        if (details.versionBefore != null &&
+            details.versionBefore != details.versionNow) {
+          Report.recordSchemaUpgrade(from: details.versionBefore!);
+        }
+      },
     );
   }
 
