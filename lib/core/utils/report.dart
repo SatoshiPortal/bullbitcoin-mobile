@@ -101,6 +101,36 @@ class Report {
     await prefs.setString(_lastVersionKey, to);
   }
 
+  /// Fallback for installs that predate the `_lastVersionKey` marker
+  /// (added in v6.6.0). Wired into drift's `MigrationStrategy.beforeOpen`
+  /// — drift only fires the upgrade path when the on-disk schema
+  /// differs from the current one, so a schema upgrade is observable
+  /// even when prefs is empty. Without this, pre-v6.6.0 upgrades are
+  /// misclassified as installs in Sentry. Idempotent: a populated
+  /// `fromVersion` from prefs takes precedence.
+  static void recordSchemaUpgrade({required int from}) {
+    fromVersion ??= _versionFromSchema(from);
+  }
+
+  /// Maps a drift schema number to the first released app version that
+  /// shipped with that schema. Append a new case here whenever
+  /// `SqliteDatabase.schemaVersion` is bumped.
+  static String _versionFromSchema(int schema) => switch (schema) {
+    1 => 'v5.0.0..v5.2.0',
+    2 => 'v5.3.0',
+    3 => 'v5.3.1',
+    4 => 'v5.4.0..v5.4.3',
+    5 => 'v5.4.4',
+    6 => 'v6.0.0',
+    7 => 'v6.1.0..v6.2.3',
+    8 => 'v6.3.0..v6.3.2',
+    9 => 'v6.3.3..v6.3.8',
+    10 => 'v6.4.0..v6.4.3',
+    11 => 'v6.5.0..v6.5.4',
+    12 => 'v6.6.0+',
+    _ => 'schema-$schema',
+  };
+
   /// Consent-gated error capture. Dropped by `beforeSend` when the user
   /// has opted out of the error-report program. Tagged `category=error`.
   /// Routed from `log.severe`.
