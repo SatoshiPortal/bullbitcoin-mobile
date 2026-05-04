@@ -108,6 +108,9 @@ class BdkWalletDatasource {
             electrumUrl: electrumServer.url,
             electrumSocks5: electrumServer.socks5,
             electrumStopGap: electrumServer.stopGap,
+            electrumTimeout: electrumServer.timeout,
+            electrumRetry: electrumServer.retry,
+            electrumValidateDomain: electrumServer.validateDomain,
             walletHexId: wallet.hexId,
             rootIsolateToken: ServicesBinding.rootIsolateToken!,
           ),
@@ -660,6 +663,9 @@ class BdkWalletDatasource {
         electrumUrl: electrumServer.url,
         electrumSocks5: electrumServer.socks5,
         electrumStopGap: electrumServer.stopGap,
+        electrumTimeout: electrumServer.timeout,
+        electrumRetry: electrumServer.retry,
+        electrumValidateDomain: electrumServer.validateDomain,
         rootIsolateToken: ServicesBinding.rootIsolateToken!,
       ),
     );
@@ -675,6 +681,9 @@ class _SyncParams {
   final String electrumUrl;
   final String? electrumSocks5;
   final int electrumStopGap;
+  final int electrumTimeout;
+  final int electrumRetry;
+  final bool electrumValidateDomain;
   final String walletHexId;
   final RootIsolateToken rootIsolateToken;
 
@@ -686,6 +695,9 @@ class _SyncParams {
     required this.electrumUrl,
     required this.electrumSocks5,
     required this.electrumStopGap,
+    required this.electrumTimeout,
+    required this.electrumRetry,
+    required this.electrumValidateDomain,
     required this.walletHexId,
     required this.rootIsolateToken,
   });
@@ -708,21 +720,19 @@ Future<void> _performFullScan(_SyncParams params) async {
   final bdkWallet = await BdkFacade.createWallet(wallet);
   final blockchain = bdk.ElectrumClient(
     url: params.electrumUrl,
-    // Only set the socks5 if it's not empty,
-    //  otherwise bdk will throw an error
-    // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
     socks5: params.electrumSocks5?.isNotEmpty == true
         ? params.electrumSocks5
         : null,
+    timeout: params.electrumTimeout.clamp(0, 255),
+    retry: params.electrumRetry.clamp(0, 255),
+    validateDomain: params.electrumValidateDomain,
   );
   final scanRequest = bdkWallet.startFullScan().build();
   final update = blockchain.fullScan(
     request: scanRequest,
     stopGap: params.electrumStopGap,
-    batchSize:
-        20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
-    fetchPrevTxouts:
-        true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
+    batchSize: _batchSizeFor(params.electrumStopGap),
+    fetchPrevTxouts: true,
   );
   // Apply update to the wallet in memory
   bdkWallet.applyUpdate(update: update);
@@ -750,6 +760,9 @@ class _DryScanParams {
   final String electrumUrl;
   final String? electrumSocks5;
   final int electrumStopGap;
+  final int electrumTimeout;
+  final int electrumRetry;
+  final bool electrumValidateDomain;
   final RootIsolateToken rootIsolateToken;
 
   _DryScanParams({
@@ -760,6 +773,9 @@ class _DryScanParams {
     required this.electrumUrl,
     required this.electrumSocks5,
     required this.electrumStopGap,
+    required this.electrumTimeout,
+    required this.electrumRetry,
+    required this.electrumValidateDomain,
     required this.rootIsolateToken,
   });
 }
@@ -835,13 +851,16 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
     socks5: params.electrumSocks5?.isNotEmpty == true
         ? params.electrumSocks5
         : null,
+    timeout: params.electrumTimeout.clamp(0, 255),
+    retry: params.electrumRetry.clamp(0, 255),
+    validateDomain: params.electrumValidateDomain,
   );
 
   final scanRequest = wallet.startFullScan().build();
   final update = blockchain.fullScan(
     request: scanRequest,
     stopGap: params.electrumStopGap,
-    batchSize: 50,
+    batchSize: _batchSizeFor(params.electrumStopGap),
     // Probe only reads balance and tx count — no fee computation needed,
     // so we skip the per-input prev-txout fetches that dominate scan time.
     fetchPrevTxouts: false,
@@ -856,3 +875,7 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
     transactions: transactions.length,
   );
 }
+
+// Scales batch size with stopGap to bound round-trips while staying within
+// per-request limits enforced by typical Electrum servers (Fulcrum/ElectrumX).
+int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 500);

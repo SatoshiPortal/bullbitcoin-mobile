@@ -94,9 +94,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "76695446cd57f94802327f6ab50392f651c49b63"
-      resolved-ref: "76695446cd57f94802327f6ab50392f651c49b63"
-      url: "https://github.com/ethicnology/bdk-dart"
+      ref: "6ddecbb360fb894068bdfd79ab0c10abf49b9fca"
+      resolved-ref: "6ddecbb360fb894068bdfd79ab0c10abf49b9fca"
+      url: "https://github.com/i5hi/bdk-dart"
     source: git
     version: "2.3.0-alpha.0"
   bech32:
