@@ -91,7 +91,7 @@ class BitcoinSettingsScreen extends StatelessWidget {
                       context.pushNamed(SettingsRoute.legacySeeds.name);
                     },
                   ),
-                if (isSuperuser)
+                if (isSuperuser && isDevModeEnabled)
                   SettingsEntryItem(
                     icon: Icons.science,
                     title: context.loc.bitcoinSettingsTestnetModeTitle,
