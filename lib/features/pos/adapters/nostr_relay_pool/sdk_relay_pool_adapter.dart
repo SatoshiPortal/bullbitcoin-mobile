@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/pos/application/ports/nostr_relay_pool_port.dart';
-import 'package:nostr_pos/nostr_pos.dart' as nostr;
+import 'package:nostr_pos/nostr_pos_io.dart' as nostr;
 
 class SdkRelayPoolAdapter implements NostrRelayPoolPort {
   const SdkRelayPoolAdapter();

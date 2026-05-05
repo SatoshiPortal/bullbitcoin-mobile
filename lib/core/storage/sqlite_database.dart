@@ -82,7 +82,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -126,6 +126,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         from10To11: _reportingMigration('from10To11', Schema10To11.migrate),
         from11To12: _reportingMigration('from11To12', Schema11To12.migrate),
         from12To13: _reportingMigration('from12To13', Schema12To13.migrate),
+        from13To14: _reportingMigration('from13To14', Schema13To14.migrate),
       ),
       // Backfills `Report.fromVersion` for installs that predate the
       // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).

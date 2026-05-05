@@ -28,16 +28,10 @@ class WatchSalesUsecase {
     if (identity == null) throw StateError('POS profile not found.');
     final terminals = await _storage.listAuthorizedTerminals(ref);
     final bucketTags = await _bucketTagsForQuery(terminals, since: since);
-    final filter = <String, Object?>{
-      'kinds': [
-        nostr.NostrPosKinds.saleCreated,
-        nostr.NostrPosKinds.paymentStatus,
-        nostr.NostrPosKinds.receipt,
-      ],
-      '#x': bucketTags,
-      'limit': 500,
-    };
-    if (since != null) filter['since'] = since;
+    final filter = nostr.saleEventsFilterForBuckets(
+      bucketTags: bucketTags,
+      since: since,
+    );
     final fresh = bucketTags.isEmpty
         ? <nostr.NostrPosEvent>[]
         : await _relayPool.query(relays: identity.relays, filter: filter);
@@ -63,26 +57,23 @@ class WatchSalesUsecase {
     final nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final fromSeconds =
         since ?? nowSeconds - const Duration(days: 30).inSeconds;
-    final fromDay = nostr.epochDayFromUnix(fromSeconds) - 1;
-    final toDay = nostr.epochDayFromUnix(nowSeconds) + 1;
-    final tags = <String>{};
+    final bucketKeys = <nostr.TerminalBucketKey>[];
     for (final terminal in terminals) {
       if (terminal.isRevoked) continue;
       final secret = await _storage.readTerminalSaleBucketSecret(terminal);
       if (secret == null || secret.isEmpty) continue;
-      final startDay = terminal.effectiveFromEpochDay > fromDay
-          ? terminal.effectiveFromEpochDay
-          : fromDay;
-      for (var day = startDay; day <= toDay; day++) {
-        tags.add(
-          nostr.dailyBucketTag(
-            secret: nostr.hexToBytes(secret),
-            generation: terminal.saleBucketGeneration,
-            epochDayUtc: day,
-          ),
-        );
-      }
+      bucketKeys.add(
+        nostr.TerminalBucketKey(
+          secret: secret,
+          generation: terminal.saleBucketGeneration,
+          effectiveFromEpochDay: terminal.effectiveFromEpochDay,
+        ),
+      );
     }
-    return tags.toList();
+    return nostr.saleBucketTagsForQuery(
+      terminals: bucketKeys,
+      from: DateTime.fromMillisecondsSinceEpoch(fromSeconds * 1000),
+      to: DateTime.fromMillisecondsSinceEpoch(nowSeconds * 1000),
+    );
   }
 }

@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/pos/domain/value_objects/pos_identity.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_network.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_profile_settings.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_ref.dart';
+import 'package:nostr_pos/nostr_pos.dart' as nostr;
 
 class InitPosUsecase {
   InitPosUsecase({
@@ -19,11 +20,7 @@ class InitPosUsecase {
   Future<PosIdentity> execute({
     required Wallet liquidWallet,
     required PosProfileSettings settings,
-    List<String> relays = const [
-      'wss://no.str.cr',
-      'wss://relay.primal.net',
-      'wss://nos.lol',
-    ],
+    List<String> relays = nostr.defaultNostrPosRelays,
   }) async {
     if (!liquidWallet.network.isLiquid) {
       throw ArgumentError('POS setup requires a Liquid wallet.');
@@ -43,6 +40,7 @@ class InitPosUsecase {
       name: settings.name,
       currency: settings.currency,
       createdAt: createdAt,
+      paymentMethods: settings.paymentMethods,
     );
     await _storage.saveProfile(identity);
     return identity;

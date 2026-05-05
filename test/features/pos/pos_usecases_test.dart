@@ -21,7 +21,7 @@ import 'package:bb_mobile/features/pos/domain/value_objects/pos_profile_settings
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_ref.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:nostr_pos/nostr_pos.dart' as nostr;
+import 'package:nostr_pos/nostr_pos_io.dart' as nostr;
 
 void main() {
   final merchantPrivkey = '01' * 32;
@@ -89,9 +89,44 @@ void main() {
     expect(result.event.kind, nostr.NostrPosKinds.posProfile);
     expect(result.event.tags, contains(equals(['network', 'liquid-testnet'])));
     expect(result.event.tags, contains(equals(['d', identity.ref.posId])));
+    final payload = jsonDecode(result.event.content) as Map<String, Object?>;
+    expect(
+      (payload['swap_providers'] as List).first,
+      containsPair('api_base', 'https://api.testnet.boltz.exchange'),
+    );
     expect(result.cashierUrl, startsWith('https://cashier.example'));
     expect(relayPool.published.single.id, result.event.id);
   });
+
+  test(
+    'threads POS payment-method settings to the profile wire payload',
+    () async {
+      final relayPool = _CapturingRelayPool(accepted: true);
+      final usecase = PublishPosProfileUsecase(
+        keyProvider: _StaticKeyProvider(keys),
+        relayPool: relayPool,
+        cashierConfig: const PosCashierConfig(),
+      );
+      final identity = _identity(
+        keys,
+        paymentMethods: const nostr.PosPaymentMethods(
+          liquid: true,
+          lightningSwap: false,
+          boltCard: false,
+        ),
+      );
+
+      final result = await usecase.execute(identity);
+      final payload = jsonDecode(result.event.content) as Map<String, Object?>;
+
+      expect(result.event.tags, contains(equals(['method', 'liquid'])));
+      expect(
+        result.event.tags,
+        isNot(contains(equals(['method', 'lightning_via_swap']))),
+      );
+      expect(payload['methods'] as List, hasLength(1));
+    },
+  );
 
   test('fails profile publishing when no relay accepts the event', () async {
     final usecase = PublishPosProfileUsecase(
@@ -188,6 +223,10 @@ void main() {
     final payload = jsonDecode(decrypted) as Map<String, Object?>;
     expect(payload, containsPair('merchant_name', 'Corner Shop'));
     expect(payload, containsPair('currency', 'CAD'));
+    expect(
+      (payload['swap_providers'] as List).first,
+      containsPair('supports_covenants', false),
+    );
   });
 
   test('revokes a terminal using its opaque terminal id', () async {
@@ -259,6 +298,7 @@ Wallet _wallet({required Network network}) {
 PosIdentity _identity(
   PosMerchantKeys keys, {
   PosNetwork network = PosNetwork.mainnet,
+  nostr.PosPaymentMethods paymentMethods = nostr.PosPaymentMethods.all,
 }) {
   return PosIdentity(
     ref: PosRef(merchantPubkey: keys.merchantPubkey, posId: 'pos-test'),
@@ -270,6 +310,7 @@ PosIdentity _identity(
     name: 'Corner Shop',
     currency: 'CAD',
     createdAt: DateTime.fromMillisecondsSinceEpoch(1700000000000),
+    paymentMethods: paymentMethods,
   );
 }
 

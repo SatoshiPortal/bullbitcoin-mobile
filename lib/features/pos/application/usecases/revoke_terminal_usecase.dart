@@ -31,16 +31,13 @@ class RevokeTerminalUsecase {
         .firstOrNull;
     if (terminal == null) throw StateError('Authorized terminal not found.');
     final keys = await _keyProvider.derive(identity.masterFingerprint);
-    final event = nostr.signNostrPosEvent(
-      await nostr.buildTerminalRevocationEvent(
-        merchantPubkey: ref.merchantPubkey,
-        merchantPrivkey: keys.merchantPrivkey,
-        posId: ref.posId,
-        terminalPubkey: terminalPubkey,
-        terminalId: terminal.terminalId,
-        reason: reason,
-      ),
-      keys.merchantPrivkey,
+    final event = await nostr.buildSignedTerminalRevocationEvent(
+      merchantPubkey: ref.merchantPubkey,
+      merchantPrivkey: keys.merchantPrivkey,
+      posId: ref.posId,
+      terminalPubkey: terminalPubkey,
+      terminalId: terminal.terminalId,
+      reason: reason,
     );
     final results = await _relayPool.publish(
       relays: identity.relays,

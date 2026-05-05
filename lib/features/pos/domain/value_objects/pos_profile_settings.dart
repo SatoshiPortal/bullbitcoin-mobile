@@ -1,3 +1,5 @@
+import 'package:nostr_pos/nostr_pos.dart' as nostr;
+
 class PosProfileSettings {
   const PosProfileSettings({
     required this.name,
@@ -12,4 +14,12 @@ class PosProfileSettings {
   final bool allowLiquid;
   final bool allowLightning;
   final bool allowBoltCard;
+
+  nostr.PosPaymentMethods get paymentMethods {
+    return nostr.PosPaymentMethods(
+      liquid: allowLiquid,
+      lightningSwap: allowLightning,
+      boltCard: allowBoltCard,
+    );
+  }
 }

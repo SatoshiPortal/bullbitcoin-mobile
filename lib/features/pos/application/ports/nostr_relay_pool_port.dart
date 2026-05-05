@@ -1,4 +1,4 @@
-import 'package:nostr_pos/nostr_pos.dart' as nostr;
+import 'package:nostr_pos/nostr_pos_io.dart' as nostr;
 
 abstract class NostrRelayPoolPort {
   Future<List<nostr.RelayPublishResult>> publish({

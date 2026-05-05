@@ -8,7 +8,9 @@ class PosSale {
     required this.fiatAmount,
     required this.satAmount,
     required this.status,
+    required this.statusKind,
     this.method,
+    this.methodKind,
     this.settlementTxid,
     this.receiptId,
     this.note,
@@ -20,7 +22,9 @@ class PosSale {
   final String fiatAmount;
   final int satAmount;
   final String status;
+  final nostr.SaleStatus statusKind;
   final String? method;
+  final nostr.PosPaymentMethod? methodKind;
   final String? settlementTxid;
   final String? receiptId;
   final String? note;
@@ -32,8 +36,10 @@ class PosSale {
       fiatCurrency: summary.fiatCurrency,
       fiatAmount: summary.fiatAmount,
       satAmount: summary.satAmount,
-      status: summary.status,
-      method: summary.method,
+      status: summary.statusRaw,
+      statusKind: summary.statusKind,
+      method: summary.methodRaw,
+      methodKind: summary.methodKind,
       settlementTxid: summary.settlementTxid,
       receiptId: summary.receiptId,
       note: summary.note,

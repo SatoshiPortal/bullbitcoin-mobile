@@ -3,7 +3,7 @@ import 'package:bb_mobile/features/pos/application/ports/nostr_relay_pool_port.d
 import 'package:bb_mobile/features/pos/application/ports/pos_storage_port.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_network.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_ref.dart';
-import 'package:nostr_pos/nostr_pos.dart' as nostr;
+import 'package:nostr_pos/nostr_pos_io.dart' as nostr;
 
 typedef PosRecoveryClaimBuilderFactory =
     nostr.RecoveryClaimBuilder Function(PosNetwork network);
@@ -42,12 +42,12 @@ class RunSwapRecoveryUsecase {
     final recoveries = nostr.swapRecoveriesFromEvents(observedEvents);
     final executor = nostr.ControllerRecoveryExecutor(
       swapStatusClient: nostr.BoltzSwapStatusClient(
-        apiBase: identity.network.sdkNetwork.boltzApiBase,
-        webSocketUrl: identity.network.sdkNetwork.boltzWebSocketUrl,
+        apiBase: identity.network.sdkServiceConfig.boltzApiBase,
+        webSocketUrl: identity.network.sdkServiceConfig.boltzWebSocketUrl,
         webSocketTimeout: const Duration(seconds: 20),
       ),
       liquidClient: nostr.LiquidTransactionClient(
-        apiBase: identity.network.sdkNetwork.liquidEsploraApiBase,
+        apiBase: identity.network.sdkServiceConfig.liquidEsploraApiBase,
       ),
       claimBuilder: _claimBuilderFactory(identity.network),
     );
@@ -87,49 +87,20 @@ class RunSwapRecoveryUsecase {
       for (final terminal in terminals)
         terminal.terminalId: terminal.terminalPubkey,
     };
-    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final events = <nostr.NostrPosEvent>[];
     for (final result in results) {
       final recovery = bySwapId[result.swapId];
       if (recovery == null) continue;
-      final claimTxid = result.claimTxid ?? recovery.claimTxid;
-      if (claimTxid == null || claimTxid.isEmpty) continue;
-      if (result.status != 'broadcast' && result.status != 'already_claimed') {
-        continue;
-      }
       final terminalPubkey = recovery.terminalId == null
           ? null
           : terminalPubkeysById[recovery.terminalId!];
-      final event = nostr.buildUnsignedEvent(
-        pubkey: terminalPubkey ?? recoveryPubkey,
-        kind: nostr.NostrPosKinds.swapRecoveryBackup,
-        tags: [
-          ['sale', recovery.saleId],
-          ['swap', recovery.swapId],
-        ],
-        createdAt: now,
-        content: {
-          'sale_id': recovery.saleId,
-          'payment_attempt_id': recovery.paymentAttemptId,
-          'swap_id': recovery.swapId,
-          'terminal_id': recovery.terminalId,
-          'encrypted_local_blob': recovery.encryptedLocalBlob,
-          'expires_at': recovery.expiresAt,
-          'lockup_txid': recovery.lockupTxid,
-          'lockup_tx_hex': recovery.lockupTxHex,
-          'claim': {
-            'mode': 'standard',
-            'claim_tx_hex': recovery.claimTxHex,
-            'claim_txid': claimTxid,
-            'replaced_claim_txids': recovery.replacedClaimTxids,
-            'claim_prepared_at': null,
-            'claim_broadcast_at': now,
-            'claim_confirmed_at': null,
-            'claim_fee_sat_per_vbyte': feeSatPerVbyte,
-            'claim_rbf_count': 0,
-          },
-        },
+      final event = nostr.buildSwapRecoveryBackupEvent(
+        recovery: recovery,
+        result: result,
+        authorPubkey: terminalPubkey ?? recoveryPubkey,
+        feeSatPerVbyte: feeSatPerVbyte,
       );
+      if (event == null) continue;
       events.add(event);
       await _relayPool.publishSwapRecoveryBackup(
         relays: relays,

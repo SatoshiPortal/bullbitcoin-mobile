@@ -14,6 +14,13 @@ enum PosNetwork {
     };
   }
 
+  nostr.PosServiceConfig get sdkServiceConfig {
+    return switch (this) {
+      PosNetwork.mainnet => nostr.PosServiceConfig.mainnetDefaults,
+      PosNetwork.testnet => nostr.PosServiceConfig.testnetDefaults,
+    };
+  }
+
   Network get liquidWalletNetwork {
     return switch (this) {
       PosNetwork.mainnet => Network.liquidMainnet,

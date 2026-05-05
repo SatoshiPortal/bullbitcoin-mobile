@@ -35,6 +35,9 @@ class DriftPosStorageAdapter implements PosStoragePort {
             network: Value(identity.network.name),
             name: Value(identity.name),
             currency: Value(identity.currency),
+            allowLiquid: Value(identity.paymentMethods.liquid),
+            allowLightning: Value(identity.paymentMethods.lightningSwap),
+            allowBoltCard: Value(identity.paymentMethods.boltCard),
             createdAt: Value(identity.createdAt.millisecondsSinceEpoch),
           ),
         );
@@ -201,6 +204,11 @@ class DriftPosStorageAdapter implements PosStoragePort {
       name: row.name,
       currency: row.currency,
       createdAt: DateTime.fromMillisecondsSinceEpoch(row.createdAt),
+      paymentMethods: nostr.PosPaymentMethods(
+        liquid: row.allowLiquid,
+        lightningSwap: row.allowLightning,
+        boltCard: row.allowBoltCard,
+      ),
     );
   }
 

@@ -11,8 +11,8 @@ class SeedDerivedMerchantKeyProvider implements MerchantKeyProviderPort {
   const SeedDerivedMerchantKeyProvider({required SeedDatasource seedDatasource})
     : _seedDatasource = seedDatasource;
 
-  static const merchantPath = "m/44'/1237'/0'/0/0";
-  static const recoveryPath = "m/44'/1237'/1'/0/0";
+  static const merchantPath = nostr.nostrPosMerchantDerivationPath;
+  static const recoveryPath = nostr.nostrPosRecoveryDerivationPath;
 
   final SeedDatasource _seedDatasource;
 

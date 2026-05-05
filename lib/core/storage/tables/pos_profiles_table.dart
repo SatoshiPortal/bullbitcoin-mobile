@@ -11,6 +11,10 @@ class PosProfiles extends Table {
   TextColumn get network => text()();
   TextColumn get name => text()();
   TextColumn get currency => text()();
+  BoolColumn get allowLiquid => boolean().withDefault(const Constant(true))();
+  BoolColumn get allowLightning =>
+      boolean().withDefault(const Constant(true))();
+  BoolColumn get allowBoltCard => boolean().withDefault(const Constant(true))();
   IntColumn get createdAt => integer()();
 
   @override

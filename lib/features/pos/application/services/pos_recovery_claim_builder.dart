@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/pos/domain/pos_domain_error.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_network.dart';
 import 'package:boltz/boltz.dart' as boltz;
 import 'package:crypto/crypto.dart';
-import 'package:nostr_pos/nostr_pos.dart' as nostr;
+import 'package:nostr_pos/nostr_pos_io.dart' as nostr;
 import 'package:pointycastle/digests/ripemd160.dart';
 
 class PosRecoveryClaimBuilder {
@@ -97,7 +97,7 @@ class PosRecoveryClaimBuilder {
   }
 
   String get _boltzUrl {
-    final base = _network.sdkNetwork.boltzApiBase.replaceAll(
+    final base = _network.sdkServiceConfig.boltzApiBase.replaceAll(
       RegExp(r'/+$'),
       '',
     );

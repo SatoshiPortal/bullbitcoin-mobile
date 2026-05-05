@@ -62,20 +62,22 @@ class PosRecoveryScreen extends StatelessWidget {
   String _recoverySubtitle(nostr.ControllerRecoveryResult result) {
     final reason = result.reason;
     if (reason != null && reason.isNotEmpty) return reason;
-    final status = result.status;
     final providerStatus = result.providerStatus;
-    return switch (status) {
-      'waiting' =>
+    return switch (result.statusKind) {
+      nostr.RecoveryStatus.waiting =>
         providerStatus == null
             ? 'Waiting for a claimable Liquid lockup transaction.'
             : 'Waiting for claimable Liquid lockup ($providerStatus).',
-      'already_claimed' => 'Already claimed by the terminal.',
-      'broadcast' =>
+      nostr.RecoveryStatus.alreadyClaimed => 'Already claimed by the terminal.',
+      nostr.RecoveryStatus.broadcast =>
         result.claimTxid == null
             ? 'Claim transaction broadcast.'
             : 'Claim transaction broadcast: ${result.claimTxid}',
-      'expired' => 'Recovery window expired.',
-      _ => providerStatus == null ? status : '$status ($providerStatus)',
+      nostr.RecoveryStatus.expired => 'Recovery window expired.',
+      nostr.RecoveryStatus.failed || nostr.RecoveryStatus.unknown =>
+        providerStatus == null
+            ? result.defaultDebugMessage
+            : '${result.defaultDebugMessage} ($providerStatus)',
     };
   }
 }

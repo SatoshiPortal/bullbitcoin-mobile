@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/pos/application/ports/merchant_key_provider_port.dart';
 import 'package:bb_mobile/features/pos/application/ports/nostr_relay_pool_port.dart';
@@ -50,42 +48,34 @@ class PairTerminalUsecase {
       terminalIndex: terminalIndex,
     );
     final keys = await _keyProvider.derive(identity.masterFingerprint);
-    final terminalId = _randomHex(bytes: 16);
-    final saleBucketSecret = nostr.randomSecretHex();
-    final nowSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    final effectiveFromEpochDay = nostr.epochDayFromUnix(nowSeconds);
-    final expiresAt = DateTime.now().add(const Duration(days: 365));
+    final material = nostr.TerminalAuthorizationMaterial.create();
     final authorization = nostr.TerminalAuthorization(
       posRef: ref.nostrAddress,
       terminalPubkey: announcement.pubkey,
-      terminalId: terminalId,
+      terminalId: material.terminalId,
       terminalName: terminalName,
       pairingCodeHint: pairingCode,
       ctDescriptor: descriptor.ctDescriptor,
       descriptorFingerprint: descriptor.descriptorFingerprint,
       terminalBranch: descriptor.terminalBranch,
       merchantRecoveryPubkey: keys.recoveryPubkey,
-      saleBucketSecret: saleBucketSecret,
-      saleBucketGeneration: 1,
-      effectiveFromEpochDay: effectiveFromEpochDay,
-      expiresAt: expiresAt.millisecondsSinceEpoch ~/ 1000,
+      saleBucketSecret: material.saleBucketSecret,
+      saleBucketGeneration: material.saleBucketGeneration,
+      effectiveFromEpochDay: material.effectiveFromEpochDay,
+      expiresAt: material.expiresAt,
       network: identity.network.sdkNetwork,
+      serviceConfig: identity.network.sdkServiceConfig,
+      paymentMethods: identity.paymentMethods,
+      limits: const nostr.PosTerminalLimits(supportsCovenants: false),
       merchantName: identity.name,
       currency: identity.currency,
     );
-    final unsigned = nostr.buildTerminalAuthorizationEvent(
+    final signed = await nostr.buildSignedTerminalAuthorizationEvent(
+      authorization: authorization,
       merchantPubkey: ref.merchantPubkey,
       posId: ref.posId,
-      authorization: authorization,
-    );
-    final encrypted = await nostr.nip44EncryptToPubkey(
-      plaintext: unsigned.content,
-      privateKeyHex: keys.merchantPrivkey,
-      publicKeyHex: announcement.pubkey,
-    );
-    final signed = nostr.signNostrPosEvent(
-      nostr.replaceEventContent(unsigned, encrypted),
-      keys.merchantPrivkey,
+      merchantPrivkey: keys.merchantPrivkey,
+      terminalPubkey: announcement.pubkey,
     );
     final results = await _relayPool.publish(
       relays: identity.relays,
@@ -99,18 +89,18 @@ class PairTerminalUsecase {
     final terminal = AuthorizedTerminal(
       posRef: ref,
       terminalPubkey: announcement.pubkey,
-      terminalId: terminalId,
+      terminalId: material.terminalId,
       ctDescriptorRef: _descriptorKey(ref, announcement.pubkey),
-      saleBucketSecretRef: _bucketSecretKey(ref, terminalId),
-      saleBucketGeneration: 1,
-      effectiveFromEpochDay: effectiveFromEpochDay,
+      saleBucketSecretRef: _bucketSecretKey(ref, material.terminalId),
+      saleBucketGeneration: material.saleBucketGeneration,
+      effectiveFromEpochDay: material.effectiveFromEpochDay,
       terminalIndex: terminalIndex,
       authorizedAt: DateTime.now(),
     );
     await _storage.saveAuthorizedTerminal(
       terminal: terminal,
       ctDescriptor: descriptor.ctDescriptor,
-      saleBucketSecret: saleBucketSecret,
+      saleBucketSecret: material.saleBucketSecret,
     );
     await _storage.appendObservedEvents(
       ref: ref,
@@ -125,13 +115,5 @@ class PairTerminalUsecase {
 
   String _bucketSecretKey(PosRef ref, String terminalId) {
     return 'pos_bucket:${ref.merchantPubkey}:${ref.posId}:$terminalId';
-  }
-
-  String _randomHex({required int bytes}) {
-    final random = Random.secure();
-    return List<int>.generate(
-      bytes,
-      (_) => random.nextInt(256),
-    ).map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
   }
 }

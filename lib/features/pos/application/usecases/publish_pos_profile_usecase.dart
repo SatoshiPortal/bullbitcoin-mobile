@@ -40,15 +40,16 @@ class PublishPosProfileUsecase {
       merchantName: identity.name,
       currency: identity.currency,
       network: identity.network.sdkNetwork,
+      serviceConfig: identity.network.sdkServiceConfig,
+      fiatProvider: nostr.FiatProviderConfig.bullBitcoinDefault,
+      paymentMethods: identity.paymentMethods,
       relays: identity.relays,
     );
-    final event = nostr.signNostrPosEvent(
-      nostr.buildPosProfileEvent(
-        merchantPubkey: identity.ref.merchantPubkey,
-        posId: identity.ref.posId,
-        profile: profile,
-      ),
-      keys.merchantPrivkey,
+    final event = nostr.buildSignedPosProfileEvent(
+      merchantPubkey: identity.ref.merchantPubkey,
+      posId: identity.ref.posId,
+      profile: profile,
+      merchantPrivkey: keys.merchantPrivkey,
     );
     final results = await _relayPool.publish(
       relays: identity.relays,

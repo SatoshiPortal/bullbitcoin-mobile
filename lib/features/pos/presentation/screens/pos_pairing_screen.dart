@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/pos/presentation/widgets/pos_pairing_code_inp
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nostr_pos/nostr_pos.dart' as nostr;
 
 class PosPairingScreen extends StatefulWidget {
   const PosPairingScreen({super.key});
@@ -89,7 +90,7 @@ class _PosPairingScreenState extends State<PosPairingScreen> {
 
   Future<void> _paste(BuildContext context) async {
     final data = await Clipboard.getData(Clipboard.kTextPlain);
-    final code = _extractPairingCode(data?.text ?? '');
+    final code = nostr.extractPairingCode(data?.text ?? '');
     if (!mounted) return;
     if (code == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -106,14 +107,6 @@ class _PosPairingScreenState extends State<PosPairingScreen> {
     if (key.length <= 16) return key;
     return '${key.substring(0, 8)}...${key.substring(key.length - 8)}';
   }
-}
-
-String? _extractPairingCode(String value) {
-  final normalized = value.trim().toUpperCase();
-  final match = RegExp(
-    r'[0-9A-HJKMNP-TV-Z]{4}-[0-9A-HJKMNP-TV-Z]{4}',
-  ).firstMatch(normalized);
-  return match?.group(0);
 }
 
 class _PairingQrScannerScreen extends StatefulWidget {
@@ -139,7 +132,7 @@ class _PairingQrScannerScreenState extends State<_PairingQrScannerScreen> {
             scanDelay: const Duration(milliseconds: 100),
             onScanned: (value) {
               if (_handled) return;
-              final code = _extractPairingCode(value);
+              final code = nostr.extractPairingCode(value);
               if (code == null) {
                 setState(() => _lastScan = value);
                 return;
