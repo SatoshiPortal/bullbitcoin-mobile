@@ -11199,6 +11199,10 @@
       }
     }
   },
+  "electrumStopGapHighWarning": "High stop gap values significantly increase sync time. Keep the app open in the foreground until the sync completes — backgrounding the app may interrupt it.",
+  "@electrumStopGapHighWarning": {
+    "description": "Warning shown when the user enters a Stop Gap larger than 1000"
+  },
   "electrumTimeoutEmptyError": "Timeout can't be empty",
   "@electrumTimeoutEmptyError": {
     "description": "Validation error for empty Timeout field"

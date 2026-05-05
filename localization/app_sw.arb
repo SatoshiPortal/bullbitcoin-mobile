@@ -166,5 +166,6 @@
   "appInitErrorDetailsToggle": "Onyesha maelezo ya hitilafu",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Thamani za juu za stop gap huongeza muda wa kusawazisha kwa kiasi kikubwa. Weka programu wazi mbele hadi usawazishaji ukamilike — kuiweka chinichini kunaweza kuukatiza."
 }

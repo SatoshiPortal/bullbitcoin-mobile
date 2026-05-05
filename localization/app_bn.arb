@@ -12288,5 +12288,6 @@
   "appInitErrorDetailsToggle": "ত্রুটির বিবরণ দেখান",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "উচ্চ স্টপ গ্যাপ মান সিঙ্ক সময় উল্লেখযোগ্যভাবে বাড়িয়ে দেয়। সিঙ্ক সম্পূর্ণ না হওয়া পর্যন্ত অ্যাপটি ফোরগ্রাউন্ডে খোলা রাখুন — ব্যাকগ্রাউন্ডে রাখলে এটি ব্যাহত হতে পারে।"
 }

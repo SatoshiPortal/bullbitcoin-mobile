@@ -358,5 +358,6 @@
   "appInitErrorDetailsToggle": "შეცდომის დეტალების ჩვენება",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "მაღალი stop gap მნიშვნელობები მნიშვნელოვნად ზრდის სინქრონიზაციის დროს. დატოვეთ აპლიკაცია წინა პლანზე გახსნილი სანამ სინქრონიზაცია არ დასრულდება — ფონურ რეჟიმში გადაყვანამ შესაძლოა შეაჩეროს იგი."
 }

@@ -4571,5 +4571,6 @@
   "appInitErrorDetailsToggle": "显示错误详情",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "较高的 stop gap 值会显著增加同步时间。请在同步完成之前保持应用在前台运行 — 将应用切换到后台可能会中断同步。"
 }

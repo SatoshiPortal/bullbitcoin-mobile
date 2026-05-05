@@ -727,16 +727,23 @@ Future<void> _performFullScan(_SyncParams params) async {
     retry: params.electrumRetry.clamp(0, 255),
     validateDomain: params.electrumValidateDomain,
   );
-  final scanRequest = bdkWallet.startFullScan().build();
-  final update = blockchain.fullScan(
-    request: scanRequest,
-    stopGap: params.electrumStopGap,
-    batchSize: _batchSizeFor(params.electrumStopGap),
-    fetchPrevTxouts: true,
-  );
-  // Apply update to the wallet in memory
-  bdkWallet.applyUpdate(update: update);
-  // Persist the updated wallet to the database
+  try {
+    final scanRequest = bdkWallet.startFullScan().build();
+    final update = blockchain.fullScan(
+      request: scanRequest,
+      stopGap: params.electrumStopGap,
+      batchSize: _batchSizeFor(params.electrumStopGap),
+      fetchPrevTxouts: true,
+    );
+    bdkWallet.applyUpdate(update: update);
+  } catch (e, st) {
+    log.warning(
+      'full_scan failed for wallet ${params.walletId}',
+      error: e,
+      trace: st,
+    );
+    rethrow;
+  }
   await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
 }
 
@@ -856,16 +863,19 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
     validateDomain: params.electrumValidateDomain,
   );
 
-  final scanRequest = wallet.startFullScan().build();
-  final update = blockchain.fullScan(
-    request: scanRequest,
-    stopGap: params.electrumStopGap,
-    batchSize: _batchSizeFor(params.electrumStopGap),
-    // Probe only reads balance and tx count — no fee computation needed,
-    // so we skip the per-input prev-txout fetches that dominate scan time.
-    fetchPrevTxouts: false,
-  );
-  wallet.applyUpdate(update: update);
+  try {
+    final scanRequest = wallet.startFullScan().build();
+    final update = blockchain.fullScan(
+      request: scanRequest,
+      stopGap: params.electrumStopGap,
+      batchSize: _batchSizeFor(params.electrumStopGap),
+      fetchPrevTxouts: false,
+    );
+    wallet.applyUpdate(update: update);
+  } catch (e, st) {
+    log.warning('probe_scan failed', error: e, trace: st);
+    rethrow;
+  }
 
   final balance = wallet.balance();
   final transactions = wallet.transactions();
@@ -876,6 +886,4 @@ Future<({BigInt satoshis, int transactions})> _performDryScan(
   );
 }
 
-// Scales batch size with stopGap to bound round-trips while staying within
-// per-request limits enforced by typical Electrum servers (Fulcrum/ElectrumX).
-int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 500);
+int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);
