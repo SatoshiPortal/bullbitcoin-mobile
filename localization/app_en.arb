@@ -12826,29 +12826,93 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgent: Backup & Reinstall Required",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  "legacyStorageBadgeActionRequired": "ACTION REQUIRED",
+  "@legacyStorageBadgeActionRequired": {
+    "description": "Red pill badge above the legacy storage warning page title"
   },
-  "homeLegacyStorageWithNoBackupDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  "legacyStorageBadgeConfirm": "CONFIRM",
+  "@legacyStorageBadgeConfirm": {
+    "description": "Red pill badge above the are-you-sure confirmation title"
   },
-  "homeLegacyStorageTitle": "Action Required: Reinstall App",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  "legacyStorageNoBackupPageTitle": "BACKUP AND RE-INSTALL YOUR WALLET",
+  "@legacyStorageNoBackupPageTitle": {
+    "description": "Full-page warning title shown when the wallet has no backup"
   },
-  "homeLegacyStorageDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  "legacyStorageHasBackupPageTitle": "RE-INSTALL YOUR WALLET",
+  "@legacyStorageHasBackupPageTitle": {
+    "description": "Full-page warning title shown when the wallet already has a backup"
   },
-  "legacyStorageWarningBackupNow": "Backup Now",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
+  "legacyStorageIntroDescription": "Your wallet is running on software that will soon be deprecated. This cannot be updated without uninstalling and re-installing the app.",
+  "@legacyStorageIntroDescription": {
+    "description": "Intro paragraph below the full-page warning title"
   },
-  "legacyStorageWarningLater": "Later",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  "legacyStorageStepBackupWallet": "Backup your wallet",
+  "@legacyStorageStepBackupWallet": {
+    "description": "Step 1 in the legacy storage warning checklist"
+  },
+  "legacyStorageStepExportLabels": "Export your labels (if you have any)",
+  "@legacyStorageStepExportLabels": {
+    "description": "Step 2 in the legacy storage warning checklist"
+  },
+  "legacyStorageStepEnsureSwapsCompleted": "Ensure all swaps are completed",
+  "@legacyStorageStepEnsureSwapsCompleted": {
+    "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
+  },
+  "legacyStorageStepUninstall": "Fully uninstall the app from your device",
+  "@legacyStorageStepUninstall": {
+    "description": "Uninstall step in the legacy storage warning checklist"
+  },
+  "legacyStorageStepReinstall": "Download the latest version and re-install",
+  "@legacyStorageStepReinstall": {
+    "description": "Reinstall step in the legacy storage warning checklist"
+  },
+  "legacyStorageStepRestoreBackup": "Restore your backup",
+  "@legacyStorageStepRestoreBackup": {
+    "description": "Final step in the legacy storage warning checklist"
+  },
+  "legacyStorageImportantTitle": "Important",
+  "@legacyStorageImportantTitle": {
+    "description": "Title of the red callout box on the legacy storage warning page"
+  },
+  "legacyStorageImportantBody": "Please do not skip this process unless you absolutely cannot do a backup at this moment.",
+  "@legacyStorageImportantBody": {
+    "description": "Body of the red callout box on the legacy storage warning page"
+  },
+  "legacyStorageContinueFooterNoBackup": "You can continue using the app without doing a backup, but we strongly recommend against it.",
+  "@legacyStorageContinueFooterNoBackup": {
+    "description": "Footer text on the legacy storage warning page when the wallet has no backup"
+  },
+  "legacyStorageContinueFooterHasBackup": "You can continue using the app, but we strongly recommend against it.",
+  "@legacyStorageContinueFooterHasBackup": {
+    "description": "Footer text on the legacy storage warning page when the wallet already has a backup"
+  },
+  "legacyStorageBackupNowButton": "Backup now",
+  "@legacyStorageBackupNowButton": {
+    "description": "Primary CTA on the legacy storage warning and confirmation pages"
+  },
+  "legacyStorageRiskAckButton": "No, I understand the risk",
+  "@legacyStorageRiskAckButton": {
+    "description": "Secondary CTA on the legacy storage warning page that acknowledges the risk"
+  },
+  "legacyStorageAreYouSureTitle": "ARE YOU SURE?",
+  "@legacyStorageAreYouSureTitle": {
+    "description": "Title of the legacy storage are-you-sure confirmation page"
+  },
+  "legacyStorageAreYouSureParagraphOne": "The software used to store the wallet’s Bitcoin private keys is being deprecated. We strongly recommend you create a backup right now to avoid any disruption in the future.",
+  "@legacyStorageAreYouSureParagraphOne": {
+    "description": "First paragraph of the are-you-sure confirmation page"
+  },
+  "legacyStorageAreYouSureParagraphTwo": "The Encrypted Vault backup option will take about 1 minute, no special tools required. Using the physical backup, all you need is a pen and paper.",
+  "@legacyStorageAreYouSureParagraphTwo": {
+    "description": "Second paragraph of the are-you-sure confirmation page"
+  },
+  "legacyStorageContinueWithoutBackupButton": "Continue without backup",
+  "@legacyStorageContinueWithoutBackupButton": {
+    "description": "Confirm button on the are-you-sure page that dismisses the warning"
+  },
+  "legacyStorageAcceptRisksCheckbox": "I accept the risks of not doing a backup",
+  "@legacyStorageAcceptRisksCheckbox": {
+    "description": "Checkbox label that gates the continue-without-backup button"
   },
   "backButton": "Back",
   "@backButton": {
