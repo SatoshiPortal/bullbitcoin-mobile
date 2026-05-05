@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 
 /// One per user-controllable wizard field. Used as the membership type
-/// of [WizardChoices.touched] so that the gate (pre-init upgrade path)
+/// of [WizardChoices.touched] so that `ApplyPendingWizardChoicesUsecase`
 /// only commits to settings the fields the user actively picked. Fields
 /// the wizard merely *displayed* (e.g. brightness-detected theme,
 /// keyboard-detected language) stay out of the touched set and never
@@ -57,9 +57,9 @@ class WizardChoices {
   /// without committing to user settings.
   final Set<WizardField> touched;
 
-  /// User-initiated change — marks the touched field so it'll be
-  /// committed by `WizardGate.apply`/`savePending` (pre-init path) and
-  /// by `WizardRouteScreen` (in-app path).
+  /// User-initiated change — marks the touched field so the bloc's
+  /// `SavePendingWizardChoicesUsecase` (on completion) stages it for
+  /// `ApplyPendingWizardChoicesUsecase` to flush post-locator.
   WizardChoices copyWith({
     Language? language,
     AppThemeMode? themeMode,

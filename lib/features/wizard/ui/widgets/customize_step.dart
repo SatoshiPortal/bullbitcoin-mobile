@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
-import 'package:bb_mobile/features/wizard/wizard_choices.dart';
 import 'package:flutter/material.dart';
 
 /// Hardcoded list shown in the wizard. Limited to currencies fully
@@ -30,14 +29,22 @@ class CustomizeStep extends StatelessWidget {
     super.key,
     required this.stepIndex,
     required this.totalSteps,
-    required this.choices,
-    required this.onChange,
+    required this.themeMode,
+    required this.language,
+    required this.defaultCurrency,
+    required this.onThemePicked,
+    required this.onLanguagePicked,
+    required this.onCurrencyPicked,
   });
 
   final int stepIndex;
   final int totalSteps;
-  final WizardChoices choices;
-  final ValueChanged<WizardChoices> onChange;
+  final AppThemeMode themeMode;
+  final Language language;
+  final String defaultCurrency;
+  final ValueChanged<AppThemeMode> onThemePicked;
+  final ValueChanged<Language> onLanguagePicked;
+  final ValueChanged<String> onCurrencyPicked;
 
   @override
   Widget build(BuildContext context) {
@@ -61,30 +68,23 @@ class CustomizeStep extends StatelessWidget {
           SettingsEntryItem(
             icon: Icons.brightness_6_outlined,
             title: loc.settingsThemeTitle,
-            trailing: _TrailingValue(
-              text: _themeLabel(context, choices.themeMode),
-            ),
+            trailing: _TrailingValue(text: _themeLabel(context, themeMode)),
             contentPadding: EdgeInsets.zero,
             onTap: () async {
-              final picked = await _showThemeSheet(context, choices.themeMode);
-              if (picked != null) {
-                onChange(choices.copyWith(themeMode: picked));
-              }
+              final picked = await _showThemeSheet(context, themeMode);
+              if (picked != null) onThemePicked(picked);
             },
           ),
           Divider(height: 1, color: context.appColors.border),
           SettingsEntryItem(
             icon: Icons.language,
             title: loc.settingsLanguageTitle,
-            trailing: _TrailingValue(text: choices.language.label),
+            trailing: _TrailingValue(text: language.label),
             contentPadding: EdgeInsets.zero,
             onTap: () async {
-              final picked = await _showLanguageSheet(
-                context,
-                choices.language,
-              );
+              final picked = await _showLanguageSheet(context, language);
               if (picked != null) {
-                onChange(choices.copyWith(language: picked));
+                onLanguagePicked(picked);
                 if (picked != Language.unitedStatesEnglish && context.mounted) {
                   TranslationWarningBottomSheet.show(context);
                 }
@@ -95,19 +95,17 @@ class CustomizeStep extends StatelessWidget {
           SettingsEntryItem(
             icon: Icons.attach_money,
             title: loc.wizardCustomizeDefaultCurrency,
-            trailing: _TrailingValue(text: choices.defaultCurrency),
+            trailing: _TrailingValue(text: defaultCurrency),
             contentPadding: EdgeInsets.zero,
             onTap: () async {
               final picked = await BlurredBottomSheet.show<String>(
                 context: context,
                 child: CurrencyBottomSheet(
                   availableCurrencies: kWizardCurrencies,
-                  selectedValue: choices.defaultCurrency,
+                  selectedValue: defaultCurrency,
                 ),
               );
-              if (picked != null) {
-                onChange(choices.copyWith(defaultCurrency: picked));
-              }
+              if (picked != null) onCurrencyPicked(picked);
             },
           ),
         ],

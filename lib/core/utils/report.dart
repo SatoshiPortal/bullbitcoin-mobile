@@ -68,11 +68,11 @@ class Report {
     fromVersion = from;
     toVersion = to;
 
-    // The pre-init upgrade-path wizard answers consent for this very
-    // boot — pass it through so migrations + Drift schema work + Sentry
-    // init see the user's freshest choice. Falls back to the prefs
-    // mirror for fresh installs (where the pre-init wizard is skipped)
-    // and for existing users between launches.
+    // The pre-init wizard answers consent for this very boot — pass
+    // it through so migrations + Drift schema work + Sentry init see
+    // the user's freshest choice. Falls back to the prefs mirror on
+    // launches where the wizard didn't run (already completed for the
+    // current `kCurrentWizardVersion`).
     consent = wizardConsent ?? prefs.getBool(_consentKey) ?? false;
 
     var uuid = prefs.getString(_installUuidKey);

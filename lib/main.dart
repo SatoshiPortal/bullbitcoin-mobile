@@ -22,8 +22,13 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_listener.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wizard/data/datasource/wizard_local_datasource.dart';
+import 'package:bb_mobile/features/wizard/data/repository/wizard_repository_impl.dart';
+import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/apply_pending_wizard_choices_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/is_wizard_complete_usecase.dart';
+import 'package:bb_mobile/features/wizard/domain/usecase/read_pending_wizard_choices_usecase.dart';
 import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
-import 'package:bb_mobile/features/wizard/wizard_gate.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
@@ -40,24 +45,37 @@ import 'package:payjoin_flutter/common.dart';
 
 import 'package:workmanager/workmanager.dart';
 
+/// Builds a [WizardRepository] without going through the locator. Used
+/// only in `main()` for the pre-init / pre-locator window: the wizard
+/// always runs before `Bull.init` (fresh installs and upgrades alike)
+/// so Sentry captures migration errors with the user's freshest answer
+/// and so consent is collected before any migration / network work.
+/// Same shape as the locator-supplied repository — the bloc behaves
+/// identically in both timing paths.
+WizardRepository _buildPreInitWizardRepository() =>
+    WizardRepositoryImpl(WizardLocalDatasourceImpl());
+
 class Bull {
   static Future<void> init() async {
     await initLogs();
-    // The pre-init wizard (upgrade path) writes consent to prefs via
-    // `WizardGate.savePending` right before this runs. Pull it so
-    // Sentry initializes with the user's freshest answer rather than
-    // a stale mirror, and so migration errors that happen on this very
-    // boot are captured if the user just opted in.
-    final pending = await WizardGate.readPending();
+    // The pre-init wizard writes consent to prefs via the bloc's
+    // `SavePendingWizardChoicesUsecase` right before this runs. Pull
+    // it so Sentry initializes with the user's freshest answer rather
+    // than a stale mirror, and so migration errors that happen on this
+    // very boot are captured if the user just opted in.
+    final preInitRepo = _buildPreInitWizardRepository();
+    final pending = await ReadPendingWizardChoicesUsecase(
+      repository: preInitRepo,
+    ).execute();
     await Report.init(wizardConsent: pending?.reportingConsent);
     await initFlutterRustBridgeDependencies();
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await initLocator();
-    final settings = locator<SettingsRepository>();
     // Flush wizard pending values (if any) to SQLite now that the
     // settings repository is available, then mark the wizard complete.
-    await WizardGate.apply(settings);
+    await locator<ApplyPendingWizardChoicesUsecase>().execute();
+    final settings = locator<SettingsRepository>();
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     await initWorkmanager();
     // Emits the install/upgrade transition event (no-op on a normal
@@ -115,22 +133,18 @@ Future main() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
-        // Hybrid wizard timing: upgrade path (existing wallets + wizard
-        // pending) runs the wizard BEFORE `Bull.init` so it can collect
-        // consent before migrations / Sentry init / Drift schema work
-        // fires off. Fresh installs skip this — they reach the wizard
-        // post-init via the Create/Recover buttons.
-        if (await WizardGate.isSetupComplete() &&
-            await WizardGate.shouldShow()) {
+        // Wizard runs BEFORE `Bull.init` for everyone — fresh installs
+        // and upgrades alike — so consent is collected before
+        // migrations / Sentry init / Drift schema work fires off, and
+        // bumping `kCurrentWizardVersion` re-prompts every user
+        // uniformly without any per-install branching.
+        final preInitRepo = _buildPreInitWizardRepository();
+        final isComplete = await IsWizardCompleteUsecase(
+          repository: preInitRepo,
+        ).execute();
+        if (!isComplete) {
           final completer = Completer<void>();
-          runApp(
-            WizardApp(
-              onDone: (choices) async {
-                await WizardGate.savePending(choices);
-                completer.complete();
-              },
-            ),
-          );
+          runApp(WizardApp(onDone: (_) => completer.complete()));
           await completer.future;
         }
         await Bull.init();
