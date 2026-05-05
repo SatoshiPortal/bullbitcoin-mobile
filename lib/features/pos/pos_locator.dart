@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/pos/application/ports/merchant_key_provider_p
 import 'package:bb_mobile/features/pos/application/ports/nostr_relay_pool_port.dart';
 import 'package:bb_mobile/features/pos/application/ports/pos_settlement_descriptor_port.dart';
 import 'package:bb_mobile/features/pos/application/ports/pos_storage_port.dart';
+import 'package:bb_mobile/features/pos/application/pos_cashier_config.dart';
 import 'package:bb_mobile/features/pos/application/services/pos_recovery_claim_builder.dart';
 import 'package:bb_mobile/features/pos/application/usecases/init_pos_usecase.dart';
 import 'package:bb_mobile/features/pos/application/usecases/pair_terminal_usecase.dart';
@@ -51,6 +52,9 @@ class PosLocator {
         ),
       ),
     );
+    locator.registerLazySingleton<PosCashierConfig>(
+      () => const PosCashierConfig(),
+    );
   }
 
   static void _registerUsecases(GetIt locator) {
@@ -64,6 +68,7 @@ class PosLocator {
       () => PublishPosProfileUsecase(
         keyProvider: locator<MerchantKeyProviderPort>(),
         relayPool: locator<NostrRelayPoolPort>(),
+        cashierConfig: locator<PosCashierConfig>(),
       ),
     );
     locator.registerFactory<PairTerminalUsecase>(

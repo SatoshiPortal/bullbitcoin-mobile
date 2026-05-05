@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/features/pos/application/ports/merchant_key_provider_port.dart';
 import 'package:bb_mobile/features/pos/application/ports/nostr_relay_pool_port.dart';
+import 'package:bb_mobile/features/pos/application/ports/pos_settlement_descriptor_port.dart';
 import 'package:bb_mobile/features/pos/application/ports/pos_storage_port.dart';
+import 'package:bb_mobile/features/pos/application/pos_cashier_config.dart';
 import 'package:bb_mobile/features/pos/application/usecases/init_pos_usecase.dart';
+import 'package:bb_mobile/features/pos/application/usecases/pair_terminal_usecase.dart';
 import 'package:bb_mobile/features/pos/application/usecases/publish_pos_profile_usecase.dart';
 import 'package:bb_mobile/features/pos/application/usecases/revoke_terminal_usecase.dart';
 import 'package:bb_mobile/features/pos/application/usecases/watch_sales_usecase.dart';
@@ -14,6 +20,7 @@ import 'package:bb_mobile/features/pos/domain/value_objects/pos_network.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_profile_settings.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_ref.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:nostr_pos/nostr_pos.dart' as nostr;
 
 void main() {
@@ -68,6 +75,7 @@ void main() {
     final usecase = PublishPosProfileUsecase(
       keyProvider: _StaticKeyProvider(keys),
       relayPool: relayPool,
+      cashierConfig: const PosCashierConfig(),
     );
     final identity = _identity(keys, network: PosNetwork.testnet);
 
@@ -89,6 +97,7 @@ void main() {
     final usecase = PublishPosProfileUsecase(
       keyProvider: _StaticKeyProvider(keys),
       relayPool: _CapturingRelayPool(accepted: false),
+      cashierConfig: const PosCashierConfig(),
     );
 
     expect(
@@ -137,6 +146,49 @@ void main() {
       expect(filter['since'], nowSeconds);
     },
   );
+
+  test('pairing approval carries merchant branding and currency', () async {
+    final storage = _MemoryPosStorage();
+    final identity = _identity(keys, network: PosNetwork.testnet);
+    await storage.saveProfile(identity);
+    final terminalPrivkey = '03' * 32;
+    final announcement = nostr.signNostrPosEvent(
+      nostr.buildPairingAnnouncement(
+        terminalPubkey: nostr.publicKeyFromPrivateKey(terminalPrivkey),
+      ),
+      terminalPrivkey,
+    );
+    final relayPool = _CapturingRelayPool(
+      accepted: true,
+      pairingAnnouncement: announcement,
+    );
+    final getWalletUsecase = _MockGetWalletUsecase();
+    when(
+      () =>
+          getWalletUsecase.execute(identity.walletId, sync: any(named: 'sync')),
+    ).thenAnswer((_) async => _wallet(network: Network.liquidTestnet));
+    final usecase = PairTerminalUsecase(
+      keyProvider: _StaticKeyProvider(keys),
+      relayPool: relayPool,
+      storage: storage,
+      descriptorProvider: const _StaticDescriptorProvider(),
+      getWalletUsecase: getWalletUsecase,
+    );
+
+    await usecase.execute(ref: identity.ref, pairingCode: '4F7G-YJDP');
+
+    final approval = relayPool.published.singleWhere(
+      (event) => event.kind == nostr.NostrPosKinds.terminalAuthorization,
+    );
+    final decrypted = await nostr.nip44DecryptFromPubkey(
+      payload: approval.content,
+      privateKeyHex: terminalPrivkey,
+      publicKeyHex: identity.ref.merchantPubkey,
+    );
+    final payload = jsonDecode(decrypted) as Map<String, Object?>;
+    expect(payload, containsPair('merchant_name', 'Corner Shop'));
+    expect(payload, containsPair('currency', 'CAD'));
+  });
 
   test('revokes a terminal using its opaque terminal id', () async {
     final storage = _MemoryPosStorage();
@@ -231,9 +283,10 @@ class _StaticKeyProvider implements MerchantKeyProviderPort {
 }
 
 class _CapturingRelayPool implements NostrRelayPoolPort {
-  _CapturingRelayPool({required this.accepted});
+  _CapturingRelayPool({required this.accepted, this.pairingAnnouncement});
 
   final bool accepted;
+  final nostr.NostrPosEvent? pairingAnnouncement;
   final published = <nostr.NostrPosEvent>[];
   final queries = <Map<String, Object?>>[];
 
@@ -266,7 +319,7 @@ class _CapturingRelayPool implements NostrRelayPoolPort {
     required List<String> relays,
     required String pairingCode,
   }) async {
-    return null;
+    return pairingAnnouncement;
   }
 
   @override
@@ -276,6 +329,41 @@ class _CapturingRelayPool implements NostrRelayPoolPort {
     required String recoveryPrivkey,
   }) async {
     return const [];
+  }
+
+  @override
+  Future<List<nostr.RelayPublishResult>> publishSwapRecoveryBackup({
+    required List<String> relays,
+    required nostr.NostrPosEvent recoveryEvent,
+    required String recoveryPubkey,
+    required String recoveryPrivkey,
+  }) async {
+    published.add(recoveryEvent);
+    return [
+      nostr.RelayPublishResult(
+        relay: relays.first,
+        ok: accepted,
+        message: accepted ? null : 'rejected',
+      ),
+    ];
+  }
+}
+
+class _MockGetWalletUsecase extends Mock implements GetWalletUsecase {}
+
+class _StaticDescriptorProvider implements PosSettlementDescriptorPort {
+  const _StaticDescriptorProvider();
+
+  @override
+  Future<PosSettlementDescriptor> descriptorForTerminal({
+    required Wallet wallet,
+    required int terminalIndex,
+  }) async {
+    return const PosSettlementDescriptor(
+      ctDescriptor: 'ct-descriptor',
+      descriptorFingerprint: 'fingerprint',
+      terminalBranch: 0,
+    );
   }
 }
 

@@ -38,11 +38,12 @@ class PosRecoveryClaimBuilder {
           request.material.settlementAddress ?? _string(swap, 'claimAddress');
       final outAmount = _int(swap, 'expectedAmountSat');
       final timeoutBlockHeight = _int(swap, 'timeoutBlockHeight');
+      final preimageHash160 = _hash160Hex(preimageHex);
 
       final preimage = await boltz.PreImage.newInstance(
         value: preimageHex,
         sha256: preimageHash,
-        hash160: _hash160Hex(preimageHex),
+        hash160: preimageHash160,
       );
       final keys = await boltz.KeyPair.newInstance(
         secretKey: claimPrivateKey,
@@ -50,7 +51,7 @@ class PosRecoveryClaimBuilder {
       );
       final swapScript = await boltz.LBtcSwapScriptStr.newInstance(
         swapType: boltz.SwapType.reverse,
-        hashlock: preimageHash,
+        hashlock: preimageHash160,
         receiverPubkey: claimPublicKey,
         locktime: timeoutBlockHeight,
         senderPubkey: refundPublicKey,
@@ -74,7 +75,7 @@ class PosRecoveryClaimBuilder {
         boltzUrl: _boltzUrl,
         referralId: ApiServiceConstants.boltzReferralId,
       );
-      return hydrated.claim(
+      return await hydrated.claim(
         outAddress: outAddress,
         minerFee: request.feeSatPerVbyte == null
             ? boltz.TxFee.relative(0.1)
@@ -84,7 +85,7 @@ class PosRecoveryClaimBuilder {
     } catch (error) {
       throw PosRecoveryClaimFailure(
         swapId: request.recovery.swapId,
-        reason: '$error',
+        reason: _errorMessage(error),
       );
     }
   }
@@ -140,5 +141,12 @@ class PosRecoveryClaimBuilder {
       for (var i = 0; i < lower.length; i += 2)
         int.parse(lower.substring(i, i + 2), radix: 16),
     ]);
+  }
+
+  String _errorMessage(Object error) {
+    if (error is boltz.BoltzError) {
+      return '${error.kind}: ${error.message}';
+    }
+    return error.toString();
   }
 }

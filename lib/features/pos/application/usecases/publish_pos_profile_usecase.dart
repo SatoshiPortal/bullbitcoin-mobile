@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/pos/application/ports/merchant_key_provider_port.dart';
 import 'package:bb_mobile/features/pos/application/ports/nostr_relay_pool_port.dart';
+import 'package:bb_mobile/features/pos/application/pos_cashier_config.dart';
 import 'package:bb_mobile/features/pos/domain/pos_domain_error.dart';
 import 'package:bb_mobile/features/pos/domain/value_objects/pos_identity.dart';
 import 'package:nostr_pos/nostr_pos.dart' as nostr;
@@ -20,15 +21,18 @@ class PublishPosProfileUsecase {
   PublishPosProfileUsecase({
     required MerchantKeyProviderPort keyProvider,
     required NostrRelayPoolPort relayPool,
+    required PosCashierConfig cashierConfig,
   }) : _keyProvider = keyProvider,
-       _relayPool = relayPool;
+       _relayPool = relayPool,
+       _cashierConfig = cashierConfig;
 
   final MerchantKeyProviderPort _keyProvider;
   final NostrRelayPoolPort _relayPool;
+  final PosCashierConfig _cashierConfig;
 
   Future<PublishPosProfileResult> execute(
     PosIdentity identity, {
-    String cashierBaseUrl = 'https://pay.bullbitcoin.com/#/pos',
+    String? cashierBaseUrl,
   }) async {
     final keys = await _keyProvider.derive(identity.masterFingerprint);
     final profile = nostr.PosProfile(
@@ -57,7 +61,7 @@ class PublishPosProfileUsecase {
     return PublishPosProfileResult(
       event: event,
       cashierUrl: nostr.posProfileUrl(
-        baseUrl: cashierBaseUrl,
+        baseUrl: cashierBaseUrl ?? _cashierConfig.baseUrl,
         identifier: identity.ref.posId,
         pubkey: identity.ref.merchantPubkey,
         relays: identity.relays,

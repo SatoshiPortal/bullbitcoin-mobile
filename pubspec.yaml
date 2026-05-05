@@ -163,7 +163,7 @@ dev_dependencies:
   mocktail: ^1.0.4
   flutter_launcher_icons: ^0.14.4
   test: ^1.26.3
-  flutter_gen_runner: any
+  flutter_gen_runner: 5.13.0+1
   drift_dev: ^2.29.0
 
 flutter:

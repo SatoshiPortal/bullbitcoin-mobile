@@ -18,6 +18,8 @@ class BoltzDatasource {
   final BoltzStorageDatasource _boltzStore;
   final Set<String> _subscribedSwapIds = {};
   final Map<String, Timer> _pendingSwapEventTimers = {};
+  Timer? _webSocketReconnectTimer;
+  int _webSocketReconnectAttempt = 0;
 
   final StreamController<SwapModel> _swapUpdatesController =
       StreamController<SwapModel>.broadcast();
@@ -942,10 +944,49 @@ class BoltzDatasource {
         );
       },
       onError: (error) {
-        _swapUpdatesController.addError(error.toString());
+        log.warning('Boltz websocket error; reconnecting watcher: $error');
+        _scheduleBoltzWebSocketReconnect();
       },
-      onDone: () {},
+      onDone: () {
+        if (_subscribedSwapIds.isNotEmpty) {
+          log.warning('Boltz websocket closed; reconnecting watcher.');
+          _scheduleBoltzWebSocketReconnect();
+        }
+      },
     );
+  }
+
+  void _scheduleBoltzWebSocketReconnect() {
+    if (_webSocketReconnectTimer?.isActive ?? false) return;
+
+    final backoffSeconds = switch (_webSocketReconnectAttempt) {
+      0 => 3,
+      1 => 10,
+      2 => 30,
+      _ => 60,
+    };
+    _webSocketReconnectAttempt += 1;
+    _webSocketReconnectTimer = Timer(Duration(seconds: backoffSeconds), () {
+      final swapIds = _subscribedSwapIds.toList();
+      try {
+        _boltzWebSocket.dispose();
+      } catch (_) {
+        // The underlying socket may already be closed or half-open.
+      }
+      try {
+        _initializeBoltzWebSocket();
+        if (swapIds.isNotEmpty) _boltzWebSocket.subscribe(swapIds);
+        _webSocketReconnectAttempt = 0;
+        log.fine('Boltz websocket watcher reconnected.');
+      } catch (error, stackTrace) {
+        log.warning(
+          'Boltz websocket reconnect failed: $error',
+          error: error,
+          trace: stackTrace,
+        );
+        _scheduleBoltzWebSocketReconnect();
+      }
+    });
   }
 
   Future<void> _processWebSocketEvent(
@@ -1269,6 +1310,9 @@ class BoltzDatasource {
   }
 
   void resetStream() {
+    _webSocketReconnectTimer?.cancel();
+    _webSocketReconnectTimer = null;
+    _webSocketReconnectAttempt = 0;
     _boltzWebSocket.dispose();
     _subscribedSwapIds.clear();
     _initializeBoltzWebSocket();
@@ -1283,8 +1327,17 @@ class BoltzDatasource {
     if (newSwapIds.isEmpty) {
       return;
     }
-    _boltzWebSocket.subscribe(newSwapIds);
     _subscribedSwapIds.addAll(newSwapIds);
+    try {
+      _boltzWebSocket.subscribe(newSwapIds);
+    } catch (error, stackTrace) {
+      log.warning(
+        'Could not subscribe to Boltz swaps; reconnecting watcher: $error',
+        error: error,
+        trace: stackTrace,
+      );
+      _scheduleBoltzWebSocketReconnect();
+    }
   }
 
   void unsubscribeToSwaps(List<String> swapIds) {
@@ -1295,8 +1348,16 @@ class BoltzDatasource {
     if (swapIdsToUnsubscribe.isEmpty) {
       return;
     }
-    _boltzWebSocket.unsubscribe(swapIdsToUnsubscribe);
     _subscribedSwapIds.removeAll(swapIdsToUnsubscribe);
+    try {
+      _boltzWebSocket.unsubscribe(swapIdsToUnsubscribe);
+    } catch (error, stackTrace) {
+      log.warning(
+        'Could not unsubscribe from Boltz swaps: $error',
+        error: error,
+        trace: stackTrace,
+      );
+    }
   }
 
   Future<(int, bool, String?)> decodeInvoice(String invoice) async {

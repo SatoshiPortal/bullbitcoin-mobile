@@ -70,6 +70,8 @@ class PairTerminalUsecase {
       effectiveFromEpochDay: effectiveFromEpochDay,
       expiresAt: expiresAt.millisecondsSinceEpoch ~/ 1000,
       network: identity.network.sdkNetwork,
+      merchantName: identity.name,
+      currency: identity.currency,
     );
     final unsigned = nostr.buildTerminalAuthorizationEvent(
       merchantPubkey: ref.merchantPubkey,

@@ -43,4 +43,19 @@ class SdkRelayPoolAdapter implements NostrRelayPoolPort {
       recoveryPrivkey: recoveryPrivkey,
     );
   }
+
+  @override
+  Future<List<nostr.RelayPublishResult>> publishSwapRecoveryBackup({
+    required List<String> relays,
+    required nostr.NostrPosEvent recoveryEvent,
+    required String recoveryPubkey,
+    required String recoveryPrivkey,
+  }) {
+    return nostr.publishSwapRecoveryBackup(
+      relays: relays,
+      recoveryEvent: recoveryEvent,
+      recoveryPubkey: recoveryPubkey,
+      recoveryPrivkey: recoveryPrivkey,
+    );
+  }
 }

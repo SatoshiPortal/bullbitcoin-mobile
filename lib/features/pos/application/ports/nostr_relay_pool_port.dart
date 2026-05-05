@@ -21,4 +21,11 @@ abstract class NostrRelayPoolPort {
     required String recoveryPubkey,
     required String recoveryPrivkey,
   });
+
+  Future<List<nostr.RelayPublishResult>> publishSwapRecoveryBackup({
+    required List<String> relays,
+    required nostr.NostrPosEvent recoveryEvent,
+    required String recoveryPubkey,
+    required String recoveryPrivkey,
+  });
 }

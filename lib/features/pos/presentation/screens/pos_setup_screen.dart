@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
+import 'package:bb_mobile/features/pos/pos_router.dart';
 import 'package:bb_mobile/features/pos/presentation/bloc/pos_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class PosSetupScreen extends StatefulWidget {
   const PosSetupScreen({super.key});
@@ -92,6 +94,12 @@ class _PosSetupScreenState extends State<PosSetupScreen> {
                 ),
                 const SizedBox(height: 12),
                 SelectableText(state.cashierUrl!),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  icon: const Icon(Icons.link),
+                  label: const Text('Pair Terminal'),
+                  onPressed: () => context.pushNamed(PosRoute.pair.name),
+                ),
               ],
             ],
           ),
