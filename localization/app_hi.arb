@@ -12571,5 +12571,6 @@
   "appInitErrorDetailsToggle": "त्रुटि विवरण दिखाएं",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "उच्च स्टॉप गैप मान सिंक समय को काफी बढ़ा देते हैं। सिंक पूरा होने तक ऐप को फ़ोरग्राउंड में खुला रखें — बैकग्राउंड में डालने से यह बाधित हो सकता है।"
 }

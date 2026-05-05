@@ -145,5 +145,6 @@
   "appInitErrorDetailsToggle": "ভুলৰ বিৱৰণ দেখুৱাওক",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "উচ্চ স্টপ গেপ মূল্যবোধে চিংক্ৰনাইজেচন সময় উল্লেখযোগ্যভাৱে বঢ়াই দিয়ে। চিংক্ৰনাইজেচন সম্পূৰ্ণ নোহোৱালৈকে এপটো ফৰগ্ৰাউণ্ডত খোলা ৰাখক — পটভূমিত ৰাখিলে ই বাধাগ্ৰস্ত হ'ব পাৰে।"
 }

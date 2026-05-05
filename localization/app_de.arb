@@ -4460,5 +4460,6 @@
   "appInitErrorDetailsToggle": "Fehlerdetails anzeigen",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Hohe Stop-Gap-Werte verlängern die Synchronisationszeit erheblich. Lassen Sie die App im Vordergrund geöffnet, bis die Synchronisation abgeschlossen ist — Wechsel in den Hintergrund kann sie unterbrechen."
 }

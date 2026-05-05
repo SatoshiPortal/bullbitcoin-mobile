@@ -12571,5 +12571,6 @@
   "appInitErrorDetailsToggle": "Εμφάνιση λεπτομερειών σφάλματος",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Οι υψηλές τιμές stop gap αυξάνουν σημαντικά τον χρόνο συγχρονισμού. Διατηρήστε την εφαρμογή ανοιχτή στο προσκήνιο μέχρι να ολοκληρωθεί ο συγχρονισμός — η μετακίνηση στο παρασκήνιο μπορεί να τον διακόψει."
 }

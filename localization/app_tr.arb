@@ -12571,5 +12571,6 @@
   "appInitErrorDetailsToggle": "Hata ayrıntılarını göster",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Yüksek stop gap değerleri senkronizasyon süresini önemli ölçüde artırır. Senkronizasyon tamamlanana kadar uygulamayı ön planda açık tutun — arka plana almak işlemi kesintiye uğratabilir."
 }

@@ -4560,5 +4560,6 @@
   "appInitErrorDetailsToggle": "Afficher les détails de l'erreur",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Des valeurs élevées de stop gap augmentent considérablement le temps de synchronisation. Gardez l'application ouverte au premier plan jusqu'à ce que la synchronisation soit terminée — la mettre en arrière-plan peut l'interrompre."
 }

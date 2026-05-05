@@ -12571,5 +12571,6 @@
   "appInitErrorDetailsToggle": "Zobrazit podrobnosti chyby",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Vysoké hodnoty stop gap výrazně prodlužují dobu synchronizace. Nechte aplikaci otevřenou v popředí, dokud se synchronizace nedokončí — přesun aplikace do pozadí ji může přerušit."
 }
