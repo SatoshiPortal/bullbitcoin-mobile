@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -16,29 +17,40 @@ import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 // For payjoins, two transactions can exist for the same txId, just as with wallet transactions,
 // there can be an incoming and an outgoing transaction for the same payjoin and so the same txId.
 class GetTransactionsByTxIdUsecase {
+  final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
   final BoltzSwapRepository _boltzSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _orderRepository;
+  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
+  final ExchangeOrderRepository _testnetExchangeOrderRepository;
 
   GetTransactionsByTxIdUsecase({
+    required SettingsRepository settingsRepository,
     required WalletTransactionRepository walletTransactionRepository,
     required BoltzSwapRepository boltzSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository orderRepository,
-  }) : _walletTransactionRepository = walletTransactionRepository,
+    required ExchangeOrderRepository mainnetExchangeOrderRepository,
+    required ExchangeOrderRepository testnetExchangeOrderRepository,
+  }) : _settingsRepository = settingsRepository,
+       _walletTransactionRepository = walletTransactionRepository,
        _boltzSwapRepository = boltzSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _orderRepository = orderRepository;
+       _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
+       _testnetExchangeOrderRepository = testnetExchangeOrderRepository;
 
   Future<List<Transaction>> execute(String txId) async {
     try {
+      final settings = await _settingsRepository.fetch();
+      final orderRepository = settings.environment.isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
+
       // Fetch wallet transactions, swap and payjoins by txId
       final (walletTransactions, swap, payjoins, order) = await (
         _walletTransactionRepository.getWalletTransactions(txId: txId),
         _boltzSwapRepository.getSwapByTxId(txId),
         _payjoinRepository.getPayjoinsByTxId(txId),
-        _orderRepository.getOrderByTxId(txId),
+        orderRepository.getOrderByTxId(txId),
       ).wait;
 
       if (walletTransactions.isNotEmpty) {

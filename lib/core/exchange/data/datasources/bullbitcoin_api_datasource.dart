@@ -250,8 +250,18 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     if (resp.statusCode != 200) {
       throw Exception('Failed to list order summaries');
     }
+    log.info(
+      '[listOrderSummaries] raw response: ${jsonEncode(resp.data)}',
+    );
     final elements = resp.data['result']['elements'] as List<dynamic>?;
-    if (elements == null) return [];
+    if (elements == null) {
+      log.info('[listOrderSummaries] elements=null, returning empty list');
+      return [];
+    }
+    log.info(
+      '[listOrderSummaries] elements.length=${elements.length}, '
+      'orderTypes=${elements.map((e) => (e as Map)['orderType']).toList()}',
+    );
     return elements
         .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
         .toList();

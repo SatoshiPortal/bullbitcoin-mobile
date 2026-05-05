@@ -34,8 +34,11 @@ class TransactionsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         payjoinRepository: locator<PayjoinRepository>(),
-        orderRepository: locator<ExchangeOrderRepository>(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
         ),
         labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
       ),
@@ -43,14 +46,18 @@ class TransactionsLocator {
 
     locator.registerFactory<GetTransactionsByTxIdUsecase>(
       () => GetTransactionsByTxIdUsecase(
+        settingsRepository: locator<SettingsRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         payjoinRepository: locator<PayjoinRepository>(),
-        orderRepository: locator<ExchangeOrderRepository>(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
         ),
       ),
     );
