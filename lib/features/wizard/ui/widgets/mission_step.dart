@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class MissionStep extends StatelessWidget {
   const MissionStep({
@@ -27,6 +27,9 @@ class MissionStep extends StatelessWidget {
       color: context.appColors.onSurfaceVariant,
       height: 1.4,
     );
+    final vGapMd = Device.screen.height * 0.018;
+    final vGapLg = Device.screen.height * 0.025;
+    final hGap = Device.screen.width * 0.03;
     return WizardStepLayout(
       stepIndex: stepIndex,
       totalSteps: totalSteps,
@@ -35,9 +38,9 @@ class MissionStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(loc.wizardMissionBody1, style: bodyStyle),
-          const Gap(12),
+          SizedBox(height: vGapMd),
           Text(loc.wizardMissionBody2, style: bodyStyle),
-          const Gap(20),
+          SizedBox(height: vGapLg),
           Text(
             loc.wizardMissionQuestion,
             style: context.font.titleMedium?.copyWith(
@@ -45,7 +48,7 @@ class MissionStep extends StatelessWidget {
               color: context.appColors.onSurface,
             ),
           ),
-          const Gap(12),
+          SizedBox(height: vGapMd),
           Row(
             children: [
               Expanded(
@@ -55,7 +58,7 @@ class MissionStep extends StatelessWidget {
                   onTap: () => onChanged(true),
                 ),
               ),
-              const Gap(12),
+              SizedBox(width: hGap),
               Expanded(
                 child: _ChoiceButton(
                   label: loc.wizardMissionNo,

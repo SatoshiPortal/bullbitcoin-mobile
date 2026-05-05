@@ -146,6 +146,7 @@ class StorageLocator {
                   'fss9: ${fss9Error.runtimeType}',
               error: fss9Error,
               trace: StackTrace.current,
+              category: ReportCategory.migration,
             );
             rethrow;
           }

@@ -41,7 +41,7 @@ import 'package:bb_mobile/features/wallet/ui/widgets/backup_warning_overlay.dart
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage_warning_overlay.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/features/withdraw/ui/withdraw_router.dart';
-import 'package:bb_mobile/features/wizard/ui/screens/wizard_route_screen.dart';
+import 'package:bb_mobile/features/wizard/ui/wizard_router.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -176,22 +176,8 @@ class AppRouter {
       RecoverBullGoogleDriveRouter.route,
       LabelsRouter.route,
       StatusCheckRouter.route,
-      GoRoute(
-        name: WizardRoute.wizard.name,
-        path: WizardRoute.wizard.path,
-        pageBuilder: (context, state) => const MaterialPage(
-          fullscreenDialog: true,
-          child: WizardRouteScreen(),
-        ),
-      ),
+      WizardRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );
-}
-
-enum WizardRoute {
-  wizard('/wizard');
-
-  final String path;
-  const WizardRoute(this.path);
 }

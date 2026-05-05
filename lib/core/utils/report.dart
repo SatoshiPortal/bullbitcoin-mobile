@@ -8,6 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum MigrationType { install, upgrade }
 
+/// Optional sub-category callers of `log.shout` / [Report.shout] can
+/// attach to an event so crash-cache can filter on it server-side.
+/// `null` falls through to `category=none`. The `error` tag is reserved
+/// for [Report.error] and applied there automatically.
+enum ReportCategory { migration }
+
 /// Breadcrumb categories whose `message`/`data` are considered safe to
 /// keep on the wire — neither carries wallet payloads nor user identity.
 /// Anything outside this set has its message + data stripped in
@@ -89,10 +95,8 @@ class Report {
   }
 
   static Future<void> _initSentry() async {
-    if (!kReleaseMode) return;
-
     await SentryFlutter.init((options) {
-      options.dsn = ApiServiceConstants.sentryDsn;
+      options.dsn = kReleaseMode ? ApiServiceConstants.sentryDsn : '';
       options.compressPayload = true;
       options.debug = false;
 
@@ -139,12 +143,12 @@ class Report {
       options.tracesSampleRate = consent ? 0.2 : 0.0; // 0.2 instead of 1.0
       options.anrEnabled = consent;
 
-      // ── Final scrub. Critical events bypass consent; everything is
-      //    anonymized so we never leak txids, addresses, or seed-derived
-      //    strings.
+      // ── Final scrub. No consent → no event, no exceptions (even
+      //    install/upgrade milestones tagged `category=critical`).
+      //    Passing events are anonymized so we never leak txids,
+      //    addresses, or seed-derived strings.
       options.beforeSend = (event, hint) {
-        // no consent, no event
-        if (!isCritical(event) && !consent) return null;
+        if (!consent) return null;
 
         event.exceptions?.forEach((e) => e.value = null);
         // Keep only the install UUID we set ourselves; drop anything else
@@ -199,8 +203,9 @@ class Report {
   }
 
   /// Advances the persisted `_lastVersionKey` marker. Caller emits the
-  /// install/upgrade milestone via `log.shout` first so a crash between
-  /// the two retries the event on the next launch.
+  /// install/upgrade milestone via `log.shout(category:
+  /// ReportCategory.migration)` first so a crash between the two
+  /// retries the event on the next launch.
   static Future<void> commitVersion() async {
     final to = toVersion;
     if (to == null) return;
@@ -253,24 +258,29 @@ class Report {
         stackTrace: stackTrace,
         withScope: (s) {
           if (message != null) _applyContexts(s, message);
-          _applyTags(s, critical: false);
+          _applyTags(s, categoryTag: 'error');
         },
       ),
     );
   }
 
-  /// Always-reported event. Bypasses user consent — `beforeSend` lets
-  /// it through via [isCritical]. Tagged `category=critical`. When
+  /// Non-error high-priority log — milestones (install/upgrade,
+  /// feature flag flips), FSS fallbacks, startup faults. Subject to
+  /// user consent: `beforeSend` drops the event when the user has
+  /// opted out. Optional [category] attaches a `category=<name>` tag
+  /// for crash-cache filtering (e.g. [ReportCategory.migration] for
+  /// storage-migration faults); when null, the tag is `none`. When
   /// [exception] and [stackTrace] are both set, captured as an
   /// exception; otherwise captured as an info-level message. Routed
-  /// from `log.shout`. Use for critical errors AND for milestones we
-  /// need regardless of consent (install/upgrade, FSS fallback, etc.).
-  static Future<void> critical({
+  /// from `log.shout`.
+  static Future<void> shout({
     required String message,
     Object? exception,
     StackTrace? stackTrace,
+    ReportCategory? category,
   }) async {
     if (!Sentry.isEnabled) return;
+    final categoryTag = category?.name ?? 'none';
     Future.microtask(() async {
       if (exception != null && stackTrace != null) {
         await Sentry.captureException(
@@ -278,27 +288,21 @@ class Report {
           stackTrace: stackTrace,
           withScope: (s) {
             _applyContexts(s, message);
-            _applyTags(s, critical: true);
+            _applyTags(s, categoryTag: categoryTag);
           },
         );
       } else {
         await Sentry.captureMessage(
           message,
           level: SentryLevel.info,
-          withScope: (s) => _applyTags(s, critical: true),
+          withScope: (s) => _applyTags(s, categoryTag: categoryTag),
         );
       }
     });
   }
 
-  /// Single predicate `beforeSend` uses to decide consent bypass.
-  /// Returns true for events emitted via [critical]; false for events
-  /// emitted via [error]. The `category` tag is the source of truth.
-  static bool isCritical(SentryEvent event) =>
-      event.tags?['category'] == 'critical';
-
-  static void _applyTags(Scope scope, {required bool critical}) {
-    scope.setTag('category', critical ? 'critical' : 'error');
+  static void _applyTags(Scope scope, {required String categoryTag}) {
+    scope.setTag('category', categoryTag);
     if (migrationType != null) {
       scope.setTag('migration_type', migrationType!.name);
       if (fromVersion != null) scope.setTag('from_version', fromVersion!);

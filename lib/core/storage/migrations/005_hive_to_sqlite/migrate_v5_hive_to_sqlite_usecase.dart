@@ -148,6 +148,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         message: 'Migration failed',
         error: e,
         trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       return false;
     }
@@ -192,6 +193,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         message: 'Errored during seed migration',
         error: e,
         trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -281,6 +283,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         message: 'Errored during default wallet migration',
         error: e,
         trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -349,6 +352,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         message: 'Errored during external wallet migration',
         error: e,
         trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -395,6 +399,7 @@ class MigrateToV5HiveToSqliteToUsecase {
               message: 'Failed to create watch only wallet',
               error: e,
               trace: StackTrace.current,
+              category: ReportCategory.migration,
             );
             continue;
           }
@@ -406,6 +411,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         message: 'Errored during watch-only wallet migration',
         error: e,
         trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -541,6 +547,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         message: 'Errored during ongoing swap migration',
         error: e,
         trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/picker_sheet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
@@ -9,7 +10,6 @@ import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:bb_mobile/features/wizard/wizard_choices.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 /// Hardcoded list shown in the wizard. Limited to currencies fully
 /// supported by [CurrencyBottomSheet]'s flag/name lookup. The full dynamic
@@ -42,6 +42,7 @@ class CustomizeStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = context.loc;
+    final vGap = Device.screen.height * 0.02;
     return WizardStepLayout(
       stepIndex: stepIndex,
       totalSteps: totalSteps,
@@ -56,7 +57,7 @@ class CustomizeStep extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          const Gap(16),
+          SizedBox(height: vGap),
           SettingsEntryItem(
             icon: Icons.brightness_6_outlined,
             title: loc.settingsThemeTitle,
@@ -132,7 +133,7 @@ class _TrailingValue extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const Gap(4),
+        SizedBox(width: Device.screen.width * 0.01),
         Icon(Icons.chevron_right, color: context.appColors.onSurface),
       ],
     );

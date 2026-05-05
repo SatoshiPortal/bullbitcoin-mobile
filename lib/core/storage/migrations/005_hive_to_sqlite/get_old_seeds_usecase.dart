@@ -59,6 +59,7 @@ class GetOldSeedsUsecase {
         message: 'Migration failed',
         error: e,
         trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }

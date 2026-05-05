@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class JourneyStep extends StatelessWidget {
   const JourneyStep({
@@ -27,6 +27,7 @@ class JourneyStep extends StatelessWidget {
       loc.wizardJourneyTip7,
       loc.wizardJourneyTip8,
     ];
+    final vGap = Device.screen.height * 0.02;
     return WizardStepLayout(
       stepIndex: stepIndex,
       totalSteps: totalSteps,
@@ -41,7 +42,7 @@ class JourneyStep extends StatelessWidget {
               height: 1.4,
             ),
           ),
-          const Gap(16),
+          SizedBox(height: vGap),
           for (final tip in tips) _Tip(text: tip),
         ],
       ),
@@ -56,13 +57,15 @@ class _Tip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hGap = Device.screen.width * 0.03;
+    final vPad = Device.screen.height * 0.012;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.only(bottom: vPad),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 2, right: 12),
+            padding: EdgeInsets.only(top: 2, right: hGap),
             child: Icon(
               Icons.arrow_forward,
               size: 18,

@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 /// Common scaffold for the body of one wizard PageView page. Renders the
 /// red "PAGE x / total" eyebrow + bold uppercase title, then the page's
@@ -24,8 +23,11 @@ class WizardStepLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hPad = Device.screen.width * 0.06;
+    final vGapSm = Device.screen.height * 0.01;
+    final vGapMd = Device.screen.height * 0.025;
+    final vPadBottom = Device.screen.height * 0.02;
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 16),
+      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, vPadBottom),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -37,7 +39,7 @@ class WizardStepLayout extends StatelessWidget {
               letterSpacing: 1.2,
             ),
           ),
-          const Gap(8),
+          SizedBox(height: vGapSm),
           Text(
             title.toUpperCase(),
             style: context.font.displaySmall?.copyWith(
@@ -46,7 +48,7 @@ class WizardStepLayout extends StatelessWidget {
               height: 1.05,
             ),
           ),
-          const Gap(20),
+          SizedBox(height: vGapMd),
           child,
         ],
       ),

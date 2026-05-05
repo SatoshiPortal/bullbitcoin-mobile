@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class WelcomeStep extends StatelessWidget {
   const WelcomeStep({
@@ -22,6 +22,9 @@ class WelcomeStep extends StatelessWidget {
       color: context.appColors.onSurfaceVariant,
       height: 1.4,
     );
+    final vGapSm = Device.screen.height * 0.01;
+    final vGapMd = Device.screen.height * 0.018;
+    final vGapLg = Device.screen.height * 0.025;
     return WizardStepLayout(
       stepIndex: stepIndex,
       totalSteps: totalSteps,
@@ -30,9 +33,9 @@ class WelcomeStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(loc.wizardWelcomeBody1, style: bodyStyle),
-          const Gap(12),
+          SizedBox(height: vGapMd),
           Text(loc.wizardWelcomeBody2, style: bodyStyle),
-          const Gap(16),
+          SizedBox(height: vGapLg),
           Text(
             loc.wizardWelcomeUseCasesHeader,
             style: context.font.titleMedium?.copyWith(
@@ -40,18 +43,18 @@ class WelcomeStep extends StatelessWidget {
               color: context.appColors.onSurface,
             ),
           ),
-          const Gap(8),
+          SizedBox(height: vGapSm),
           _Bullet(text: loc.wizardWelcomeUseCase1),
           _Bullet(text: loc.wizardWelcomeUseCase2),
           _Bullet(text: loc.wizardWelcomeUseCase3),
-          const Gap(16),
+          SizedBox(height: vGapLg),
           InfoCard(
             title: loc.wizardWelcomeImportantTitle,
             description: loc.wizardWelcomeImportantBody,
             tagColor: context.appColors.error,
             bgColor: context.appColors.errorContainer,
           ),
-          const Gap(20),
+          SizedBox(height: vGapLg),
           Text(
             loc.wizardWelcomeFooter,
             style: bodyStyle?.copyWith(color: context.appColors.textMuted),
@@ -69,13 +72,15 @@ class _Bullet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hGap = Device.screen.width * 0.025;
+    final vPad = Device.screen.height * 0.008;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: EdgeInsets.only(bottom: vPad),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 6, right: 10),
+            padding: EdgeInsets.only(top: 6, right: hGap),
             child: Container(
               width: 6,
               height: 6,

@@ -64,7 +64,7 @@ class Bull {
     // launch) and advances the persisted version marker.
     final type = Report.migrationType;
     if (type != null) {
-      log.shout(message: type.name);
+      log.shout(message: type.name, category: ReportCategory.migration);
       await Report.commitVersion();
     }
   }

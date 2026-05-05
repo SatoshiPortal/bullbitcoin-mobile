@@ -14,8 +14,9 @@ class WizardHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hPad = Device.screen.width * 0.06;
+    final vPad = Device.screen.height * 0.01;
     return Padding(
-      padding: EdgeInsets.fromLTRB(hPad, 8, hPad, 8),
+      padding: EdgeInsets.fromLTRB(hPad, vPad, hPad, vPad),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
