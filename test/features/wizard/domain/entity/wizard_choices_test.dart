@@ -81,13 +81,6 @@ void main() {
   });
 
   group('WizardChoices.copyWithSilent — no touch', () {
-    test('language update does NOT join touched', () {
-      const c = WizardChoices();
-      final next = c.copyWithSilent(language: Language.franceFrench);
-      expect(next.language, Language.franceFrench);
-      expect(next.touched, isEmpty);
-    });
-
     test('themeMode update does NOT join touched', () {
       const c = WizardChoices();
       final next = c.copyWithSilent(themeMode: AppThemeMode.dark);

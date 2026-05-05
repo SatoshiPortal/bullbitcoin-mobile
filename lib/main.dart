@@ -149,7 +149,7 @@ Future main() async {
         }
         await Bull.init();
       } catch (error, stackTrace) {
-        log.shout(message: 'App Init Error', error: error, trace: stackTrace);
+        log.severe(message: 'App Init Error', error: error, trace: stackTrace);
         runApp(AppInitErrorScreen(error: error));
         return;
       }

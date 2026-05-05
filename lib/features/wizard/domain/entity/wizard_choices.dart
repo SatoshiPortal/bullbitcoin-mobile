@@ -85,13 +85,13 @@ class WizardChoices {
     );
   }
 
-  /// System-initiated change (brightness detection, keyboard locale).
-  /// Updates the value for display purposes only — does NOT mark the
-  /// field as touched, so it won't be committed to settings unless the
-  /// user later confirms via the corresponding picker.
-  WizardChoices copyWithSilent({Language? language, AppThemeMode? themeMode}) {
+  /// System-initiated theme update (brightness detection). Updates the
+  /// value for display purposes only — does NOT mark the field as
+  /// touched, so it won't be committed to settings unless the user
+  /// later confirms via the theme picker.
+  WizardChoices copyWithSilent({AppThemeMode? themeMode}) {
     return WizardChoices(
-      language: language ?? this.language,
+      language: language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency,
       reportingConsent: reportingConsent,

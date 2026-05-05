@@ -31,7 +31,6 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     on<_WizardCurrencyPicked>(_onCurrencyPicked);
     on<_WizardConsentPicked>(_onConsentPicked);
     on<_WizardThemeDetected>(_onThemeDetected);
-    on<_WizardLanguageDetected>(_onLanguageDetected);
     on<_WizardCompleted>(_onCompleted);
   }
 
@@ -78,17 +77,6 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     emit(
       state.copyWith(
         choices: state.choices.copyWithSilent(themeMode: event.mode),
-      ),
-    );
-  }
-
-  void _onLanguageDetected(
-    _WizardLanguageDetected event,
-    Emitter<WizardState> emit,
-  ) {
-    emit(
-      state.copyWith(
-        choices: state.choices.copyWithSilent(language: event.language),
       ),
     );
   }

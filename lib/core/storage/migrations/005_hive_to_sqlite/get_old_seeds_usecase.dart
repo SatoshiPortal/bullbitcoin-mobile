@@ -55,7 +55,7 @@ class GetOldSeedsUsecase {
       }
       return oldSeeds;
     } catch (e) {
-      log.shout(
+      log.severe(
         message: 'Migration failed',
         error: e,
         trace: StackTrace.current,

@@ -9,8 +9,6 @@ sealed class WizardEvent with _$WizardEvent {
   const factory WizardEvent.consentPicked(bool consent) = _WizardConsentPicked;
   const factory WizardEvent.themeDetected(AppThemeMode mode) =
       _WizardThemeDetected;
-  const factory WizardEvent.languageDetected(Language language) =
-      _WizardLanguageDetected;
   const factory WizardEvent.completed() = _WizardCompleted;
   const WizardEvent._();
 }

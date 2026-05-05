@@ -176,10 +176,16 @@ class Logger {
   /// Logs serious errors that may prevent parts of the app from working correctly.
   /// Use for unrecoverable errors that require immediate attention.
   /// [trace] is required to ensure proper error tracking in Sentry.
+  ///
+  /// Optional [category] attaches a `category=<name>` Sentry tag for
+  /// crash-cache filtering (e.g. [ReportCategory.migration] for
+  /// storage-migration faults); when omitted the tag defaults to
+  /// `error`.
   void severe({
     String? message,
     required StackTrace trace,
     required Object error,
+    ReportCategory category = ReportCategory.error,
   }) {
     // Guard against reentrant logging: if Report.error() or the broadcast
     // listener throws, runZonedGuarded catches it and calls severe() again
@@ -202,7 +208,12 @@ class Logger {
     }
 
     try {
-      Report.error(message: message, exception: error, stackTrace: trace);
+      Report.error(
+        message: message,
+        exception: error,
+        stackTrace: trace,
+        category: category,
+      );
     } catch (e) {
       if (kDebugMode) debugPrint('[Report.error failed] $e');
     }

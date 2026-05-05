@@ -8,11 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum MigrationType { install, upgrade }
 
-/// Optional sub-category callers of `log.shout` / [Report.shout] can
-/// attach to an event so crash-cache can filter on it server-side.
-/// `null` falls through to `category=none`. The `error` tag is reserved
-/// for [Report.error] and applied there automatically.
-enum ReportCategory { migration }
+/// Optional sub-category callers of `log.severe` / `log.shout` /
+/// [Report.error] / [Report.shout] can attach to an event so crash-cache
+/// can filter on it server-side. `null` falls through to `category=error`
+/// for [Report.error] and `category=none` for [Report.shout].
+enum ReportCategory { migration, error }
 
 /// Breadcrumb categories whose `message`/`data` are considered safe to
 /// keep on the wire — neither carries wallet payloads nor user identity.
@@ -244,12 +244,14 @@ class Report {
   };
 
   /// Consent-gated error capture. Dropped by `beforeSend` when the user
-  /// has opted out of the error-report program. Tagged `category=error`.
-  /// Routed from `log.severe`.
+  /// has opted out of the error-report program. Tagged `category=error`
+  /// by default; an explicit [category] (e.g. [ReportCategory.migration])
+  /// overrides it for crash-cache filtering. Routed from `log.severe`.
   static Future<void> error({
     required Object exception,
     required StackTrace stackTrace,
     String? message,
+    ReportCategory category = ReportCategory.error,
   }) async {
     if (!Sentry.isEnabled) return;
     Future.microtask(
@@ -258,7 +260,7 @@ class Report {
         stackTrace: stackTrace,
         withScope: (s) {
           if (message != null) _applyContexts(s, message);
-          _applyTags(s, categoryTag: 'error');
+          _applyTags(s, categoryTag: category.name);
         },
       ),
     );

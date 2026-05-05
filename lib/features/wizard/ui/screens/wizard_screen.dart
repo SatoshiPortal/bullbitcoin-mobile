@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
-import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
@@ -20,12 +19,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// 4-page wizard body rendered inside [WizardApp] pre-init. Pure UI —
 /// reads choices from the surrounding [WizardBloc] and dispatches
 /// events on every user pick; dispatches `WizardEvent.completed()`
-/// from the last page's "Get started" button. `initState` performs
-/// system probes (keyboard locale + brightness) and dispatches
-/// `WizardEvent.themeDetected` / `languageDetected` — both reduce via
-/// `WizardChoices.copyWithSilent`, updating the displayed value
-/// without marking the field as touched, so the user's existing
-/// settings aren't clobbered when they tap Skip.
+/// from the last page's "Get started" button. `initState` runs a
+/// brightness probe and dispatches `WizardEvent.themeDetected` — it
+/// reduces via `WizardChoices.copyWithSilent`, updating the displayed
+/// theme without marking it as touched, so the user's existing setting
+/// isn't clobbered when they tap Skip.
 class WizardScreen extends StatefulWidget {
   const WizardScreen({super.key});
 
@@ -47,37 +45,25 @@ class _WizardScreenState extends State<WizardScreen> {
   @override
   void initState() {
     super.initState();
-    final detectedLang = Language.fromKeyboard();
+    final c = context.read<WizardBloc>().state.choices;
+    if (c.themeMode != AppThemeMode.system) return;
     final brightness =
         WidgetsBinding.instance.platformDispatcher.platformBrightness;
     final detectedTheme = brightness == Brightness.dark
         ? AppThemeMode.dark
         : AppThemeMode.light;
-
-    final c = context.read<WizardBloc>().state.choices;
-    final needsLangUpdate =
-        detectedLang != Language.unitedStatesEnglish &&
-        c.language == Language.unitedStatesEnglish;
-    final needsThemeUpdate = c.themeMode == AppThemeMode.system;
-    if (!needsLangUpdate && !needsThemeUpdate) return;
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final bloc = context.read<WizardBloc>();
-      // `themeDetected` / `languageDetected` reduce via `copyWithSilent`
-      // — they update the displayed value WITHOUT marking the field as
-      // touched, so auto-detected values (brightness + keyboard) don't
-      // get committed to user settings unless the user later confirms
-      // via the picker. Critical because the wizard re-shows on every
+      // `themeDetected` reduces via `copyWithSilent` — updates the
+      // displayed value WITHOUT marking the field as touched, so the
+      // brightness-detected value doesn't get committed to user
+      // settings unless the user later confirms via the picker.
+      // Critical because the wizard re-shows on every
       // `kCurrentWizardVersion` bump for existing users — their stored
-      // language/theme would otherwise be clobbered when they tap Skip.
-      if (needsThemeUpdate) {
-        bloc.add(WizardEvent.themeDetected(detectedTheme));
-      }
-      if (needsLangUpdate) {
-        bloc.add(WizardEvent.languageDetected(detectedLang));
-        TranslationWarningBottomSheet.show(context);
-      }
+      // theme would otherwise be clobbered when they tap Skip.
+      context.read<WizardBloc>().add(
+        WizardEvent.themeDetected(detectedTheme),
+      );
     });
   }
 

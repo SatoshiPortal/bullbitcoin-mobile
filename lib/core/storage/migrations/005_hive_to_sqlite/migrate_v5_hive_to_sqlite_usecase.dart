@@ -144,7 +144,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       );
       return true;
     } catch (e) {
-      log.shout(
+      log.severe(
         message: 'Migration failed',
         error: e,
         trace: StackTrace.current,
@@ -189,7 +189,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return seeds;
     } catch (e) {
-      log.shout(
+      log.severe(
         message: 'Errored during seed migration',
         error: e,
         trace: StackTrace.current,
@@ -279,7 +279,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return recovered;
     } catch (e) {
-      log.shout(
+      log.severe(
         message: 'Errored during default wallet migration',
         error: e,
         trace: StackTrace.current,
@@ -348,7 +348,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return recovered;
     } catch (e) {
-      log.shout(
+      log.severe(
         message: 'Errored during external wallet migration',
         error: e,
         trace: StackTrace.current,
@@ -395,7 +395,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             );
             count++;
           } catch (e) {
-            log.shout(
+            log.severe(
               message: 'Failed to create watch only wallet',
               error: e,
               trace: StackTrace.current,
@@ -407,7 +407,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return count;
     } catch (e) {
-      log.shout(
+      log.severe(
         message: 'Errored during watch-only wallet migration',
         error: e,
         trace: StackTrace.current,
@@ -543,7 +543,7 @@ class MigrateToV5HiveToSqliteToUsecase {
 
       return count;
     } catch (e) {
-      log.shout(
+      log.severe(
         message: 'Errored during ongoing swap migration',
         error: e,
         trace: StackTrace.current,
