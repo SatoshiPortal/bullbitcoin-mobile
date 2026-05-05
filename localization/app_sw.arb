@@ -74,30 +74,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Haraka: Nakala Rudufu na Usakinishaji Upya Unahitajika",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Hatua Inahitajika: Sakinisha Upya Programu",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Programu unayoitumia inatumia programu ya kompyuta ambayo hivi karibuni itakuwa ya zamani. Tafadhali fuata hatua hizi:\n\n1. Hifadhi nakala rudufu ya pochi yako\n2. Sakinua programu. Ifute kabisa kutoka kwenye simu yako.\n3. Sakinisha upya toleo jipya zaidi la programu\n4. Tumia chaguo la uokoaji badala ya \"tengeneza pochi mpya\".\n\nFedha zako ziko salama na unaweza kuendelea kutumia programu sasa hivi, lakini fanya hivyo haraka iwezekanavyo kuzuia programu isiharibike katika siku zijazo za karibu.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Hifadhi sasa",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Baadaye",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
   "backButton": "Rudi",
   "@backButton": {
@@ -166,5 +142,27 @@
   "appInitErrorDetailsToggle": "Onyesha maelezo ya hitilafu",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "HATUA INAHITAJIKA",
+  "legacyStorageBadgeConfirm": "THIBITISHA",
+  "legacyStorageNoBackupPageTitle": "HIFADHI NAKALA NA SAKINISHA UPYA WALLET YAKO",
+  "legacyStorageHasBackupPageTitle": "SAKINISHA UPYA WALLET YAKO",
+  "legacyStorageIntroDescription": "Wallet yako inatumia programu ambayo itaachwa hivi karibuni. Haiwezi kusasishwa bila kuondoa programu na kuiweka tena.",
+  "legacyStorageStepBackupWallet": "Hifadhi nakala ya wallet yako",
+  "legacyStorageStepExportLabels": "Hamisha lebo zako (kama unazo)",
+  "legacyStorageStepEnsureSwapsCompleted": "Hakikisha swaps zote zimekamilika",
+  "legacyStorageStepUninstall": "Ondoa programu kabisa kutoka kwenye kifaa chako",
+  "legacyStorageStepReinstall": "Pakua toleo jipya zaidi na uweke tena",
+  "legacyStorageStepRestoreBackup": "Rejesha nakala yako",
+  "legacyStorageImportantTitle": "Muhimu",
+  "legacyStorageImportantBody": "Usiruke utaratibu huu isipokuwa kweli huwezi kuhifadhi nakala kwa sasa.",
+  "legacyStorageContinueFooterNoBackup": "Unaweza kuendelea kutumia programu bila kuhifadhi nakala, lakini tunashauri sana usifanye hivyo.",
+  "legacyStorageContinueFooterHasBackup": "Unaweza kuendelea kutumia programu, lakini tunashauri sana usifanye hivyo.",
+  "legacyStorageBackupNowButton": "Hifadhi sasa",
+  "legacyStorageRiskAckButton": "Hapana, naelewa hatari",
+  "legacyStorageAreYouSureTitle": "UNA UHAKIKA?",
+  "legacyStorageAreYouSureParagraphOne": "Programu inayohifadhi funguo binafsi za Bitcoin za wallet yako inaachwa. Tunashauri sana uhifadhi nakala sasa hivi ili kuepuka usumbufu wowote baadaye.",
+  "legacyStorageAreYouSureParagraphTwo": "Chaguo la Encrypted Vault linachukua takriban dakika 1 na halihitaji vifaa maalum. Kwa nakala ya kimwili unahitaji kalamu na karatasi tu.",
+  "legacyStorageContinueWithoutBackupButton": "Endelea bila nakala",
+  "legacyStorageAcceptRisksCheckbox": "Ninakubali hatari za kutohifadhi nakala"
 }

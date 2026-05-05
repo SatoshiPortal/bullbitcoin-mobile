@@ -4469,30 +4469,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgent : Sauvegarde et réinstallation requises",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Action requise : Réinstaller l'application",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "L'application que vous utilisez repose sur un logiciel qui sera bientôt obsolète. Veuillez suivre ces étapes :\n\n1. Sauvegardez votre portefeuille\n2. Désinstallez l'application. Supprimez-la complètement de votre téléphone.\n3. Réinstallez la dernière version de l'application\n4. Utilisez l'option de récupération plutôt que « créer un nouveau portefeuille ».\n\nVos fonds sont en sécurité et vous pouvez continuer à utiliser l'application dès maintenant, mais faites-le dès que possible pour éviter que l'application ne tombe en panne dans un proche avenir.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Sauvegarder maintenant",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Plus tard",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Retour",
   "@backButton": {
     "description": "Generic back button label"
@@ -4560,5 +4536,27 @@
   "appInitErrorDetailsToggle": "Afficher les détails de l'erreur",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ACTION REQUISE",
+  "legacyStorageBadgeConfirm": "CONFIRMER",
+  "legacyStorageNoBackupPageTitle": "SAUVEGARDEZ ET RÉINSTALLEZ VOTRE PORTEFEUILLE",
+  "legacyStorageHasBackupPageTitle": "RÉINSTALLEZ VOTRE PORTEFEUILLE",
+  "legacyStorageIntroDescription": "Votre portefeuille fonctionne avec un logiciel qui sera bientôt obsolète. Il ne peut pas être mis à jour sans désinstaller et réinstaller l'application.",
+  "legacyStorageStepBackupWallet": "Sauvegardez votre portefeuille",
+  "legacyStorageStepExportLabels": "Exportez vos étiquettes (si vous en avez)",
+  "legacyStorageStepEnsureSwapsCompleted": "Assurez-vous que tous les swaps sont terminés",
+  "legacyStorageStepUninstall": "Désinstallez complètement l'application de votre appareil",
+  "legacyStorageStepReinstall": "Téléchargez la dernière version et réinstallez",
+  "legacyStorageStepRestoreBackup": "Restaurez votre sauvegarde",
+  "legacyStorageImportantTitle": "Important",
+  "legacyStorageImportantBody": "Ne sautez pas cette procédure à moins que vous ne puissiez vraiment pas faire de sauvegarde en ce moment.",
+  "legacyStorageContinueFooterNoBackup": "Vous pouvez continuer à utiliser l'application sans sauvegarde, mais nous vous le déconseillons fortement.",
+  "legacyStorageContinueFooterHasBackup": "Vous pouvez continuer à utiliser l'application, mais nous vous le déconseillons fortement.",
+  "legacyStorageBackupNowButton": "Sauvegarder maintenant",
+  "legacyStorageRiskAckButton": "Non, je comprends le risque",
+  "legacyStorageAreYouSureTitle": "ÊTES-VOUS SÛR ?",
+  "legacyStorageAreYouSureParagraphOne": "Le logiciel utilisé pour stocker les clés privées Bitcoin de votre portefeuille est en fin de vie. Nous vous recommandons fortement de faire une sauvegarde maintenant pour éviter toute interruption à l'avenir.",
+  "legacyStorageAreYouSureParagraphTwo": "L'option Encrypted Vault prend environ 1 minute et ne nécessite aucun outil spécial. Pour la sauvegarde physique, il vous suffit d'un stylo et de papier.",
+  "legacyStorageContinueWithoutBackupButton": "Continuer sans sauvegarde",
+  "legacyStorageAcceptRisksCheckbox": "J'accepte les risques de ne pas faire de sauvegarde"
 }

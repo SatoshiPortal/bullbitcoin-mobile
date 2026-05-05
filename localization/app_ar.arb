@@ -12483,30 +12483,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "عاجل: النسخ الاحتياطي وإعادة التثبيت مطلوبان",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "إجراء مطلوب: إعادة تثبيت التطبيق",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "التطبيق الذي تستخدمه يعتمد على برنامج سيتوقف قريباً. يرجى اتباع الخطوات التالية:\n\n1. احتفظ بنسخة احتياطية من محفظتك\n2. قم بإلغاء تثبيت التطبيق. احذفه بالكامل من هاتفك.\n3. أعد تثبيت أحدث إصدار من التطبيق\n4. استخدم خيار الاسترداد بدلاً من \"إنشاء محفظة جديدة\".\n\nأموالك في أمان ويمكنك الاستمرار في استخدام التطبيق الآن، لكن قم بذلك في أقرب وقت ممكن لمنع تعطل التطبيق في المستقبل القريب.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "احتياطي الآن",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "لاحقاً",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "رجوع",
   "@backButton": {
     "description": "Generic back button label"
@@ -12574,5 +12550,27 @@
   "appInitErrorDetailsToggle": "إظهار تفاصيل الخطأ",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "إجراء مطلوب",
+  "legacyStorageBadgeConfirm": "تأكيد",
+  "legacyStorageNoBackupPageTitle": "احفظ نسخة احتياطية وأعد تثبيت محفظتك",
+  "legacyStorageHasBackupPageTitle": "أعد تثبيت محفظتك",
+  "legacyStorageIntroDescription": "محفظتك تعمل على برنامج سيتم إيقافه قريبًا. لا يمكن تحديثه دون إلغاء تثبيت التطبيق وإعادة تثبيته.",
+  "legacyStorageStepBackupWallet": "احفظ نسخة احتياطية لمحفظتك",
+  "legacyStorageStepExportLabels": "صدّر تسمياتك (إن وُجدت)",
+  "legacyStorageStepEnsureSwapsCompleted": "تأكد من اكتمال جميع عمليات التبادل",
+  "legacyStorageStepUninstall": "أزل التطبيق بالكامل من جهازك",
+  "legacyStorageStepReinstall": "نزّل أحدث إصدار وأعد التثبيت",
+  "legacyStorageStepRestoreBackup": "استعِد نسختك الاحتياطية",
+  "legacyStorageImportantTitle": "هام",
+  "legacyStorageImportantBody": "لا تتخطَّ هذه العملية إلا إذا كنت لا تستطيع فعلًا عمل نسخة احتياطية في هذه اللحظة.",
+  "legacyStorageContinueFooterNoBackup": "يمكنك متابعة استخدام التطبيق دون عمل نسخة احتياطية، لكننا ننصح بشدة بعدم القيام بذلك.",
+  "legacyStorageContinueFooterHasBackup": "يمكنك متابعة استخدام التطبيق، لكننا ننصح بشدة بعدم القيام بذلك.",
+  "legacyStorageBackupNowButton": "احفظ نسخة احتياطية الآن",
+  "legacyStorageRiskAckButton": "لا، أتفهم المخاطر",
+  "legacyStorageAreYouSureTitle": "هل أنت متأكد؟",
+  "legacyStorageAreYouSureParagraphOne": "البرنامج المستخدم لتخزين مفاتيح بيتكوين الخاصة بمحفظتك يتم إيقافه. ننصح بشدة أن تعمل نسخة احتياطية الآن لتجنب أي تعطل في المستقبل.",
+  "legacyStorageAreYouSureParagraphTwo": "خيار النسخة الاحتياطية المشفّرة لا يستغرق سوى دقيقة، ولا يتطلب أدوات خاصة. أما النسخة الاحتياطية المادية، فكل ما تحتاجه قلم وورقة.",
+  "legacyStorageContinueWithoutBackupButton": "متابعة دون نسخة احتياطية",
+  "legacyStorageAcceptRisksCheckbox": "أوافق على مخاطر عدم عمل نسخة احتياطية"
 }

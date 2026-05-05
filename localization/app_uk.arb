@@ -4477,30 +4477,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Терміново: необхідне резервне копіювання та переустановлення",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Необхідна дія: Перевстановіть додаток",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Додаток, яким ви користуєтеся, працює на програмному забезпеченні, яке незабаром застаріє. Будь ласка, виконайте такі кроки:\n\n1. Зробіть резервну копію вашого гаманця\n2. Видаліть додаток. Повністю сотріть його з телефону.\n3. Встановіть заново останню версію додатка\n4. Використовуйте опцію відновлення замість «створення нового гаманця».\n\nВаші кошти в безпеці, і ви можете продовжувати користуватися додатком прямо зараз, але зробіть це якомога швидше, щоб запобігти збою додатка найближчим часом.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Зробити копію зараз",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Пізніше",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Назад",
   "@backButton": {
     "description": "Generic back button label"
@@ -4568,5 +4544,27 @@
   "appInitErrorDetailsToggle": "Показати деталі помилки",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ПОТРІБНА ДІЯ",
+  "legacyStorageBadgeConfirm": "ПІДТВЕРДИТИ",
+  "legacyStorageNoBackupPageTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ТА ПЕРЕВСТАНОВІТЬ ГАМАНЕЦЬ",
+  "legacyStorageHasBackupPageTitle": "ПЕРЕВСТАНОВІТЬ ГАМАНЕЦЬ",
+  "legacyStorageIntroDescription": "Ваш гаманець працює на програмному забезпеченні, підтримку якого незабаром буде припинено. Його неможливо оновити без видалення та повторного встановлення застосунку.",
+  "legacyStorageStepBackupWallet": "Створіть резервну копію гаманця",
+  "legacyStorageStepExportLabels": "Експортуйте свої мітки (якщо є)",
+  "legacyStorageStepEnsureSwapsCompleted": "Переконайтеся, що всі swap-операції завершено",
+  "legacyStorageStepUninstall": "Повністю видаліть застосунок зі свого пристрою",
+  "legacyStorageStepReinstall": "Завантажте найновішу версію та встановіть знову",
+  "legacyStorageStepRestoreBackup": "Відновіть резервну копію",
+  "legacyStorageImportantTitle": "Важливо",
+  "legacyStorageImportantBody": "Не пропускайте цей процес, якщо ви справді не можете створити резервну копію прямо зараз.",
+  "legacyStorageContinueFooterNoBackup": "Ви можете продовжувати користуватися застосунком без резервної копії, але ми наполегливо радимо так не робити.",
+  "legacyStorageContinueFooterHasBackup": "Ви можете продовжувати користуватися застосунком, але ми наполегливо радимо так не робити.",
+  "legacyStorageBackupNowButton": "Створити копію зараз",
+  "legacyStorageRiskAckButton": "Ні, я розумію ризик",
+  "legacyStorageAreYouSureTitle": "ВИ ВПЕВНЕНІ?",
+  "legacyStorageAreYouSureParagraphOne": "Програмне забезпечення, яке зберігає приватні ключі Bitcoin вашого гаманця, припиняє підтримку. Ми наполегливо радимо створити резервну копію прямо зараз, щоб уникнути збоїв у майбутньому.",
+  "legacyStorageAreYouSureParagraphTwo": "Резервне копіювання Encrypted Vault займає близько 1 хвилини та не потребує спеціальних інструментів. Для фізичної резервної копії вам знадобляться лише ручка та папір.",
+  "legacyStorageContinueWithoutBackupButton": "Продовжити без копії",
+  "legacyStorageAcceptRisksCheckbox": "Я приймаю ризики відсутності резервної копії"
 }

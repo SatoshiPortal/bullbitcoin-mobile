@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/legacy_storage/legacy_storage_screen_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -39,9 +40,9 @@ class _LegacyStorageAreYouSureScreenState
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(loc.legacyStorageAreYouSureParagraphOne, style: bodyTextStyle),
+          BBText(loc.legacyStorageAreYouSureParagraphOne, style: bodyTextStyle),
           const Gap(16),
-          Text(loc.legacyStorageAreYouSureParagraphTwo, style: bodyTextStyle),
+          BBText(loc.legacyStorageAreYouSureParagraphTwo, style: bodyTextStyle),
         ],
       ),
       primaryButton: BBButton.big(
@@ -100,7 +101,7 @@ class _AcceptRisksRow extends StatelessWidget {
           ),
           const Gap(12),
           Expanded(
-            child: Text(
+            child: BBText(
               label,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,

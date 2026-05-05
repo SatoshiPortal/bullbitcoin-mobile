@@ -12197,30 +12197,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "জরুরি: ব্যাকআপ ও পুনরায় ইনস্টল প্রয়োজন",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "পদক্ষেপ প্রয়োজন: অ্যাপ পুনরায় ইনস্টল করুন",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "আপনি যে অ্যাপটি ব্যবহার করছেন তা এমন সফটওয়্যার ব্যবহার করছে যা শীঘ্রই বাতিল হয়ে যাবে। অনুগ্রহ করে এই পদক্ষেপগুলি অনুসরণ করুন:\n\n1. আপনার ওয়ালেট ব্যাকআপ করুন\n2. অ্যাপটি আনইনস্টল করুন। আপনার ফোন থেকে সম্পূর্ণরূপে মুছে দিন।\n3. অ্যাপের সর্বশেষ সংস্করণ পুনরায় ইনস্টল করুন\n4. \"নতুন ওয়ালেট তৈরি করুন\" এর পরিবর্তে রিকভারি বিকল্প ব্যবহার করুন।\n\nআপনার অর্থ নিরাপদ এবং আপনি এখনই অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে অ্যাপটি অচল হওয়ার আগে যত দ্রুত সম্ভব এটি করুন।",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "এখনই ব্যাকআপ করুন",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "পরে",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "পিছনে",
   "@backButton": {
     "description": "Generic back button label"
@@ -12288,5 +12264,27 @@
   "appInitErrorDetailsToggle": "ত্রুটির বিবরণ দেখান",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "পদক্ষেপ প্রয়োজন",
+  "legacyStorageBadgeConfirm": "নিশ্চিত করুন",
+  "legacyStorageNoBackupPageTitle": "আপনার ওয়ালেট ব্যাকআপ ও পুনরায় ইনস্টল করুন",
+  "legacyStorageHasBackupPageTitle": "আপনার ওয়ালেট পুনরায় ইনস্টল করুন",
+  "legacyStorageIntroDescription": "আপনার ওয়ালেট এমন সফটওয়্যারে চলছে যেটি শীঘ্রই অপ্রচলিত হবে। অ্যাপটি আনইনস্টল ও পুনরায় ইনস্টল না করে এটি আপডেট করা যাবে না।",
+  "legacyStorageStepBackupWallet": "আপনার ওয়ালেট ব্যাকআপ করুন",
+  "legacyStorageStepExportLabels": "আপনার লেবেলগুলো এক্সপোর্ট করুন (যদি থাকে)",
+  "legacyStorageStepEnsureSwapsCompleted": "নিশ্চিত করুন সব সোয়াপ সম্পন্ন হয়েছে",
+  "legacyStorageStepUninstall": "ডিভাইস থেকে অ্যাপটি সম্পূর্ণ আনইনস্টল করুন",
+  "legacyStorageStepReinstall": "সর্বশেষ সংস্করণ ডাউনলোড করে পুনরায় ইনস্টল করুন",
+  "legacyStorageStepRestoreBackup": "আপনার ব্যাকআপ পুনরুদ্ধার করুন",
+  "legacyStorageImportantTitle": "গুরুত্বপূর্ণ",
+  "legacyStorageImportantBody": "এই মুহূর্তে একেবারেই ব্যাকআপ নেওয়া সম্ভব না হলে ছাড়া এই প্রক্রিয়া এড়িয়ে যাবেন না।",
+  "legacyStorageContinueFooterNoBackup": "ব্যাকআপ না করেও আপনি অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে আমরা দৃঢ়ভাবে এর বিরুদ্ধে পরামর্শ দিই।",
+  "legacyStorageContinueFooterHasBackup": "আপনি অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে আমরা দৃঢ়ভাবে এর বিরুদ্ধে পরামর্শ দিই।",
+  "legacyStorageBackupNowButton": "এখনই ব্যাকআপ",
+  "legacyStorageRiskAckButton": "না, আমি ঝুঁকি বুঝি",
+  "legacyStorageAreYouSureTitle": "আপনি কি নিশ্চিত?",
+  "legacyStorageAreYouSureParagraphOne": "আপনার ওয়ালেটের বিটকয়েন প্রাইভেট কী সংরক্ষণে ব্যবহৃত সফটওয়্যারটি অপ্রচলিত হয়ে যাচ্ছে। ভবিষ্যতে কোনো বাধা এড়াতে আমরা দৃঢ়ভাবে এখনই ব্যাকআপ নেওয়ার পরামর্শ দিই।",
+  "legacyStorageAreYouSureParagraphTwo": "এনক্রিপ্টেড ভল্ট ব্যাকআপের অপশনটি প্রায় ১ মিনিট সময় নেয়, কোনো বিশেষ সরঞ্জাম লাগে না। ফিজিক্যাল ব্যাকআপের জন্য কেবল কলম ও কাগজ যথেষ্ট।",
+  "legacyStorageContinueWithoutBackupButton": "ব্যাকআপ ছাড়াই চালিয়ে যান",
+  "legacyStorageAcceptRisksCheckbox": "ব্যাকআপ না করার ঝুঁকি আমি গ্রহণ করছি"
 }

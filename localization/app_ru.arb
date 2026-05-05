@@ -4489,30 +4489,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Срочно: требуется резервное копирование и переустановка",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Требуется действие: Переустановите приложение",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Приложение, которое вы используете, работает на программном обеспечении, которое скоро устареет. Пожалуйста, выполните следующие шаги:\n\n1. Создайте резервную копию вашего кошелька\n2. Удалите приложение. Полностью сотрите его с вашего телефона.\n3. Переустановите последнюю версию приложения\n4. Используйте функцию восстановления вместо «создания нового кошелька».\n\nВаши средства в безопасности, и вы можете продолжать пользоваться приложением прямо сейчас, но сделайте это как можно скорее, чтобы предотвратить неисправность приложения в ближайшем будущем.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Создать копию сейчас",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Позже",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Назад",
   "@backButton": {
     "description": "Generic back button label"
@@ -4580,5 +4556,27 @@
   "appInitErrorDetailsToggle": "Показать подробности ошибки",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ТРЕБУЕТСЯ ДЕЙСТВИЕ",
+  "legacyStorageBadgeConfirm": "ПОДТВЕРДИТЬ",
+  "legacyStorageNoBackupPageTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ И ПЕРЕУСТАНОВИТЕ КОШЕЛЁК",
+  "legacyStorageHasBackupPageTitle": "ПЕРЕУСТАНОВИТЕ КОШЕЛЁК",
+  "legacyStorageIntroDescription": "Ваш кошелёк работает на программном обеспечении, поддержка которого скоро прекратится. Его нельзя обновить, не удалив и не установив приложение заново.",
+  "legacyStorageStepBackupWallet": "Сделайте резервную копию кошелька",
+  "legacyStorageStepExportLabels": "Экспортируйте свои метки (если они есть)",
+  "legacyStorageStepEnsureSwapsCompleted": "Убедитесь, что все обмены (swap) завершены",
+  "legacyStorageStepUninstall": "Полностью удалите приложение с устройства",
+  "legacyStorageStepReinstall": "Скачайте последнюю версию и установите её заново",
+  "legacyStorageStepRestoreBackup": "Восстановите резервную копию",
+  "legacyStorageImportantTitle": "Важно",
+  "legacyStorageImportantBody": "Не пропускайте этот процесс, если у вас действительно нет возможности сделать резервную копию прямо сейчас.",
+  "legacyStorageContinueFooterNoBackup": "Вы можете продолжить пользоваться приложением без резервной копии, но мы настоятельно не рекомендуем этого.",
+  "legacyStorageContinueFooterHasBackup": "Вы можете продолжить пользоваться приложением, но мы настоятельно не рекомендуем этого.",
+  "legacyStorageBackupNowButton": "Сделать копию сейчас",
+  "legacyStorageRiskAckButton": "Нет, я понимаю риск",
+  "legacyStorageAreYouSureTitle": "ВЫ УВЕРЕНЫ?",
+  "legacyStorageAreYouSureParagraphOne": "Программное обеспечение, в котором хранятся приватные ключи Bitcoin вашего кошелька, прекращает поддержку. Мы настоятельно рекомендуем сделать резервную копию прямо сейчас, чтобы избежать сбоев в будущем.",
+  "legacyStorageAreYouSureParagraphTwo": "Резервная копия Encrypted Vault занимает около 1 минуты и не требует особых инструментов. Для физической копии достаточно ручки и листа бумаги.",
+  "legacyStorageContinueWithoutBackupButton": "Продолжить без копии",
+  "legacyStorageAcceptRisksCheckbox": "Я принимаю риски отказа от резервной копии"
 }

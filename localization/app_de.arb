@@ -4369,30 +4369,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Dringend: Backup und Neuinstallation erforderlich",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Die App, die Sie verwenden, nutzt Software, die bald veraltet sein wird. Bitte führen Sie folgende Schritte durch:\n\n1. Sichern Sie Ihre Wallet\n2. Deinstallieren Sie die App. Löschen Sie sie vollständig von Ihrem Telefon.\n3. Installieren Sie die neueste Version der App erneut\n4. Verwenden Sie die Wiederherstellungsoption anstatt \"neue Wallet erstellen\".\n\nIhre Gelder sind sicher und Sie können die App jetzt weiter nutzen, aber erledigen Sie dies so bald wie möglich, um zu verhindern, dass die App in naher Zukunft nicht mehr funktioniert.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "Aktion erforderlich: App neu installieren",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Die App, die Sie verwenden, nutzt Software, die bald veraltet sein wird. Bitte führen Sie folgende Schritte durch:\n\n1. Sichern Sie Ihre Wallet\n2. Deinstallieren Sie die App. Löschen Sie sie vollständig von Ihrem Telefon.\n3. Installieren Sie die neueste Version der App erneut\n4. Verwenden Sie die Wiederherstellungsoption anstatt \"neue Wallet erstellen\".\n\nIhre Gelder sind sicher und Sie können die App jetzt weiter nutzen, aber erledigen Sie dies so bald wie möglich, um zu verhindern, dass die App in naher Zukunft nicht mehr funktioniert.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Jetzt sichern",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Später",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Zurück",
   "@backButton": {
     "description": "Generic back button label"
@@ -4460,5 +4436,27 @@
   "appInitErrorDetailsToggle": "Fehlerdetails anzeigen",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "AKTION ERFORDERLICH",
+  "legacyStorageBadgeConfirm": "BESTÄTIGEN",
+  "legacyStorageNoBackupPageTitle": "WALLET SICHERN UND NEU INSTALLIEREN",
+  "legacyStorageHasBackupPageTitle": "WALLET NEU INSTALLIEREN",
+  "legacyStorageIntroDescription": "Deine Wallet läuft auf einer Software, die bald nicht mehr unterstützt wird. Sie kann nicht aktualisiert werden, ohne die App zu deinstallieren und neu zu installieren.",
+  "legacyStorageStepBackupWallet": "Sichere deine Wallet",
+  "legacyStorageStepExportLabels": "Exportiere deine Labels (falls vorhanden)",
+  "legacyStorageStepEnsureSwapsCompleted": "Stelle sicher, dass alle Swaps abgeschlossen sind",
+  "legacyStorageStepUninstall": "Deinstalliere die App vollständig von deinem Gerät",
+  "legacyStorageStepReinstall": "Lade die neueste Version herunter und installiere sie neu",
+  "legacyStorageStepRestoreBackup": "Stelle deine Sicherung wieder her",
+  "legacyStorageImportantTitle": "Wichtig",
+  "legacyStorageImportantBody": "Überspringe diesen Vorgang nur, wenn du jetzt absolut keine Sicherung erstellen kannst.",
+  "legacyStorageContinueFooterNoBackup": "Du kannst die App auch ohne Sicherung weiter nutzen, wir raten aber dringend davon ab.",
+  "legacyStorageContinueFooterHasBackup": "Du kannst die App weiter nutzen, wir raten aber dringend davon ab.",
+  "legacyStorageBackupNowButton": "Jetzt sichern",
+  "legacyStorageRiskAckButton": "Nein, ich verstehe das Risiko",
+  "legacyStorageAreYouSureTitle": "BIST DU SICHER?",
+  "legacyStorageAreYouSureParagraphOne": "Die Software, die die privaten Bitcoin-Schlüssel deiner Wallet speichert, wird nicht mehr unterstützt. Wir empfehlen dir dringend, jetzt eine Sicherung zu erstellen, um spätere Störungen zu vermeiden.",
+  "legacyStorageAreYouSureParagraphTwo": "Die verschlüsselte Vault-Sicherung dauert nur etwa 1 Minute und benötigt keine besonderen Werkzeuge. Für eine physische Sicherung brauchst du nur Stift und Papier.",
+  "legacyStorageContinueWithoutBackupButton": "Ohne Sicherung fortfahren",
+  "legacyStorageAcceptRisksCheckbox": "Ich akzeptiere die Risiken, keine Sicherung zu haben"
 }

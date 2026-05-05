@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
 class LegacyStorageBadge extends StatelessWidget {
@@ -14,7 +15,7 @@ class LegacyStorageBadge extends StatelessWidget {
         color: context.appColors.primary,
         borderRadius: BorderRadius.circular(2),
       ),
-      child: Text(
+      child: BBText(
         label,
         style: TextStyle(
           fontFamily: 'Bebas Neue',

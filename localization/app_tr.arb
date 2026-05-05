@@ -12480,30 +12480,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Acil: Yedekleme ve Yeniden Kurulum Gerekli",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "İşlem Gerekli: Uygulamayı Yeniden Yükleyin",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "Kullandığınız uygulama yakında kullanımdan kalkacak bir yazılım kullanmaktadır. Lütfen şu adımları izleyin:\n\n1. Cüzdanınızı yedekleyin\n2. Uygulamayı kaldırın. Telefonunuzdan tamamen silin.\n3. Uygulamanın en son sürümünü yeniden yükleyin\n4. \"Yeni cüzdan oluştur\" yerine kurtarma seçeneğini kullanın.\n\nParalarınız güvende ve uygulamayı şu an kullanmaya devam edebilirsiniz, ancak uygulamanın yakın gelecekte bozulmasını önlemek için bunu mümkün olan en kısa sürede yapın.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "Şimdi yedekle",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "Daha sonra",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "Geri",
   "@backButton": {
     "description": "Generic back button label"
@@ -12571,5 +12547,27 @@
   "appInitErrorDetailsToggle": "Hata ayrıntılarını göster",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "legacyStorageBadgeActionRequired": "İŞLEM GEREKLİ",
+  "legacyStorageBadgeConfirm": "ONAYLA",
+  "legacyStorageNoBackupPageTitle": "CÜZDANINIZIN YEDEĞİNİ ALIN VE YENİDEN YÜKLEYİN",
+  "legacyStorageHasBackupPageTitle": "CÜZDANINIZI YENİDEN YÜKLEYİN",
+  "legacyStorageIntroDescription": "Cüzdanınız kısa süre içinde kullanımdan kalkacak bir yazılım üzerinde çalışıyor. Uygulama kaldırılıp yeniden yüklenmeden güncellenemez.",
+  "legacyStorageStepBackupWallet": "Cüzdanınızın yedeğini alın",
+  "legacyStorageStepExportLabels": "Etiketlerinizi dışa aktarın (varsa)",
+  "legacyStorageStepEnsureSwapsCompleted": "Tüm swap işlemlerinin tamamlandığından emin olun",
+  "legacyStorageStepUninstall": "Uygulamayı cihazınızdan tamamen kaldırın",
+  "legacyStorageStepReinstall": "En güncel sürümü indirip yeniden yükleyin",
+  "legacyStorageStepRestoreBackup": "Yedeğinizi geri yükleyin",
+  "legacyStorageImportantTitle": "Önemli",
+  "legacyStorageImportantBody": "Şu an gerçekten yedek alamayacaksanız bu işlemi atlamayın.",
+  "legacyStorageContinueFooterNoBackup": "Yedek almadan da uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
+  "legacyStorageContinueFooterHasBackup": "Uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
+  "legacyStorageBackupNowButton": "Şimdi yedekle",
+  "legacyStorageRiskAckButton": "Hayır, riski anlıyorum",
+  "legacyStorageAreYouSureTitle": "EMİN MİSİNİZ?",
+  "legacyStorageAreYouSureParagraphOne": "Cüzdanınızın Bitcoin özel anahtarlarını saklamak için kullanılan yazılım kullanımdan kalkıyor. İleride yaşanabilecek aksaklıkları önlemek için hemen yedek almanızı kesinlikle öneririz.",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault yedekleme seçeneği yaklaşık 1 dakika sürer ve özel araç gerektirmez. Fiziksel yedek için ihtiyacınız olan tek şey kalem ve kağıttır.",
+  "legacyStorageContinueWithoutBackupButton": "Yedek almadan devam et",
+  "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum"
 }

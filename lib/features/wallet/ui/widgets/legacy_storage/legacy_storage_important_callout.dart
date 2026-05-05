@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -36,7 +37,7 @@ class LegacyStorageImportantCallout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                BBText(
                   title,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.appColors.primary,
@@ -44,7 +45,7 @@ class LegacyStorageImportantCallout extends StatelessWidget {
                   ),
                 ),
                 const Gap(2),
-                Text(
+                BBText(
                   body,
                   style: context.font.bodyMedium?.copyWith(
                     color: context.appColors.onSurface,

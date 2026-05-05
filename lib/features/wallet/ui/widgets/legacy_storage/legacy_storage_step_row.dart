@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -24,7 +25,7 @@ class LegacyStorageStepRow extends StatelessWidget {
           _Bullet(index: index, done: done),
           const Gap(12),
           Expanded(
-            child: Text(
+            child: BBText(
               label,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,
@@ -53,7 +54,7 @@ class _Bullet extends StatelessWidget {
       alignment: Alignment.center,
       child: done
           ? Icon(Icons.check, size: 14, color: context.appColors.onPrimary)
-          : Text(
+          : BBText(
               '$index',
               style: context.font.labelSmall?.copyWith(
                 color: context.appColors.onPrimary,
