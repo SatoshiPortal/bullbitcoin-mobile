@@ -46,6 +46,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     OnboardingCreateNewWallet event,
     Emitter<OnboardingState> emit,
   ) async {
+    // Bloc events are processed serially. By the time a 2nd queued event
+    // dequeues, the 1st emit has already flipped the status to loading,
+    // so this guard drops the duplicate (#2015).
+    if (state.onboardingStepStatus == OnboardingStepStatus.loading) return;
     try {
       emit(
         state.copyWith(
@@ -64,6 +68,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     OnboardingRecoverWalletClicked event,
     Emitter<OnboardingState> emit,
   ) async {
+    // Same serialized-event guard as `_onCreateNewWallet` (#2015).
+    if (state.onboardingStepStatus == OnboardingStepStatus.loading) return;
     try {
       emit(
         state.copyWith(

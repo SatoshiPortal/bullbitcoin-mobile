@@ -27,6 +27,24 @@ class CreateDefaultWalletsUsecase {
     String? passphrase,
   }) async {
     try {
+      // Resolve the environment up front so the idempotency check below
+      // uses the same scope as the wallet creation.
+      final settings = await _settingsRepository.fetch();
+      final environment = settings.environment;
+
+      // Idempotency: if defaults already exist for this environment,
+      // return them instead of generating duplicates. Final safety net
+      // for the rapid-tap race (#2015) — the UI disable + bloc handler
+      // guard close the front-end window, this guards the backend.
+      final existing = await _wallet.getWallets(
+        onlyDefaults: true,
+        environment: environment,
+      );
+      if (existing.isNotEmpty) {
+        log.warning('CreateDefaultWalletsUsecase: defaults already exist');
+        return existing;
+      }
+
       final isGenerated = mnemonicWords == null;
 
       // Generate a mnemonic seed if the user creates a new wallet
@@ -45,10 +63,6 @@ class CreateDefaultWalletsUsecase {
 
       // The current default script type for the wallets is BIP84
       const scriptType = ScriptType.bip84;
-
-      // Get the current environment to determine the network
-      final settings = await _settingsRepository.fetch();
-      final environment = settings.environment;
       final bitcoinNetwork = environment.isMainnet
           ? Network.bitcoinMainnet
           : Network.bitcoinTestnet;

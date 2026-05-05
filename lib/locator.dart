@@ -39,6 +39,7 @@ import 'package:bb_mobile/features/tor_settings/tor_settings_locator.dart';
 import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:bb_mobile/features/wallet/wallet_locator.dart';
 import 'package:bb_mobile/features/withdraw/withdraw_locator.dart';
+import 'package:bb_mobile/features/wizard/wizard_locator.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt locator = GetIt.instance;
@@ -67,6 +68,7 @@ class AppLocator {
     MempoolSettingsLocator.setup(locator);
     TorSettingsLocator.setup(locator);
     PinCodeLocator.setup(locator);
+    WizardLocator.setup(locator);
     AppStartupLocator.setup(locator);
     AppUnlockLocator.setup(locator);
     OnboardingLocator.setup(locator);

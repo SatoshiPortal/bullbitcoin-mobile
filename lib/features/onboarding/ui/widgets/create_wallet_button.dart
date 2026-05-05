@@ -21,6 +21,11 @@ class CreateWalletButton extends StatelessWidget {
       bgColor: context.appColors.secondaryFixed,
       textColor: context.appColors.onSecondaryFixed,
       iconData: Icons.account_balance_wallet_outlined,
+      // Visually + functionally disable the button the moment the bloc
+      // emits loading. Combined with the bloc-level early-return guard
+      // and the use-case idempotency check, closes the rapid-tap race
+      // that produced duplicate default wallets (#2015).
+      disabled: creating,
       onPressed: () {
         if (creating) return;
         context.read<OnboardingBloc>().add(const OnboardingCreateNewWallet());

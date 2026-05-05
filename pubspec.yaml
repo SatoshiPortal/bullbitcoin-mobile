@@ -173,7 +173,6 @@ flutter:
     - assets/backgrounds/
     - assets/animations/
     - assets/misc/
-    - assets/wizard/
 
   fonts:
     - family: Bebas Neue
