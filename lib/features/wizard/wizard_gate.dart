@@ -39,7 +39,11 @@ const int kCurrentWizardVersion = 1;
 /// set by `OnboardingBloc` after a successful create/recover).
 class WizardGate {
   static const String _versionKey = 'wizard_completed_version';
-  static const String _setupCompleteKey = 'wallet_setup_complete';
+  static const String _setupCompleteKey = 'wizard_setup_complete';
+  // Pre-rename key — read-once-then-erased on first `isSetupComplete`
+  // call so existing v6.9 users don't lose their setup-complete signal.
+  static const String _legacySetupCompleteKey = 'wallet_setup_complete';
+  static const String _pendingVersionKey = 'wizard_pending_version';
   static const String _pendingLanguageKey = 'wizard_pending_language';
   static const String _pendingThemeKey = 'wizard_pending_theme_mode';
   static const String _pendingCurrencyKey = 'wizard_pending_currency';
@@ -64,6 +68,16 @@ class WizardGate {
   /// wizard to the Create/Recover buttons).
   static Future<bool> isSetupComplete() async {
     final prefs = await SharedPreferences.getInstance();
+    // One-shot migration: rename `wallet_setup_complete` →
+    // `wizard_setup_complete` (the flag is conceptually about wizard
+    // routing, not wallet setup). Carry the legacy value across so the
+    // upgrade detection still fires for v6.9 users on first v7+ launch.
+    if (prefs.containsKey(_legacySetupCompleteKey) &&
+        !prefs.containsKey(_setupCompleteKey)) {
+      final legacy = prefs.getBool(_legacySetupCompleteKey) ?? false;
+      await prefs.setBool(_setupCompleteKey, legacy);
+      await prefs.remove(_legacySetupCompleteKey);
+    }
     return prefs.getBool(_setupCompleteKey) ?? false;
   }
 
@@ -73,8 +87,13 @@ class WizardGate {
   ///   ships this flag for the first time).
   /// - `OnboardingBloc` after a successful create/recover so the next
   ///   launch routes through the upgrade pre-init path.
+  ///
+  /// Idempotent — short-circuits when the flag is already set, so the
+  /// 3 call sites can fire concurrently or repeatedly without piling
+  /// up writes.
   static Future<void> markSetupComplete() async {
     final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool(_setupCompleteKey) ?? false) return;
     await prefs.setBool(_setupCompleteKey, true);
   }
 
@@ -89,6 +108,11 @@ class WizardGate {
   static Future<void> savePending(WizardChoices choices) async {
     await clearPending();
     final prefs = await SharedPreferences.getInstance();
+    // Tag the staging blob with the version that wrote it so a future
+    // `kCurrentWizardVersion` bump invalidates stale pending state from
+    // an interrupted earlier wizard run, instead of letting `apply()`
+    // flush v(N-1) defaults onto v(N) settings.
+    await prefs.setInt(_pendingVersionKey, kCurrentWizardVersion);
     if (choices.touched.contains(WizardField.language)) {
       await prefs.setString(_pendingLanguageKey, choices.language.name);
     }
@@ -108,6 +132,11 @@ class WizardGate {
   /// Reconstructs a [WizardChoices] with `touched` derived from which
   /// keys are present in prefs — only fields the user picked end up in
   /// the touched set, so [apply] commits exactly those.
+  ///
+  /// Returns `null` if the staged blob is from a different
+  /// `kCurrentWizardVersion` than the current build (also wiped as a
+  /// side effect) — those values belong to a previous wizard schema
+  /// and must not leak into the new one.
   static Future<WizardChoices?> readPending() async {
     final prefs = await SharedPreferences.getInstance();
     final languageName = prefs.getString(_pendingLanguageKey);
@@ -118,6 +147,14 @@ class WizardGate {
         themeName == null &&
         currency == null &&
         errorReporting == null) {
+      return null;
+    }
+    // Pending data is present — verify the tag matches the build.
+    // A missing tag (`0`) implies pre-versioning leftovers from an
+    // older build and is treated as stale.
+    final pendingVersion = prefs.getInt(_pendingVersionKey) ?? 0;
+    if (pendingVersion != kCurrentWizardVersion) {
+      await clearPending();
       return null;
     }
 
@@ -168,6 +205,7 @@ class WizardGate {
 
   static Future<void> clearPending() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_pendingVersionKey);
     await prefs.remove(_pendingLanguageKey);
     await prefs.remove(_pendingThemeKey);
     await prefs.remove(_pendingCurrencyKey);

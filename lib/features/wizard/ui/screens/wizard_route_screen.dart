@@ -9,15 +9,18 @@ import 'package:go_router/go_router.dart';
 
 /// In-app wrapper around [WizardScreen] mounted as a full-screen route.
 ///
-/// Differs from the now-removed pre-init `WizardApp` wrapper in that the
-/// locator is already initialized by the time this widget mounts, so each
-/// choice is committed immediately through `SettingsCubit` (live preview
-/// of theme + language + currency). On `onDone` we just persist the
-/// completion marker and pop — no prefs staging needed.
+/// Differs from the pre-init `WizardApp` wrapper in that the locator is
+/// already initialized by the time this widget mounts, so each choice
+/// is committed immediately through `SettingsCubit` (live preview of
+/// theme + language + currency). On `onDone` we persist the completion
+/// marker and pop with `true` so the caller can distinguish a real
+/// completion from a back-out.
 ///
-/// `PopScope(canPop: false)` blocks the Android back button so the only
-/// way to leave the wizard is via Skip / Get Started, which both route
-/// through `_finish` after the consent gate is satisfied.
+/// Back gesture / system back is allowed: it pops with `null`, which
+/// the caller (`CreateWalletButton` / `RecoverWalletButton`) treats as
+/// "user changed their mind" and aborts the original action without
+/// marking the wizard complete — the wizard will simply re-prompt the
+/// next time the user taps the button.
 class WizardRouteScreen extends StatefulWidget {
   const WizardRouteScreen({super.key});
 
@@ -70,18 +73,13 @@ class _WizardRouteScreenState extends State<WizardRouteScreen> {
 
   Future<void> _onDone() async {
     await WizardGate.markComplete();
-    if (mounted) context.pop();
+    // Pop with `true` so the caller can tell completion apart from a
+    // back-gesture pop (which yields `null`).
+    if (mounted) context.pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: WizardScreen(
-        choices: _choices,
-        onChange: _update,
-        onDone: _onDone,
-      ),
-    );
+    return WizardScreen(choices: _choices, onChange: _update, onDone: _onDone);
   }
 }

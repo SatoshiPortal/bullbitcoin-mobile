@@ -14,6 +14,33 @@ import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
 import 'package:bb_mobile/features/wizard/wizard_choices.dart';
 import 'package:flutter/material.dart';
 
+/// 4-page install/upgrade wizard body.
+///
+/// Pure UI — receives [choices] from a parent that owns the state and
+/// reports user picks via [onChange] / [onDone]. Two parents wrap this
+/// widget at runtime, selected by `main.dart` based on
+/// `WizardGate.isSetupComplete()`:
+///
+/// 1. **Pre-init upgrade path** — `WizardApp` (a self-contained
+///    `MaterialApp`) runs before `Bull.init()` so the user's consent is
+///    in prefs before migrations / Sentry init / Drift schema work
+///    fires off. Choices stage in SharedPreferences via
+///    `WizardGate.savePending` and are flushed to SQLite by
+///    `WizardGate.apply` once the locator is up. Back gesture is
+///    blocked there to keep the consent collection mandatory.
+///
+/// 2. **Post-init fresh-install path** — `WizardRouteScreen` (a
+///    `GoRoute` target) mounts after `Bull.init()` from the
+///    Create/Recover buttons and writes through `SettingsCubit`
+///    directly for live theme/language preview. Back gesture is
+///    allowed there: cancelling pops the route with `null`, the caller
+///    aborts the create/recover, the wizard re-prompts on the next
+///    tap (since `markComplete` only fires from Skip/Get started).
+///
+/// `initState` performs system probes (keyboard locale + brightness)
+/// via [WizardChoices.copyWithSilent] so the wizard *displays* sensible
+/// defaults without committing them to user settings — only fields the
+/// user actively picks via the pickers join `WizardChoices.touched`.
 class WizardScreen extends StatefulWidget {
   const WizardScreen({
     super.key,
@@ -139,8 +166,9 @@ class _WizardScreenState extends State<WizardScreen> {
                     stepIndex: _missionPage,
                     totalSteps: _totalSteps,
                     consent: c.reportingConsent,
-                    onChanged: (v) =>
-                        widget.onChange(c.copyWith(reportingConsent: v)),
+                    onChanged: (v) => widget.onChange(
+                      c.copyWith(reportingConsent: ConsentValue(v)),
+                    ),
                   ),
                   JourneyStep(stepIndex: 3, totalSteps: _totalSteps),
                 ],

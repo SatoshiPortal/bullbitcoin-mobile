@@ -8,6 +8,30 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 /// clobber existing user values when `kCurrentWizardVersion` bumps.
 enum WizardField { language, themeMode, defaultCurrency, reportingConsent }
 
+/// Tagged variant for the `reportingConsent` parameter of
+/// [WizardChoices.copyWith].
+///
+/// `null` is itself a valid [WizardChoices.reportingConsent] value
+/// ("user has not yet answered"), so the usual nullable-named-arg
+/// pattern can't distinguish "caller didn't supply a value" from
+/// "caller wants to reset to null". This sealed type makes the two
+/// cases statically distinguishable without resorting to `Object?` and
+/// runtime casts.
+sealed class ConsentArg {
+  const ConsentArg();
+}
+
+class _ConsentUnset extends ConsentArg {
+  const _ConsentUnset();
+}
+
+class ConsentValue extends ConsentArg {
+  const ConsentValue(this.value);
+  final bool? value;
+}
+
+const ConsentArg _consentUnset = _ConsentUnset();
+
 class WizardChoices {
   const WizardChoices({
     this.language = Language.unitedStatesEnglish,
@@ -40,22 +64,23 @@ class WizardChoices {
     Language? language,
     AppThemeMode? themeMode,
     String? defaultCurrency,
-    Object? reportingConsent = _unset,
+    ConsentArg reportingConsent = _consentUnset,
   }) {
     final t = Set<WizardField>.from(touched);
     if (language != null) t.add(WizardField.language);
     if (themeMode != null) t.add(WizardField.themeMode);
     if (defaultCurrency != null) t.add(WizardField.defaultCurrency);
-    if (!identical(reportingConsent, _unset)) {
+    if (reportingConsent is ConsentValue) {
       t.add(WizardField.reportingConsent);
     }
     return WizardChoices(
       language: language ?? this.language,
       themeMode: themeMode ?? this.themeMode,
       defaultCurrency: defaultCurrency ?? this.defaultCurrency,
-      reportingConsent: identical(reportingConsent, _unset)
-          ? this.reportingConsent
-          : reportingConsent as bool?,
+      reportingConsent: switch (reportingConsent) {
+        ConsentValue(:final value) => value,
+        _ConsentUnset() => this.reportingConsent,
+      },
       touched: t,
     );
   }
@@ -74,5 +99,3 @@ class WizardChoices {
     );
   }
 }
-
-const Object _unset = Object();
