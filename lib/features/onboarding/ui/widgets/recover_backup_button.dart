@@ -33,12 +33,18 @@ class _RecoverWalletButtonState extends State<RecoverWalletButton> {
         if (_pushing) return;
         // Same wizard gate as `CreateWalletButton` — fresh-install path
         // routes through the wizard before the recovery flow proper.
+        // A back-gesture cancel from inside the wizard pops with
+        // `null` (vs `true` on Skip / Get Started) and aborts the
+        // recovery navigation so the user stays on the splash.
         if (await WizardGate.shouldShow()) {
           if (!mounted) return;
           setState(() => _pushing = true);
-          await context.pushNamed(WizardRoute.wizard.name);
+          final completed = await context.pushNamed<bool>(
+            WizardRoute.wizard.name,
+          );
           if (!mounted) return;
           setState(() => _pushing = false);
+          if (completed != true) return;
         }
         if (!mounted) return;
         context.goNamed(OnboardingRoute.recoverOptions.name);

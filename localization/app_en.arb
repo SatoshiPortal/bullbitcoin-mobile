@@ -12942,7 +12942,7 @@
   "@wizardWelcomeUseCasesHeader": {
     "description": "Header introducing the bullet list of use cases on the wizard welcome page"
   },
-  "wizardWelcomeUseCase1": "Send and receive payments anonymously via Bitcoin, Lightning or Liquid",
+  "wizardWelcomeUseCase1": "Send and receive payments via Bitcoin, Lightning or Liquid",
   "@wizardWelcomeUseCase1": {
     "description": "First use-case bullet on the wizard welcome page"
   },
@@ -12970,7 +12970,7 @@
   "@wizardCustomizeTitle": {
     "description": "Title of the wizard's settings/customize page"
   },
-  "wizardCustomizeBody": "Use BULL on your own terms with these display settings.",
+  "wizardCustomizeBody": "Use BULL on your own terms with these settings.",
   "@wizardCustomizeBody": {
     "description": "Subtitle on the wizard's settings/customize page"
   },
@@ -12986,7 +12986,7 @@
   "@wizardMissionBody1": {
     "description": "First explanatory paragraph on the wizard error-reporting page"
   },
-  "wizardMissionBody2": "These logs are fully anonymous, are not linked to your IP address, and never share any information about your transactions or your identity. They are purely technical and do not put you at any risk. It's very helpful for us, and doesn't cost anything to you.",
+  "wizardMissionBody2": "These logs are anonymized, are not linked to your IP address, and never share any information about your transactions or your identity. They are purely technical and do not put you at any risk. It's very helpful for us, and doesn't cost anything to you.",
   "@wizardMissionBody2": {
     "description": "Second explanatory paragraph on the wizard error-reporting page"
   },

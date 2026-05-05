@@ -47,9 +47,16 @@ class _CreateWalletButtonState extends State<CreateWalletButton> {
         if (await WizardGate.shouldShow()) {
           if (!mounted) return;
           setState(() => _pushing = true);
-          await context.pushNamed(WizardRoute.wizard.name);
+          // The wizard pops with `true` on completion (Skip / Get
+          // Started) and `null` on a back-gesture cancel — abort the
+          // create flow in the latter case so the user lands back on
+          // the splash without a wallet being silently generated.
+          final completed = await context.pushNamed<bool>(
+            WizardRoute.wizard.name,
+          );
           if (!mounted) return;
           setState(() => _pushing = false);
+          if (completed != true) return;
         }
         if (!mounted) return;
         context.read<OnboardingBloc>().add(const OnboardingCreateNewWallet());
