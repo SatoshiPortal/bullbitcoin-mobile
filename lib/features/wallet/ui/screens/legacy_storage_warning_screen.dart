@@ -23,13 +23,13 @@ class LegacyStorageWarningScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = context.loc;
-    final steps = <({String label, bool done})>[
-      (label: loc.legacyStorageStepBackupWallet, done: !hasNoBackup),
-      (label: loc.legacyStorageStepExportLabels, done: false),
-      (label: loc.legacyStorageStepEnsureSwapsCompleted, done: false),
-      (label: loc.legacyStorageStepUninstall, done: false),
-      (label: loc.legacyStorageStepReinstall, done: false),
-      (label: loc.legacyStorageStepRestoreBackup, done: false),
+    final steps = <String>[
+      loc.legacyStorageStepBackupWallet,
+      loc.legacyStorageStepExportLabels,
+      loc.legacyStorageStepEnsureSwapsCompleted,
+      loc.legacyStorageStepUninstall,
+      loc.legacyStorageStepReinstall,
+      loc.legacyStorageStepRestoreBackup,
     ];
 
     return LegacyStorageScreenScaffold(
@@ -49,12 +49,8 @@ class LegacyStorageWarningScreen extends StatelessWidget {
             ),
           ),
           const Gap(10),
-          for (final (i, step) in steps.indexed)
-            LegacyStorageStepRow(
-              index: i + 1,
-              label: step.label,
-              done: step.done,
-            ),
+          for (final (i, label) in steps.indexed)
+            LegacyStorageStepRow(index: i + 1, label: label),
           const Gap(10),
           LegacyStorageImportantCallout(
             title: loc.legacyStorageImportantTitle,

@@ -8,12 +8,10 @@ class LegacyStorageStepRow extends StatelessWidget {
     super.key,
     required this.index,
     required this.label,
-    this.done = false,
   });
 
   final int index;
   final String label;
-  final bool done;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +20,7 @@ class LegacyStorageStepRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _Bullet(index: index, done: done),
+          _Bullet(index: index),
           const Gap(12),
           Expanded(
             child: BBText(
@@ -39,29 +37,28 @@ class LegacyStorageStepRow extends StatelessWidget {
 }
 
 class _Bullet extends StatelessWidget {
-  const _Bullet({required this.index, required this.done});
+  const _Bullet({required this.index});
 
   final int index;
-  final bool done;
 
   @override
   Widget build(BuildContext context) {
-    final color = done ? context.appColors.success : context.appColors.primary;
     return Container(
       width: 22,
       height: 22,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      decoration: BoxDecoration(
+        color: context.appColors.primary,
+        shape: BoxShape.circle,
+      ),
       alignment: Alignment.center,
-      child: done
-          ? Icon(Icons.check, size: 14, color: context.appColors.onPrimary)
-          : BBText(
-              '$index',
-              style: context.font.labelSmall?.copyWith(
-                color: context.appColors.onPrimary,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-              ),
-            ),
+      child: BBText(
+        '$index',
+        style: context.font.labelSmall?.copyWith(
+          color: context.appColors.onPrimary,
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+        ),
+      ),
     );
   }
 }
