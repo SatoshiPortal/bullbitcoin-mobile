@@ -4480,6 +4480,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "紧急：需要备份并重新安装",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "需要操作：重新安装应用程序",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "您正在使用的应用程序依赖即将被弃用的软件。请按照以下步骤操作：\n\n1. 备份您的钱包\n2. 卸载应用程序。从您的手机中完全删除。\n3. 重新安装最新版本的应用程序\n4. 使用恢复选项，而不是\"创建新钱包\"。\n\n您的资金是安全的，您现在可以继续使用该应用程序，但请尽快执行此操作，以防止应用程序在不久的将来出现故障。",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "立即备份",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "稍后",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "backButton": "返回",
   "@backButton": {
     "description": "Generic back button label"
@@ -4547,27 +4571,5 @@
   "appInitErrorDetailsToggle": "显示错误详情",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "需要操作",
-  "legacyStorageBadgeConfirm": "确认",
-  "legacyStorageNoBackupPageTitle": "备份并重新安装您的钱包",
-  "legacyStorageHasBackupPageTitle": "重新安装您的钱包",
-  "legacyStorageIntroDescription": "您的钱包正在使用即将停止支持的软件。除非卸载并重新安装应用,否则无法更新。",
-  "legacyStorageStepBackupWallet": "备份您的钱包",
-  "legacyStorageStepExportLabels": "导出您的标签(如果有)",
-  "legacyStorageStepEnsureSwapsCompleted": "确认所有 swap 已完成",
-  "legacyStorageStepUninstall": "从设备上完全卸载应用",
-  "legacyStorageStepReinstall": "下载最新版本并重新安装",
-  "legacyStorageStepRestoreBackup": "恢复您的备份",
-  "legacyStorageImportantTitle": "重要",
-  "legacyStorageImportantBody": "除非此刻您实在无法备份,否则请勿跳过此流程。",
-  "legacyStorageContinueFooterNoBackup": "您可以在不备份的情况下继续使用应用,但我们强烈不建议这样做。",
-  "legacyStorageContinueFooterHasBackup": "您可以继续使用应用,但我们强烈不建议这样做。",
-  "legacyStorageBackupNowButton": "立即备份",
-  "legacyStorageRiskAckButton": "否,我了解风险",
-  "legacyStorageAreYouSureTitle": "您确定吗?",
-  "legacyStorageAreYouSureParagraphOne": "用于保管钱包 Bitcoin 私钥的软件即将停止支持。强烈建议您立即备份,以避免日后出现任何中断。",
-  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault 备份大约需要 1 分钟,无需任何特殊工具。物理备份只需一支笔和一张纸。",
-  "legacyStorageContinueWithoutBackupButton": "不备份继续",
-  "legacyStorageAcceptRisksCheckbox": "我接受不进行备份的风险"
+  }
 }

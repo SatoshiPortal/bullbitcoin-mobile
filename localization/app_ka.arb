@@ -266,6 +266,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "სასწრაფო: საჭიროა სარეზერვო ასლი და ხელახლა ინსტალაცია",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "თქვენ მიერ გამოყენებული აპლიკაცია მუშაობს პროგრამულ უზრუნველყოფაზე, რომელიც მალე მოძველდება. გთხოვთ, მიჰყვეთ ამ ნაბიჯებს:\n\n1. შექმენით სარეზერვო ასლი თქვენი საფულიდან\n2. წაშალეთ აპლიკაცია. სრულად წაშალეთ ის თქვენი ტელეფონიდან.\n3. ხელახლა დააინსტალირეთ აპლიკაციის უახლესი ვერსია\n4. გამოიყენეთ აღდგენის ვარიანტი \"ახალი საფულის შექმნის\" ნაცვლად.\n\nთქვენი სახსრები უსაფრთხოა და შეგიძლიათ გამოიყენოთ აპლიკაცია ახლავე, მაგრამ გააკეთეთ ეს რაც შეიძლება მალე, რათა თავიდან აიცილოთ აპლიკაციის გამართულობის დარღვევა მომავალში.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "საჭიროა მოქმედება: ხელახლა დააინსტალირეთ აპლიკაცია",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "თქვენ მიერ გამოყენებული აპლიკაცია მუშაობს პროგრამულ უზრუნველყოფაზე, რომელიც მალე მოძველდება. გთხოვთ, მიჰყვეთ ამ ნაბიჯებს:\n\n1. შექმენით სარეზერვო ასლი თქვენი საფულიდან\n2. წაშალეთ აპლიკაცია. სრულად წაშალეთ ის თქვენი ტელეფონიდან.\n3. ხელახლა დააინსტალირეთ აპლიკაციის უახლესი ვერსია\n4. გამოიყენეთ აღდგენის ვარიანტი \"ახალი საფულის შექმნის\" ნაცვლად.\n\nთქვენი სახსრები უსაფრთხოა და შეგიძლიათ გამოიყენოთ აპლიკაცია ახლავე, მაგრამ გააკეთეთ ეს რაც შეიძლება მალე, რათა თავიდან აიცილოთ აპლიკაციის გამართულობის დარღვევა მომავალში.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "სარეზერვო ასლი ახლავე",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "მოგვიანებით",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
   "backButton": "უკან",
   "@backButton": {
@@ -334,27 +358,5 @@
   "appInitErrorDetailsToggle": "შეცდომის დეტალების ჩვენება",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "ქმედება საჭიროა",
-  "legacyStorageBadgeConfirm": "დადასტურება",
-  "legacyStorageNoBackupPageTitle": "შექმენით სარეზერვო ასლი და დააინსტალირეთ თავიდან საფულე",
-  "legacyStorageHasBackupPageTitle": "თავიდან დააინსტალირეთ საფულე",
-  "legacyStorageIntroDescription": "თქვენი საფულე მუშაობს პროგრამაზე, რომელიც მალე აღარ იქნება მხარდაჭერილი. მისი განახლება შეუძლებელია აპლიკაციის წაშლისა და თავიდან ინსტალაციის გარეშე.",
-  "legacyStorageStepBackupWallet": "შექმენით საფულის სარეზერვო ასლი",
-  "legacyStorageStepExportLabels": "ექსპორტი გაუკეთეთ თქვენს ლეიბლებს (თუ გაქვთ)",
-  "legacyStorageStepEnsureSwapsCompleted": "დარწმუნდით, რომ ყველა swap დასრულებულია",
-  "legacyStorageStepUninstall": "სრულად წაშალეთ აპლიკაცია თქვენი მოწყობილობიდან",
-  "legacyStorageStepReinstall": "ჩამოტვირთეთ უახლესი ვერსია და თავიდან დააინსტალირეთ",
-  "legacyStorageStepRestoreBackup": "აღადგინეთ თქვენი სარეზერვო ასლი",
-  "legacyStorageImportantTitle": "მნიშვნელოვანი",
-  "legacyStorageImportantBody": "ნუ გამოტოვებთ ამ პროცესს, თუ ნამდვილად არ შეგიძლიათ ამ მომენტში სარეზერვო ასლის შექმნა.",
-  "legacyStorageContinueFooterNoBackup": "შეგიძლიათ გააგრძელოთ აპის გამოყენება სარეზერვო ასლის გარეშეც, მაგრამ მტკიცედ გირჩევთ, რომ ასე არ მოიქცეთ.",
-  "legacyStorageContinueFooterHasBackup": "შეგიძლიათ გააგრძელოთ აპის გამოყენება, მაგრამ მტკიცედ გირჩევთ, რომ ასე არ მოიქცეთ.",
-  "legacyStorageBackupNowButton": "სარეზერვო ასლი ახლავე",
-  "legacyStorageRiskAckButton": "არა, ვაცნობიერებ რისკს",
-  "legacyStorageAreYouSureTitle": "დარწმუნებული ხართ?",
-  "legacyStorageAreYouSureParagraphOne": "თქვენი საფულის Bitcoin-ის პირადი გასაღებების შესანახად გამოყენებული პროგრამა მხარდაჭერას წყვეტს. მკაცრად გირჩევთ ახლავე შექმნათ სარეზერვო ასლი, რათა მომავალში პრობლემები არ შეგექმნათ.",
-  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault სარეზერვო ასლის ოფცია იღებს დაახლოებით 1 წუთს და სპეციალური ხელსაწყოები არ ჭირდება. ფიზიკური სარეზერვო ასლისთვის სულ რაც გჭირდებათ კალამი და ქაღალდია.",
-  "legacyStorageContinueWithoutBackupButton": "გაგრძელება სარეზერვო ასლის გარეშე",
-  "legacyStorageAcceptRisksCheckbox": "ვაღიარებ რისკებს, რომ სარეზერვო ასლი არ მაქვს"
+  }
 }

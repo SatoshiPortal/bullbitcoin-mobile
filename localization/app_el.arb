@@ -12480,6 +12480,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "Επείγον: Απαιτείται αντίγραφο ασφαλείας και επανεγκατάσταση",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Απαιτείται ενέργεια: Επανεγκατάσταση εφαρμογής",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Η εφαρμογή που χρησιμοποιείτε βασίζεται σε λογισμικό που σύντομα θα καταργηθεί. Παρακαλούμε ακολουθήστε τα παρακάτω βήματα:\n\n1. Δημιουργήστε αντίγραφο ασφαλείας του πορτοφολιού σας\n2. Απεγκαταστήστε την εφαρμογή. Διαγράψτε τη πλήρως από το τηλέφωνό σας.\n3. Επανεγκαταστήστε την πιο πρόσφατη έκδοση της εφαρμογής\n4. Χρησιμοποιήστε την επιλογή ανάκτησης αντί για \"δημιουργία νέου πορτοφολιού\".\n\nΤα χρήματά σας είναι ασφαλή και μπορείτε να συνεχίσετε να χρησιμοποιείτε την εφαρμογή τώρα, αλλά κάντε το το συντομότερο δυνατό για να αποτρέψετε τη διακοπή λειτουργίας της εφαρμογής στο άμεσο μέλλον.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Δημιουργία αντιγράφου τώρα",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Αργότερα",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "backButton": "Πίσω",
   "@backButton": {
     "description": "Generic back button label"
@@ -12547,27 +12571,5 @@
   "appInitErrorDetailsToggle": "Εμφάνιση λεπτομερειών σφάλματος",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ",
-  "legacyStorageBadgeConfirm": "ΕΠΙΒΕΒΑΙΩΣΗ",
-  "legacyStorageNoBackupPageTitle": "ΔΗΜΙΟΥΡΓΗΣΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΚΑΙ ΕΠΑΝΕΓΚΑΤΑΣΤΗΣΕ ΤΟ ΠΟΡΤΟΦΟΛΙ",
-  "legacyStorageHasBackupPageTitle": "ΕΠΑΝΕΓΚΑΤΑΣΤΗΣΕ ΤΟ ΠΟΡΤΟΦΟΛΙ",
-  "legacyStorageIntroDescription": "Το πορτοφόλι σου τρέχει σε λογισμικό που σύντομα θα παύσει να υποστηρίζεται. Δεν μπορεί να ενημερωθεί χωρίς να απεγκαταστήσεις και να επανεγκαταστήσεις την εφαρμογή.",
-  "legacyStorageStepBackupWallet": "Δημιούργησε αντίγραφο ασφαλείας του πορτοφολιού",
-  "legacyStorageStepExportLabels": "Εξάγαγε τις ετικέτες σου (αν έχεις)",
-  "legacyStorageStepEnsureSwapsCompleted": "Βεβαιώσου ότι όλα τα swaps έχουν ολοκληρωθεί",
-  "legacyStorageStepUninstall": "Απεγκατάστησε εντελώς την εφαρμογή από τη συσκευή σου",
-  "legacyStorageStepReinstall": "Κατέβασε την πιο πρόσφατη έκδοση και εγκατάστησέ την ξανά",
-  "legacyStorageStepRestoreBackup": "Επανάφερε το αντίγραφο ασφαλείας",
-  "legacyStorageImportantTitle": "Σημαντικό",
-  "legacyStorageImportantBody": "Μην παραλείψεις αυτή τη διαδικασία εκτός αν πραγματικά δεν μπορείς να κάνεις αντίγραφο ασφαλείας τώρα.",
-  "legacyStorageContinueFooterNoBackup": "Μπορείς να συνεχίσεις να χρησιμοποιείς την εφαρμογή χωρίς αντίγραφο ασφαλείας, αλλά το αποτρέπουμε έντονα.",
-  "legacyStorageContinueFooterHasBackup": "Μπορείς να συνεχίσεις να χρησιμοποιείς την εφαρμογή, αλλά το αποτρέπουμε έντονα.",
-  "legacyStorageBackupNowButton": "Δημιούργησε αντίγραφο τώρα",
-  "legacyStorageRiskAckButton": "Όχι, καταλαβαίνω τον κίνδυνο",
-  "legacyStorageAreYouSureTitle": "ΕΙΣΑΙ ΣΙΓΟΥΡΟΣ;",
-  "legacyStorageAreYouSureParagraphOne": "Το λογισμικό που χρησιμοποιείται για την αποθήκευση των ιδιωτικών κλειδιών Bitcoin του πορτοφολιού σου παύει να υποστηρίζεται. Σου συνιστούμε ανεπιφύλακτα να κάνεις αντίγραφο ασφαλείας τώρα για να αποφύγεις τυχόν διακοπές στο μέλλον.",
-  "legacyStorageAreYouSureParagraphTwo": "Η επιλογή Encrypted Vault διαρκεί περίπου 1 λεπτό και δεν απαιτεί ειδικά εργαλεία. Για το φυσικό αντίγραφο, χρειάζεσαι μόνο στυλό και χαρτί.",
-  "legacyStorageContinueWithoutBackupButton": "Συνέχιση χωρίς αντίγραφο",
-  "legacyStorageAcceptRisksCheckbox": "Αποδέχομαι τον κίνδυνο να μην έχω αντίγραφο ασφαλείας"
+  }
 }

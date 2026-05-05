@@ -4535,6 +4535,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstalação necessários",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "A aplicação que está a usar utiliza um software que em breve ficará obsoleto. Por favor, siga estes passos:\n\n1. Faça uma cópia de segurança da sua carteira\n2. Desinstale a aplicação. Elimine-a completamente do seu telemóvel.\n3. Reinstale a versão mais recente da aplicação\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nOs seus fundos estão seguros e pode continuar a usar a aplicação agora, mas faça isso o mais rapidamente possível para evitar que a aplicação deixe de funcionar num futuro próximo.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Ação necessária: Reinstalar a aplicação",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "A aplicação que está a usar utiliza um software que em breve ficará obsoleto. Por favor, siga estes passos:\n\n1. Faça uma cópia de segurança da sua carteira\n2. Desinstale a aplicação. Elimine-a completamente do seu telemóvel.\n3. Reinstale a versão mais recente da aplicação\n4. Use a opção de recuperação em vez de \"criar nova carteira\".\n\nOs seus fundos estão seguros e pode continuar a usar a aplicação agora, mas faça isso o mais rapidamente possível para evitar que a aplicação deixe de funcionar num futuro próximo.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Fazer backup agora",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Mais tarde",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "backButton": "Voltar",
   "@backButton": {
     "description": "Generic back button label"
@@ -4602,27 +4626,5 @@
   "appInitErrorDetailsToggle": "Mostrar detalhes do erro",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "AÇÃO NECESSÁRIA",
-  "legacyStorageBadgeConfirm": "CONFIRMAR",
-  "legacyStorageNoBackupPageTitle": "FAÇA BACKUP E REINSTALE A SUA CARTEIRA",
-  "legacyStorageHasBackupPageTitle": "REINSTALE A SUA CARTEIRA",
-  "legacyStorageIntroDescription": "A sua carteira está a correr num software que vai deixar de ser suportado em breve. Não pode ser atualizado sem desinstalar e reinstalar a aplicação.",
-  "legacyStorageStepBackupWallet": "Faça backup da sua carteira",
-  "legacyStorageStepExportLabels": "Exporte as suas etiquetas (se as tiver)",
-  "legacyStorageStepEnsureSwapsCompleted": "Certifique-se de que todos os swaps estão concluídos",
-  "legacyStorageStepUninstall": "Desinstale completamente a aplicação do seu dispositivo",
-  "legacyStorageStepReinstall": "Descarregue a versão mais recente e reinstale",
-  "legacyStorageStepRestoreBackup": "Restaure o seu backup",
-  "legacyStorageImportantTitle": "Importante",
-  "legacyStorageImportantBody": "Não salte este processo a menos que mesmo não consiga fazer um backup neste momento.",
-  "legacyStorageContinueFooterNoBackup": "Pode continuar a usar a aplicação sem fazer backup, mas desaconselhamos vivamente.",
-  "legacyStorageContinueFooterHasBackup": "Pode continuar a usar a aplicação, mas desaconselhamos vivamente.",
-  "legacyStorageBackupNowButton": "Fazer backup agora",
-  "legacyStorageRiskAckButton": "Não, percebo o risco",
-  "legacyStorageAreYouSureTitle": "TEM A CERTEZA?",
-  "legacyStorageAreYouSureParagraphOne": "O software usado para guardar as chaves privadas Bitcoin da sua carteira está a ser descontinuado. Recomendamos vivamente que faça já um backup para evitar quaisquer problemas no futuro.",
-  "legacyStorageAreYouSureParagraphTwo": "A opção Encrypted Vault demora cerca de 1 minuto e não precisa de ferramentas especiais. Para o backup físico só precisa de uma caneta e papel.",
-  "legacyStorageContinueWithoutBackupButton": "Continuar sem backup",
-  "legacyStorageAcceptRisksCheckbox": "Aceito os riscos de não fazer um backup"
+  }
 }

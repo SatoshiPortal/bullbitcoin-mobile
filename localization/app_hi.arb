@@ -12480,6 +12480,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "अत्यावश्यक: बैकअप और पुनः इंस्टॉलेशन आवश्यक",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "कार्रवाई आवश्यक: ऐप पुनः इंस्टॉल करें",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "अभी बैकअप करें",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "बाद में",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "backButton": "वापस",
   "@backButton": {
     "description": "Generic back button label"
@@ -12547,27 +12571,5 @@
   "appInitErrorDetailsToggle": "त्रुटि विवरण दिखाएं",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "कार्रवाई आवश्यक",
-  "legacyStorageBadgeConfirm": "पुष्टि करें",
-  "legacyStorageNoBackupPageTitle": "अपना वॉलेट बैकअप लें और फिर से इंस्टॉल करें",
-  "legacyStorageHasBackupPageTitle": "अपना वॉलेट फिर से इंस्टॉल करें",
-  "legacyStorageIntroDescription": "आपका वॉलेट ऐसे सॉफ़्टवेयर पर चल रहा है जिसे जल्द बंद किया जा रहा है। इसे ऐप अनइंस्टॉल किए बिना और दोबारा इंस्टॉल किए बिना अपडेट नहीं किया जा सकता।",
-  "legacyStorageStepBackupWallet": "अपना वॉलेट बैकअप लें",
-  "legacyStorageStepExportLabels": "अपने लेबल एक्सपोर्ट करें (अगर हों)",
-  "legacyStorageStepEnsureSwapsCompleted": "सुनिश्चित करें कि सभी स्वैप पूरे हो चुके हैं",
-  "legacyStorageStepUninstall": "ऐप को अपने डिवाइस से पूरी तरह अनइंस्टॉल करें",
-  "legacyStorageStepReinstall": "नवीनतम संस्करण डाउनलोड करें और फिर से इंस्टॉल करें",
-  "legacyStorageStepRestoreBackup": "अपना बैकअप पुनर्स्थापित करें",
-  "legacyStorageImportantTitle": "महत्वपूर्ण",
-  "legacyStorageImportantBody": "इस प्रक्रिया को तभी छोड़ें जब आप सचमुच इस वक़्त बैकअप नहीं ले सकते।",
-  "legacyStorageContinueFooterNoBackup": "आप बैकअप लिए बिना भी ऐप का इस्तेमाल जारी रख सकते हैं, लेकिन हम इसकी पुरज़ोर सलाह नहीं देते।",
-  "legacyStorageContinueFooterHasBackup": "आप ऐप का इस्तेमाल जारी रख सकते हैं, लेकिन हम इसकी पुरज़ोर सलाह नहीं देते।",
-  "legacyStorageBackupNowButton": "अभी बैकअप लें",
-  "legacyStorageRiskAckButton": "नहीं, मैं जोखिम समझता हूँ",
-  "legacyStorageAreYouSureTitle": "क्या आप निश्चित हैं?",
-  "legacyStorageAreYouSureParagraphOne": "आपके वॉलेट की Bitcoin प्राइवेट कीज़ संग्रहित करने वाला सॉफ़्टवेयर बंद हो रहा है। भविष्य में किसी रुकावट से बचने के लिए हम पुरज़ोर सलाह देते हैं कि आप अभी बैकअप लें।",
-  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault बैकअप विकल्प में लगभग 1 मिनट लगता है, कोई विशेष उपकरण नहीं चाहिए। फ़िज़िकल बैकअप के लिए सिर्फ़ कलम और कागज़ चाहिए।",
-  "legacyStorageContinueWithoutBackupButton": "बैकअप के बिना जारी रखें",
-  "legacyStorageAcceptRisksCheckbox": "मैं बैकअप न लेने के जोखिम स्वीकार करता हूँ"
+  }
 }

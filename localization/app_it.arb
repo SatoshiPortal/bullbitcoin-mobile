@@ -4480,6 +4480,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "Urgente: Backup e reinstallazione richiesti",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "L'app che stai usando utilizza un software che sarà presto deprecato. Segui questi passaggi:\n\n1. Esegui il backup del tuo portafoglio\n2. Disinstalla l'app. Eliminala completamente dal tuo telefono.\n3. Reinstalla l'ultima versione dell'app\n4. Usa l'opzione di recupero invece di \"crea nuovo portafoglio\".\n\nI tuoi fondi sono al sicuro e puoi continuare a usare l'app adesso, ma fallo il prima possibile per evitare che l'app smetta di funzionare nel prossimo futuro.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Azione richiesta: Reinstalla l'app",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "L'app che stai usando utilizza un software che sarà presto deprecato. Segui questi passaggi:\n\n1. Esegui il backup del tuo portafoglio\n2. Disinstalla l'app. Eliminala completamente dal tuo telefono.\n3. Reinstalla l'ultima versione dell'app\n4. Usa l'opzione di recupero invece di \"crea nuovo portafoglio\".\n\nI tuoi fondi sono al sicuro e puoi continuare a usare l'app adesso, ma fallo il prima possibile per evitare che l'app smetta di funzionare nel prossimo futuro.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Esegui backup ora",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Più tardi",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "backButton": "Indietro",
   "@backButton": {
     "description": "Generic back button label"
@@ -4547,27 +4571,5 @@
   "appInitErrorDetailsToggle": "Mostra dettagli errore",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "AZIONE RICHIESTA",
-  "legacyStorageBadgeConfirm": "CONFERMA",
-  "legacyStorageNoBackupPageTitle": "ESEGUI BACKUP E REINSTALLA IL PORTAFOGLIO",
-  "legacyStorageHasBackupPageTitle": "REINSTALLA IL PORTAFOGLIO",
-  "legacyStorageIntroDescription": "Il tuo portafoglio funziona su un software che presto verrà dismesso. Non può essere aggiornato senza disinstallare e reinstallare l'app.",
-  "legacyStorageStepBackupWallet": "Esegui il backup del portafoglio",
-  "legacyStorageStepExportLabels": "Esporta le tue etichette (se ne hai)",
-  "legacyStorageStepEnsureSwapsCompleted": "Assicurati che tutti gli swap siano completati",
-  "legacyStorageStepUninstall": "Disinstalla completamente l'app dal tuo dispositivo",
-  "legacyStorageStepReinstall": "Scarica la versione più recente e reinstalla",
-  "legacyStorageStepRestoreBackup": "Ripristina il tuo backup",
-  "legacyStorageImportantTitle": "Importante",
-  "legacyStorageImportantBody": "Non saltare questa procedura a meno che proprio non sia possibile fare un backup in questo momento.",
-  "legacyStorageContinueFooterNoBackup": "Puoi continuare a usare l'app senza fare un backup, ma sconsigliamo vivamente di farlo.",
-  "legacyStorageContinueFooterHasBackup": "Puoi continuare a usare l'app, ma sconsigliamo vivamente di farlo.",
-  "legacyStorageBackupNowButton": "Esegui backup ora",
-  "legacyStorageRiskAckButton": "No, capisco il rischio",
-  "legacyStorageAreYouSureTitle": "SEI SICURO?",
-  "legacyStorageAreYouSureParagraphOne": "Il software che custodisce le chiavi private Bitcoin del tuo portafoglio sta per essere dismesso. Ti consigliamo vivamente di fare un backup adesso per evitare interruzioni in futuro.",
-  "legacyStorageAreYouSureParagraphTwo": "L'opzione Encrypted Vault impiega circa 1 minuto e non richiede strumenti speciali. Per il backup fisico ti basta carta e penna.",
-  "legacyStorageContinueWithoutBackupButton": "Continua senza backup",
-  "legacyStorageAcceptRisksCheckbox": "Accetto i rischi di non fare un backup"
+  }
 }

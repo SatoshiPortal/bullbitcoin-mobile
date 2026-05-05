@@ -9490,6 +9490,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "Спешно: Необходимо е архивиране и преинсталиране",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Приложението, което използвате, работи на софтуер, който скоро ще бъде прекратен. Моля, следвайте тези стъпки:\n\n1. Архивирайте портфейла си\n2. Деинсталирайте приложението. Изтрийте го напълно от телефона си.\n3. Инсталирайте отново най-новата версия на приложението\n4. Използвайте опцията за възстановяване вместо \"създаване на нов портфейл\".\n\nВашите средства са в безопасност и можете да продължите да използвате приложението сега, но го направете възможно най-скоро, за да предотвратите срив на приложението в близко бъдеще.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Необходимо действие: Преинсталирайте приложението",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Приложението, което използвате, работи на софтуер, който скоро ще бъде прекратен. Моля, следвайте тези стъпки:\n\n1. Архивирайте портфейла си\n2. Деинсталирайте приложението. Изтрийте го напълно от телефона си.\n3. Инсталирайте отново най-новата версия на приложението\n4. Използвайте опцията за възстановяване вместо \"създаване на нов портфейл\".\n\nВашите средства са в безопасност и можете да продължите да използвате приложението сега, но го направете възможно най-скоро, за да предотвратите срив на приложението в близко бъдеще.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Архивирай сега",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "По-късно",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "backButton": "Назад",
   "@backButton": {
     "description": "Generic back button label"
@@ -9557,27 +9581,5 @@
   "appInitErrorDetailsToggle": "Покажи подробности за грешката",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "ИЗИСКВА СЕ ДЕЙСТВИЕ",
-  "legacyStorageBadgeConfirm": "ПОТВЪРДИ",
-  "legacyStorageNoBackupPageTitle": "НАПРАВЕТЕ РЕЗЕРВНО КОПИЕ И ПРЕИНСТАЛИРАЙТЕ ПОРТФЕЙЛА",
-  "legacyStorageHasBackupPageTitle": "ПРЕИНСТАЛИРАЙТЕ ПОРТФЕЙЛА",
-  "legacyStorageIntroDescription": "Портфейлът ви работи със софтуер, който скоро ще бъде изведен от употреба. Той не може да бъде обновен, без да деинсталирате и преинсталирате приложението.",
-  "legacyStorageStepBackupWallet": "Направете резервно копие на портфейла",
-  "legacyStorageStepExportLabels": "Експортирайте етикетите си (ако имате такива)",
-  "legacyStorageStepEnsureSwapsCompleted": "Уверете се, че всички размени са завършени",
-  "legacyStorageStepUninstall": "Деинсталирайте приложението напълно от устройството си",
-  "legacyStorageStepReinstall": "Изтеглете най-новата версия и инсталирайте отново",
-  "legacyStorageStepRestoreBackup": "Възстановете резервното копие",
-  "legacyStorageImportantTitle": "Важно",
-  "legacyStorageImportantBody": "Не пропускайте този процес, освен ако наистина не можете да направите резервно копие в момента.",
-  "legacyStorageContinueFooterNoBackup": "Можете да продължите да използвате приложението без резервно копие, но категорично не препоръчваме това.",
-  "legacyStorageContinueFooterHasBackup": "Можете да продължите да използвате приложението, но категорично не препоръчваме това.",
-  "legacyStorageBackupNowButton": "Резервно копие сега",
-  "legacyStorageRiskAckButton": "Не, разбирам риска",
-  "legacyStorageAreYouSureTitle": "СИГУРНИ ЛИ СТЕ?",
-  "legacyStorageAreYouSureParagraphOne": "Софтуерът, използван за съхранение на частните Bitcoin ключове на портфейла, се извежда от употреба. Силно ви препоръчваме да направите резервно копие сега, за да избегнете прекъсвания в бъдеще.",
-  "legacyStorageAreYouSureParagraphTwo": "Опцията за криптирано резервно копие отнема около 1 минута и не изисква специални инструменти. За физическо резервно копие ви трябват само химикалка и хартия.",
-  "legacyStorageContinueWithoutBackupButton": "Продължи без резервно копие",
-  "legacyStorageAcceptRisksCheckbox": "Приемам рисковете от това да не направя резервно копие"
+  }
 }

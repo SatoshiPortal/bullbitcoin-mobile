@@ -54,6 +54,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "Շտապ. Անհրաժեշտ է կրկնօրինակել և վերատեղադրել",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Ձeр кoghmiц охадvar hавelваcн аshхатum е ծраграйин апаhовман вра, вором шутов кhнана. Хndrum ек hетевел hетевял каyllerin.\n\n1. Крkнорinакете дзер драмапанакы\n2. Апателhадрум hавелвацы. Амбоghутьямб джнджек айн дзер hераховос.\n3. Верателhадрум hавелвацы верджин тарберакы\n4. Огtвек веракангнман чнтранутюниц \"нор драмапанак ствцел\" похарен.\n\nДзер мидзоцнере апаhов ен ев карог ек шарункакнел огтвел hавелвацум hима, сайн да арек hним колкин hнараvор мжамад, арнатесел hавелвацун мот апайцум.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Անhраժешт е горцогутюн. Верателhадрете hавелвацы",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Ձeр кoghmiц охадvar hавelваcн аshхатum е ծраграйин апаhовман вра, вором шутов кhнана. Хndrum ек hетевел hетевял каyllerin.\n\n1. Крkнорinакете дзер драмапанакы\n2. Апателhадрум hавелвацы. Амбоghутьямб джнджек айн дзер hераховос.\n3. Верателhадрум hавелвацы верджин тарберакы\n4. Огtвек веракангнман чнтранутюниц \"нор драмапанак ствцел\" похарен.\n\nДзер мидзоцнере апаhов ен ев карог ек шарункакнел огтвел hавелвацум hима, сайн да арек hним колкин hнараvор мжамад, арнатесел hавелвацун мот апайцум.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Կրկnоrinakel hima",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Aveli ush",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
   "backButton": "Ետ",
   "@backButton": {
@@ -122,27 +146,5 @@
   "appInitErrorDetailsToggle": "Ցույց տալ սխալի մանրամասները",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "ՊԱՀԱՆՋՎՈՒՄ Է ԳՈՐԾՈՂՈՒԹՅՈՒՆ",
-  "legacyStorageBadgeConfirm": "ՀԱՍՏԱՏԵԼ",
-  "legacyStorageNoBackupPageTitle": "ՊԱՀՈՒՍՏԱՎՈՐԵՔ ԵՎ ՎԵՐԱԿԱՆԳՆԵՔ ՁԵՐ ԴՐԱՄԱՊԱՆԱԿԸ",
-  "legacyStorageHasBackupPageTitle": "ՎԵՐԱԿԱՆԳՆԵՔ ՁԵՐ ԴՐԱՄԱՊԱՆԱԿԸ",
-  "legacyStorageIntroDescription": "Ձեր դրամապանակն աշխատում է ծրագրաշարով, որը շուտով կդադարեցվի։ Այն չի կարող թարմացվել առանց հավելվածը հեռացնելու և նորից տեղադրելու։",
-  "legacyStorageStepBackupWallet": "Պահուստավորեք ձեր դրամապանակը",
-  "legacyStorageStepExportLabels": "Արտահանեք ձեր պիտակները (եթե կան)",
-  "legacyStorageStepEnsureSwapsCompleted": "Համոզվեք, որ բոլոր փոխանակումներն ավարտված են",
-  "legacyStorageStepUninstall": "Հեռացրեք հավելվածը ձեր սարքից ամբողջությամբ",
-  "legacyStorageStepReinstall": "Ներբեռնեք ամենավերջին տարբերակը և նորից տեղադրեք",
-  "legacyStorageStepRestoreBackup": "Վերականգնեք ձեր պահուստը",
-  "legacyStorageImportantTitle": "Կարևոր",
-  "legacyStorageImportantBody": "Մի բաց թողեք այս գործընթացը, քանի դեռ իսկապես չեք կարող այս պահին պահուստավորում անել։",
-  "legacyStorageContinueFooterNoBackup": "Կարող եք շարունակել օգտվել հավելվածից առանց պահուստավորման, բայց մենք խստորեն խորհուրդ ենք տալիս չանել այդպես։",
-  "legacyStorageContinueFooterHasBackup": "Կարող եք շարունակել օգտվել հավելվածից, բայց մենք խստորեն խորհուրդ ենք տալիս չանել այդպես։",
-  "legacyStorageBackupNowButton": "Պահուստավորել հիմա",
-  "legacyStorageRiskAckButton": "Ոչ, ես հասկանում եմ ռիսկը",
-  "legacyStorageAreYouSureTitle": "ՎՍՏԱ՞Հ ԵՔ",
-  "legacyStorageAreYouSureParagraphOne": "Ձեր դրամապանակի Bitcoin մասնավոր բանալիների պահպանման համար օգտագործվող ծրագրաշարը դադարեցվում է։ Խստորեն խորհուրդ ենք տալիս հենց հիմա պահուստավորում անել՝ ապագայում խանգարումներից խուսափելու համար։",
-  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault պահուստավորման տարբերակը տևում է մոտ 1 րոպե և չի պահանջում հատուկ գործիքներ։ Ֆիզիկական պահուստավորման համար ձեզ անհրաժեշտ է միայն գրիչ և թուղթ։",
-  "legacyStorageContinueWithoutBackupButton": "Շարունակել առանց պահուստավորման",
-  "legacyStorageAcceptRisksCheckbox": "Ընդունում եմ պահուստավորում չանելու ռիսկերը"
+  }
 }

@@ -4472,6 +4472,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "Kiireellinen: Varmuuskopio ja uudelleenasennus vaaditaan",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Toimenpide vaaditaan: Asenna sovellus uudelleen",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Käyttämäsi sovellus käyttää ohjelmistoa, joka poistuu käytöstä pian. Noudata näitä ohjeita:\n\n1. Varmuuskopioi lompakkosi\n2. Poista sovellus. Poista se kokonaan puhelimestasi.\n3. Asenna sovelluksen uusin versio uudelleen\n4. Käytä palautusvaihtoehtoa \"luo uusi lompakko\" -vaihtoehdon sijaan.\n\nVaroosi ovat turvassa ja voit jatkaa sovelluksen käyttöä nyt, mutta tee tämä mahdollisimman pian estääksesi sovelluksen toiminnan lakkaamisen lähitulevaisuudessa.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Varmuuskopioi nyt",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Myöhemmin",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "backButton": "Takaisin",
   "@backButton": {
     "description": "Generic back button label"
@@ -4539,27 +4563,5 @@
   "appInitErrorDetailsToggle": "Näytä virheen tiedot",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "TOIMENPIDE VAADITAAN",
-  "legacyStorageBadgeConfirm": "VAHVISTA",
-  "legacyStorageNoBackupPageTitle": "VARMUUSKOPIOI JA ASENNA LOMPAKKO UUDELLEEN",
-  "legacyStorageHasBackupPageTitle": "ASENNA LOMPAKKO UUDELLEEN",
-  "legacyStorageIntroDescription": "Lompakkosi käyttää ohjelmistoa, jonka tuki on pian päättymässä. Sitä ei voi päivittää poistamatta ja asentamatta sovellusta uudelleen.",
-  "legacyStorageStepBackupWallet": "Varmuuskopioi lompakkosi",
-  "legacyStorageStepExportLabels": "Vie tunnisteesi (jos sinulla on)",
-  "legacyStorageStepEnsureSwapsCompleted": "Varmista, että kaikki swapit ovat valmistuneet",
-  "legacyStorageStepUninstall": "Poista sovellus kokonaan laitteeltasi",
-  "legacyStorageStepReinstall": "Lataa uusin versio ja asenna se uudelleen",
-  "legacyStorageStepRestoreBackup": "Palauta varmuuskopiosi",
-  "legacyStorageImportantTitle": "Tärkeää",
-  "legacyStorageImportantBody": "Älä ohita tätä prosessia, ellet todella pysty tekemään varmuuskopiota juuri nyt.",
-  "legacyStorageContinueFooterNoBackup": "Voit jatkaa sovelluksen käyttöä ilman varmuuskopiota, mutta suosittelemme vahvasti ettet tee niin.",
-  "legacyStorageContinueFooterHasBackup": "Voit jatkaa sovelluksen käyttöä, mutta suosittelemme vahvasti ettet tee niin.",
-  "legacyStorageBackupNowButton": "Varmuuskopioi nyt",
-  "legacyStorageRiskAckButton": "Ei, ymmärrän riskin",
-  "legacyStorageAreYouSureTitle": "OLETKO VARMA?",
-  "legacyStorageAreYouSureParagraphOne": "Lompakkosi Bitcoin-yksityisavainten tallentamiseen käytetyn ohjelmiston tuki on päättymässä. Suosittelemme vahvasti varmuuskopion ottamista heti, jotta vältät keskeytykset tulevaisuudessa.",
-  "legacyStorageAreYouSureParagraphTwo": "Salattu Vault -varmuuskopiointi vie noin minuutin eikä vaadi erityisiä työkaluja. Fyysiseen varmuuskopioon tarvitset vain kynän ja paperia.",
-  "legacyStorageContinueWithoutBackupButton": "Jatka ilman varmuuskopiota",
-  "legacyStorageAcceptRisksCheckbox": "Hyväksyn riskit siitä, etten tee varmuuskopiota"
+  }
 }

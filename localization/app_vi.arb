@@ -54,6 +54,30 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
+  "homeLegacyStorageWithNoBackupTitle": "Khẩn cấp: Cần sao lưu và cài đặt lại",
+  "@homeLegacyStorageWithNoBackupTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageWithNoBackupDescription": "Ứng dụng bạn đang sử dụng đang chạy trên phần mềm sẽ sớm bị ngừng hỗ trợ. Vui lòng thực hiện các bước sau:\n\n1. Sao lưu ví của bạn\n2. Gỡ cài đặt ứng dụng. Xóa hoàn toàn khỏi điện thoại của bạn.\n3. Cài đặt lại phiên bản mới nhất của ứng dụng\n4. Sử dụng tùy chọn khôi phục thay vì \"tạo ví mới\".\n\nTài sản của bạn an toàn và bạn có thể tiếp tục sử dụng ứng dụng ngay bây giờ, nhưng hãy thực hiện điều này càng sớm càng tốt để tránh ứng dụng bị hỏng trong tương lai gần.",
+  "@homeLegacyStorageWithNoBackupDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  },
+  "homeLegacyStorageTitle": "Cần thực hiện: Cài đặt lại ứng dụng",
+  "@homeLegacyStorageTitle": {
+    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  },
+  "homeLegacyStorageDescription": "Ứng dụng bạn đang sử dụng đang chạy trên phần mềm sẽ sớm bị ngừng hỗ trợ. Vui lòng thực hiện các bước sau:\n\n1. Sao lưu ví của bạn\n2. Gỡ cài đặt ứng dụng. Xóa hoàn toàn khỏi điện thoại của bạn.\n3. Cài đặt lại phiên bản mới nhất của ứng dụng\n4. Sử dụng tùy chọn khôi phục thay vì \"tạo ví mới\".\n\nTài sản của bạn an toàn và bạn có thể tiếp tục sử dụng ứng dụng ngay bây giờ, nhưng hãy thực hiện điều này càng sớm càng tốt để tránh ứng dụng bị hỏng trong tương lai gần.",
+  "@homeLegacyStorageDescription": {
+    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  },
+  "legacyStorageWarningBackupNow": "Sao lưu ngay",
+  "@legacyStorageWarningBackupNow": {
+    "description": "Primary action button on the legacy storage warning overlay"
+  },
+  "legacyStorageWarningLater": "Sau",
+  "@legacyStorageWarningLater": {
+    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  },
   "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
   "backButton": "Quay lại",
   "@backButton": {
@@ -122,27 +146,5 @@
   "appInitErrorDetailsToggle": "Hiển thị chi tiết lỗi",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  },
-  "legacyStorageBadgeActionRequired": "CẦN HÀNH ĐỘNG",
-  "legacyStorageBadgeConfirm": "XÁC NHẬN",
-  "legacyStorageNoBackupPageTitle": "SAO LƯU VÀ CÀI ĐẶT LẠI VÍ CỦA BẠN",
-  "legacyStorageHasBackupPageTitle": "CÀI ĐẶT LẠI VÍ CỦA BẠN",
-  "legacyStorageIntroDescription": "Ví của bạn đang chạy trên phần mềm sẽ sớm ngừng hỗ trợ. Phần mềm này không thể cập nhật nếu không gỡ và cài lại ứng dụng.",
-  "legacyStorageStepBackupWallet": "Sao lưu ví của bạn",
-  "legacyStorageStepExportLabels": "Xuất nhãn của bạn (nếu có)",
-  "legacyStorageStepEnsureSwapsCompleted": "Đảm bảo tất cả swap đã hoàn tất",
-  "legacyStorageStepUninstall": "Gỡ hoàn toàn ứng dụng khỏi thiết bị",
-  "legacyStorageStepReinstall": "Tải phiên bản mới nhất và cài đặt lại",
-  "legacyStorageStepRestoreBackup": "Khôi phục bản sao lưu của bạn",
-  "legacyStorageImportantTitle": "Quan trọng",
-  "legacyStorageImportantBody": "Đừng bỏ qua quy trình này trừ khi bạn thực sự không thể sao lưu vào lúc này.",
-  "legacyStorageContinueFooterNoBackup": "Bạn vẫn có thể tiếp tục sử dụng ứng dụng mà không sao lưu, nhưng chúng tôi đặc biệt khuyên bạn không nên làm vậy.",
-  "legacyStorageContinueFooterHasBackup": "Bạn vẫn có thể tiếp tục sử dụng ứng dụng, nhưng chúng tôi đặc biệt khuyên bạn không nên làm vậy.",
-  "legacyStorageBackupNowButton": "Sao lưu ngay",
-  "legacyStorageRiskAckButton": "Không, tôi hiểu rủi ro",
-  "legacyStorageAreYouSureTitle": "BẠN CÓ CHẮC KHÔNG?",
-  "legacyStorageAreYouSureParagraphOne": "Phần mềm lưu trữ khoá riêng Bitcoin của ví của bạn đang bị ngừng hỗ trợ. Chúng tôi đặc biệt khuyến nghị bạn sao lưu ngay bây giờ để tránh gián đoạn về sau.",
-  "legacyStorageAreYouSureParagraphTwo": "Tuỳ chọn Encrypted Vault chỉ mất khoảng 1 phút và không cần công cụ đặc biệt. Với bản sao lưu vật lý, bạn chỉ cần bút và giấy.",
-  "legacyStorageContinueWithoutBackupButton": "Tiếp tục không sao lưu",
-  "legacyStorageAcceptRisksCheckbox": "Tôi chấp nhận rủi ro khi không sao lưu"
+  }
 }
