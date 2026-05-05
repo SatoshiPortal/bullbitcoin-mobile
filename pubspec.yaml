@@ -19,7 +19,6 @@ dependencies:
   flutter_svg: ^2.2.4
   gap: ^3.0.1
   go_router: ^17.0.0
-  google_fonts: ^6.3.3
   flutter_secure_storage:
     git:
       url: https://github.com/SatoshiPortal/flutter_secure_storage
@@ -180,6 +179,13 @@ flutter:
     - family: Bebas Neue
       fonts:
         - asset: assets/fonts/BebasNeue-Regular.ttf
+    - family: Golos Text
+      fonts:
+        - asset: assets/fonts/GolosText.ttf
+        - asset: assets/fonts/GolosText.ttf
+          weight: 500
+        - asset: assets/fonts/GolosText.ttf
+          weight: 700
 
 flutter_native_splash:
   background_image: "assets/logos/bb-logo-white-splash.png"

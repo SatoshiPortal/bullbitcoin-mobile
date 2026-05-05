@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppFonts {
   static const _textTheme = TextTheme(
@@ -53,8 +52,8 @@ class AppFonts {
   );
 
   static ({String fontFamily, TextTheme textTheme}) textTheme = (
-    fontFamily: 'Golos',
-    textTheme: GoogleFonts.golosTextTextTheme(_textTheme),
+    fontFamily: 'Golos Text',
+    textTheme: _textTheme,
   );
 
   static ({String fontFamily, TextStyle textStyle}) textTitleTheme = (
