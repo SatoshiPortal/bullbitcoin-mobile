@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +24,7 @@ class WizardHeader extends StatelessWidget {
           Image.asset(Assets.logos.bbLogoSmall.path, width: 32, height: 32),
           TextButton(
             onPressed: onSkip,
-            child: Text(
+            child: BBText(
               context.loc.wizardSkipButton,
               style: context.font.bodyLarge?.copyWith(
                 color: context.appColors.onSurfaceVariant,

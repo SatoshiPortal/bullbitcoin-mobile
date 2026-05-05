@@ -6,23 +6,10 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/picker_sheet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
-
-/// Hardcoded list shown in the wizard. Limited to currencies fully
-/// supported by [CurrencyBottomSheet]'s flag/name lookup. The full dynamic
-/// list (fetched from the exchange API via the locator) becomes available
-/// once the user reaches the main app's settings page.
-const List<String> kWizardCurrencies = [
-  'USD',
-  'EUR',
-  'CAD',
-  'MXN',
-  'CRC',
-  'ARS',
-  'COP',
-];
 
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
@@ -57,7 +44,7 @@ class CustomizeStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          BBText(
             loc.wizardCustomizeBody,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurfaceVariant,
@@ -101,7 +88,7 @@ class CustomizeStep extends StatelessWidget {
               final picked = await BlurredBottomSheet.show<String>(
                 context: context,
                 child: CurrencyBottomSheet(
-                  availableCurrencies: kWizardCurrencies,
+                  availableCurrencies: CurrencyConstants.supportedFiat,
                   selectedValue: defaultCurrency,
                 ),
               );
@@ -124,7 +111,7 @@ class _TrailingValue extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        BBText(
           text,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.onSurface,

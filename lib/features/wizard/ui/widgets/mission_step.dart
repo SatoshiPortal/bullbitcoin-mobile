@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
 
@@ -37,11 +38,11 @@ class MissionStep extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(loc.wizardMissionBody1, style: bodyStyle),
+          BBText(loc.wizardMissionBody1, style: bodyStyle),
           SizedBox(height: vGapMd),
-          Text(loc.wizardMissionBody2, style: bodyStyle),
+          BBText(loc.wizardMissionBody2, style: bodyStyle),
           SizedBox(height: vGapLg),
-          Text(
+          BBText(
             loc.wizardMissionQuestion,
             style: context.font.titleMedium?.copyWith(
               fontWeight: FontWeight.w700,

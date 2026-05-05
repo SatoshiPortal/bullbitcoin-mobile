@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 
 /// Common scaffold for the body of one wizard PageView page. Renders the
@@ -31,7 +32,7 @@ class WizardStepLayout extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          BBText(
             context.loc.wizardPageIndicator(stepIndex + 1, totalSteps),
             style: context.font.labelMedium?.copyWith(
               color: context.appColors.primary,
@@ -40,7 +41,7 @@ class WizardStepLayout extends StatelessWidget {
             ),
           ),
           SizedBox(height: vGapSm),
-          Text(
+          BBText(
             title.toUpperCase(),
             style: context.font.displaySmall?.copyWith(
               fontWeight: FontWeight.w900,
