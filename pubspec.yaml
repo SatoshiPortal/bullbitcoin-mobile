@@ -176,6 +176,11 @@ flutter:
     - assets/misc/
     - assets/wizard/
 
+  fonts:
+    - family: Bebas Neue
+      fonts:
+        - asset: assets/fonts/BebasNeue-Regular.ttf
+
 flutter_native_splash:
   background_image: "assets/logos/bb-logo-white-splash.png"
   android_12:

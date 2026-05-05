@@ -59,6 +59,6 @@ class AppFonts {
 
   static ({String fontFamily, TextStyle textStyle}) textTitleTheme = (
     fontFamily: 'Bebas Neue',
-    textStyle: GoogleFonts.bebasNeue(),
+    textStyle: const TextStyle(fontFamily: 'Bebas Neue'),
   );
 }
