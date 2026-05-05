@@ -237,6 +237,29 @@ class _SetAdvancedOptionsBottomSheetState
                             onFieldSubmitted:
                                 (_) => _timeoutNode.requestFocus(),
                           ),
+                          Builder(
+                            builder: (context) {
+                              final stopGapValue = int.tryParse(
+                                _stopGap.text.trim(),
+                              );
+                              if (stopGapValue != null && stopGapValue > 1000) {
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    InfoCard(
+                                      description: context
+                                          .loc
+                                          .electrumStopGapHighWarning,
+                                      tagColor: context.appColors.tertiary,
+                                      bgColor:
+                                          context.appColors.tertiaryContainer,
+                                    ),
+                                  ],
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
                           const SizedBox(height: 12),
                           Text(
                             context.loc.electrumTimeout,

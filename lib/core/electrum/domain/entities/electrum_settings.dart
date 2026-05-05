@@ -11,7 +11,7 @@ class ElectrumSettings {
   final ElectrumServerNetwork _network;
   String? _socks5;
 
-  static const int maxStopGap = 3000;
+  static const int maxStopGap = 5000;
   static const int maxTimeout = 300; // 5 minutes
 
   ElectrumSettings({
