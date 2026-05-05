@@ -12909,5 +12909,125 @@
   "appInitErrorDetailsToggle": "Show error details",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "wizardSkipButton": "Skip",
+  "@wizardSkipButton": {
+    "description": "Top-right action in the install/upgrade wizard that finishes it immediately with current selections"
+  },
+  "wizardPageIndicator": "PAGE {current} / {total}",
+  "@wizardPageIndicator": {
+    "description": "Eyebrow label above each wizard page title indicating progress",
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "wizardNextButton": "Next",
+  "@wizardNextButton": {
+    "description": "Primary action that advances the wizard to the next page"
+  },
+  "wizardWelcomeTitle": "Welcome to sovereignty",
+  "@wizardWelcomeTitle": {
+    "description": "Title of the wizard's welcome page"
+  },
+  "wizardWelcomeBody1": "BULL is a self-custodial Bitcoin wallet which focuses on privacy, security and usability for day-to-day transactions. It is a fully free and open-source project financed by BULLBITCOIN.COM",
+  "@wizardWelcomeBody1": {
+    "description": "First marketing paragraph on the wizard welcome page"
+  },
+  "wizardWelcomeBody2": "Our mission is to give you the tools you need to take back your financial sovereignty",
+  "@wizardWelcomeBody2": {
+    "description": "Mission statement paragraph on the wizard welcome page"
+  },
+  "wizardWelcomeUseCasesHeader": "You can use BULL to:",
+  "@wizardWelcomeUseCasesHeader": {
+    "description": "Header introducing the bullet list of use cases on the wizard welcome page"
+  },
+  "wizardWelcomeUseCase1": "Send and receive payments anonymously via Bitcoin, Lightning or Liquid",
+  "@wizardWelcomeUseCase1": {
+    "description": "First use-case bullet on the wizard welcome page"
+  },
+  "wizardWelcomeUseCase2": "Connect your hardware wallet securely",
+  "@wizardWelcomeUseCase2": {
+    "description": "Second use-case bullet on the wizard welcome page"
+  },
+  "wizardWelcomeUseCase3": "Link your Bull Bitcoin exchange account",
+  "@wizardWelcomeUseCase3": {
+    "description": "Third use-case bullet on the wizard welcome page"
+  },
+  "wizardWelcomeImportantTitle": "Important",
+  "@wizardWelcomeImportantTitle": {
+    "description": "Title of the red callout on the wizard welcome page"
+  },
+  "wizardWelcomeImportantBody": "Always create a backup of your Bitcoin wallet. This is the single most important thing you need to do. Everything else is just bonus.",
+  "@wizardWelcomeImportantBody": {
+    "description": "Body of the red callout on the wizard welcome page"
+  },
+  "wizardWelcomeFooter": "We offer secure chat with human Bitcoin experts for free. Don't hesitate to ask them any questions!",
+  "@wizardWelcomeFooter": {
+    "description": "Reassuring footer on the wizard welcome page advertising support availability"
+  },
+  "wizardCustomizeTitle": "Customize your experience",
+  "@wizardCustomizeTitle": {
+    "description": "Title of the wizard's settings/customize page"
+  },
+  "wizardCustomizeBody": "Use BULL on your own terms with these display settings.",
+  "@wizardCustomizeBody": {
+    "description": "Subtitle on the wizard's settings/customize page"
+  },
+  "wizardCustomizeDefaultCurrency": "Default currency",
+  "@wizardCustomizeDefaultCurrency": {
+    "description": "Label for the default fiat currency row on the wizard customize page"
+  },
+  "wizardMissionTitle": "Help the Bull mission",
+  "@wizardMissionTitle": {
+    "description": "Title of the wizard's error-reporting consent page"
+  },
+  "wizardMissionBody1": "To help us improve our software and make sure we offer the highest level of security, privacy and usability, your app can send us error logs that allow us to detect issues and fix them quickly in our next updates.",
+  "@wizardMissionBody1": {
+    "description": "First explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionBody2": "These logs are fully anonymous, are not linked to your IP address, and never share any information about your transactions or your identity. They are purely technical and do not put you at any risk. It's very helpful for us, and doesn't cost anything to you.",
+  "@wizardMissionBody2": {
+    "description": "Second explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionQuestion": "Do you accept to be part of our automated issue reporting program?",
+  "@wizardMissionQuestion": {
+    "description": "Yes/No question on the wizard error-reporting page"
+  },
+  "wizardMissionYes": "Yes",
+  "@wizardMissionYes": {
+    "description": "Affirmative response button on the wizard error-reporting page"
+  },
+  "wizardMissionNo": "No",
+  "@wizardMissionNo": {
+    "description": "Negative response button on the wizard error-reporting page"
+  },
+  "wizardMissionRequired": "Please choose Yes or No before continuing.",
+  "@wizardMissionRequired": {
+    "description": "Snackbar shown when the user tries to leave the wizard without answering the error-reporting question"
+  },
+  "wizardJourneyTitle": "Progress on your journey",
+  "@wizardJourneyTitle": {
+    "description": "Title of the wizard's final tips page"
+  },
+  "wizardJourneyBody": "If you are new to BULL wallet, here are a few features you can take advantage of to improve your privacy, security and user experience.",
+  "@wizardJourneyBody": {
+    "description": "Intro paragraph on the wizard journey/tips page"
+  },
+  "wizardJourneyTip1": "Add a security PIN to unlock your wallet",
+  "@wizardJourneyTip1": {"description": "Tip 1 on the wizard journey page"},
+  "wizardJourneyTip2": "Try the encrypted vault backup",
+  "@wizardJourneyTip2": {"description": "Tip 2 on the wizard journey page"},
+  "wizardJourneyTip3": "Connect to your own Bitcoin node",
+  "@wizardJourneyTip3": {"description": "Tip 3 on the wizard journey page"},
+  "wizardJourneyTip4": "Connect to your own Mempool explorer",
+  "@wizardJourneyTip4": {"description": "Tip 4 on the wizard journey page"},
+  "wizardJourneyTip5": "Transfer between Bitcoin and Liquid with no KYC",
+  "@wizardJourneyTip5": {"description": "Tip 5 on the wizard journey page"},
+  "wizardJourneyTip6": "Customize your autoswap settings",
+  "@wizardJourneyTip6": {"description": "Tip 6 on the wizard journey page"},
+  "wizardJourneyTip7": "Switch between Bitcoin (BTC) and Satoshis (sats)",
+  "@wizardJourneyTip7": {"description": "Tip 7 on the wizard journey page"},
+  "wizardJourneyTip8": "Create air-gapped transactions for your hardware wallet",
+  "@wizardJourneyTip8": {"description": "Tip 8 on the wizard journey page"}
 }

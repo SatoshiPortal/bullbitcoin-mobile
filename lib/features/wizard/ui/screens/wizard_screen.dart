@@ -3,12 +3,14 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
-import 'package:bb_mobile/features/wizard/ui/widgets/error_reporting_step.dart';
-import 'package:bb_mobile/features/wizard/ui/widgets/language_step.dart';
-import 'package:bb_mobile/features/wizard/ui/widgets/theme_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/welcome_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
-import 'package:bb_mobile/features/wizard/ui/widgets/wizard_page.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
 import 'package:bb_mobile/features/wizard/wizard_choices.dart';
 import 'package:flutter/material.dart';
 
@@ -29,21 +31,50 @@ class WizardScreen extends StatefulWidget {
 }
 
 class _WizardScreenState extends State<WizardScreen> {
-  final PageController _controller = PageController();
-  int _page = 0;
+  static const int _totalSteps = 4;
+  // Mission step index — `Skip`/`Next` jump here when consent is unset.
+  static const int _missionPage = 2;
 
   static const Duration _pageDuration = Duration(milliseconds: 300);
   static const Curve _pageCurve = Curves.easeInOut;
 
+  final PageController _controller = PageController();
+  int _page = 0;
+
   @override
   void initState() {
     super.initState();
-    final detected = Language.fromKeyboard();
-    if (detected == Language.unitedStatesEnglish) return;
+    final detectedLang = Language.fromKeyboard();
+    final brightness =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness;
+    final detectedTheme = brightness == Brightness.dark
+        ? AppThemeMode.dark
+        : AppThemeMode.light;
+
+    final c = widget.choices;
+    final needsLangUpdate =
+        detectedLang != Language.unitedStatesEnglish &&
+        c.language == Language.unitedStatesEnglish;
+    final needsThemeUpdate = c.themeMode == AppThemeMode.system;
+    if (!needsLangUpdate && !needsThemeUpdate) return;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      widget.onChange(widget.choices.copyWith(language: detected));
-      TranslationWarningBottomSheet.show(context);
+      // `copyWithSilent` updates the displayed value WITHOUT marking
+      // the field as touched — auto-detected values (brightness +
+      // keyboard) shouldn't get committed to user settings unless the
+      // user later confirms via the picker. Critical for the upgrade
+      // pre-init path where the user's existing language/theme would
+      // otherwise be clobbered when they tap Skip.
+      var updated = widget.choices;
+      if (needsLangUpdate) {
+        updated = updated.copyWithSilent(language: detectedLang);
+      }
+      if (needsThemeUpdate) {
+        updated = updated.copyWithSilent(themeMode: detectedTheme);
+      }
+      widget.onChange(updated);
+      if (needsLangUpdate) TranslationWarningBottomSheet.show(context);
     });
   }
 
@@ -53,104 +84,83 @@ class _WizardScreenState extends State<WizardScreen> {
     super.dispose();
   }
 
-  void _next(int stepCount) {
-    if (_page < stepCount - 1) {
+  void _advance() {
+    // Block leaving the mission step until the user explicitly picks Yes/No.
+    if (_page == _missionPage && widget.choices.reportingConsent == null) {
+      SnackBarUtils.showSnackBar(context, context.loc.wizardMissionRequired);
+      return;
+    }
+    if (_page < _totalSteps - 1) {
       _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
     } else {
-      widget.onDone();
+      _tryFinish();
     }
   }
 
-  void _back() {
-    if (_page > 0) {
-      _controller.previousPage(duration: _pageDuration, curve: _pageCurve);
+  void _tryFinish() {
+    if (widget.choices.reportingConsent == null) {
+      _controller.animateToPage(
+        _missionPage,
+        duration: _pageDuration,
+        curve: _pageCurve,
+      );
+      SnackBarUtils.showSnackBar(context, context.loc.wizardMissionRequired);
+      return;
     }
-  }
-
-  List<_Step> _buildSteps(BuildContext context) {
-    final c = widget.choices;
-    return [
-      _Step(
-        title: context.loc.settingsThemeTitle,
-        image: 'assets/wizard/undraw_insert-block.svg',
-        child: ThemeStep(
-          selected: c.themeMode,
-          onChanged: (v) => widget.onChange(c.copyWith(themeMode: v)),
-        ),
-      ),
-      _Step(
-        title: context.loc.settingsLanguageTitle,
-        image: 'assets/wizard/undraw_global-team.svg',
-        child: LanguageStep(
-          selected: c.language,
-          onChanged: (v) => widget.onChange(c.copyWith(language: v)),
-        ),
-      ),
-      _Step(
-        title: context.loc.errorReportingProgramTitle,
-        image: 'assets/wizard/undraw_upload-warning.svg',
-        child: ErrorReportingStep(
-          enabled: c.reportingConsent,
-          onChanged: (v) => widget.onChange(c.copyWith(reportingConsent: v)),
-        ),
-      ),
-    ];
+    widget.onDone();
   }
 
   @override
   Widget build(BuildContext context) {
-    final steps = _buildSteps(context);
-    final isLast = _page == steps.length - 1;
-    final vGap = Device.screen.height * 0.02;
+    final c = widget.choices;
+    final isLast = _page == _totalSteps - 1;
     final hPad = Device.screen.width * 0.06;
-    final btnGap = Device.screen.height * 0.015;
+    final vGap = Device.screen.height * 0.02;
 
     return Scaffold(
-      appBar: AppBar(title: Text(steps[_page].title)),
+      backgroundColor: context.appColors.background,
       body: SafeArea(
         child: Column(
           children: [
+            WizardHeader(onSkip: _tryFinish),
             Expanded(
               child: PageView(
                 controller: _controller,
                 onPageChanged: (i) => setState(() => _page = i),
-                children: steps
-                    .map((s) => WizardPage(image: s.image, child: s.child))
-                    .toList(),
+                children: [
+                  WelcomeStep(stepIndex: 0, totalSteps: _totalSteps),
+                  CustomizeStep(
+                    stepIndex: 1,
+                    totalSteps: _totalSteps,
+                    choices: c,
+                    onChange: widget.onChange,
+                  ),
+                  MissionStep(
+                    stepIndex: _missionPage,
+                    totalSteps: _totalSteps,
+                    consent: c.reportingConsent,
+                    onChanged: (v) =>
+                        widget.onChange(c.copyWith(reportingConsent: v)),
+                  ),
+                  JourneyStep(stepIndex: 3, totalSteps: _totalSteps),
+                ],
               ),
             ),
             SizedBox(height: vGap),
-            WizardDots(count: steps.length, index: _page),
+            WizardDots(count: _totalSteps, index: _page),
             SizedBox(height: vGap),
             Padding(
               padding: EdgeInsets.fromLTRB(hPad, 0, hPad, hPad),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  BBButton.big(
-                    label: isLast
-                        ? context.loc.getStartedButton
-                        : context.loc.continueButton,
-                    onPressed: () => _next(steps.length),
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
-                  ),
-                  SizedBox(height: btnGap),
-                  IgnorePointer(
-                    ignoring: _page == 0,
-                    child: Opacity(
-                      opacity: _page == 0 ? 0 : 1,
-                      child: BBButton.big(
-                        label: context.loc.backButton,
-                        onPressed: _back,
-                        bgColor: context.appColors.surface,
-                        textColor: context.appColors.text,
-                        borderColor: context.appColors.border,
-                        outlined: true,
-                      ),
-                    ),
-                  ),
-                ],
+              child: SizedBox(
+                width: double.infinity,
+                child: BBButton.big(
+                  label: isLast
+                      ? context.loc.getStartedButton
+                      : context.loc.wizardNextButton,
+                  onPressed: _advance,
+                  bgColor: context.appColors.primary,
+                  textColor: context.appColors.onPrimary,
+                ),
               ),
             ),
           ],
@@ -158,12 +168,4 @@ class _WizardScreenState extends State<WizardScreen> {
       ),
     );
   }
-}
-
-class _Step {
-  const _Step({required this.title, required this.image, required this.child});
-
-  final String title;
-  final String image;
-  final Widget child;
 }

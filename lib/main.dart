@@ -43,8 +43,11 @@ import 'package:workmanager/workmanager.dart';
 class Bull {
   static Future<void> init() async {
     await initLogs();
-    // Wizard pending (freshest) wins over the prefs mirror — the user
-    // may have just answered consent in the wizard on this launch.
+    // The pre-init wizard (upgrade path) writes consent to prefs via
+    // `WizardGate.savePending` right before this runs. Pull it so
+    // Sentry initializes with the user's freshest answer rather than
+    // a stale mirror, and so migration errors that happen on this very
+    // boot are captured if the user just opted in.
     final pending = await WizardGate.readPending();
     await Report.init(wizardConsent: pending?.reportingConsent);
     await initFlutterRustBridgeDependencies();
@@ -52,9 +55,9 @@ class Bull {
     //  so it's important to call it after the initialization
     await initLocator();
     final settings = locator<SettingsRepository>();
+    // Flush wizard pending values (if any) to SQLite now that the
+    // settings repository is available, then mark the wizard complete.
     await WizardGate.apply(settings);
-    // Refresh from the SQLite source of truth now that the locator is up
-    // (the wizard may have flipped consent in apply above).
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     await initWorkmanager();
     // Emits the install/upgrade transition event (no-op on a normal
@@ -112,7 +115,13 @@ Future main() async {
     () async {
       try {
         WidgetsFlutterBinding.ensureInitialized();
-        if (await WizardGate.shouldShow()) {
+        // Hybrid wizard timing: upgrade path (existing wallets + wizard
+        // pending) runs the wizard BEFORE `Bull.init` so it can collect
+        // consent before migrations / Sentry init / Drift schema work
+        // fires off. Fresh installs skip this — they reach the wizard
+        // post-init via the Create/Recover buttons.
+        if (await WizardGate.isSetupComplete() &&
+            await WizardGate.shouldShow()) {
           final completer = Completer<void>();
           runApp(
             WizardApp(

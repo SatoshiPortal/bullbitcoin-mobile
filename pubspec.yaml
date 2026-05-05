@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 6.9.102+177
+version: 6.9.103+177
 
 environment:
   sdk: ">=3.10.0 <4.0.0"
@@ -174,7 +174,6 @@ flutter:
     - assets/backgrounds/
     - assets/animations/
     - assets/misc/
-    - assets/wizard/
 
 flutter_native_splash:
   background_image: "assets/logos/bb-logo-white-splash.png"

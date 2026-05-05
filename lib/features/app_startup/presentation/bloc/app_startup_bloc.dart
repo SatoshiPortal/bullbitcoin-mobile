@@ -10,6 +10,7 @@ import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existin
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/check_backup_usecase.dart';
+import 'package:bb_mobile/features/wizard/wizard_gate.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -120,6 +121,11 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
 
       if (doDefaultWalletsExist) {
         isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
+        // Auto-migrate existing v6.x users to the new pre-init wizard
+        // gating: once we know they have wallets, the next launch's
+        // `WizardGate.isSetupComplete()` returns true, so any future
+        // pending wizard runs as a pre-init wrapper before migrations.
+        await WizardGate.markSetupComplete();
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {
         // This is a fresh install, so reset the app data that might still be
