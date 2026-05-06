@@ -12568,5 +12568,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Valores altos de stop gap aumentam significativamente o tempo de sincronização. Mantenha o aplicativo aberto em primeiro plano até a sincronização ser concluída — colocá-lo em segundo plano pode interrompê-la."
+  "electrumStopGapHighWarning": "Valores altos de stop gap aumentam significativamente o tempo de sincronização. Mantenha o aplicativo aberto em primeiro plano até a sincronização ser concluída — colocá-lo em segundo plano pode interrompê-la.",
+  "wizardSkipButton": "Pular",
+  "wizardPageIndicator": "PÁGINA {current} / {total}",
+  "wizardNextButton": "Próximo",
+  "wizardCustomizeTitle": "Personalize sua experiência",
+  "wizardCustomizeBody": "Use o BULL do seu jeito com essas configurações.",
+  "wizardCustomizeDefaultCurrency": "Moeda padrão",
+  "wizardMissionTitle": "Apoie a missão da Bull",
+  "wizardMissionBody1": "Para nos ajudar a melhorar nosso software e garantir o mais alto nível de segurança, privacidade e usabilidade, seu aplicativo pode nos enviar registros de erros que nos permitem detectar problemas e corrigi-los rapidamente em nossas próximas atualizações.",
+  "wizardMissionBody2": "Esses registros são anônimos, não são vinculados ao seu endereço IP e nunca compartilham informações sobre suas transações ou identidade. São puramente técnicos e não te expõem a nenhum risco. É muito útil para nós e não custa nada para você.",
+  "wizardMissionQuestion": "Você aceita participar do nosso programa automatizado de relato de problemas?",
+  "wizardMissionYes": "Sim",
+  "wizardMissionNo": "Não",
+  "wizardMissionRequired": "Por favor, escolha Sim ou Não antes de continuar.",
+  "wizardJourneyTitle": "Avance na sua jornada",
+  "wizardJourneyBody": "Se você é novo na carteira BULL, aqui estão alguns recursos que você pode aproveitar para melhorar sua privacidade, segurança e experiência.",
+  "wizardJourneyTip1": "Adicione um PIN de segurança para desbloquear sua carteira",
+  "wizardJourneyTip2": "Experimente o backup criptografado do cofre",
+  "wizardJourneyTip3": "Conecte-se ao seu próprio node Bitcoin",
+  "wizardJourneyTip4": "Conecte-se ao seu próprio explorador Mempool",
+  "wizardJourneyTip5": "Transfira entre Bitcoin e Liquid sem KYC",
+  "wizardJourneyTip6": "Personalize suas configurações de autoswap",
+  "wizardJourneyTip7": "Alterne entre Bitcoin (BTC) e Satoshis (sats)",
+  "wizardJourneyTip8": "Crie transações air-gap para sua carteira de hardware",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

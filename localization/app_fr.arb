@@ -4561,5 +4561,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Des valeurs élevées de stop gap augmentent considérablement le temps de synchronisation. Gardez l'application ouverte au premier plan jusqu'à ce que la synchronisation soit terminée — la mettre en arrière-plan peut l'interrompre."
+  "electrumStopGapHighWarning": "Des valeurs élevées de stop gap augmentent considérablement le temps de synchronisation. Gardez l'application ouverte au premier plan jusqu'à ce que la synchronisation soit terminée — la mettre en arrière-plan peut l'interrompre.",
+  "wizardSkipButton": "Passer",
+  "wizardPageIndicator": "PAGE {current} / {total}",
+  "wizardNextButton": "Suivant",
+  "wizardCustomizeTitle": "Personnalisez votre expérience",
+  "wizardCustomizeBody": "Utilisez BULL selon vos préférences avec ces paramètres.",
+  "wizardCustomizeDefaultCurrency": "Devise par défaut",
+  "wizardMissionTitle": "Aidez la mission Bull",
+  "wizardMissionBody1": "Pour nous aider à améliorer notre logiciel et garantir le meilleur niveau de sécurité, de confidentialité et d'utilisabilité, votre application peut nous envoyer des journaux d'erreurs qui nous permettent de détecter et corriger les problèmes rapidement dans nos prochaines mises à jour.",
+  "wizardMissionBody2": "Ces journaux sont anonymisés, ne sont pas liés à votre adresse IP, et ne partagent jamais d'informations sur vos transactions ou votre identité. Ils sont purement techniques et ne vous exposent à aucun risque. Cela nous aide énormément, et ne vous coûte rien.",
+  "wizardMissionQuestion": "Acceptez-vous de participer à notre programme de signalement automatique des problèmes ?",
+  "wizardMissionYes": "Oui",
+  "wizardMissionNo": "Non",
+  "wizardMissionRequired": "Veuillez choisir Oui ou Non avant de continuer.",
+  "wizardJourneyTitle": "Progressez dans votre parcours",
+  "wizardJourneyBody": "Si vous découvrez le portefeuille BULL, voici quelques fonctionnalités dont vous pouvez profiter pour améliorer votre confidentialité, votre sécurité et votre expérience utilisateur.",
+  "wizardJourneyTip1": "Ajoutez un PIN de sécurité pour déverrouiller votre portefeuille",
+  "wizardJourneyTip2": "Essayez la sauvegarde chiffrée du coffre",
+  "wizardJourneyTip3": "Connectez-vous à votre propre nœud Bitcoin",
+  "wizardJourneyTip4": "Connectez-vous à votre propre explorateur Mempool",
+  "wizardJourneyTip5": "Transférez entre Bitcoin et Liquid sans KYC",
+  "wizardJourneyTip6": "Personnalisez vos paramètres d'autoswap",
+  "wizardJourneyTip7": "Basculez entre Bitcoin (BTC) et Satoshis (sats)",
+  "wizardJourneyTip8": "Créez des transactions air-gap pour votre portefeuille matériel",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

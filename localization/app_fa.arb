@@ -12572,5 +12572,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "مقادیر بالای stop gap زمان همگام‌سازی را به طور قابل توجهی افزایش می‌دهند. تا اتمام همگام‌سازی، برنامه را در پیش‌زمینه باز نگه دارید — انتقال به پس‌زمینه ممکن است آن را قطع کند."
+  "electrumStopGapHighWarning": "مقادیر بالای stop gap زمان همگام‌سازی را به طور قابل توجهی افزایش می‌دهند. تا اتمام همگام‌سازی، برنامه را در پیش‌زمینه باز نگه دارید — انتقال به پس‌زمینه ممکن است آن را قطع کند.",
+  "wizardSkipButton": "رد کردن",
+  "wizardPageIndicator": "صفحه {current} / {total}",
+  "wizardNextButton": "بعدی",
+  "wizardCustomizeTitle": "تجربه خود را شخصی‌سازی کنید",
+  "wizardCustomizeBody": "از BULL بر اساس ترجیحات خود با این تنظیمات استفاده کنید.",
+  "wizardCustomizeDefaultCurrency": "ارز پیش‌فرض",
+  "wizardMissionTitle": "از مأموریت Bull حمایت کنید",
+  "wizardMissionBody1": "برای کمک به ما در بهبود نرم‌افزار و اطمینان از بالاترین سطح امنیت، حریم خصوصی و قابلیت استفاده، اپلیکیشن شما می‌تواند گزارش‌های خطا را برای ما ارسال کند تا بتوانیم مشکلات را تشخیص داده و در به‌روزرسانی‌های بعدی به سرعت برطرف کنیم.",
+  "wizardMissionBody2": "این گزارش‌ها ناشناس هستند، به آدرس IP شما متصل نیستند و هرگز اطلاعاتی درباره تراکنش‌ها یا هویت شما به اشتراک نمی‌گذارند. کاملاً فنی هستند و هیچ خطری برای شما ایجاد نمی‌کنند. این برای ما بسیار مفید است و برای شما هیچ هزینه‌ای ندارد.",
+  "wizardMissionQuestion": "آیا می‌پذیرید که در برنامه گزارش‌دهی خودکار مشکلات ما شرکت کنید؟",
+  "wizardMissionYes": "بله",
+  "wizardMissionNo": "خیر",
+  "wizardMissionRequired": "لطفاً قبل از ادامه، بله یا خیر را انتخاب کنید.",
+  "wizardJourneyTitle": "در سفر خود پیشرفت کنید",
+  "wizardJourneyBody": "اگر تازه‌وارد کیف پول BULL هستید، در اینجا چند ویژگی وجود دارد که می‌توانید از آن‌ها برای بهبود حریم خصوصی، امنیت و تجربه کاربری خود استفاده کنید.",
+  "wizardJourneyTip1": "یک PIN امنیتی برای باز کردن کیف پول خود اضافه کنید",
+  "wizardJourneyTip2": "نسخه پشتیبان رمزگذاری‌شده گاوصندوق را امتحان کنید",
+  "wizardJourneyTip3": "به نود Bitcoin خود متصل شوید",
+  "wizardJourneyTip4": "به مرورگر Mempool خود متصل شوید",
+  "wizardJourneyTip5": "بدون KYC بین Bitcoin و Liquid انتقال دهید",
+  "wizardJourneyTip6": "تنظیمات autoswap خود را شخصی‌سازی کنید",
+  "wizardJourneyTip7": "بین Bitcoin (BTC) و Satoshis (sats) جابجا شوید",
+  "wizardJourneyTip8": "تراکنش‌های air-gap برای کیف پول سخت‌افزاری خود ایجاد کنید",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

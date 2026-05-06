@@ -146,5 +146,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "উচ্চ স্টপ গেপ মূল্যবোধে চিংক্ৰনাইজেচন সময় উল্লেখযোগ্যভাৱে বঢ়াই দিয়ে। চিংক্ৰনাইজেচন সম্পূৰ্ণ নোহোৱালৈকে এপটো ফৰগ্ৰাউণ্ডত খোলা ৰাখক — পটভূমিত ৰাখিলে ই বাধাগ্ৰস্ত হ'ব পাৰে।"
+  "electrumStopGapHighWarning": "উচ্চ স্টপ গেপ মূল্যবোধে চিংক্ৰনাইজেচন সময় উল্লেখযোগ্যভাৱে বঢ়াই দিয়ে। চিংক্ৰনাইজেচন সম্পূৰ্ণ নোহোৱালৈকে এপটো ফৰগ্ৰাউণ্ডত খোলা ৰাখক — পটভূমিত ৰাখিলে ই বাধাগ্ৰস্ত হ'ব পাৰে।",
+  "wizardSkipButton": "এৰি যাওক",
+  "wizardPageIndicator": "পৃষ্ঠা {current} / {total}",
+  "wizardNextButton": "পৰৱৰ্তী",
+  "wizardCustomizeTitle": "আপোনাৰ অভিজ্ঞতা কাষ্টমাইজ কৰক",
+  "wizardCustomizeBody": "এই ছেটিংসমূহৰ সৈতে আপোনাৰ চৰ্তত BULL ব্যৱহাৰ কৰক।",
+  "wizardCustomizeDefaultCurrency": "অবিকল্পিত মুদ্ৰা",
+  "wizardMissionTitle": "Bull মিছনক সমৰ্থন কৰক",
+  "wizardMissionBody1": "আমাৰ ছফ্টৱেৰ উন্নত কৰাত আৰু সৰ্বোচ্চ স্তৰৰ সুৰক্ষা, গোপনীয়তা আৰু ব্যৱহাৰযোগ্যতা নিশ্চিত কৰাত সহায় কৰিবলৈ, আপোনাৰ এপে আমালৈ ত্ৰুটি লগ পঠিয়াব পাৰে যিয়ে আমাক পৰৱৰ্তী আপডেটত দ্ৰুতভাৱে সমস্যা চিনাক্ত কৰাত আৰু সমাধান কৰাত সহায় কৰে।",
+  "wizardMissionBody2": "এই লগসমূহ বেনামী, আপোনাৰ IP ঠিকনাৰ সৈতে সংযুক্ত নহয়, আৰু আপোনাৰ লেনদেন বা পৰিচয়ৰ বিষয়ে কেতিয়াও তথ্য ভাগ-বতৰা নকৰে। এইবোৰ সম্পূৰ্ণৰূপে প্ৰাযুক্তিগত আৰু আপোনাক কোনো বিপদত পেলোৱা নাই। এইটো আমাৰ বাবে অতি সহায়ক আৰু আপোনাৰ একো খৰচ নহয়।",
+  "wizardMissionQuestion": "আপুনি আমাৰ স্বয়ংক্ৰিয় সমস্যা ৰিপৰ্টিং প্ৰগ্ৰামত অংশগ্ৰহণ কৰিবলৈ সন্মত নেকি?",
+  "wizardMissionYes": "হয়",
+  "wizardMissionNo": "নহয়",
+  "wizardMissionRequired": "অব্যাহত ৰখাৰ আগতে অনুগ্ৰহ কৰি হয় বা নহয় বাছনি কৰক।",
+  "wizardJourneyTitle": "আপোনাৰ যাত্ৰাত আগবাঢ়ক",
+  "wizardJourneyBody": "যদি আপুনি BULL ৱালেটত নতুন, ইয়াত কেইটামান বৈশিষ্ট্য আছে যিবোৰ আপুনি আপোনাৰ গোপনীয়তা, সুৰক্ষা আৰু ব্যৱহাৰকাৰীৰ অভিজ্ঞতা উন্নত কৰিবলৈ ব্যৱহাৰ কৰিব পাৰে।",
+  "wizardJourneyTip1": "আপোনাৰ ৱালেট আনলক কৰিবলৈ এটা সুৰক্ষা PIN যোগ কৰক",
+  "wizardJourneyTip2": "এনক্ৰিপ্টেড ভল্ট বেকআপ চেষ্টা কৰক",
+  "wizardJourneyTip3": "আপোনাৰ নিজা Bitcoin নডৰ সৈতে সংযোগ কৰক",
+  "wizardJourneyTip4": "আপোনাৰ নিজা Mempool অন্বেষকৰ সৈতে সংযোগ কৰক",
+  "wizardJourneyTip5": "KYC অবিহনে Bitcoin আৰু Liquid ৰ মাজত স্থানান্তৰ কৰক",
+  "wizardJourneyTip6": "আপোনাৰ autoswap ছেটিংসমূহ কাষ্টমাইজ কৰক",
+  "wizardJourneyTip7": "Bitcoin (BTC) আৰু Satoshis (sats) ৰ মাজত সলনি কৰক",
+  "wizardJourneyTip8": "আপোনাৰ হাৰ্ডৱেৰ ৱালেটৰ বাবে air-gap লেনদেন সৃষ্টি কৰক",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

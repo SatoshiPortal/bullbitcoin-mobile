@@ -1,25 +1,16 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
 
+/// Mission / consent page body — text only. The Yes/No choice is
+/// rendered by [WizardScreen] in the bottom chrome (in place of the
+/// dots + Next button) so the user must answer to advance.
 class MissionStep extends StatelessWidget {
-  const MissionStep({
-    super.key,
-    required this.stepIndex,
-    required this.totalSteps,
-    required this.consent,
-    required this.onChanged,
-  });
-
-  final int stepIndex;
-  final int totalSteps;
-  // `null` until the user explicitly taps Yes or No.
-  final bool? consent;
-  final ValueChanged<bool> onChanged;
+  const MissionStep({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +21,8 @@ class MissionStep extends StatelessWidget {
     );
     final vGapMd = Device.screen.height * 0.018;
     final vGapLg = Device.screen.height * 0.025;
-    final hGap = Device.screen.width * 0.03;
     return WizardStepLayout(
-      stepIndex: stepIndex,
-      totalSteps: totalSteps,
+      page: WizardPage.mission,
       title: loc.wizardMissionTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,53 +38,8 @@ class MissionStep extends StatelessWidget {
               color: context.appColors.onSurface,
             ),
           ),
-          SizedBox(height: vGapMd),
-          Row(
-            children: [
-              Expanded(
-                child: _ChoiceButton(
-                  label: loc.wizardMissionYes,
-                  selected: consent == true,
-                  onTap: () => onChanged(true),
-                ),
-              ),
-              SizedBox(width: hGap),
-              Expanded(
-                child: _ChoiceButton(
-                  label: loc.wizardMissionNo,
-                  selected: consent == false,
-                  onTap: () => onChanged(false),
-                ),
-              ),
-            ],
-          ),
         ],
       ),
-    );
-  }
-}
-
-class _ChoiceButton extends StatelessWidget {
-  const _ChoiceButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.appColors;
-    return BBButton.big(
-      label: label,
-      onPressed: onTap,
-      bgColor: selected ? colors.primary : colors.surface,
-      textColor: selected ? colors.onPrimary : colors.onSurface,
-      borderColor: selected ? colors.primary : colors.border,
-      outlined: !selected,
     );
   }
 }
