@@ -12605,5 +12605,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "조치 필요",
+  "legacyStorageBadgeConfirm": "확인",
+  "legacyStorageNoBackupPageTitle": "지갑을 백업하고 다시 설치하세요",
+  "legacyStorageHasBackupPageTitle": "지갑을 다시 설치하세요",
+  "legacyStorageIntroDescription": "지갑이 곧 지원이 종료될 소프트웨어에서 동작 중입니다. 앱을 삭제하고 다시 설치하지 않으면 업데이트할 수 없습니다.",
+  "legacyStorageStepBackupWallet": "지갑을 백업하세요",
+  "legacyStorageStepExportLabels": "라벨이 있다면 내보내세요",
+  "legacyStorageStepEnsureSwapsCompleted": "모든 스왑이 완료되었는지 확인하세요",
+  "legacyStorageStepUninstall": "앱을 기기에서 완전히 삭제하세요",
+  "legacyStorageStepReinstall": "최신 버전을 다운로드해 다시 설치하세요",
+  "legacyStorageStepRestoreBackup": "백업을 복원하세요",
+  "legacyStorageImportantTitle": "중요",
+  "legacyStorageImportantBody": "지금 정말로 백업을 할 수 없는 경우가 아니라면 이 절차를 건너뛰지 마세요.",
+  "legacyStorageContinueFooterNoBackup": "백업 없이 앱을 계속 사용할 수도 있지만, 그렇게 하지 않을 것을 강력히 권장합니다.",
+  "legacyStorageContinueFooterHasBackup": "앱을 계속 사용할 수도 있지만, 그렇게 하지 않을 것을 강력히 권장합니다.",
+  "legacyStorageBackupNowButton": "지금 백업",
+  "legacyStorageRiskAckButton": "아니요, 위험을 이해합니다",
+  "legacyStorageAreYouSureTitle": "정말 진행하시겠습니까?",
+  "legacyStorageAreYouSureParagraphOne": "지갑의 비트코인 개인키를 보관하는 소프트웨어가 지원 종료됩니다. 향후 문제를 방지하기 위해 지금 즉시 백업할 것을 강력히 권장합니다.",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault 백업 옵션은 약 1분 정도 소요되며 별도의 도구가 필요 없습니다. 물리 백업을 사용하는 경우 펜과 종이만 있으면 됩니다.",
+  "legacyStorageContinueWithoutBackupButton": "백업 없이 계속",
+  "legacyStorageAcceptRisksCheckbox": "백업을 하지 않는 위험을 감수합니다",
+  "legacyStorageHasBackupImportantBody": "지갑을 긴급하게 사용해야 하거나 스왑이 완료되기를 기다리는 경우가 아니라면 이 과정을 건너뛰지 마세요.",
+  "legacyStorageRiskAckButtonHasBackup": "위험을 이해합니다"
 }

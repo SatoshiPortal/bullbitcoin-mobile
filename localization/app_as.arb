@@ -179,5 +179,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "কাৰ্য প্ৰয়োজনীয়",
+  "legacyStorageBadgeConfirm": "নিশ্চিত কৰক",
+  "legacyStorageNoBackupPageTitle": "আপোনাৰ ৱালেটৰ বেকআপ লওক আৰু পুনৰ ইনষ্টল কৰক",
+  "legacyStorageHasBackupPageTitle": "আপোনাৰ ৱালেট পুনৰ ইনষ্টল কৰক",
+  "legacyStorageIntroDescription": "আপোনাৰ ৱালেট এনে চফ্টৱেৰত চলি আছে যিটো অলপতে অপ্ৰচলিত হ'ব। এপটো আনইনষ্টল কৰি পুনৰ ইনষ্টল নকৰাকৈ ই আপডেট কৰিব নোৱাৰি।",
+  "legacyStorageStepBackupWallet": "আপোনাৰ ৱালেটৰ বেকআপ লওক",
+  "legacyStorageStepExportLabels": "আপোনাৰ লেবেলবোৰ এক্সপৰ্ট কৰক (যদি থাকে)",
+  "legacyStorageStepEnsureSwapsCompleted": "সকলো স্বেপ সম্পূৰ্ণ হৈছে নে নিশ্চিত কৰক",
+  "legacyStorageStepUninstall": "আপোনাৰ ডিভাইচৰপৰা এপটো সম্পূৰ্ণৰূপে আনইনষ্টল কৰক",
+  "legacyStorageStepReinstall": "আটাইতকৈ নতুন সংস্কৰণ ডাউনলোড কৰি পুনৰ ইনষ্টল কৰক",
+  "legacyStorageStepRestoreBackup": "আপোনাৰ বেকআপ পুনৰুদ্ধাৰ কৰক",
+  "legacyStorageImportantTitle": "গুৰুত্বপূৰ্ণ",
+  "legacyStorageImportantBody": "এই মুহূৰ্তত যদি আপুনি একেবাৰে বেকআপ ল'ব পৰা নাই, তেতিয়াহে এই প্ৰক্ৰিয়া এৰি যাব।",
+  "legacyStorageContinueFooterNoBackup": "আপুনি বেকআপ নকৰাকৈ এপটো ব্যৱহাৰ চলাই থাকিব পাৰে, কিন্তু আমি ইয়াক দৃঢ়ভাৱে নিৰুৎসাহিত কৰোঁ।",
+  "legacyStorageContinueFooterHasBackup": "আপুনি এপটো ব্যৱহাৰ চলাই থাকিব পাৰে, কিন্তু আমি ইয়াক দৃঢ়ভাৱে নিৰুৎসাহিত কৰোঁ।",
+  "legacyStorageBackupNowButton": "এতিয়াই বেকআপ লওক",
+  "legacyStorageRiskAckButton": "নহয়, মই বিপদ বুজি পাইছোঁ",
+  "legacyStorageAreYouSureTitle": "আপুনি নিশ্চিতনে?",
+  "legacyStorageAreYouSureParagraphOne": "আপোনাৰ ৱালেটৰ বিটক'ইন প্ৰাইভেট কীবোৰ ৰাখিবলৈ ব্যৱহাৰ কৰা চফ্টৱেৰটো অপ্ৰচলিত হৈ গৈছে। ভৱিষ্যতৰ যিকোনো ব্যাঘাত পৰিহাৰ কৰিবলৈ আমি দৃঢ়ভাৱে এতিয়াই বেকআপ লোৱাৰ পৰামৰ্শ দিওঁ।",
+  "legacyStorageAreYouSureParagraphTwo": "এনক্ৰিপ্টেড ভল্ট বেকআপ বিকল্পত মাত্ৰ এক মিনিটমান লাগে, কোনো বিশেষ সঁজুলিৰ প্ৰয়োজন নহয়। ফিজিকেল বেকআপ ব্যৱহাৰ কৰিলে আপোনাক কেৱল কলম আৰু কাগজ লাগিব।",
+  "legacyStorageContinueWithoutBackupButton": "বেকআপ নকৰাকৈ আগবাঢ়ক",
+  "legacyStorageAcceptRisksCheckbox": "মই বেকআপ নকৰাৰ বিপদ গ্ৰহণ কৰোঁ",
+  "legacyStorageHasBackupImportantBody": "এই প্ৰক্ৰিয়া এৰি নাযাব যদিহে আপুনি ৱালেট জৰুৰীভাৱে ব্যৱহাৰ কৰাটো অত্যাৱশ্যক নহয় বা এটা স্বেপ সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি আছে।",
+  "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ"
 }

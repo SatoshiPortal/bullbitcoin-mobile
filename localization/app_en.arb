@@ -12986,8 +12986,12 @@
   "@wizardPageIndicator": {
     "description": "Eyebrow label above each wizard page title indicating progress",
     "placeholders": {
-      "current": {"type": "int"},
-      "total": {"type": "int"}
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "wizardNextButton": "Next",
@@ -13043,19 +13047,43 @@
     "description": "Intro paragraph on the wizard journey/tips page"
   },
   "wizardJourneyTip1": "Add a security PIN to unlock your wallet",
-  "@wizardJourneyTip1": {"description": "Tip 1 on the wizard journey page"},
+  "@wizardJourneyTip1": {
+    "description": "Tip 1 on the wizard journey page"
+  },
   "wizardJourneyTip2": "Try the encrypted vault backup",
-  "@wizardJourneyTip2": {"description": "Tip 2 on the wizard journey page"},
+  "@wizardJourneyTip2": {
+    "description": "Tip 2 on the wizard journey page"
+  },
   "wizardJourneyTip3": "Connect to your own Bitcoin node",
-  "@wizardJourneyTip3": {"description": "Tip 3 on the wizard journey page"},
+  "@wizardJourneyTip3": {
+    "description": "Tip 3 on the wizard journey page"
+  },
   "wizardJourneyTip4": "Connect to your own Mempool explorer",
-  "@wizardJourneyTip4": {"description": "Tip 4 on the wizard journey page"},
+  "@wizardJourneyTip4": {
+    "description": "Tip 4 on the wizard journey page"
+  },
   "wizardJourneyTip5": "Transfer between Bitcoin and Liquid with no KYC",
-  "@wizardJourneyTip5": {"description": "Tip 5 on the wizard journey page"},
+  "@wizardJourneyTip5": {
+    "description": "Tip 5 on the wizard journey page"
+  },
   "wizardJourneyTip6": "Customize your autoswap settings",
-  "@wizardJourneyTip6": {"description": "Tip 6 on the wizard journey page"},
+  "@wizardJourneyTip6": {
+    "description": "Tip 6 on the wizard journey page"
+  },
   "wizardJourneyTip7": "Switch between Bitcoin (BTC) and Satoshis (sats)",
-  "@wizardJourneyTip7": {"description": "Tip 7 on the wizard journey page"},
+  "@wizardJourneyTip7": {
+    "description": "Tip 7 on the wizard journey page"
+  },
   "wizardJourneyTip8": "Create air-gapped transactions for your hardware wallet",
-  "@wizardJourneyTip8": {"description": "Tip 8 on the wizard journey page"}
+  "@wizardJourneyTip8": {
+    "description": "Tip 8 on the wizard journey page"
+  },
+  "legacyStorageHasBackupImportantBody": "Please do not skip this process unless you absolutely need to use the wallet urgently or waiting for a swap to complete.",
+  "@legacyStorageHasBackupImportantBody": {
+    "description": "Important callout body shown only on the reinstall variant of the legacy storage warning (when the user already has a verified backup)."
+  },
+  "legacyStorageRiskAckButtonHasBackup": "I understand the risk",
+  "@legacyStorageRiskAckButtonHasBackup": {
+    "description": "Risk-acknowledge button label on the reinstall variant of the legacy storage warning (no leading \"No,\" because there is no Backup Now alternative on this page)."
+  }
 }

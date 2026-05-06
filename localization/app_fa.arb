@@ -12605,5 +12605,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "اقدام لازم است",
+  "legacyStorageBadgeConfirm": "تأیید",
+  "legacyStorageNoBackupPageTitle": "از کیف پول خود نسخه پشتیبان بگیرید و دوباره نصب کنید",
+  "legacyStorageHasBackupPageTitle": "کیف پول خود را دوباره نصب کنید",
+  "legacyStorageIntroDescription": "کیف پول شما روی نرم‌افزاری اجرا می‌شود که به‌زودی منسوخ می‌شود. بدون حذف و نصب مجدد برنامه نمی‌توان آن را به‌روزرسانی کرد.",
+  "legacyStorageStepBackupWallet": "از کیف پول خود نسخه پشتیبان بگیرید",
+  "legacyStorageStepExportLabels": "برچسب‌های خود را خروجی بگیرید (اگر دارید)",
+  "legacyStorageStepEnsureSwapsCompleted": "مطمئن شوید همه swap ها تکمیل شده‌اند",
+  "legacyStorageStepUninstall": "برنامه را کاملاً از دستگاه خود حذف کنید",
+  "legacyStorageStepReinstall": "آخرین نسخه را دانلود کرده و دوباره نصب کنید",
+  "legacyStorageStepRestoreBackup": "نسخه پشتیبان خود را بازیابی کنید",
+  "legacyStorageImportantTitle": "مهم",
+  "legacyStorageImportantBody": "این مراحل را رد نکنید مگر آنکه واقعاً در این لحظه نتوانید پشتیبان بگیرید.",
+  "legacyStorageContinueFooterNoBackup": "می‌توانید بدون گرفتن پشتیبان از برنامه استفاده کنید، اما ما اکیداً توصیه می‌کنیم این کار را نکنید.",
+  "legacyStorageContinueFooterHasBackup": "می‌توانید از برنامه استفاده کنید، اما ما اکیداً توصیه می‌کنیم این کار را نکنید.",
+  "legacyStorageBackupNowButton": "همین حالا پشتیبان بگیر",
+  "legacyStorageRiskAckButton": "نه، خطر را می‌فهمم",
+  "legacyStorageAreYouSureTitle": "مطمئن هستید؟",
+  "legacyStorageAreYouSureParagraphOne": "نرم‌افزاری که کلیدهای خصوصی بیت‌کوین کیف پول شما را ذخیره می‌کند در حال منسوخ شدن است. اکیداً توصیه می‌کنیم همین حالا یک پشتیبان بگیرید تا در آینده دچار اختلال نشوید.",
+  "legacyStorageAreYouSureParagraphTwo": "گزینه Encrypted Vault حدود ۱ دقیقه طول می‌کشد و به ابزار خاصی نیاز ندارد. برای پشتیبان فیزیکی، فقط به قلم و کاغذ نیاز دارید.",
+  "legacyStorageContinueWithoutBackupButton": "ادامه بدون پشتیبان",
+  "legacyStorageAcceptRisksCheckbox": "ریسک‌های نگرفتن پشتیبان را می‌پذیرم",
+  "legacyStorageHasBackupImportantBody": "لطفاً این فرآیند را رد نکنید مگر اینکه واقعاً نیاز فوری به استفاده از کیف پول داشته باشید یا منتظر تکمیل یک سواپ هستید.",
+  "legacyStorageRiskAckButtonHasBackup": "خطر را درک می‌کنم"
 }

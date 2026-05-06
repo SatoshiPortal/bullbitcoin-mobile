@@ -180,5 +180,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "CẦN HÀNH ĐỘNG",
+  "legacyStorageBadgeConfirm": "XÁC NHẬN",
+  "legacyStorageNoBackupPageTitle": "SAO LƯU VÀ CÀI ĐẶT LẠI VÍ CỦA BẠN",
+  "legacyStorageHasBackupPageTitle": "CÀI ĐẶT LẠI VÍ CỦA BẠN",
+  "legacyStorageIntroDescription": "Ví của bạn đang chạy trên phần mềm sẽ sớm ngừng hỗ trợ. Phần mềm này không thể cập nhật nếu không gỡ và cài lại ứng dụng.",
+  "legacyStorageStepBackupWallet": "Sao lưu ví của bạn",
+  "legacyStorageStepExportLabels": "Xuất nhãn của bạn (nếu có)",
+  "legacyStorageStepEnsureSwapsCompleted": "Đảm bảo tất cả swap đã hoàn tất",
+  "legacyStorageStepUninstall": "Gỡ hoàn toàn ứng dụng khỏi thiết bị",
+  "legacyStorageStepReinstall": "Tải phiên bản mới nhất và cài đặt lại",
+  "legacyStorageStepRestoreBackup": "Khôi phục bản sao lưu của bạn",
+  "legacyStorageImportantTitle": "Quan trọng",
+  "legacyStorageImportantBody": "Đừng bỏ qua quy trình này trừ khi bạn thực sự không thể sao lưu vào lúc này.",
+  "legacyStorageContinueFooterNoBackup": "Bạn vẫn có thể tiếp tục sử dụng ứng dụng mà không sao lưu, nhưng chúng tôi đặc biệt khuyên bạn không nên làm vậy.",
+  "legacyStorageContinueFooterHasBackup": "Bạn vẫn có thể tiếp tục sử dụng ứng dụng, nhưng chúng tôi đặc biệt khuyên bạn không nên làm vậy.",
+  "legacyStorageBackupNowButton": "Sao lưu ngay",
+  "legacyStorageRiskAckButton": "Không, tôi hiểu rủi ro",
+  "legacyStorageAreYouSureTitle": "BẠN CÓ CHẮC KHÔNG?",
+  "legacyStorageAreYouSureParagraphOne": "Phần mềm lưu trữ khoá riêng Bitcoin của ví của bạn đang bị ngừng hỗ trợ. Chúng tôi đặc biệt khuyến nghị bạn sao lưu ngay bây giờ để tránh gián đoạn về sau.",
+  "legacyStorageAreYouSureParagraphTwo": "Tuỳ chọn Encrypted Vault chỉ mất khoảng 1 phút và không cần công cụ đặc biệt. Với bản sao lưu vật lý, bạn chỉ cần bút và giấy.",
+  "legacyStorageContinueWithoutBackupButton": "Tiếp tục không sao lưu",
+  "legacyStorageAcceptRisksCheckbox": "Tôi chấp nhận rủi ro khi không sao lưu",
+  "legacyStorageHasBackupImportantBody": "Vui lòng không bỏ qua quy trình này trừ khi bạn thực sự cần sử dụng ví khẩn cấp hoặc đang chờ một giao dịch hoán đổi hoàn tất.",
+  "legacyStorageRiskAckButtonHasBackup": "Tôi hiểu rủi ro"
 }

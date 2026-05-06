@@ -392,5 +392,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ქმედება საჭიროა",
+  "legacyStorageBadgeConfirm": "დადასტურება",
+  "legacyStorageNoBackupPageTitle": "შექმენით სარეზერვო ასლი და დააინსტალირეთ თავიდან საფულე",
+  "legacyStorageHasBackupPageTitle": "თავიდან დააინსტალირეთ საფულე",
+  "legacyStorageIntroDescription": "თქვენი საფულე მუშაობს პროგრამაზე, რომელიც მალე აღარ იქნება მხარდაჭერილი. მისი განახლება შეუძლებელია აპლიკაციის წაშლისა და თავიდან ინსტალაციის გარეშე.",
+  "legacyStorageStepBackupWallet": "შექმენით საფულის სარეზერვო ასლი",
+  "legacyStorageStepExportLabels": "ექსპორტი გაუკეთეთ თქვენს ლეიბლებს (თუ გაქვთ)",
+  "legacyStorageStepEnsureSwapsCompleted": "დარწმუნდით, რომ ყველა swap დასრულებულია",
+  "legacyStorageStepUninstall": "სრულად წაშალეთ აპლიკაცია თქვენი მოწყობილობიდან",
+  "legacyStorageStepReinstall": "ჩამოტვირთეთ უახლესი ვერსია და თავიდან დააინსტალირეთ",
+  "legacyStorageStepRestoreBackup": "აღადგინეთ თქვენი სარეზერვო ასლი",
+  "legacyStorageImportantTitle": "მნიშვნელოვანი",
+  "legacyStorageImportantBody": "ნუ გამოტოვებთ ამ პროცესს, თუ ნამდვილად არ შეგიძლიათ ამ მომენტში სარეზერვო ასლის შექმნა.",
+  "legacyStorageContinueFooterNoBackup": "შეგიძლიათ გააგრძელოთ აპის გამოყენება სარეზერვო ასლის გარეშეც, მაგრამ მტკიცედ გირჩევთ, რომ ასე არ მოიქცეთ.",
+  "legacyStorageContinueFooterHasBackup": "შეგიძლიათ გააგრძელოთ აპის გამოყენება, მაგრამ მტკიცედ გირჩევთ, რომ ასე არ მოიქცეთ.",
+  "legacyStorageBackupNowButton": "სარეზერვო ასლი ახლავე",
+  "legacyStorageRiskAckButton": "არა, ვაცნობიერებ რისკს",
+  "legacyStorageAreYouSureTitle": "დარწმუნებული ხართ?",
+  "legacyStorageAreYouSureParagraphOne": "თქვენი საფულის Bitcoin-ის პირადი გასაღებების შესანახად გამოყენებული პროგრამა მხარდაჭერას წყვეტს. მკაცრად გირჩევთ ახლავე შექმნათ სარეზერვო ასლი, რათა მომავალში პრობლემები არ შეგექმნათ.",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault სარეზერვო ასლის ოფცია იღებს დაახლოებით 1 წუთს და სპეციალური ხელსაწყოები არ ჭირდება. ფიზიკური სარეზერვო ასლისთვის სულ რაც გჭირდებათ კალამი და ქაღალდია.",
+  "legacyStorageContinueWithoutBackupButton": "გაგრძელება სარეზერვო ასლის გარეშე",
+  "legacyStorageAcceptRisksCheckbox": "ვაღიარებ რისკებს, რომ სარეზერვო ასლი არ მაქვს",
+  "legacyStorageHasBackupImportantBody": "გთხოვთ, არ გამოტოვოთ ეს პროცესი, თუ არ გჭირდებათ საფულის გადაუდებელი გამოყენება ან არ ელოდებით სვოპის დასრულებას.",
+  "legacyStorageRiskAckButtonHasBackup": "მესმის რისკი"
 }

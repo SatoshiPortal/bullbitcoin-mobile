@@ -200,5 +200,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "HATUA INAHITAJIKA",
+  "legacyStorageBadgeConfirm": "THIBITISHA",
+  "legacyStorageNoBackupPageTitle": "HIFADHI NAKALA NA SAKINISHA UPYA WALLET YAKO",
+  "legacyStorageHasBackupPageTitle": "SAKINISHA UPYA WALLET YAKO",
+  "legacyStorageIntroDescription": "Wallet yako inatumia programu ambayo itaachwa hivi karibuni. Haiwezi kusasishwa bila kuondoa programu na kuiweka tena.",
+  "legacyStorageStepBackupWallet": "Hifadhi nakala ya wallet yako",
+  "legacyStorageStepExportLabels": "Hamisha lebo zako (kama unazo)",
+  "legacyStorageStepEnsureSwapsCompleted": "Hakikisha swaps zote zimekamilika",
+  "legacyStorageStepUninstall": "Ondoa programu kabisa kutoka kwenye kifaa chako",
+  "legacyStorageStepReinstall": "Pakua toleo jipya zaidi na uweke tena",
+  "legacyStorageStepRestoreBackup": "Rejesha nakala yako",
+  "legacyStorageImportantTitle": "Muhimu",
+  "legacyStorageImportantBody": "Usiruke utaratibu huu isipokuwa kweli huwezi kuhifadhi nakala kwa sasa.",
+  "legacyStorageContinueFooterNoBackup": "Unaweza kuendelea kutumia programu bila kuhifadhi nakala, lakini tunashauri sana usifanye hivyo.",
+  "legacyStorageContinueFooterHasBackup": "Unaweza kuendelea kutumia programu, lakini tunashauri sana usifanye hivyo.",
+  "legacyStorageBackupNowButton": "Hifadhi sasa",
+  "legacyStorageRiskAckButton": "Hapana, naelewa hatari",
+  "legacyStorageAreYouSureTitle": "UNA UHAKIKA?",
+  "legacyStorageAreYouSureParagraphOne": "Programu inayohifadhi funguo binafsi za Bitcoin za wallet yako inaachwa. Tunashauri sana uhifadhi nakala sasa hivi ili kuepuka usumbufu wowote baadaye.",
+  "legacyStorageAreYouSureParagraphTwo": "Chaguo la Encrypted Vault linachukua takriban dakika 1 na halihitaji vifaa maalum. Kwa nakala ya kimwili unahitaji kalamu na karatasi tu.",
+  "legacyStorageContinueWithoutBackupButton": "Endelea bila nakala",
+  "legacyStorageAcceptRisksCheckbox": "Ninakubali hatari za kutohifadhi nakala",
+  "legacyStorageHasBackupImportantBody": "Tafadhali usiruke mchakato huu isipokuwa lazima utumie pochi kwa haraka au unasubiri swap ikamilike.",
+  "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari"
 }

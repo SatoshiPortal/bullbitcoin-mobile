@@ -55,7 +55,7 @@ class _LegacyStorageAreYouSureScreenState
         label: loc.legacyStorageContinueWithoutBackupButton,
         onPressed: widget.onConfirmContinue,
         disabled: !_accepted,
-        bgColor: context.appColors.surface,
+        bgColor: context.appColors.background,
         textColor: context.appColors.primary,
         borderColor: context.appColors.primary,
         outlined: true,

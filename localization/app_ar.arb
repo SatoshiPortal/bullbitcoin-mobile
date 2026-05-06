@@ -12608,5 +12608,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "إجراء مطلوب",
+  "legacyStorageBadgeConfirm": "تأكيد",
+  "legacyStorageNoBackupPageTitle": "احفظ نسخة احتياطية وأعد تثبيت محفظتك",
+  "legacyStorageHasBackupPageTitle": "أعد تثبيت محفظتك",
+  "legacyStorageIntroDescription": "محفظتك تعمل على برنامج سيتم إيقافه قريبًا. لا يمكن تحديثه دون إلغاء تثبيت التطبيق وإعادة تثبيته.",
+  "legacyStorageStepBackupWallet": "احفظ نسخة احتياطية لمحفظتك",
+  "legacyStorageStepExportLabels": "صدّر تسمياتك (إن وُجدت)",
+  "legacyStorageStepEnsureSwapsCompleted": "تأكد من اكتمال جميع عمليات التبادل",
+  "legacyStorageStepUninstall": "أزل التطبيق بالكامل من جهازك",
+  "legacyStorageStepReinstall": "نزّل أحدث إصدار وأعد التثبيت",
+  "legacyStorageStepRestoreBackup": "استعِد نسختك الاحتياطية",
+  "legacyStorageImportantTitle": "هام",
+  "legacyStorageImportantBody": "لا تتخطَّ هذه العملية إلا إذا كنت لا تستطيع فعلًا عمل نسخة احتياطية في هذه اللحظة.",
+  "legacyStorageContinueFooterNoBackup": "يمكنك متابعة استخدام التطبيق دون عمل نسخة احتياطية، لكننا ننصح بشدة بعدم القيام بذلك.",
+  "legacyStorageContinueFooterHasBackup": "يمكنك متابعة استخدام التطبيق، لكننا ننصح بشدة بعدم القيام بذلك.",
+  "legacyStorageBackupNowButton": "احفظ نسخة احتياطية الآن",
+  "legacyStorageRiskAckButton": "لا، أتفهم المخاطر",
+  "legacyStorageAreYouSureTitle": "هل أنت متأكد؟",
+  "legacyStorageAreYouSureParagraphOne": "البرنامج المستخدم لتخزين مفاتيح بيتكوين الخاصة بمحفظتك يتم إيقافه. ننصح بشدة أن تعمل نسخة احتياطية الآن لتجنب أي تعطل في المستقبل.",
+  "legacyStorageAreYouSureParagraphTwo": "خيار النسخة الاحتياطية المشفّرة لا يستغرق سوى دقيقة، ولا يتطلب أدوات خاصة. أما النسخة الاحتياطية المادية، فكل ما تحتاجه قلم وورقة.",
+  "legacyStorageContinueWithoutBackupButton": "متابعة دون نسخة احتياطية",
+  "legacyStorageAcceptRisksCheckbox": "أوافق على مخاطر عدم عمل نسخة احتياطية",
+  "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
+  "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر"
 }

@@ -4594,5 +4594,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ACTION REQUISE",
+  "legacyStorageBadgeConfirm": "CONFIRMER",
+  "legacyStorageNoBackupPageTitle": "SAUVEGARDEZ ET RÉINSTALLEZ VOTRE PORTEFEUILLE",
+  "legacyStorageHasBackupPageTitle": "RÉINSTALLEZ VOTRE PORTEFEUILLE",
+  "legacyStorageIntroDescription": "Votre portefeuille fonctionne avec un logiciel qui sera bientôt obsolète. Il ne peut pas être mis à jour sans désinstaller et réinstaller l'application.",
+  "legacyStorageStepBackupWallet": "Sauvegardez votre portefeuille",
+  "legacyStorageStepExportLabels": "Exportez vos étiquettes (si vous en avez)",
+  "legacyStorageStepEnsureSwapsCompleted": "Assurez-vous que tous les swaps sont terminés",
+  "legacyStorageStepUninstall": "Désinstallez complètement l'application de votre appareil",
+  "legacyStorageStepReinstall": "Téléchargez la dernière version et réinstallez",
+  "legacyStorageStepRestoreBackup": "Restaurez votre sauvegarde",
+  "legacyStorageImportantTitle": "Important",
+  "legacyStorageImportantBody": "Ne sautez pas cette procédure à moins que vous ne puissiez vraiment pas faire de sauvegarde en ce moment.",
+  "legacyStorageContinueFooterNoBackup": "Vous pouvez continuer à utiliser l'application sans sauvegarde, mais nous vous le déconseillons fortement.",
+  "legacyStorageContinueFooterHasBackup": "Vous pouvez continuer à utiliser l'application, mais nous vous le déconseillons fortement.",
+  "legacyStorageBackupNowButton": "Sauvegarder maintenant",
+  "legacyStorageRiskAckButton": "Non, je comprends le risque",
+  "legacyStorageAreYouSureTitle": "ÊTES-VOUS SÛR ?",
+  "legacyStorageAreYouSureParagraphOne": "Le logiciel utilisé pour stocker les clés privées Bitcoin de votre portefeuille est en fin de vie. Nous vous recommandons fortement de faire une sauvegarde maintenant pour éviter toute interruption à l'avenir.",
+  "legacyStorageAreYouSureParagraphTwo": "L'option Encrypted Vault prend environ 1 minute et ne nécessite aucun outil spécial. Pour la sauvegarde physique, il vous suffit d'un stylo et de papier.",
+  "legacyStorageContinueWithoutBackupButton": "Continuer sans sauvegarde",
+  "legacyStorageAcceptRisksCheckbox": "J'accepte les risques de ne pas faire de sauvegarde",
+  "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un swap se termine.",
+  "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque"
 }

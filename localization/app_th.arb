@@ -12605,5 +12605,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ต้องดำเนินการ",
+  "legacyStorageBadgeConfirm": "ยืนยัน",
+  "legacyStorageNoBackupPageTitle": "สำรองข้อมูลและติดตั้งกระเป๋าใหม่",
+  "legacyStorageHasBackupPageTitle": "ติดตั้งกระเป๋าใหม่",
+  "legacyStorageIntroDescription": "กระเป๋าของคุณกำลังใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า ไม่สามารถอัปเดตได้หากไม่ถอนการติดตั้งและติดตั้งแอปใหม่",
+  "legacyStorageStepBackupWallet": "สำรองข้อมูลกระเป๋าของคุณ",
+  "legacyStorageStepExportLabels": "ส่งออกป้ายของคุณ (ถ้ามี)",
+  "legacyStorageStepEnsureSwapsCompleted": "ตรวจสอบว่า swap ทั้งหมดเสร็จสมบูรณ์แล้ว",
+  "legacyStorageStepUninstall": "ถอนการติดตั้งแอปออกจากอุปกรณ์ของคุณทั้งหมด",
+  "legacyStorageStepReinstall": "ดาวน์โหลดเวอร์ชันล่าสุดและติดตั้งใหม่",
+  "legacyStorageStepRestoreBackup": "กู้คืนข้อมูลสำรองของคุณ",
+  "legacyStorageImportantTitle": "สำคัญ",
+  "legacyStorageImportantBody": "อย่าข้ามขั้นตอนนี้เว้นแต่ว่าคุณจะไม่สามารถสำรองข้อมูลได้จริง ๆ ในตอนนี้",
+  "legacyStorageContinueFooterNoBackup": "คุณสามารถใช้แอปต่อได้โดยไม่สำรองข้อมูล แต่เราแนะนำอย่างยิ่งว่าไม่ควรทำเช่นนั้น",
+  "legacyStorageContinueFooterHasBackup": "คุณสามารถใช้แอปต่อได้ แต่เราแนะนำอย่างยิ่งว่าไม่ควรทำเช่นนั้น",
+  "legacyStorageBackupNowButton": "สำรองข้อมูลตอนนี้",
+  "legacyStorageRiskAckButton": "ไม่ ฉันเข้าใจความเสี่ยง",
+  "legacyStorageAreYouSureTitle": "คุณแน่ใจหรือ?",
+  "legacyStorageAreYouSureParagraphOne": "ซอฟต์แวร์ที่ใช้เก็บคีย์ส่วนตัว Bitcoin ของกระเป๋าคุณกำลังถูกยกเลิก เราแนะนำอย่างยิ่งให้คุณสำรองข้อมูลตอนนี้เลยเพื่อหลีกเลี่ยงปัญหาในอนาคต",
+  "legacyStorageAreYouSureParagraphTwo": "ตัวเลือก Encrypted Vault ใช้เวลาประมาณ 1 นาที ไม่ต้องใช้เครื่องมือพิเศษ สำหรับการสำรองข้อมูลแบบกระดาษ คุณต้องใช้เพียงปากกาและกระดาษ",
+  "legacyStorageContinueWithoutBackupButton": "ดำเนินการต่อโดยไม่สำรองข้อมูล",
+  "legacyStorageAcceptRisksCheckbox": "ฉันยอมรับความเสี่ยงของการไม่สำรองข้อมูล",
+  "legacyStorageHasBackupImportantBody": "โปรดอย่าข้ามขั้นตอนนี้ เว้นแต่คุณจำเป็นต้องใช้กระเป๋าเงินอย่างเร่งด่วน หรือกำลังรอให้สวอปเสร็จสมบูรณ์",
+  "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง"
 }
