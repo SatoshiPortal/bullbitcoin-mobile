@@ -4568,5 +4568,6 @@
   "appInitErrorDetailsToggle": "Показати деталі помилки",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Високі значення stop gap значно збільшують час синхронізації. Тримайте додаток відкритим на передньому плані до завершення синхронізації — переведення у фоновий режим може її перервати."
 }

@@ -4563,5 +4563,6 @@
   "appInitErrorDetailsToggle": "Näytä virheen tiedot",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Korkeat stop gap -arvot kasvattavat merkittävästi synkronointiaikaa. Pidä sovellus avoinna edustalla, kunnes synkronointi on valmis — sovelluksen siirtäminen taustalle voi keskeyttää sen."
 }

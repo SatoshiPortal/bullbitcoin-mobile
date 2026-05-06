@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -7,12 +8,34 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum MigrationType { install, upgrade }
 
+/// Optional sub-category callers of `log.severe` / `log.shout` /
+/// [Report.error] / [Report.shout] can attach to an event so crash-cache
+/// can filter on it server-side. `null` falls through to `category=error`
+/// for [Report.error] and `category=none` for [Report.shout].
+enum ReportCategory { migration, error }
+
+/// Breadcrumb categories whose `message`/`data` are considered safe to
+/// keep on the wire — neither carries wallet payloads nor user identity.
+/// Anything outside this set has its message + data stripped in
+/// `beforeSend`, so cubit-state breadcrumbs (which can hold addresses,
+/// balances, descriptors, txids) never leave the device.
+const _safeBreadcrumbCategories = <String>{'navigation', 'app.lifecycle'};
+
 class Report {
   static const _consentKey = 'error_reporting_consent';
   static const _lastVersionKey = 'last_seen_app_version';
+  static const _installUuidKey = 'install_uuid';
 
   static String? fromVersion;
   static String? toVersion;
+
+  /// Random opaque per-install identifier. Generated once on first
+  /// launch and persisted in [SharedPreferences] under [_installUuidKey].
+  /// Forwarded to Sentry as `event.user.id` purely to
+  /// distinguish "1 install crashed 1000 times" from "1000 installs
+  /// crashed once" — there is no auth in BULL, no link to identity, and
+  /// the value resets on uninstall.
+  static String? installUuid;
 
   static MigrationType? get migrationType {
     if (fromVersion == null) {
@@ -45,40 +68,128 @@ class Report {
     fromVersion = from;
     toVersion = to;
 
+    // The pre-init wizard answers consent for this very boot — pass
+    // it through so migrations + Drift schema work + Sentry init see
+    // the user's freshest choice. Falls back to the prefs mirror on
+    // launches where the wizard didn't run (already completed for the
+    // current `kCurrentWizardVersion`).
     consent = wizardConsent ?? prefs.getBool(_consentKey) ?? false;
 
+    var uuid = prefs.getString(_installUuidKey);
+    if (uuid == null) {
+      uuid = _generateInstallUuid();
+      await prefs.setString(_installUuidKey, uuid);
+    }
+    installUuid = uuid;
+
     await _initSentry();
+  }
+
+  /// 128-bit hex string generated via `Random.secure()`. Not RFC 4122
+  /// formatted — Sentry's `user.id` accepts any opaque string, and we
+  /// avoid pulling in a `uuid` package dependency for a 4-line helper.
+  static String _generateInstallUuid() {
+    final r = Random.secure();
+    final bytes = List<int>.generate(16, (_) => r.nextInt(256));
+    return bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
   }
 
   static Future<void> _initSentry() async {
     await SentryFlutter.init((options) {
       options.dsn = kReleaseMode ? ApiServiceConstants.sentryDsn : '';
       options.compressPayload = true;
+      options.debug = false;
 
-      // Depending on user consent to the reporting program.
+      // ── PII and identification
+      options.sendDefaultPii = false;
+      options.attachThreads = false;
+      options.reportPackages = false;
+      options.considerInAppFramesByDefault = true;
+
+      // ── Screen content capture
+      options.attachScreenshot = false;
+      options.attachViewHierarchy = false;
+      options.replay.sessionSampleRate = 0.0;
+      options.replay.onErrorSampleRate = 0.0;
+
+      // ── Logs and prints ───────────────────────────────────────────
+      options.enableLogs = false;
+      options.enablePrintBreadcrumbs = false;
+
+      // ── User-interaction tracking ─────────────────────────────────
+      options.enableUserInteractionBreadcrumbs = false;
+      options.enableUserInteractionTracing = false;
+      options.enableWindowMetricBreadcrumbs = false;
+      options.enableAppLifecycleBreadcrumbs = false;
+      options.enableBrightnessChangeBreadcrumbs = false;
+      options.enableTextScaleChangeBreadcrumbs = false;
+
+      // ── Network
+      options.captureFailedRequests = false;
+      options.propagateTraceparent = false;
+
+      // ── Profiling
+      options.profilesSampleRate = 0.0;
+
+      // ── Misc reporting
+      options.reportSilentFlutterErrors = true;
+
+      // ── Consent-gated
       final consent = Report.consent;
       options.sendClientReports = consent;
       options.enableAutoSessionTracking = consent;
       options.enableAutoPerformanceTracing = consent;
-      options.tracesSampleRate = consent ? 1.0 : 0;
       options.enableAutoNativeBreadcrumbs = consent;
+      options.tracesSampleRate = consent ? 0.2 : 0.0; // 0.2 instead of 1.0
+      options.anrEnabled = consent;
 
-      // Set to false by default
-      options.captureFailedRequests = false;
-      options.enableUserInteractionBreadcrumbs = false;
-      options.enableUserInteractionTracing = false;
+      // ── Final scrub. No consent → no event, no exceptions (even
+      //    install/upgrade milestones tagged `category=critical`).
+      //    Passing events are anonymized so we never leak txids,
+      //    addresses, or seed-derived strings.
+      options.beforeSend = (event, hint) {
+        if (!consent) return null;
 
-      // Consent gate: events tagged `category=critical` by [Report.critical]
-      // bypass [Report.consent]; everything else is dropped when the user
-      // opted out. Source of truth is [Report.isCritical]. Passing events
-      // are anonymized — `e.value` is stripped — so we never leak txids,
-      // addresses, or seed-derived strings.
-      options.beforeSend = (event, _) {
-        if (!isCritical(event) && !consent) return null;
         event.exceptions?.forEach((e) => e.value = null);
+        // Keep only the install UUID we set ourselves; drop anything else
+        // (ip_address, username, geo, …) that could appear on `event.user`.
+        final uid = event.user?.id;
+        event.user = uid == null ? null : SentryUser(id: uid);
+        event.request = null;
+
+        for (final ex in event.exceptions ?? <SentryException>[]) {
+          ex.stackTrace?.frames.forEach((f) => f.vars.clear());
+        }
+
+        event.threads?.forEach((t) {
+          t.stacktrace?.frames.forEach((f) => f.vars.clear());
+        });
+
+        // Whitelisted categories keep their message + data so we can
+        // reproduce the user journey leading up to the crash. Everything
+        // else (notably `state` from the bloc integration, which mirrors
+        // cubit state and can contain wallet data) is stripped down to
+        // metadata only.
+        event.breadcrumbs = event.breadcrumbs?.map((b) {
+          final isSafe = _safeBreadcrumbCategories.contains(b.category);
+          return Breadcrumb(
+            category: b.category,
+            level: b.level,
+            timestamp: b.timestamp,
+            type: b.type,
+            message: isSafe ? b.message : null,
+            data: isSafe ? b.data : null,
+          );
+        }).toList();
+
         return event;
       };
     });
+
+    final uuid = installUuid;
+    if (uuid != null) {
+      Sentry.configureScope((scope) => scope.setUser(SentryUser(id: uuid)));
+    }
   }
 
   /// Writes the boot-time consent mirror so the next cold start's
@@ -92,8 +203,9 @@ class Report {
   }
 
   /// Advances the persisted `_lastVersionKey` marker. Caller emits the
-  /// install/upgrade milestone via `log.shout` first so a crash between
-  /// the two retries the event on the next launch.
+  /// install/upgrade milestone via `log.shout(category:
+  /// ReportCategory.migration)` first so a crash between the two
+  /// retries the event on the next launch.
   static Future<void> commitVersion() async {
     final to = toVersion;
     if (to == null) return;
@@ -132,12 +244,14 @@ class Report {
   };
 
   /// Consent-gated error capture. Dropped by `beforeSend` when the user
-  /// has opted out of the error-report program. Tagged `category=error`.
-  /// Routed from `log.severe`.
+  /// has opted out of the error-report program. Tagged `category=error`
+  /// by default; an explicit [category] (e.g. [ReportCategory.migration])
+  /// overrides it for crash-cache filtering. Routed from `log.severe`.
   static Future<void> error({
     required Object exception,
     required StackTrace stackTrace,
     String? message,
+    ReportCategory category = ReportCategory.error,
   }) async {
     if (!Sentry.isEnabled) return;
     Future.microtask(
@@ -146,24 +260,29 @@ class Report {
         stackTrace: stackTrace,
         withScope: (s) {
           if (message != null) _applyContexts(s, message);
-          _applyTags(s, critical: false);
+          _applyTags(s, categoryTag: category.name);
         },
       ),
     );
   }
 
-  /// Always-reported event. Bypasses user consent — `beforeSend` lets
-  /// it through via [isCritical]. Tagged `category=critical`. When
+  /// Non-error high-priority log — milestones (install/upgrade,
+  /// feature flag flips), FSS fallbacks, startup faults. Subject to
+  /// user consent: `beforeSend` drops the event when the user has
+  /// opted out. Optional [category] attaches a `category=<name>` tag
+  /// for crash-cache filtering (e.g. [ReportCategory.migration] for
+  /// storage-migration faults); when null, the tag is `none`. When
   /// [exception] and [stackTrace] are both set, captured as an
   /// exception; otherwise captured as an info-level message. Routed
-  /// from `log.shout`. Use for critical errors AND for milestones we
-  /// need regardless of consent (install/upgrade, FSS fallback, etc.).
-  static Future<void> critical({
+  /// from `log.shout`.
+  static Future<void> shout({
     required String message,
     Object? exception,
     StackTrace? stackTrace,
+    ReportCategory? category,
   }) async {
     if (!Sentry.isEnabled) return;
+    final categoryTag = category?.name ?? 'none';
     Future.microtask(() async {
       if (exception != null && stackTrace != null) {
         await Sentry.captureException(
@@ -171,27 +290,21 @@ class Report {
           stackTrace: stackTrace,
           withScope: (s) {
             _applyContexts(s, message);
-            _applyTags(s, critical: true);
+            _applyTags(s, categoryTag: categoryTag);
           },
         );
       } else {
         await Sentry.captureMessage(
           message,
           level: SentryLevel.info,
-          withScope: (s) => _applyTags(s, critical: true),
+          withScope: (s) => _applyTags(s, categoryTag: categoryTag),
         );
       }
     });
   }
 
-  /// Single predicate `beforeSend` uses to decide consent bypass.
-  /// Returns true for events emitted via [critical]; false for events
-  /// emitted via [error]. The `category` tag is the source of truth.
-  static bool isCritical(SentryEvent event) =>
-      event.tags?['category'] == 'critical';
-
-  static void _applyTags(Scope scope, {required bool critical}) {
-    scope.setTag('category', critical ? 'critical' : 'error');
+  static void _applyTags(Scope scope, {required String categoryTag}) {
+    scope.setTag('category', categoryTag);
     if (migrationType != null) {
       scope.setTag('migration_type', migrationType!.name);
       if (fromVersion != null) scope.setTag('from_version', fromVersion!);

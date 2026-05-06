@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
 import 'package:bb_mobile/features/ark/router.dart';
@@ -38,77 +39,55 @@ class ArkWalletDetailPage extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: RefreshIndicator(
-                onRefresh: () async => await cubit.load(),
-                child: SingleChildScrollView(
-                  // Needed to allow pull-to-refresh even if content is too short
-                  //  to be scrollable
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 160.0),
-                  child: Column(
-                    children: [
-                      ArkBalanceDetailWidget(arkBalance: state.arkBalance),
-                      if (state.isLoading)
-                        LinearProgressIndicator(
-                          backgroundColor: context.appColors.surface,
-                          color: context.appColors.primary,
-                        ),
-                      const Gap(16.0),
-                      TransactionHistoryWidget(
-                        transactions: state.transactions,
-                        isLoading: state.isLoading,
-                      ),
-                    ],
+        child: BBRefreshIndicator(
+          onRefresh: () async => await cubit.load(),
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(
+                child: ArkBalanceDetailWidget(arkBalance: state.arkBalance),
+              ),
+              if (state.isLoading)
+                SliverToBoxAdapter(
+                  child: LinearProgressIndicator(
+                    backgroundColor: context.appColors.surface,
+                    color: context.appColors.primary,
                   ),
                 ),
+              const SliverToBoxAdapter(child: Gap(16.0)),
+              SliverToBoxAdapter(
+                child: TransactionHistoryWidget(
+                  transactions: state.transactions,
+                  isLoading: state.isLoading,
+                ),
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Column(
-                mainAxisSize: .min,
-                children: [
-                  Builder(
-                    builder: (context) {
-                      /*final unsettledCount =
-                          state.transactions
-                              .whereType<ark_wallet.Transaction_Redeem>()
-                              .where((tx) => !tx.isSettled)
-                              .length;
-
-                      if (unsettledCount == 0) {
-                        return const SizedBox.shrink();
-                      }*/
-
-                      return Padding(
-                        padding: const EdgeInsets.all(13.0),
-                        child: BBButton.big(
-                          label: context.loc.arkSettleTransactions,
-                          onPressed:
-                              () => SettleBottomSheet.show(context, cubit),
-                          bgColor: context.appColors.primary,
-                          textColor: context.appColors.onPrimary,
-                        ),
-                      );
-                    },
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(
-                      left: 13.0,
-                      right: 13.0,
-                      bottom: 40.0,
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.all(13.0),
+                      child: BBButton.big(
+                        label: context.loc.arkSettleTransactions,
+                        onPressed: () => SettleBottomSheet.show(context, cubit),
+                        bgColor: context.appColors.primary,
+                        textColor: context.appColors.onPrimary,
+                      ),
                     ),
-                    child: ArkWalletBottomButtons(),
-                  ),
-                ],
+                    const Padding(
+                      padding: EdgeInsets.only(
+                        left: 13.0,
+                        right: 13.0,
+                        bottom: 40.0,
+                      ),
+                      child: ArkWalletBottomButtons(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -12571,5 +12571,6 @@
   "appInitErrorDetailsToggle": "오류 세부 정보 표시",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "높은 stop gap 값은 동기화 시간을 크게 증가시킵니다. 동기화가 완료될 때까지 앱을 포그라운드에서 열어두십시오 — 백그라운드로 전환하면 중단될 수 있습니다."
 }

@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_preference_payload_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/dca/domain/dca.dart';
 import 'package:dio/dio.dart';
@@ -32,7 +33,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   @override
   Future<List<String>> get availableCurrencies async {
     // TODO: fetch the actual list of currencies from the api
-    return ['USD', 'CAD', 'MXN', 'CRC', 'EUR', 'ARS', 'COP'];
+    return CurrencyConstants.supportedFiat;
   }
 
   @override

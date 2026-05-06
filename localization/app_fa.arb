@@ -12571,5 +12571,6 @@
   "appInitErrorDetailsToggle": "نمایش جزئیات خطا",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "مقادیر بالای stop gap زمان همگام‌سازی را به طور قابل توجهی افزایش می‌دهند. تا اتمام همگام‌سازی، برنامه را در پیش‌زمینه باز نگه دارید — انتقال به پس‌زمینه ممکن است آن را قطع کند."
 }

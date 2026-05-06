@@ -12571,5 +12571,6 @@
   "appInitErrorDetailsToggle": "แสดงรายละเอียดข้อผิดพลาด",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "ค่า stop gap ที่สูงจะเพิ่มเวลาในการซิงค์อย่างมาก เปิดแอปไว้ด้านหน้าจนกว่าการซิงค์จะเสร็จสิ้น — การส่งแอปไปทำงานเบื้องหลังอาจทำให้การซิงค์ถูกขัดจังหวะ"
 }

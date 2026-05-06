@@ -16,9 +16,7 @@ class RecoverWalletButton extends StatelessWidget {
       textColor: context.appColors.onPrimaryFixed,
       iconData: Icons.history_edu,
       outlined: true,
-      onPressed: () {
-        context.goNamed(OnboardingRoute.recoverOptions.name);
-      },
+      onPressed: () => context.goNamed(OnboardingRoute.recoverOptions.name),
     );
   }
 }

@@ -146,5 +146,6 @@
   "appInitErrorDetailsToggle": "Ցույց տալ սխալի մանրամասները",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Stop gap-ի բարձր արժեքները զգալիորեն ավելացնում են համաժամացման ժամանակը։ Թողեք հավելվածը բացված առաջնային պլանում մինչև համաժամացման ավարտը — այն ֆոն տեղափոխելը կարող է ընդհատել այն։"
 }

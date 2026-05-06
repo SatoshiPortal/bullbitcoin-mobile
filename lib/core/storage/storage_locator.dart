@@ -139,13 +139,14 @@ class StorageLocator {
             );
             log.fine('StorageLocator: fss9 fallback verified and flag written');
           } catch (fss9Error) {
-            log.shout(
+            log.severe(
               message:
                   'StorageLocator: both fss10 and fss9 failed. '
                   'fss10: ${fss10Error.runtimeType}, '
                   'fss9: ${fss9Error.runtimeType}',
               error: fss9Error,
               trace: StackTrace.current,
+              category: ReportCategory.migration,
             );
             rethrow;
           }

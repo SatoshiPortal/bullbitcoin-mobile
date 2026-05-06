@@ -146,5 +146,6 @@
   "appInitErrorDetailsToggle": "Hiển thị chi tiết lỗi",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "Giá trị stop gap cao làm tăng đáng kể thời gian đồng bộ. Giữ ứng dụng mở ở phía trước cho đến khi đồng bộ hoàn tất — đưa ứng dụng xuống nền có thể làm gián đoạn quá trình."
 }

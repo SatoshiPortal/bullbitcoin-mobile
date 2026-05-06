@@ -12574,5 +12574,6 @@
   "appInitErrorDetailsToggle": "إظهار تفاصيل الخطأ",
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
-  }
+  },
+  "electrumStopGapHighWarning": "تؤدي قيم Stop Gap العالية إلى زيادة وقت المزامنة بشكل كبير. أبقِ التطبيق مفتوحًا في المقدمة حتى تكتمل المزامنة — قد يؤدي تشغيل التطبيق في الخلفية إلى مقاطعتها."
 }

@@ -146,10 +146,11 @@ class SqliteDatabase extends _$SqliteDatabase {
       try {
         await fn(m, schema);
       } catch (e, s) {
-        log.shout(
+        log.severe(
           message: 'drift migration step $name failed',
           error: e,
           trace: s,
+          category: ReportCategory.migration,
         );
         rethrow;
       }
@@ -163,7 +164,12 @@ class SqliteDatabase extends _$SqliteDatabase {
       try {
         await fn(m);
       } catch (e, s) {
-        log.shout(message: 'drift onCreate failed', error: e, trace: s);
+        log.severe(
+          message: 'drift onCreate failed',
+          error: e,
+          trace: s,
+          category: ReportCategory.migration,
+        );
         rethrow;
       }
     };

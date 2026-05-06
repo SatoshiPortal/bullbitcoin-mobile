@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/widgets/draggable_server_list.dart';
@@ -27,76 +28,77 @@ class ElectrumSettingsScreen extends StatelessWidget {
         // Create a reusable app bar with a loading indicator at the bottom
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3),
-          child:
-              isLoading
-                  ? FadingLinearProgress(
-                    height: 3,
-                    trigger: isLoading,
-                    backgroundColor: context.appColors.surface,
-                    foregroundColor: context.appColors.primary,
-                  )
-                  : const SizedBox(height: 3),
+          child: isLoading
+              ? FadingLinearProgress(
+                  height: 3,
+                  trigger: isLoading,
+                  backgroundColor: context.appColors.surface,
+                  foregroundColor: context.appColors.primary,
+                )
+              : const SizedBox(height: 3),
         ),
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  context.read<ElectrumSettingsBloc>().add(
-                    ElectrumSettingsLoaded(isLiquid: isLiquid),
-                  );
-                },
-                child: SingleChildScrollView(
-                  // Needed to allow pull-to-refresh even if content is too short
-                  //  to be scrollable
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: [
-                        const Gap(16),
-                        BBSegmentFull(
-                          items: {
-                            context.loc.electrumNetworkBitcoin,
-                            context.loc.electrumNetworkLiquid,
-                          },
-                          initialValue:
-                              isLiquid
-                                  ? context.loc.electrumNetworkLiquid
-                                  : context.loc.electrumNetworkBitcoin,
-                          onSelected: (value) {
-                            context.read<ElectrumSettingsBloc>().add(
-                              ElectrumSettingsLoaded(
-                                isLiquid:
-                                    value == context.loc.electrumNetworkLiquid,
-                              ),
-                            );
-                          },
-                        ),
-                        const TorProxyErrorBanner(),
-                        const Gap(16),
-                        const DraggableServerList(),
-                      ],
+        child: BBRefreshIndicator(
+          onRefresh: () async {
+            context.read<ElectrumSettingsBloc>().add(
+              ElectrumSettingsLoaded(isLiquid: isLiquid),
+            );
+          },
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    const Gap(16),
+                    BBSegmentFull(
+                      items: {
+                        context.loc.electrumNetworkBitcoin,
+                        context.loc.electrumNetworkLiquid,
+                      },
+                      initialValue: isLiquid
+                          ? context.loc.electrumNetworkLiquid
+                          : context.loc.electrumNetworkBitcoin,
+                      onSelected: (value) {
+                        context.read<ElectrumSettingsBloc>().add(
+                          ElectrumSettingsLoaded(
+                            isLiquid:
+                                value == context.loc.electrumNetworkLiquid,
+                          ),
+                        );
+                      },
                     ),
-                  ),
+                    const TorProxyErrorBanner(),
+                    const Gap(16),
+                    const DraggableServerList(),
+                  ]),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: TextButton(
-                onPressed: () => SetAdvancedOptionsBottomSheet.show(context),
-                child: Text(
-                  context.loc.electrumAdvancedOptions,
-                  style: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.primary,
-                  ),
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: TextButton(
+                        onPressed: () =>
+                            SetAdvancedOptionsBottomSheet.show(context),
+                        child: Text(
+                          context.loc.electrumAdvancedOptions,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

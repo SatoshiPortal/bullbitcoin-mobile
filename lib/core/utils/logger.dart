@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bb_mobile/core/utils/report.dart';
+export 'package:bb_mobile/core/utils/report.dart' show ReportCategory;
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 export 'package:logging_colorful/logging_colorful.dart';
@@ -94,30 +95,31 @@ class Logger {
   }
 
   Future<void> prune() => _enqueue(() async {
-        final sizeInKb = (await logsFile.stat()).size ~/ 1000;
-        if (sizeInKb <= _maxLogSizeKb) return;
+    final sizeInKb = (await logsFile.stat()).size ~/ 1000;
+    if (sizeInKb <= _maxLogSizeKb) return;
 
-        await _sink?.flush();
-        await _sink?.close();
-        _sink = null;
+    await _sink?.flush();
+    await _sink?.close();
+    _sink = null;
 
-        final lines =
-            (await logsFile.readAsLines()).where((e) => e.isNotEmpty).toList();
-        final linesToDelete = lines.length ~/ 2;
-        final logsToKeep = lines.sublist(linesToDelete);
+    final lines = (await logsFile.readAsLines())
+        .where((e) => e.isNotEmpty)
+        .toList();
+    final linesToDelete = lines.length ~/ 2;
+    final logsToKeep = lines.sublist(linesToDelete);
 
-        await logsFile.writeAsString(
-          logsToKeep.isEmpty ? '' : '${logsToKeep.join('\n')}\n',
-        );
-        _ensureSinkOpen();
+    await logsFile.writeAsString(
+      logsToKeep.isEmpty ? '' : '${logsToKeep.join('\n')}\n',
+    );
+    _ensureSinkOpen();
 
-        final newSizeInKb = (await logsFile.stat()).size ~/ 1000;
-        fine('Logs pruned from $sizeInKb kB to $newSizeInKb kB');
-      });
+    final newSizeInKb = (await logsFile.stat()).size ~/ 1000;
+    fine('Logs pruned from $sizeInKb kB to $newSizeInKb kB');
+  });
 
   Future<void> flush() => _enqueue(() async {
-        await _sink?.flush();
-      });
+    await _sink?.flush();
+  });
 
   Future<void> deleteLogs() async {
     await _enqueue(() async {
@@ -128,26 +130,6 @@ class Logger {
       _ensureSinkOpen();
     });
     config('Logs deleted');
-  }
-
-  Future<void> migration({
-    required dep.Level level,
-    required String message,
-    Map<String, dynamic>? context,
-    Object? exception,
-    StackTrace? stackTrace,
-  }) async {
-    final now = DateTime.now().toIso8601String();
-    final content = <String>[
-      now,
-      level.name,
-      message,
-      context?.toString() ?? '',
-      exception?.toString() ?? '',
-      stackTrace?.toString() ?? '',
-    ];
-    final line = content.map(_sanitize).join('\t');
-    _queueWrite(line);
   }
 
   // ---------------------------------------------------------------------------
@@ -194,10 +176,16 @@ class Logger {
   /// Logs serious errors that may prevent parts of the app from working correctly.
   /// Use for unrecoverable errors that require immediate attention.
   /// [trace] is required to ensure proper error tracking in Sentry.
+  ///
+  /// Optional [category] attaches a `category=<name>` Sentry tag for
+  /// crash-cache filtering (e.g. [ReportCategory.migration] for
+  /// storage-migration faults); when omitted the tag defaults to
+  /// `error`.
   void severe({
     String? message,
     required StackTrace trace,
     required Object error,
+    ReportCategory category = ReportCategory.error,
   }) {
     // Guard against reentrant logging: if Report.error() or the broadcast
     // listener throws, runZonedGuarded catches it and calls severe() again
@@ -220,22 +208,31 @@ class Logger {
     }
 
     try {
-      Report.error(message: message, exception: error, stackTrace: trace);
+      Report.error(
+        message: message,
+        exception: error,
+        stackTrace: trace,
+        category: category,
+      );
     } catch (e) {
       if (kDebugMode) debugPrint('[Report.error failed] $e');
     }
   }
 
-  /// Logs critical events that must reach Sentry regardless of user
-  /// consent. [error] and [trace] are optional so `shout` can also record
-  /// info milestones (`log.shout(message: 'migration_install')`, FSS
-  /// fallback started, feature-flag flip, etc.). [message] is required —
-  /// every always-on event carries a human-readable label for the Sentry
-  /// UI and the on-disk TSV log.
+  /// Logs non-error high-priority events that reach Sentry (consent-gated).
+  /// [error] and [trace] are optional so `shout` can also record info
+  /// milestones (install/upgrade, FSS fallback started, feature-flag
+  /// flip, etc.). [message] is required — every such event carries a
+  /// human-readable label for the Sentry UI and the on-disk TSV log.
+  ///
+  /// Optional [category] attaches a `category=<name>` Sentry tag for
+  /// crash-cache filtering (e.g. [ReportCategory.migration] for
+  /// storage-migration faults); when omitted the tag is `none`.
   void shout({
     required String message,
     Object? error,
     StackTrace? trace,
+    ReportCategory? category,
   }) {
     if (_isLogging) {
       _emitDirect(
@@ -254,9 +251,14 @@ class Logger {
     }
 
     try {
-      Report.critical(message: message, exception: error, stackTrace: trace);
+      Report.shout(
+        message: message,
+        exception: error,
+        stackTrace: trace,
+        category: category,
+      );
     } catch (e) {
-      if (kDebugMode) debugPrint('[Report.critical failed] $e');
+      if (kDebugMode) debugPrint('[Report.shout failed] $e');
     }
   }
 
@@ -279,9 +281,7 @@ class Logger {
     String trace = '',
   }) {
     final time = DateTime.now().toIso8601String();
-    final line = _sanitize(
-      [time, level, message, error, trace].join('\t'),
-    );
+    final line = _sanitize([time, level, message, error, trace].join('\t'));
     _queueWrite(line, flush: true);
     if (kDebugMode) debugPrint('[REENTRANT] $line');
   }
