@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/disable_autoswap_warning_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/sync/sync_coordinator.dart';
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -47,7 +47,7 @@ class WalletLocator {
             locator<WatchFinishedWalletSyncsUsecase>(),
         watchElectrumSyncResultsUsecase:
             locator<WatchElectrumSyncResultsUsecase>(),
-        restartSwapWatcherUsecase: locator<RestartSwapWatcherUsecase>(),
+        syncCoordinator: locator<SyncCoordinator>(),
         initializeTorUsecase: locator<InitTorUsecase>(),
         checkForTorInitializationOnStartupUsecase:
             locator<IsTorRequiredUsecase>(),

@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart
 import 'package:bb_mobile/features/recoverbull/ui/pages/test_completed_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/view_vault_key_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -94,6 +95,7 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
           if (state.flow == RecoverBullFlow.recoverVault &&
               state.isFlowFinished) {
             _hasNavigatedAway = true;
+            context.read<WalletBloc>().add(const WalletRefreshed());
             context.goNamed(WalletRoute.walletHome.name);
             return;
           }
