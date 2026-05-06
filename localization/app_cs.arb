@@ -12605,5 +12605,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "VYŽADUJE AKCI",
+  "legacyStorageBadgeConfirm": "POTVRDIT",
+  "legacyStorageNoBackupPageTitle": "ZÁLOHUJTE A PŘEINSTALUJTE PENĚŽENKU",
+  "legacyStorageHasBackupPageTitle": "PŘEINSTALUJTE PENĚŽENKU",
+  "legacyStorageIntroDescription": "Vaše peněženka běží na softwaru, který bude brzy ukončen. Nelze jej aktualizovat bez odinstalování a opětovné instalace aplikace.",
+  "legacyStorageStepBackupWallet": "Zazálohujte si peněženku",
+  "legacyStorageStepExportLabels": "Exportujte své štítky (pokud je máte)",
+  "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny swapy jsou dokončené",
+  "legacyStorageStepUninstall": "Odinstalujte aplikaci ze svého zařízení",
+  "legacyStorageStepReinstall": "Stáhněte nejnovější verzi a znovu nainstalujte",
+  "legacyStorageStepRestoreBackup": "Obnovte zálohu",
+  "legacyStorageImportantTitle": "Důležité",
+  "legacyStorageImportantBody": "Tento postup nepřeskakujte, ledaže opravdu nemůžete teď zálohu udělat.",
+  "legacyStorageContinueFooterNoBackup": "Můžete pokračovat v používání aplikace bez zálohy, ale rozhodně to nedoporučujeme.",
+  "legacyStorageContinueFooterHasBackup": "Můžete pokračovat v používání aplikace, ale rozhodně to nedoporučujeme.",
+  "legacyStorageBackupNowButton": "Zálohovat nyní",
+  "legacyStorageRiskAckButton": "Ne, riziko chápu",
+  "legacyStorageAreYouSureTitle": "JSTE SI JISTÍ?",
+  "legacyStorageAreYouSureParagraphOne": "Software používaný k uložení Bitcoin privátních klíčů peněženky se ukončuje. Důrazně doporučujeme zálohu vytvořit teď, aby v budoucnu nedošlo k žádným potížím.",
+  "legacyStorageAreYouSureParagraphTwo": "Šifrovaná záloha (Encrypted Vault) trvá asi 1 minutu a nepotřebujete žádné speciální nástroje. Pro fyzickou zálohu vám stačí pero a papír.",
+  "legacyStorageContinueWithoutBackupButton": "Pokračovat bez zálohy",
+  "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
+  "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
+  "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku"
 }

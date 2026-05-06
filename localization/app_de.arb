@@ -4494,5 +4494,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "AKTION ERFORDERLICH",
+  "legacyStorageBadgeConfirm": "BESTÄTIGEN",
+  "legacyStorageNoBackupPageTitle": "WALLET SICHERN UND NEU INSTALLIEREN",
+  "legacyStorageHasBackupPageTitle": "WALLET NEU INSTALLIEREN",
+  "legacyStorageIntroDescription": "Deine Wallet läuft auf einer Software, die bald nicht mehr unterstützt wird. Sie kann nicht aktualisiert werden, ohne die App zu deinstallieren und neu zu installieren.",
+  "legacyStorageStepBackupWallet": "Sichere deine Wallet",
+  "legacyStorageStepExportLabels": "Exportiere deine Labels (falls vorhanden)",
+  "legacyStorageStepEnsureSwapsCompleted": "Stelle sicher, dass alle Swaps abgeschlossen sind",
+  "legacyStorageStepUninstall": "Deinstallieren Sie die App von Ihrem Gerät",
+  "legacyStorageStepReinstall": "Lade die neueste Version herunter und installiere sie neu",
+  "legacyStorageStepRestoreBackup": "Stelle deine Sicherung wieder her",
+  "legacyStorageImportantTitle": "Wichtig",
+  "legacyStorageImportantBody": "Überspringe diesen Vorgang nur, wenn du jetzt absolut keine Sicherung erstellen kannst.",
+  "legacyStorageContinueFooterNoBackup": "Du kannst die App auch ohne Sicherung weiter nutzen, wir raten aber dringend davon ab.",
+  "legacyStorageContinueFooterHasBackup": "Du kannst die App weiter nutzen, wir raten aber dringend davon ab.",
+  "legacyStorageBackupNowButton": "Jetzt sichern",
+  "legacyStorageRiskAckButton": "Nein, ich verstehe das Risiko",
+  "legacyStorageAreYouSureTitle": "BIST DU SICHER?",
+  "legacyStorageAreYouSureParagraphOne": "Die Software, die die privaten Bitcoin-Schlüssel deiner Wallet speichert, wird nicht mehr unterstützt. Wir empfehlen dir dringend, jetzt eine Sicherung zu erstellen, um spätere Störungen zu vermeiden.",
+  "legacyStorageAreYouSureParagraphTwo": "Die verschlüsselte Vault-Sicherung dauert nur etwa 1 Minute und benötigt keine besonderen Werkzeuge. Für eine physische Sicherung brauchst du nur Stift und Papier.",
+  "legacyStorageContinueWithoutBackupButton": "Ohne Sicherung fortfahren",
+  "legacyStorageAcceptRisksCheckbox": "Ich akzeptiere die Risiken, keine Sicherung zu haben",
+  "legacyStorageHasBackupImportantBody": "Bitte überspringen Sie diesen Vorgang nur, wenn Sie die Wallet unbedingt dringend verwenden müssen oder auf den Abschluss eines Swaps warten.",
+  "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko"
 }

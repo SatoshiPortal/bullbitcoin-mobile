@@ -12605,5 +12605,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "İŞLEM GEREKLİ",
+  "legacyStorageBadgeConfirm": "ONAYLA",
+  "legacyStorageNoBackupPageTitle": "CÜZDANINIZIN YEDEĞİNİ ALIN VE YENİDEN YÜKLEYİN",
+  "legacyStorageHasBackupPageTitle": "CÜZDANINIZI YENİDEN YÜKLEYİN",
+  "legacyStorageIntroDescription": "Cüzdanınız kısa süre içinde kullanımdan kalkacak bir yazılım üzerinde çalışıyor. Uygulama kaldırılıp yeniden yüklenmeden güncellenemez.",
+  "legacyStorageStepBackupWallet": "Cüzdanınızın yedeğini alın",
+  "legacyStorageStepExportLabels": "Etiketlerinizi dışa aktarın (varsa)",
+  "legacyStorageStepEnsureSwapsCompleted": "Tüm swap işlemlerinin tamamlandığından emin olun",
+  "legacyStorageStepUninstall": "Uygulamayı cihazınızdan kaldırın",
+  "legacyStorageStepReinstall": "En güncel sürümü indirip yeniden yükleyin",
+  "legacyStorageStepRestoreBackup": "Yedeğinizi geri yükleyin",
+  "legacyStorageImportantTitle": "Önemli",
+  "legacyStorageImportantBody": "Şu an gerçekten yedek alamayacaksanız bu işlemi atlamayın.",
+  "legacyStorageContinueFooterNoBackup": "Yedek almadan da uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
+  "legacyStorageContinueFooterHasBackup": "Uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
+  "legacyStorageBackupNowButton": "Şimdi yedekle",
+  "legacyStorageRiskAckButton": "Hayır, riski anlıyorum",
+  "legacyStorageAreYouSureTitle": "EMİN MİSİNİZ?",
+  "legacyStorageAreYouSureParagraphOne": "Cüzdanınızın Bitcoin özel anahtarlarını saklamak için kullanılan yazılım kullanımdan kalkıyor. İleride yaşanabilecek aksaklıkları önlemek için hemen yedek almanızı kesinlikle öneririz.",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault yedekleme seçeneği yaklaşık 1 dakika sürer ve özel araç gerektirmez. Fiziksel yedek için ihtiyacınız olan tek şey kalem ve kağıttır.",
+  "legacyStorageContinueWithoutBackupButton": "Yedek almadan devam et",
+  "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum",
+  "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
+  "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum"
 }

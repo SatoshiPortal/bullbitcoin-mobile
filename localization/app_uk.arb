@@ -4602,5 +4602,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ПОТРІБНА ДІЯ",
+  "legacyStorageBadgeConfirm": "ПІДТВЕРДИТИ",
+  "legacyStorageNoBackupPageTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ТА ПЕРЕВСТАНОВІТЬ ГАМАНЕЦЬ",
+  "legacyStorageHasBackupPageTitle": "ПЕРЕВСТАНОВІТЬ ГАМАНЕЦЬ",
+  "legacyStorageIntroDescription": "Ваш гаманець працює на програмному забезпеченні, підтримку якого незабаром буде припинено. Його неможливо оновити без видалення та повторного встановлення застосунку.",
+  "legacyStorageStepBackupWallet": "Створіть резервну копію гаманця",
+  "legacyStorageStepExportLabels": "Експортуйте свої мітки (якщо є)",
+  "legacyStorageStepEnsureSwapsCompleted": "Переконайтеся, що всі swap-операції завершено",
+  "legacyStorageStepUninstall": "Видаліть програму зі свого пристрою",
+  "legacyStorageStepReinstall": "Завантажте найновішу версію та встановіть знову",
+  "legacyStorageStepRestoreBackup": "Відновіть резервну копію",
+  "legacyStorageImportantTitle": "Важливо",
+  "legacyStorageImportantBody": "Не пропускайте цей процес, якщо ви справді не можете створити резервну копію прямо зараз.",
+  "legacyStorageContinueFooterNoBackup": "Ви можете продовжувати користуватися застосунком без резервної копії, але ми наполегливо радимо так не робити.",
+  "legacyStorageContinueFooterHasBackup": "Ви можете продовжувати користуватися застосунком, але ми наполегливо радимо так не робити.",
+  "legacyStorageBackupNowButton": "Створити копію зараз",
+  "legacyStorageRiskAckButton": "Ні, я розумію ризик",
+  "legacyStorageAreYouSureTitle": "ВИ ВПЕВНЕНІ?",
+  "legacyStorageAreYouSureParagraphOne": "Програмне забезпечення, яке зберігає приватні ключі Bitcoin вашого гаманця, припиняє підтримку. Ми наполегливо радимо створити резервну копію прямо зараз, щоб уникнути збоїв у майбутньому.",
+  "legacyStorageAreYouSureParagraphTwo": "Резервне копіювання Encrypted Vault займає близько 1 хвилини та не потребує спеціальних інструментів. Для фізичної резервної копії вам знадобляться лише ручка та папір.",
+  "legacyStorageContinueWithoutBackupButton": "Продовжити без копії",
+  "legacyStorageAcceptRisksCheckbox": "Я приймаю ризики відсутності резервної копії",
+  "legacyStorageHasBackupImportantBody": "Будь ласка, не пропускайте цей процес, якщо тільки вам не потрібно терміново скористатися гаманцем або ви не очікуєте на завершення свопу.",
+  "legacyStorageRiskAckButtonHasBackup": "Я розумію ризик"
 }

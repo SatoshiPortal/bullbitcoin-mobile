@@ -12605,5 +12605,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "कार्रवाई आवश्यक",
+  "legacyStorageBadgeConfirm": "पुष्टि करें",
+  "legacyStorageNoBackupPageTitle": "अपना वॉलेट बैकअप लें और फिर से इंस्टॉल करें",
+  "legacyStorageHasBackupPageTitle": "अपना वॉलेट फिर से इंस्टॉल करें",
+  "legacyStorageIntroDescription": "आपका वॉलेट ऐसे सॉफ़्टवेयर पर चल रहा है जिसे जल्द बंद किया जा रहा है। इसे ऐप अनइंस्टॉल किए बिना और दोबारा इंस्टॉल किए बिना अपडेट नहीं किया जा सकता।",
+  "legacyStorageStepBackupWallet": "अपना वॉलेट बैकअप लें",
+  "legacyStorageStepExportLabels": "अपने लेबल एक्सपोर्ट करें (अगर हों)",
+  "legacyStorageStepEnsureSwapsCompleted": "सुनिश्चित करें कि सभी स्वैप पूरे हो चुके हैं",
+  "legacyStorageStepUninstall": "अपने डिवाइस से ऐप को अनइंस्टॉल करें",
+  "legacyStorageStepReinstall": "नवीनतम संस्करण डाउनलोड करें और फिर से इंस्टॉल करें",
+  "legacyStorageStepRestoreBackup": "अपना बैकअप पुनर्स्थापित करें",
+  "legacyStorageImportantTitle": "महत्वपूर्ण",
+  "legacyStorageImportantBody": "इस प्रक्रिया को तभी छोड़ें जब आप सचमुच इस वक़्त बैकअप नहीं ले सकते।",
+  "legacyStorageContinueFooterNoBackup": "आप बैकअप लिए बिना भी ऐप का इस्तेमाल जारी रख सकते हैं, लेकिन हम इसकी पुरज़ोर सलाह नहीं देते।",
+  "legacyStorageContinueFooterHasBackup": "आप ऐप का इस्तेमाल जारी रख सकते हैं, लेकिन हम इसकी पुरज़ोर सलाह नहीं देते।",
+  "legacyStorageBackupNowButton": "अभी बैकअप लें",
+  "legacyStorageRiskAckButton": "नहीं, मैं जोखिम समझता हूँ",
+  "legacyStorageAreYouSureTitle": "क्या आप निश्चित हैं?",
+  "legacyStorageAreYouSureParagraphOne": "आपके वॉलेट की Bitcoin प्राइवेट कीज़ संग्रहित करने वाला सॉफ़्टवेयर बंद हो रहा है। भविष्य में किसी रुकावट से बचने के लिए हम पुरज़ोर सलाह देते हैं कि आप अभी बैकअप लें।",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault बैकअप विकल्प में लगभग 1 मिनट लगता है, कोई विशेष उपकरण नहीं चाहिए। फ़िज़िकल बैकअप के लिए सिर्फ़ कलम और कागज़ चाहिए।",
+  "legacyStorageContinueWithoutBackupButton": "बैकअप के बिना जारी रखें",
+  "legacyStorageAcceptRisksCheckbox": "मैं बैकअप न लेने के जोखिम स्वीकार करता हूँ",
+  "legacyStorageHasBackupImportantBody": "कृपया इस प्रक्रिया को न छोड़ें जब तक कि आपको तत्काल वॉलेट का उपयोग करने की नितांत आवश्यकता न हो या आप किसी स्वैप के पूरा होने की प्रतीक्षा कर रहे हों।",
+  "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ"
 }

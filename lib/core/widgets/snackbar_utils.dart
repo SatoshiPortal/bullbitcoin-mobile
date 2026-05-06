@@ -36,7 +36,7 @@ class SnackBarUtils {
         backgroundColor: context.appColors.onSurface.withAlpha(204),
         behavior: .floating,
         elevation: 4,
-        margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+        margin: const EdgeInsets.fromLTRB(40, 16, 40, 96),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),

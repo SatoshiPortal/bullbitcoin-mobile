@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -59,6 +60,7 @@ class WalletLocator {
         autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
         seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
+        checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),
       ),
     );
   }

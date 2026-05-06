@@ -180,5 +180,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ՊԱՀԱՆՋՎՈՒՄ Է ԳՈՐԾՈՂՈՒԹՅՈՒՆ",
+  "legacyStorageBadgeConfirm": "ՀԱՍՏԱՏԵԼ",
+  "legacyStorageNoBackupPageTitle": "ՊԱՀՈՒՍՏԱՎՈՐԵՔ ԵՎ ՎԵՐԱԿԱՆԳՆԵՔ ՁԵՐ ԴՐԱՄԱՊԱՆԱԿԸ",
+  "legacyStorageHasBackupPageTitle": "ՎԵՐԱԿԱՆԳՆԵՔ ՁԵՐ ԴՐԱՄԱՊԱՆԱԿԸ",
+  "legacyStorageIntroDescription": "Ձեր դրամապանակն աշխատում է ծրագրաշարով, որը շուտով կդադարեցվի։ Այն չի կարող թարմացվել առանց հավելվածը հեռացնելու և նորից տեղադրելու։",
+  "legacyStorageStepBackupWallet": "Պահուստավորեք ձեր դրամապանակը",
+  "legacyStorageStepExportLabels": "Արտահանեք ձեր պիտակները (եթե կան)",
+  "legacyStorageStepEnsureSwapsCompleted": "Համոզվեք, որ բոլոր փոխանակումներն ավարտված են",
+  "legacyStorageStepUninstall": "Ապատեղադրեք հավելվածը ձեր սարքից",
+  "legacyStorageStepReinstall": "Ներբեռնեք ամենավերջին տարբերակը և նորից տեղադրեք",
+  "legacyStorageStepRestoreBackup": "Վերականգնեք ձեր պահուստը",
+  "legacyStorageImportantTitle": "Կարևոր",
+  "legacyStorageImportantBody": "Մի բաց թողեք այս գործընթացը, քանի դեռ իսկապես չեք կարող այս պահին պահուստավորում անել։",
+  "legacyStorageContinueFooterNoBackup": "Կարող եք շարունակել օգտվել հավելվածից առանց պահուստավորման, բայց մենք խստորեն խորհուրդ ենք տալիս չանել այդպես։",
+  "legacyStorageContinueFooterHasBackup": "Կարող եք շարունակել օգտվել հավելվածից, բայց մենք խստորեն խորհուրդ ենք տալիս չանել այդպես։",
+  "legacyStorageBackupNowButton": "Պահուստավորել հիմա",
+  "legacyStorageRiskAckButton": "Ոչ, ես հասկանում եմ ռիսկը",
+  "legacyStorageAreYouSureTitle": "ՎՍՏԱ՞Հ ԵՔ",
+  "legacyStorageAreYouSureParagraphOne": "Ձեր դրամապանակի Bitcoin մասնավոր բանալիների պահպանման համար օգտագործվող ծրագրաշարը դադարեցվում է։ Խստորեն խորհուրդ ենք տալիս հենց հիմա պահուստավորում անել՝ ապագայում խանգարումներից խուսափելու համար։",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault պահուստավորման տարբերակը տևում է մոտ 1 րոպե և չի պահանջում հատուկ գործիքներ։ Ֆիզիկական պահուստավորման համար ձեզ անհրաժեշտ է միայն գրիչ և թուղթ։",
+  "legacyStorageContinueWithoutBackupButton": "Շարունակել առանց պահուստավորման",
+  "legacyStorageAcceptRisksCheckbox": "Ընդունում եմ պահուստավորում չանելու ռիսկերը",
+  "legacyStorageHasBackupImportantBody": "Խնդրում ենք բաց չթողնել այս գործընթացը, եթե ձեզ հրատապ չի անհրաժեշտ օգտագործել դրամապանակը կամ սպասում եք սվոփի ավարտին։",
+  "legacyStorageRiskAckButtonHasBackup": "Ես հասկանում եմ ռիսկը"
 }

@@ -4597,5 +4597,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "TOIMENPIDE VAADITAAN",
+  "legacyStorageBadgeConfirm": "VAHVISTA",
+  "legacyStorageNoBackupPageTitle": "VARMUUSKOPIOI JA ASENNA LOMPAKKO UUDELLEEN",
+  "legacyStorageHasBackupPageTitle": "ASENNA LOMPAKKO UUDELLEEN",
+  "legacyStorageIntroDescription": "Lompakkosi käyttää ohjelmistoa, jonka tuki on pian päättymässä. Sitä ei voi päivittää poistamatta ja asentamatta sovellusta uudelleen.",
+  "legacyStorageStepBackupWallet": "Varmuuskopioi lompakkosi",
+  "legacyStorageStepExportLabels": "Vie tunnisteesi (jos sinulla on)",
+  "legacyStorageStepEnsureSwapsCompleted": "Varmista, että kaikki swapit ovat valmistuneet",
+  "legacyStorageStepUninstall": "Poista sovellus laitteeltasi",
+  "legacyStorageStepReinstall": "Lataa uusin versio ja asenna se uudelleen",
+  "legacyStorageStepRestoreBackup": "Palauta varmuuskopiosi",
+  "legacyStorageImportantTitle": "Tärkeää",
+  "legacyStorageImportantBody": "Älä ohita tätä prosessia, ellet todella pysty tekemään varmuuskopiota juuri nyt.",
+  "legacyStorageContinueFooterNoBackup": "Voit jatkaa sovelluksen käyttöä ilman varmuuskopiota, mutta suosittelemme vahvasti ettet tee niin.",
+  "legacyStorageContinueFooterHasBackup": "Voit jatkaa sovelluksen käyttöä, mutta suosittelemme vahvasti ettet tee niin.",
+  "legacyStorageBackupNowButton": "Varmuuskopioi nyt",
+  "legacyStorageRiskAckButton": "Ei, ymmärrän riskin",
+  "legacyStorageAreYouSureTitle": "OLETKO VARMA?",
+  "legacyStorageAreYouSureParagraphOne": "Lompakkosi Bitcoin-yksityisavainten tallentamiseen käytetyn ohjelmiston tuki on päättymässä. Suosittelemme vahvasti varmuuskopion ottamista heti, jotta vältät keskeytykset tulevaisuudessa.",
+  "legacyStorageAreYouSureParagraphTwo": "Salattu Vault -varmuuskopiointi vie noin minuutin eikä vaadi erityisiä työkaluja. Fyysiseen varmuuskopioon tarvitset vain kynän ja paperia.",
+  "legacyStorageContinueWithoutBackupButton": "Jatka ilman varmuuskopiota",
+  "legacyStorageAcceptRisksCheckbox": "Hyväksyn riskit siitä, etten tee varmuuskopiota",
+  "legacyStorageHasBackupImportantBody": "Älä ohita tätä prosessia, ellet ehdottomasti tarvitse lompakkoa kiireellisesti tai odota swapin valmistumista.",
+  "legacyStorageRiskAckButtonHasBackup": "Ymmärrän riskin"
 }

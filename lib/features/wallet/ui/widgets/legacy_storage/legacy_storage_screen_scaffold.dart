@@ -11,7 +11,7 @@ class LegacyStorageScreenScaffold extends StatelessWidget {
     required this.badgeLabel,
     required this.title,
     required this.body,
-    required this.primaryButton,
+    this.primaryButton,
     required this.secondaryButton,
     required this.dotIndex,
     this.belowButtons,
@@ -21,7 +21,7 @@ class LegacyStorageScreenScaffold extends StatelessWidget {
   final String badgeLabel;
   final String title;
   final Widget body;
-  final Widget primaryButton;
+  final Widget? primaryButton;
   final Widget secondaryButton;
   final Widget? belowButtons;
   final int dotIndex;
@@ -30,7 +30,7 @@ class LegacyStorageScreenScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: context.appColors.surface,
+      color: context.appColors.background,
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
@@ -64,8 +64,7 @@ class LegacyStorageScreenScaffold extends StatelessWidget {
               const Gap(10),
               Expanded(child: SingleChildScrollView(child: body)),
               const Gap(10),
-              primaryButton,
-              const Gap(8),
+              if (primaryButton != null) ...[primaryButton!, const Gap(8)],
               secondaryButton,
               if (belowButtons != null) ...[
                 const Gap(10),

@@ -37,6 +37,7 @@ class LegacyStorageWarningScreen extends StatelessWidget {
       title: hasNoBackup
           ? loc.legacyStorageNoBackupPageTitle
           : loc.legacyStorageHasBackupPageTitle,
+      dotCount: hasNoBackup ? 2 : 1,
       dotIndex: 0,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,7 +55,9 @@ class LegacyStorageWarningScreen extends StatelessWidget {
           const Gap(10),
           LegacyStorageImportantCallout(
             title: loc.legacyStorageImportantTitle,
-            body: loc.legacyStorageImportantBody,
+            body: hasNoBackup
+                ? loc.legacyStorageImportantBody
+                : loc.legacyStorageHasBackupImportantBody,
           ),
           const Gap(10),
           BBText(
@@ -68,16 +71,20 @@ class LegacyStorageWarningScreen extends StatelessWidget {
           ),
         ],
       ),
-      primaryButton: BBButton.big(
-        label: loc.legacyStorageBackupNowButton,
-        onPressed: onBackupNow,
-        bgColor: context.appColors.primary,
-        textColor: context.appColors.onPrimary,
-      ),
+      primaryButton: hasNoBackup
+          ? BBButton.big(
+              label: loc.legacyStorageBackupNowButton,
+              onPressed: onBackupNow,
+              bgColor: context.appColors.primary,
+              textColor: context.appColors.onPrimary,
+            )
+          : null,
       secondaryButton: BBButton.big(
-        label: loc.legacyStorageRiskAckButton,
+        label: hasNoBackup
+            ? loc.legacyStorageRiskAckButton
+            : loc.legacyStorageRiskAckButtonHasBackup,
         onPressed: onAcknowledgeRisk,
-        bgColor: context.appColors.surface,
+        bgColor: context.appColors.background,
         textColor: context.appColors.primary,
         borderColor: context.appColors.primary,
         outlined: true,

@@ -45,6 +45,12 @@ class _LegacyStorageWarningBlockerState
     extends State<_LegacyStorageWarningBlocker> {
   bool _showAreYouSure = false;
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<WalletBloc>().add(const VerifyBackupStatus());
+  }
+
   void _backupNow() {
     context.pushNamed(BackupSettingsSubroute.backupOptions.name);
   }

@@ -4611,5 +4611,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ACCIÓN REQUERIDA",
+  "legacyStorageBadgeConfirm": "CONFIRMAR",
+  "legacyStorageNoBackupPageTitle": "RESPALDA Y REINSTALA TU MONEDERO",
+  "legacyStorageHasBackupPageTitle": "REINSTALA TU MONEDERO",
+  "legacyStorageIntroDescription": "Tu monedero está corriendo sobre un software que pronto dejará de mantenerse. No se puede actualizar sin desinstalar y reinstalar la app.",
+  "legacyStorageStepBackupWallet": "Respalda tu monedero",
+  "legacyStorageStepExportLabels": "Exporta tus etiquetas (si tienes)",
+  "legacyStorageStepEnsureSwapsCompleted": "Asegúrate de que todos los swaps estén completados",
+  "legacyStorageStepUninstall": "Desinstala la aplicación de tu dispositivo",
+  "legacyStorageStepReinstall": "Descarga la última versión e instálala de nuevo",
+  "legacyStorageStepRestoreBackup": "Restaura tu respaldo",
+  "legacyStorageImportantTitle": "Importante",
+  "legacyStorageImportantBody": "No te saltes este proceso a menos que de verdad no puedas hacer un respaldo en este momento.",
+  "legacyStorageContinueFooterNoBackup": "Puedes seguir usando la app sin hacer un respaldo, pero te recomendamos firmemente no hacerlo.",
+  "legacyStorageContinueFooterHasBackup": "Puedes seguir usando la app, pero te recomendamos firmemente no hacerlo.",
+  "legacyStorageBackupNowButton": "Respaldar ahora",
+  "legacyStorageRiskAckButton": "No, entiendo el riesgo",
+  "legacyStorageAreYouSureTitle": "¿ESTÁS SEGURO?",
+  "legacyStorageAreYouSureParagraphOne": "El software que guarda las claves privadas de Bitcoin de tu monedero ya no se mantendrá. Te recomendamos firmemente hacer un respaldo ahora mismo para evitar problemas en el futuro.",
+  "legacyStorageAreYouSureParagraphTwo": "La opción de respaldo cifrado (Encrypted Vault) toma alrededor de 1 minuto y no necesita herramientas especiales. Para el respaldo físico solo necesitas lápiz y papel.",
+  "legacyStorageContinueWithoutBackupButton": "Continuar sin respaldo",
+  "legacyStorageAcceptRisksCheckbox": "Acepto los riesgos de no hacer un respaldo",
+  "legacyStorageHasBackupImportantBody": "Por favor, no omita este proceso a menos que necesite usar la billetera urgentemente o esté esperando a que se complete un intercambio.",
+  "legacyStorageRiskAckButtonHasBackup": "Entiendo el riesgo"
 }

@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/tor/data/usecases/init_tor_usecase.dart';
 import 'package:bb_mobile/core/tor/data/usecases/is_tor_required_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/delete_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -56,7 +57,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required GetArkWalletUsecase getArkWalletUsecase,
     required CheckArkWalletSetupUsecase checkArkWalletSetupUsecase,
     required SeedStoreTypeDatasource seedStoreTypeDatasource,
+    required CheckBackupNeededUsecase checkBackupNeededUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
+       _checkBackupNeededUsecase = checkBackupNeededUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
@@ -92,6 +95,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<DisableAutoSwap>(_onDisableAutoSwap);
     on<DismissBackupWarning>(_onDismissBackupWarning);
     on<DismissLegacyStorageWarning>(_onDismissLegacyStorageWarning);
+    on<VerifyBackupStatus>(_onVerifyBackupStatus);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -113,6 +117,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetArkWalletUsecase _getArkWalletUsecase;
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
   final SeedStoreTypeDatasource _seedStoreTypeDatasource;
+  final CheckBackupNeededUsecase _checkBackupNeededUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -634,5 +639,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) {
     emit(state.copyWith(legacyStorageWarningDismissed: true));
+  }
+
+  Future<void> _onVerifyBackupStatus(
+    VerifyBackupStatus event,
+    Emitter<WalletState> emit,
+  ) async {
+    final dbBackupNeeded = await _checkBackupNeededUsecase.execute();
+    if (dbBackupNeeded == state.hasNoBackup()) return;
+    final wallets = await _getWalletsUsecase.execute();
+    emit(state.copyWith(wallets: wallets));
   }
 }

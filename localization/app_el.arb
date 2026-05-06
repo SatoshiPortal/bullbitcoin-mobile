@@ -12605,5 +12605,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ",
+  "legacyStorageBadgeConfirm": "ΕΠΙΒΕΒΑΙΩΣΗ",
+  "legacyStorageNoBackupPageTitle": "ΔΗΜΙΟΥΡΓΗΣΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΚΑΙ ΕΠΑΝΕΓΚΑΤΑΣΤΗΣΕ ΤΟ ΠΟΡΤΟΦΟΛΙ",
+  "legacyStorageHasBackupPageTitle": "ΕΠΑΝΕΓΚΑΤΑΣΤΗΣΕ ΤΟ ΠΟΡΤΟΦΟΛΙ",
+  "legacyStorageIntroDescription": "Το πορτοφόλι σου τρέχει σε λογισμικό που σύντομα θα παύσει να υποστηρίζεται. Δεν μπορεί να ενημερωθεί χωρίς να απεγκαταστήσεις και να επανεγκαταστήσεις την εφαρμογή.",
+  "legacyStorageStepBackupWallet": "Δημιούργησε αντίγραφο ασφαλείας του πορτοφολιού",
+  "legacyStorageStepExportLabels": "Εξάγαγε τις ετικέτες σου (αν έχεις)",
+  "legacyStorageStepEnsureSwapsCompleted": "Βεβαιώσου ότι όλα τα swaps έχουν ολοκληρωθεί",
+  "legacyStorageStepUninstall": "Απεγκαταστήστε την εφαρμογή από τη συσκευή σας",
+  "legacyStorageStepReinstall": "Κατέβασε την πιο πρόσφατη έκδοση και εγκατάστησέ την ξανά",
+  "legacyStorageStepRestoreBackup": "Επανάφερε το αντίγραφο ασφαλείας",
+  "legacyStorageImportantTitle": "Σημαντικό",
+  "legacyStorageImportantBody": "Μην παραλείψεις αυτή τη διαδικασία εκτός αν πραγματικά δεν μπορείς να κάνεις αντίγραφο ασφαλείας τώρα.",
+  "legacyStorageContinueFooterNoBackup": "Μπορείς να συνεχίσεις να χρησιμοποιείς την εφαρμογή χωρίς αντίγραφο ασφαλείας, αλλά το αποτρέπουμε έντονα.",
+  "legacyStorageContinueFooterHasBackup": "Μπορείς να συνεχίσεις να χρησιμοποιείς την εφαρμογή, αλλά το αποτρέπουμε έντονα.",
+  "legacyStorageBackupNowButton": "Δημιούργησε αντίγραφο τώρα",
+  "legacyStorageRiskAckButton": "Όχι, καταλαβαίνω τον κίνδυνο",
+  "legacyStorageAreYouSureTitle": "ΕΙΣΑΙ ΣΙΓΟΥΡΟΣ;",
+  "legacyStorageAreYouSureParagraphOne": "Το λογισμικό που χρησιμοποιείται για την αποθήκευση των ιδιωτικών κλειδιών Bitcoin του πορτοφολιού σου παύει να υποστηρίζεται. Σου συνιστούμε ανεπιφύλακτα να κάνεις αντίγραφο ασφαλείας τώρα για να αποφύγεις τυχόν διακοπές στο μέλλον.",
+  "legacyStorageAreYouSureParagraphTwo": "Η επιλογή Encrypted Vault διαρκεί περίπου 1 λεπτό και δεν απαιτεί ειδικά εργαλεία. Για το φυσικό αντίγραφο, χρειάζεσαι μόνο στυλό και χαρτί.",
+  "legacyStorageContinueWithoutBackupButton": "Συνέχιση χωρίς αντίγραφο",
+  "legacyStorageAcceptRisksCheckbox": "Αποδέχομαι τον κίνδυνο να μην έχω αντίγραφο ασφαλείας",
+  "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
+  "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο"
 }

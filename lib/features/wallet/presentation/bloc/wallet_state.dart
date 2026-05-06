@@ -59,8 +59,7 @@ sealed class WalletState with _$WalletState {
   }
 
   bool showBackupWarning() {
-    // Suppressed when on legacy storage — the legacy overlay handles both cases.
-    return hasNoBackup() && !backupWarningDismissed && !isOnLegacyStorage;
+    return hasNoBackup() && totalBalance() > 0 && !backupWarningDismissed;
   }
 
   bool showLegacyStorageWarning() {

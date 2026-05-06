@@ -9615,5 +9615,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "ИЗИСКВА СЕ ДЕЙСТВИЕ",
+  "legacyStorageBadgeConfirm": "ПОТВЪРДИ",
+  "legacyStorageNoBackupPageTitle": "НАПРАВЕТЕ РЕЗЕРВНО КОПИЕ И ПРЕИНСТАЛИРАЙТЕ ПОРТФЕЙЛА",
+  "legacyStorageHasBackupPageTitle": "ПРЕИНСТАЛИРАЙТЕ ПОРТФЕЙЛА",
+  "legacyStorageIntroDescription": "Портфейлът ви работи със софтуер, който скоро ще бъде изведен от употреба. Той не може да бъде обновен, без да деинсталирате и преинсталирате приложението.",
+  "legacyStorageStepBackupWallet": "Направете резервно копие на портфейла",
+  "legacyStorageStepExportLabels": "Експортирайте етикетите си (ако имате такива)",
+  "legacyStorageStepEnsureSwapsCompleted": "Уверете се, че всички размени са завършени",
+  "legacyStorageStepUninstall": "Деинсталирайте приложението от устройството си",
+  "legacyStorageStepReinstall": "Изтеглете най-новата версия и инсталирайте отново",
+  "legacyStorageStepRestoreBackup": "Възстановете резервното копие",
+  "legacyStorageImportantTitle": "Важно",
+  "legacyStorageImportantBody": "Не пропускайте този процес, освен ако наистина не можете да направите резервно копие в момента.",
+  "legacyStorageContinueFooterNoBackup": "Можете да продължите да използвате приложението без резервно копие, но категорично не препоръчваме това.",
+  "legacyStorageContinueFooterHasBackup": "Можете да продължите да използвате приложението, но категорично не препоръчваме това.",
+  "legacyStorageBackupNowButton": "Резервно копие сега",
+  "legacyStorageRiskAckButton": "Не, разбирам риска",
+  "legacyStorageAreYouSureTitle": "СИГУРНИ ЛИ СТЕ?",
+  "legacyStorageAreYouSureParagraphOne": "Софтуерът, използван за съхранение на частните Bitcoin ключове на портфейла, се извежда от употреба. Силно ви препоръчваме да направите резервно копие сега, за да избегнете прекъсвания в бъдеще.",
+  "legacyStorageAreYouSureParagraphTwo": "Опцията за криптирано резервно копие отнема около 1 минута и не изисква специални инструменти. За физическо резервно копие ви трябват само химикалка и хартия.",
+  "legacyStorageContinueWithoutBackupButton": "Продължи без резервно копие",
+  "legacyStorageAcceptRisksCheckbox": "Приемам рисковете от това да не направя резервно копие",
+  "legacyStorageHasBackupImportantBody": "Моля, не пропускайте този процес, освен ако наистина не се налага спешно да използвате портфейла или не чакате суап да приключи.",
+  "legacyStorageRiskAckButtonHasBackup": "Разбирам риска"
 }

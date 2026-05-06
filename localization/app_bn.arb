@@ -12322,5 +12322,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "পদক্ষেপ প্রয়োজন",
+  "legacyStorageBadgeConfirm": "নিশ্চিত করুন",
+  "legacyStorageNoBackupPageTitle": "আপনার ওয়ালেট ব্যাকআপ ও পুনরায় ইনস্টল করুন",
+  "legacyStorageHasBackupPageTitle": "আপনার ওয়ালেট পুনরায় ইনস্টল করুন",
+  "legacyStorageIntroDescription": "আপনার ওয়ালেট এমন সফটওয়্যারে চলছে যেটি শীঘ্রই অপ্রচলিত হবে। অ্যাপটি আনইনস্টল ও পুনরায় ইনস্টল না করে এটি আপডেট করা যাবে না।",
+  "legacyStorageStepBackupWallet": "আপনার ওয়ালেট ব্যাকআপ করুন",
+  "legacyStorageStepExportLabels": "আপনার লেবেলগুলো এক্সপোর্ট করুন (যদি থাকে)",
+  "legacyStorageStepEnsureSwapsCompleted": "নিশ্চিত করুন সব সোয়াপ সম্পন্ন হয়েছে",
+  "legacyStorageStepUninstall": "আপনার ডিভাইস থেকে অ্যাপটি আনইনস্টল করুন",
+  "legacyStorageStepReinstall": "সর্বশেষ সংস্করণ ডাউনলোড করে পুনরায় ইনস্টল করুন",
+  "legacyStorageStepRestoreBackup": "আপনার ব্যাকআপ পুনরুদ্ধার করুন",
+  "legacyStorageImportantTitle": "গুরুত্বপূর্ণ",
+  "legacyStorageImportantBody": "এই মুহূর্তে একেবারেই ব্যাকআপ নেওয়া সম্ভব না হলে ছাড়া এই প্রক্রিয়া এড়িয়ে যাবেন না।",
+  "legacyStorageContinueFooterNoBackup": "ব্যাকআপ না করেও আপনি অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে আমরা দৃঢ়ভাবে এর বিরুদ্ধে পরামর্শ দিই।",
+  "legacyStorageContinueFooterHasBackup": "আপনি অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে আমরা দৃঢ়ভাবে এর বিরুদ্ধে পরামর্শ দিই।",
+  "legacyStorageBackupNowButton": "এখনই ব্যাকআপ",
+  "legacyStorageRiskAckButton": "না, আমি ঝুঁকি বুঝি",
+  "legacyStorageAreYouSureTitle": "আপনি কি নিশ্চিত?",
+  "legacyStorageAreYouSureParagraphOne": "আপনার ওয়ালেটের বিটকয়েন প্রাইভেট কী সংরক্ষণে ব্যবহৃত সফটওয়্যারটি অপ্রচলিত হয়ে যাচ্ছে। ভবিষ্যতে কোনো বাধা এড়াতে আমরা দৃঢ়ভাবে এখনই ব্যাকআপ নেওয়ার পরামর্শ দিই।",
+  "legacyStorageAreYouSureParagraphTwo": "এনক্রিপ্টেড ভল্ট ব্যাকআপের অপশনটি প্রায় ১ মিনিট সময় নেয়, কোনো বিশেষ সরঞ্জাম লাগে না। ফিজিক্যাল ব্যাকআপের জন্য কেবল কলম ও কাগজ যথেষ্ট।",
+  "legacyStorageContinueWithoutBackupButton": "ব্যাকআপ ছাড়াই চালিয়ে যান",
+  "legacyStorageAcceptRisksCheckbox": "ব্যাকআপ না করার ঝুঁকি আমি গ্রহণ করছি",
+  "legacyStorageHasBackupImportantBody": "এই প্রক্রিয়াটি এড়িয়ে যাবেন না যদি না আপনার জরুরিভাবে ওয়ালেট ব্যবহার করার একান্ত প্রয়োজন হয় অথবা একটি স্বপ সম্পন্ন হওয়ার জন্য অপেক্ষা করছেন।",
+  "legacyStorageRiskAckButtonHasBackup": "আমি ঝুঁকি বুঝতে পারছি"
 }

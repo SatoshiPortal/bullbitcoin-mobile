@@ -4660,5 +4660,29 @@
         "type": "int"
       }
     }
-  }
+  },
+  "legacyStorageBadgeActionRequired": "AÇÃO NECESSÁRIA",
+  "legacyStorageBadgeConfirm": "CONFIRMAR",
+  "legacyStorageNoBackupPageTitle": "FAÇA BACKUP E REINSTALE A SUA CARTEIRA",
+  "legacyStorageHasBackupPageTitle": "REINSTALE A SUA CARTEIRA",
+  "legacyStorageIntroDescription": "A sua carteira está a correr num software que vai deixar de ser suportado em breve. Não pode ser atualizado sem desinstalar e reinstalar a aplicação.",
+  "legacyStorageStepBackupWallet": "Faça backup da sua carteira",
+  "legacyStorageStepExportLabels": "Exporte as suas etiquetas (se as tiver)",
+  "legacyStorageStepEnsureSwapsCompleted": "Certifique-se de que todos os swaps estão concluídos",
+  "legacyStorageStepUninstall": "Desinstale a aplicação do seu dispositivo",
+  "legacyStorageStepReinstall": "Descarregue a versão mais recente e reinstale",
+  "legacyStorageStepRestoreBackup": "Restaure o seu backup",
+  "legacyStorageImportantTitle": "Importante",
+  "legacyStorageImportantBody": "Não salte este processo a menos que mesmo não consiga fazer um backup neste momento.",
+  "legacyStorageContinueFooterNoBackup": "Pode continuar a usar a aplicação sem fazer backup, mas desaconselhamos vivamente.",
+  "legacyStorageContinueFooterHasBackup": "Pode continuar a usar a aplicação, mas desaconselhamos vivamente.",
+  "legacyStorageBackupNowButton": "Fazer backup agora",
+  "legacyStorageRiskAckButton": "Não, percebo o risco",
+  "legacyStorageAreYouSureTitle": "TEM A CERTEZA?",
+  "legacyStorageAreYouSureParagraphOne": "O software usado para guardar as chaves privadas Bitcoin da sua carteira está a ser descontinuado. Recomendamos vivamente que faça já um backup para evitar quaisquer problemas no futuro.",
+  "legacyStorageAreYouSureParagraphTwo": "A opção Encrypted Vault demora cerca de 1 minuto e não precisa de ferramentas especiais. Para o backup físico só precisa de uma caneta e papel.",
+  "legacyStorageContinueWithoutBackupButton": "Continuar sem backup",
+  "legacyStorageAcceptRisksCheckbox": "Aceito os riscos de não fazer um backup",
+  "legacyStorageHasBackupImportantBody": "Por favor, não ignore este processo, a menos que precise mesmo de usar a carteira urgentemente ou esteja à espera que uma troca seja concluída.",
+  "legacyStorageRiskAckButtonHasBackup": "Compreendo o risco"
 }
