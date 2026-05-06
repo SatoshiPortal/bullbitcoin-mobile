@@ -12994,46 +12994,6 @@
   "@wizardNextButton": {
     "description": "Primary action that advances the wizard to the next page"
   },
-  "wizardWelcomeTitle": "Welcome to sovereignty",
-  "@wizardWelcomeTitle": {
-    "description": "Title of the wizard's welcome page"
-  },
-  "wizardWelcomeBody1": "BULL is a self-custodial Bitcoin wallet which focuses on privacy, security and usability for day-to-day transactions. It is a fully free and open-source project financed by BULLBITCOIN.COM",
-  "@wizardWelcomeBody1": {
-    "description": "First marketing paragraph on the wizard welcome page"
-  },
-  "wizardWelcomeBody2": "Our mission is to give you the tools you need to take back your financial sovereignty",
-  "@wizardWelcomeBody2": {
-    "description": "Mission statement paragraph on the wizard welcome page"
-  },
-  "wizardWelcomeUseCasesHeader": "You can use BULL to:",
-  "@wizardWelcomeUseCasesHeader": {
-    "description": "Header introducing the bullet list of use cases on the wizard welcome page"
-  },
-  "wizardWelcomeUseCase1": "Send and receive payments via Bitcoin, Lightning or Liquid",
-  "@wizardWelcomeUseCase1": {
-    "description": "First use-case bullet on the wizard welcome page"
-  },
-  "wizardWelcomeUseCase2": "Connect your hardware wallet securely",
-  "@wizardWelcomeUseCase2": {
-    "description": "Second use-case bullet on the wizard welcome page"
-  },
-  "wizardWelcomeUseCase3": "Link your Bull Bitcoin exchange account",
-  "@wizardWelcomeUseCase3": {
-    "description": "Third use-case bullet on the wizard welcome page"
-  },
-  "wizardWelcomeImportantTitle": "Important",
-  "@wizardWelcomeImportantTitle": {
-    "description": "Title of the red callout on the wizard welcome page"
-  },
-  "wizardWelcomeImportantBody": "Always create a backup of your Bitcoin wallet. This is the single most important thing you need to do. Everything else is just bonus.",
-  "@wizardWelcomeImportantBody": {
-    "description": "Body of the red callout on the wizard welcome page"
-  },
-  "wizardWelcomeFooter": "We offer secure chat with human Bitcoin experts for free. Don't hesitate to ask them any questions!",
-  "@wizardWelcomeFooter": {
-    "description": "Reassuring footer on the wizard welcome page advertising support availability"
-  },
   "wizardCustomizeTitle": "Customize your experience",
   "@wizardCustomizeTitle": {
     "description": "Title of the wizard's settings/customize page"

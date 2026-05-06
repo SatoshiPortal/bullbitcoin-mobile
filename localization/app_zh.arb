@@ -4572,5 +4572,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "较高的 stop gap 值会显著增加同步时间。请在同步完成之前保持应用在前台运行 — 将应用切换到后台可能会中断同步。"
+  "electrumStopGapHighWarning": "较高的 stop gap 值会显著增加同步时间。请在同步完成之前保持应用在前台运行 — 将应用切换到后台可能会中断同步。",
+  "wizardSkipButton": "跳过",
+  "wizardPageIndicator": "第 {current} / {total} 页",
+  "wizardNextButton": "下一步",
+  "wizardCustomizeTitle": "个性化您的体验",
+  "wizardCustomizeBody": "通过这些设置，按您的方式使用 BULL。",
+  "wizardCustomizeDefaultCurrency": "默认货币",
+  "wizardMissionTitle": "支持 Bull 的使命",
+  "wizardMissionBody1": "为帮助我们改进软件并确保提供最高级别的安全性、隐私性和易用性,您的应用可以向我们发送错误日志,以便我们在下一次更新中快速检测并修复问题。",
+  "wizardMissionBody2": "这些日志是匿名的,不与您的 IP 地址关联,并且永远不会分享有关您的交易或身份的任何信息。它们纯粹是技术性的,不会让您面临任何风险。这对我们非常有帮助,而且对您没有任何成本。",
+  "wizardMissionQuestion": "您是否同意加入我们的自动化问题报告计划?",
+  "wizardMissionYes": "是",
+  "wizardMissionNo": "否",
+  "wizardMissionRequired": "请在继续之前选择是或否。",
+  "wizardJourneyTitle": "在您的旅程中前进",
+  "wizardJourneyBody": "如果您是 BULL 钱包的新用户,以下是一些您可以利用的功能,以改善您的隐私、安全和用户体验。",
+  "wizardJourneyTip1": "添加安全 PIN 来解锁您的钱包",
+  "wizardJourneyTip2": "尝试加密保险库备份",
+  "wizardJourneyTip3": "连接到您自己的 Bitcoin 节点",
+  "wizardJourneyTip4": "连接到您自己的 Mempool 浏览器",
+  "wizardJourneyTip5": "在 Bitcoin 和 Liquid 之间转账,无需 KYC",
+  "wizardJourneyTip6": "自定义您的 autoswap 设置",
+  "wizardJourneyTip7": "在 Bitcoin (BTC) 和 Satoshis (sats) 之间切换",
+  "wizardJourneyTip8": "为您的硬件钱包创建 air-gap 交易",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

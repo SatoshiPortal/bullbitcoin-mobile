@@ -12575,5 +12575,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "تؤدي قيم Stop Gap العالية إلى زيادة وقت المزامنة بشكل كبير. أبقِ التطبيق مفتوحًا في المقدمة حتى تكتمل المزامنة — قد يؤدي تشغيل التطبيق في الخلفية إلى مقاطعتها."
+  "electrumStopGapHighWarning": "تؤدي قيم Stop Gap العالية إلى زيادة وقت المزامنة بشكل كبير. أبقِ التطبيق مفتوحًا في المقدمة حتى تكتمل المزامنة — قد يؤدي تشغيل التطبيق في الخلفية إلى مقاطعتها.",
+  "wizardSkipButton": "تخطي",
+  "wizardPageIndicator": "صفحة {current} / {total}",
+  "wizardNextButton": "التالي",
+  "wizardCustomizeTitle": "خصص تجربتك",
+  "wizardCustomizeBody": "استخدم BULL بطريقتك مع هذه الإعدادات.",
+  "wizardCustomizeDefaultCurrency": "العملة الافتراضية",
+  "wizardMissionTitle": "ادعم مهمة Bull",
+  "wizardMissionBody1": "لمساعدتنا في تحسين برامجنا وضمان أعلى مستوى من الأمان والخصوصية وسهولة الاستخدام، يمكن لتطبيقك أن يرسل إلينا سجلات الأخطاء التي تتيح لنا اكتشاف المشكلات وإصلاحها بسرعة في التحديثات القادمة.",
+  "wizardMissionBody2": "هذه السجلات مجهولة الهوية، وغير مرتبطة بعنوان IP الخاص بك، ولا تشارك أبدًا أي معلومات عن معاملاتك أو هويتك. إنها تقنية بحتة ولا تعرضك لأي مخاطر. هذا مفيد جدًا لنا ولا يكلفك شيئًا.",
+  "wizardMissionQuestion": "هل توافق على الانضمام إلى برنامج الإبلاغ التلقائي عن المشكلات؟",
+  "wizardMissionYes": "نعم",
+  "wizardMissionNo": "لا",
+  "wizardMissionRequired": "يرجى اختيار نعم أو لا قبل المتابعة.",
+  "wizardJourneyTitle": "تقدم في رحلتك",
+  "wizardJourneyBody": "إذا كنت جديدًا على محفظة BULL، فإليك بعض الميزات التي يمكنك الاستفادة منها لتحسين خصوصيتك وأمانك وتجربة الاستخدام.",
+  "wizardJourneyTip1": "أضف رمز PIN للأمان لفتح محفظتك",
+  "wizardJourneyTip2": "جرب النسخة الاحتياطية المشفرة للخزنة",
+  "wizardJourneyTip3": "اتصل بعقدة Bitcoin الخاصة بك",
+  "wizardJourneyTip4": "اتصل بمستكشف Mempool الخاص بك",
+  "wizardJourneyTip5": "حول بين Bitcoin و Liquid بدون KYC",
+  "wizardJourneyTip6": "خصص إعدادات autoswap",
+  "wizardJourneyTip7": "بدّل بين Bitcoin (BTC) و Satoshis (sats)",
+  "wizardJourneyTip8": "أنشئ معاملات air-gap لمحفظتك المادية",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

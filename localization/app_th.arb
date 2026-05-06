@@ -12572,5 +12572,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "ค่า stop gap ที่สูงจะเพิ่มเวลาในการซิงค์อย่างมาก เปิดแอปไว้ด้านหน้าจนกว่าการซิงค์จะเสร็จสิ้น — การส่งแอปไปทำงานเบื้องหลังอาจทำให้การซิงค์ถูกขัดจังหวะ"
+  "electrumStopGapHighWarning": "ค่า stop gap ที่สูงจะเพิ่มเวลาในการซิงค์อย่างมาก เปิดแอปไว้ด้านหน้าจนกว่าการซิงค์จะเสร็จสิ้น — การส่งแอปไปทำงานเบื้องหลังอาจทำให้การซิงค์ถูกขัดจังหวะ",
+  "wizardSkipButton": "ข้าม",
+  "wizardPageIndicator": "หน้า {current} / {total}",
+  "wizardNextButton": "ถัดไป",
+  "wizardCustomizeTitle": "ปรับแต่งประสบการณ์ของคุณ",
+  "wizardCustomizeBody": "ใช้ BULL ตามวิธีของคุณด้วยการตั้งค่าเหล่านี้",
+  "wizardCustomizeDefaultCurrency": "สกุลเงินเริ่มต้น",
+  "wizardMissionTitle": "สนับสนุนภารกิจของ Bull",
+  "wizardMissionBody1": "เพื่อช่วยเราปรับปรุงซอฟต์แวร์และให้แน่ใจว่ามีความปลอดภัย ความเป็นส่วนตัว และความสามารถในการใช้งานสูงสุด แอปของคุณสามารถส่งบันทึกข้อผิดพลาดให้เรา ซึ่งจะช่วยให้เราตรวจพบและแก้ไขปัญหาได้อย่างรวดเร็วในการอัปเดตครั้งถัดไป",
+  "wizardMissionBody2": "บันทึกเหล่านี้ไม่ระบุชื่อ ไม่เชื่อมโยงกับที่อยู่ IP ของคุณ และไม่เคยแบ่งปันข้อมูลเกี่ยวกับธุรกรรมหรือตัวตนของคุณ เป็นข้อมูลทางเทคนิคล้วนๆ และไม่ทำให้คุณเสี่ยงใดๆ มีประโยชน์มากสำหรับเราและไม่มีค่าใช้จ่ายสำหรับคุณ",
+  "wizardMissionQuestion": "คุณยินยอมที่จะเข้าร่วมโปรแกรมรายงานปัญหาอัตโนมัติของเราหรือไม่?",
+  "wizardMissionYes": "ใช่",
+  "wizardMissionNo": "ไม่",
+  "wizardMissionRequired": "กรุณาเลือก ใช่ หรือ ไม่ ก่อนดำเนินการต่อ",
+  "wizardJourneyTitle": "ก้าวหน้าในเส้นทางของคุณ",
+  "wizardJourneyBody": "หากคุณเพิ่งเริ่มใช้กระเป๋าเงิน BULL นี่คือฟีเจอร์บางอย่างที่คุณสามารถใช้ประโยชน์เพื่อปรับปรุงความเป็นส่วนตัว ความปลอดภัย และประสบการณ์การใช้งานของคุณ",
+  "wizardJourneyTip1": "เพิ่ม PIN รักษาความปลอดภัยเพื่อปลดล็อกกระเป๋าเงินของคุณ",
+  "wizardJourneyTip2": "ลองสำรองข้อมูลห้องนิรภัยที่เข้ารหัส",
+  "wizardJourneyTip3": "เชื่อมต่อกับโหนด Bitcoin ของคุณเอง",
+  "wizardJourneyTip4": "เชื่อมต่อกับเอ็กซ์พลอเรอร์ Mempool ของคุณเอง",
+  "wizardJourneyTip5": "โอนระหว่าง Bitcoin และ Liquid โดยไม่ต้องทำ KYC",
+  "wizardJourneyTip6": "ปรับแต่งการตั้งค่า autoswap ของคุณ",
+  "wizardJourneyTip7": "สลับระหว่าง Bitcoin (BTC) และ Satoshis (sats)",
+  "wizardJourneyTip8": "สร้างธุรกรรม air-gap สำหรับกระเป๋าเงินฮาร์ดแวร์ของคุณ",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

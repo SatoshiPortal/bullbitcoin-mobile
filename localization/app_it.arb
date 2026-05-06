@@ -4572,5 +4572,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Valori elevati di stop gap aumentano notevolmente il tempo di sincronizzazione. Mantieni l'app aperta in primo piano fino al completamento della sincronizzazione — mandarla in background potrebbe interromperla."
+  "electrumStopGapHighWarning": "Valori elevati di stop gap aumentano notevolmente il tempo di sincronizzazione. Mantieni l'app aperta in primo piano fino al completamento della sincronizzazione — mandarla in background potrebbe interromperla.",
+  "wizardSkipButton": "Salta",
+  "wizardPageIndicator": "PAGINA {current} / {total}",
+  "wizardNextButton": "Avanti",
+  "wizardCustomizeTitle": "Personalizza la tua esperienza",
+  "wizardCustomizeBody": "Usa BULL secondo le tue preferenze con queste impostazioni.",
+  "wizardCustomizeDefaultCurrency": "Valuta predefinita",
+  "wizardMissionTitle": "Sostieni la missione di Bull",
+  "wizardMissionBody1": "Per aiutarci a migliorare il nostro software e garantire il massimo livello di sicurezza, privacy e usabilità, la tua app può inviarci registri degli errori che ci permettono di rilevare e risolvere rapidamente i problemi nei nostri prossimi aggiornamenti.",
+  "wizardMissionBody2": "Questi registri sono anonimizzati, non sono collegati al tuo indirizzo IP e non condividono mai informazioni sulle tue transazioni o sulla tua identità. Sono puramente tecnici e non ti espongono ad alcun rischio. È molto utile per noi e non ti costa nulla.",
+  "wizardMissionQuestion": "Accetti di partecipare al nostro programma automatizzato di segnalazione dei problemi?",
+  "wizardMissionYes": "Sì",
+  "wizardMissionNo": "No",
+  "wizardMissionRequired": "Scegli Sì o No prima di continuare.",
+  "wizardJourneyTitle": "Procedi nel tuo percorso",
+  "wizardJourneyBody": "Se sei nuovo nel portafoglio BULL, ecco alcune funzioni che puoi sfruttare per migliorare la tua privacy, sicurezza ed esperienza d'uso.",
+  "wizardJourneyTip1": "Aggiungi un PIN di sicurezza per sbloccare il tuo portafoglio",
+  "wizardJourneyTip2": "Prova il backup cifrato del vault",
+  "wizardJourneyTip3": "Collegati al tuo nodo Bitcoin",
+  "wizardJourneyTip4": "Collegati al tuo esploratore Mempool",
+  "wizardJourneyTip5": "Trasferisci tra Bitcoin e Liquid senza KYC",
+  "wizardJourneyTip6": "Personalizza le tue impostazioni di autoswap",
+  "wizardJourneyTip7": "Passa da Bitcoin (BTC) a Satoshis (sats)",
+  "wizardJourneyTip8": "Crea transazioni air-gap per il tuo portafoglio hardware",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

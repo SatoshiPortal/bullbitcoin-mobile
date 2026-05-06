@@ -4461,5 +4461,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Hohe Stop-Gap-Werte verlängern die Synchronisationszeit erheblich. Lassen Sie die App im Vordergrund geöffnet, bis die Synchronisation abgeschlossen ist — Wechsel in den Hintergrund kann sie unterbrechen."
+  "electrumStopGapHighWarning": "Hohe Stop-Gap-Werte verlängern die Synchronisationszeit erheblich. Lassen Sie die App im Vordergrund geöffnet, bis die Synchronisation abgeschlossen ist — Wechsel in den Hintergrund kann sie unterbrechen.",
+  "wizardSkipButton": "Überspringen",
+  "wizardPageIndicator": "SEITE {current} / {total}",
+  "wizardNextButton": "Weiter",
+  "wizardCustomizeTitle": "Passe dein Erlebnis an",
+  "wizardCustomizeBody": "Nutze BULL nach deinen Vorstellungen mit diesen Einstellungen.",
+  "wizardCustomizeDefaultCurrency": "Standardwährung",
+  "wizardMissionTitle": "Unterstütze die Bull-Mission",
+  "wizardMissionBody1": "Um uns zu helfen, unsere Software zu verbessern und das höchste Maß an Sicherheit, Datenschutz und Benutzerfreundlichkeit zu gewährleisten, kann deine App uns Fehlerprotokolle senden, mit denen wir Probleme erkennen und in unseren nächsten Updates schnell beheben können.",
+  "wizardMissionBody2": "Diese Protokolle sind anonymisiert, nicht mit deiner IP-Adresse verknüpft und teilen niemals Informationen über deine Transaktionen oder deine Identität. Sie sind rein technisch und stellen kein Risiko für dich dar. Es hilft uns sehr und kostet dich nichts.",
+  "wizardMissionQuestion": "Bist du einverstanden, an unserem automatischen Fehlermeldeprogramm teilzunehmen?",
+  "wizardMissionYes": "Ja",
+  "wizardMissionNo": "Nein",
+  "wizardMissionRequired": "Bitte wähle Ja oder Nein, bevor du fortfährst.",
+  "wizardJourneyTitle": "Fortschritte auf deinem Weg",
+  "wizardJourneyBody": "Wenn du neu bei BULL Wallet bist, sind hier einige Funktionen, die du nutzen kannst, um deine Privatsphäre, Sicherheit und Benutzererfahrung zu verbessern.",
+  "wizardJourneyTip1": "Füge eine Sicherheits-PIN zum Entsperren deiner Wallet hinzu",
+  "wizardJourneyTip2": "Probiere die verschlüsselte Vault-Sicherung aus",
+  "wizardJourneyTip3": "Verbinde dich mit deinem eigenen Bitcoin-Node",
+  "wizardJourneyTip4": "Verbinde dich mit deinem eigenen Mempool-Explorer",
+  "wizardJourneyTip5": "Transferiere zwischen Bitcoin und Liquid ohne KYC",
+  "wizardJourneyTip6": "Passe deine Autoswap-Einstellungen an",
+  "wizardJourneyTip7": "Wechsle zwischen Bitcoin (BTC) und Satoshis (sats)",
+  "wizardJourneyTip8": "Erstelle Air-Gap-Transaktionen für deine Hardware-Wallet",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

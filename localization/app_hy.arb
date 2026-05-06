@@ -147,5 +147,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Stop gap-ի բարձր արժեքները զգալիորեն ավելացնում են համաժամացման ժամանակը։ Թողեք հավելվածը բացված առաջնային պլանում մինչև համաժամացման ավարտը — այն ֆոն տեղափոխելը կարող է ընդհատել այն։"
+  "electrumStopGapHighWarning": "Stop gap-ի բարձր արժեքները զգալիորեն ավելացնում են համաժամացման ժամանակը։ Թողեք հավելվածը բացված առաջնային պլանում մինչև համաժամացման ավարտը — այն ֆոն տեղափոխելը կարող է ընդհատել այն։",
+  "wizardSkipButton": "Բաց թողնել",
+  "wizardPageIndicator": "ԷՋ {current} / {total}",
+  "wizardNextButton": "Հաջորդ",
+  "wizardCustomizeTitle": "Անհատականացրեք ձեր փորձը",
+  "wizardCustomizeBody": "Օգտագործեք BULL-ը ձեր պայմաններով այս կարգավորումներով։",
+  "wizardCustomizeDefaultCurrency": "Կանխադրված արժույթ",
+  "wizardMissionTitle": "Աջակցեք Bull-ի առաքելությանը",
+  "wizardMissionBody1": "Մեզ օգնելու համար բարելավել ծրագրակազմը և ապահովել անվտանգության, գաղտնիության և օգտագործելիության ամենաբարձր մակարդակը, ձեր հավելվածը կարող է մեզ ուղարկել սխալների գրանցամատյաններ, որոնք թույլ կտան մեզ արագ հայտնաբերել խնդիրները և ուղղել դրանք հաջորդ թարմացումներում։",
+  "wizardMissionBody2": "Այս գրանցամատյանները անանուն են, կապված չեն ձեր IP հասցեի հետ և երբեք չեն կիսում տեղեկություններ ձեր գործարքների կամ ինքնության մասին։ Դրանք զուտ տեխնիկական են և ոչ մի ռիսկի չեն ենթարկում ձեզ։ Դա մեզ համար շատ օգտակար է և ձեզ ոչ մի ծախս չի պատճառում։",
+  "wizardMissionQuestion": "Համաձայն եք մասնակցել մեր ավտոմատ խնդիրների հաշվետվության ծրագրին?",
+  "wizardMissionYes": "Այո",
+  "wizardMissionNo": "Ոչ",
+  "wizardMissionRequired": "Շարունակելուց առաջ խնդրում ենք ընտրել Այո կամ Ոչ։",
+  "wizardJourneyTitle": "Առաջադիմեք ձեր ճանապարհորդության մեջ",
+  "wizardJourneyBody": "Եթե դուք նոր եք BULL դրամապանակին, ահա մի քանի առանձնահատկություններ, որոնք կարող եք օգտագործել ձեր գաղտնիությունը, անվտանգությունը և օգտվողի փորձը բարելավելու համար։",
+  "wizardJourneyTip1": "Ավելացրեք անվտանգության PIN ձեր դրամապանակը բացելու համար",
+  "wizardJourneyTip2": "Փորձեք գաղտնագրված պահոցի կրկնօրինակը",
+  "wizardJourneyTip3": "Միացեք ձեր սեփական Bitcoin հանգույցին",
+  "wizardJourneyTip4": "Միացեք ձեր սեփական Mempool հետազոտողին",
+  "wizardJourneyTip5": "Փոխանցեք Bitcoin-ի և Liquid-ի միջև առանց KYC-ի",
+  "wizardJourneyTip6": "Անհատականացրեք ձեր autoswap կարգավորումները",
+  "wizardJourneyTip7": "Անցեք Bitcoin (BTC) և Satoshis (sats) միջև",
+  "wizardJourneyTip8": "Ստեղծեք air-gap գործարքներ ձեր ապարատային դրամապանակի համար",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

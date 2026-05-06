@@ -12572,5 +12572,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "Yüksek stop gap değerleri senkronizasyon süresini önemli ölçüde artırır. Senkronizasyon tamamlanana kadar uygulamayı ön planda açık tutun — arka plana almak işlemi kesintiye uğratabilir."
+  "electrumStopGapHighWarning": "Yüksek stop gap değerleri senkronizasyon süresini önemli ölçüde artırır. Senkronizasyon tamamlanana kadar uygulamayı ön planda açık tutun — arka plana almak işlemi kesintiye uğratabilir.",
+  "wizardSkipButton": "Atla",
+  "wizardPageIndicator": "SAYFA {current} / {total}",
+  "wizardNextButton": "İleri",
+  "wizardCustomizeTitle": "Deneyimini özelleştir",
+  "wizardCustomizeBody": "Bu ayarlarla BULL'u kendi şartlarınla kullan.",
+  "wizardCustomizeDefaultCurrency": "Varsayılan para birimi",
+  "wizardMissionTitle": "Bull misyonunu destekle",
+  "wizardMissionBody1": "Yazılımımızı geliştirmemize ve en yüksek düzeyde güvenlik, gizlilik ve kullanılabilirlik sunmamıza yardımcı olmak için uygulamanız bize hata günlükleri gönderebilir. Bu, sorunları tespit etmemizi ve sonraki güncellemelerimizde hızlıca düzeltmemizi sağlar.",
+  "wizardMissionBody2": "Bu günlükler anonimleştirilmiştir, IP adresinize bağlı değildir ve işlemleriniz veya kimliğiniz hakkında asla bilgi paylaşmaz. Tamamen tekniktir ve sizi hiçbir riske maruz bırakmaz. Bizim için çok yararlıdır ve size hiçbir maliyeti yoktur.",
+  "wizardMissionQuestion": "Otomatik sorun bildirim programımıza katılmayı kabul ediyor musunuz?",
+  "wizardMissionYes": "Evet",
+  "wizardMissionNo": "Hayır",
+  "wizardMissionRequired": "Devam etmeden önce lütfen Evet veya Hayır seçin.",
+  "wizardJourneyTitle": "Yolculuğunda ilerle",
+  "wizardJourneyBody": "BULL cüzdanında yeniyseniz, gizliliğinizi, güvenliğinizi ve kullanıcı deneyiminizi geliştirmek için yararlanabileceğiniz bazı özellikler şunlardır.",
+  "wizardJourneyTip1": "Cüzdanınızın kilidini açmak için güvenlik PIN'i ekleyin",
+  "wizardJourneyTip2": "Şifreli kasa yedeklemesini deneyin",
+  "wizardJourneyTip3": "Kendi Bitcoin düğümünüze bağlanın",
+  "wizardJourneyTip4": "Kendi Mempool gezgininize bağlanın",
+  "wizardJourneyTip5": "KYC olmadan Bitcoin ve Liquid arasında transfer yapın",
+  "wizardJourneyTip6": "Autoswap ayarlarınızı özelleştirin",
+  "wizardJourneyTip7": "Bitcoin (BTC) ve Satoshi (sats) arasında geçiş yapın",
+  "wizardJourneyTip8": "Donanım cüzdanınız için air-gap işlemleri oluşturun",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

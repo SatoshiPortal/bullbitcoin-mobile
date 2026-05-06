@@ -12572,5 +12572,38 @@
   "@appInitErrorDetailsToggle": {
     "description": "Label on the collapsed section that reveals the raw exception text"
   },
-  "electrumStopGapHighWarning": "높은 stop gap 값은 동기화 시간을 크게 증가시킵니다. 동기화가 완료될 때까지 앱을 포그라운드에서 열어두십시오 — 백그라운드로 전환하면 중단될 수 있습니다."
+  "electrumStopGapHighWarning": "높은 stop gap 값은 동기화 시간을 크게 증가시킵니다. 동기화가 완료될 때까지 앱을 포그라운드에서 열어두십시오 — 백그라운드로 전환하면 중단될 수 있습니다.",
+  "wizardSkipButton": "건너뛰기",
+  "wizardPageIndicator": "페이지 {current} / {total}",
+  "wizardNextButton": "다음",
+  "wizardCustomizeTitle": "경험을 맞춤 설정하세요",
+  "wizardCustomizeBody": "이러한 설정으로 BULL을 원하는 방식으로 사용하세요.",
+  "wizardCustomizeDefaultCurrency": "기본 통화",
+  "wizardMissionTitle": "Bull의 미션을 지원하세요",
+  "wizardMissionBody1": "저희가 소프트웨어를 개선하고 최고 수준의 보안, 개인 정보 보호 및 사용성을 제공할 수 있도록, 앱이 오류 로그를 보내 다음 업데이트에서 문제를 빠르게 감지하고 수정할 수 있게 해드릴 수 있습니다.",
+  "wizardMissionBody2": "이 로그는 익명화되며, IP 주소와 연결되지 않고, 거래나 신원에 대한 정보를 절대 공유하지 않습니다. 순전히 기술적이며 어떠한 위험에도 노출되지 않습니다. 저희에게는 매우 도움이 되며 사용자에게는 비용이 들지 않습니다.",
+  "wizardMissionQuestion": "자동화된 문제 보고 프로그램에 참여하시겠습니까?",
+  "wizardMissionYes": "예",
+  "wizardMissionNo": "아니오",
+  "wizardMissionRequired": "계속하기 전에 예 또는 아니오를 선택해 주세요.",
+  "wizardJourneyTitle": "여정에서 진전을 이루세요",
+  "wizardJourneyBody": "BULL 지갑이 처음이라면, 개인 정보 보호, 보안 및 사용자 경험을 향상시키기 위해 활용할 수 있는 몇 가지 기능을 소개합니다.",
+  "wizardJourneyTip1": "지갑 잠금 해제를 위한 보안 PIN 추가",
+  "wizardJourneyTip2": "암호화된 볼트 백업 시도",
+  "wizardJourneyTip3": "자체 Bitcoin 노드에 연결",
+  "wizardJourneyTip4": "자체 Mempool 익스플로러에 연결",
+  "wizardJourneyTip5": "KYC 없이 Bitcoin과 Liquid 간 전송",
+  "wizardJourneyTip6": "autoswap 설정 맞춤화",
+  "wizardJourneyTip7": "Bitcoin (BTC)와 Satoshis (sats) 간 전환",
+  "wizardJourneyTip8": "하드웨어 지갑을 위한 air-gap 거래 생성",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }
