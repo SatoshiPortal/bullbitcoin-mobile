@@ -201,40 +201,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
-  // Listen to the app lifecycle state changes
+  // Wallet/swap sync on resume is handled by SyncCoordinator's own
+  // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.detached:
-        _onDetached();
-      case AppLifecycleState.resumed:
-        _onResumed();
-      case AppLifecycleState.inactive:
-        _onInactive();
-      case AppLifecycleState.hidden:
-        _onHidden();
-      case AppLifecycleState.paused:
-        _onPaused();
+    log.info(state.name);
+    if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused) {
+      log.flush();
     }
-  }
-
-  void _onDetached() => log.info('detached');
-
-  Future<void> _onResumed() async {
-    log.info('resumed');
-    // Wallet/swap sync on resume is handled by SyncCoordinator's own
-    // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
-  }
-
-  void _onInactive() => log.info('inactive');
-
-  Future<void> _onHidden() async {
-    log.info('hidden');
-    await log.flush();
-  }
-
-  Future<void> _onPaused() async {
-    log.info('paused');
-    await log.flush();
   }
 
   @override
