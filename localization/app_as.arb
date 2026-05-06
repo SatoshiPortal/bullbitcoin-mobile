@@ -188,7 +188,7 @@
   "legacyStorageStepBackupWallet": "আপোনাৰ ৱালেটৰ বেকআপ লওক",
   "legacyStorageStepExportLabels": "আপোনাৰ লেবেলবোৰ এক্সপৰ্ট কৰক (যদি থাকে)",
   "legacyStorageStepEnsureSwapsCompleted": "সকলো স্বেপ সম্পূৰ্ণ হৈছে নে নিশ্চিত কৰক",
-  "legacyStorageStepUninstall": "আপোনাৰ ডিভাইচৰপৰা এপটো সম্পূৰ্ণৰূপে আনইনষ্টল কৰক",
+  "legacyStorageStepUninstall": "আপোনাৰ ডিভাইচৰ পৰা এপটো আনইনষ্টল কৰক",
   "legacyStorageStepReinstall": "আটাইতকৈ নতুন সংস্কৰণ ডাউনলোড কৰি পুনৰ ইনষ্টল কৰক",
   "legacyStorageStepRestoreBackup": "আপোনাৰ বেকআপ পুনৰুদ্ধাৰ কৰক",
   "legacyStorageImportantTitle": "গুৰুত্বপূৰ্ণ",

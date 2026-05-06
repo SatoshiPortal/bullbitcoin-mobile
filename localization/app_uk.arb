@@ -4611,7 +4611,7 @@
   "legacyStorageStepBackupWallet": "Створіть резервну копію гаманця",
   "legacyStorageStepExportLabels": "Експортуйте свої мітки (якщо є)",
   "legacyStorageStepEnsureSwapsCompleted": "Переконайтеся, що всі swap-операції завершено",
-  "legacyStorageStepUninstall": "Повністю видаліть застосунок зі свого пристрою",
+  "legacyStorageStepUninstall": "Видаліть програму зі свого пристрою",
   "legacyStorageStepReinstall": "Завантажте найновішу версію та встановіть знову",
   "legacyStorageStepRestoreBackup": "Відновіть резервну копію",
   "legacyStorageImportantTitle": "Важливо",

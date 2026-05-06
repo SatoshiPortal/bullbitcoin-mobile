@@ -12614,7 +12614,7 @@
   "legacyStorageStepBackupWallet": "अपना वॉलेट बैकअप लें",
   "legacyStorageStepExportLabels": "अपने लेबल एक्सपोर्ट करें (अगर हों)",
   "legacyStorageStepEnsureSwapsCompleted": "सुनिश्चित करें कि सभी स्वैप पूरे हो चुके हैं",
-  "legacyStorageStepUninstall": "ऐप को अपने डिवाइस से पूरी तरह अनइंस्टॉल करें",
+  "legacyStorageStepUninstall": "अपने डिवाइस से ऐप को अनइंस्टॉल करें",
   "legacyStorageStepReinstall": "नवीनतम संस्करण डाउनलोड करें और फिर से इंस्टॉल करें",
   "legacyStorageStepRestoreBackup": "अपना बैकअप पुनर्स्थापित करें",
   "legacyStorageImportantTitle": "महत्वपूर्ण",

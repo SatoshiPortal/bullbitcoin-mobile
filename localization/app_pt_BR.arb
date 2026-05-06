@@ -12610,7 +12610,7 @@
   "legacyStorageStepBackupWallet": "Faça backup da sua carteira",
   "legacyStorageStepExportLabels": "Exporte seus rótulos (se tiver)",
   "legacyStorageStepEnsureSwapsCompleted": "Certifique-se de que todos os swaps foram concluídos",
-  "legacyStorageStepUninstall": "Desinstale completamente o aplicativo do seu dispositivo",
+  "legacyStorageStepUninstall": "Desinstale o aplicativo do seu dispositivo",
   "legacyStorageStepReinstall": "Baixe a versão mais recente e reinstale",
   "legacyStorageStepRestoreBackup": "Restaure seu backup",
   "legacyStorageImportantTitle": "Importante",

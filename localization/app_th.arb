@@ -12614,7 +12614,7 @@
   "legacyStorageStepBackupWallet": "สำรองข้อมูลกระเป๋าของคุณ",
   "legacyStorageStepExportLabels": "ส่งออกป้ายของคุณ (ถ้ามี)",
   "legacyStorageStepEnsureSwapsCompleted": "ตรวจสอบว่า swap ทั้งหมดเสร็จสมบูรณ์แล้ว",
-  "legacyStorageStepUninstall": "ถอนการติดตั้งแอปออกจากอุปกรณ์ของคุณทั้งหมด",
+  "legacyStorageStepUninstall": "ถอนการติดตั้งแอปจากอุปกรณ์ของคุณ",
   "legacyStorageStepReinstall": "ดาวน์โหลดเวอร์ชันล่าสุดและติดตั้งใหม่",
   "legacyStorageStepRestoreBackup": "กู้คืนข้อมูลสำรองของคุณ",
   "legacyStorageImportantTitle": "สำคัญ",

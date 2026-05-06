@@ -4614,7 +4614,7 @@
   "legacyStorageStepBackupWallet": "Esegui il backup del portafoglio",
   "legacyStorageStepExportLabels": "Esporta le tue etichette (se ne hai)",
   "legacyStorageStepEnsureSwapsCompleted": "Assicurati che tutti gli swap siano completati",
-  "legacyStorageStepUninstall": "Disinstalla completamente l'app dal tuo dispositivo",
+  "legacyStorageStepUninstall": "Disinstalla l'app dal tuo dispositivo",
   "legacyStorageStepReinstall": "Scarica la versione più recente e reinstalla",
   "legacyStorageStepRestoreBackup": "Ripristina il tuo backup",
   "legacyStorageImportantTitle": "Importante",

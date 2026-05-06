@@ -401,7 +401,7 @@
   "legacyStorageStepBackupWallet": "შექმენით საფულის სარეზერვო ასლი",
   "legacyStorageStepExportLabels": "ექსპორტი გაუკეთეთ თქვენს ლეიბლებს (თუ გაქვთ)",
   "legacyStorageStepEnsureSwapsCompleted": "დარწმუნდით, რომ ყველა swap დასრულებულია",
-  "legacyStorageStepUninstall": "სრულად წაშალეთ აპლიკაცია თქვენი მოწყობილობიდან",
+  "legacyStorageStepUninstall": "წაშალეთ აპლიკაცია თქვენი მოწყობილობიდან",
   "legacyStorageStepReinstall": "ჩამოტვირთეთ უახლესი ვერსია და თავიდან დააინსტალირეთ",
   "legacyStorageStepRestoreBackup": "აღადგინეთ თქვენი სარეზერვო ასლი",
   "legacyStorageImportantTitle": "მნიშვნელოვანი",

@@ -189,7 +189,7 @@
   "legacyStorageStepBackupWallet": "Պահուստավորեք ձեր դրամապանակը",
   "legacyStorageStepExportLabels": "Արտահանեք ձեր պիտակները (եթե կան)",
   "legacyStorageStepEnsureSwapsCompleted": "Համոզվեք, որ բոլոր փոխանակումներն ավարտված են",
-  "legacyStorageStepUninstall": "Հեռացրեք հավելվածը ձեր սարքից ամբողջությամբ",
+  "legacyStorageStepUninstall": "Ապատեղադրեք հավելվածը ձեր սարքից",
   "legacyStorageStepReinstall": "Ներբեռնեք ամենավերջին տարբերակը և նորից տեղադրեք",
   "legacyStorageStepRestoreBackup": "Վերականգնեք ձեր պահուստը",
   "legacyStorageImportantTitle": "Կարևոր",

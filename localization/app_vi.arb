@@ -189,7 +189,7 @@
   "legacyStorageStepBackupWallet": "Sao lưu ví của bạn",
   "legacyStorageStepExportLabels": "Xuất nhãn của bạn (nếu có)",
   "legacyStorageStepEnsureSwapsCompleted": "Đảm bảo tất cả swap đã hoàn tất",
-  "legacyStorageStepUninstall": "Gỡ hoàn toàn ứng dụng khỏi thiết bị",
+  "legacyStorageStepUninstall": "Gỡ cài đặt ứng dụng khỏi thiết bị của bạn",
   "legacyStorageStepReinstall": "Tải phiên bản mới nhất và cài đặt lại",
   "legacyStorageStepRestoreBackup": "Khôi phục bản sao lưu của bạn",
   "legacyStorageImportantTitle": "Quan trọng",

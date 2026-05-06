@@ -12614,7 +12614,7 @@
   "legacyStorageStepBackupWallet": "Cüzdanınızın yedeğini alın",
   "legacyStorageStepExportLabels": "Etiketlerinizi dışa aktarın (varsa)",
   "legacyStorageStepEnsureSwapsCompleted": "Tüm swap işlemlerinin tamamlandığından emin olun",
-  "legacyStorageStepUninstall": "Uygulamayı cihazınızdan tamamen kaldırın",
+  "legacyStorageStepUninstall": "Uygulamayı cihazınızdan kaldırın",
   "legacyStorageStepReinstall": "En güncel sürümü indirip yeniden yükleyin",
   "legacyStorageStepRestoreBackup": "Yedeğinizi geri yükleyin",
   "legacyStorageImportantTitle": "Önemli",

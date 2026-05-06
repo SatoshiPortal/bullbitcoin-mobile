@@ -12614,7 +12614,7 @@
   "legacyStorageStepBackupWallet": "Zazálohujte si peněženku",
   "legacyStorageStepExportLabels": "Exportujte své štítky (pokud je máte)",
   "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny swapy jsou dokončené",
-  "legacyStorageStepUninstall": "Zcela odinstalujte aplikaci z vašeho zařízení",
+  "legacyStorageStepUninstall": "Odinstalujte aplikaci ze svého zařízení",
   "legacyStorageStepReinstall": "Stáhněte nejnovější verzi a znovu nainstalujte",
   "legacyStorageStepRestoreBackup": "Obnovte zálohu",
   "legacyStorageImportantTitle": "Důležité",

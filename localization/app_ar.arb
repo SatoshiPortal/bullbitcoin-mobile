@@ -12617,7 +12617,7 @@
   "legacyStorageStepBackupWallet": "احفظ نسخة احتياطية لمحفظتك",
   "legacyStorageStepExportLabels": "صدّر تسمياتك (إن وُجدت)",
   "legacyStorageStepEnsureSwapsCompleted": "تأكد من اكتمال جميع عمليات التبادل",
-  "legacyStorageStepUninstall": "أزل التطبيق بالكامل من جهازك",
+  "legacyStorageStepUninstall": "قم بإلغاء تثبيت التطبيق من جهازك",
   "legacyStorageStepReinstall": "نزّل أحدث إصدار وأعد التثبيت",
   "legacyStorageStepRestoreBackup": "استعِد نسختك الاحتياطية",
   "legacyStorageImportantTitle": "هام",

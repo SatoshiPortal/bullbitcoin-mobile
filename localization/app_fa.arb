@@ -12614,7 +12614,7 @@
   "legacyStorageStepBackupWallet": "از کیف پول خود نسخه پشتیبان بگیرید",
   "legacyStorageStepExportLabels": "برچسب‌های خود را خروجی بگیرید (اگر دارید)",
   "legacyStorageStepEnsureSwapsCompleted": "مطمئن شوید همه swap ها تکمیل شده‌اند",
-  "legacyStorageStepUninstall": "برنامه را کاملاً از دستگاه خود حذف کنید",
+  "legacyStorageStepUninstall": "برنامه را از دستگاه خود حذف کنید",
   "legacyStorageStepReinstall": "آخرین نسخه را دانلود کرده و دوباره نصب کنید",
   "legacyStorageStepRestoreBackup": "نسخه پشتیبان خود را بازیابی کنید",
   "legacyStorageImportantTitle": "مهم",

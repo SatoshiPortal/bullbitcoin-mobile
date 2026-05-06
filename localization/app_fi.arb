@@ -4606,7 +4606,7 @@
   "legacyStorageStepBackupWallet": "Varmuuskopioi lompakkosi",
   "legacyStorageStepExportLabels": "Vie tunnisteesi (jos sinulla on)",
   "legacyStorageStepEnsureSwapsCompleted": "Varmista, että kaikki swapit ovat valmistuneet",
-  "legacyStorageStepUninstall": "Poista sovellus kokonaan laitteeltasi",
+  "legacyStorageStepUninstall": "Poista sovellus laitteeltasi",
   "legacyStorageStepReinstall": "Lataa uusin versio ja asenna se uudelleen",
   "legacyStorageStepRestoreBackup": "Palauta varmuuskopiosi",
   "legacyStorageImportantTitle": "Tärkeää",

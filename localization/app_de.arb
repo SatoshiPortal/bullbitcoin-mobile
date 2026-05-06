@@ -4503,7 +4503,7 @@
   "legacyStorageStepBackupWallet": "Sichere deine Wallet",
   "legacyStorageStepExportLabels": "Exportiere deine Labels (falls vorhanden)",
   "legacyStorageStepEnsureSwapsCompleted": "Stelle sicher, dass alle Swaps abgeschlossen sind",
-  "legacyStorageStepUninstall": "Deinstalliere die App vollständig von deinem Gerät",
+  "legacyStorageStepUninstall": "Deinstallieren Sie die App von Ihrem Gerät",
   "legacyStorageStepReinstall": "Lade die neueste Version herunter und installiere sie neu",
   "legacyStorageStepRestoreBackup": "Stelle deine Sicherung wieder her",
   "legacyStorageImportantTitle": "Wichtig",

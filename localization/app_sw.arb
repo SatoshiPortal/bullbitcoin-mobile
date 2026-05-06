@@ -209,7 +209,7 @@
   "legacyStorageStepBackupWallet": "Hifadhi nakala ya wallet yako",
   "legacyStorageStepExportLabels": "Hamisha lebo zako (kama unazo)",
   "legacyStorageStepEnsureSwapsCompleted": "Hakikisha swaps zote zimekamilika",
-  "legacyStorageStepUninstall": "Ondoa programu kabisa kutoka kwenye kifaa chako",
+  "legacyStorageStepUninstall": "Ondoa programu kwenye kifaa chako",
   "legacyStorageStepReinstall": "Pakua toleo jipya zaidi na uweke tena",
   "legacyStorageStepRestoreBackup": "Rejesha nakala yako",
   "legacyStorageImportantTitle": "Muhimu",

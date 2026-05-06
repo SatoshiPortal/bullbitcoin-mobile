@@ -4603,7 +4603,7 @@
   "legacyStorageStepBackupWallet": "Sauvegardez votre portefeuille",
   "legacyStorageStepExportLabels": "Exportez vos étiquettes (si vous en avez)",
   "legacyStorageStepEnsureSwapsCompleted": "Assurez-vous que tous les swaps sont terminés",
-  "legacyStorageStepUninstall": "Désinstallez complètement l'application de votre appareil",
+  "legacyStorageStepUninstall": "Désinstallez l'application de votre appareil",
   "legacyStorageStepReinstall": "Téléchargez la dernière version et réinstallez",
   "legacyStorageStepRestoreBackup": "Restaurez votre sauvegarde",
   "legacyStorageImportantTitle": "Important",

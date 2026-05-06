@@ -4620,7 +4620,7 @@
   "legacyStorageStepBackupWallet": "Respalda tu monedero",
   "legacyStorageStepExportLabels": "Exporta tus etiquetas (si tienes)",
   "legacyStorageStepEnsureSwapsCompleted": "Asegúrate de que todos los swaps estén completados",
-  "legacyStorageStepUninstall": "Desinstala la app por completo de tu dispositivo",
+  "legacyStorageStepUninstall": "Desinstala la aplicación de tu dispositivo",
   "legacyStorageStepReinstall": "Descarga la última versión e instálala de nuevo",
   "legacyStorageStepRestoreBackup": "Restaura tu respaldo",
   "legacyStorageImportantTitle": "Importante",

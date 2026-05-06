@@ -12614,7 +12614,7 @@
   "legacyStorageStepBackupWallet": "Δημιούργησε αντίγραφο ασφαλείας του πορτοφολιού",
   "legacyStorageStepExportLabels": "Εξάγαγε τις ετικέτες σου (αν έχεις)",
   "legacyStorageStepEnsureSwapsCompleted": "Βεβαιώσου ότι όλα τα swaps έχουν ολοκληρωθεί",
-  "legacyStorageStepUninstall": "Απεγκατάστησε εντελώς την εφαρμογή από τη συσκευή σου",
+  "legacyStorageStepUninstall": "Απεγκαταστήστε την εφαρμογή από τη συσκευή σας",
   "legacyStorageStepReinstall": "Κατέβασε την πιο πρόσφατη έκδοση και εγκατάστησέ την ξανά",
   "legacyStorageStepRestoreBackup": "Επανάφερε το αντίγραφο ασφαλείας",
   "legacyStorageImportantTitle": "Σημαντικό",

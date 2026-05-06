@@ -4614,7 +4614,7 @@
   "legacyStorageStepBackupWallet": "备份您的钱包",
   "legacyStorageStepExportLabels": "导出您的标签(如果有)",
   "legacyStorageStepEnsureSwapsCompleted": "确认所有 swap 已完成",
-  "legacyStorageStepUninstall": "从设备上完全卸载应用",
+  "legacyStorageStepUninstall": "从您的设备中卸载该应用",
   "legacyStorageStepReinstall": "下载最新版本并重新安装",
   "legacyStorageStepRestoreBackup": "恢复您的备份",
   "legacyStorageImportantTitle": "重要",

@@ -12858,7 +12858,7 @@
   "@legacyStorageStepEnsureSwapsCompleted": {
     "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
   },
-  "legacyStorageStepUninstall": "Fully uninstall the app from your device",
+  "legacyStorageStepUninstall": "Uninstall the app from your device",
   "@legacyStorageStepUninstall": {
     "description": "Uninstall step in the legacy storage warning checklist"
   },

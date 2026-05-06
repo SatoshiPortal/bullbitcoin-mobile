@@ -71,3 +71,7 @@ class DismissBackupWarning extends WalletEvent {
 class DismissLegacyStorageWarning extends WalletEvent {
   const DismissLegacyStorageWarning();
 }
+
+class VerifyBackupStatus extends WalletEvent {
+  const VerifyBackupStatus();
+}

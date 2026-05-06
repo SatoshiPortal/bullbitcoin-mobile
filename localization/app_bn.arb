@@ -12331,7 +12331,7 @@
   "legacyStorageStepBackupWallet": "আপনার ওয়ালেট ব্যাকআপ করুন",
   "legacyStorageStepExportLabels": "আপনার লেবেলগুলো এক্সপোর্ট করুন (যদি থাকে)",
   "legacyStorageStepEnsureSwapsCompleted": "নিশ্চিত করুন সব সোয়াপ সম্পন্ন হয়েছে",
-  "legacyStorageStepUninstall": "ডিভাইস থেকে অ্যাপটি সম্পূর্ণ আনইনস্টল করুন",
+  "legacyStorageStepUninstall": "আপনার ডিভাইস থেকে অ্যাপটি আনইনস্টল করুন",
   "legacyStorageStepReinstall": "সর্বশেষ সংস্করণ ডাউনলোড করে পুনরায় ইনস্টল করুন",
   "legacyStorageStepRestoreBackup": "আপনার ব্যাকআপ পুনরুদ্ধার করুন",
   "legacyStorageImportantTitle": "গুরুত্বপূর্ণ",

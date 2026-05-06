@@ -4623,7 +4623,7 @@
   "legacyStorageStepBackupWallet": "Сделайте резервную копию кошелька",
   "legacyStorageStepExportLabels": "Экспортируйте свои метки (если они есть)",
   "legacyStorageStepEnsureSwapsCompleted": "Убедитесь, что все обмены (swap) завершены",
-  "legacyStorageStepUninstall": "Полностью удалите приложение с устройства",
+  "legacyStorageStepUninstall": "Удалите приложение с вашего устройства",
   "legacyStorageStepReinstall": "Скачайте последнюю версию и установите её заново",
   "legacyStorageStepRestoreBackup": "Восстановите резервную копию",
   "legacyStorageImportantTitle": "Важно",

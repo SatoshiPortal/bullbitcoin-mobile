@@ -9624,7 +9624,7 @@
   "legacyStorageStepBackupWallet": "Направете резервно копие на портфейла",
   "legacyStorageStepExportLabels": "Експортирайте етикетите си (ако имате такива)",
   "legacyStorageStepEnsureSwapsCompleted": "Уверете се, че всички размени са завършени",
-  "legacyStorageStepUninstall": "Деинсталирайте приложението напълно от устройството си",
+  "legacyStorageStepUninstall": "Деинсталирайте приложението от устройството си",
   "legacyStorageStepReinstall": "Изтеглете най-новата версия и инсталирайте отново",
   "legacyStorageStepRestoreBackup": "Възстановете резервното копие",
   "legacyStorageImportantTitle": "Важно",

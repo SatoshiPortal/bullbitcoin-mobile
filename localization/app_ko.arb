@@ -12614,7 +12614,7 @@
   "legacyStorageStepBackupWallet": "지갑을 백업하세요",
   "legacyStorageStepExportLabels": "라벨이 있다면 내보내세요",
   "legacyStorageStepEnsureSwapsCompleted": "모든 스왑이 완료되었는지 확인하세요",
-  "legacyStorageStepUninstall": "앱을 기기에서 완전히 삭제하세요",
+  "legacyStorageStepUninstall": "기기에서 앱을 삭제하세요",
   "legacyStorageStepReinstall": "최신 버전을 다운로드해 다시 설치하세요",
   "legacyStorageStepRestoreBackup": "백업을 복원하세요",
   "legacyStorageImportantTitle": "중요",
