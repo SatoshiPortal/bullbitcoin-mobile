@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bip32_keys/bip32_keys.dart';
@@ -11,10 +11,13 @@ import 'package:convert/convert.dart';
 /// If the key server is down
 class UpdateLatestEncryptedVaultTestUsecase {
   final WalletRepository _walletRepository;
+  final SettingsRepository _settingsRepository;
 
   UpdateLatestEncryptedVaultTestUsecase({
     required WalletRepository walletRepository,
-  }) : _walletRepository = walletRepository;
+    required SettingsRepository settingsRepository,
+  }) : _walletRepository = walletRepository,
+       _settingsRepository = settingsRepository;
 
   Future<void> execute({required DecryptedVault decryptedVault}) async {
     try {
@@ -27,9 +30,10 @@ class UpdateLatestEncryptedVaultTestUsecase {
       final decodedRoot = Bip32Keys.fromSeed(Uint8List.fromList(mnemonic.seed));
       final decodedFingerprint = hex.encode(decodedRoot.fingerprint);
 
+      final settings = await _settingsRepository.fetch();
       final availableWallets = await _walletRepository.getWallets(
         onlyDefaults: true,
-        environment: Environment.mainnet,
+        environment: settings.environment,
       );
 
       for (final wallet in availableWallets) {

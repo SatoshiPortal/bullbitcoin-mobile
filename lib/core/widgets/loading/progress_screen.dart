@@ -9,13 +9,11 @@ class ProgressScreen extends StatelessWidget {
   final String? title;
   final String? description;
   final bool isLoading;
-  final List<Widget> extras;
   const ProgressScreen({
     required this.isLoading,
     super.key,
     this.title,
     this.description,
-    this.extras = const [],
   });
 
   @override
@@ -33,9 +31,7 @@ class ProgressScreen extends StatelessWidget {
                 height: 200,
                 image: AssetImage(Assets.animations.cubesLoading.path),
               ),
-            )
-          else
-            const SizedBox.shrink(),
+            ),
           if (title != null) ...[
             const Gap(16),
             BBText(
@@ -55,7 +51,6 @@ class ProgressScreen extends StatelessWidget {
               maxLines: 3,
             ),
           ],
-          if (extras.isNotEmpty) ...[const Gap(16), ...extras],
         ],
       ),
     );

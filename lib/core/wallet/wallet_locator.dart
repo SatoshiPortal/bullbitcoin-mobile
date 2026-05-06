@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_i
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
@@ -160,6 +161,12 @@ class WalletLocator {
     locator.registerFactory<CheckWalletSyncingUsecase>(
       () => CheckWalletSyncingUsecase(
         walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<CheckBackupNeededUsecase>(
+      () => CheckBackupNeededUsecase(
+        walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
