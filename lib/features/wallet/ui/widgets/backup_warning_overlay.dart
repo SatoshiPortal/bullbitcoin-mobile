@@ -1,9 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -32,11 +34,36 @@ class BackupWarningOverlay extends StatelessWidget {
   }
 }
 
-class _BackupWarningBlocker extends StatelessWidget {
+class _BackupWarningBlocker extends StatefulWidget {
   const _BackupWarningBlocker();
 
   @override
+  State<_BackupWarningBlocker> createState() => _BackupWarningBlockerState();
+}
+
+class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
+  bool? _backupNeeded;
+
+  @override
+  void initState() {
+    super.initState();
+    _verify();
+  }
+
+  Future<void> _verify() async {
+    final needed = await locator<CheckBackupNeededUsecase>().execute();
+    if (!mounted) return;
+    if (!needed) {
+      // Bloc cache was stale — sync it so the warning's gate matches reality.
+      context.read<WalletBloc>().add(const WalletRefreshed());
+    }
+    setState(() => _backupNeeded = needed);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_backupNeeded != true) return const SizedBox.shrink();
+
     return Positioned.fill(
       child: Material(
         color: context.appColors.surface.withAlpha(100),

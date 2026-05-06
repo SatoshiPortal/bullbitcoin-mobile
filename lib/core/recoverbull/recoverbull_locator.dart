@@ -171,6 +171,7 @@ class RecoverbullLocator {
     locator.registerFactory<UpdateLatestEncryptedVaultTestUsecase>(
       () => UpdateLatestEncryptedVaultTestUsecase(
         walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<FetchRecoverbullUrlUsecase>(
