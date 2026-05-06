@@ -14,7 +14,7 @@ class Logger {
   final dep.LoggerColorful logger;
 
   static const _logFilename = 'bull_logs.tsv';
-  static const _maxLogSizeKb = 100;
+  static const _maxLogSizeBytes = 9 * 1024 * 1024; // 9 MiB
 
   IOSink? _sink;
   Future<void> _opChain = Future.value();
@@ -95,8 +95,8 @@ class Logger {
   }
 
   Future<void> prune() => _enqueue(() async {
-    final sizeInKb = (await logsFile.stat()).size ~/ 1000;
-    if (sizeInKb <= _maxLogSizeKb) return;
+    final initialSize = (await logsFile.stat()).size;
+    if (initialSize <= _maxLogSizeBytes) return;
 
     await _sink?.flush();
     await _sink?.close();
@@ -113,8 +113,11 @@ class Logger {
     );
     _ensureSinkOpen();
 
-    final newSizeInKb = (await logsFile.stat()).size ~/ 1000;
-    fine('Logs pruned from $sizeInKb kB to $newSizeInKb kB');
+    final newSize = (await logsFile.stat()).size;
+    fine(
+      'Logs pruned from ${initialSize ~/ 1024} KiB '
+      'to ${newSize ~/ 1024} KiB',
+    );
   });
 
   Future<void> flush() => _enqueue(() async {
