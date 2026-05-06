@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 /// A screen that handles three states: loading, success, and error
-
 class StatusScreen extends StatelessWidget {
   final String? title;
   final String? description;
@@ -32,17 +31,17 @@ class StatusScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = hasError ? context.appColors.error : null;
-
     return Scaffold(
       backgroundColor: context.appColors.surface,
       body: StackedPage(
         bottomChild: (!isLoading && onTap != null)
             ? BBButton.big(
-                label: hasError
-                    ? (buttonText ?? context.loc.statusScreenTryAgain)
-                    : (buttonText ?? context.loc.statusScreenContinue),
-                onPressed: onTap ?? () {},
+                label:
+                    buttonText ??
+                    (hasError
+                        ? context.loc.statusScreenTryAgain
+                        : context.loc.statusScreenContinue),
+                onPressed: onTap!,
                 textColor: context.appColors.onSecondary,
                 bgColor: context.appColors.secondary,
               )
@@ -52,19 +51,18 @@ class StatusScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Column(
-                mainAxisAlignment: .start,
                 children: [
                   if (hasError)
                     Icon(
                       Icons.error_outline_rounded,
                       size: 80,
-                      color: textColor,
-                    )
-                  else
-                    const SizedBox.shrink(),
+                      color: context.appColors.error,
+                    ),
                   ProgressScreen(
-                    title: !hasError ? title : "Oops! Something went wrong",
-                    description: !hasError ? description : errorMessage,
+                    title: hasError
+                        ? context.loc.oopsSomethingWentWrong
+                        : title,
+                    description: hasError ? errorMessage : description,
                     isLoading: isLoading && !hasError,
                   ),
                   if (extras.isNotEmpty && !hasError) ...[
