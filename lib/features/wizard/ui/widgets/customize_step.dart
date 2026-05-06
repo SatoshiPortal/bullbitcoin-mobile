@@ -7,15 +7,13 @@ import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/translation_warning_bottom_sheet.dart';
+import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_step_layout.dart';
 import 'package:flutter/material.dart';
 
 class CustomizeStep extends StatelessWidget {
   const CustomizeStep({
     super.key,
-    required this.stepIndex,
-    required this.totalSteps,
     required this.themeMode,
     required this.language,
     required this.defaultCurrency,
@@ -24,8 +22,6 @@ class CustomizeStep extends StatelessWidget {
     required this.onCurrencyPicked,
   });
 
-  final int stepIndex;
-  final int totalSteps;
   final AppThemeMode themeMode;
   final Language language;
   final String defaultCurrency;
@@ -38,8 +34,7 @@ class CustomizeStep extends StatelessWidget {
     final loc = context.loc;
     final vGap = Device.screen.height * 0.02;
     return WizardStepLayout(
-      stepIndex: stepIndex,
-      totalSteps: totalSteps,
+      page: WizardPage.customize,
       title: loc.wizardCustomizeTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,12 +65,7 @@ class CustomizeStep extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
             onTap: () async {
               final picked = await _showLanguageSheet(context, language);
-              if (picked != null) {
-                onLanguagePicked(picked);
-                if (picked != Language.unitedStatesEnglish && context.mounted) {
-                  TranslationWarningBottomSheet.show(context);
-                }
-              }
+              if (picked != null) onLanguagePicked(picked);
             },
           ),
           Divider(height: 1, color: context.appColors.border),

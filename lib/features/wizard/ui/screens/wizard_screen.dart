@@ -6,13 +6,15 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/presentation/bloc/wizard_bloc.dart';
+import 'package:bb_mobile/features/wizard/ui/wizard_page.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/customize_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/journey_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/mission_consent_row.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/mission_step.dart';
+import 'package:bb_mobile/features/wizard/ui/widgets/welcome_bg_pattern.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/welcome_step.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_dots.dart';
 import 'package:bb_mobile/features/wizard/ui/widgets/wizard_header.dart';
-import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,15 +34,11 @@ class WizardScreen extends StatefulWidget {
 }
 
 class _WizardScreenState extends State<WizardScreen> {
-  static const int _totalSteps = 4;
-  // Mission step index — `Skip`/`Next` jump here when consent is unset.
-  static const int _missionPage = 2;
-
   static const Duration _pageDuration = Duration(milliseconds: 300);
   static const Curve _pageCurve = Curves.easeInOut;
 
   final PageController _controller = PageController();
-  int _page = 0;
+  WizardPage _page = WizardPage.welcome;
 
   @override
   void initState() {
@@ -61,9 +59,7 @@ class _WizardScreenState extends State<WizardScreen> {
       // Critical because the wizard re-shows on every
       // `kCurrentWizardVersion` bump for existing users — their stored
       // theme would otherwise be clobbered when they tap Skip.
-      context.read<WizardBloc>().add(
-        WizardEvent.themeDetected(detectedTheme),
-      );
+      context.read<WizardBloc>().add(WizardEvent.themeDetected(detectedTheme));
     });
   }
 
@@ -74,22 +70,24 @@ class _WizardScreenState extends State<WizardScreen> {
   }
 
   void _advance(WizardChoices choices) {
-    // Block leaving the mission step until the user explicitly picks Yes/No.
-    if (_page == _missionPage && choices.reportingConsent == null) {
-      SnackBarUtils.showSnackBar(context, context.loc.wizardMissionRequired);
-      return;
-    }
-    if (_page < _totalSteps - 1) {
-      _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
-    } else {
+    if (_page.isLast) {
       _tryFinish(choices);
+    } else {
+      _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
     }
+  }
+
+  /// Mission step Yes/No tap → record consent + advance to journey
+  /// step. Replaces the dots + Next button on the mission page.
+  void _pickConsent(bool consent) {
+    context.read<WizardBloc>().add(WizardEvent.consentPicked(consent));
+    _controller.nextPage(duration: _pageDuration, curve: _pageCurve);
   }
 
   void _tryFinish(WizardChoices choices) {
     if (choices.reportingConsent == null) {
       _controller.animateToPage(
-        _missionPage,
+        WizardPage.mission.index,
         duration: _pageDuration,
         curve: _pageCurve,
       );
@@ -101,11 +99,12 @@ class _WizardScreenState extends State<WizardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLast = _page == _totalSteps - 1;
     final hPad = Device.screen.width * 0.06;
     final vGap = Device.screen.height * 0.02;
 
-    final isWelcome = _page == 0;
+    final isWelcome = _page == WizardPage.welcome;
+    final isMission = _page == WizardPage.mission;
+    final isLast = _page.isLast;
     return PopScope(
       // Block the actual app pop. The handler below intercepts the
       // gesture and steps the PageView back one page instead — except
@@ -114,7 +113,7 @@ class _WizardScreenState extends State<WizardScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        if (_page > 0) {
+        if (!_page.isFirst) {
           _controller.previousPage(duration: _pageDuration, curve: _pageCurve);
         }
       },
@@ -127,82 +126,113 @@ class _WizardScreenState extends State<WizardScreen> {
             : context.appColors.background,
         body: Stack(
           children: [
-            if (isWelcome) const _WelcomeBgPattern(),
+            if (isWelcome) const WelcomeBgPattern(),
             SafeArea(
               child: BlocBuilder<WizardBloc, WizardState>(
                 buildWhen: (a, b) => a.choices != b.choices,
                 builder: (context, state) {
                   final c = state.choices;
                   final bloc = context.read<WizardBloc>();
-                  return Column(
+                  return Stack(
                     children: [
-                      // Header (small logo + Skip) is hidden on page 1 to
-                      // keep the splash visual clean; reappears on page 2+.
-                      if (!isWelcome) WizardHeader(onSkip: () => _tryFinish(c)),
-                      Expanded(
-                        child: PageView(
-                          controller: _controller,
-                          onPageChanged: (i) => setState(() => _page = i),
-                          children: [
-                            const WelcomeStep(),
-                            CustomizeStep(
-                              stepIndex: 1,
-                              totalSteps: _totalSteps,
-                              themeMode: c.themeMode,
-                              language: c.language,
-                              defaultCurrency: c.defaultCurrency,
-                              onThemePicked: (m) =>
-                                  bloc.add(WizardEvent.themePicked(m)),
-                              onLanguagePicked: (l) =>
-                                  bloc.add(WizardEvent.languagePicked(l)),
-                              onCurrencyPicked: (code) =>
-                                  bloc.add(WizardEvent.currencyPicked(code)),
+                      // Page content fills the whole SafeArea. The
+                      // bottom chrome (dots + button or Yes/No) floats
+                      // on top via a Positioned overlay so steps can
+                      // scroll their content past it without a hard
+                      // visual cut. Each step's `WizardStepLayout`
+                      // adds bottom padding equal to `kWizardChromeHeight`
+                      // so the last item can settle right above the
+                      // chrome at max-scroll.
+                      Column(
+                        children: [
+                          if (!isWelcome)
+                            WizardHeader(onSkip: () => _tryFinish(c)),
+                          Expanded(
+                            child: PageView(
+                              controller: _controller,
+                              onPageChanged: (i) =>
+                                  setState(() => _page = WizardPage.values[i]),
+                              children: [
+                                const WelcomeStep(),
+                                CustomizeStep(
+                                  themeMode: c.themeMode,
+                                  language: c.language,
+                                  defaultCurrency: c.defaultCurrency,
+                                  onThemePicked: (m) =>
+                                      bloc.add(WizardEvent.themePicked(m)),
+                                  onLanguagePicked: (l) =>
+                                      bloc.add(WizardEvent.languagePicked(l)),
+                                  onCurrencyPicked: (code) => bloc.add(
+                                    WizardEvent.currencyPicked(code),
+                                  ),
+                                ),
+                                const MissionStep(),
+                                const JourneyStep(),
+                              ],
                             ),
-                            MissionStep(
-                              stepIndex: _missionPage,
-                              totalSteps: _totalSteps,
-                              consent: c.reportingConsent,
-                              onChanged: (v) =>
-                                  bloc.add(WizardEvent.consentPicked(v)),
-                            ),
-                            JourneyStep(stepIndex: 3, totalSteps: _totalSteps),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: vGap),
-                      WizardDots(
-                        count: _totalSteps,
-                        index: _page,
-                        // On the red splash bg the default red active dot
-                        // is invisible. Switch to white-on-red.
-                        activeColor: isWelcome
-                            ? context.appColors.onPrimaryFixed
-                            : null,
-                        inactiveColor: isWelcome
-                            ? context.appColors.onPrimaryFixed.withValues(
-                                alpha: 0.4,
-                              )
-                            : null,
-                      ),
-                      SizedBox(height: vGap),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(hPad, 0, hPad, hPad),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: BBButton.big(
-                            label: isLast
-                                ? context.loc.getStartedButton
-                                : context.loc.wizardNextButton,
-                            onPressed: () => _advance(c),
-                            // Same scheme as `CreateWalletButton` on the
-                            // splash: high-contrast against the red bg on
-                            // page 1; brand red elsewhere.
-                            bgColor: isWelcome
-                                ? context.appColors.secondaryFixed
-                                : context.appColors.primary,
-                            textColor: isWelcome
-                                ? context.appColors.onSecondaryFixed
-                                : context.appColors.onPrimary,
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(hPad, vGap, hPad, hPad),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Dots hidden on the welcome splash — the
+                              // page reads as a self-contained intro
+                              // without progress chrome competing with
+                              // the centered logo + tagline.
+                              if (!isWelcome) ...[
+                                // Small pill behind the dots so they
+                                // stay legible on top of the page
+                                // content scrolling underneath.
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: context.appColors.background,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: WizardDots(
+                                    count: WizardPage.total,
+                                    index: _page.index,
+                                  ),
+                                ),
+                                SizedBox(height: vGap),
+                              ],
+                              if (isMission)
+                                MissionConsentRow(
+                                  consent: c.reportingConsent,
+                                  onYes: () => _pickConsent(true),
+                                  onNo: () => _pickConsent(false),
+                                )
+                              else
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: BBButton.big(
+                                    label: isLast
+                                        ? context.loc.getStartedButton
+                                        : context.loc.wizardNextButton,
+                                    onPressed: () => _advance(c),
+                                    // Same scheme as `CreateWalletButton`
+                                    // on the splash: high-contrast
+                                    // against the red bg on page 1;
+                                    // brand red elsewhere.
+                                    bgColor: isWelcome
+                                        ? context.appColors.secondaryFixed
+                                        : context.appColors.primary,
+                                    textColor: isWelcome
+                                        ? context.appColors.onSecondaryFixed
+                                        : context.appColors.onPrimary,
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                       ),
@@ -214,36 +244,6 @@ class _WizardScreenState extends State<WizardScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-/// Red + `bgLong` pattern painted behind the whole `Scaffold` body on
-/// page 1 so the splash visual extends under the dots and Next button.
-/// Mirrors `OnboardingSplash._BG`.
-class _WelcomeBgPattern extends StatelessWidget {
-  const _WelcomeBgPattern();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: ColoredBox(color: context.appColors.primaryFixed),
-        ),
-        Positioned.fill(
-          child: Opacity(
-            opacity: 0.2,
-            child: Transform.rotate(
-              angle: 3.141,
-              child: Image.asset(
-                Assets.backgrounds.bgLong.path,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
