@@ -24,21 +24,56 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
   bool _hasShownAutoSwapWarning = false;
   // ensures that the warning is only showed once on app startup
 
+  final GlobalKey<RefreshIndicatorState> _indicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // If a refresh is already in flight when WalletHome mounts (cold boot,
+    // post-import, post-PIN unlock, etc.), show the spinner over it so the
+    // user sees the activity instead of landing on apparently-static data.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (context.read<WalletBloc>().state.isRefreshing) {
+        _indicatorKey.currentState?.show();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<WalletBloc, WalletState>(
-      listenWhen: (previous, current) =>
-          previous.autoSwapSettings != current.autoSwapSettings ||
-          previous.wallets != current.wallets,
-      listener: (context, state) {
-        if (!_hasShownAutoSwapWarning &&
-            state.showAutoSwapDefaultEnabledWarning()) {
-          _hasShownAutoSwapWarning = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            AutoSwapWarningBottomSheet.show(context);
-          });
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<WalletBloc, WalletState>(
+          listenWhen: (previous, current) =>
+              !previous.isRefreshing && current.isRefreshing,
+          listener: (context, state) {
+            // A refresh just started (manual pull, post-activity dispatch,
+            // env change, etc.) — surface the spinner. RefreshIndicator.show()
+            // is a no-op if it's already running, so this is safe to combine
+            // with the initState path.
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              _indicatorKey.currentState?.show();
+            });
+          },
+        ),
+        BlocListener<WalletBloc, WalletState>(
+          listenWhen: (previous, current) =>
+              previous.autoSwapSettings != current.autoSwapSettings ||
+              previous.wallets != current.wallets,
+          listener: (context, state) {
+            if (!_hasShownAutoSwapWarning &&
+                state.showAutoSwapDefaultEnabledWarning()) {
+              _hasShownAutoSwapWarning = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                AutoSwapWarningBottomSheet.show(context);
+              });
+            }
+          },
+        ),
+      ],
       child: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, _) {},
@@ -55,10 +90,11 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
               ),
             ),
             BBPullableBody(
+              indicatorKey: _indicatorKey,
               onRefresh: () async {
                 final bloc = context.read<WalletBloc>();
                 bloc.add(const WalletRefreshed());
-                await bloc.stream.firstWhere((state) => !state.isSyncing);
+                await bloc.stream.firstWhere((state) => !state.isRefreshing);
               },
               slivers: [
                 const SliverToBoxAdapter(child: WalletHomeTopSection()),

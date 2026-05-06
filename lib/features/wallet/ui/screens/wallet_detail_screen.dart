@@ -58,7 +58,7 @@ class WalletDetailScreen extends StatelessWidget {
                 onRefresh: () async {
                   final bloc = context.read<WalletBloc>();
                   bloc.add(const WalletRefreshed());
-                  await bloc.stream.firstWhere((state) => !state.isSyncing);
+                  await bloc.stream.firstWhere((state) => !state.isRefreshing);
                 },
                 slivers: [
                   SliverToBoxAdapter(

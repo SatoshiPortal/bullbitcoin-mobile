@@ -9,7 +9,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -222,15 +221,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   Future<void> _onResumed() async {
     log.info('resumed');
-    try {
-      await locator<RestartSwapWatcherUsecase>().execute();
-    } catch (e) {
-      log.severe(
-        message: 'Error during app resume',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
+    // Wallet/swap sync on resume is handled by SyncCoordinator's own
+    // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   }
 
   void _onInactive() => log.info('inactive');
