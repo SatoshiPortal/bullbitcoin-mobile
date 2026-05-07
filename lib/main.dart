@@ -79,10 +79,13 @@ class Bull {
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
     await initWorkmanager();
     // Emits the install/upgrade transition event (no-op on a normal
-    // launch) and advances the persisted version marker.
+    // launch) and advances the persisted version marker. The shout is
+    // awaited so a crash between scheduling and capture cannot lose
+    // the milestone — the persisted marker only advances once Sentry
+    // has the event.
     final type = Report.migrationType;
     if (type != null) {
-      log.shout(message: type.name, category: ReportCategory.migration);
+      await log.shout(message: type.name, category: ReportCategory.migration);
       await Report.commitVersion();
     }
   }
@@ -102,7 +105,7 @@ class Bull {
 
   static Future<void> initLogs() async {
     final logDirectory = await getApplicationDocumentsDirectory();
-    log = Logger.init(directory: logDirectory);
+    log = Logger.replace(directory: logDirectory);
     await log.ensureLogsExist();
   }
 

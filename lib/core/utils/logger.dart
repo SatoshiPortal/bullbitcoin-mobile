@@ -7,7 +7,15 @@ import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 export 'package:logging_colorful/logging_colorful.dart';
 
-Logger log = Logger.init();
+// The top-level holder is eagerly seeded with a placeholder anchored at
+// `Directory.current` so that any log line emitted before `Bull.initLogs`
+// runs (e.g. from a thrown exception during early `WidgetsFlutterBinding`
+// init) doesn't hit a `LateInitializationError`. `Bull.initLogs` then
+// calls [Logger.replace] which cancels this placeholder's
+// `dep.Logger.root.onRecord` subscription before attaching a new one —
+// preventing the duplicate-listener leak that occurred when both
+// instances stayed subscribed to the same broadcast stream.
+Logger log = Logger.replace(directory: Directory.current);
 
 class Logger {
   final Directory dir;
@@ -16,17 +24,25 @@ class Logger {
   static const _logFilename = 'bull_logs.tsv';
   static const _maxLogSizeKb = 100;
 
+  /// Tracks the currently-active Logger so [replace] can cancel its
+  /// `dep.Logger.root.onRecord` subscription before installing the
+  /// next one. Per-isolate (Dart isolates do not share static state),
+  /// so background-task isolates that call `Bull.initLogs` get their
+  /// own single-listener lifecycle.
+  static Logger? _current;
+
   IOSink? _sink;
   Future<void> _opChain = Future.value();
   bool _isLogging = false;
   bool _handlingLoggerFailure = false;
+  StreamSubscription<dep.LogRecord>? _subscription;
 
   File get logsFile => File('${dir.path}/$_logFilename');
 
   Logger._(this.dir, this.logger) {
     dep.Logger.root.level = dep.Level.ALL;
 
-    dep.Logger.root.onRecord.listen((record) {
+    _subscription = dep.Logger.root.onRecord.listen((record) {
       _isLogging = true;
       try {
         final content = _recordToContent(record);
@@ -49,16 +65,23 @@ class Logger {
     });
   }
 
-  Logger.init({String name = 'Logger', Directory? directory})
-    : this._(
-        directory ?? Directory.current,
-        // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
-        // We don't want colors in release mode either
-        dep.LoggerColorful(
-          name,
-          disabledColors: Platform.isIOS || kReleaseMode,
-        ),
-      );
+  /// Builds a new Logger anchored at [directory] and retires the prior
+  /// instance (if any) by cancelling its `dep.Logger.root.onRecord`
+  /// subscription. Idempotent: safe to call when no prior instance
+  /// exists. Callers must reassign the top-level [log] holder to the
+  /// returned instance — `Bull.initLogs` is the canonical caller.
+  static Logger replace({String name = 'Logger', required Directory directory}) {
+    _current?._subscription?.cancel();
+    _current?._subscription = null;
+    final next = Logger._(
+      directory,
+      // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
+      // We don't want colors in release mode either
+      dep.LoggerColorful(name, disabledColors: Platform.isIOS || kReleaseMode),
+    );
+    _current = next;
+    return next;
+  }
 
   // ---------------------------------------------------------------------------
   // Public API
@@ -87,11 +110,6 @@ class Logger {
       _reportLoggerFailure('Failed to read logs', e);
       rethrow;
     }
-  }
-
-  Future<int> getSizeInKb() async {
-    final stat = await logsFile.stat();
-    return stat.size ~/ 1000;
   }
 
   Future<void> prune() => _enqueue(() async {
@@ -228,12 +246,20 @@ class Logger {
   /// Optional [category] attaches a `category=<name>` Sentry tag for
   /// crash-cache filtering (e.g. [ReportCategory.migration] for
   /// storage-migration faults); when omitted the tag is `none`.
-  void shout({
+  ///
+  /// Returns a `Future<void>` that completes once the underlying
+  /// `Report.shout` has finished its Sentry capture. Awaiting it lets
+  /// callers serialize before persisting state that depends on the
+  /// capture having reached the wire — notably the install/upgrade
+  /// milestone, where `Report.commitVersion` advances the persisted
+  /// version marker only after the Sentry event is in flight, so a
+  /// crash between the two retries the event on the next launch.
+  Future<void> shout({
     required String message,
     Object? error,
     StackTrace? trace,
     ReportCategory? category,
-  }) {
+  }) async {
     if (_isLogging) {
       _emitDirect(
         level: 'SHOUT',
@@ -251,7 +277,7 @@ class Logger {
     }
 
     try {
-      Report.shout(
+      await Report.shout(
         message: message,
         exception: error,
         stackTrace: trace,
@@ -274,6 +300,11 @@ class Logger {
   // listener is already firing (reentrancy) or when the logger itself is in
   // a failure path — both cases where re-entering the dependency logger
   // would risk a "Cannot fire new event" crash.
+  //
+  // Sanitize per column before joining: `_sanitize` replaces tabs and
+  // newlines with spaces, so applying it to the already-joined string
+  // would collapse the column-separator tabs and produce a row with a
+  // different shape than the normal listener path.
   void _emitDirect({
     required String level,
     required String message,
@@ -281,7 +312,13 @@ class Logger {
     String trace = '',
   }) {
     final time = DateTime.now().toIso8601String();
-    final line = _sanitize([time, level, message, error, trace].join('\t'));
+    final line = [
+      time,
+      level,
+      message,
+      error,
+      trace,
+    ].map(_sanitize).join('\t');
     _queueWrite(line, flush: true);
     if (kDebugMode) debugPrint('[REENTRANT] $line');
   }
@@ -345,11 +382,5 @@ class Logger {
     final colors = RegExp(r'\x1B\[[0-9;]*[a-zA-Z]'); // ascii colors
     final tabNewLine = RegExp(r'[\t\n\r]');
     return input.replaceAll(tabNewLine, ' ').replaceAll(colors, '');
-  }
-
-  static String redactAddressOrTxId(String? value) {
-    if (value == null || value.isEmpty) return value ?? '';
-    if (value.length <= 6) return value;
-    return '${value.substring(0, 3)}...${value.substring(value.length - 3)}';
   }
 }

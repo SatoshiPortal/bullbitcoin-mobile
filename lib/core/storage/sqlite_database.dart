@@ -75,8 +75,15 @@ class SqliteDatabase extends _$SqliteDatabase {
   SqliteDatabase([QueryExecutor? executor])
     : super(executor ?? _openConnection());
 
+  /// Current drift schema version. Bump in lockstep with adding a new
+  /// `Schema<N-1>To<N>.migrate` step in [migration]. `Report.init`
+  /// asserts that an entry for this number exists in the
+  /// schema → app-version map so a future bump can't silently
+  /// misclassify upgrade events.
+  static const int currentSchemaVersion = 12;
+
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => currentSchemaVersion;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -135,9 +142,10 @@ class SqliteDatabase extends _$SqliteDatabase {
   }
 
   /// Wraps a per-version drift migration step so a failure is surfaced to
-  /// Sentry via the always-on migration channel before the rethrow aborts
-  /// init. Drift migrations run lazily on first query, so wrapping the step
-  /// fn (not the constructor) is what actually catches failures.
+  /// Sentry (consent-gated, tagged `category=migration`) before the
+  /// rethrow aborts init. Drift migrations run lazily on first query,
+  /// so wrapping the step fn (not the constructor) is what actually
+  /// catches failures.
   static Future<void> Function(Migrator, Schema) _reportingMigration<Schema>(
     String name,
     Future<void> Function(Migrator, Schema) fn,
