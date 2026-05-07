@@ -41,9 +41,9 @@ class ElectrumSettingsScreen extends StatelessWidget {
       body: SafeArea(
         child: BBPullableBody(
           onRefresh: () async {
-            context.read<ElectrumSettingsBloc>().add(
-              ElectrumSettingsLoaded(isLiquid: isLiquid),
-            );
+            final bloc = context.read<ElectrumSettingsBloc>();
+            bloc.add(ElectrumSettingsLoaded(isLiquid: isLiquid));
+            await bloc.stream.firstWhere((state) => !state.isLoadingData);
           },
           slivers: [
             SliverPadding(
