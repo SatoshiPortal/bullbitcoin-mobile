@@ -106,80 +106,45 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         apiKey: apiKeyModel.key,
       );
 
-      log.info(
-        '[getOrders] received ${orderModels.length} order models from datasource',
-      );
-
-      final List<Order> orders = [];
-      for (final model in orderModels) {
-        try {
-          orders.add(model.toEntity(isTestnet: _isTestnet));
-        } catch (e, st) {
-          log.warning(
-            '[getOrders] FAILED to map orderId=${model.orderId} '
-            'orderType="${model.orderType}" '
-            'orderStatus="${model.orderStatus}" '
-            'payinStatus="${model.payinStatus}" '
-            'payoutStatus="${model.payoutStatus}" '
-            'payinMethod="${model.payinMethod}" '
-            'payoutMethod="${model.payoutMethod}" — '
-            'error: $e',
-            error: e,
-            trace: st,
-          );
-        }
-      }
-
-      log.info(
-        '[getOrders] mapped ${orders.length}/${orderModels.length} orders. '
-        'runtimeTypes=${orders.map((o) => o.runtimeType.toString()).toList()}',
-      );
-
-      List<Order> filteredOrders = orders;
+      List<Order> orders = orderModels
+          .map((model) => model.toEntity(isTestnet: _isTestnet))
+          .toList();
 
       // this filtering should also be done separately, read from disk not over network
       if (type != null) {
         switch (type) {
           case OrderType.buy:
-            filteredOrders = filteredOrders.whereType<BuyOrder>().toList();
+            orders = orders.whereType<BuyOrder>().toList();
           case OrderType.sell:
-            filteredOrders = filteredOrders.whereType<SellOrder>().toList();
+            orders = orders.whereType<SellOrder>().toList();
           case OrderType.fiatPayment:
-            filteredOrders =
-                filteredOrders.whereType<FiatPaymentOrder>().toList();
+            orders = orders.whereType<FiatPaymentOrder>().toList();
           case OrderType.funding:
-            filteredOrders =
-                filteredOrders.whereType<FundingOrder>().toList();
+            orders = orders.whereType<FundingOrder>().toList();
           case OrderType.withdraw:
-            filteredOrders =
-                filteredOrders.whereType<WithdrawOrder>().toList();
+            orders = orders.whereType<WithdrawOrder>().toList();
           case OrderType.reward:
-            filteredOrders = filteredOrders.whereType<RewardOrder>().toList();
+            orders = orders.whereType<RewardOrder>().toList();
           case OrderType.refund:
-            filteredOrders = filteredOrders.whereType<RefundOrder>().toList();
+            orders = orders.whereType<RefundOrder>().toList();
           case OrderType.balanceAdjustment:
-            filteredOrders =
-                filteredOrders.whereType<BalanceAdjustmentOrder>().toList();
+            orders = orders.whereType<BalanceAdjustmentOrder>().toList();
         }
       }
 
       // Pagination should be provided by the endpoint
       if (offset != null || limit != null) {
         final startIndex = offset ?? 0;
-        final endIndex =
-            limit != null ? startIndex + limit : filteredOrders.length;
+        final endIndex = limit != null ? startIndex + limit : orders.length;
 
-        if (startIndex < filteredOrders.length) {
-          filteredOrders = filteredOrders.sublist(
-            startIndex,
-            endIndex.clamp(0, filteredOrders.length),
-          );
+        if (startIndex < orders.length) {
+          orders = orders.sublist(startIndex, endIndex.clamp(0, orders.length));
         } else {
-          filteredOrders = [];
+          orders = [];
         }
       }
 
-      return filteredOrders;
+      return orders;
     } catch (e) {
       log.severe(
         message: 'Error fetching orders',

@@ -61,13 +61,6 @@ class GetTransactionsUsecase {
         _boltzSwapRepository.getAllSwaps(walletId: walletId),
       ).wait;
 
-      log.info(
-        '[GetTransactionsUsecase] walletId=$walletId fetched: '
-        'walletTxs=${walletTransactions.length} payjoins=${payjoins.length} '
-        'orders=${orders.length} swaps=${swaps.length}. '
-        'orderTypes=${orders.map((o) => o.runtimeType.toString()).toList()}',
-      );
-
       if (orders.isNotEmpty) await _labelExchangeOrdersUsecase.execute();
 
       // Add related payjoins, swaps and orders to the broadcasted wallet transactions
@@ -139,17 +132,6 @@ class GetTransactionsUsecase {
           swaps.remove(tx.swap);
         }
       }
-
-      final attachedOrderCount =
-          broadcastedTransactions.where((t) => t.order != null).length;
-      log.info(
-        '[GetTransactionsUsecase] merged: broadcastedTxs='
-        '${broadcastedTransactions.length} '
-        '(of which orders attached=$attachedOrderCount), '
-        'remainingOrders=${orders.length}, '
-        'remainingSwaps=${swaps.length}, remainingPayjoins=${payjoins.length}, '
-        'standaloneOrdersIncluded=${walletId == null ? orders.length : 0}',
-      );
 
       // Combine results of broadcasted transactions, remaining swaps which are
       //  ongoing and remaining payjoins that are unbroadcasted as well
