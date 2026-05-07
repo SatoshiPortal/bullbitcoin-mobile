@@ -45,7 +45,6 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usec
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:test/test.dart';
 
@@ -59,7 +58,7 @@ String _env(String key, {String? fallback}) {
   final dartVal = _dartDefines[key];
   final val = (dartVal != null && dartVal.isNotEmpty)
       ? dartVal
-      : Platform.environment[key] ?? dotenv.env[key];
+      : Platform.environment[key];
   if (val != null && val.isNotEmpty) return val;
   if (fallback != null) return fallback;
   throw Exception('Required environment variable $key is not set');

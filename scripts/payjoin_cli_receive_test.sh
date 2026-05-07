@@ -141,6 +141,7 @@ echo "[script] Using device: $DEVICE_ID"
 
 fvm flutter test \
   --device-id="$DEVICE_ID" \
+  --dart-define-from-file=.env \
   --dart-define="PJ_BIP21_URI=$BIP21_URI" \
   integration_test/payjoin_cli_receive_integration_test.dart \
   --reporter=compact

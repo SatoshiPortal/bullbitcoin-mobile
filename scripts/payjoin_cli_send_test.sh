@@ -131,6 +131,7 @@ echo "[script] Using device: $DEVICE_ID"
 echo "[script] Starting Flutter integration test (mobile receiver)..."
 fvm flutter test \
   --device-id="$DEVICE_ID" \
+  --dart-define-from-file=.env \
   --dart-define="PAYJOIN_CLI_SEND_AMOUNT_SAT=$AMOUNT_SAT" \
   integration_test/payjoin_cli_send_integration_test.dart \
   --reporter=compact \
