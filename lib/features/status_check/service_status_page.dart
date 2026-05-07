@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/status/domain/entity/service_status.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
+import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/status_check/presentation/cubit.dart';
 import 'package:bb_mobile/features/status_check/presentation/state.dart';
@@ -36,67 +36,56 @@ class _ServiceStatusPageState extends State<ServiceStatusPage> {
           final serviceStatus = state.serviceStatus;
           final cubit = context.read<ServiceStatusCubit>();
 
-          return BBRefreshIndicator(
+          return BBPullableBody(
             indicatorKey: _refreshIndicatorKey,
             onRefresh: () async => await cubit.checkStatus(),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Padding(
+            slivers: [
+              SliverPadding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 24,
                 ),
-                child: Column(
-                  mainAxisSize: .min,
-                  crossAxisAlignment: .start,
-                  children: [
-                    Column(
+                sliver: SliverList(
+                  delegate: SliverChildListDelegate([
+                    _ServiceStatusItem(
+                      service: serviceStatus.internetConnection,
+                    ),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.bitcoinElectrum),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.liquidElectrum),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.boltz),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.payjoin),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.pricer),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.mempool),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.tor),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.recoverbull),
+                    const SizedBox(height: 12),
+                    _ServiceStatusItem(service: serviceStatus.ark),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: .center,
                       children: [
-                        _ServiceStatusItem(
-                          service: serviceStatus.internetConnection,
-                        ),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(
-                          service: serviceStatus.bitcoinElectrum,
-                        ),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(
-                          service: serviceStatus.liquidElectrum,
-                        ),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(service: serviceStatus.boltz),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(service: serviceStatus.payjoin),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(service: serviceStatus.pricer),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(service: serviceStatus.mempool),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(service: serviceStatus.tor),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(service: serviceStatus.recoverbull),
-                        const SizedBox(height: 12),
-                        _ServiceStatusItem(service: serviceStatus.ark),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: .center,
-                          children: [
-                            if (serviceStatus.lastChecked != null)
-                              BBText(
-                                context.loc.statusCheckLastChecked(
-                                  _formatDateTime(serviceStatus.lastChecked!),
-                                ),
-                                style: context.font.bodySmall,
-                                color: context.appColors.onSurfaceVariant,
-                              ),
-                          ],
-                        ),
+                        if (serviceStatus.lastChecked != null)
+                          BBText(
+                            context.loc.statusCheckLastChecked(
+                              _formatDateTime(serviceStatus.lastChecked!),
+                            ),
+                            style: context.font.bodySmall,
+                            color: context.appColors.onSurfaceVariant,
+                          ),
                       ],
                     ),
-                  ],
+                  ]),
                 ),
               ),
-            ),
+            ],
           );
         },
       ),

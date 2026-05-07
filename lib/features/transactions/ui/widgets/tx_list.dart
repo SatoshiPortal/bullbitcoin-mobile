@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TxList extends StatelessWidget {
-  const TxList({super.key});
+  const TxList({super.key, this.sliver = false});
+
+  final bool sliver;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class TxList extends StatelessWidget {
         transactionsByDay: const {},
         ongoingSwaps: ongoingSwaps,
         errorMessage: context.loc.transactionListLoadingFailed,
+        sliver: sliver,
       );
     }
 
@@ -40,6 +43,7 @@ class TxList extends StatelessWidget {
     return TransactionsByDayList(
       transactionsByDay: txsByDay,
       ongoingSwaps: showOngoingSwaps ? ongoingSwaps : [],
+      sliver: sliver,
     );
   }
 }

@@ -33,19 +33,17 @@ class BBRefreshIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Position the spinner around the upper third of the actual scroll
-    // area (not the full screen — MediaQuery would include the bottom
-    // nav and bias the indicator toward the bottom of the body).
-    // 60 = default RefreshIndicator displacement (40) + half indicator
-    // height (~20). The displacement is left at its native value to
-    // preserve drag feel.
-    return LayoutBuilder(
-      builder: (context, constraints) => RefreshIndicator(
-        key: indicatorKey,
-        edgeOffset: constraints.maxHeight * 0.4 - 60,
-        onRefresh: onRefresh,
-        child: child,
-      ),
+    // Center the spinner vertically on the screen. 60 = default
+    // RefreshIndicator displacement (40) + half indicator height (~20),
+    // so subtracting it lands the indicator's center on the midline.
+    // The displacement is left at its native value to preserve drag feel.
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final offset = (screenHeight * 0.40 - 60).clamp(0.0, screenHeight);
+    return RefreshIndicator(
+      key: indicatorKey,
+      edgeOffset: offset,
+      onRefresh: onRefresh,
+      child: child,
     );
   }
 }

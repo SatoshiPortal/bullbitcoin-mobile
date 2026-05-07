@@ -14,109 +14,135 @@ class TransactionsByDayList extends StatelessWidget {
     required this.transactionsByDay,
     this.ongoingSwaps,
     this.errorMessage,
+    this.sliver = false,
   });
 
   final Map<int, List<Transaction>>? transactionsByDay;
   final List<Transaction>? ongoingSwaps;
   final String? errorMessage;
 
+  /// When true, returns Sliver* widgets so the list can live inside a
+  /// CustomScrollView and share the parent's scroll/refresh gesture.
+  final bool sliver;
+
+  Widget _wrapPlaceholder(Widget child) =>
+      sliver ? SliverToBoxAdapter(child: child) : child;
+
   @override
   Widget build(BuildContext context) {
     if (errorMessage != null) {
-      return Center(
-        child: Column(
-          children: [
-            const Gap(16),
-            BBText(
-              errorMessage!,
-              maxLines: 2,
-              textAlign: .center,
-              style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
-                color: context.appColors.error,
+      return _wrapPlaceholder(
+        Center(
+          child: Column(
+            children: [
+              const Gap(16),
+              BBText(
+                errorMessage!,
+                maxLines: 2,
+                textAlign: .center,
+                style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
+                  color: context.appColors.error,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     } else if (transactionsByDay == null) {
-      return Center(
-        child: Column(
-          children: [
-            const Gap(16),
-            BBText(
-              'Loading transactions...',
-              maxLines: 2,
-              textAlign: .center,
-              style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
+      return _wrapPlaceholder(
+        Center(
+          child: Column(
+            children: [
+              const Gap(16),
+              BBText(
+                'Loading transactions...',
+                maxLines: 2,
+                textAlign: .center,
+                style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
+                  color: context.appColors.onSurface,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       );
     } else if (transactionsByDay!.isEmpty &&
         (ongoingSwaps == null || ongoingSwaps!.isEmpty)) {
-      return Center(
-        child: Column(
-          children: [
-            const Gap(16),
-            BBText(
-              'No transactions yet.',
-              maxLines: 2,
-              textAlign: .center,
-              style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
-                color: context.appColors.onSurface,
-              ),
-            ),
-          ],
-        ),
-      );
-    } else {
-      return ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        itemCount:
-            transactionsByDay!.entries.length +
-            (ongoingSwaps != null && ongoingSwaps!.isNotEmpty ? 1 : 0),
-        itemBuilder: (context, index) {
-          // Show ongoing swaps section at the top
-          if (ongoingSwaps != null && ongoingSwaps!.isNotEmpty && index == 0) {
-            return OngoingSwapsWidget(ongoingSwaps: ongoingSwaps!);
-          }
-
-          // Adjust index if we have ongoing swaps
-          final adjustedIndex = ongoingSwaps != null && ongoingSwaps!.isNotEmpty
-              ? index - 1
-              : index;
-          final entry = transactionsByDay!.entries.elementAt(adjustedIndex);
-          final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
-          final txs = entry.value;
-          final now = DateTime.now();
-          final today = DateTime(now.year, now.month, now.day);
-          final yesterday = DateTime(now.year, now.month, now.day - 1);
-
-          return Column(
-            crossAxisAlignment: .start,
+      return _wrapPlaceholder(
+        Center(
+          child: Column(
             children: [
+              const Gap(16),
               BBText(
-                date.compareTo(today) > 0
-                    ? 'Pending'
-                    : date.isAtSameMomentAs(today)
-                    ? 'Today'
-                    : date.isAtSameMomentAs(yesterday)
-                    ? 'Yesterday'
-                    : date.year == DateTime.now().year
-                    ? DateFormat.MMMMd().format(date)
-                    : DateFormat.yMMMMd().format(date),
-                style: context.font.titleSmall?.copyWith(
+                'No transactions yet.',
+                maxLines: 2,
+                textAlign: .center,
+                style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
                   color: context.appColors.onSurface,
                 ),
               ),
-              const Gap(16),
-              ...txs.map((tx) => TxListItem(tx: tx)),
-              const Gap(16),
             ],
-          );
-        },
+          ),
+        ),
+      );
+    } else {
+      final itemCount =
+          transactionsByDay!.entries.length +
+          (ongoingSwaps != null && ongoingSwaps!.isNotEmpty ? 1 : 0);
+      Widget itemBuilder(BuildContext context, int index) {
+        // Show ongoing swaps section at the top
+        if (ongoingSwaps != null && ongoingSwaps!.isNotEmpty && index == 0) {
+          return OngoingSwapsWidget(ongoingSwaps: ongoingSwaps!);
+        }
+
+        // Adjust index if we have ongoing swaps
+        final adjustedIndex = ongoingSwaps != null && ongoingSwaps!.isNotEmpty
+            ? index - 1
+            : index;
+        final entry = transactionsByDay!.entries.elementAt(adjustedIndex);
+        final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
+        final txs = entry.value;
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day);
+        final yesterday = DateTime(now.year, now.month, now.day - 1);
+
+        return Column(
+          crossAxisAlignment: .start,
+          children: [
+            BBText(
+              date.compareTo(today) > 0
+                  ? 'Pending'
+                  : date.isAtSameMomentAs(today)
+                  ? 'Today'
+                  : date.isAtSameMomentAs(yesterday)
+                  ? 'Yesterday'
+                  : date.year == DateTime.now().year
+                  ? DateFormat.MMMMd().format(date)
+                  : DateFormat.yMMMMd().format(date),
+              style: context.font.titleSmall?.copyWith(
+                color: context.appColors.onSurface,
+              ),
+            ),
+            const Gap(16),
+            ...txs.map((tx) => TxListItem(tx: tx)),
+            const Gap(16),
+          ],
+        );
+      }
+
+      if (sliver) {
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          sliver: SliverList.builder(
+            itemCount: itemCount,
+            itemBuilder: itemBuilder,
+          ),
+        );
+      }
+      return ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        itemCount: itemCount,
+        itemBuilder: itemBuilder,
       );
     }
   }
