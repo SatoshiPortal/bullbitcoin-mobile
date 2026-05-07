@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test payjoin-test payjoin-cli-receive-test payjoin-cli-send-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -115,3 +115,17 @@ unit-test:
 integration-test:
 	@echo "🧪 integration tests"
 	@fvm flutter test integration_test/ --reporter=compact
+
+payjoin-test: payjoin-internal-test payjoin-cli-receive-test payjoin-cli-send-test
+
+payjoin-internal-test:
+	@echo "🧪 internal payjoin integration test"
+	@fvm flutter test integration_test/payjoin_test.dart --dart-define-from-file=.env --reporter=compact
+
+payjoin-cli-receive-test:                                                                
+	@echo "🧪 payjoin-cli receiver <-> mobile sender"
+	@bash scripts/payjoin_cli_receive_test.sh
+
+payjoin-cli-send-test:                                                                   
+	@echo "🧪 payjoin-cli sender <-> mobile receiver"
+	@bash scripts/payjoin_cli_send_test.sh
