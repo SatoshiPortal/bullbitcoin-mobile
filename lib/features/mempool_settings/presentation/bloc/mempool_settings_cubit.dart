@@ -47,37 +47,56 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
         errorMessage: null,
       ),
     );
+    try {
+      await _fetchAndApplyData();
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
 
+  /// Reload server data from local DB then probe each server's status, all
+  /// under a single `isLoading` flag so the top progress bar reflects the
+  /// full pull-to-refresh duration.
+  Future<void> refresh() async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      await _fetchAndApplyData();
+      final defaultServer = state.defaultServer;
+      final customServer = state.customServer;
+      await Future.wait([
+        if (defaultServer != null) checkServerStatus(defaultServer),
+        if (customServer != null) checkServerStatus(customServer),
+      ]);
+    } finally {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _fetchAndApplyData() async {
     try {
       final request = LoadMempoolServerDataRequest(isLiquid: state.isLiquid);
-
       final response = await _loadDataUsecase.execute(request);
-
       emit(
         state.copyWith(
           defaultServer: response.defaultServer,
           customServer: response.customServer,
           settings: response.settings,
-          isLoading: false,
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          isLoading: false,
-          errorMessage: e.toString(),
-        ),
-      );
+      emit(state.copyWith(errorMessage: e.toString()));
     }
   }
 
   Future<bool> setCustomServer(String url, {bool enableSsl = true}) async {
-    emit(state.copyWith(
-      isSavingServer: true,
-      setServerError: null,
-      validationErrorType: null,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        isSavingServer: true,
+        setServerError: null,
+        validationErrorType: null,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final request = SetCustomMempoolServerRequest(
@@ -103,18 +122,19 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
         return false;
       }
     } catch (e) {
-      emit(
-        state.copyWith(
-          isSavingServer: false,
-          errorMessage: e.toString(),
-        ),
-      );
+      emit(state.copyWith(isSavingServer: false, errorMessage: e.toString()));
       return false;
     }
   }
 
   Future<void> deleteCustomServer() async {
-    emit(state.copyWith(isDeletingServer: true, setServerError: null, errorMessage: null));
+    emit(
+      state.copyWith(
+        isDeletingServer: true,
+        setServerError: null,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final request = DeleteCustomMempoolServerRequest(
@@ -125,17 +145,18 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
 
       emit(state.copyWith(customServer: null, isDeletingServer: false));
     } catch (e) {
-      emit(
-        state.copyWith(
-          isDeletingServer: false,
-          errorMessage: e.toString(),
-        ),
-      );
+      emit(state.copyWith(isDeletingServer: false, errorMessage: e.toString()));
     }
   }
 
   Future<void> updateUseForFeeEstimation(bool value) async {
-    emit(state.copyWith(isUpdatingSettings: true, setServerError: null, errorMessage: null));
+    emit(
+      state.copyWith(
+        isUpdatingSettings: true,
+        setServerError: null,
+        errorMessage: null,
+      ),
+    );
 
     try {
       final request = UpdateMempoolSettingsRequest(
@@ -157,10 +178,7 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
       );
     } catch (e) {
       emit(
-        state.copyWith(
-          isUpdatingSettings: false,
-          errorMessage: e.toString(),
-        ),
+        state.copyWith(isUpdatingSettings: false, errorMessage: e.toString()),
       );
     }
   }
@@ -190,8 +208,9 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
         enableSsl: server.enableSsl,
       );
 
-      final finalStatus =
-          isValid ? MempoolServerStatus.online : MempoolServerStatus.offline;
+      final finalStatus = isValid
+          ? MempoolServerStatus.online
+          : MempoolServerStatus.offline;
       final finalServer = server.copyWith(status: finalStatus);
 
       if (server.isCustom) {
@@ -210,10 +229,12 @@ class MempoolSettingsCubit extends Cubit<MempoolSettingsState> {
   }
 
   void clearError() {
-    emit(state.copyWith(
-      setServerError: null,
-      validationErrorType: null,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        setServerError: null,
+        validationErrorType: null,
+        errorMessage: null,
+      ),
+    );
   }
 }

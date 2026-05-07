@@ -51,16 +51,8 @@ class _MempoolSettingsScreenState extends State<MempoolSettingsScreen> {
       ),
       body: SafeArea(
         child: BBPullableBody(
-          onRefresh: () async {
-            final cubit = context.read<MempoolSettingsCubit>();
-            await cubit.loadData(isLiquid: cubit.state.isLiquid);
-            final defaultServer = cubit.state.defaultServer;
-            final customServer = cubit.state.customServer;
-            await Future.wait([
-              if (defaultServer != null) cubit.checkServerStatus(defaultServer),
-              if (customServer != null) cubit.checkServerStatus(customServer),
-            ]);
-          },
+          onRefresh: () async =>
+              await context.read<MempoolSettingsCubit>().refresh(),
           slivers: [
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
