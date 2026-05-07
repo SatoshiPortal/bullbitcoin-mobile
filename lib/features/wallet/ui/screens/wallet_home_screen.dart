@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/themes/colors.dart';
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
+import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
@@ -54,42 +54,30 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 child: const SizedBox(height: 300),
               ),
             ),
-            BBRefreshIndicator(
+            BBPullableBody(
               onRefresh: () async {
                 final bloc = context.read<WalletBloc>();
                 bloc.add(const WalletRefreshed());
                 await bloc.stream.firstWhere((state) => !state.isSyncing);
               },
-              child: CustomScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  const SliverToBoxAdapter(child: WalletHomeTopSection()),
-                  const SliverToBoxAdapter(child: HomeWarnings()),
-                  const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
-                  SliverToBoxAdapter(
-                    child: WalletCards(
-                      onTap: (w) {
-                        context.pushNamed(
-                          WalletRoute.walletDetail.name,
-                          pathParameters: {'walletId': w.id},
-                        );
-                      },
-                    ),
+              slivers: [
+                const SliverToBoxAdapter(child: WalletHomeTopSection()),
+                const SliverToBoxAdapter(child: HomeWarnings()),
+                const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
+                SliverToBoxAdapter(
+                  child: WalletCards(
+                    onTap: (w) {
+                      context.pushNamed(
+                        WalletRoute.walletDetail.name,
+                        pathParameters: {'walletId': w.id},
+                      );
+                    },
                   ),
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Column(
-                      children: [
-                        Spacer(),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 13.0),
-                          child: WalletBottomButtons(),
-                        ),
-                        Gap(16),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
+              ],
+              bottomChild: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 13.0),
+                child: Column(children: [WalletBottomButtons(), Gap(16)]),
               ),
             ),
           ],

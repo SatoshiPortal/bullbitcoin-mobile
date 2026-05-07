@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/bb_refresh_indicator.dart';
+import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
@@ -43,33 +43,30 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
-    return Column(
-      crossAxisAlignment: .start,
-      children: [
-        const TxsFilterRow(),
-        const TxsSyncingIndicator(),
+    return BBPullableBody(
+      onRefresh: () async {
+        final bloc = context.read<WalletBloc>();
+        bloc.add(const WalletRefreshed());
+        await bloc.stream.firstWhere((state) => !state.isSyncing);
+        if (!context.mounted) return;
+        await context.read<TransactionsCubit>().loadTxs();
+      },
+      slivers: [
+        const SliverToBoxAdapter(child: TxsFilterRow()),
+        const SliverToBoxAdapter(child: TxsSyncingIndicator()),
         if (err != null)
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: BBText(
-              context.loc.transactionError(err.toString()),
-              style: context.font.bodyLarge,
-              color: context.appColors.error,
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: BBText(
+                context.loc.transactionError(err.toString()),
+                style: context.font.bodyLarge,
+                color: context.appColors.error,
+              ),
             ),
           ),
-        const Gap(16.0),
-        Expanded(
-          child: BBRefreshIndicator(
-            onRefresh: () async {
-              final bloc = context.read<WalletBloc>();
-              bloc.add(const WalletRefreshed());
-              await bloc.stream.firstWhere((state) => !state.isSyncing);
-              if (!context.mounted) return;
-              await context.read<TransactionsCubit>().loadTxs();
-            },
-            child: const TxList(),
-          ),
-        ),
+        const SliverToBoxAdapter(child: Gap(16.0)),
+        const TxList(sliver: true),
       ],
     );
   }

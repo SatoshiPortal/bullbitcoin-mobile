@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class WalletDetailTxsList extends StatelessWidget {
-  const WalletDetailTxsList({super.key});
+  const WalletDetailTxsList({super.key, this.sliver = false});
+
+  final bool sliver;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class WalletDetailTxsList extends StatelessWidget {
         errorMessage: selected.err != null
             ? context.loc.transactionListLoadingFailed
             : null,
+        sliver: sliver,
       ),
     );
   }
