@@ -9546,17 +9546,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "Критични логове",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "Винаги активно — ни позволява да видим дали портфейлът ви мигрира безопасно между версиите на приложението.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "Критичните логове не могат да бъдат изключени. Те докладват за неуспешни надстройки, миграции и грешки при стартиране на приложението, за да можем да отстраним проблеми, които биха могли да засегнат други потребители.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Използвайте резервното си копие",
   "@appInitErrorHasBackupTitle": {

@@ -12536,17 +12536,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "Kritik günlükler",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "Her zaman açık — cüzdanınızın uygulama sürümleri arasında güvenle taşınıp taşınmadığını görmemizi sağlar.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "Kritik günlükler devre dışı bırakılamaz. Başarısız yükseltmeleri, geçişleri ve uygulama başlatma hatalarını bildirirler; böylece başkalarını etkileyebilecek sorunları giderebiliriz.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Yedeğinizi kullanın",
   "@appInitErrorHasBackupTitle": {

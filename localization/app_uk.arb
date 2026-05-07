@@ -4533,17 +4533,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "Критичні журнали",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "Завжди ввімкнено — дозволяє нам бачити, чи ваш гаманець безпечно переходить між версіями застосунку.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "Критичні журнали не можна вимкнути. Вони повідомляють про невдалі оновлення, міграції та помилки запуску застосунку, щоб ми могли виправити проблеми, які можуть вплинути на інших.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Використайте резервну копію",
   "@appInitErrorHasBackupTitle": {

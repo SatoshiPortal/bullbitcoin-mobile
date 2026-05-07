@@ -12946,14 +12946,6 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch shown in the wizard and settings"
   },
-  "errorReportingCriticalTitle": "Critical logs",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only critical logs switch shown in the wizard and settings"
-  },
-  "errorReportingCriticalSnackbar": "Critical logs can't be disabled. They report failed upgrades, migrations, and app startup errors so we can fix problems that may affect others.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled critical logs switch"
-  },
   "appInitErrorHasBackupTitle": "Use your backup",
   "@appInitErrorHasBackupTitle": {
     "description": "Reassurance headline shown on the init-error screen when the user already has a backup"

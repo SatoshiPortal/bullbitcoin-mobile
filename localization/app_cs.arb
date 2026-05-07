@@ -12536,17 +12536,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "Kritické protokoly",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "Vždy zapnuto — umožňuje nám vidět, zda se vaše peněženka bezpečně migruje mezi verzemi aplikace.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "Kritické protokoly nelze vypnout. Hlásí neúspěšné upgrady, migrace a chyby při spouštění aplikace, abychom mohli opravit problémy, které by se mohly týkat ostatních.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Použijte svou zálohu",
   "@appInitErrorHasBackupTitle": {
