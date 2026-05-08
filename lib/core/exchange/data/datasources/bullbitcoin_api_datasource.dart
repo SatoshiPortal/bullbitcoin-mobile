@@ -172,23 +172,27 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     if (statusCode != 200) throw Exception('Failed to create order');
     if (error != null) {
       final reason = error['data']['reason'];
-      final limitReason = reason['limit'];
-      if (limitReason != null) {
-        final isBelowLimit =
-            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
-        final limitAmount = limitReason['amount'] as String;
-        final limitCurrency = limitReason['currencyCode'] as String;
-        if (isBelowLimit) {
-          throw BullBitcoinApiMinAmountException(
-            minAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
-        } else {
-          throw BullBitcoinApiMaxAmountException(
-            maxAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
+      if (reason != null) {
+        final limitReason = reason['limit'];
+        if (limitReason != null) {
+          final isBelowLimit =
+              limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+          final limitAmount = limitReason['amount'] as String;
+          final limitCurrency = limitReason['currencyCode'] as String;
+          if (isBelowLimit) {
+            throw BullBitcoinApiMinAmountException(
+              minAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          } else {
+            throw BullBitcoinApiMaxAmountException(
+              maxAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          }
         }
+      } else {
+        throw Exception('Failed to create buy order: ${error['message']}');
       }
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
@@ -354,23 +358,27 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     if (statusCode != 200) throw Exception('Failed to create sell order');
     if (error != null) {
       final reason = error['data']['reason'];
-      final limitReason = reason['limit'];
-      if (limitReason != null) {
-        final isBelowLimit =
-            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
-        final limitAmount = limitReason['amount'] as String;
-        final limitCurrency = limitReason['currencyCode'] as String;
-        if (isBelowLimit) {
-          throw BullBitcoinApiMinAmountException(
-            minAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
-        } else {
-          throw BullBitcoinApiMaxAmountException(
-            maxAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
+      if (reason != null) {
+        final limitReason = reason['limit'];
+        if (limitReason != null) {
+          final isBelowLimit =
+              limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+          final limitAmount = limitReason['amount'] as String;
+          final limitCurrency = limitReason['currencyCode'] as String;
+          if (isBelowLimit) {
+            throw BullBitcoinApiMinAmountException(
+              minAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          } else {
+            throw BullBitcoinApiMaxAmountException(
+              maxAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          }
         }
+      } else {
+        throw Exception('Failed to create sell order: ${error['message']}');
       }
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
@@ -480,25 +488,31 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     if (statusCode != 200) throw Exception('Failed to create withdrawal order');
     if (error != null) {
       final reason = error['data']['reason'];
-      final limitReason = reason['limit'];
-      if (limitReason != null) {
-        final isBelowLimit =
-            limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
-        final limitAmount = limitReason['amount'] as String;
-        final limitCurrency = limitReason['currencyCode'] as String;
-        if (isBelowLimit) {
-          throw BullBitcoinApiMinAmountException(
-            minAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
-        } else {
-          throw BullBitcoinApiMaxAmountException(
-            maxAmount: double.parse(limitAmount),
-            currency: limitCurrency,
-          );
+      if (reason != null) {
+        final limitReason = reason['limit'];
+        if (limitReason != null) {
+          final isBelowLimit =
+              limitReason['conditionalOperator'] == 'GREATER_THAN_OR_EQUAL';
+          final limitAmount = limitReason['amount'] as String;
+          final limitCurrency = limitReason['currencyCode'] as String;
+          if (isBelowLimit) {
+            throw BullBitcoinApiMinAmountException(
+              minAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          } else {
+            throw BullBitcoinApiMaxAmountException(
+              maxAmount: double.parse(limitAmount),
+              currency: limitCurrency,
+            );
+          }
         }
+        throw Exception('Failed to create withdrawal order: $reason');
+      } else {
+        throw Exception(
+          'Failed to create withdrawal order: ${error['message']}',
+        );
       }
-      throw Exception('Failed to create withdrawal order: $reason');
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
