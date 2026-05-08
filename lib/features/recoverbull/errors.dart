@@ -33,24 +33,10 @@ class VaultIsNotSetError extends RecoverBullError {
   }
 }
 
-class DecryptedVaultIsNotSetError extends RecoverBullError {
-  @override
-  String toTranslated(BuildContext context) {
-    return context.loc.recoverbullErrorDecryptedVaultNotSet;
-  }
-}
-
 class KeyServerConnectionError extends RecoverBullError {
   @override
   String toTranslated(BuildContext context) {
     return context.loc.recoverbullErrorConnectionFailed;
-  }
-}
-
-class InvalidFlowError extends RecoverBullError {
-  @override
-  String toTranslated(BuildContext context) {
-    return context.loc.recoverbullErrorInvalidFlow;
   }
 }
 
@@ -93,13 +79,6 @@ class VaultDecryptionError extends RecoverBullError {
   @override
   String toTranslated(BuildContext context) {
     return context.loc.recoverbullErrorDecryptFailed;
-  }
-}
-
-class VaultCheckStatusError extends RecoverBullError {
-  @override
-  String toTranslated(BuildContext context) {
-    return context.loc.recoverbullErrorCheckStatusFailed;
   }
 }
 

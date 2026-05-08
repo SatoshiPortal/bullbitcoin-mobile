@@ -603,14 +603,6 @@
   "sellBelowMinAmountError": "Вы пытаетесь продать ниже минимальной суммы, которую можно продать с этим кошельком.",
   "buyAwaitingConfirmation": "Пробуждение подтверждения ",
   "payExpired": "Заключено",
-  "recoverbullBalance": "Остаток: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Параметры доступа",
   "payPaymentSuccessful": "Оплата успешно",
   "exchangeHomeWithdraw": "Выделить",
@@ -705,7 +697,6 @@
   "dcaFundAccountButton": "Фонд вашего счета",
   "transactionFilterAll": "Все",
   "arkSendTitle": "Отправить",
-  "recoverbullVaultRecovery": "Восстановление хранилища",
   "transactionDetailLabelAmountReceived": "Полученная сумма",
   "bitboxCubitOperationTimeout": "Операция была отложена. Попробуй еще раз.",
   "receivePaymentReceived": "Получена оплата!",
@@ -787,14 +778,6 @@
   "importQrDevicePassportStep11": "Введите этикетку для вашего паспортного кошелька и нажмите «Import»",
   "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
   "withdrawBelowMinAmountError": "Вы пытаетесь уйти ниже минимальной суммы.",
-  "recoverbullTransactions": "Транзакции: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "swapYouPay": "Вы платите",
   "encryptedVaultTitle": "Зашифрованное хранилище",
   "fundExchangeCrIbanUsdLabelIban": "Номер счета IBAN (только доллары США)",
@@ -1121,7 +1104,6 @@
   "payNameHint": "Имя получателя",
   "autoswapWarningTriggerAmount": "Максимальный баланс 0,02 BTC",
   "legacySeedViewScreenTitle": "Наследные семена",
-  "recoverbullErrorCheckStatusFailed": "Не удалось проверить состояние хранилища",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
   "backupWalletPhysicalBackupTag": "Неверный (примите свое время)",
   "electrumReset": "Перезагрузка",
@@ -1338,7 +1320,6 @@
   "recoverbullTestCompletedTitle": "Тест завершен успешно!",
   "arkBtcAddress": "Адрес BTC",
   "transactionFilterReceive": "Получить",
-  "recoverbullErrorInvalidFlow": "Неверный поток",
   "exchangeDcaFrequencyDay": "день",
   "payBumpFee": "Bump Fee",
   "arkCancelButton": "Отмена",
@@ -1584,7 +1565,6 @@
   "ledgerWalletTypeLabel": "Тип кошелька:",
   "bip85ExperimentalWarning": "Экспериментальный\nЗаверните свои пути вывода вручную",
   "addressViewBalance": "Баланс",
-  "recoverbullLookingForBalance": "Поиск баланса и сделок..",
   "recoverbullSelectNoBackupsFound": "Никаких резервных копий не найдено",
   "importMnemonicNestedSegwit": "Nested Segwit",
   "sendReplaceByFeeActivated": "Замена по фе активирована",
@@ -2858,7 +2838,6 @@
       }
     }
   },
-  "recoverbullErrorDecryptedVaultNotSet": "Зашифрованное хранилище не установлено",
   "pinCodeMismatchError": "PIN не совпадает",
   "autoswapRecipientWalletPlaceholderRequired": "Выберите биткойн-кошелек*",
   "recoverbullGoogleDriveErrorGeneric": "Произошла ошибка. Попробуй еще раз.",

@@ -40,15 +40,6 @@ class OnServerCheck extends RecoverBullEvent {
   const OnServerCheck();
 }
 
-class OnVaultCheckStatus extends RecoverBullEvent {
-  const OnVaultCheckStatus({required this.decryptedVault});
-  final DecryptedVault decryptedVault;
-}
-
-class OnVaultRecovery extends RecoverBullEvent {
-  const OnVaultRecovery();
-}
-
 class OnTorInitialization extends RecoverBullEvent {
   const OnTorInitialization();
 }

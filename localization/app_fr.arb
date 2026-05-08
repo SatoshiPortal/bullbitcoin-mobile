@@ -2587,14 +2587,6 @@
       }
     }
   },
-  "recoverbullBalance": "Solde : {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Vérification de la connexion pour RecoverBull",
   "recoverbullConfirm": "Confirmer",
   "recoverbullConfirmInput": "Confirmer {inputType}",
@@ -2646,13 +2638,10 @@
     }
   },
   "recoverbullEnterVaultKeyInstead": "Entrer une clé de coffre-fort",
-  "recoverbullErrorCheckStatusFailed": "Échec de la vérification de l'état du coffre-fort",
   "recoverbullErrorConnectionFailed": "Échec de la connexion au serveur de clés cible. Veuillez réessayer plus tard !",
-  "recoverbullErrorDecryptedVaultNotSet": "Le coffre-fort déchiffré n'est pas défini",
   "recoverbullErrorDecryptFailed": "Échec du déchiffrement du coffre-fort",
   "recoverbullErrorFetchKeyFailed": "Échec de la récupération de la clé du coffre-fort depuis le serveur",
   "recoverbullErrorInvalidCredentials": "Mot de passe incorrect pour ce fichier de sauvegarde",
-  "recoverbullErrorInvalidFlow": "Flux invalide",
   "recoverbullErrorMissingBytes": "Octets manquants dans la réponse Tor. Réessayez, mais si le problème persiste, il s'agit d'un problème connu pour certains appareils avec Tor.",
   "recoverbullErrorPasswordNotSet": "Le mot de passe n'est pas défini",
   "recoverbullErrorRecoveryFailed": "Échec de la récupération du coffre-fort",
@@ -2677,7 +2666,6 @@
   "recoverbullGoBackEdit": "<< Retour pour modifier",
   "recoverbullGotIt": "Compris",
   "recoverbullKeyServer": "Serveur de clés ",
-  "recoverbullLookingForBalance": "Recherche du solde et des transactions…",
   "recoverbullMemorizeWarning": "Vous devez mémoriser ce {inputType} pour récupérer l'accès à votre portefeuille. Il doit contenir au moins 6 chiffres. Si vous perdez ce {inputType}, vous ne pourrez pas récupérer votre sauvegarde.",
   "@recoverbullMemorizeWarning": {
     "placeholders": {
@@ -2747,19 +2735,10 @@
   "recoverbullTestRecovery": "Tester la récupération",
   "recoverbullTestSuccessDescription": "Vous pouvez récupérer l'accès à un portefeuille Bitcoin perdu",
   "recoverbullTorNetwork": "Réseau Tor",
-  "recoverbullTransactions": "Transactions : {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Coffre-fort créé avec succès",
   "recoverbullVaultImportedSuccess": "Votre coffre-fort a été importé avec succès",
   "recoverbullVaultKey": "Clé de coffre-fort",
   "recoverbullVaultKeyInput": "Clé de coffre-fort",
-  "recoverbullVaultRecovery": "Récupération de coffre-fort",
   "recoverbullVaultSelected": "Coffre-fort sélectionné",
   "recoverbullWaiting": "En attente",
   "recoverbullRecoveryTitle": "Récupération du coffre-fort RecoverBull",

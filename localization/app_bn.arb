@@ -1808,15 +1808,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "ব্যালেন্স: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "সেটিংস অ্যাক্সেস করুন",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2065,10 +2056,6 @@
   "arkSendTitle": "পাঠান",
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
-  },
-  "recoverbullVaultRecovery": "ভল্ট পুনরুদ্ধার",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
   },
   "transactionDetailLabelAmountReceived": "প্রাপ্ত পরিমাণ",
   "@transactionDetailLabelAmountReceived": {
@@ -2320,15 +2307,6 @@
   "withdrawBelowMinAmountError": "আপনি ন্যূনতম পরিমাণের নিচে উত্তোলন করার চেষ্টা করছেন।",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "লেনদেন: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "আপনি প্রদান করবেন",
   "@swapYouPay": {
@@ -3276,10 +3254,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "ভল্টের অবস্থা যাচাই করতে ব্যর্থ হয়েছে",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "আপনার ব্যাকআপ ফাইলটি আনতে অনুগ্রহ করে অপেক্ষা করুন।",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -3985,10 +3959,6 @@
   "transactionFilterReceive": "গ্রহণ করুন",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "অবৈধ প্রবাহ",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "দিন",
   "@exchangeDcaFrequencyDay": {
@@ -4723,10 +4693,6 @@
   "addressViewBalance": "ব্যালান্স",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "ব্যালেন্স এবং লেনদেন খুঁজছি…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "কোনো ব্যাকআপ পাওয়া যায়নি",
   "@recoverbullSelectNoBackupsFound": {
@@ -8524,10 +8490,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "ডিক্রিপ্ট করা ভল্ট সেট করা হয়নি",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "পিনগুলো মেলেনি",
   "@pinCodeMismatchError": {

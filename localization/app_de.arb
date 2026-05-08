@@ -593,14 +593,6 @@
   "sellBelowMinAmountError": "Sie versuchen, unterhalb des Mindestbetrags dieser Wallet zu verkaufen.",
   "buyAwaitingConfirmation": "Warten auf Bestätigung",
   "payExpired": "Abgelaufen",
-  "recoverbullBalance": "Guthaben: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Zugriffseinstellungen",
   "payPaymentSuccessful": "Zahlung erfolgreich",
   "exchangeHomeWithdraw": "Auszahlung",
@@ -694,7 +686,6 @@
   "bitboxErrorNoActiveConnection": "Keine aktive Verbindung zum BitBox-Gerät.",
   "dcaFundAccountButton": "Ihr Konto aufladen",
   "arkSendTitle": "Senden",
-  "recoverbullVaultRecovery": "Tresorwiederherstellung",
   "transactionDetailLabelAmountReceived": "Erhaltener Betrag",
   "bitboxCubitOperationTimeout": "Der Vorgang hat zu lange gedauert. Bitte versuchen Sie es erneut.",
   "receivePaymentReceived": "Zahlung erhalten!",
@@ -774,14 +765,6 @@
   "importQrDevicePassportStep11": "Geben Sie eine Bezeichnung für Ihre Foundation Passport-Wallet ein und tippen Sie auf „Importieren“.",
   "fundExchangeJurisdictionCanada": "🇨🇦 Kanada",
   "withdrawBelowMinAmountError": "Sie versuchen, einen Betrag unterhalb des Mindestbetrags abzuheben.",
-  "recoverbullTransactions": "Transaktionen: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "swapYouPay": "Sie bezahlen",
   "encryptedVaultTitle": "Verschlüsselter Tresor",
   "fundExchangeCrIbanUsdLabelIban": "IBAN-Kontonummer (nur US-Dollar)",
@@ -1102,7 +1085,6 @@
   "payNameHint": "Empfängername eingeben",
   "autoswapWarningTriggerAmount": "Maximaler Kontostand von 0,02 BTC.",
   "legacySeedViewScreenTitle": "Legacy Seeds",
-  "recoverbullErrorCheckStatusFailed": "Tresorstatus konnte nicht überprüft werden.",
   "pleaseWaitFetching": "Bitte warten Sie, während Ihre Sicherungsdatei abgerufen wird.",
   "backupWalletPhysicalBackupTag": "Vertrauenslos (nehmen Sie sich die Zeit)",
   "electrumReset": "Zurücksetzen",
@@ -1315,7 +1297,6 @@
   "recoverbullTestCompletedTitle": "Test erfolgreich abgeschlossen!",
   "arkBtcAddress": "Adresse",
   "transactionFilterReceive": "Empfangen",
-  "recoverbullErrorInvalidFlow": "Ungültiger Ablauf",
   "exchangeDcaFrequencyDay": "Tag",
   "payBumpFee": "Gebühren erhöhen",
   "bitboxActionImportWalletProcessingSubtext": "Ihre Watch-Only-Wallet wird eingerichtet…",
@@ -1557,7 +1538,6 @@
   "ledgerWalletTypeLabel": "Wallet-Typ:",
   "bip85ExperimentalWarning": "Experimentell\nSichern Sie Ihre Ableitungspfade manuell.",
   "addressViewBalance": "Saldo",
-  "recoverbullLookingForBalance": "Suche nach Guthaben und Transaktionen…",
   "recoverbullSelectNoBackupsFound": "Keine Backups gefunden",
   "importMnemonicNestedSegwit": "Eingebettetes SegWit",
   "sendReplaceByFeeActivated": "Gebührenerhöhung aktiviert",
@@ -2817,7 +2797,6 @@
       }
     }
   },
-  "recoverbullErrorDecryptedVaultNotSet": "Entschlüsselter Tresor ist nicht gesetzt.",
   "pinCodeMismatchError": "PINs stimmen nicht überein.",
   "autoswapRecipientWalletPlaceholderRequired": "Wählen Sie eine Bitcoin-Wallet aus *",
   "recoverbullGoogleDriveErrorGeneric": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",

@@ -1626,15 +1626,6 @@
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
   },
-  "recoverbullBalance": "Баланс: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Настройки за достъп",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -1841,10 +1832,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Възстановяване на Vault",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "Получена сума",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2034,15 +2021,6 @@
   "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
-  },
-  "recoverbullTransactions": "Транзакции: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "Вие плащате",
   "@swapYouPay": {
@@ -2811,10 +2789,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Неуспя да проверя състоянието на хранилището",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Моля, изчакайте докато заредим вашето резервно копие.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -3316,10 +3290,6 @@
   "transactionFilterReceive": "Получаване",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "Невалиден поток",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "payBumpFee": "Увеличи таксата",
   "@payBumpFee": {
@@ -3851,10 +3821,6 @@
   "exchangeFileUploadInReviewMessage": "Вашите документи в момента се разглеждат. Не можете да качвате повече файлове, докато прегледът не приключи.",
   "@exchangeFileUploadInReviewMessage": {
     "description": "Message shown when documents are under review"
-  },
-  "recoverbullLookingForBalance": "Търся баланс и транзакции…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Няма намерени резервни копия.",
   "@recoverbullSelectNoBackupsFound": {
@@ -6671,10 +6637,6 @@
   "fundExchangeSinpeAddedToBalance": "След като плащането бъде изпратено, то ще бъде добавено към баланса ви в акаунта.",
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Разшифрованият сейф не е зададен",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PIN-овете не съвпадат",
   "@pinCodeMismatchError": {

@@ -2537,14 +2537,6 @@
       }
     }
   },
-  "recoverbullBalance": "Saldo: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Tarkistetaan yhteyttä RecoverBull-palveluun",
   "recoverbullConfirm": "Vahvista",
   "recoverbullConfirmInput": "Vahvista {inputType}",
@@ -2596,13 +2588,10 @@
     }
   },
   "recoverbullEnterVaultKeyInstead": "Syötä sen sijaan holviavain",
-  "recoverbullErrorCheckStatusFailed": "Holvin tilan tarkistus epäonnistui",
   "recoverbullErrorConnectionFailed": "Yhteyden muodostaminen kohdeavainpalvelimeen epäonnistui. Yritä myöhemmin uudelleen!",
-  "recoverbullErrorDecryptedVaultNotSet": "Purettua holvia ei ole asetettu",
   "recoverbullErrorDecryptFailed": "Holvin purku epäonnistui",
   "recoverbullErrorFetchKeyFailed": "Holviavaimen hakeminen palvelimelta epäonnistui",
   "recoverbullErrorInvalidCredentials": "Väärä salasana tälle varmuuskopiolle",
-  "recoverbullErrorInvalidFlow": "Virheellinen työnkulku",
   "recoverbullErrorMissingBytes": "Puuttuvia bittejä Tor-vastauksesta. Yritä uudelleen, mutta jos ongelma jatkuu, se on joillain laitteilla tunnettu Tor-ongelma.",
   "recoverbullErrorPasswordNotSet": "Salasanaa ei ole asetettu",
   "recoverbullErrorRecoveryFailed": "Holvin palautus epäonnistui",
@@ -2627,7 +2616,6 @@
   "recoverbullGoBackEdit": "<< Palaa takaisin ja muokkaa",
   "recoverbullGotIt": "Selvä",
   "recoverbullKeyServer": "Avainpalvelin ",
-  "recoverbullLookingForBalance": "Etsitään saldoa ja transaktioita…",
   "recoverbullMemorizeWarning": "Sinun on muistettava tämä {inputType} palauttaaksesi pääsyn lompakkoosi. Sen on oltava vähintään 6 numeroa. Jos menetät tämän {inputType}, et voi palauttaa varmuuskopioasi.",
   "@recoverbullMemorizeWarning": {
     "placeholders": {
@@ -2697,19 +2685,10 @@
   "recoverbullTestRecovery": "Palautuksen testaus",
   "recoverbullTestSuccessDescription": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
   "recoverbullTorNetwork": "Tor-verkko",
-  "recoverbullTransactions": "Transaktioita: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Holvi luotu onnistuneesti",
   "recoverbullVaultImportedSuccess": "Holvisi tuotiin onnistuneesti",
   "recoverbullVaultKey": "Holviavain",
   "recoverbullVaultKeyInput": "Holviavain",
-  "recoverbullVaultRecovery": "Palauta Holvi",
   "recoverbullVaultSelected": "Holvi valittu",
   "recoverbullWaiting": "Odotetaan",
   "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",

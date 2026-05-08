@@ -1772,10 +1772,6 @@
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
   },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "bitboxCubitOperationTimeout": "Λειτουργία χρονοβόρα. Παρακαλώ δοκιμάστε ξανά.",
   "@bitboxCubitOperationTimeout": {
     "description": "Error interpretation for timeout"
@@ -1965,15 +1961,6 @@
   "withdrawBelowMinAmountError": "Προσπαθείτε να αποσύρετε κάτω από το ελάχιστο ποσό.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "Συναλλαγές: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "Πληρώνετε",
   "@swapYouPay": {
@@ -10493,15 +10480,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "recoverbullBalance": "Balance: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterToDecrypt": "Παρακαλώ μπείτε στο {inputType} για να αποκρυπτογραφήσετε το θύλακα σας.",
   "@recoverbullEnterToDecrypt": {
     "description": "Instruction to enter PIN or password for vault decryption",
@@ -10788,10 +10766,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Απέτυχε να ελέγξει την κατάσταση του θύλακα",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Παρακαλώ περιμένετε ενώ θα τραβήξουμε το εφεδρικό αρχείο σας.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -10901,10 +10875,6 @@
   "arkBtcAddress": "BTC διεύθυνση διεύθυνση",
   "@arkBtcAddress": {
     "description": "Label for the Bitcoin address field"
-  },
-  "recoverbullErrorInvalidFlow": "Invalid flow",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "arkCancelButton": "Ακύρωση",
   "@arkCancelButton": {
@@ -11027,10 +10997,6 @@
   "physicalBackupRecommendation": "Φυσικό αντίγραφο ασφαλείας: ",
   "@physicalBackupRecommendation": {
     "description": "Bold label for physical backup recommendation"
-  },
-  "recoverbullLookingForBalance": "Αναζητώντας ισορροπία και συναλλαγές..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Δεν βρέθηκαν αντίγραφα ασφαλείας",
   "@recoverbullSelectNoBackupsFound": {
@@ -11754,10 +11720,6 @@
   "autoswapWarningDescription": "Το Autoswap διασφαλίζει ότι δεν κρατάτε τυχαία πάρα πολλά χρήματα στο Instant Payment Wallet, το οποίο δεν είναι ασφαλές για μακροπρόθεσμη αποθήκευση.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Decrypted θύλακα δεν έχει οριστεί",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "autoswapRecipientWalletPlaceholderRequired": "Επιλέξτε ένα πορτοφόλι Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {

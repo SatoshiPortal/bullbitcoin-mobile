@@ -1816,15 +1816,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "สมดุล: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "การตั้งค่าการเข้าถึง",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2091,10 +2082,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "การกู้คืน",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "จํานวน",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2349,15 +2336,6 @@
   "withdrawBelowMinAmountError": "คุณพยายามที่จะถอนขั้นต่ํา.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "การทําธุรกรรม: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "คุณชําระเงิน",
   "@swapYouPay": {
@@ -3343,10 +3321,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "ตรวจสอบสถานะ",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "โปรดรอในขณะที่เราเขียนไฟล์สํารองข้อมูลของคุณ.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4064,10 +4038,6 @@
   "transactionFilterReceive": "ลงทะเบียน",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "การไหลของการไหล",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "วัน",
   "@exchangeDcaFrequencyDay": {
@@ -4831,10 +4801,6 @@
   "addressViewBalance": "สมดุล",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "กําลังมองหายอดคงเหลือและการทําธุรกรรม ..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "ไม่มีการสํารองข้อมูล",
   "@recoverbullSelectNoBackupsFound": {
@@ -8722,10 +8688,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "ถอดรหัสไม่ได้ตั้งค่า",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PINs ไม่จับคู่",
   "@pinCodeMismatchError": {

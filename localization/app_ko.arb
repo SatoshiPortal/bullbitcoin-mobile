@@ -1816,15 +1816,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "밸런스: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "액세스 설정",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2091,10 +2082,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Vault 복구",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "지불 방법",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2349,15 +2336,6 @@
   "withdrawBelowMinAmountError": "최소 금액을 인출하려고 합니다.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "거래 : {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "결제하기",
   "@swapYouPay": {
@@ -3343,10 +3321,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Vault 상태 확인 실패",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "귀하의 백업 파일을 fetch하는 동안 기다려 주십시오.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4064,10 +4038,6 @@
   "transactionFilterReceive": "이름 *",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "잘못된 흐름",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "일 시",
   "@exchangeDcaFrequencyDay": {
@@ -4831,10 +4801,6 @@
   "addressViewBalance": "(주)",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "균형과 거래를 찾고..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "백업 없음",
   "@recoverbullSelectNoBackupsFound": {
@@ -8730,10 +8696,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "해독된 결함은 놓지 않습니다",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PIN는 일치하지 않습니다",
   "@pinCodeMismatchError": {

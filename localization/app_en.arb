@@ -8321,15 +8321,6 @@
       }
     }
   },
-  "recoverbullBalance": "Balance: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Checking connection for RecoverBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -8419,17 +8410,9 @@
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
-  "recoverbullErrorCheckStatusFailed": "Failed to check the vault status",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "recoverbullErrorConnectionFailed": "Failed to connect to the target key server. Please try again later!",
   "@recoverbullErrorConnectionFailed": {
     "description": "Error message when server connection fails"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Decrypted vault is not set",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "recoverbullErrorDecryptFailed": "Failed to decrypt the vault",
   "@recoverbullErrorDecryptFailed": {
@@ -8442,10 +8425,6 @@
   "recoverbullErrorInvalidCredentials": "Wrong password for this backup file",
   "@recoverbullErrorInvalidCredentials": {
     "description": "Error message when wrong password is entered for vault"
-  },
-  "recoverbullErrorInvalidFlow": "Invalid flow",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "recoverbullErrorMissingBytes": "Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.",
   "@recoverbullErrorMissingBytes": {
@@ -8519,10 +8498,6 @@
   "recoverbullKeyServer": "Key Server ",
   "@recoverbullKeyServer": {
     "description": "Label for key server connection status"
-  },
-  "recoverbullLookingForBalance": "Looking for balance and transactions…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
   "@recoverbullMemorizeWarning": {
@@ -8731,15 +8706,6 @@
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
   },
-  "recoverbullTransactions": "Transactions: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Vault created successfully",
   "@recoverbullVaultCreatedSuccess": {
     "description": "Success message after vault creation"
@@ -8755,10 +8721,6 @@
   "recoverbullVaultKeyInput": "Vault Key",
   "@recoverbullVaultKeyInput": {
     "description": "Input field label for vault key entry"
-  },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
   },
   "recoverbullVaultSelected": "Vault Selected",
   "@recoverbullVaultSelected": {

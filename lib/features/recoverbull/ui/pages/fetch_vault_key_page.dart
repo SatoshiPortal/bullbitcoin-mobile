@@ -4,11 +4,12 @@ import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/recoverbull/presentation/bloc.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/password_input_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/test_completed_page.dart';
-import 'package:bb_mobile/features/recoverbull/ui/pages/vault_recovery_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/pages/view_vault_key_page.dart';
 import 'package:bb_mobile/features/recoverbull/ui/widgets/key_server_status_widget.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class FetchVaultKeyPage extends StatefulWidget {
   final String input;
@@ -79,7 +80,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                 current.decryptedVault != null &&
                     previous.decryptedVault != current.decryptedVault ||
                 current.vaultKey != null &&
-                    previous.vaultKey != current.vaultKey,
+                    previous.vaultKey != current.vaultKey ||
+                previous.isFlowFinished != current.isFlowFinished,
         listener: (context, state) {
           if (state.error != null) {
             SnackBarUtils.showSnackBar(
@@ -88,6 +90,12 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
             );
             context.read<RecoverBullBloc>().add(const OnClearError());
             Navigator.of(context).pop();
+          }
+          if (state.flow == RecoverBullFlow.recoverVault &&
+              state.isFlowFinished) {
+            _hasNavigatedAway = true;
+            context.goNamed(WalletRoute.walletHome.name);
+            return;
           }
           if (state.decryptedVault != null && state.vaultKey != null) {
             _hasNavigatedAway = true;
@@ -107,11 +115,9 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
                   ),
                 );
               case RecoverBullFlow.recoverVault:
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const VaultRecoveryPage(),
-                  ),
-                );
+                // Recover flow finishes via isFlowFinished above; this branch
+                // intentionally no-ops so we don't navigate before persistence.
+                break;
               case RecoverBullFlow.secureVault:
                 break; // should not fetch anything
               case RecoverBullFlow.settings:
