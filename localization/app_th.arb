@@ -12536,17 +12536,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "บันทึกสำคัญ",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "เปิดอยู่เสมอ — ช่วยให้เราเห็นว่ากระเป๋าเงินของคุณย้ายข้อมูลระหว่างเวอร์ชันแอปอย่างปลอดภัยหรือไม่",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "ไม่สามารถปิดบันทึกสำคัญได้ บันทึกเหล่านี้รายงานการอัปเกรด การย้ายข้อมูล และข้อผิดพลาดในการเริ่มต้นแอปที่ล้มเหลว เพื่อให้เราสามารถแก้ไขปัญหาที่อาจส่งผลกระทบต่อผู้อื่นได้",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",
   "@appInitErrorHasBackupTitle": {

@@ -111,17 +111,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "Nhật ký quan trọng",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "Luôn bật — giúp chúng tôi biết ví của bạn có di chuyển an toàn giữa các phiên bản ứng dụng hay không.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "Không thể tắt nhật ký quan trọng. Chúng báo cáo các bản nâng cấp, di chuyển và lỗi khởi động ứng dụng không thành công để chúng tôi có thể khắc phục các sự cố có thể ảnh hưởng đến những người khác.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "Sử dụng bản sao lưu của bạn",
   "@appInitErrorHasBackupTitle": {

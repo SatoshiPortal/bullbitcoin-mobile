@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/app_language_picker.dart';
 import 'package:bb_mobile/core/widgets/settings_entry_item.dart';
-import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/dev_mode_switch.dart';
@@ -87,22 +86,6 @@ class AppSettingsScreen extends StatelessWidget {
                   icon: Icons.bug_report,
                   title: context.loc.settingsErrorReportingTitle,
                   trailing: const ErrorReportingSwitch(),
-                ),
-                SettingsEntryItem(
-                  icon: Icons.sync_problem,
-                  title: context.loc.errorReportingCriticalTitle,
-                  trailing: Switch(
-                    value: true,
-                    // Read-only — tapping surfaces the snackbar.
-                    onChanged: (_) => SnackBarUtils.showSnackBar(
-                      context,
-                      context.loc.errorReportingCriticalSnackbar,
-                    ),
-                  ),
-                  onTap: () => SnackBarUtils.showSnackBar(
-                    context,
-                    context.loc.errorReportingCriticalSnackbar,
-                  ),
                 ),
               ],
             ),

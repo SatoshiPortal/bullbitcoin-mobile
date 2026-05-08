@@ -12536,17 +12536,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "중요 로그",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "항상 켜짐 — 앱 버전 간에 지갑이 안전하게 마이그레이션되는지 확인할 수 있게 해줍니다.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "중요 로그는 비활성화할 수 없습니다. 실패한 업그레이드, 마이그레이션, 앱 시작 오류를 보고하여 다른 사용자에게 영향을 줄 수 있는 문제를 해결할 수 있도록 합니다.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "백업을 사용하세요",
   "@appInitErrorHasBackupTitle": {

@@ -12536,17 +12536,9 @@
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
   },
-  "errorReportingCriticalTitle": "گزارش‌های حیاتی",
-  "@errorReportingCriticalTitle": {
-    "description": "Title of the read-only migration logs switch shown in the wizard and settings"
-  },
   "errorReportingMigrationSubtitle": "همیشه روشن — به ما اجازه می‌دهد ببینیم آیا کیف پول شما به‌طور ایمن بین نسخه‌های برنامه منتقل می‌شود.",
   "@errorReportingMigrationSubtitle": {
     "description": "Subtitle explaining why the migration logs switch cannot be disabled"
-  },
-  "errorReportingCriticalSnackbar": "گزارش‌های حیاتی را نمی‌توان غیرفعال کرد. آن‌ها ارتقاها، مهاجرت‌ها و خطاهای راه‌اندازی برنامه ناموفق را گزارش می‌دهند تا بتوانیم مشکلاتی را که ممکن است بر دیگران تأثیر بگذارد برطرف کنیم.",
-  "@errorReportingCriticalSnackbar": {
-    "description": "Snackbar shown when the user taps the disabled migration logs switch"
   },
   "appInitErrorHasBackupTitle": "از نسخه پشتیبان خود استفاده کنید",
   "@appInitErrorHasBackupTitle": {
