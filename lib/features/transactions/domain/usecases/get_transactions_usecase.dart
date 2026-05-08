@@ -15,7 +15,8 @@ class GetTransactionsUsecase {
   final WalletTransactionRepository _walletTransactionRepository;
   final BoltzSwapRepository _boltzSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _orderRepository;
+  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
+  final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
 
   GetTransactionsUsecase({
@@ -23,13 +24,15 @@ class GetTransactionsUsecase {
     required WalletTransactionRepository walletTransactionRepository,
     required BoltzSwapRepository boltzSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository orderRepository,
+    required ExchangeOrderRepository mainnetExchangeOrderRepository,
+    required ExchangeOrderRepository testnetExchangeOrderRepository,
     required LabelExchangeOrdersUsecase labelExchangeOrdersUsecase,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
        _boltzSwapRepository = boltzSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _orderRepository = orderRepository,
+       _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
+       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _labelExchangeOrdersUsecase = labelExchangeOrdersUsecase;
 
   Future<List<Transaction>> execute({
@@ -39,6 +42,9 @@ class GetTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
+      final orderRepository = environment.isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
 
       // Fetch wallet transactions, payjoins, orders and swaps
       final (walletTransactions, payjoins, orders, swaps) = await (
@@ -51,7 +57,7 @@ class GetTransactionsUsecase {
           walletId: walletId,
           environment: environment,
         ),
-        _orderRepository.getOrders(),
+        orderRepository.getOrders(),
         _boltzSwapRepository.getAllSwaps(walletId: walletId),
       ).wait;
 
