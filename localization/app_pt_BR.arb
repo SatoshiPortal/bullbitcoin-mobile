@@ -1780,10 +1780,6 @@
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
   },
-  "recoverbullVaultRecovery": "Recuperação de Vault",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "addressCardCopiedMessage": "Endereço copiado para clipboard",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -2302,15 +2298,6 @@
   "importWalletSectionHardware": "Carteiras de hardware",
   "@importWalletSectionHardware": {
     "description": "Section header for hardware wallet types"
-  },
-  "recoverbullTransactions": "Transações: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "payBillerName": "Nome do Biller",
   "@payBillerName": {
@@ -3533,10 +3520,6 @@
   "@fundExchangeCanadaPostStep1": {
     "description": "Step 1 for Canada Post payment process"
   },
-  "recoverbullErrorInvalidFlow": "Fluxo inválido",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
-  },
   "backupWalletGoogleDrivePermissionWarning": "O Google irá pedir-lhe para partilhar informações pessoais com este aplicativo.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
@@ -4225,10 +4208,6 @@
   "backupWalletEncryptedVaultTitle": "Vault criptografado",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
-  },
-  "recoverbullLookingForBalance": "Procurando equilíbrio e transações..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "swapConfirmTransferTitle": "Confirmar transferência",
   "@swapConfirmTransferTitle": {
@@ -7752,10 +7731,6 @@
   "pinCodeMismatchError": "PINs não correspondem",
   "@pinCodeMismatchError": {
     "description": "Error message when PIN confirmation doesn't match"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Vault descriptografado não está definido",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "sellCalculating": "Cálculo...",
   "@sellCalculating": {
@@ -11551,15 +11526,6 @@
   "@dcaFrequencyMonthly": {
     "description": "Monthly DCA frequency"
   },
-  "recoverbullBalance": "Equilíbrio: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterToDecrypt": "Digite seu {inputType} para descriptografar seu cofre.",
   "@recoverbullEnterToDecrypt": {
     "description": "Instruction to enter PIN or password for vault decryption",
@@ -11701,10 +11667,6 @@
   "doNotShareWarning": "NÃO COMPLEMENTAR COM NINGUÉM",
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
-  },
-  "recoverbullErrorCheckStatusFailed": "Falhado para verificar o status do vault",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
   },
   "importColdcardInstructionsStep9": "Digite um 'Label' para sua carteira Coldcard Q e toque em \"Importar\"",
   "@importColdcardInstructionsStep9": {

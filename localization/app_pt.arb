@@ -604,14 +604,6 @@
   "sellBelowMinAmountError": "Você está tentando vender abaixo da quantidade mínima que pode ser vendida com esta carteira.",
   "buyAwaitingConfirmation": "Aguardando confirmação ",
   "payExpired": "Expirou",
-  "recoverbullBalance": "Equilíbrio: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Configurações de acesso",
   "payPaymentSuccessful": "Pagamento bem sucedido",
   "exchangeHomeWithdraw": "Retirar",
@@ -705,7 +697,6 @@
   "dcaFundAccountButton": "Fina sua conta",
   "transactionFilterAll": "Todos",
   "arkSendTitle": "Enviar",
-  "recoverbullVaultRecovery": "Recuperação de Vault",
   "transactionDetailLabelAmountReceived": "Montante recebido",
   "bitboxCubitOperationTimeout": "A operação acabou. Por favor, tente novamente.",
   "receivePaymentReceived": "Pagamento recebido!",
@@ -787,14 +778,6 @@
   "importQrDevicePassportStep11": "Digite um rótulo para sua carteira de passaporte e toque em \"Importar\"",
   "fundExchangeJurisdictionCanada": "Canadá",
   "withdrawBelowMinAmountError": "Você está tentando retirar abaixo do valor mínimo.",
-  "recoverbullTransactions": "Transações: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "swapYouPay": "Você paga",
   "encryptedVaultTitle": "Vault criptografado",
   "fundExchangeCrIbanUsdLabelIban": "Número da conta IBAN (apenas dólares americanos)",
@@ -1121,7 +1104,6 @@
   "payNameHint": "Digite o nome do destinatário",
   "autoswapWarningTriggerAmount": "Classificação de 0,02 BTC",
   "legacySeedViewScreenTitle": "Sementes Legacy",
-  "recoverbullErrorCheckStatusFailed": "Falhado para verificar o status do vault",
   "pleaseWaitFetching": "Por favor, espere enquanto buscamos seu arquivo de backup.",
   "backupWalletPhysicalBackupTag": "Trustless (ter o seu tempo)",
   "electrumReset": "Redefinição",
@@ -1338,7 +1320,6 @@
   "recoverbullTestCompletedTitle": "Teste concluído com sucesso!",
   "arkBtcAddress": "Endereço de BTC",
   "transactionFilterReceive": "Receber",
-  "recoverbullErrorInvalidFlow": "Fluxo inválido",
   "exchangeDcaFrequencyDay": "dia",
   "payBumpFee": "Bump Fee",
   "arkCancelButton": "Cancelar",
@@ -1584,7 +1565,6 @@
   "ledgerWalletTypeLabel": "Tipo de carteira:",
   "bip85ExperimentalWarning": "Experimental\nFaça backup de seus caminhos de derivação manualmente",
   "addressViewBalance": "Balanço",
-  "recoverbullLookingForBalance": "Procurando equilíbrio e transações..",
   "recoverbullSelectNoBackupsFound": "Nenhum backup encontrado",
   "importMnemonicNestedSegwit": "Segwit aninhado",
   "sendReplaceByFeeActivated": "Substitui-a-taxa activada",
@@ -2841,7 +2821,6 @@
       }
     }
   },
-  "recoverbullErrorDecryptedVaultNotSet": "Vault descriptografado não está definido",
   "pinCodeMismatchError": "PINs não correspondem",
   "autoswapRecipientWalletPlaceholderRequired": "Selecione uma carteira Bitcoin *",
   "recoverbullGoogleDriveErrorGeneric": "Um erro ocorreu. Por favor, tente novamente.",

@@ -1808,15 +1808,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "Denge: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Access Settings Ayarlar",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2083,10 +2074,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "$ aldı",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2341,15 +2328,6 @@
   "withdrawBelowMinAmountError": "Asgari miktarın altına çekilmeye çalışıyorsunuz.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "İşlemler: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "You Pay",
   "@swapYouPay": {
@@ -3335,10 +3313,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Boş durumu kontrol etmek için başarısız oldu",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Lütfen yedek dosyanızı alırken bekleyin.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4052,10 +4026,6 @@
   "transactionFilterReceive": "Kabul Kabul Al",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "Invalid akışı",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "gün",
   "@exchangeDcaFrequencyDay": {
@@ -4811,10 +4781,6 @@
   "addressViewBalance": "Denge dengesi",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "Denge ve işlemlere bakmak..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Hiçbir yedek bulunamadı",
   "@recoverbullSelectNoBackupsFound": {
@@ -8655,10 +8621,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Decryptedob ayarlanmamış değildir",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PIN'ler eşleşmez",
   "@pinCodeMismatchError": {

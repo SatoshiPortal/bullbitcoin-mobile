@@ -2590,14 +2590,6 @@
       }
     }
   },
-  "recoverbullBalance": "Saldo: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Verificando conexión para RecoverBull",
   "recoverbullConfirm": "Confirmar",
   "recoverbullConfirmInput": "Confirmar {inputType}",
@@ -2649,13 +2641,10 @@
     }
   },
   "recoverbullEnterVaultKeyInstead": "Ingresar una clave de bóveda en su lugar",
-  "recoverbullErrorCheckStatusFailed": "Error al verificar el estado de la bóveda",
   "recoverbullErrorConnectionFailed": "Error al conectar con el servidor de claves de destino. ¡Por favor intente de nuevo más tarde!",
-  "recoverbullErrorDecryptedVaultNotSet": "La bóveda descifrada no está configurada",
   "recoverbullErrorDecryptFailed": "Error al descifrar la bóveda",
   "recoverbullErrorFetchKeyFailed": "Error al obtener la clave de bóveda del servidor",
   "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
-  "recoverbullErrorInvalidFlow": "Flujo inválido",
   "recoverbullErrorMissingBytes": "Faltan bytes en la respuesta de Tor. Reintente, pero si el problema persiste, es un problema conocido para algunos dispositivos con Tor.",
   "recoverbullErrorPasswordNotSet": "La contraseña no está configurada",
   "recoverbullErrorRecoveryFailed": "Error al recuperar la bóveda",
@@ -2680,7 +2669,6 @@
   "recoverbullGoBackEdit": "<< Volver y editar",
   "recoverbullGotIt": "Entendido",
   "recoverbullKeyServer": "Servidor de Claves ",
-  "recoverbullLookingForBalance": "Buscando saldo y transacciones…",
   "recoverbullMemorizeWarning": "Debe memorizar este {inputType} para recuperar el acceso a su monedero. Debe tener al menos 6 dígitos. Si pierde este {inputType} no podrá recuperar su respaldo.",
   "@recoverbullMemorizeWarning": {
     "placeholders": {
@@ -2750,19 +2738,10 @@
   "recoverbullTestRecovery": "Probar Recuperación",
   "recoverbullTestSuccessDescription": "Puede recuperar el acceso a un monedero Bitcoin perdido",
   "recoverbullTorNetwork": "Red Tor",
-  "recoverbullTransactions": "Transacciones: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Bóveda creada con éxito",
   "recoverbullVaultImportedSuccess": "Su bóveda se importó exitosamente",
   "recoverbullVaultKey": "Clave de Bóveda",
   "recoverbullVaultKeyInput": "Clave de Bóveda",
-  "recoverbullVaultRecovery": "Recuperación de Bóveda",
   "recoverbullVaultSelected": "Bóveda Seleccionada",
   "recoverbullWaiting": "Esperando",
   "recoverbullRecoveryTitle": "Recuperación de bóveda RecoverBull",

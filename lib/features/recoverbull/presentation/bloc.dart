@@ -19,12 +19,8 @@ import 'package:bb_mobile/core/tor/data/usecases/tor_status_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/ports/tor_config_port.dart';
 import 'package:bb_mobile/core/tor/tor_status.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/features/recoverbull/errors.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -44,8 +40,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
   final DecryptVaultUsecase _decryptVaultUsecase;
   final RestoreVaultUsecase _restoreVaultUsecase;
   final InitTorUsecase _initializeTorUsecase;
-  final TheDirtyUsecase _checkWalletStatusUsecase;
-  final TheDirtyLiquidUsecase _checkLiquidWalletStatusUsecase;
   final WalletBloc _walletBloc;
   final FetchLatestGoogleDriveVaultUsecase _fetchLatestGoogleDriveVaultUsecase;
   final UpdateLatestEncryptedVaultTestUsecase
@@ -65,8 +59,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
     required SaveVaultToGoogleDriveUsecase saveToGoogleDriveUsecase,
     required InitTorUsecase initializeTorUsecase,
-    required TheDirtyUsecase checkWalletStatusUsecase,
-    required TheDirtyLiquidUsecase checkLiquidWalletStatusUsecase,
     required WalletBloc walletBloc,
     required FetchLatestGoogleDriveVaultUsecase
     fetchLatestGoogleDriveVaultUsecase,
@@ -83,8 +75,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
        _saveToGoogleDriveUsecase = saveToGoogleDriveUsecase,
        _initializeTorUsecase = initializeTorUsecase,
-       _checkWalletStatusUsecase = checkWalletStatusUsecase,
-       _checkLiquidWalletStatusUsecase = checkLiquidWalletStatusUsecase,
        _walletBloc = walletBloc,
        _fetchLatestGoogleDriveVaultUsecase = fetchLatestGoogleDriveVaultUsecase,
        _updateLatestEncryptedVaultTestUsecase =
@@ -97,8 +87,6 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     on<OnVaultPasswordSet>(_onVaultPasswordSet);
     on<OnVaultCreation>(_onVaultCreation);
     on<OnVaultDecryption>(_onVaultDecryption);
-    on<OnVaultCheckStatus>(_onVaultCheckStatus);
-    on<OnVaultRecovery>(_onVaultRecovery);
     on<OnServerCheck>(_onServerCheck);
     on<OnTorInitialization>(_onTorInitialization);
     on<OnClearError>(_onClearError);
@@ -395,10 +383,8 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
           await _updateLatestEncryptedVaultTestUsecase.execute(
             decryptedVault: decryptedVault,
           );
-          await _onVaultCheckStatus(
-            OnVaultCheckStatus(decryptedVault: decryptedVault),
-            emit,
-          );
+          await _restoreAndStart(decryptedVault, emit);
+          return;
         case RecoverBullFlow.secureVault:
           throw UnimplementedError();
         case RecoverBullFlow.settings:
@@ -415,62 +401,22 @@ class RecoverBullBloc extends Bloc<RecoverBullEvent, RecoverBullState> {
     }
   }
 
-  Future<void> _onVaultCheckStatus(
-    OnVaultCheckStatus event,
+  // Persists the recovered wallets, kicks off the real WalletBloc sync, and
+  // marks the flow finished so `FetchVaultKeyPage` can navigate straight to
+  // the wallet home. Replaces the deprecated dry-scan preview screen, which
+  // showed a balance/tx preview gated behind a manual "Continue" button.
+  Future<void> _restoreAndStart(
+    DecryptedVault decryptedVault,
     Emitter<RecoverBullState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true));
-
-      final mnemonic = bip39.Mnemonic.fromWords(
-        words: event.decryptedVault.mnemonic,
-      );
-
-      final bip84Status = await _checkWalletStatusUsecase(
-        mnemonic: mnemonic,
-        scriptType: ScriptType.bip84,
-      );
-      emit(state.copyWith(bip84Status: bip84Status));
-      log.fine('Vault BIP84 status checked');
-
-      final liquidStatus = await _checkLiquidWalletStatusUsecase(
-        mnemonic: mnemonic,
-      );
-      emit(state.copyWith(liquidStatus: liquidStatus));
-      log.fine('Vault Liquid status checked');
-    } catch (e) {
-      log.severe(error: e, trace: StackTrace.current);
-      emit(state.copyWith(error: VaultCheckStatusError()));
-    } finally {
-      emit(state.copyWith(isLoading: false));
-    }
-  }
-
-  Future<void> _onVaultRecovery(
-    OnVaultRecovery event,
-    Emitter<RecoverBullState> emit,
-  ) async {
-    if (state.decryptedVault == null) {
-      emit(state.copyWith(error: DecryptedVaultIsNotSetError()));
-      return;
-    }
-    if (state.flow != RecoverBullFlow.recoverVault) {
-      emit(state.copyWith(error: InvalidFlowError()));
-      return;
-    }
-
-    try {
-      emit(state.copyWith(isLoading: true));
-
-      await _restoreVaultUsecase.execute(decryptedVault: state.decryptedVault!);
+      await _restoreVaultUsecase.execute(decryptedVault: decryptedVault);
       _walletBloc.add(const WalletStarted());
       log.fine('Vault recovered');
-      emit(state.copyWith(isFlowFinished: true));
+      emit(state.copyWith(isFlowFinished: true, isLoading: false));
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      emit(state.copyWith(error: VaultRecoveryError()));
-    } finally {
-      emit(state.copyWith(isLoading: false));
+      emit(state.copyWith(error: VaultRecoveryError(), isLoading: false));
     }
   }
 

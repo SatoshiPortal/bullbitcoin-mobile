@@ -2033,15 +2033,6 @@
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
   },
-  "recoverbullBalance": "Zůstatek: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Nastavení přístupu",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2304,10 +2295,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Vault zotavení",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "Množství přijaté",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2549,15 +2536,6 @@
   "withdrawBelowMinAmountError": "Pokuste se odstoupit nad minimálním množstvím.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "Transakce: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "Zaplatit",
   "@swapYouPay": {
@@ -3494,10 +3472,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Zkontrolovat stav klenby",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Prosím, počkejte, když načteme váš záložní soubor.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4157,10 +4131,6 @@
   "transactionFilterReceive": "Čeština",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "Neplatný tok",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "den",
   "@exchangeDcaFrequencyDay": {
@@ -4888,10 +4858,6 @@
   "addressViewBalance": "Čeština",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "Hledáte rovnováhu a transakce..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Žádné zálohy nalezeno",
   "@recoverbullSelectNoBackupsFound": {
@@ -8585,10 +8551,6 @@
   "fundExchangeSinpeAddedToBalance": "Jakmile je platba odeslána, bude přidána do zůstatku na účtu.",
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Dešifrovaná klenba není nastavena",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "autoswapRecipientWalletPlaceholderRequired": "Vyberte peněženku Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {

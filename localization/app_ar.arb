@@ -1702,15 +1702,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "الرصيد: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "الدخول",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -1977,10 +1968,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "الاسترداد الافتراضي",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "المبلغ المستلم",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2223,15 +2210,6 @@
   "withdrawBelowMinAmountError": "أنت تحاول أن تنسحب دون الحد الأدنى.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "المعاملات: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "تدفع",
   "@swapYouPay": {
@@ -3157,10 +3135,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "فشل في التحقق من حالة الخزنة",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "backupWalletPhysicalBackupTag": "عديم الثقة (خذ وقتك)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
@@ -3830,10 +3804,6 @@
   "transactionFilterReceive": "الاستلام",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "تدفق غير مستقر",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "اليوم",
   "@exchangeDcaFrequencyDay": {
@@ -4564,10 +4534,6 @@
   "addressViewBalance": "الرصيد",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "أبحث عن التوازن والمعاملات..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "لم يتم العثور على أي دعم",
   "@recoverbullSelectNoBackupsFound": {
@@ -8201,10 +8167,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "الخزنة المشفرة ليست جاهزة",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PINS لا تطابق",
   "@pinCodeMismatchError": {
