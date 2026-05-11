@@ -34,6 +34,15 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
+# Workaround for CVE-2024-32020 hardlink check failing on overlayfs:
+# git >= 2.45.1 verifies inode equality after hardlinking during local clone;
+# overlayfs returns different inodes so the check aborts. Pub does many local
+# clones from its bare cache, so we force --no-hardlinks for `git clone`.
+# Upstream fix tracked in git PR #1796 (not merged).
+RUN mv /usr/bin/git /usr/bin/git.real && \
+    printf '#!/bin/sh\nif [ "$1" = "clone" ]; then shift; exec /usr/bin/git.real clone --no-hardlinks "$@"; fi\nexec /usr/bin/git.real "$@"\n' > /usr/bin/git && \
+    chmod +x /usr/bin/git
+
 # Create user
 RUN adduser --disabled-password --gecos '' $USER
 RUN adduser $USER sudo
