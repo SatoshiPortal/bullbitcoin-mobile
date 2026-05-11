@@ -6,9 +6,14 @@ Scripts for verifying that the published Bull Bitcoin Mobile app matches a build
 
 Three components work together:
 
-### `../Dockerfile` (root)
+### `../Containerfile.tools` and `../Containerfile.app` (root)
 
-Builds the app from source in a clean, hermetic environment. It installs all toolchains (Rust, Flutter via FVM, Android SDK, Gradle), copies the repo into the image, and runs `flutter build`. Two environment variables are set at build time to eliminate sources of non-determinism:
+Two-file build setup driven by `make apk release`:
+
+- `Containerfile.tools` installs all toolchains (Rust pinned via `RUST_VERSION`, Flutter via FVM, Android SDK, Gradle).
+- `Containerfile.app` copies the repo, runs `pub get` / `build_runner` / `gen-l10n`, and configures Gradle. It does NOT run `flutter build` — that happens via `podman run` against the resulting image so the multi-GB build output is never committed to a layer.
+
+Two environment variables are set at build time to eliminate sources of non-determinism:
 
 - `SOURCE_DATE_EPOCH` — set to the timestamp of the latest git commit (`git log -1 --format=%ct`). OpenSSL embeds a wall-clock build timestamp in compiled binaries by default; setting this variable makes it use a fixed value instead, so any `.so` that links against OpenSSL (`libark_wallet.so`, `libboltz.so`, `libtor.so`) is identical across builds.
 - `CARGO_ENCODED_RUSTFLAGS` — three `--remap-path-prefix` flags that rewrite absolute paths baked into Rust binaries at compile time (home directory, `.cargo`, `.rustup`) to fixed strings (`/cargo`, `/rustup`, `/build`). cargokit reads `CARGO_ENCODED_RUSTFLAGS` rather than `RUSTFLAGS`; flags are separated by the ASCII unit separator `\x1f` (octal `\037`).
@@ -23,13 +28,13 @@ Orchestrates the full verification:
 
 1. Builds the verification tools image from `Dockerfile`
 2. Optionally downloads the official APK from the GitHub release, or uses a locally provided APK or split APK directory
-3. Builds the app from the current repo checkout using the root `Dockerfile`
-4. Extracts the built artifact from the Docker image
+3. Builds the app from the current repo checkout via `make apk release` (which uses the root `Containerfile.tools` + `Containerfile.app`)
+4. Picks up the extracted APK from the repo root (`./app-release.apk`)
 5. Decodes both APKs with apktool (inside the tools container)
 6. Diffs the decoded output excluding `META-INF` (signatures are not part of reproducibility)
 7. Writes a `RESULTS.md` verdict to the workspace directory
 
-For Docker-to-Docker comparisons to be reproducible, both builds must use the exact same git commit. `SOURCE_DATE_EPOCH` is derived from `git log -1 --format=%ct`, so if two builds are from different commits they will embed different timestamps and the `.so` files will differ.
+For build-to-build comparisons to be reproducible, both builds must use the exact same git commit. `SOURCE_DATE_EPOCH` is derived from `git log -1 --format=%ct`, so if two builds are from different commits they will embed different timestamps and the `.so` files will differ.
 
 ---
 

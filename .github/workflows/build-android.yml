@@ -1,0 +1,37 @@
+name: build-android
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [release, debug]
+        default: release
+
+jobs:
+  build:
+    # Pinned to 24.04. 26.04 runner not yet provided by GitHub
+    # (tracked in actions/runner-images#13855). Bump when available.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Build APK
+        # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
+        run: make apk ${{ inputs.mode }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: app-${{ inputs.mode }}
+          path: app-${{ inputs.mode }}.apk
+          retention-days: 30
