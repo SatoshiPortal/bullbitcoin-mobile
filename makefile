@@ -60,9 +60,13 @@ ios-sqlite-update:
 	@echo "Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
 
+# Container runtime — default podman, override with CONTAINER=docker for
+# environments without podman.
+CONTAINER ?= podman
+
 container-tools:
 	@echo "🔧 Building tools image"
-	@podman build -f Containerfile.tools -t bull-tools \
+	@$(CONTAINER) build -f Containerfile.tools -t bull-tools \
 		--build-arg FLUTTER_VERSION=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc) \
 		--build-arg JVM_TARGET=$$(grep 'android.jvmTarget' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_API_LEVEL=$$(grep 'android.compileSdk' android/gradle.properties | cut -d= -f2) \
@@ -73,7 +77,7 @@ container-tools:
 
 container-app: container-tools
 	@echo "📦 Building app image"
-	@podman build -f Containerfile.app -t bull-app \
+	@$(CONTAINER) build -f Containerfile.app -t bull-app \
 		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
 		.
 
@@ -90,10 +94,21 @@ endif
 release debug:
 	@:
 
+# Flutter writes APK and AAB to different paths
+ifeq ($(FORMAT),aab)
+  CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(MODE)/app-$(MODE).aab
+  HOST_OUTPUT := ./app-$(MODE).aab
+  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE)
+else
+  CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(MODE).apk
+  HOST_OUTPUT := ./app-$(MODE).apk
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE)
+endif
+
 apk: container-app
-	@echo "🔨 Building $(FORMAT) ($(MODE)) via Podman"
-	@podman rm -f bull-build > /dev/null 2>&1 || true
-	@podman run --name bull-build \
+	@echo "🔨 Building $(FORMAT) ($(MODE)) via $(CONTAINER)"
+	@$(CONTAINER) rm -f bull-build > /dev/null 2>&1 || true
+	@$(CONTAINER) run --name bull-build \
 		--ulimit nofile=65536:65536 \
 		bull-app bash -c '\
 			SOURCE_DATE_EPOCH=$$(git -C /app log -1 --format=%ct) && \
@@ -104,15 +119,11 @@ apk: container-app
 			CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 && \
 			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS && \
 			cd /app && \
-			if [ "$(FORMAT)" = "aab" ]; then \
-				fvm flutter build appbundle --$(MODE); \
-			else \
-				fvm flutter build apk --$(MODE); \
-			fi'
-	@podman cp bull-build:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
-	@podman rm bull-build > /dev/null
-	@echo "✅ APK extracted: ./app-$(MODE).apk"
-	@sha256sum ./app-$(MODE).apk
+			$(FLUTTER_BUILD)'
+	@$(CONTAINER) cp bull-build:$(CONTAINER_OUTPUT) $(HOST_OUTPUT)
+	@$(CONTAINER) rm bull-build > /dev/null
+	@echo "✅ Output extracted: $(HOST_OUTPUT)"
+	@sha256sum $(HOST_OUTPUT)
 
 verify:
 	@echo "🔍 Verifying reproducible build"

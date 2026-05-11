@@ -37,7 +37,6 @@ WORK_DIR="$SCRIPT_DIR/reproducibility_test_$(date +%s)"
 mkdir -p "$WORK_DIR"
 echo "Workspace: $WORK_DIR"
 
-APK_PATH="build/app/outputs/flutter-apk/app-${MODE}.apk"
 VERIFY_TOOLS_IMAGE="bullbitcoin-verify-tools:latest"
 
 # Build verification tools container
@@ -48,11 +47,8 @@ $CTR build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
 echo ""
 echo -e "${YELLOW}=== Build 1 ===${NC}"
 cd "$REPO_ROOT"
-make apk "$MODE"
-
-$CTR create --name repro_build1_$$ bull-mobile-apk > /dev/null
-$CTR cp "repro_build1_$$:/app/$APK_PATH" "$WORK_DIR/build1.apk"
-$CTR rm repro_build1_$$ > /dev/null
+CONTAINER="$CTR" make apk "$MODE"
+cp "$REPO_ROOT/app-${MODE}.apk" "$WORK_DIR/build1.apk"
 
 echo "Saved: $WORK_DIR/build1.apk"
 sha256sum "$WORK_DIR/build1.apk"
@@ -60,13 +56,11 @@ sha256sum "$WORK_DIR/build1.apk"
 # --- Build 2 (no cache) ---
 echo ""
 echo -e "${YELLOW}=== Build 2 (no cache) ===${NC}"
-$CTR rmi bull-mobile-apk > /dev/null 2>&1 || true
+# Drop the image so the second build re-runs every step from a clean slate
+$CTR rmi bull-app > /dev/null 2>&1 || true
 
-make apk "$MODE"
-
-$CTR create --name repro_build2_$$ bull-mobile-apk > /dev/null
-$CTR cp "repro_build2_$$:/app/$APK_PATH" "$WORK_DIR/build2.apk"
-$CTR rm repro_build2_$$ > /dev/null
+CONTAINER="$CTR" make apk "$MODE"
+cp "$REPO_ROOT/app-${MODE}.apk" "$WORK_DIR/build2.apk"
 
 echo "Saved: $WORK_DIR/build2.apk"
 sha256sum "$WORK_DIR/build2.apk"

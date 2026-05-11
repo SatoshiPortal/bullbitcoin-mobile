@@ -4,4 +4,17 @@ build/
 android/.gradle/
 ios/
 .idea/
+.vscode/
 *.iml
+
+# Host-side Flutter version cache (FVM downloads its own copy in the container)
+.fvm/
+
+# Local APKs/AABs built previously (host-side artifacts)
+app-*.apk
+app-*.aab
+
+# Local investigation / verification scratch dirs
+.tmp_apk_diff/
+reproducibility/bullbitcoin_*_verification/
+reproducibility/reproducibility_test_*/

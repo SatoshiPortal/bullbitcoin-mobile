@@ -3,13 +3,17 @@ FROM --platform=linux/amd64 debian:trixie
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG USERNAME="bull"
-# Rust toolchain is always "stable" — cargokit forces stable regardless of what we install.
-# Reproducibility is enforced by EXPECTED_RUST_VERSION (build-arg guard below) + the
-# rust version recorded in the manifest, not by the install step.
 ENV USER=$USERNAME
 ARG FVM_VERSION="4.0.5"
 ARG FLUTTER_VERSION="3.38.5"
 ARG ANDROID_CMDLINE_TOOLS_VERSION="14742923"
+
+# Rust is pinned explicitly so the rustup default toolchain matches what
+# our forked plugins (ark-wallet-dart, boltz-dart) declare in their
+# cargokit.yaml. Plugins without cargokit.yaml fall back to "stable" — for
+# those, EXPECTED_RUST_VERSION (below) acts as a guard so the build aborts
+# if the installed version drifts from what we recorded as canonical.
+ARG RUST_VERSION="1.95.0"
 
 # Android versions (passed via --build-arg from Makefile, defaults as fallback)
 ARG JVM_TARGET="21"
@@ -50,9 +54,9 @@ RUN adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USER
 
-# Install Rust
+# Install Rust (pinned via RUST_VERSION arg)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
-RUN sh /tmp/rustup.sh -y --default-toolchain stable
+RUN sh /tmp/rustup.sh -y --no-modify-path --default-toolchain ${RUST_VERSION}
 RUN rm /tmp/rustup.sh
 ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 
@@ -63,13 +67,15 @@ RUN rustup target add x86_64-linux-android
 RUN rustup target add i686-linux-android
 RUN rustc --version && cargo --version
 
-# Optional: abort if stable doesn't match expected version (used by reproduce)
+# Belt-and-suspenders verification: abort if the installed Rust does not match
+# EXPECTED_RUST_VERSION when provided. Useful when reproducing an older build
+# whose canonical Rust differs from the current RUST_VERSION default.
 ARG EXPECTED_RUST_VERSION=""
 RUN if [ -n "$EXPECTED_RUST_VERSION" ]; then \
       INSTALLED=$(rustc --version | awk '{print $2}'); \
       if [ "$INSTALLED" != "$EXPECTED_RUST_VERSION" ]; then \
-        echo "ERROR: Expected Rust $EXPECTED_RUST_VERSION but current stable is $INSTALLED"; \
-        echo "Cargokit uses stable toolchain — all FRB crates will build with $INSTALLED, not $EXPECTED_RUST_VERSION"; \
+        echo "ERROR: Expected Rust $EXPECTED_RUST_VERSION but installed is $INSTALLED"; \
+        echo "Pass --build-arg RUST_VERSION=$EXPECTED_RUST_VERSION to align"; \
         exit 1; \
       fi; \
     fi
