@@ -78,5 +78,123 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN"
+  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
+  "backButton": "Quay lại",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Bắt đầu",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Sáng",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Tối",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Hệ thống",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Tôi đóng góp",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Tôi không đóng góp",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Nhật ký tiêu chuẩn",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Luôn bật — giúp chúng tôi biết ví của bạn có di chuyển an toàn giữa các phiên bản ứng dụng hay không.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Sử dụng bản sao lưu của bạn",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Nhờ bản sao lưu, tiền của bạn vẫn an toàn.\nTrước tiên hãy thử khởi động lại ứng dụng; nếu vẫn không chạy, gỡ cài đặt và cài lại rồi khôi phục bằng bản sao lưu.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Không có bản sao lưu?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Đừng xóa ứng dụng.\nLiên hệ với đội hỗ trợ của chúng tôi để thử giải cứu.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Liên hệ hỗ trợ",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Hiển thị chi tiết lỗi",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Giá trị stop gap cao làm tăng đáng kể thời gian đồng bộ. Giữ ứng dụng mở ở phía trước cho đến khi đồng bộ hoàn tất — đưa ứng dụng xuống nền có thể làm gián đoạn quá trình.",
+  "wizardSkipButton": "Bỏ qua",
+  "wizardPageIndicator": "TRANG {current} / {total}",
+  "wizardNextButton": "Tiếp theo",
+  "wizardCustomizeTitle": "Tùy chỉnh trải nghiệm của bạn",
+  "wizardCustomizeBody": "Sử dụng BULL theo cách của bạn với các cài đặt này.",
+  "wizardCustomizeDefaultCurrency": "Tiền tệ mặc định",
+  "wizardMissionTitle": "Hỗ trợ sứ mệnh Bull",
+  "wizardMissionBody1": "Để giúp chúng tôi cải thiện phần mềm và đảm bảo mức độ bảo mật, quyền riêng tư và khả năng sử dụng cao nhất, ứng dụng của bạn có thể gửi cho chúng tôi nhật ký lỗi, cho phép chúng tôi phát hiện và khắc phục sự cố nhanh chóng trong các bản cập nhật tiếp theo.",
+  "wizardMissionBody2": "Các nhật ký này được ẩn danh, không được liên kết với địa chỉ IP của bạn và không bao giờ chia sẻ bất kỳ thông tin nào về giao dịch hoặc danh tính của bạn. Chúng hoàn toàn mang tính kỹ thuật và không khiến bạn gặp rủi ro nào. Điều này rất hữu ích cho chúng tôi và không tốn kém gì cho bạn.",
+  "wizardMissionQuestion": "Bạn có chấp nhận tham gia chương trình báo cáo sự cố tự động của chúng tôi không?",
+  "wizardMissionYes": "Có",
+  "wizardMissionNo": "Không",
+  "wizardMissionRequired": "Vui lòng chọn Có hoặc Không trước khi tiếp tục.",
+  "wizardJourneyTitle": "Tiến bước trên hành trình của bạn",
+  "wizardJourneyBody": "Nếu bạn mới sử dụng ví BULL, đây là một số tính năng bạn có thể tận dụng để cải thiện quyền riêng tư, bảo mật và trải nghiệm người dùng.",
+  "wizardJourneyTip1": "Thêm mã PIN bảo mật để mở khóa ví của bạn",
+  "wizardJourneyTip2": "Thử bản sao lưu kho mã hóa",
+  "wizardJourneyTip3": "Kết nối với nút Bitcoin của riêng bạn",
+  "wizardJourneyTip4": "Kết nối với trình khám phá Mempool của riêng bạn",
+  "wizardJourneyTip5": "Chuyển đổi giữa Bitcoin và Liquid mà không cần KYC",
+  "wizardJourneyTip6": "Tùy chỉnh cài đặt autoswap của bạn",
+  "wizardJourneyTip7": "Chuyển đổi giữa Bitcoin (BTC) và Satoshis (sats)",
+  "wizardJourneyTip8": "Tạo giao dịch air-gap cho ví phần cứng của bạn",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "CẦN HÀNH ĐỘNG",
+  "legacyStorageBadgeConfirm": "XÁC NHẬN",
+  "legacyStorageNoBackupPageTitle": "SAO LƯU VÀ CÀI ĐẶT LẠI VÍ CỦA BẠN",
+  "legacyStorageHasBackupPageTitle": "CÀI ĐẶT LẠI VÍ CỦA BẠN",
+  "legacyStorageIntroDescription": "Ví của bạn đang chạy trên phần mềm sẽ sớm ngừng hỗ trợ. Phần mềm này không thể cập nhật nếu không gỡ và cài lại ứng dụng.",
+  "legacyStorageStepBackupWallet": "Sao lưu ví của bạn",
+  "legacyStorageStepExportLabels": "Xuất nhãn của bạn (nếu có)",
+  "legacyStorageStepEnsureSwapsCompleted": "Đảm bảo tất cả swap đã hoàn tất",
+  "legacyStorageStepUninstall": "Gỡ cài đặt ứng dụng khỏi thiết bị của bạn",
+  "legacyStorageStepReinstall": "Tải phiên bản mới nhất và cài đặt lại",
+  "legacyStorageStepRestoreBackup": "Khôi phục bản sao lưu của bạn",
+  "legacyStorageImportantTitle": "Quan trọng",
+  "legacyStorageImportantBody": "Đừng bỏ qua quy trình này trừ khi bạn thực sự không thể sao lưu vào lúc này.",
+  "legacyStorageContinueFooterNoBackup": "Bạn vẫn có thể tiếp tục sử dụng ứng dụng mà không sao lưu, nhưng chúng tôi đặc biệt khuyên bạn không nên làm vậy.",
+  "legacyStorageContinueFooterHasBackup": "Bạn vẫn có thể tiếp tục sử dụng ứng dụng, nhưng chúng tôi đặc biệt khuyên bạn không nên làm vậy.",
+  "legacyStorageBackupNowButton": "Sao lưu ngay",
+  "legacyStorageRiskAckButton": "Không, tôi hiểu rủi ro",
+  "legacyStorageAreYouSureTitle": "BẠN CÓ CHẮC KHÔNG?",
+  "legacyStorageAreYouSureParagraphOne": "Phần mềm lưu trữ khoá riêng Bitcoin của ví của bạn đang bị ngừng hỗ trợ. Chúng tôi đặc biệt khuyến nghị bạn sao lưu ngay bây giờ để tránh gián đoạn về sau.",
+  "legacyStorageAreYouSureParagraphTwo": "Tuỳ chọn Encrypted Vault chỉ mất khoảng 1 phút và không cần công cụ đặc biệt. Với bản sao lưu vật lý, bạn chỉ cần bút và giấy.",
+  "legacyStorageContinueWithoutBackupButton": "Tiếp tục không sao lưu",
+  "legacyStorageAcceptRisksCheckbox": "Tôi chấp nhận rủi ro khi không sao lưu",
+  "legacyStorageHasBackupImportantBody": "Vui lòng không bỏ qua quy trình này trừ khi bạn thực sự cần sử dụng ví khẩn cấp hoặc đang chờ một giao dịch hoán đổi hoàn tất.",
+  "legacyStorageRiskAckButtonHasBackup": "Tôi hiểu rủi ro"
 }

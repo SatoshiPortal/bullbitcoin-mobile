@@ -32,12 +32,13 @@ class BdkBitcoinBlockchainDatasource {
   ) async {
     final blockchain = bdk.ElectrumClient(
       url: electrumServer.url,
-      // Only set the socks5 if it's not empty,
-      //  otherwise bdk will throw an error
-      // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
       socks5: electrumServer.socks5?.isNotEmpty == true
           ? electrumServer.socks5
           : null,
+      // electrum-client caps timeout/retry at u8 (255s, 255 retries).
+      timeout: electrumServer.timeout.clamp(0, 255),
+      retry: electrumServer.retry.clamp(0, 255),
+      validateDomain: electrumServer.validateDomain,
     );
 
     return blockchain;

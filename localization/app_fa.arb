@@ -2774,15 +2774,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "تعادل: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "تنظیمات دسترسی",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -3020,10 +3011,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "مبلغ دریافت شده",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -3242,15 +3229,6 @@
   "fundExchangeJurisdictionCanada": "کانادا",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
-  },
-  "recoverbullTransactions": "معاملات: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "پرداخت می کنید",
   "@swapYouPay": {
@@ -4082,10 +4060,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "شکست برای بررسی وضعیت خزانه",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "backupWalletPhysicalBackupTag": "بی اعتماد (زمان خود را)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
@@ -4686,10 +4660,6 @@
   "transactionFilterReceive": "دریافت کننده",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "جریان Invalid",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "payBumpFee": "هزینه Bump",
   "@payBumpFee": {
@@ -5343,10 +5313,6 @@
   "addressViewBalance": "تعادل",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "به دنبال تعادل و معاملات ..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "هیچ پشتیبان گیری پیدا نشد",
   "@recoverbullSelectNoBackupsFound": {
@@ -8499,10 +8465,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "کابینت های رمزگذاری شده تنظیم نمی شوند",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PIN ها مطابقت ندارند",
   "@pinCodeMismatchError": {
@@ -12503,5 +12465,123 @@
   "legacyStorageWarningLater": "بعداً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "بازگشت",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "شروع کنید",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "روشن",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "تیره",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "سیستم",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "مشارکت می‌کنم",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "مشارکت نمی‌کنم",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "گزارش‌های استاندارد",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "همیشه روشن — به ما اجازه می‌دهد ببینیم آیا کیف پول شما به‌طور ایمن بین نسخه‌های برنامه منتقل می‌شود.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "از نسخه پشتیبان خود استفاده کنید",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "به لطف پشتیبان‌گیری شما، وجوهتان در امان است.\nابتدا راه‌اندازی مجدد برنامه را امتحان کنید؛ اگر همچنان با خطا مواجه شد، برنامه را دوباره نصب کرده و با پشتیبان خود بازیابی کنید.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "نسخه پشتیبان ندارید؟",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "برنامه را حذف نکنید.\nبرای تلاش برای نجات با تیم پشتیبانی ما تماس بگیرید.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "تماس با پشتیبانی",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "نمایش جزئیات خطا",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "مقادیر بالای stop gap زمان همگام‌سازی را به طور قابل توجهی افزایش می‌دهند. تا اتمام همگام‌سازی، برنامه را در پیش‌زمینه باز نگه دارید — انتقال به پس‌زمینه ممکن است آن را قطع کند.",
+  "wizardSkipButton": "رد کردن",
+  "wizardPageIndicator": "صفحه {current} / {total}",
+  "wizardNextButton": "بعدی",
+  "wizardCustomizeTitle": "تجربه خود را شخصی‌سازی کنید",
+  "wizardCustomizeBody": "از BULL بر اساس ترجیحات خود با این تنظیمات استفاده کنید.",
+  "wizardCustomizeDefaultCurrency": "ارز پیش‌فرض",
+  "wizardMissionTitle": "از مأموریت Bull حمایت کنید",
+  "wizardMissionBody1": "برای کمک به ما در بهبود نرم‌افزار و اطمینان از بالاترین سطح امنیت، حریم خصوصی و قابلیت استفاده، اپلیکیشن شما می‌تواند گزارش‌های خطا را برای ما ارسال کند تا بتوانیم مشکلات را تشخیص داده و در به‌روزرسانی‌های بعدی به سرعت برطرف کنیم.",
+  "wizardMissionBody2": "این گزارش‌ها ناشناس هستند، به آدرس IP شما متصل نیستند و هرگز اطلاعاتی درباره تراکنش‌ها یا هویت شما به اشتراک نمی‌گذارند. کاملاً فنی هستند و هیچ خطری برای شما ایجاد نمی‌کنند. این برای ما بسیار مفید است و برای شما هیچ هزینه‌ای ندارد.",
+  "wizardMissionQuestion": "آیا می‌پذیرید که در برنامه گزارش‌دهی خودکار مشکلات ما شرکت کنید؟",
+  "wizardMissionYes": "بله",
+  "wizardMissionNo": "خیر",
+  "wizardMissionRequired": "لطفاً قبل از ادامه، بله یا خیر را انتخاب کنید.",
+  "wizardJourneyTitle": "در سفر خود پیشرفت کنید",
+  "wizardJourneyBody": "اگر تازه‌وارد کیف پول BULL هستید، در اینجا چند ویژگی وجود دارد که می‌توانید از آن‌ها برای بهبود حریم خصوصی، امنیت و تجربه کاربری خود استفاده کنید.",
+  "wizardJourneyTip1": "یک PIN امنیتی برای باز کردن کیف پول خود اضافه کنید",
+  "wizardJourneyTip2": "نسخه پشتیبان رمزگذاری‌شده گاوصندوق را امتحان کنید",
+  "wizardJourneyTip3": "به نود Bitcoin خود متصل شوید",
+  "wizardJourneyTip4": "به مرورگر Mempool خود متصل شوید",
+  "wizardJourneyTip5": "بدون KYC بین Bitcoin و Liquid انتقال دهید",
+  "wizardJourneyTip6": "تنظیمات autoswap خود را شخصی‌سازی کنید",
+  "wizardJourneyTip7": "بین Bitcoin (BTC) و Satoshis (sats) جابجا شوید",
+  "wizardJourneyTip8": "تراکنش‌های air-gap برای کیف پول سخت‌افزاری خود ایجاد کنید",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "اقدام لازم است",
+  "legacyStorageBadgeConfirm": "تأیید",
+  "legacyStorageNoBackupPageTitle": "از کیف پول خود نسخه پشتیبان بگیرید و دوباره نصب کنید",
+  "legacyStorageHasBackupPageTitle": "کیف پول خود را دوباره نصب کنید",
+  "legacyStorageIntroDescription": "کیف پول شما روی نرم‌افزاری اجرا می‌شود که به‌زودی منسوخ می‌شود. بدون حذف و نصب مجدد برنامه نمی‌توان آن را به‌روزرسانی کرد.",
+  "legacyStorageStepBackupWallet": "از کیف پول خود نسخه پشتیبان بگیرید",
+  "legacyStorageStepExportLabels": "برچسب‌های خود را خروجی بگیرید (اگر دارید)",
+  "legacyStorageStepEnsureSwapsCompleted": "مطمئن شوید همه swap ها تکمیل شده‌اند",
+  "legacyStorageStepUninstall": "برنامه را از دستگاه خود حذف کنید",
+  "legacyStorageStepReinstall": "آخرین نسخه را دانلود کرده و دوباره نصب کنید",
+  "legacyStorageStepRestoreBackup": "نسخه پشتیبان خود را بازیابی کنید",
+  "legacyStorageImportantTitle": "مهم",
+  "legacyStorageImportantBody": "این مراحل را رد نکنید مگر آنکه واقعاً در این لحظه نتوانید پشتیبان بگیرید.",
+  "legacyStorageContinueFooterNoBackup": "می‌توانید بدون گرفتن پشتیبان از برنامه استفاده کنید، اما ما اکیداً توصیه می‌کنیم این کار را نکنید.",
+  "legacyStorageContinueFooterHasBackup": "می‌توانید از برنامه استفاده کنید، اما ما اکیداً توصیه می‌کنیم این کار را نکنید.",
+  "legacyStorageBackupNowButton": "همین حالا پشتیبان بگیر",
+  "legacyStorageRiskAckButton": "نه، خطر را می‌فهمم",
+  "legacyStorageAreYouSureTitle": "مطمئن هستید؟",
+  "legacyStorageAreYouSureParagraphOne": "نرم‌افزاری که کلیدهای خصوصی بیت‌کوین کیف پول شما را ذخیره می‌کند در حال منسوخ شدن است. اکیداً توصیه می‌کنیم همین حالا یک پشتیبان بگیرید تا در آینده دچار اختلال نشوید.",
+  "legacyStorageAreYouSureParagraphTwo": "گزینه Encrypted Vault حدود ۱ دقیقه طول می‌کشد و به ابزار خاصی نیاز ندارد. برای پشتیبان فیزیکی، فقط به قلم و کاغذ نیاز دارید.",
+  "legacyStorageContinueWithoutBackupButton": "ادامه بدون پشتیبان",
+  "legacyStorageAcceptRisksCheckbox": "ریسک‌های نگرفتن پشتیبان را می‌پذیرم",
+  "legacyStorageHasBackupImportantBody": "لطفاً این فرآیند را رد نکنید مگر اینکه واقعاً نیاز فوری به استفاده از کیف پول داشته باشید یا منتظر تکمیل یک سواپ هستید.",
+  "legacyStorageRiskAckButtonHasBackup": "خطر را درک می‌کنم"
 }

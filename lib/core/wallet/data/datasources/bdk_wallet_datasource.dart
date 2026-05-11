@@ -108,6 +108,9 @@ class BdkWalletDatasource {
             electrumUrl: electrumServer.url,
             electrumSocks5: electrumServer.socks5,
             electrumStopGap: electrumServer.stopGap,
+            electrumTimeout: electrumServer.timeout,
+            electrumRetry: electrumServer.retry,
+            electrumValidateDomain: electrumServer.validateDomain,
             walletHexId: wallet.hexId,
             rootIsolateToken: ServicesBinding.rootIsolateToken!,
           ),
@@ -132,27 +135,23 @@ class BdkWalletDatasource {
   Future<bool> isMine(
     Uint8List scriptBytes, {
     required WalletModel wallet,
+    bdk.Wallet? bdkWallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
-    final script = bdk.Script(rawOutputScript: scriptBytes);
-    final isMine = bdkWallet.isMine(script: script);
-
-    return isMine;
+    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
+    return w.isMine(script: bdk.Script(rawOutputScript: scriptBytes));
   }
 
   Future<bool> isAddressMine(
     String address, {
     required WalletModel wallet,
+    bdk.Wallet? bdkWallet,
   }) async {
-    final bdkWallet = await BdkFacade.createWallet(wallet);
+    final w = bdkWallet ?? await BdkFacade.createWallet(wallet);
     final bdkAddress = bdk.Address(
       address: address,
       network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
     );
-    final script = bdkAddress.scriptPubkey();
-    final isMine = bdkWallet.isMine(script: script);
-
-    return isMine;
+    return w.isMine(script: bdkAddress.scriptPubkey());
   }
 
   Future<String> buildPsbt({
@@ -294,7 +293,7 @@ class BdkWalletDatasource {
       signOptions: bdk.SignOptions(
         trustWitnessUtxo: true,
         assumeHeight: null,
-        allowAllSighashes: true,
+        allowAllSighashes: false,
         tryFinalize: true,
         signWithTapInternalKey: false,
         allowGrinding: true,
@@ -345,6 +344,7 @@ class BdkWalletDatasource {
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
       transactions,
       wallet: wallet,
+      bdkWallet: bdkWallet,
     );
 
     // Map the transactions to WalletTransactionModel
@@ -589,6 +589,7 @@ class BdkWalletDatasource {
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
     List<bdk.CanonicalTx> transactions, {
     required WalletModel wallet,
+    required bdk.Wallet bdkWallet,
   }) async {
     final listOfOutputs = await Future.wait(
       transactions.map((tx) async {
@@ -607,7 +608,11 @@ class BdkWalletDatasource {
             return TransactionOutputModel.bitcoin(
               txId: tx.transaction.computeTxid().toString(),
               vout: vout,
-              isOwn: await isMine(scriptPubkeyBytes, wallet: wallet),
+              isOwn: await isMine(
+                scriptPubkeyBytes,
+                wallet: wallet,
+                bdkWallet: bdkWallet,
+              ),
               value: BigInt.from(output.value.toSat()),
               scriptPubkey: scriptPubkeyBytes,
               address: address,
@@ -640,6 +645,31 @@ class BdkWalletDatasource {
     await BdkFacade.delete(wallet);
     log.fine('Deleted wallet ${wallet.id} BDK database');
   }
+
+  Future<({BigInt satoshis, int transactions})> dryScan({
+    required List<int> entropy,
+    required String passphrase,
+    required ScriptType scriptType,
+    required bool isTestnet,
+    required ElectrumServer electrumServer,
+  }) {
+    return compute(
+      _performDryScan,
+      _DryScanParams(
+        entropy: entropy,
+        passphrase: passphrase,
+        scriptType: scriptType,
+        isTestnet: isTestnet,
+        electrumUrl: electrumServer.url,
+        electrumSocks5: electrumServer.socks5,
+        electrumStopGap: electrumServer.stopGap,
+        electrumTimeout: electrumServer.timeout,
+        electrumRetry: electrumServer.retry,
+        electrumValidateDomain: electrumServer.validateDomain,
+        rootIsolateToken: ServicesBinding.rootIsolateToken!,
+      ),
+    );
+  }
 }
 
 // Top-level function for isolate execution
@@ -651,6 +681,9 @@ class _SyncParams {
   final String electrumUrl;
   final String? electrumSocks5;
   final int electrumStopGap;
+  final int electrumTimeout;
+  final int electrumRetry;
+  final bool electrumValidateDomain;
   final String walletHexId;
   final RootIsolateToken rootIsolateToken;
 
@@ -662,6 +695,9 @@ class _SyncParams {
     required this.electrumUrl,
     required this.electrumSocks5,
     required this.electrumStopGap,
+    required this.electrumTimeout,
+    required this.electrumRetry,
+    required this.electrumValidateDomain,
     required this.walletHexId,
     required this.rootIsolateToken,
   });
@@ -684,25 +720,30 @@ Future<void> _performFullScan(_SyncParams params) async {
   final bdkWallet = await BdkFacade.createWallet(wallet);
   final blockchain = bdk.ElectrumClient(
     url: params.electrumUrl,
-    // Only set the socks5 if it's not empty,
-    //  otherwise bdk will throw an error
-    // TODO: this was in bdk_flutter, check if it's still needed in bdk_dart
     socks5: params.electrumSocks5?.isNotEmpty == true
         ? params.electrumSocks5
         : null,
+    timeout: params.electrumTimeout.clamp(0, 255),
+    retry: params.electrumRetry.clamp(0, 255),
+    validateDomain: params.electrumValidateDomain,
   );
-  final scanRequest = bdkWallet.startFullScan().build();
-  final update = blockchain.fullScan(
-    request: scanRequest,
-    stopGap: params.electrumStopGap,
-    batchSize:
-        20, // TODO: Should we make `batchSize` configurable in electrumSettings as well?
-    fetchPrevTxouts:
-        true, // TODO: Should we make `fetchPrevTxouts` configurable in electrumSettings as well?
-  );
-  // Apply update to the wallet in memory
-  bdkWallet.applyUpdate(update: update);
-  // Persist the updated wallet to the database
+  try {
+    final scanRequest = bdkWallet.startFullScan().build();
+    final update = blockchain.fullScan(
+      request: scanRequest,
+      stopGap: params.electrumStopGap,
+      batchSize: _batchSizeFor(params.electrumStopGap),
+      fetchPrevTxouts: true,
+    );
+    bdkWallet.applyUpdate(update: update);
+  } catch (e, st) {
+    log.warning(
+      'full_scan failed for wallet ${params.walletId}',
+      error: e,
+      trace: st,
+    );
+    rethrow;
+  }
   await BdkFacade.saveWallet(bdkWallet, params.walletHexId);
 }
 
@@ -717,3 +758,132 @@ class UnsupportedBdkNetworkException extends BullException {
 class NoSpendableUtxoException extends BullException {
   NoSpendableUtxoException(super.message);
 }
+
+class _DryScanParams {
+  final List<int> entropy;
+  final String passphrase;
+  final ScriptType scriptType;
+  final bool isTestnet;
+  final String electrumUrl;
+  final String? electrumSocks5;
+  final int electrumStopGap;
+  final int electrumTimeout;
+  final int electrumRetry;
+  final bool electrumValidateDomain;
+  final RootIsolateToken rootIsolateToken;
+
+  _DryScanParams({
+    required this.entropy,
+    required this.passphrase,
+    required this.scriptType,
+    required this.isTestnet,
+    required this.electrumUrl,
+    required this.electrumSocks5,
+    required this.electrumStopGap,
+    required this.electrumTimeout,
+    required this.electrumRetry,
+    required this.electrumValidateDomain,
+    required this.rootIsolateToken,
+  });
+}
+
+Future<({BigInt satoshis, int transactions})> _performDryScan(
+  _DryScanParams params,
+) async {
+  BackgroundIsolateBinaryMessenger.ensureInitialized(params.rootIsolateToken);
+
+  final bdkNetwork = params.isTestnet
+      ? bdk.Network.testnet
+      : bdk.Network.bitcoin;
+
+  final bdkMnemonic = bdk.Mnemonic.fromEntropy(
+    entropy: Uint8List.fromList(params.entropy),
+  );
+
+  final descriptorSecretKey = bdk.DescriptorSecretKey(
+    network: bdkNetwork,
+    mnemonic: bdkMnemonic,
+    password: params.passphrase,
+  );
+
+  final (external, internal) = switch (params.scriptType) {
+    ScriptType.bip84 => (
+      bdk.Descriptor.newBip84(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.external_,
+        network: bdkNetwork,
+      ),
+      bdk.Descriptor.newBip84(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.internal,
+        network: bdkNetwork,
+      ),
+    ),
+    ScriptType.bip49 => (
+      bdk.Descriptor.newBip49(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.external_,
+        network: bdkNetwork,
+      ),
+      bdk.Descriptor.newBip49(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.internal,
+        network: bdkNetwork,
+      ),
+    ),
+    ScriptType.bip44 => (
+      bdk.Descriptor.newBip44(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.external_,
+        network: bdkNetwork,
+      ),
+      bdk.Descriptor.newBip44(
+        secretKey: descriptorSecretKey,
+        keychainKind: bdk.KeychainKind.internal,
+        network: bdkNetwork,
+      ),
+    ),
+  };
+
+  final wallet = bdk.Wallet(
+    descriptor: external,
+    changeDescriptor: internal,
+    network: bdkNetwork,
+    persister: bdk.Persister.newInMemory(),
+    lookahead: 0,
+  );
+
+  final blockchain = bdk.ElectrumClient(
+    url: params.electrumUrl,
+    socks5: params.electrumSocks5?.isNotEmpty == true
+        ? params.electrumSocks5
+        : null,
+    timeout: params.electrumTimeout.clamp(0, 255),
+    retry: params.electrumRetry.clamp(0, 255),
+    validateDomain: params.electrumValidateDomain,
+  );
+
+  try {
+    final scanRequest = wallet.startFullScan().build();
+    final update = blockchain.fullScan(
+      request: scanRequest,
+      stopGap: params.electrumStopGap,
+      batchSize: _batchSizeFor(params.electrumStopGap),
+      fetchPrevTxouts: false,
+    );
+    wallet.applyUpdate(update: update);
+  } catch (e, st) {
+    log.warning('probe_scan failed', error: e, trace: st);
+    rethrow;
+  }
+
+  final balance = wallet.balance();
+  final transactions = wallet.transactions();
+
+  return (
+    satoshis: BigInt.from(balance.confirmed.toSat()),
+    transactions: transactions.length,
+  );
+}
+
+int _batchSizeFor(int stopGap) => (stopGap ~/ 4).clamp(50, 1000);

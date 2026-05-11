@@ -1626,15 +1626,6 @@
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
   },
-  "recoverbullBalance": "Баланс: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Настройки за достъп",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -1841,10 +1832,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Възстановяване на Vault",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "Получена сума",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2034,15 +2021,6 @@
   "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
   "@fundExchangeJurisdictionCanada": {
     "description": "Dropdown option for Canada jurisdiction"
-  },
-  "recoverbullTransactions": "Транзакции: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "Вие плащате",
   "@swapYouPay": {
@@ -2811,10 +2789,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Неуспя да проверя състоянието на хранилището",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Моля, изчакайте докато заредим вашето резервно копие.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -3316,10 +3290,6 @@
   "transactionFilterReceive": "Получаване",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "Невалиден поток",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "payBumpFee": "Увеличи таксата",
   "@payBumpFee": {
@@ -3851,10 +3821,6 @@
   "exchangeFileUploadInReviewMessage": "Вашите документи в момента се разглеждат. Не можете да качвате повече файлове, докато прегледът не приключи.",
   "@exchangeFileUploadInReviewMessage": {
     "description": "Message shown when documents are under review"
-  },
-  "recoverbullLookingForBalance": "Търся баланс и транзакции…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Няма намерени резервни копия.",
   "@recoverbullSelectNoBackupsFound": {
@@ -6671,10 +6637,6 @@
   "fundExchangeSinpeAddedToBalance": "След като плащането бъде изпратено, то ще бъде добавено към баланса ви в акаунта.",
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Разшифрованият сейф не е зададен",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PIN-овете не съвпадат",
   "@pinCodeMismatchError": {
@@ -9513,5 +9475,123 @@
   "legacyStorageWarningLater": "По-късно",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Назад",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Започнете",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Светла",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Тъмна",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Системна",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Участвам",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Не участвам",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Стандартни логове",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Винаги активно — ни позволява да видим дали портфейлът ви мигрира безопасно между версиите на приложението.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Използвайте резервното си копие",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Благодарение на резервното копие, средствата ви са в безопасност.\nПърво опитайте да рестартирате приложението; ако все още не работи, преинсталирайте го и възстановете с резервното копие.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Няма резервно копие?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не изтривайте приложението.\nСвържете се с нашия екип за поддръжка за опит за спасяване.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Свържете се с поддръжката",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Покажи подробности за грешката",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Високите стойности на Stop Gap значително увеличават времето за синхронизация. Дръжте приложението отворено на преден план, докато синхронизацията завърши — преместването му във фонов режим може да я прекъсне.",
+  "wizardSkipButton": "Пропусни",
+  "wizardPageIndicator": "СТРАНИЦА {current} / {total}",
+  "wizardNextButton": "Напред",
+  "wizardCustomizeTitle": "Персонализирайте изживяването си",
+  "wizardCustomizeBody": "Използвайте BULL по ваш начин с тези настройки.",
+  "wizardCustomizeDefaultCurrency": "Валута по подразбиране",
+  "wizardMissionTitle": "Подкрепете мисията на Bull",
+  "wizardMissionBody1": "За да ни помогнете да подобрим софтуера си и да гарантираме най-високо ниво на сигурност, поверителност и удобство, приложението ви може да ни изпраща дневници с грешки, които ни позволяват да откриваме и поправяме проблеми бързо в следващите ни актуализации.",
+  "wizardMissionBody2": "Тези дневници са анонимизирани, не са свързани с вашия IP адрес и никога не споделят информация за транзакциите или самоличността ви. Те са чисто технически и не ви излагат на никакъв риск. Това ни помага много и не ви струва нищо.",
+  "wizardMissionQuestion": "Съгласни ли сте да участвате в нашата автоматизирана програма за докладване на проблеми?",
+  "wizardMissionYes": "Да",
+  "wizardMissionNo": "Не",
+  "wizardMissionRequired": "Моля, изберете Да или Не, преди да продължите.",
+  "wizardJourneyTitle": "Напредвайте по пътя си",
+  "wizardJourneyBody": "Ако сте нови в портфейла BULL, ето няколко функции, които можете да използвате, за да подобрите поверителността, сигурността и потребителското си изживяване.",
+  "wizardJourneyTip1": "Добавете ПИН за сигурност, за да отключите портфейла си",
+  "wizardJourneyTip2": "Опитайте криптираното резервно копие на хранилището",
+  "wizardJourneyTip3": "Свържете се със собствен Bitcoin възел",
+  "wizardJourneyTip4": "Свържете се със собствен Mempool изследовател",
+  "wizardJourneyTip5": "Прехвърляйте между Bitcoin и Liquid без KYC",
+  "wizardJourneyTip6": "Персонализирайте настройките на autoswap",
+  "wizardJourneyTip7": "Превключвайте между Bitcoin (BTC) и Satoshis (sats)",
+  "wizardJourneyTip8": "Създавайте air-gap транзакции за хардуерния си портфейл",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "ИЗИСКВА СЕ ДЕЙСТВИЕ",
+  "legacyStorageBadgeConfirm": "ПОТВЪРДИ",
+  "legacyStorageNoBackupPageTitle": "НАПРАВЕТЕ РЕЗЕРВНО КОПИЕ И ПРЕИНСТАЛИРАЙТЕ ПОРТФЕЙЛА",
+  "legacyStorageHasBackupPageTitle": "ПРЕИНСТАЛИРАЙТЕ ПОРТФЕЙЛА",
+  "legacyStorageIntroDescription": "Портфейлът ви работи със софтуер, който скоро ще бъде изведен от употреба. Той не може да бъде обновен, без да деинсталирате и преинсталирате приложението.",
+  "legacyStorageStepBackupWallet": "Направете резервно копие на портфейла",
+  "legacyStorageStepExportLabels": "Експортирайте етикетите си (ако имате такива)",
+  "legacyStorageStepEnsureSwapsCompleted": "Уверете се, че всички размени са завършени",
+  "legacyStorageStepUninstall": "Деинсталирайте приложението от устройството си",
+  "legacyStorageStepReinstall": "Изтеглете най-новата версия и инсталирайте отново",
+  "legacyStorageStepRestoreBackup": "Възстановете резервното копие",
+  "legacyStorageImportantTitle": "Важно",
+  "legacyStorageImportantBody": "Не пропускайте този процес, освен ако наистина не можете да направите резервно копие в момента.",
+  "legacyStorageContinueFooterNoBackup": "Можете да продължите да използвате приложението без резервно копие, но категорично не препоръчваме това.",
+  "legacyStorageContinueFooterHasBackup": "Можете да продължите да използвате приложението, но категорично не препоръчваме това.",
+  "legacyStorageBackupNowButton": "Резервно копие сега",
+  "legacyStorageRiskAckButton": "Не, разбирам риска",
+  "legacyStorageAreYouSureTitle": "СИГУРНИ ЛИ СТЕ?",
+  "legacyStorageAreYouSureParagraphOne": "Софтуерът, използван за съхранение на частните Bitcoin ключове на портфейла, се извежда от употреба. Силно ви препоръчваме да направите резервно копие сега, за да избегнете прекъсвания в бъдеще.",
+  "legacyStorageAreYouSureParagraphTwo": "Опцията за криптирано резервно копие отнема около 1 минута и не изисква специални инструменти. За физическо резервно копие ви трябват само химикалка и хартия.",
+  "legacyStorageContinueWithoutBackupButton": "Продължи без резервно копие",
+  "legacyStorageAcceptRisksCheckbox": "Приемам рисковете от това да не направя резервно копие",
+  "legacyStorageHasBackupImportantBody": "Моля, не пропускайте този процес, освен ако наистина не се налага спешно да използвате портфейла или не чакате суап да приключи.",
+  "legacyStorageRiskAckButtonHasBackup": "Разбирам риска"
 }

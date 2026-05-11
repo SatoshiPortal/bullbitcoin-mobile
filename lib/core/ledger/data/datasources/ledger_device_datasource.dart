@@ -299,7 +299,7 @@ class LedgerDeviceDatasource {
       try {
         await _cachedConnection!.disconnect();
       } catch (e) {
-        log.info('Error disconnecting Ledger device', error: e);
+        log.warning('Error disconnecting Ledger device', error: e);
       }
       _cachedConnection = null;
     }

@@ -22,7 +22,6 @@ sealed class ImportMnemonicState with _$ImportMnemonicState {
     @Default(null) ({BigInt satoshis, int transactions})? bip44Status,
     @Default(null) ({BigInt satoshis, int transactions})? bip49Status,
     @Default(null) ({BigInt satoshis, int transactions})? bip84Status,
-    @Default(false) bool hasCheckedWallets,
     Exception? error,
   }) = _ImportMnemonicState;
 }

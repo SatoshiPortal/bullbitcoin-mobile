@@ -38,15 +38,13 @@ sealed class PayState with _$PayState {
       PaySuccessState;
   const PayState._();
 
-  UserSummary? get userSummary {
-    return whenOrNull(
-      recipientSelection: (userSummary, _, _) => userSummary,
-      amountInput: (_, userSummary, _) => userSummary,
-      walletSelection: (_, userSummary, _, _, _) => userSummary,
-      payment: (_, userSummary, _, _, _, _, _, _, _, _, _, _, _) => userSummary,
-      success: (_) => null,
-    );
-  }
+  UserSummary? get userSummary => switch (this) {
+    PayRecipientSelectionState(:final userSummary) => userSummary,
+    PayAmountInputState(:final userSummary) => userSummary,
+    PayWalletSelectionState(:final userSummary) => userSummary,
+    PayPaymentState(:final userSummary) => userSummary,
+    PaySuccessState() => null,
+  };
 
   bool get isFullyVerifiedKycLevel =>
       userSummary?.isFullyVerifiedKycLevel == true;
@@ -70,111 +68,86 @@ sealed class PayState with _$PayState {
     return userSummary?.needsKycUpgrade(amount, effectiveCurrency) ?? true;
   }
 
-  FiatCurrency get currency {
-    return when(
-      recipientSelection: (userSummary, _, _) => userSummary != null
-          ? FiatCurrency.fromCode(userSummary.currency!)
-          : FiatCurrency.cad,
-      amountInput: (selectedRecipient, _, _) =>
-          FiatCurrency.fromCode(selectedRecipient.currencyCode),
-      walletSelection: (selectedRecipient, _, _, _, _) =>
-          FiatCurrency.fromCode(selectedRecipient.currencyCode),
-      payment: (_, _, _, _, payOrder, _, _, _, _, _, _, _, _) =>
-          FiatCurrency.fromCode(payOrder.payoutCurrency),
-      success: (order) => FiatCurrency.fromCode(order.payoutCurrency),
-    );
-  }
+  FiatCurrency get currency => switch (this) {
+    PayRecipientSelectionState(:final userSummary) => userSummary != null
+        ? FiatCurrency.fromCode(userSummary.currency!)
+        : FiatCurrency.cad,
+    PayAmountInputState(:final selectedRecipient) => FiatCurrency.fromCode(
+      selectedRecipient.currencyCode,
+    ),
+    PayWalletSelectionState(:final selectedRecipient) => FiatCurrency.fromCode(
+      selectedRecipient.currencyCode,
+    ),
+    PayPaymentState(:final payOrder) => FiatCurrency.fromCode(
+      payOrder.payoutCurrency,
+    ),
+    PaySuccessState(:final payOrder) => FiatCurrency.fromCode(
+      payOrder.payoutCurrency,
+    ),
+  };
 
-  PayRecipientSelectionState? get cleanRecipientSelectionState {
-    return whenOrNull(
-      recipientSelection: (userSummary, _, _) =>
-          PayRecipientSelectionState(userSummary: userSummary),
-      amountInput: (selectedRecipient, userSummary, _) =>
-          PayRecipientSelectionState(userSummary: userSummary),
-      walletSelection: (selectedRecipient, userSummary, amount, _, _) =>
-          PayRecipientSelectionState(userSummary: userSummary),
-      payment: (_, userSummary, _, _, _, _, _, _, _, _, _, _, _) =>
-          PayRecipientSelectionState(userSummary: userSummary),
-    );
-  }
+  // Backward step: drop forward state, reset transients on the destination.
+  PayRecipientSelectionState? get cleanRecipientSelectionState => switch (this) {
+    final PayRecipientSelectionState s => s.copyWith(
+      isLoadingUserSummary: false,
+      error: null,
+    ),
+    PayAmountInputState(:final userSummary) => PayRecipientSelectionState(
+      userSummary: userSummary,
+    ),
+    PayWalletSelectionState(:final userSummary) => PayRecipientSelectionState(
+      userSummary: userSummary,
+    ),
+    PayPaymentState(:final userSummary) => PayRecipientSelectionState(
+      userSummary: userSummary,
+    ),
+    PaySuccessState() => null,
+  };
 
-  PayAmountInputState? get cleanAmountInputState {
-    return whenOrNull(
-      amountInput: (selectedRecipient, userSummary, _) => PayAmountInputState(
+  PayAmountInputState? get cleanAmountInputState => switch (this) {
+    final PayAmountInputState s => s.copyWith(error: null),
+    PayWalletSelectionState(:final selectedRecipient, :final userSummary) =>
+      PayAmountInputState(
         selectedRecipient: selectedRecipient,
         userSummary: userSummary,
       ),
-      walletSelection: (selectedRecipient, userSummary, _, _, _) =>
-          PayAmountInputState(
-            selectedRecipient: selectedRecipient,
-            userSummary: userSummary,
-          ),
-      payment:
-          (selectedRecipient, userSummary, _, _, _, _, _, _, _, _, _, _, _) =>
-              PayAmountInputState(
-                selectedRecipient: selectedRecipient,
-                userSummary: userSummary,
-              ),
-    );
-  }
+    PayPaymentState(:final selectedRecipient, :final userSummary) =>
+      PayAmountInputState(
+        selectedRecipient: selectedRecipient,
+        userSummary: userSummary,
+      ),
+    _ => null,
+  };
 
-  PayWalletSelectionState? get cleanWalletSelectionState {
-    return whenOrNull(
-      walletSelection: (selectedRecipient, userSummary, amount, _, _) =>
-          PayWalletSelectionState(
-            selectedRecipient: selectedRecipient,
-            userSummary: userSummary,
-            amount: amount,
-          ),
-      payment:
-          (
-            selectedRecipient,
-            userSummary,
-            amount,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-          ) => PayWalletSelectionState(
-            selectedRecipient: selectedRecipient,
-            userSummary: userSummary,
-            amount: amount,
-          ),
-    );
-  }
+  PayWalletSelectionState? get cleanWalletSelectionState => switch (this) {
+    final PayWalletSelectionState s => s.copyWith(
+      isCreatingPayOrder: false,
+      error: null,
+    ),
+    PayPaymentState(
+      :final selectedRecipient,
+      :final userSummary,
+      :final amount,
+    ) =>
+      PayWalletSelectionState(
+        selectedRecipient: selectedRecipient,
+        userSummary: userSummary,
+        amount: amount,
+      ),
+    _ => null,
+  };
 
-  PayPaymentState? get cleanPaymentState {
-    return whenOrNull(
-      payment:
-          (
-            selectedRecipient,
-            userSummary,
-            amount,
-            selectedWallet,
-            payOrder,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-            _,
-          ) => PayPaymentState(
-            selectedRecipient: selectedRecipient,
-            userSummary: userSummary,
-            amount: amount,
-            selectedWallet: selectedWallet,
-            payOrder: payOrder,
-          ),
-    );
-  }
+  // Same-type reset: preserve all data fields, clear only transient UI flags.
+  // Using copyWith here makes new fields safe-by-default — adding a field to
+  // PayPaymentState can no longer silently drop it (was issue #2007).
+  PayPaymentState? get cleanPaymentState => switch (this) {
+    final PayPaymentState s => s.copyWith(
+      isConfirmingPayment: false,
+      isPolling: false,
+      error: null,
+    ),
+    _ => null,
+  };
 }
 
 extension PayRecipientSelectionStateX on PayRecipientSelectionState {

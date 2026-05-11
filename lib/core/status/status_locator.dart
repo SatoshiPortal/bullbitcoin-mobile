@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/ark/usecases/fetch_ark_secret_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
@@ -19,22 +20,18 @@ class StatusLocator {
     // Port
     locator.registerFactory<ElectrumConnectivityPort>(
       () => ElectrumConnectivityAdapter(
-        checkForOnlineElectrumServersUsecase:
-            locator<CheckForOnlineElectrumServersUsecase>(),
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+        serverStatusPort: locator<ServerStatusPort>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     // Usecase
     locator.registerFactory<CheckAllServiceStatusUsecase>(
       () => CheckAllServiceStatusUsecase(
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
         ),
         exchangeRateRepository: locator<ExchangeRateRepository>(
           instanceName: 'mainnetExchangeRateRepository',

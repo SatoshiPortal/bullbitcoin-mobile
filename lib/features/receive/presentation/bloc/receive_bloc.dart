@@ -323,7 +323,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           type: wallet.isLiquid
               ? SwapType.lightningToLiquid
               : SwapType.lightningToBitcoin,
-          isTestnet: wallet.network.isTestnet,
         );
         emit(state.copyWith(swapLimits: swapLimits));
       }

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
@@ -132,8 +131,6 @@ class SellBloc extends Bloc<SellEvent, SellState> {
           bitcoinUnit: settings.bitcoinUnit,
         ),
       );
-    } on ApiKeyException catch (e) {
-      emit(SellState.initial(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
       emit(SellState.initial(getUserSummaryException: e));
     }

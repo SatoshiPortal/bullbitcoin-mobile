@@ -1564,14 +1564,6 @@
   "totalFeeLabel": "Всього Фе",
   "mempoolCustomServerBottomSheetDescription": "Введіть URL-адресу вашого користувацького сервера mempool. Сервер буде дійсний до економії.",
   "payExpired": "Зареєструватися",
-  "recoverbullBalance": "Баланс: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "payPaymentSuccessful": "Вдалий платіж",
   "exchangeHomeWithdraw": "Зняття",
   "importMnemonicSegwit": "Сегвейт",
@@ -1646,7 +1638,6 @@
   "bitboxErrorNoActiveConnection": "Не активне підключення до пристрою BitBox.",
   "dcaFundAccountButton": "Оберіть Ваш рахунок",
   "arkSendTitle": "Відправити",
-  "recoverbullVaultRecovery": "Відновлення файлів",
   "bitboxCubitOperationTimeout": "Час роботи. Будь ласка, спробуйте знову.",
   "backupWalletHowToDecideVaultCloudSecurity": "Ми не маємо доступу до вашого біткойн, оскільки пароль шифрування занадто сильний. Вони можуть мати доступ до вашого біткойн в малоймовірному випадку, вони з'єднуються з ключовим сервером (онлайн-сервіс, який зберігає пароль шифрування). Якщо сервер ключа коли-небудь отримує зламаний, ваш Біткойн може бути на ризику з Google або Apple хмарою.",
   "coldcardStep13": "Гаманець Bull Bitcoin попросить вас сканування QR-коду на Coldcard. Сканування.",
@@ -1697,14 +1688,6 @@
   "recoverbullErrorInvalidCredentials": "Wrong пароль для цього резервного файлу",
   "importQrDevicePassportStep11": "Введіть мітку для вашого паспорта гаманця і натисніть \"Імпорт\"",
   "withdrawBelowMinAmountError": "Ви намагаєтеся виводити нижче мінімальної суми.",
-  "recoverbullTransactions": "{count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "swapYouPay": "Оплатити",
   "chooseAccessPinTitle": "Виберіть доступ {pinOrPassword}",
   "@chooseAccessPinTitle": {
@@ -1928,7 +1911,6 @@
   "backupWalletInstructionSecurityRisk": "Будь-який з доступом до вашого 12 резервного копіювання може вкрасти ваші біткоїни. Приховати його добре.",
   "torSettingsPortNumber": "Номер порту",
   "autoswapWarningTriggerAmount": "Максимальний баланс 0.02 BTC",
-  "recoverbullErrorCheckStatusFailed": "Не вдалося перевірити статус за замовчуванням",
   "pleaseWaitFetching": "Будь ласка, почекайте, коли ми фіксуємо файл резервного копіювання.",
   "backupWalletPhysicalBackupTag": "Бездоганний (забрати час)",
   "electrumReset": "Зареєструватися",
@@ -2062,7 +2044,6 @@
   "withdrawUnauthenticatedError": "Ви не автентифіковані. Будь ласка, увійдіть, щоб продовжити.",
   "recoverbullTestCompletedTitle": "Випробувано успішно!",
   "arkBtcAddress": "Bitcoin у USD",
-  "recoverbullErrorInvalidFlow": "Інвалідний потік",
   "exchangeDcaFrequencyDay": "день",
   "payBumpFee": "Бампер Фе",
   "arkCancelButton": "Зареєструватися",
@@ -2231,7 +2212,6 @@
   "ledgerWalletTypeLabel": "Тип гаманця:",
   "bip85ExperimentalWarning": "Експериментальні\nРезервне копіювання стежок видалення вручну",
   "addressViewBalance": "Посилання",
-  "recoverbullLookingForBalance": "Шукаємо баланс і операції..",
   "recoverbullSelectNoBackupsFound": "Не знайдено резервних копій",
   "importMnemonicNestedSegwit": "Нескінченний Segwit",
   "psbtFlowScanQrOption": "Виберіть опцію \"Scan QR\"",
@@ -3185,7 +3165,6 @@
   "ledgerErrorRejectedByUser": "Переказ було відхилено користувачем на пристрої Ledger.",
   "payFeeRate": "Тарифи",
   "autoswapWarningDescription": "Автообмін запобігає випадковому збереженню занадто великої суми в гаманці миттєвих платежів, що не є безпечним для довготривалого зберігання.",
-  "recoverbullErrorDecryptedVaultNotSet": "Розшифрована сорочка не встановлена",
   "autoswapRecipientWalletPlaceholderRequired": "Виберіть гаманець Bitcoin *",
   "recoverbullGoogleDriveErrorGeneric": "Помилки. Будь ласка, спробуйте знову.",
   "coreScreensConfirmSend": "Підтвердження",
@@ -4381,9 +4360,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Допоможіть нам поліпшити Bull Bitcoin, беручи участь у нашій програмі звітування про помилки. Це безпосередньо допомагає нам зробити Bull Bitcoin кращим для всіх.\n\nКоли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми. Ці дані допомагають нам зрозуміти, що відбувається у наших користувачів по всьому світу, та відповідно розставити пріоритети для випралення.\n\nМи не діліться цією інформацією з третіми сторонами. Ми використовуємо клієнт з відкритим вихідним кодом Sentry з власним самостійно розміщеним серверним сервером.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Допоможіть нам поліпшити Bull Bitcoin, беручи участь у нашій програмі звітування про помилки. Це безпосередньо допомагає нам зробити Bull Bitcoin кращим для всіх.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Коли цей параметр увімкнено, ми автоматично відправляємо звіти про помилки, коли в програмі виникають проблеми.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Ці дані допомагають нам зрозуміти, що відбувається у наших користувачів по всьому світу, та відповідно розставити пріоритети для виправлення.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Ми не ділимось цією інформацією з третіми сторонами.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Ми використовуємо клієнт з відкритим вихідним кодом Sentry з власним самостійно розміщеним серверним сервером.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Прийняти",
   "@errorReportingAcceptButton": {
@@ -4484,5 +4479,123 @@
   "legacyStorageWarningLater": "Пізніше",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Назад",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Почати",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Світла",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Темна",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Системна",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Я долучаюсь",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Я не долучаюсь",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Стандартні журнали",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Завжди ввімкнено — дозволяє нам бачити, чи ваш гаманець безпечно переходить між версіями застосунку.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Використайте резервну копію",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Завдяки резервній копії ваші кошти в безпеці.\nСпочатку спробуйте перезапустити застосунок; якщо він усе ще не запускається, перевстановіть його та відновіть за допомогою резервної копії.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Немає резервної копії?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не видаляйте застосунок.\nЗв'яжіться з нашою командою підтримки, щоб спробувати відновлення.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Звернутися до підтримки",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Показати деталі помилки",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Високі значення stop gap значно збільшують час синхронізації. Тримайте додаток відкритим на передньому плані до завершення синхронізації — переведення у фоновий режим може її перервати.",
+  "wizardSkipButton": "Пропустити",
+  "wizardPageIndicator": "СТОРІНКА {current} / {total}",
+  "wizardNextButton": "Далі",
+  "wizardCustomizeTitle": "Налаштуйте під себе",
+  "wizardCustomizeBody": "Користуйтеся BULL так, як вам зручно, з цими налаштуваннями.",
+  "wizardCustomizeDefaultCurrency": "Валюта за замовчуванням",
+  "wizardMissionTitle": "Підтримайте місію Bull",
+  "wizardMissionBody1": "Щоб допомогти нам покращити програму та забезпечити найвищий рівень безпеки, конфіденційності та зручності, ваш застосунок може надсилати нам журнали помилок, що дозволяє швидко виявляти та виправляти проблеми в наступних оновленнях.",
+  "wizardMissionBody2": "Ці журнали анонімні, не пов'язані з вашою IP-адресою і ніколи не передають інформацію про ваші транзакції чи особу. Вони суто технічні і не піддають вас ризику. Це дуже допомагає нам і нічого не коштує вам.",
+  "wizardMissionQuestion": "Чи згодні ви брати участь у нашій автоматизованій програмі звітування про проблеми?",
+  "wizardMissionYes": "Так",
+  "wizardMissionNo": "Ні",
+  "wizardMissionRequired": "Будь ласка, оберіть Так або Ні, перш ніж продовжити.",
+  "wizardJourneyTitle": "Просувайтеся на своєму шляху",
+  "wizardJourneyBody": "Якщо ви новачок у гаманці BULL, ось кілька функцій, які ви можете використати для покращення конфіденційності, безпеки та зручності.",
+  "wizardJourneyTip1": "Додайте PIN-код безпеки для розблокування гаманця",
+  "wizardJourneyTip2": "Спробуйте зашифровану резервну копію сховища",
+  "wizardJourneyTip3": "Підключіться до власного вузла Bitcoin",
+  "wizardJourneyTip4": "Підключіться до власного оглядача Mempool",
+  "wizardJourneyTip5": "Переказуйте між Bitcoin та Liquid без KYC",
+  "wizardJourneyTip6": "Налаштуйте параметри автообміну",
+  "wizardJourneyTip7": "Перемикайтеся між Bitcoin (BTC) та Satoshis (sats)",
+  "wizardJourneyTip8": "Створюйте air-gap транзакції для апаратного гаманця",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "ПОТРІБНА ДІЯ",
+  "legacyStorageBadgeConfirm": "ПІДТВЕРДИТИ",
+  "legacyStorageNoBackupPageTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ТА ПЕРЕВСТАНОВІТЬ ГАМАНЕЦЬ",
+  "legacyStorageHasBackupPageTitle": "ПЕРЕВСТАНОВІТЬ ГАМАНЕЦЬ",
+  "legacyStorageIntroDescription": "Ваш гаманець працює на програмному забезпеченні, підтримку якого незабаром буде припинено. Його неможливо оновити без видалення та повторного встановлення застосунку.",
+  "legacyStorageStepBackupWallet": "Створіть резервну копію гаманця",
+  "legacyStorageStepExportLabels": "Експортуйте свої мітки (якщо є)",
+  "legacyStorageStepEnsureSwapsCompleted": "Переконайтеся, що всі swap-операції завершено",
+  "legacyStorageStepUninstall": "Видаліть програму зі свого пристрою",
+  "legacyStorageStepReinstall": "Завантажте найновішу версію та встановіть знову",
+  "legacyStorageStepRestoreBackup": "Відновіть резервну копію",
+  "legacyStorageImportantTitle": "Важливо",
+  "legacyStorageImportantBody": "Не пропускайте цей процес, якщо ви справді не можете створити резервну копію прямо зараз.",
+  "legacyStorageContinueFooterNoBackup": "Ви можете продовжувати користуватися застосунком без резервної копії, але ми наполегливо радимо так не робити.",
+  "legacyStorageContinueFooterHasBackup": "Ви можете продовжувати користуватися застосунком, але ми наполегливо радимо так не робити.",
+  "legacyStorageBackupNowButton": "Створити копію зараз",
+  "legacyStorageRiskAckButton": "Ні, я розумію ризик",
+  "legacyStorageAreYouSureTitle": "ВИ ВПЕВНЕНІ?",
+  "legacyStorageAreYouSureParagraphOne": "Програмне забезпечення, яке зберігає приватні ключі Bitcoin вашого гаманця, припиняє підтримку. Ми наполегливо радимо створити резервну копію прямо зараз, щоб уникнути збоїв у майбутньому.",
+  "legacyStorageAreYouSureParagraphTwo": "Резервне копіювання Encrypted Vault займає близько 1 хвилини та не потребує спеціальних інструментів. Для фізичної резервної копії вам знадобляться лише ручка та папір.",
+  "legacyStorageContinueWithoutBackupButton": "Продовжити без копії",
+  "legacyStorageAcceptRisksCheckbox": "Я приймаю ризики відсутності резервної копії",
+  "legacyStorageHasBackupImportantBody": "Будь ласка, не пропускайте цей процес, якщо тільки вам не потрібно терміново скористатися гаманцем або ви не очікуєте на завершення свопу.",
+  "legacyStorageRiskAckButtonHasBackup": "Я розумію ризик"
 }

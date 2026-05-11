@@ -46,10 +46,6 @@ class SelectScriptTypePage extends StatelessWidget {
           final cubit = context.read<ImportMnemonicCubit>();
           final scriptType = state.scriptType;
 
-          if (!state.hasCheckedWallets && state.mnemonic != null) {
-            cubit.checkWalletsStatusDirty();
-          }
-
           return SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),

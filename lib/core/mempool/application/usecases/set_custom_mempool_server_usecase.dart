@@ -122,7 +122,7 @@ class SetCustomMempoolServerUsecase {
 
       return SetCustomMempoolServerResult.success();
     } catch (e) {
-      log.warning('Failed to save mempool server: $e');
+      log.warning('Failed to save mempool server', error: e);
       return SetCustomMempoolServerResult.failure(
         SetCustomMempoolServerError.saveFailed,
       );

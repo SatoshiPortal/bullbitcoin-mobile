@@ -7,34 +7,32 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final BoltzSwapRepository _mainnetBoltzSwapRepository;
-  final BoltzSwapRepository _testnetBoltzSwapRepository;
+  final BoltzSwapRepository _boltzSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _mainnetOrderRepository;
-  final ExchangeOrderRepository _testnetOrderRepository;
+  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
+  final ExchangeOrderRepository _testnetExchangeOrderRepository;
   final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
 
   GetTransactionsUsecase({
     required SettingsRepository settingsRepository,
     required WalletTransactionRepository walletTransactionRepository,
-    required BoltzSwapRepository mainnetBoltzSwapRepository,
-    required BoltzSwapRepository testnetBoltzSwapRepository,
+    required BoltzSwapRepository boltzSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository mainnetOrderRepository,
-    required ExchangeOrderRepository testnetOrderRepository,
+    required ExchangeOrderRepository mainnetExchangeOrderRepository,
+    required ExchangeOrderRepository testnetExchangeOrderRepository,
     required LabelExchangeOrdersUsecase labelExchangeOrdersUsecase,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
-       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
-       _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
+       _boltzSwapRepository = boltzSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _mainnetOrderRepository = mainnetOrderRepository,
-       _testnetOrderRepository = testnetOrderRepository,
+       _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
+       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
        _labelExchangeOrdersUsecase = labelExchangeOrdersUsecase;
 
   Future<List<Transaction>> execute({
@@ -44,12 +42,9 @@ class GetTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final swapRepository = environment.isTestnet
-          ? _testnetBoltzSwapRepository
-          : _mainnetBoltzSwapRepository;
       final orderRepository = environment.isTestnet
-          ? _testnetOrderRepository
-          : _mainnetOrderRepository;
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
 
       // Fetch wallet transactions, payjoins, orders and swaps
       final (walletTransactions, payjoins, orders, swaps) = await (
@@ -63,7 +58,7 @@ class GetTransactionsUsecase {
           environment: environment,
         ),
         orderRepository.getOrders(),
-        swapRepository.getAllSwaps(walletId: walletId),
+        _boltzSwapRepository.getAllSwaps(walletId: walletId),
       ).wait;
 
       if (orders.isNotEmpty) await _labelExchangeOrdersUsecase.execute();
@@ -156,7 +151,12 @@ class GetTransactionsUsecase {
             ? orders.map((o) => Transaction(order: o))
             : <Transaction>[]),
       ];
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log.severe(
+        message: 'Failed to fetch transactions',
+        error: e,
+        trace: stackTrace,
+      );
       throw Exception('Failed to fetch transactions: $e');
     }
   }

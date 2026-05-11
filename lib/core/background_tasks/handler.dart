@@ -21,6 +21,16 @@ Future<bool> tasksHandler(String task) async {
   final startTime = DateTime.now();
 
   await Bull.initLogs();
+  // Note: `Report.init` is intentionally NOT called here. The BG isolate
+  // has its own Dart-side Sentry hub but the native plugin (Sentry
+  // Android / iOS) is a process-level singleton. Calling
+  // `SentryFlutter.init` again from the BG isolate would re-init the
+  // native SDK and stomp the main isolate's crash-handler config when
+  // both isolates are alive (foreground app + BG task firing). The
+  // trade-off: BG-task failures are captured to the on-disk TSV log
+  // only; they don't reach Sentry. If/when we need BG observability,
+  // switch to envelope-forwarding (write events to a queue here, ship
+  // them next time the main isolate boots).
   await LibLwk.init();
 
   try {

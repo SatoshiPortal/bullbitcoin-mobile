@@ -1772,10 +1772,6 @@
   "@transactionFilterAll": {
     "description": "Filter option to show all transactions"
   },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "bitboxCubitOperationTimeout": "Λειτουργία χρονοβόρα. Παρακαλώ δοκιμάστε ξανά.",
   "@bitboxCubitOperationTimeout": {
     "description": "Error interpretation for timeout"
@@ -1965,15 +1961,6 @@
   "withdrawBelowMinAmountError": "Προσπαθείτε να αποσύρετε κάτω από το ελάχιστο ποσό.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "Συναλλαγές: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "Πληρώνετε",
   "@swapYouPay": {
@@ -10493,15 +10480,6 @@
   "@testBackupDecryptVault": {
     "description": "Button text to decrypt the vault"
   },
-  "recoverbullBalance": "Balance: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterToDecrypt": "Παρακαλώ μπείτε στο {inputType} για να αποκρυπτογραφήσετε το θύλακα σας.",
   "@recoverbullEnterToDecrypt": {
     "description": "Instruction to enter PIN or password for vault decryption",
@@ -10788,10 +10766,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Απέτυχε να ελέγξει την κατάσταση του θύλακα",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Παρακαλώ περιμένετε ενώ θα τραβήξουμε το εφεδρικό αρχείο σας.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -10901,10 +10875,6 @@
   "arkBtcAddress": "BTC διεύθυνση διεύθυνση",
   "@arkBtcAddress": {
     "description": "Label for the Bitcoin address field"
-  },
-  "recoverbullErrorInvalidFlow": "Invalid flow",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "arkCancelButton": "Ακύρωση",
   "@arkCancelButton": {
@@ -11027,10 +10997,6 @@
   "physicalBackupRecommendation": "Φυσικό αντίγραφο ασφαλείας: ",
   "@physicalBackupRecommendation": {
     "description": "Bold label for physical backup recommendation"
-  },
-  "recoverbullLookingForBalance": "Αναζητώντας ισορροπία και συναλλαγές..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Δεν βρέθηκαν αντίγραφα ασφαλείας",
   "@recoverbullSelectNoBackupsFound": {
@@ -11754,10 +11720,6 @@
   "autoswapWarningDescription": "Το Autoswap διασφαλίζει ότι δεν κρατάτε τυχαία πάρα πολλά χρήματα στο Instant Payment Wallet, το οποίο δεν είναι ασφαλές για μακροπρόθεσμη αποθήκευση.",
   "@autoswapWarningDescription": {
     "description": "Description text at the top of the autoswap warning bottom sheet"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Decrypted θύλακα δεν έχει οριστεί",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "autoswapRecipientWalletPlaceholderRequired": "Επιλέξτε ένα πορτοφόλι Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
@@ -12503,5 +12465,123 @@
   "legacyStorageWarningLater": "Αργότερα",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Πίσω",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Ξεκινήστε",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Φωτεινό",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Σκούρο",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Σύστημα",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Συμμετέχω",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Δεν συμμετέχω",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Τυπικά αρχεία καταγραφής",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Πάντα ενεργό — μας επιτρέπει να βλέπουμε αν το πορτοφόλι σας μεταφέρεται με ασφάλεια μεταξύ εκδόσεων της εφαρμογής.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Χρησιμοποιήστε το αντίγραφο ασφαλείας σας",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Χάρη στο αντίγραφο ασφαλείας σας, τα χρήματά σας είναι ασφαλή.\nΔοκιμάστε πρώτα να επανεκκινήσετε την εφαρμογή· αν εξακολουθεί να αποτυγχάνει, επανεγκαταστήστε την και επαναφέρετε με το αντίγραφο ασφαλείας σας.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Χωρίς αντίγραφο ασφαλείας;",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Μη διαγράψετε την εφαρμογή.\nΕπικοινωνήστε με την ομάδα υποστήριξης για μια προσπάθεια διάσωσης.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Επικοινωνία με την υποστήριξη",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Εμφάνιση λεπτομερειών σφάλματος",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Οι υψηλές τιμές stop gap αυξάνουν σημαντικά τον χρόνο συγχρονισμού. Διατηρήστε την εφαρμογή ανοιχτή στο προσκήνιο μέχρι να ολοκληρωθεί ο συγχρονισμός — η μετακίνηση στο παρασκήνιο μπορεί να τον διακόψει.",
+  "wizardSkipButton": "Παράλειψη",
+  "wizardPageIndicator": "ΣΕΛΙΔΑ {current} / {total}",
+  "wizardNextButton": "Επόμενο",
+  "wizardCustomizeTitle": "Προσαρμόστε την εμπειρία σας",
+  "wizardCustomizeBody": "Χρησιμοποιήστε το BULL με τους δικούς σας όρους με αυτές τις ρυθμίσεις.",
+  "wizardCustomizeDefaultCurrency": "Προεπιλεγμένο νόμισμα",
+  "wizardMissionTitle": "Στηρίξτε την αποστολή του Bull",
+  "wizardMissionBody1": "Για να μας βοηθήσετε να βελτιώσουμε το λογισμικό μας και να διασφαλίσουμε το υψηλότερο επίπεδο ασφάλειας, ιδιωτικότητας και χρηστικότητας, η εφαρμογή σας μπορεί να μας στέλνει αρχεία καταγραφής σφαλμάτων που μας επιτρέπουν να εντοπίζουμε και να διορθώνουμε γρήγορα προβλήματα στις επόμενες ενημερώσεις.",
+  "wizardMissionBody2": "Αυτά τα αρχεία καταγραφής είναι ανώνυμα, δεν συνδέονται με τη διεύθυνση IP σας και ποτέ δεν μοιράζονται πληροφορίες σχετικά με τις συναλλαγές ή την ταυτότητά σας. Είναι αμιγώς τεχνικά και δεν σας εκθέτουν σε κανέναν κίνδυνο. Μας βοηθά πολύ και δεν σας κοστίζει τίποτα.",
+  "wizardMissionQuestion": "Δέχεστε να συμμετάσχετε στο αυτοματοποιημένο πρόγραμμα αναφοράς προβλημάτων μας;",
+  "wizardMissionYes": "Ναι",
+  "wizardMissionNo": "Όχι",
+  "wizardMissionRequired": "Παρακαλώ επιλέξτε Ναι ή Όχι πριν συνεχίσετε.",
+  "wizardJourneyTitle": "Προχωρήστε στο ταξίδι σας",
+  "wizardJourneyBody": "Αν είστε νέος στο πορτοφόλι BULL, εδώ είναι μερικές λειτουργίες που μπορείτε να αξιοποιήσετε για να βελτιώσετε την ιδιωτικότητα, την ασφάλεια και την εμπειρία χρήσης σας.",
+  "wizardJourneyTip1": "Προσθέστε PIN ασφαλείας για ξεκλείδωμα του πορτοφολιού",
+  "wizardJourneyTip2": "Δοκιμάστε το κρυπτογραφημένο αντίγραφο ασφαλείας θησαυροφυλακίου",
+  "wizardJourneyTip3": "Συνδεθείτε στον δικό σας κόμβο Bitcoin",
+  "wizardJourneyTip4": "Συνδεθείτε στον δικό σας εξερευνητή Mempool",
+  "wizardJourneyTip5": "Μεταφέρετε μεταξύ Bitcoin και Liquid χωρίς KYC",
+  "wizardJourneyTip6": "Προσαρμόστε τις ρυθμίσεις autoswap",
+  "wizardJourneyTip7": "Εναλλάξτε μεταξύ Bitcoin (BTC) και Satoshis (sats)",
+  "wizardJourneyTip8": "Δημιουργήστε air-gap συναλλαγές για το hardware wallet σας",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ",
+  "legacyStorageBadgeConfirm": "ΕΠΙΒΕΒΑΙΩΣΗ",
+  "legacyStorageNoBackupPageTitle": "ΔΗΜΙΟΥΡΓΗΣΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΚΑΙ ΕΠΑΝΕΓΚΑΤΑΣΤΗΣΕ ΤΟ ΠΟΡΤΟΦΟΛΙ",
+  "legacyStorageHasBackupPageTitle": "ΕΠΑΝΕΓΚΑΤΑΣΤΗΣΕ ΤΟ ΠΟΡΤΟΦΟΛΙ",
+  "legacyStorageIntroDescription": "Το πορτοφόλι σου τρέχει σε λογισμικό που σύντομα θα παύσει να υποστηρίζεται. Δεν μπορεί να ενημερωθεί χωρίς να απεγκαταστήσεις και να επανεγκαταστήσεις την εφαρμογή.",
+  "legacyStorageStepBackupWallet": "Δημιούργησε αντίγραφο ασφαλείας του πορτοφολιού",
+  "legacyStorageStepExportLabels": "Εξάγαγε τις ετικέτες σου (αν έχεις)",
+  "legacyStorageStepEnsureSwapsCompleted": "Βεβαιώσου ότι όλα τα swaps έχουν ολοκληρωθεί",
+  "legacyStorageStepUninstall": "Απεγκαταστήστε την εφαρμογή από τη συσκευή σας",
+  "legacyStorageStepReinstall": "Κατέβασε την πιο πρόσφατη έκδοση και εγκατάστησέ την ξανά",
+  "legacyStorageStepRestoreBackup": "Επανάφερε το αντίγραφο ασφαλείας",
+  "legacyStorageImportantTitle": "Σημαντικό",
+  "legacyStorageImportantBody": "Μην παραλείψεις αυτή τη διαδικασία εκτός αν πραγματικά δεν μπορείς να κάνεις αντίγραφο ασφαλείας τώρα.",
+  "legacyStorageContinueFooterNoBackup": "Μπορείς να συνεχίσεις να χρησιμοποιείς την εφαρμογή χωρίς αντίγραφο ασφαλείας, αλλά το αποτρέπουμε έντονα.",
+  "legacyStorageContinueFooterHasBackup": "Μπορείς να συνεχίσεις να χρησιμοποιείς την εφαρμογή, αλλά το αποτρέπουμε έντονα.",
+  "legacyStorageBackupNowButton": "Δημιούργησε αντίγραφο τώρα",
+  "legacyStorageRiskAckButton": "Όχι, καταλαβαίνω τον κίνδυνο",
+  "legacyStorageAreYouSureTitle": "ΕΙΣΑΙ ΣΙΓΟΥΡΟΣ;",
+  "legacyStorageAreYouSureParagraphOne": "Το λογισμικό που χρησιμοποιείται για την αποθήκευση των ιδιωτικών κλειδιών Bitcoin του πορτοφολιού σου παύει να υποστηρίζεται. Σου συνιστούμε ανεπιφύλακτα να κάνεις αντίγραφο ασφαλείας τώρα για να αποφύγεις τυχόν διακοπές στο μέλλον.",
+  "legacyStorageAreYouSureParagraphTwo": "Η επιλογή Encrypted Vault διαρκεί περίπου 1 λεπτό και δεν απαιτεί ειδικά εργαλεία. Για το φυσικό αντίγραφο, χρειάζεσαι μόνο στυλό και χαρτί.",
+  "legacyStorageContinueWithoutBackupButton": "Συνέχιση χωρίς αντίγραφο",
+  "legacyStorageAcceptRisksCheckbox": "Αποδέχομαι τον κίνδυνο να μην έχω αντίγραφο ασφαλείας",
+  "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
+  "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο"
 }

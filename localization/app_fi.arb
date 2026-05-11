@@ -2537,14 +2537,6 @@
       }
     }
   },
-  "recoverbullBalance": "Saldo: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Tarkistetaan yhteyttä RecoverBull-palveluun",
   "recoverbullConfirm": "Vahvista",
   "recoverbullConfirmInput": "Vahvista {inputType}",
@@ -2596,13 +2588,10 @@
     }
   },
   "recoverbullEnterVaultKeyInstead": "Syötä sen sijaan holviavain",
-  "recoverbullErrorCheckStatusFailed": "Holvin tilan tarkistus epäonnistui",
   "recoverbullErrorConnectionFailed": "Yhteyden muodostaminen kohdeavainpalvelimeen epäonnistui. Yritä myöhemmin uudelleen!",
-  "recoverbullErrorDecryptedVaultNotSet": "Purettua holvia ei ole asetettu",
   "recoverbullErrorDecryptFailed": "Holvin purku epäonnistui",
   "recoverbullErrorFetchKeyFailed": "Holviavaimen hakeminen palvelimelta epäonnistui",
   "recoverbullErrorInvalidCredentials": "Väärä salasana tälle varmuuskopiolle",
-  "recoverbullErrorInvalidFlow": "Virheellinen työnkulku",
   "recoverbullErrorMissingBytes": "Puuttuvia bittejä Tor-vastauksesta. Yritä uudelleen, mutta jos ongelma jatkuu, se on joillain laitteilla tunnettu Tor-ongelma.",
   "recoverbullErrorPasswordNotSet": "Salasanaa ei ole asetettu",
   "recoverbullErrorRecoveryFailed": "Holvin palautus epäonnistui",
@@ -2627,7 +2616,6 @@
   "recoverbullGoBackEdit": "<< Palaa takaisin ja muokkaa",
   "recoverbullGotIt": "Selvä",
   "recoverbullKeyServer": "Avainpalvelin ",
-  "recoverbullLookingForBalance": "Etsitään saldoa ja transaktioita…",
   "recoverbullMemorizeWarning": "Sinun on muistettava tämä {inputType} palauttaaksesi pääsyn lompakkoosi. Sen on oltava vähintään 6 numeroa. Jos menetät tämän {inputType}, et voi palauttaa varmuuskopioasi.",
   "@recoverbullMemorizeWarning": {
     "placeholders": {
@@ -2697,19 +2685,10 @@
   "recoverbullTestRecovery": "Palautuksen testaus",
   "recoverbullTestSuccessDescription": "Pystyt palauttamaan pääsyn kadonneeseen Bitcoin-lompakkoon",
   "recoverbullTorNetwork": "Tor-verkko",
-  "recoverbullTransactions": "Transaktioita: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Holvi luotu onnistuneesti",
   "recoverbullVaultImportedSuccess": "Holvisi tuotiin onnistuneesti",
   "recoverbullVaultKey": "Holviavain",
   "recoverbullVaultKeyInput": "Holviavain",
-  "recoverbullVaultRecovery": "Palauta Holvi",
   "recoverbullVaultSelected": "Holvi valittu",
   "recoverbullWaiting": "Odotetaan",
   "recoverbullRecoveryTitle": "Recoverbull-holvin palautus",
@@ -4376,9 +4355,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.\n\nKun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista. Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.\n\nEmme jaa näitä tietoja kolmansien osapuolten kanssa. Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Auta parantamaan Bull Bitcoinia osallistumalla virheraportoinnin ohjelmaamme. Se auttaa meitä suoraan tekemään Bull Bitcoinista parempaa kaikille.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Kun se on käytössä, lähettämme automaattisesti virheraportteja sovellukseen ilmaantuvista ongelmista.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Nämä tiedot auttavat meitä ymmärtämään, mitä tapahtuu käyttäjillemme maailmanlaajuisesti, ja priorisoimaan korjauksia vastaavasti.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Emme jaa näitä tietoja kolmansien osapuolten kanssa.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Käytämme Sentryn avoimen lähdekoodin asiakasta omalla itsensä isännöimällä backend-palvelimella.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Hyväksy",
   "@errorReportingAcceptButton": {
@@ -4479,5 +4474,123 @@
   "legacyStorageWarningLater": "Myöhemmin",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Takaisin",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Aloita",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Vaalea",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Tumma",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Järjestelmä",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Osallistun",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "En osallistu",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Peruslokit",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Aina päällä — näemme, siirtyykö lompakkosi turvallisesti sovellusversioiden välillä.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Käytä varmuuskopiotasi",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Varmuuskopiosi ansiosta varasi ovat turvassa.\nYritä ensin käynnistää sovellus uudelleen; jos se ei vieläkään toimi, asenna se uudelleen ja palauta varmuuskopion avulla.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Ei varmuuskopiota?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Älä poista sovellusta.\nOta yhteyttä tukitiimiimme pelastusyritystä varten.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Ota yhteyttä tukeen",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Näytä virheen tiedot",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Korkeat stop gap -arvot kasvattavat merkittävästi synkronointiaikaa. Pidä sovellus avoinna edustalla, kunnes synkronointi on valmis — sovelluksen siirtäminen taustalle voi keskeyttää sen.",
+  "wizardSkipButton": "Ohita",
+  "wizardPageIndicator": "SIVU {current} / {total}",
+  "wizardNextButton": "Seuraava",
+  "wizardCustomizeTitle": "Mukauta kokemustasi",
+  "wizardCustomizeBody": "Käytä BULL-sovellusta omilla ehdoillasi näillä asetuksilla.",
+  "wizardCustomizeDefaultCurrency": "Oletusvaluutta",
+  "wizardMissionTitle": "Tue Bullin missiota",
+  "wizardMissionBody1": "Auttaaksesi meitä parantamaan ohjelmistoamme ja varmistamaan korkeimman turvallisuuden, yksityisyyden ja käytettävyyden tason, sovelluksesi voi lähettää meille virhelokeja, joiden avulla voimme havaita ongelmia ja korjata ne nopeasti seuraavissa päivityksissä.",
+  "wizardMissionBody2": "Nämä lokit on anonymisoitu, niitä ei ole liitetty IP-osoitteeseesi eivätkä ne koskaan jaa tietoja tapahtumistasi tai henkilöllisyydestäsi. Ne ovat puhtaasti teknisiä eivätkä aseta sinua mihinkään riskiin. Se on meille erittäin hyödyllistä eikä maksa sinulle mitään.",
+  "wizardMissionQuestion": "Hyväksytkö osallistumisen automaattiseen ongelmaraportointiohjelmaamme?",
+  "wizardMissionYes": "Kyllä",
+  "wizardMissionNo": "Ei",
+  "wizardMissionRequired": "Valitse Kyllä tai Ei ennen jatkamista.",
+  "wizardJourneyTitle": "Etene matkallasi",
+  "wizardJourneyBody": "Jos olet uusi BULL-lompakon käyttäjä, tässä on muutamia ominaisuuksia, joita voit hyödyntää parantaaksesi yksityisyyttäsi, turvallisuuttasi ja käyttökokemustasi.",
+  "wizardJourneyTip1": "Lisää suojaus-PIN-koodi lompakon avaamiseksi",
+  "wizardJourneyTip2": "Kokeile salattua holvivarmuuskopiota",
+  "wizardJourneyTip3": "Yhdistä omaan Bitcoin-solmuusi",
+  "wizardJourneyTip4": "Yhdistä omaan Mempool-selaimeesi",
+  "wizardJourneyTip5": "Siirrä Bitcoinin ja Liquidin välillä ilman KYC:tä",
+  "wizardJourneyTip6": "Mukauta autoswap-asetuksiasi",
+  "wizardJourneyTip7": "Vaihda Bitcoinin (BTC) ja Satoshien (sats) välillä",
+  "wizardJourneyTip8": "Luo air-gap-tapahtumia laitteistolompakollesi",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "TOIMENPIDE VAADITAAN",
+  "legacyStorageBadgeConfirm": "VAHVISTA",
+  "legacyStorageNoBackupPageTitle": "VARMUUSKOPIOI JA ASENNA LOMPAKKO UUDELLEEN",
+  "legacyStorageHasBackupPageTitle": "ASENNA LOMPAKKO UUDELLEEN",
+  "legacyStorageIntroDescription": "Lompakkosi käyttää ohjelmistoa, jonka tuki on pian päättymässä. Sitä ei voi päivittää poistamatta ja asentamatta sovellusta uudelleen.",
+  "legacyStorageStepBackupWallet": "Varmuuskopioi lompakkosi",
+  "legacyStorageStepExportLabels": "Vie tunnisteesi (jos sinulla on)",
+  "legacyStorageStepEnsureSwapsCompleted": "Varmista, että kaikki swapit ovat valmistuneet",
+  "legacyStorageStepUninstall": "Poista sovellus laitteeltasi",
+  "legacyStorageStepReinstall": "Lataa uusin versio ja asenna se uudelleen",
+  "legacyStorageStepRestoreBackup": "Palauta varmuuskopiosi",
+  "legacyStorageImportantTitle": "Tärkeää",
+  "legacyStorageImportantBody": "Älä ohita tätä prosessia, ellet todella pysty tekemään varmuuskopiota juuri nyt.",
+  "legacyStorageContinueFooterNoBackup": "Voit jatkaa sovelluksen käyttöä ilman varmuuskopiota, mutta suosittelemme vahvasti ettet tee niin.",
+  "legacyStorageContinueFooterHasBackup": "Voit jatkaa sovelluksen käyttöä, mutta suosittelemme vahvasti ettet tee niin.",
+  "legacyStorageBackupNowButton": "Varmuuskopioi nyt",
+  "legacyStorageRiskAckButton": "Ei, ymmärrän riskin",
+  "legacyStorageAreYouSureTitle": "OLETKO VARMA?",
+  "legacyStorageAreYouSureParagraphOne": "Lompakkosi Bitcoin-yksityisavainten tallentamiseen käytetyn ohjelmiston tuki on päättymässä. Suosittelemme vahvasti varmuuskopion ottamista heti, jotta vältät keskeytykset tulevaisuudessa.",
+  "legacyStorageAreYouSureParagraphTwo": "Salattu Vault -varmuuskopiointi vie noin minuutin eikä vaadi erityisiä työkaluja. Fyysiseen varmuuskopioon tarvitset vain kynän ja paperia.",
+  "legacyStorageContinueWithoutBackupButton": "Jatka ilman varmuuskopiota",
+  "legacyStorageAcceptRisksCheckbox": "Hyväksyn riskit siitä, etten tee varmuuskopiota",
+  "legacyStorageHasBackupImportantBody": "Älä ohita tätä prosessia, ellet ehdottomasti tarvitse lompakkoa kiireellisesti tai odota swapin valmistumista.",
+  "legacyStorageRiskAckButtonHasBackup": "Ymmärrän riskin"
 }

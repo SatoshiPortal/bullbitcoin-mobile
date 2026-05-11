@@ -19,45 +19,39 @@ import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 class GetTransactionsByTxIdUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
-  final BoltzSwapRepository _mainnetBoltzSwapRepository;
-  final BoltzSwapRepository _testnetBoltzSwapRepository;
+  final BoltzSwapRepository _boltzSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _mainnetOrderRepository;
-  final ExchangeOrderRepository _testnetOrderRepository;
+  final ExchangeOrderRepository _mainnetExchangeOrderRepository;
+  final ExchangeOrderRepository _testnetExchangeOrderRepository;
 
   GetTransactionsByTxIdUsecase({
     required SettingsRepository settingsRepository,
     required WalletTransactionRepository walletTransactionRepository,
-    required BoltzSwapRepository mainnetBoltzSwapRepository,
-    required BoltzSwapRepository testnetBoltzSwapRepository,
+    required BoltzSwapRepository boltzSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository mainnetOrderRepository,
-    required ExchangeOrderRepository testnetOrderRepository,
+    required ExchangeOrderRepository mainnetExchangeOrderRepository,
+    required ExchangeOrderRepository testnetExchangeOrderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
-       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
-       _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
+       _boltzSwapRepository = boltzSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _mainnetOrderRepository = mainnetOrderRepository,
-       _testnetOrderRepository = testnetOrderRepository;
+       _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
+       _testnetExchangeOrderRepository = testnetExchangeOrderRepository;
 
   Future<List<Transaction>> execute(String txId) async {
     try {
-      // Fetch settings to determine environment for swap repository
       final settings = await _settingsRepository.fetch();
-      final isTestnet = settings.environment.isTestnet;
-      final swapRepository =
-          isTestnet ? _testnetBoltzSwapRepository : _mainnetBoltzSwapRepository;
-      final orderRepository =
-          isTestnet ? _testnetOrderRepository : _mainnetOrderRepository;
+      final orderRepository = settings.environment.isTestnet
+          ? _testnetExchangeOrderRepository
+          : _mainnetExchangeOrderRepository;
+
       // Fetch wallet transactions, swap and payjoins by txId
-      final (walletTransactions, swap, payjoins, order) =
-          await (
-            _walletTransactionRepository.getWalletTransactions(txId: txId),
-            swapRepository.getSwapByTxId(txId),
-            _payjoinRepository.getPayjoinsByTxId(txId),
-            orderRepository.getOrderByTxId(txId),
-          ).wait;
+      final (walletTransactions, swap, payjoins, order) = await (
+        _walletTransactionRepository.getWalletTransactions(txId: txId),
+        _boltzSwapRepository.getSwapByTxId(txId),
+        _payjoinRepository.getPayjoinsByTxId(txId),
+        orderRepository.getOrderByTxId(txId),
+      ).wait;
 
       if (walletTransactions.isNotEmpty) {
         return walletTransactions.map((walletTransaction) {

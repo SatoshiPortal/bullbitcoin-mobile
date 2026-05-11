@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -46,8 +45,6 @@ class DcaBloc extends Bloc<DcaEvent, DcaState> {
           defaultLightningAddress: startData.lightningAddress,
         ),
       );
-    } on ApiKeyException catch (e) {
-      emit(DcaState.initial(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
       emit(DcaState.initial(getUserSummaryException: e));
     }

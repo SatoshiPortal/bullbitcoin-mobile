@@ -2590,14 +2590,6 @@
       }
     }
   },
-  "recoverbullBalance": "Saldo: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Verificando conexión para RecoverBull",
   "recoverbullConfirm": "Confirmar",
   "recoverbullConfirmInput": "Confirmar {inputType}",
@@ -2649,13 +2641,10 @@
     }
   },
   "recoverbullEnterVaultKeyInstead": "Ingresar una clave de bóveda en su lugar",
-  "recoverbullErrorCheckStatusFailed": "Error al verificar el estado de la bóveda",
   "recoverbullErrorConnectionFailed": "Error al conectar con el servidor de claves de destino. ¡Por favor intente de nuevo más tarde!",
-  "recoverbullErrorDecryptedVaultNotSet": "La bóveda descifrada no está configurada",
   "recoverbullErrorDecryptFailed": "Error al descifrar la bóveda",
   "recoverbullErrorFetchKeyFailed": "Error al obtener la clave de bóveda del servidor",
   "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
-  "recoverbullErrorInvalidFlow": "Flujo inválido",
   "recoverbullErrorMissingBytes": "Faltan bytes en la respuesta de Tor. Reintente, pero si el problema persiste, es un problema conocido para algunos dispositivos con Tor.",
   "recoverbullErrorPasswordNotSet": "La contraseña no está configurada",
   "recoverbullErrorRecoveryFailed": "Error al recuperar la bóveda",
@@ -2680,7 +2669,6 @@
   "recoverbullGoBackEdit": "<< Volver y editar",
   "recoverbullGotIt": "Entendido",
   "recoverbullKeyServer": "Servidor de Claves ",
-  "recoverbullLookingForBalance": "Buscando saldo y transacciones…",
   "recoverbullMemorizeWarning": "Debe memorizar este {inputType} para recuperar el acceso a su monedero. Debe tener al menos 6 dígitos. Si pierde este {inputType} no podrá recuperar su respaldo.",
   "@recoverbullMemorizeWarning": {
     "placeholders": {
@@ -2750,19 +2738,10 @@
   "recoverbullTestRecovery": "Probar Recuperación",
   "recoverbullTestSuccessDescription": "Puede recuperar el acceso a un monedero Bitcoin perdido",
   "recoverbullTorNetwork": "Red Tor",
-  "recoverbullTransactions": "Transacciones: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Bóveda creada con éxito",
   "recoverbullVaultImportedSuccess": "Su bóveda se importó exitosamente",
   "recoverbullVaultKey": "Clave de Bóveda",
   "recoverbullVaultKeyInput": "Clave de Bóveda",
-  "recoverbullVaultRecovery": "Recuperación de Bóveda",
   "recoverbullVaultSelected": "Bóveda Seleccionada",
   "recoverbullWaiting": "Esperando",
   "recoverbullRecoveryTitle": "Recuperación de bóveda RecoverBull",
@@ -4390,9 +4369,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Ayúdenos a mejorar Bull Bitcoin participando en nuestro programa de informes de errores. Nos ayuda directamente a hacer que Bull Bitcoin sea mejor para todos.\n\nCuando está habilitado, enviamos automáticamente informes de errores cuando ocurren problemas en la aplicación. Estos datos nos ayudan a entender qué está sucediendo para nuestros usuarios en todo el mundo y priorizar las correcciones en consecuencia.\n\nNo compartimos esta información con terceros. Utilizamos el cliente de código abierto de Sentry con nuestro propio servidor backend autohospedado.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Ayúdenos a mejorar Bull Bitcoin participando en nuestro programa de informes de errores. Nos ayuda directamente a hacer que Bull Bitcoin sea mejor para todos.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Cuando está habilitado, enviamos automáticamente informes de errores cuando ocurren problemas en la aplicación.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Estos datos nos ayudan a entender qué está sucediendo para nuestros usuarios en todo el mundo y priorizar las correcciones en consecuencia.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "No compartimos esta información con terceros.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Utilizamos el cliente de código abierto de Sentry con nuestro propio servidor backend autohospedado.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Aceptar",
   "@errorReportingAcceptButton": {
@@ -4493,5 +4488,123 @@
   "legacyStorageWarningLater": "Más tarde",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Atrás",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Empezar",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Claro",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Oscuro",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Sistema",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Contribuyo",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "No contribuyo",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Registros estándar",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Siempre activo — nos permite saber si tu monedero migra de forma segura entre versiones de la aplicación.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Usa tu copia de seguridad",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Gracias a tu copia de seguridad, tus fondos están a salvo.\nPrimero intenta reiniciar la app; si sigue fallando, reinstálala y recupera con tu copia de seguridad.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "¿Sin copia de seguridad?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "No elimines la aplicación.\nContacta con nuestro equipo de soporte para intentar un rescate.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contactar con soporte",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostrar detalles del error",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Los valores altos de stop gap aumentan significativamente el tiempo de sincronización. Mantén la aplicación abierta en primer plano hasta que se complete la sincronización — pasarla a segundo plano puede interrumpirla.",
+  "wizardSkipButton": "Omitir",
+  "wizardPageIndicator": "PÁGINA {current} / {total}",
+  "wizardNextButton": "Siguiente",
+  "wizardCustomizeTitle": "Personaliza tu experiencia",
+  "wizardCustomizeBody": "Usa BULL a tu manera con estos ajustes.",
+  "wizardCustomizeDefaultCurrency": "Moneda predeterminada",
+  "wizardMissionTitle": "Apoya la misión de Bull",
+  "wizardMissionBody1": "Para ayudarnos a mejorar nuestro software y garantizar el más alto nivel de seguridad, privacidad y usabilidad, tu aplicación puede enviarnos registros de errores que nos permiten detectar problemas y solucionarlos rápidamente en nuestras próximas actualizaciones.",
+  "wizardMissionBody2": "Estos registros son anónimos, no están vinculados a tu dirección IP y nunca comparten información sobre tus transacciones o tu identidad. Son puramente técnicos y no te ponen en riesgo. Nos resulta muy útil y no te cuesta nada.",
+  "wizardMissionQuestion": "¿Aceptas formar parte de nuestro programa automatizado de reporte de problemas?",
+  "wizardMissionYes": "Sí",
+  "wizardMissionNo": "No",
+  "wizardMissionRequired": "Por favor, elige Sí o No antes de continuar.",
+  "wizardJourneyTitle": "Avanza en tu camino",
+  "wizardJourneyBody": "Si eres nuevo en el monedero BULL, aquí tienes algunas funciones que puedes aprovechar para mejorar tu privacidad, seguridad y experiencia de usuario.",
+  "wizardJourneyTip1": "Añade un PIN de seguridad para desbloquear tu monedero",
+  "wizardJourneyTip2": "Prueba la copia de seguridad cifrada del cofre",
+  "wizardJourneyTip3": "Conéctate a tu propio nodo Bitcoin",
+  "wizardJourneyTip4": "Conéctate a tu propio explorador Mempool",
+  "wizardJourneyTip5": "Transfiere entre Bitcoin y Liquid sin KYC",
+  "wizardJourneyTip6": "Personaliza tus ajustes de autoswap",
+  "wizardJourneyTip7": "Cambia entre Bitcoin (BTC) y Satoshis (sats)",
+  "wizardJourneyTip8": "Crea transacciones air-gap para tu monedero hardware",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "ACCIÓN REQUERIDA",
+  "legacyStorageBadgeConfirm": "CONFIRMAR",
+  "legacyStorageNoBackupPageTitle": "RESPALDA Y REINSTALA TU MONEDERO",
+  "legacyStorageHasBackupPageTitle": "REINSTALA TU MONEDERO",
+  "legacyStorageIntroDescription": "Tu monedero está corriendo sobre un software que pronto dejará de mantenerse. No se puede actualizar sin desinstalar y reinstalar la app.",
+  "legacyStorageStepBackupWallet": "Respalda tu monedero",
+  "legacyStorageStepExportLabels": "Exporta tus etiquetas (si tienes)",
+  "legacyStorageStepEnsureSwapsCompleted": "Asegúrate de que todos los swaps estén completados",
+  "legacyStorageStepUninstall": "Desinstala la aplicación de tu dispositivo",
+  "legacyStorageStepReinstall": "Descarga la última versión e instálala de nuevo",
+  "legacyStorageStepRestoreBackup": "Restaura tu respaldo",
+  "legacyStorageImportantTitle": "Importante",
+  "legacyStorageImportantBody": "No te saltes este proceso a menos que de verdad no puedas hacer un respaldo en este momento.",
+  "legacyStorageContinueFooterNoBackup": "Puedes seguir usando la app sin hacer un respaldo, pero te recomendamos firmemente no hacerlo.",
+  "legacyStorageContinueFooterHasBackup": "Puedes seguir usando la app, pero te recomendamos firmemente no hacerlo.",
+  "legacyStorageBackupNowButton": "Respaldar ahora",
+  "legacyStorageRiskAckButton": "No, entiendo el riesgo",
+  "legacyStorageAreYouSureTitle": "¿ESTÁS SEGURO?",
+  "legacyStorageAreYouSureParagraphOne": "El software que guarda las claves privadas de Bitcoin de tu monedero ya no se mantendrá. Te recomendamos firmemente hacer un respaldo ahora mismo para evitar problemas en el futuro.",
+  "legacyStorageAreYouSureParagraphTwo": "La opción de respaldo cifrado (Encrypted Vault) toma alrededor de 1 minuto y no necesita herramientas especiales. Para el respaldo físico solo necesitas lápiz y papel.",
+  "legacyStorageContinueWithoutBackupButton": "Continuar sin respaldo",
+  "legacyStorageAcceptRisksCheckbox": "Acepto los riesgos de no hacer un respaldo",
+  "legacyStorageHasBackupImportantBody": "Por favor, no omita este proceso a menos que necesite usar la billetera urgentemente o esté esperando a que se complete un intercambio.",
+  "legacyStorageRiskAckButtonHasBackup": "Entiendo el riesgo"
 }

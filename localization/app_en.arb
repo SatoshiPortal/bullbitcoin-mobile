@@ -3102,6 +3102,10 @@
   "@transactionListNoTransactions": {
     "description": "Message displayed when there are no transactions"
   },
+  "transactionListLoadingFailed": "Could not load transactions.",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
   "transactionListToday": "Today",
   "@transactionListToday": {
     "description": "Date label for today's transactions"
@@ -8317,15 +8321,6 @@
       }
     }
   },
-  "recoverbullBalance": "Balance: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "Checking connection for RecoverBull",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -8415,17 +8410,9 @@
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
-  "recoverbullErrorCheckStatusFailed": "Failed to check the vault status",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "recoverbullErrorConnectionFailed": "Failed to connect to the target key server. Please try again later!",
   "@recoverbullErrorConnectionFailed": {
     "description": "Error message when server connection fails"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Decrypted vault is not set",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "recoverbullErrorDecryptFailed": "Failed to decrypt the vault",
   "@recoverbullErrorDecryptFailed": {
@@ -8438,10 +8425,6 @@
   "recoverbullErrorInvalidCredentials": "Wrong password for this backup file",
   "@recoverbullErrorInvalidCredentials": {
     "description": "Error message when wrong password is entered for vault"
-  },
-  "recoverbullErrorInvalidFlow": "Invalid flow",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "recoverbullErrorMissingBytes": "Missing bytes from the Tor response. Retry but if the issue persists, it is a known issue for some devices with Tor.",
   "@recoverbullErrorMissingBytes": {
@@ -8515,10 +8498,6 @@
   "recoverbullKeyServer": "Key Server ",
   "@recoverbullKeyServer": {
     "description": "Label for key server connection status"
-  },
-  "recoverbullLookingForBalance": "Looking for balance and transactions…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullMemorizeWarning": "You must memorize this {inputType} to recover access to your wallet. It must be at least 6 digits. If you lose this {inputType} you cannot recover your backup.",
   "@recoverbullMemorizeWarning": {
@@ -8727,15 +8706,6 @@
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
   },
-  "recoverbullTransactions": "Transactions: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Vault created successfully",
   "@recoverbullVaultCreatedSuccess": {
     "description": "Success message after vault creation"
@@ -8751,10 +8721,6 @@
   "recoverbullVaultKeyInput": "Vault Key",
   "@recoverbullVaultKeyInput": {
     "description": "Input field label for vault key entry"
-  },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
   },
   "recoverbullVaultSelected": "Vault Selected",
   "@recoverbullVaultSelected": {
@@ -11195,6 +11161,10 @@
       }
     }
   },
+  "electrumStopGapHighWarning": "High stop gap values significantly increase sync time. Keep the app open in the foreground until the sync completes — backgrounding the app may interrupt it.",
+  "@electrumStopGapHighWarning": {
+    "description": "Warning shown when the user enters a Stop Gap larger than 1000"
+  },
   "electrumTimeoutEmptyError": "Timeout can't be empty",
   "@electrumTimeoutEmptyError": {
     "description": "Validation error for empty Timeout field"
@@ -12722,9 +12692,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Help us improve Bull Bitcoin by participating in our error reporting program. It directly helps us make Bull Bitcoin better for everyone.\n\nWhen enabled, we automatically send error reports when issues occur in the app. This data helps us understand what's happening for our users worldwide and prioritize fixes accordingly.\n\nWe do not share this information with any third parties. We use Sentry's open-source client with our own self-hosted backend server.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Accept",
   "@errorReportingAcceptButton": {
@@ -12802,28 +12788,256 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "Urgent: Backup & Reinstall Required",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
+  "legacyStorageBadgeActionRequired": "ACTION REQUIRED",
+  "@legacyStorageBadgeActionRequired": {
+    "description": "Red pill badge above the legacy storage warning page title"
   },
-  "homeLegacyStorageWithNoBackupDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
+  "legacyStorageBadgeConfirm": "CONFIRM",
+  "@legacyStorageBadgeConfirm": {
+    "description": "Red pill badge above the are-you-sure confirmation title"
   },
-  "homeLegacyStorageTitle": "Action Required: Reinstall App",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
+  "legacyStorageNoBackupPageTitle": "BACKUP AND RE-INSTALL YOUR WALLET",
+  "@legacyStorageNoBackupPageTitle": {
+    "description": "Full-page warning title shown when the wallet has no backup"
   },
-  "homeLegacyStorageDescription": "The app you are using is using software that will soon be deprecated. Please follow these steps:\n\n1. Backup your wallet\n2. Uninstall the app. Delete it fully from your phone.\n3. Reinstall the latest version of the app\n4. Use the recovery option instead of \"create new wallet\".\n\nYour funds are safe and you can continue using the app right now, but do this as soon as possible to prevent your app from breaking in the near future.",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
+  "legacyStorageHasBackupPageTitle": "RE-INSTALL YOUR WALLET",
+  "@legacyStorageHasBackupPageTitle": {
+    "description": "Full-page warning title shown when the wallet already has a backup"
   },
-  "legacyStorageWarningBackupNow": "Backup Now",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
+  "legacyStorageIntroDescription": "Your wallet is running on software that will soon be deprecated. This cannot be updated without uninstalling and re-installing the app.",
+  "@legacyStorageIntroDescription": {
+    "description": "Intro paragraph below the full-page warning title"
   },
-  "legacyStorageWarningLater": "Later",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
+  "legacyStorageStepBackupWallet": "Backup your wallet",
+  "@legacyStorageStepBackupWallet": {
+    "description": "Step 1 in the legacy storage warning checklist"
+  },
+  "legacyStorageStepExportLabels": "Export your labels (if you have any)",
+  "@legacyStorageStepExportLabels": {
+    "description": "Step 2 in the legacy storage warning checklist"
+  },
+  "legacyStorageStepEnsureSwapsCompleted": "Ensure all swaps are completed",
+  "@legacyStorageStepEnsureSwapsCompleted": {
+    "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
+  },
+  "legacyStorageStepUninstall": "Uninstall the app from your device",
+  "@legacyStorageStepUninstall": {
+    "description": "Uninstall step in the legacy storage warning checklist"
+  },
+  "legacyStorageStepReinstall": "Download the latest version and re-install",
+  "@legacyStorageStepReinstall": {
+    "description": "Reinstall step in the legacy storage warning checklist"
+  },
+  "legacyStorageStepRestoreBackup": "Restore your backup",
+  "@legacyStorageStepRestoreBackup": {
+    "description": "Final step in the legacy storage warning checklist"
+  },
+  "legacyStorageImportantTitle": "Important",
+  "@legacyStorageImportantTitle": {
+    "description": "Title of the red callout box on the legacy storage warning page"
+  },
+  "legacyStorageImportantBody": "Please do not skip this process unless you absolutely cannot do a backup at this moment.",
+  "@legacyStorageImportantBody": {
+    "description": "Body of the red callout box on the legacy storage warning page"
+  },
+  "legacyStorageContinueFooterNoBackup": "You can continue using the app without doing a backup, but we strongly recommend against it.",
+  "@legacyStorageContinueFooterNoBackup": {
+    "description": "Footer text on the legacy storage warning page when the wallet has no backup"
+  },
+  "legacyStorageContinueFooterHasBackup": "You can continue using the app, but we strongly recommend against it.",
+  "@legacyStorageContinueFooterHasBackup": {
+    "description": "Footer text on the legacy storage warning page when the wallet already has a backup"
+  },
+  "legacyStorageBackupNowButton": "Backup now",
+  "@legacyStorageBackupNowButton": {
+    "description": "Primary CTA on the legacy storage warning and confirmation pages"
+  },
+  "legacyStorageRiskAckButton": "No, I understand the risk",
+  "@legacyStorageRiskAckButton": {
+    "description": "Secondary CTA on the legacy storage warning page that acknowledges the risk"
+  },
+  "legacyStorageAreYouSureTitle": "ARE YOU SURE?",
+  "@legacyStorageAreYouSureTitle": {
+    "description": "Title of the legacy storage are-you-sure confirmation page"
+  },
+  "legacyStorageAreYouSureParagraphOne": "The software used to store the wallet’s Bitcoin private keys is being deprecated. We strongly recommend you create a backup right now to avoid any disruption in the future.",
+  "@legacyStorageAreYouSureParagraphOne": {
+    "description": "First paragraph of the are-you-sure confirmation page"
+  },
+  "legacyStorageAreYouSureParagraphTwo": "The Encrypted Vault backup option will take about 1 minute, no special tools required. Using the physical backup, all you need is a pen and paper.",
+  "@legacyStorageAreYouSureParagraphTwo": {
+    "description": "Second paragraph of the are-you-sure confirmation page"
+  },
+  "legacyStorageContinueWithoutBackupButton": "Continue without backup",
+  "@legacyStorageContinueWithoutBackupButton": {
+    "description": "Confirm button on the are-you-sure page that dismisses the warning"
+  },
+  "legacyStorageAcceptRisksCheckbox": "I accept the risks of not doing a backup",
+  "@legacyStorageAcceptRisksCheckbox": {
+    "description": "Checkbox label that gates the continue-without-backup button"
+  },
+  "backButton": "Back",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Get started",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "I contribute",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "I do not contribute",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Standard logs",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch shown in the wizard and settings"
+  },
+  "appInitErrorHasBackupTitle": "Use your backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Thanks to your backup, your funds are safe.\nTry restarting the app first, if it still fails, reinstall and recover with your backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "No backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Do not delete the app.\nContact our support team to attempt a rescue.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contact support",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Show error details",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "wizardSkipButton": "Skip",
+  "@wizardSkipButton": {
+    "description": "Top-right action in the install/upgrade wizard that finishes it immediately with current selections"
+  },
+  "wizardPageIndicator": "PAGE {current} / {total}",
+  "@wizardPageIndicator": {
+    "description": "Eyebrow label above each wizard page title indicating progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wizardNextButton": "Next",
+  "@wizardNextButton": {
+    "description": "Primary action that advances the wizard to the next page"
+  },
+  "wizardCustomizeTitle": "Customize your experience",
+  "@wizardCustomizeTitle": {
+    "description": "Title of the wizard's settings/customize page"
+  },
+  "wizardCustomizeBody": "Use BULL on your own terms with these settings.",
+  "@wizardCustomizeBody": {
+    "description": "Subtitle on the wizard's settings/customize page"
+  },
+  "wizardCustomizeDefaultCurrency": "Default currency",
+  "@wizardCustomizeDefaultCurrency": {
+    "description": "Label for the default fiat currency row on the wizard customize page"
+  },
+  "wizardMissionTitle": "Help the Bull mission",
+  "@wizardMissionTitle": {
+    "description": "Title of the wizard's error-reporting consent page"
+  },
+  "wizardMissionBody1": "To help us improve our software and make sure we offer the highest level of security, privacy and usability, your app can send us error logs that allow us to detect issues and fix them quickly in our next updates.",
+  "@wizardMissionBody1": {
+    "description": "First explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionBody2": "These logs are anonymized, are not linked to your IP address, and never share any information about your transactions or your identity. They are purely technical and do not put you at any risk. It's very helpful for us, and doesn't cost anything to you.",
+  "@wizardMissionBody2": {
+    "description": "Second explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionQuestion": "Do you accept to be part of our automated issue reporting program?",
+  "@wizardMissionQuestion": {
+    "description": "Yes/No question on the wizard error-reporting page"
+  },
+  "wizardMissionYes": "Yes",
+  "@wizardMissionYes": {
+    "description": "Affirmative response button on the wizard error-reporting page"
+  },
+  "wizardMissionNo": "No",
+  "@wizardMissionNo": {
+    "description": "Negative response button on the wizard error-reporting page"
+  },
+  "wizardMissionRequired": "Please choose Yes or No before continuing.",
+  "@wizardMissionRequired": {
+    "description": "Snackbar shown when the user tries to leave the wizard without answering the error-reporting question"
+  },
+  "wizardJourneyTitle": "Progress on your journey",
+  "@wizardJourneyTitle": {
+    "description": "Title of the wizard's final tips page"
+  },
+  "wizardJourneyBody": "If you are new to BULL wallet, here are a few features you can take advantage of to improve your privacy, security and user experience.",
+  "@wizardJourneyBody": {
+    "description": "Intro paragraph on the wizard journey/tips page"
+  },
+  "wizardJourneyTip1": "Add a security PIN to unlock your wallet",
+  "@wizardJourneyTip1": {
+    "description": "Tip 1 on the wizard journey page"
+  },
+  "wizardJourneyTip2": "Try the encrypted vault backup",
+  "@wizardJourneyTip2": {
+    "description": "Tip 2 on the wizard journey page"
+  },
+  "wizardJourneyTip3": "Connect to your own Bitcoin node",
+  "@wizardJourneyTip3": {
+    "description": "Tip 3 on the wizard journey page"
+  },
+  "wizardJourneyTip4": "Connect to your own Mempool explorer",
+  "@wizardJourneyTip4": {
+    "description": "Tip 4 on the wizard journey page"
+  },
+  "wizardJourneyTip5": "Transfer between Bitcoin and Liquid with no KYC",
+  "@wizardJourneyTip5": {
+    "description": "Tip 5 on the wizard journey page"
+  },
+  "wizardJourneyTip6": "Customize your autoswap settings",
+  "@wizardJourneyTip6": {
+    "description": "Tip 6 on the wizard journey page"
+  },
+  "wizardJourneyTip7": "Switch between Bitcoin (BTC) and Satoshis (sats)",
+  "@wizardJourneyTip7": {
+    "description": "Tip 7 on the wizard journey page"
+  },
+  "wizardJourneyTip8": "Create air-gapped transactions for your hardware wallet",
+  "@wizardJourneyTip8": {
+    "description": "Tip 8 on the wizard journey page"
+  },
+  "legacyStorageHasBackupImportantBody": "Please do not skip this process unless you absolutely need to use the wallet urgently or waiting for a swap to complete.",
+  "@legacyStorageHasBackupImportantBody": {
+    "description": "Important callout body shown only on the reinstall variant of the legacy storage warning (when the user already has a verified backup)."
+  },
+  "legacyStorageRiskAckButtonHasBackup": "I understand the risk",
+  "@legacyStorageRiskAckButtonHasBackup": {
+    "description": "Risk-acknowledge button label on the reinstall variant of the legacy storage warning (no leading \"No,\" because there is no Backup Now alternative on this page)."
   }
 }

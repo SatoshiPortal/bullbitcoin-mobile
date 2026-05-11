@@ -19,7 +19,7 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_i
 import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_liquid_wallet_status_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_status_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -162,18 +162,19 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
+    locator.registerFactory<CheckBackupNeededUsecase>(
+      () => CheckBackupNeededUsecase(
+        walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
 
     locator.registerFactory<DeleteWalletUsecase>(
       () => DeleteWalletUsecase(
         walletRepository: locator<WalletRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-        mainnetSwapRepository: locator<BoltzSwapRepository>(
+        swapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -221,12 +222,7 @@ class WalletLocator {
       () => TheDirtyUsecase(
         locator<SettingsRepository>(),
         locator<ElectrumServerPort>(),
-      ),
-    );
-    locator.registerFactory<TheDirtyLiquidUsecase>(
-      () => TheDirtyLiquidUsecase(
-        locator<SettingsRepository>(),
-        locator<ElectrumServerPort>(),
+        locator<BitcoinWalletRepository>(),
       ),
     );
     locator.registerFactory<SyncWalletUsecase>(

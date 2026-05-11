@@ -237,7 +237,7 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
         maxHeight: MediaQuery.of(context).size.height * 0.3,
       ),
       decoration: BoxDecoration(
-        color: context.appColors.onPrimary,
+        color: context.appColors.background,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Padding(

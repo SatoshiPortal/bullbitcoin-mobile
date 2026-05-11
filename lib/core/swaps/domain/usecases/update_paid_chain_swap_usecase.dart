@@ -1,26 +1,14 @@
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class UpdatePaidChainSwapUsecase {
   final BoltzSwapRepository _swapRepository;
-  final BoltzSwapRepository _swapRepositoryTestnet;
 
-  UpdatePaidChainSwapUsecase({
-    required BoltzSwapRepository swapRepository,
-    required BoltzSwapRepository swapRepositoryTestnet,
-  }) : _swapRepository = swapRepository,
-       _swapRepositoryTestnet = swapRepositoryTestnet;
+  UpdatePaidChainSwapUsecase({required BoltzSwapRepository swapRepository})
+    : _swapRepository = swapRepository;
 
-  Future<void> execute({
-    required String txid,
-    required String swapId,
-    required Network network,
-  }) async {
+  Future<void> execute({required String txid, required String swapId}) async {
     try {
-      final swapRepository =
-          network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
-
-      return await swapRepository.updatePaidSendSwap(
+      return await _swapRepository.updatePaidSendSwap(
         swapId: swapId,
         txid: txid,
       );

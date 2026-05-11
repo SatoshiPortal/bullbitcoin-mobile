@@ -1702,15 +1702,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "الرصيد: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "الدخول",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -1977,10 +1968,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "الاسترداد الافتراضي",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "المبلغ المستلم",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2223,15 +2210,6 @@
   "withdrawBelowMinAmountError": "أنت تحاول أن تنسحب دون الحد الأدنى.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "المعاملات: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "تدفع",
   "@swapYouPay": {
@@ -3157,10 +3135,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "فشل في التحقق من حالة الخزنة",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "backupWalletPhysicalBackupTag": "عديم الثقة (خذ وقتك)",
   "@backupWalletPhysicalBackupTag": {
     "description": "Tag indicating difficulty and trust model for physical backup"
@@ -3830,10 +3804,6 @@
   "transactionFilterReceive": "الاستلام",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "تدفق غير مستقر",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "اليوم",
   "@exchangeDcaFrequencyDay": {
@@ -4564,10 +4534,6 @@
   "addressViewBalance": "الرصيد",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "أبحث عن التوازن والمعاملات..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "لم يتم العثور على أي دعم",
   "@recoverbullSelectNoBackupsFound": {
@@ -8201,10 +8167,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "الخزنة المشفرة ليست جاهزة",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PINS لا تطابق",
   "@pinCodeMismatchError": {
@@ -12506,5 +12468,123 @@
   "legacyStorageWarningLater": "لاحقاً",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "رجوع",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "ابدأ",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "فاتح",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "داكن",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "النظام",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "أنا أساهم",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "لا أساهم",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "السجلات القياسية",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "مفعّل دائمًا — يتيح لنا التأكد من انتقال محفظتك بأمان بين إصدارات التطبيق.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "استخدم نسختك الاحتياطية",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "أموالك آمنة بفضل نسختك الاحتياطية.\nحاول إعادة تشغيل التطبيق أولاً، وإذا استمر الفشل، أعد تثبيته واسترجع محفظتك باستخدام نسختك الاحتياطية.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "لا توجد نسخة احتياطية؟",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "لا تحذف التطبيق.\nاتصل بفريق الدعم لمحاولة الإنقاذ.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "اتصل بالدعم",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "إظهار تفاصيل الخطأ",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "تؤدي قيم Stop Gap العالية إلى زيادة وقت المزامنة بشكل كبير. أبقِ التطبيق مفتوحًا في المقدمة حتى تكتمل المزامنة — قد يؤدي تشغيل التطبيق في الخلفية إلى مقاطعتها.",
+  "wizardSkipButton": "تخطي",
+  "wizardPageIndicator": "صفحة {current} / {total}",
+  "wizardNextButton": "التالي",
+  "wizardCustomizeTitle": "خصص تجربتك",
+  "wizardCustomizeBody": "استخدم BULL بطريقتك مع هذه الإعدادات.",
+  "wizardCustomizeDefaultCurrency": "العملة الافتراضية",
+  "wizardMissionTitle": "ادعم مهمة Bull",
+  "wizardMissionBody1": "لمساعدتنا في تحسين برامجنا وضمان أعلى مستوى من الأمان والخصوصية وسهولة الاستخدام، يمكن لتطبيقك أن يرسل إلينا سجلات الأخطاء التي تتيح لنا اكتشاف المشكلات وإصلاحها بسرعة في التحديثات القادمة.",
+  "wizardMissionBody2": "هذه السجلات مجهولة الهوية، وغير مرتبطة بعنوان IP الخاص بك، ولا تشارك أبدًا أي معلومات عن معاملاتك أو هويتك. إنها تقنية بحتة ولا تعرضك لأي مخاطر. هذا مفيد جدًا لنا ولا يكلفك شيئًا.",
+  "wizardMissionQuestion": "هل توافق على الانضمام إلى برنامج الإبلاغ التلقائي عن المشكلات؟",
+  "wizardMissionYes": "نعم",
+  "wizardMissionNo": "لا",
+  "wizardMissionRequired": "يرجى اختيار نعم أو لا قبل المتابعة.",
+  "wizardJourneyTitle": "تقدم في رحلتك",
+  "wizardJourneyBody": "إذا كنت جديدًا على محفظة BULL، فإليك بعض الميزات التي يمكنك الاستفادة منها لتحسين خصوصيتك وأمانك وتجربة الاستخدام.",
+  "wizardJourneyTip1": "أضف رمز PIN للأمان لفتح محفظتك",
+  "wizardJourneyTip2": "جرب النسخة الاحتياطية المشفرة للخزنة",
+  "wizardJourneyTip3": "اتصل بعقدة Bitcoin الخاصة بك",
+  "wizardJourneyTip4": "اتصل بمستكشف Mempool الخاص بك",
+  "wizardJourneyTip5": "حول بين Bitcoin و Liquid بدون KYC",
+  "wizardJourneyTip6": "خصص إعدادات autoswap",
+  "wizardJourneyTip7": "بدّل بين Bitcoin (BTC) و Satoshis (sats)",
+  "wizardJourneyTip8": "أنشئ معاملات air-gap لمحفظتك المادية",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "إجراء مطلوب",
+  "legacyStorageBadgeConfirm": "تأكيد",
+  "legacyStorageNoBackupPageTitle": "احفظ نسخة احتياطية وأعد تثبيت محفظتك",
+  "legacyStorageHasBackupPageTitle": "أعد تثبيت محفظتك",
+  "legacyStorageIntroDescription": "محفظتك تعمل على برنامج سيتم إيقافه قريبًا. لا يمكن تحديثه دون إلغاء تثبيت التطبيق وإعادة تثبيته.",
+  "legacyStorageStepBackupWallet": "احفظ نسخة احتياطية لمحفظتك",
+  "legacyStorageStepExportLabels": "صدّر تسمياتك (إن وُجدت)",
+  "legacyStorageStepEnsureSwapsCompleted": "تأكد من اكتمال جميع عمليات التبادل",
+  "legacyStorageStepUninstall": "قم بإلغاء تثبيت التطبيق من جهازك",
+  "legacyStorageStepReinstall": "نزّل أحدث إصدار وأعد التثبيت",
+  "legacyStorageStepRestoreBackup": "استعِد نسختك الاحتياطية",
+  "legacyStorageImportantTitle": "هام",
+  "legacyStorageImportantBody": "لا تتخطَّ هذه العملية إلا إذا كنت لا تستطيع فعلًا عمل نسخة احتياطية في هذه اللحظة.",
+  "legacyStorageContinueFooterNoBackup": "يمكنك متابعة استخدام التطبيق دون عمل نسخة احتياطية، لكننا ننصح بشدة بعدم القيام بذلك.",
+  "legacyStorageContinueFooterHasBackup": "يمكنك متابعة استخدام التطبيق، لكننا ننصح بشدة بعدم القيام بذلك.",
+  "legacyStorageBackupNowButton": "احفظ نسخة احتياطية الآن",
+  "legacyStorageRiskAckButton": "لا، أتفهم المخاطر",
+  "legacyStorageAreYouSureTitle": "هل أنت متأكد؟",
+  "legacyStorageAreYouSureParagraphOne": "البرنامج المستخدم لتخزين مفاتيح بيتكوين الخاصة بمحفظتك يتم إيقافه. ننصح بشدة أن تعمل نسخة احتياطية الآن لتجنب أي تعطل في المستقبل.",
+  "legacyStorageAreYouSureParagraphTwo": "خيار النسخة الاحتياطية المشفّرة لا يستغرق سوى دقيقة، ولا يتطلب أدوات خاصة. أما النسخة الاحتياطية المادية، فكل ما تحتاجه قلم وورقة.",
+  "legacyStorageContinueWithoutBackupButton": "متابعة دون نسخة احتياطية",
+  "legacyStorageAcceptRisksCheckbox": "أوافق على مخاطر عدم عمل نسخة احتياطية",
+  "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
+  "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر"
 }

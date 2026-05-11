@@ -29,10 +29,6 @@ class ReceiveLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        swapRepositoryTestnet: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
         seedRepository: locator<SeedRepository>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         labelsFacade: locator<LabelsFacade>(),

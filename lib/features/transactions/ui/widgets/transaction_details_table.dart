@@ -874,7 +874,7 @@ class TransactionDetailsTable extends StatelessWidget {
                           ? context.loc.transactionFeesDeductedFrom
                           : context.loc.transactionFeesTotalDeducted,
                       style: context.font.labelSmall,
-                      color: context.appColors.surfaceContainer,
+                      color: context.appColors.secondary,
                     ),
                   ),
                   if (swap.isLnReceiveSwap && swap.fees!.lockupFee != null)
@@ -950,14 +950,14 @@ Widget _feeRow(BuildContext context, String label, int amt) {
         BBText(
           label,
           style: context.font.bodySmall,
-          color: context.appColors.surfaceContainer,
+          color: context.appColors.secondary,
         ),
         const Spacer(),
         CurrencyText(
           amt,
           showFiat: false,
           style: context.font.bodySmall,
-          color: context.appColors.surfaceContainer,
+          color: context.appColors.secondary,
         ),
       ],
     ),

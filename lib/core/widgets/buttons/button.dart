@@ -66,58 +66,63 @@ class BBButton extends StatelessWidget {
         ? Image.asset(icon!, width: 20, height: 20, color: textColor)
         : const SizedBox.shrink();
 
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 200),
-      opacity: disabled ? 0.5 : 1,
-      child: IgnorePointer(
-        ignoring: disabled,
-        child: InkWell(
-          onTap: () => disabled ? null : onPressed(),
-          borderRadius: radius,
-          child: Container(
-            height: height ?? 52,
-            width: width ?? (size == ButtonSize.large ? null : 160),
-            padding: height != null
-                ? null
-                : const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: bgColor,
-              border: outlined
-                  ? Border.all(color: borderColor ?? textColor)
-                  : null,
-              borderRadius: radius,
-            ),
-            child: Row(
-              mainAxisAlignment: .center,
-              children: [
-                if (iconData == null && icon == null) ...[
-                  BBText(
-                    label,
-                    style: textStyle ?? context.font.headlineLarge,
-                    color: textColor,
-                  ),
-                ] else if (label.isEmpty) ...[
-                  image,
-                ] else ...[
-                  if (iconFirst) ...[
+    // Flexible-wrapped so a long label shrinks via AutoSizeText first and
+    // finally ellipsizes; the enclosing Tooltip lets users long-press to
+    // read the full label if it was truncated.
+    final labelText = Flexible(
+      child: BBText(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: textStyle ?? context.font.headlineLarge,
+        color: textColor,
+      ),
+    );
+
+    return Tooltip(
+      message: label,
+      waitDuration: const Duration(milliseconds: 500),
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 200),
+        opacity: disabled ? 0.5 : 1,
+        child: IgnorePointer(
+          ignoring: disabled,
+          child: InkWell(
+            onTap: () => disabled ? null : onPressed(),
+            borderRadius: radius,
+            child: Container(
+              height: height ?? 52,
+              width: width ?? (size == ButtonSize.large ? null : 160),
+              padding: height != null
+                  ? null
+                  : const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: bgColor,
+                border: outlined
+                    ? Border.all(color: borderColor ?? textColor)
+                    : null,
+                borderRadius: radius,
+              ),
+              child: Row(
+                mainAxisAlignment: .center,
+                children: [
+                  if (iconData == null && icon == null) ...[
+                    labelText,
+                  ] else if (label.isEmpty) ...[
                     image,
-                    const Gap(10),
-                    BBText(
-                      label,
-                      style: textStyle ?? context.font.headlineLarge,
-                      color: textColor,
-                    ),
                   ] else ...[
-                    BBText(
-                      label,
-                      style: textStyle ?? context.font.headlineLarge,
-                      color: textColor,
-                    ),
-                    const Gap(10),
-                    image,
+                    if (iconFirst) ...[
+                      image,
+                      const Gap(10),
+                      labelText,
+                    ] else ...[
+                      labelText,
+                      const Gap(10),
+                      image,
+                    ],
                   ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

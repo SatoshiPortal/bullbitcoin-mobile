@@ -14,29 +14,33 @@ class StackedPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      fit: StackFit.expand,
       children: [
         child,
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.only(
-            bottom: 32,
-            top: 8,
-            left: 16,
-            right: 16,
-          ),
-          alignment: Alignment.bottomCenter,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                context.appColors.onSecondary.withValues(alpha: 0.0),
-                context.appColors.onSecondary,
-              ],
-              stops: const [0.0, 0.3],
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            padding: const EdgeInsets.only(
+              bottom: 32,
+              top: 8,
+              left: 16,
+              right: 16,
             ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  context.appColors.onSecondary.withValues(alpha: 0.0),
+                  context.appColors.onSecondary,
+                ],
+                stops: const [0.0, 0.3],
+              ),
+            ),
+            child: bottomChild,
           ),
-          child: bottomChild,
         ),
       ],
     );

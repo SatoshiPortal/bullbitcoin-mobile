@@ -39,6 +39,8 @@ class SettingsEntryItem extends StatelessWidget {
       leading: Icon(effectiveIcon, color: effectiveIconColor),
       title: Text(
         title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: theme.textTheme.bodyLarge?.copyWith(
           color: textColor ?? context.appColors.onSurface,
         ),

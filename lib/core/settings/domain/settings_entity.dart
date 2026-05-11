@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -75,6 +77,21 @@ enum Language {
       log.warning('unsupported language fallback on default');
       return Language.unitedStatesEnglish;
     }
+  }
+
+  static Language fromKeyboard() {
+    final locale = PlatformDispatcher.instance.locale;
+    final exact = Language.values.where(
+      (l) =>
+          l.languageCode == locale.languageCode &&
+          l.countryCode == locale.countryCode,
+    );
+    if (exact.isNotEmpty) return exact.first;
+    final langOnly = Language.values.where(
+      (l) => l.languageCode == locale.languageCode,
+    );
+    if (langOnly.isNotEmpty) return langOnly.first;
+    return Language.unitedStatesEnglish;
   }
 }
 

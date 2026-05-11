@@ -61,7 +61,7 @@ class LoadElectrumServerDataUsecase {
     final serverStatusMap = <String, ElectrumServerStatus>{};
     await Future.wait(
       servers.map((server) async {
-        final status = await _serverStatusPort.checkServerStatus(
+        final status = await _serverStatusPort.checkSocket(
           url: server.url,
           useTorProxy: useTorProxy,
           torProxyPort: appSettings.torProxyPort,

@@ -98,5 +98,123 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN"
+  "pinCodeBackupRequiredWarning": "Tafadhali kamilisha nakala rudufu ya pochi kabla ya kuweka PIN",
+  "backButton": "Rudi",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Anza",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Nyepesi",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Nyeusi",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Mfumo",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Ninashiriki",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Sishiriki",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Rekodi za kawaida",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Inaendelea kuwashwa — inatuwezesha kuona kama pochi yako inahama kwa usalama kati ya matoleo ya programu.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Tumia nakala rudufu yako",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Kutokana na hifadhi rudufu yako, fedha zako ziko salama.\nKwanza jaribu kuanzisha upya programu; ikiwa bado inashindwa, isakinishe upya na urudishe kwa kutumia hifadhi rudufu yako.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Hakuna nakala rudufu?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Usifute programu.\nWasiliana na timu yetu ya usaidizi kwa jaribio la kuokoa.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Wasiliana na usaidizi",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Onyesha maelezo ya hitilafu",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Thamani za juu za stop gap huongeza muda wa kusawazisha kwa kiasi kikubwa. Weka programu wazi mbele hadi usawazishaji ukamilike — kuiweka chinichini kunaweza kuukatiza.",
+  "wizardSkipButton": "Ruka",
+  "wizardPageIndicator": "UKURASA {current} / {total}",
+  "wizardNextButton": "Inayofuata",
+  "wizardCustomizeTitle": "Sanidi uzoefu wako",
+  "wizardCustomizeBody": "Tumia BULL kwa namna yako kwa mipangilio hii.",
+  "wizardCustomizeDefaultCurrency": "Sarafu ya msingi",
+  "wizardMissionTitle": "Saidia dhamira ya Bull",
+  "wizardMissionBody1": "Ili kutusaidia kuboresha programu yetu na kuhakikisha kiwango cha juu zaidi cha usalama, faragha na utumiaji, programu yako inaweza kutuma kumbukumbu za makosa zinazoturuhusu kugundua matatizo na kuyatatua haraka katika masasisho yetu yajayo.",
+  "wizardMissionBody2": "Kumbukumbu hizi hazijulikani, hazijaunganishwa na anwani yako ya IP, na hazishiriki kamwe taarifa yoyote kuhusu miamala yako au utambulisho wako. Ni za kiufundi tu na hazikuwekei katika hatari yoyote. Ni muhimu sana kwetu na haikugharimu chochote.",
+  "wizardMissionQuestion": "Je, unakubali kushiriki katika mpango wetu wa otomatiki wa kuripoti matatizo?",
+  "wizardMissionYes": "Ndiyo",
+  "wizardMissionNo": "Hapana",
+  "wizardMissionRequired": "Tafadhali chagua Ndiyo au Hapana kabla ya kuendelea.",
+  "wizardJourneyTitle": "Endelea katika safari yako",
+  "wizardJourneyBody": "Ikiwa wewe ni mpya kwa pochi ya BULL, hapa kuna baadhi ya vipengele unavyoweza kutumia ili kuboresha faragha, usalama na uzoefu wako wa mtumiaji.",
+  "wizardJourneyTip1": "Ongeza PIN ya usalama kufungua pochi yako",
+  "wizardJourneyTip2": "Jaribu hifadhi nakala iliyosimbwa ya hifadhi",
+  "wizardJourneyTip3": "Unganisha na nodi yako ya Bitcoin",
+  "wizardJourneyTip4": "Unganisha na kichunguzi chako cha Mempool",
+  "wizardJourneyTip5": "Hamisha kati ya Bitcoin na Liquid bila KYC",
+  "wizardJourneyTip6": "Sanidi mipangilio yako ya autoswap",
+  "wizardJourneyTip7": "Badilisha kati ya Bitcoin (BTC) na Satoshis (sats)",
+  "wizardJourneyTip8": "Unda miamala ya air-gap kwa pochi yako ya maunzi",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "HATUA INAHITAJIKA",
+  "legacyStorageBadgeConfirm": "THIBITISHA",
+  "legacyStorageNoBackupPageTitle": "HIFADHI NAKALA NA SAKINISHA UPYA WALLET YAKO",
+  "legacyStorageHasBackupPageTitle": "SAKINISHA UPYA WALLET YAKO",
+  "legacyStorageIntroDescription": "Wallet yako inatumia programu ambayo itaachwa hivi karibuni. Haiwezi kusasishwa bila kuondoa programu na kuiweka tena.",
+  "legacyStorageStepBackupWallet": "Hifadhi nakala ya wallet yako",
+  "legacyStorageStepExportLabels": "Hamisha lebo zako (kama unazo)",
+  "legacyStorageStepEnsureSwapsCompleted": "Hakikisha swaps zote zimekamilika",
+  "legacyStorageStepUninstall": "Ondoa programu kwenye kifaa chako",
+  "legacyStorageStepReinstall": "Pakua toleo jipya zaidi na uweke tena",
+  "legacyStorageStepRestoreBackup": "Rejesha nakala yako",
+  "legacyStorageImportantTitle": "Muhimu",
+  "legacyStorageImportantBody": "Usiruke utaratibu huu isipokuwa kweli huwezi kuhifadhi nakala kwa sasa.",
+  "legacyStorageContinueFooterNoBackup": "Unaweza kuendelea kutumia programu bila kuhifadhi nakala, lakini tunashauri sana usifanye hivyo.",
+  "legacyStorageContinueFooterHasBackup": "Unaweza kuendelea kutumia programu, lakini tunashauri sana usifanye hivyo.",
+  "legacyStorageBackupNowButton": "Hifadhi sasa",
+  "legacyStorageRiskAckButton": "Hapana, naelewa hatari",
+  "legacyStorageAreYouSureTitle": "UNA UHAKIKA?",
+  "legacyStorageAreYouSureParagraphOne": "Programu inayohifadhi funguo binafsi za Bitcoin za wallet yako inaachwa. Tunashauri sana uhifadhi nakala sasa hivi ili kuepuka usumbufu wowote baadaye.",
+  "legacyStorageAreYouSureParagraphTwo": "Chaguo la Encrypted Vault linachukua takriban dakika 1 na halihitaji vifaa maalum. Kwa nakala ya kimwili unahitaji kalamu na karatasi tu.",
+  "legacyStorageContinueWithoutBackupButton": "Endelea bila nakala",
+  "legacyStorageAcceptRisksCheckbox": "Ninakubali hatari za kutohifadhi nakala",
+  "legacyStorageHasBackupImportantBody": "Tafadhali usiruke mchakato huu isipokuwa lazima utumie pochi kwa haraka au unasubiri swap ikamilike.",
+  "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari"
 }

@@ -290,5 +290,123 @@
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
   },
-  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი"
+  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
+  "backButton": "უკან",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "დაწყება",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "ღია",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "მუქი",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "სისტემა",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "წვლილს შევიტან",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "არ შევიტან წვლილს",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "სტანდარტული ჟურნალები",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "ყოველთვის ჩართული — საშუალებას გვაძლევს ვნახოთ, თქვენი საფულე უსაფრთხოდ გადადის აპის ვერსიებს შორის თუ არა.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "გამოიყენეთ თქვენი სარეზერვო ასლი",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "თქვენი სარეზერვო ასლის წყალობით თქვენი სახსრები დაცულია.\nჯერ სცადეთ აპლიკაციის გადატვირთვა; თუ ის კვლავ არ მუშაობს, ხელახლა დააინსტალირეთ და აღადგინეთ თქვენი სარეზერვო ასლით.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "სარეზერვო ასლი არ გაქვთ?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "არ წაშალოთ აპი.\nდაუკავშირდით ჩვენს მხარდაჭერის გუნდს გადარჩენის მცდელობისთვის.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "მხარდაჭერასთან დაკავშირება",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "შეცდომის დეტალების ჩვენება",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "მაღალი stop gap მნიშვნელობები მნიშვნელოვნად ზრდის სინქრონიზაციის დროს. დატოვეთ აპლიკაცია წინა პლანზე გახსნილი სანამ სინქრონიზაცია არ დასრულდება — ფონურ რეჟიმში გადაყვანამ შესაძლოა შეაჩეროს იგი.",
+  "wizardSkipButton": "გამოტოვება",
+  "wizardPageIndicator": "გვერდი {current} / {total}",
+  "wizardNextButton": "შემდეგი",
+  "wizardCustomizeTitle": "მოარგეთ თქვენი გამოცდილება",
+  "wizardCustomizeBody": "გამოიყენეთ BULL თქვენი სურვილისამებრ ამ პარამეტრებით.",
+  "wizardCustomizeDefaultCurrency": "ნაგულისხმევი ვალუტა",
+  "wizardMissionTitle": "მხარი დაუჭირეთ Bull-ის მისიას",
+  "wizardMissionBody1": "იმისათვის, რომ დაგვეხმაროთ ჩვენი პროგრამული უზრუნველყოფის გაუმჯობესებაში და უმაღლესი დონის უსაფრთხოების, კონფიდენციალურობისა და გამოყენებადობის უზრუნველყოფაში, თქვენს აპლიკაციას შეუძლია გამოგვიგზავნოს შეცდომების ჟურნალები, რომლებიც საშუალებას გვაძლევს სწრაფად აღმოვაჩინოთ პრობლემები და გავასწოროთ ისინი შემდეგ განახლებებში.",
+  "wizardMissionBody2": "ეს ჟურნალები ანონიმურია, არ არის დაკავშირებული თქვენს IP მისამართთან და არასოდეს იზიარებს ინფორმაციას თქვენი ტრანზაქციების ან ვინაობის შესახებ. ისინი წმინდად ტექნიკურია და არ გაყენებთ რისკის ქვეშ. ეს ჩვენთვის ძალიან სასარგებლოა და თქვენ არაფერი დაგიჯდებათ.",
+  "wizardMissionQuestion": "ეთანხმებით ავტომატური პრობლემების მოხსენების ჩვენს პროგრამაში მონაწილეობას?",
+  "wizardMissionYes": "დიახ",
+  "wizardMissionNo": "არა",
+  "wizardMissionRequired": "გაგრძელებამდე გთხოვთ აირჩიოთ დიახ ან არა.",
+  "wizardJourneyTitle": "გააგრძელეთ თქვენი მოგზაურობა",
+  "wizardJourneyBody": "თუ ახალი ხართ BULL საფულეში, აქ არის რამდენიმე ფუნქცია, რომელიც შეგიძლიათ გამოიყენოთ თქვენი კონფიდენციალურობის, უსაფრთხოებისა და მომხმარებლის გამოცდილების გასაუმჯობესებლად.",
+  "wizardJourneyTip1": "დაამატეთ უსაფრთხოების PIN თქვენი საფულის განსაბლოკად",
+  "wizardJourneyTip2": "სცადეთ დაშიფრული საცავის სარეზერვო ასლი",
+  "wizardJourneyTip3": "დაუკავშირდით თქვენს საკუთარ Bitcoin კვანძს",
+  "wizardJourneyTip4": "დაუკავშირდით თქვენს საკუთარ Mempool მკვლევარს",
+  "wizardJourneyTip5": "გადარიცხეთ Bitcoin-სა და Liquid-ს შორის KYC-ის გარეშე",
+  "wizardJourneyTip6": "მოარგეთ თქვენი autoswap პარამეტრები",
+  "wizardJourneyTip7": "გადართეთ Bitcoin (BTC) და Satoshis (sats) შორის",
+  "wizardJourneyTip8": "შექმენით air-gap ტრანზაქციები თქვენი აპარატული საფულისთვის",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "ქმედება საჭიროა",
+  "legacyStorageBadgeConfirm": "დადასტურება",
+  "legacyStorageNoBackupPageTitle": "შექმენით სარეზერვო ასლი და დააინსტალირეთ თავიდან საფულე",
+  "legacyStorageHasBackupPageTitle": "თავიდან დააინსტალირეთ საფულე",
+  "legacyStorageIntroDescription": "თქვენი საფულე მუშაობს პროგრამაზე, რომელიც მალე აღარ იქნება მხარდაჭერილი. მისი განახლება შეუძლებელია აპლიკაციის წაშლისა და თავიდან ინსტალაციის გარეშე.",
+  "legacyStorageStepBackupWallet": "შექმენით საფულის სარეზერვო ასლი",
+  "legacyStorageStepExportLabels": "ექსპორტი გაუკეთეთ თქვენს ლეიბლებს (თუ გაქვთ)",
+  "legacyStorageStepEnsureSwapsCompleted": "დარწმუნდით, რომ ყველა swap დასრულებულია",
+  "legacyStorageStepUninstall": "წაშალეთ აპლიკაცია თქვენი მოწყობილობიდან",
+  "legacyStorageStepReinstall": "ჩამოტვირთეთ უახლესი ვერსია და თავიდან დააინსტალირეთ",
+  "legacyStorageStepRestoreBackup": "აღადგინეთ თქვენი სარეზერვო ასლი",
+  "legacyStorageImportantTitle": "მნიშვნელოვანი",
+  "legacyStorageImportantBody": "ნუ გამოტოვებთ ამ პროცესს, თუ ნამდვილად არ შეგიძლიათ ამ მომენტში სარეზერვო ასლის შექმნა.",
+  "legacyStorageContinueFooterNoBackup": "შეგიძლიათ გააგრძელოთ აპის გამოყენება სარეზერვო ასლის გარეშეც, მაგრამ მტკიცედ გირჩევთ, რომ ასე არ მოიქცეთ.",
+  "legacyStorageContinueFooterHasBackup": "შეგიძლიათ გააგრძელოთ აპის გამოყენება, მაგრამ მტკიცედ გირჩევთ, რომ ასე არ მოიქცეთ.",
+  "legacyStorageBackupNowButton": "სარეზერვო ასლი ახლავე",
+  "legacyStorageRiskAckButton": "არა, ვაცნობიერებ რისკს",
+  "legacyStorageAreYouSureTitle": "დარწმუნებული ხართ?",
+  "legacyStorageAreYouSureParagraphOne": "თქვენი საფულის Bitcoin-ის პირადი გასაღებების შესანახად გამოყენებული პროგრამა მხარდაჭერას წყვეტს. მკაცრად გირჩევთ ახლავე შექმნათ სარეზერვო ასლი, რათა მომავალში პრობლემები არ შეგექმნათ.",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault სარეზერვო ასლის ოფცია იღებს დაახლოებით 1 წუთს და სპეციალური ხელსაწყოები არ ჭირდება. ფიზიკური სარეზერვო ასლისთვის სულ რაც გჭირდებათ კალამი და ქაღალდია.",
+  "legacyStorageContinueWithoutBackupButton": "გაგრძელება სარეზერვო ასლის გარეშე",
+  "legacyStorageAcceptRisksCheckbox": "ვაღიარებ რისკებს, რომ სარეზერვო ასლი არ მაქვს",
+  "legacyStorageHasBackupImportantBody": "გთხოვთ, არ გამოტოვოთ ეს პროცესი, თუ არ გჭირდებათ საფულის გადაუდებელი გამოყენება ან არ ელოდებით სვოპის დასრულებას.",
+  "legacyStorageRiskAckButtonHasBackup": "მესმის რისკი"
 }

@@ -1780,10 +1780,6 @@
   "@sendFrom": {
     "description": "Label for the sender/source in a transaction"
   },
-  "recoverbullVaultRecovery": "Recuperação de Vault",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "addressCardCopiedMessage": "Endereço copiado para clipboard",
   "@addressCardCopiedMessage": {
     "description": "Success message when an address is copied to clipboard"
@@ -2302,15 +2298,6 @@
   "importWalletSectionHardware": "Carteiras de hardware",
   "@importWalletSectionHardware": {
     "description": "Section header for hardware wallet types"
-  },
-  "recoverbullTransactions": "Transações: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "payBillerName": "Nome do Biller",
   "@payBillerName": {
@@ -3533,10 +3520,6 @@
   "@fundExchangeCanadaPostStep1": {
     "description": "Step 1 for Canada Post payment process"
   },
-  "recoverbullErrorInvalidFlow": "Fluxo inválido",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
-  },
   "backupWalletGoogleDrivePermissionWarning": "O Google irá pedir-lhe para partilhar informações pessoais com este aplicativo.",
   "@backupWalletGoogleDrivePermissionWarning": {
     "description": "Warning message about Google Drive permission request"
@@ -4225,10 +4208,6 @@
   "backupWalletEncryptedVaultTitle": "Vault criptografado",
   "@backupWalletEncryptedVaultTitle": {
     "description": "Title for encrypted vault backup option"
-  },
-  "recoverbullLookingForBalance": "Procurando equilíbrio e transações..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "swapConfirmTransferTitle": "Confirmar transferência",
   "@swapConfirmTransferTitle": {
@@ -7752,10 +7731,6 @@
   "pinCodeMismatchError": "PINs não correspondem",
   "@pinCodeMismatchError": {
     "description": "Error message when PIN confirmation doesn't match"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Vault descriptografado não está definido",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "sellCalculating": "Cálculo...",
   "@sellCalculating": {
@@ -11551,15 +11526,6 @@
   "@dcaFrequencyMonthly": {
     "description": "Monthly DCA frequency"
   },
-  "recoverbullBalance": "Equilíbrio: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullEnterToDecrypt": "Digite seu {inputType} para descriptografar seu cofre.",
   "@recoverbullEnterToDecrypt": {
     "description": "Instruction to enter PIN or password for vault decryption",
@@ -11701,10 +11667,6 @@
   "doNotShareWarning": "NÃO COMPLEMENTAR COM NINGUÉM",
   "@doNotShareWarning": {
     "description": "Warning to not share recovery phrase with anyone"
-  },
-  "recoverbullErrorCheckStatusFailed": "Falhado para verificar o status do vault",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
   },
   "importColdcardInstructionsStep9": "Digite um 'Label' para sua carteira Coldcard Q e toque em \"Importar\"",
   "@importColdcardInstructionsStep9": {
@@ -12499,5 +12461,123 @@
   "legacyStorageWarningLater": "Mais tarde",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Voltar",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Começar",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Claro",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Escuro",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Sistema",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Contribuo",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Não contribuo",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Logs padrão",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Sempre ativo — permite que vejamos se sua carteira migra com segurança entre versões do aplicativo.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Use seu backup",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Graças ao seu backup, seus fundos estão seguros.\nPrimeiro tente reiniciar o aplicativo; se ainda falhar, reinstale e recupere com seu backup.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Sem backup?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Não exclua o aplicativo.\nEntre em contato com nossa equipe de suporte para tentar um resgate.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Contatar suporte",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Mostrar detalhes do erro",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Valores altos de stop gap aumentam significativamente o tempo de sincronização. Mantenha o aplicativo aberto em primeiro plano até a sincronização ser concluída — colocá-lo em segundo plano pode interrompê-la.",
+  "wizardSkipButton": "Pular",
+  "wizardPageIndicator": "PÁGINA {current} / {total}",
+  "wizardNextButton": "Próximo",
+  "wizardCustomizeTitle": "Personalize sua experiência",
+  "wizardCustomizeBody": "Use o BULL do seu jeito com essas configurações.",
+  "wizardCustomizeDefaultCurrency": "Moeda padrão",
+  "wizardMissionTitle": "Apoie a missão da Bull",
+  "wizardMissionBody1": "Para nos ajudar a melhorar nosso software e garantir o mais alto nível de segurança, privacidade e usabilidade, seu aplicativo pode nos enviar registros de erros que nos permitem detectar problemas e corrigi-los rapidamente em nossas próximas atualizações.",
+  "wizardMissionBody2": "Esses registros são anônimos, não são vinculados ao seu endereço IP e nunca compartilham informações sobre suas transações ou identidade. São puramente técnicos e não te expõem a nenhum risco. É muito útil para nós e não custa nada para você.",
+  "wizardMissionQuestion": "Você aceita participar do nosso programa automatizado de relato de problemas?",
+  "wizardMissionYes": "Sim",
+  "wizardMissionNo": "Não",
+  "wizardMissionRequired": "Por favor, escolha Sim ou Não antes de continuar.",
+  "wizardJourneyTitle": "Avance na sua jornada",
+  "wizardJourneyBody": "Se você é novo na carteira BULL, aqui estão alguns recursos que você pode aproveitar para melhorar sua privacidade, segurança e experiência.",
+  "wizardJourneyTip1": "Adicione um PIN de segurança para desbloquear sua carteira",
+  "wizardJourneyTip2": "Experimente o backup criptografado do cofre",
+  "wizardJourneyTip3": "Conecte-se ao seu próprio node Bitcoin",
+  "wizardJourneyTip4": "Conecte-se ao seu próprio explorador Mempool",
+  "wizardJourneyTip5": "Transfira entre Bitcoin e Liquid sem KYC",
+  "wizardJourneyTip6": "Personalize suas configurações de autoswap",
+  "wizardJourneyTip7": "Alterne entre Bitcoin (BTC) e Satoshis (sats)",
+  "wizardJourneyTip8": "Crie transações air-gap para sua carteira de hardware",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "AÇÃO NECESSÁRIA",
+  "legacyStorageBadgeConfirm": "CONFIRMAR",
+  "legacyStorageNoBackupPageTitle": "FAÇA BACKUP E REINSTALE SUA CARTEIRA",
+  "legacyStorageHasBackupPageTitle": "REINSTALE SUA CARTEIRA",
+  "legacyStorageIntroDescription": "Sua carteira está rodando em um software que em breve será descontinuado. Ele não pode ser atualizado sem desinstalar e reinstalar o aplicativo.",
+  "legacyStorageStepBackupWallet": "Faça backup da sua carteira",
+  "legacyStorageStepExportLabels": "Exporte seus rótulos (se tiver)",
+  "legacyStorageStepEnsureSwapsCompleted": "Certifique-se de que todos os swaps foram concluídos",
+  "legacyStorageStepUninstall": "Desinstale o aplicativo do seu dispositivo",
+  "legacyStorageStepReinstall": "Baixe a versão mais recente e reinstale",
+  "legacyStorageStepRestoreBackup": "Restaure seu backup",
+  "legacyStorageImportantTitle": "Importante",
+  "legacyStorageImportantBody": "Não pule este processo a menos que realmente não consiga fazer um backup neste momento.",
+  "legacyStorageContinueFooterNoBackup": "Você pode continuar usando o aplicativo sem fazer backup, mas desaconselhamos fortemente.",
+  "legacyStorageContinueFooterHasBackup": "Você pode continuar usando o aplicativo, mas desaconselhamos fortemente.",
+  "legacyStorageBackupNowButton": "Fazer backup agora",
+  "legacyStorageRiskAckButton": "Não, entendo o risco",
+  "legacyStorageAreYouSureTitle": "TEM CERTEZA?",
+  "legacyStorageAreYouSureParagraphOne": "O software usado para guardar as chaves privadas Bitcoin da sua carteira está sendo descontinuado. Recomendamos fortemente que você faça um backup agora para evitar problemas no futuro.",
+  "legacyStorageAreYouSureParagraphTwo": "A opção Encrypted Vault leva cerca de 1 minuto e não precisa de ferramentas especiais. Para o backup físico, basta caneta e papel.",
+  "legacyStorageContinueWithoutBackupButton": "Continuar sem backup",
+  "legacyStorageAcceptRisksCheckbox": "Aceito os riscos de não fazer backup",
+  "legacyStorageHasBackupImportantBody": "Por favor, não pule este processo, a menos que você precise usar a carteira urgentemente ou esteja esperando uma troca ser concluída.",
+  "legacyStorageRiskAckButtonHasBackup": "Eu entendo o risco"
 }

@@ -47,6 +47,23 @@ class AssetConstants {
       '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49';
 }
 
+class CurrencyConstants {
+  /// Currencies supported by [CurrencyBottomSheet]'s flag/name lookup.
+  /// Single source of truth for both the pre-init wizard's currency
+  /// picker (which has no locator access) and the exchange-rate
+  /// datasource's hardcoded fallback (until the API supports
+  /// fetching the list dynamically).
+  static const List<String> supportedFiat = [
+    'USD',
+    'CAD',
+    'MXN',
+    'CRC',
+    'EUR',
+    'ARS',
+    'COP',
+  ];
+}
+
 class PayjoinConstants {
   static List<String> get ohttpRelayUrls {
     final list = [
@@ -93,7 +110,6 @@ class ApiServiceConstants {
 
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';
-  static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
   static const boltzReferralId = 'BULL';
 
   // BullBitcoin API
@@ -121,13 +137,8 @@ class LocatorInstanceNameConstants {
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
-  static const boltzTestnetSwapRepositoryInstanceName =
-      'boltzTestnetSwapRepository';
   static const boltzSwapWatcherInstanceName = 'boltzSwapWatcher';
-  static const boltzTestnetSwapWatcherInstanceName = 'boltzTestnetSwapWatcher';
   static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';
-  static const boltzTestnetAutoSwapTimerInstanceName =
-      'boltzTestnetAutoSwapTimer';
   static const String labelsHiveStorageDatasourceInstanceName =
       'labelsHiveStorageDatasource';
   static const String labelByRefHiveStorageDatasourceInstanceName =

@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/buy_error.dart';
@@ -98,7 +97,6 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       emit(
         state.copyWith(
           userSummary: summary,
-          apiKeyException: null,
           getUserSummaryException: null,
           currencyInput: currencyInput,
           bitcoinUnit: settings.bitcoinUnit,
@@ -131,10 +129,6 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       }
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      if (e is ApiKeyException) {
-        // If the API key is invalid, we should not proceed with the buy flow.
-        emit(state.copyWith(apiKeyException: e));
-      }
       if (e is GetExchangeUserSummaryException) {
         emit(state.copyWith(getUserSummaryException: e));
       } else if (e is GetWalletsException) {

@@ -1808,15 +1808,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "ব্যালেন্স: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "সেটিংস অ্যাক্সেস করুন",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2065,10 +2056,6 @@
   "arkSendTitle": "পাঠান",
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
-  },
-  "recoverbullVaultRecovery": "ভল্ট পুনরুদ্ধার",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
   },
   "transactionDetailLabelAmountReceived": "প্রাপ্ত পরিমাণ",
   "@transactionDetailLabelAmountReceived": {
@@ -2320,15 +2307,6 @@
   "withdrawBelowMinAmountError": "আপনি ন্যূনতম পরিমাণের নিচে উত্তোলন করার চেষ্টা করছেন।",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "লেনদেন: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "আপনি প্রদান করবেন",
   "@swapYouPay": {
@@ -3276,10 +3254,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "ভল্টের অবস্থা যাচাই করতে ব্যর্থ হয়েছে",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "আপনার ব্যাকআপ ফাইলটি আনতে অনুগ্রহ করে অপেক্ষা করুন।",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -3985,10 +3959,6 @@
   "transactionFilterReceive": "গ্রহণ করুন",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "অবৈধ প্রবাহ",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "দিন",
   "@exchangeDcaFrequencyDay": {
@@ -4723,10 +4693,6 @@
   "addressViewBalance": "ব্যালান্স",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "ব্যালেন্স এবং লেনদেন খুঁজছি…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "কোনো ব্যাকআপ পাওয়া যায়নি",
   "@recoverbullSelectNoBackupsFound": {
@@ -8525,10 +8491,6 @@
       }
     }
   },
-  "recoverbullErrorDecryptedVaultNotSet": "ডিক্রিপ্ট করা ভল্ট সেট করা হয়নি",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
-  },
   "pinCodeMismatchError": "পিনগুলো মেলেনি",
   "@pinCodeMismatchError": {
     "description": "Error message when PIN confirmation doesn't match"
@@ -12220,5 +12182,123 @@
   "legacyStorageWarningLater": "পরে",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "পিছনে",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "শুরু করুন",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "হালকা",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "গাঢ়",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "সিস্টেম",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "আমি অবদান রাখি",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "আমি অবদান রাখি না",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "স্ট্যান্ডার্ড লগ",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "সবসময় সক্রিয় — অ্যাপের সংস্করণগুলির মধ্যে আপনার ওয়ালেট নিরাপদে মাইগ্রেট হচ্ছে কিনা তা আমাদের দেখতে দেয়।",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "আপনার ব্যাকআপ ব্যবহার করুন",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "আপনার ব্যাকআপের কারণে আপনার তহবিল নিরাপদ।\nপ্রথমে অ্যাপটি পুনরায় চালু করার চেষ্টা করুন, যদি এটি এখনও ব্যর্থ হয়, পুনরায় ইনস্টল করুন এবং আপনার ব্যাকআপ দিয়ে পুনরুদ্ধার করুন।",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "কোনো ব্যাকআপ নেই?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "অ্যাপটি মুছে ফেলবেন না।\nউদ্ধার প্রচেষ্টার জন্য আমাদের সহায়তা দলের সাথে যোগাযোগ করুন।",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "সহায়তার সাথে যোগাযোগ করুন",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "ত্রুটির বিবরণ দেখান",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "উচ্চ স্টপ গ্যাপ মান সিঙ্ক সময় উল্লেখযোগ্যভাবে বাড়িয়ে দেয়। সিঙ্ক সম্পূর্ণ না হওয়া পর্যন্ত অ্যাপটি ফোরগ্রাউন্ডে খোলা রাখুন — ব্যাকগ্রাউন্ডে রাখলে এটি ব্যাহত হতে পারে।",
+  "wizardSkipButton": "এড়িয়ে যান",
+  "wizardPageIndicator": "পৃষ্ঠা {current} / {total}",
+  "wizardNextButton": "পরবর্তী",
+  "wizardCustomizeTitle": "আপনার অভিজ্ঞতা কাস্টমাইজ করুন",
+  "wizardCustomizeBody": "এই সেটিংসের মাধ্যমে আপনার শর্তে BULL ব্যবহার করুন।",
+  "wizardCustomizeDefaultCurrency": "ডিফল্ট মুদ্রা",
+  "wizardMissionTitle": "Bull মিশনকে সমর্থন করুন",
+  "wizardMissionBody1": "আমাদের সফটওয়্যার উন্নত করতে এবং সর্বোচ্চ স্তরের নিরাপত্তা, গোপনীয়তা ও ব্যবহারযোগ্যতা নিশ্চিত করতে সাহায্য করার জন্য, আপনার অ্যাপ আমাদের ত্রুটি লগ পাঠাতে পারে যা আমাদের পরবর্তী আপডেটগুলিতে দ্রুত সমস্যা সনাক্ত ও সমাধান করতে সাহায্য করে।",
+  "wizardMissionBody2": "এই লগগুলি বেনামী, আপনার IP ঠিকানার সাথে সংযুক্ত নয়, এবং আপনার লেনদেন বা পরিচয় সম্পর্কে কোনো তথ্য শেয়ার করে না। এগুলি সম্পূর্ণরূপে প্রযুক্তিগত এবং আপনাকে কোনো ঝুঁকিতে ফেলে না। এটি আমাদের জন্য খুব সহায়ক এবং আপনার কোনো খরচ হয় না।",
+  "wizardMissionQuestion": "আপনি কি আমাদের স্বয়ংক্রিয় সমস্যা রিপোর্টিং প্রোগ্রামে অংশ নিতে সম্মত?",
+  "wizardMissionYes": "হ্যাঁ",
+  "wizardMissionNo": "না",
+  "wizardMissionRequired": "চালিয়ে যাওয়ার আগে দয়া করে হ্যাঁ বা না বেছে নিন।",
+  "wizardJourneyTitle": "আপনার যাত্রায় অগ্রসর হন",
+  "wizardJourneyBody": "যদি আপনি BULL ওয়ালেটে নতুন হন, এখানে কিছু বৈশিষ্ট্য রয়েছে যা আপনি আপনার গোপনীয়তা, নিরাপত্তা ও ব্যবহারকারীর অভিজ্ঞতা উন্নত করতে কাজে লাগাতে পারেন।",
+  "wizardJourneyTip1": "আপনার ওয়ালেট আনলক করতে একটি নিরাপত্তা PIN যোগ করুন",
+  "wizardJourneyTip2": "এনক্রিপ্টেড ভল্ট ব্যাকআপ চেষ্টা করুন",
+  "wizardJourneyTip3": "আপনার নিজস্ব Bitcoin নোডের সাথে সংযোগ করুন",
+  "wizardJourneyTip4": "আপনার নিজস্ব Mempool এক্সপ্লোরারের সাথে সংযোগ করুন",
+  "wizardJourneyTip5": "KYC ছাড়াই Bitcoin এবং Liquid এর মধ্যে স্থানান্তর করুন",
+  "wizardJourneyTip6": "আপনার autoswap সেটিংস কাস্টমাইজ করুন",
+  "wizardJourneyTip7": "Bitcoin (BTC) এবং Satoshis (sats) এর মধ্যে পরিবর্তন করুন",
+  "wizardJourneyTip8": "আপনার হার্ডওয়্যার ওয়ালেটের জন্য air-gap লেনদেন তৈরি করুন",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "পদক্ষেপ প্রয়োজন",
+  "legacyStorageBadgeConfirm": "নিশ্চিত করুন",
+  "legacyStorageNoBackupPageTitle": "আপনার ওয়ালেট ব্যাকআপ ও পুনরায় ইনস্টল করুন",
+  "legacyStorageHasBackupPageTitle": "আপনার ওয়ালেট পুনরায় ইনস্টল করুন",
+  "legacyStorageIntroDescription": "আপনার ওয়ালেট এমন সফটওয়্যারে চলছে যেটি শীঘ্রই অপ্রচলিত হবে। অ্যাপটি আনইনস্টল ও পুনরায় ইনস্টল না করে এটি আপডেট করা যাবে না।",
+  "legacyStorageStepBackupWallet": "আপনার ওয়ালেট ব্যাকআপ করুন",
+  "legacyStorageStepExportLabels": "আপনার লেবেলগুলো এক্সপোর্ট করুন (যদি থাকে)",
+  "legacyStorageStepEnsureSwapsCompleted": "নিশ্চিত করুন সব সোয়াপ সম্পন্ন হয়েছে",
+  "legacyStorageStepUninstall": "আপনার ডিভাইস থেকে অ্যাপটি আনইনস্টল করুন",
+  "legacyStorageStepReinstall": "সর্বশেষ সংস্করণ ডাউনলোড করে পুনরায় ইনস্টল করুন",
+  "legacyStorageStepRestoreBackup": "আপনার ব্যাকআপ পুনরুদ্ধার করুন",
+  "legacyStorageImportantTitle": "গুরুত্বপূর্ণ",
+  "legacyStorageImportantBody": "এই মুহূর্তে একেবারেই ব্যাকআপ নেওয়া সম্ভব না হলে ছাড়া এই প্রক্রিয়া এড়িয়ে যাবেন না।",
+  "legacyStorageContinueFooterNoBackup": "ব্যাকআপ না করেও আপনি অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে আমরা দৃঢ়ভাবে এর বিরুদ্ধে পরামর্শ দিই।",
+  "legacyStorageContinueFooterHasBackup": "আপনি অ্যাপটি ব্যবহার চালিয়ে যেতে পারেন, তবে আমরা দৃঢ়ভাবে এর বিরুদ্ধে পরামর্শ দিই।",
+  "legacyStorageBackupNowButton": "এখনই ব্যাকআপ",
+  "legacyStorageRiskAckButton": "না, আমি ঝুঁকি বুঝি",
+  "legacyStorageAreYouSureTitle": "আপনি কি নিশ্চিত?",
+  "legacyStorageAreYouSureParagraphOne": "আপনার ওয়ালেটের বিটকয়েন প্রাইভেট কী সংরক্ষণে ব্যবহৃত সফটওয়্যারটি অপ্রচলিত হয়ে যাচ্ছে। ভবিষ্যতে কোনো বাধা এড়াতে আমরা দৃঢ়ভাবে এখনই ব্যাকআপ নেওয়ার পরামর্শ দিই।",
+  "legacyStorageAreYouSureParagraphTwo": "এনক্রিপ্টেড ভল্ট ব্যাকআপের অপশনটি প্রায় ১ মিনিট সময় নেয়, কোনো বিশেষ সরঞ্জাম লাগে না। ফিজিক্যাল ব্যাকআপের জন্য কেবল কলম ও কাগজ যথেষ্ট।",
+  "legacyStorageContinueWithoutBackupButton": "ব্যাকআপ ছাড়াই চালিয়ে যান",
+  "legacyStorageAcceptRisksCheckbox": "ব্যাকআপ না করার ঝুঁকি আমি গ্রহণ করছি",
+  "legacyStorageHasBackupImportantBody": "এই প্রক্রিয়াটি এড়িয়ে যাবেন না যদি না আপনার জরুরিভাবে ওয়ালেট ব্যবহার করার একান্ত প্রয়োজন হয় অথবা একটি স্বপ সম্পন্ন হওয়ার জন্য অপেক্ষা করছেন।",
+  "legacyStorageRiskAckButtonHasBackup": "আমি ঝুঁকি বুঝতে পারছি"
 }

@@ -1,12 +1,9 @@
-import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/screens/legacy_storage_are_you_sure_screen.dart';
+import 'package:bb_mobile/features/wallet/ui/screens/legacy_storage_warning_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class LegacyStorageWarningOverlay extends StatelessWidget {
@@ -34,92 +31,55 @@ class LegacyStorageWarningOverlay extends StatelessWidget {
   }
 }
 
-class _LegacyStorageWarningBlocker extends StatelessWidget {
+class _LegacyStorageWarningBlocker extends StatefulWidget {
   const _LegacyStorageWarningBlocker({required this.hasNoBackup});
 
   final bool hasNoBackup;
 
   @override
+  State<_LegacyStorageWarningBlocker> createState() =>
+      _LegacyStorageWarningBlockerState();
+}
+
+class _LegacyStorageWarningBlockerState
+    extends State<_LegacyStorageWarningBlocker> {
+  bool _showAreYouSure = false;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<WalletBloc>().add(const VerifyBackupStatus());
+  }
+
+  void _backupNow() {
+    context.pushNamed(BackupSettingsSubroute.backupOptions.name);
+  }
+
+  void _dismiss() {
+    context.read<WalletBloc>().add(const DismissLegacyStorageWarning());
+  }
+
+  void _acknowledgeRisk() {
+    if (widget.hasNoBackup) {
+      setState(() => _showAreYouSure = true);
+    } else {
+      _dismiss();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-      child: Material(
-        color: context.appColors.surface.withAlpha(100),
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: SafeArea(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: context.appColors.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  BBText(
-                    hasNoBackup
-                        ? context.loc.homeLegacyStorageWithNoBackupTitle
-                        : context.loc.homeLegacyStorageTitle,
-                    style: context.font.headlineMedium,
-                    color: context.appColors.onSurface,
-                  ),
-                  const Gap(16),
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        for (final (i, line) in (hasNoBackup
-                                ? context
-                                    .loc
-                                    .homeLegacyStorageWithNoBackupDescription
-                                : context.loc.homeLegacyStorageDescription)
-                            .split('\n')
-                            .indexed)
-                          TextSpan(
-                            text: i == 0 ? line : '\n$line',
-                            style: context.font.bodyMedium?.copyWith(
-                              color: context.appColors.onSurface,
-                              fontWeight: line.startsWith('1.')
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  const Gap(24),
-                  BBButton.big(
-                    label: context.loc.legacyStorageWarningBackupNow,
-                    onPressed: () {
-                      context.pushNamed(
-                        BackupSettingsSubroute.backupOptions.name,
-                      );
-                    },
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
-                  ),
-                  if (!hasNoBackup) ...[
-                    const Gap(12),
-                    BBButton.big(
-                      label: context.loc.legacyStorageWarningLater,
-                      onPressed: () {
-                        context
-                            .read<WalletBloc>()
-                            .add(const DismissLegacyStorageWarning());
-                      },
-                      bgColor: context.appColors.surface,
-                      textColor: context.appColors.onSurface,
-                      outlined: true,
-                    ),
-                  ],
-                ],
-              ),
+      child: _showAreYouSure
+          ? LegacyStorageAreYouSureScreen(
+              onBackupNow: _backupNow,
+              onConfirmContinue: _dismiss,
+            )
+          : LegacyStorageWarningScreen(
+              hasNoBackup: widget.hasNoBackup,
+              onBackupNow: _backupNow,
+              onAcknowledgeRisk: _acknowledgeRisk,
             ),
-          ),
-        ),
-      ),
     );
   }
 }

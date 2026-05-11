@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/check_for_online_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
@@ -11,7 +10,6 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repo
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/frameworks/socket/datasources/socket_connectivity_datasource.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/environment_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_status_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_server_repository.dart';
@@ -29,9 +27,6 @@ class ElectrumLocator {
     locator.registerLazySingleton<ElectrumSettingsStorageDatasource>(
       () =>
           ElectrumSettingsStorageDatasource(sqlite: locator<SqliteDatabase>()),
-    );
-    locator.registerLazySingleton<SocketConnectivityDatasource>(
-      () => const SocketConnectivityDatasource(),
     );
   }
 
@@ -57,23 +52,13 @@ class ElectrumLocator {
           EnvironmentAdapter(getSettingsUsecase: locator<GetSettingsUsecase>()),
     );
     locator.registerLazySingleton<ServerStatusPort>(
-      () => ServerStatusAdapter(
-        socketDatasource: locator<SocketConnectivityDatasource>(),
-      ),
+      () => const ServerStatusAdapter(),
     );
   }
 
   static void registerUsecases(GetIt locator) {
     locator.registerFactory<AddCustomServerUsecase>(
       () => AddCustomServerUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-        serverStatusPort: locator<ServerStatusPort>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<CheckForOnlineElectrumServersUsecase>(
-      () => CheckForOnlineElectrumServersUsecase(
-        environmentPort: locator<EnvironmentPort>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
         serverStatusPort: locator<ServerStatusPort>(),
         settingsRepository: locator<SettingsRepository>(),

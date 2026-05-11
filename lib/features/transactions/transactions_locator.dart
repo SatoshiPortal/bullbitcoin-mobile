@@ -29,19 +29,15 @@ class TransactionsLocator {
       () => GetTransactionsUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
         payjoinRepository: locator<PayjoinRepository>(),
-        mainnetOrderRepository: locator<ExchangeOrderRepository>(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
         ),
-        testnetOrderRepository: locator<ExchangeOrderRepository>(
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
         labelExchangeOrdersUsecase: locator<LabelExchangeOrdersUsecase>(),
@@ -52,19 +48,15 @@ class TransactionsLocator {
       () => GetTransactionsByTxIdUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletTransactionRepository: locator<WalletTransactionRepository>(),
-        mainnetBoltzSwapRepository: locator<BoltzSwapRepository>(
+        boltzSwapRepository: locator<BoltzSwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
-        testnetBoltzSwapRepository: locator<BoltzSwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ),
         payjoinRepository: locator<PayjoinRepository>(),
-        mainnetOrderRepository: locator<ExchangeOrderRepository>(
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'mainnetExchangeOrderRepository',
         ),
-        testnetOrderRepository: locator<ExchangeOrderRepository>(
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
         ),
       ),

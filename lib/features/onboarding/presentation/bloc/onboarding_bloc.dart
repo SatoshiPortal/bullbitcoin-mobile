@@ -32,12 +32,12 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
   final CompletePhysicalBackupVerificationUsecase
   _completePhysicalBackupVerificationUsecase;
-  Future<void> _handleError(String error, Emitter<OnboardingState> emit) async {
+  Future<void> _handleError(Object error, Emitter<OnboardingState> emit) async {
     log.severe(error: error, trace: StackTrace.current);
     emit(
       state.copyWith(
         onboardingStepStatus: OnboardingStepStatus.none,
-        statusError: error,
+        statusError: error.toString(),
       ),
     );
   }
@@ -46,6 +46,10 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     OnboardingCreateNewWallet event,
     Emitter<OnboardingState> emit,
   ) async {
+    // Bloc events are processed serially. By the time a 2nd queued event
+    // dequeues, the 1st emit has already flipped the status to loading,
+    // so this guard drops the duplicate (#2015).
+    if (state.onboardingStepStatus == OnboardingStepStatus.loading) return;
     try {
       emit(
         state.copyWith(
@@ -56,7 +60,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       await _createDefaultWalletsUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
-      await _handleError(e.toString(), emit);
+      await _handleError(e, emit);
     }
   }
 
@@ -64,6 +68,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     OnboardingRecoverWalletClicked event,
     Emitter<OnboardingState> emit,
   ) async {
+    // Same serialized-event guard as `_onCreateNewWallet` (#2015).
+    if (state.onboardingStepStatus == OnboardingStepStatus.loading) return;
     try {
       emit(
         state.copyWith(
@@ -77,7 +83,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       await _completePhysicalBackupVerificationUsecase.execute();
       emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
     } catch (e) {
-      await _handleError(e.toString(), emit);
+      await _handleError(e, emit);
     }
   }
 }

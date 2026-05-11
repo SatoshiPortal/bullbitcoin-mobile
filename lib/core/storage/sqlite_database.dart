@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/storage/migrations/migrations.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/report.dart';
 import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/bip85_derivations_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
@@ -73,8 +75,15 @@ class SqliteDatabase extends _$SqliteDatabase {
   SqliteDatabase([QueryExecutor? executor])
     : super(executor ?? _openConnection());
 
+  /// Current drift schema version. Bump in lockstep with adding a new
+  /// `Schema<N-1>To<N>.migrate` step in [migration]. `Report.init`
+  /// asserts that an entry for this number exists in the
+  /// schema → app-version map so a future bump can't silently
+  /// misclassify upgrade events.
+  static const int currentSchemaVersion = 12;
+
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => currentSchemaVersion;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -104,21 +113,74 @@ class SqliteDatabase extends _$SqliteDatabase {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      onCreate: Schema0To1.onCreate,
+      onCreate: _reportingOnCreate(Schema0To1.onCreate),
       onUpgrade: stepByStep(
-        from1To2: Schema1To2.migrate,
-        from2To3: Schema2To3.migrate,
-        from3To4: Schema3To4.migrate,
-        from4To5: Schema4To5.migrate,
-        from5To6: Schema5To6.migrate,
-        from6To7: Schema6To7.migrate,
-        from7To8: Schema7To8.migrate,
-        from8To9: Schema8To9.migrate,
-        from9To10: Schema9To10.migrate,
-        from10To11: Schema10To11.migrate,
-        from11To12: Schema11To12.migrate,
+        from1To2: _reportingMigration('from1To2', Schema1To2.migrate),
+        from2To3: _reportingMigration('from2To3', Schema2To3.migrate),
+        from3To4: _reportingMigration('from3To4', Schema3To4.migrate),
+        from4To5: _reportingMigration('from4To5', Schema4To5.migrate),
+        from5To6: _reportingMigration('from5To6', Schema5To6.migrate),
+        from6To7: _reportingMigration('from6To7', Schema6To7.migrate),
+        from7To8: _reportingMigration('from7To8', Schema7To8.migrate),
+        from8To9: _reportingMigration('from8To9', Schema8To9.migrate),
+        from9To10: _reportingMigration('from9To10', Schema9To10.migrate),
+        from10To11: _reportingMigration('from10To11', Schema10To11.migrate),
+        from11To12: _reportingMigration('from11To12', Schema11To12.migrate),
       ),
+      // Backfills `Report.fromVersion` for installs that predate the
+      // `_lastVersionKey` SharedPreferences marker (added in v6.6.0).
+      // Drift sets `versionBefore` to the on-disk schema before any
+      // step runs, so this fires once on the first launch after a
+      // pre-v6.6.0 → v6.6.0+ upgrade and is a no-op otherwise.
+      beforeOpen: (details) async {
+        if (details.versionBefore != null &&
+            details.versionBefore != details.versionNow) {
+          Report.recordSchemaUpgrade(from: details.versionBefore!);
+        }
+      },
     );
+  }
+
+  /// Wraps a per-version drift migration step so a failure is surfaced to
+  /// Sentry (consent-gated, tagged `category=migration`) before the
+  /// rethrow aborts init. Drift migrations run lazily on first query,
+  /// so wrapping the step fn (not the constructor) is what actually
+  /// catches failures.
+  static Future<void> Function(Migrator, Schema) _reportingMigration<Schema>(
+    String name,
+    Future<void> Function(Migrator, Schema) fn,
+  ) {
+    return (m, schema) async {
+      try {
+        await fn(m, schema);
+      } catch (e, s) {
+        log.severe(
+          message: 'drift migration step $name failed',
+          error: e,
+          trace: s,
+          category: ReportCategory.migration,
+        );
+        rethrow;
+      }
+    };
+  }
+
+  static Future<void> Function(Migrator) _reportingOnCreate(
+    Future<void> Function(Migrator) fn,
+  ) {
+    return (m) async {
+      try {
+        await fn(m);
+      } catch (e, s) {
+        log.severe(
+          message: 'drift onCreate failed',
+          error: e,
+          trace: s,
+          category: ReportCategory.migration,
+        );
+        rethrow;
+      }
+    };
   }
 
   Future<void> clearCacheTables() async {

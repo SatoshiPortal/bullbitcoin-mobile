@@ -2033,15 +2033,6 @@
   "@buyAwaitingConfirmation": {
     "description": "Text shown while waiting for order confirmation"
   },
-  "recoverbullBalance": "Zůstatek: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Nastavení přístupu",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2304,10 +2295,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Vault zotavení",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "Množství přijaté",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2549,15 +2536,6 @@
   "withdrawBelowMinAmountError": "Pokuste se odstoupit nad minimálním množstvím.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "Transakce: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "Zaplatit",
   "@swapYouPay": {
@@ -3494,10 +3472,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Zkontrolovat stav klenby",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Prosím, počkejte, když načteme váš záložní soubor.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4157,10 +4131,6 @@
   "transactionFilterReceive": "Čeština",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "Neplatný tok",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "den",
   "@exchangeDcaFrequencyDay": {
@@ -4888,10 +4858,6 @@
   "addressViewBalance": "Čeština",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "Hledáte rovnováhu a transakce..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Žádné zálohy nalezeno",
   "@recoverbullSelectNoBackupsFound": {
@@ -8585,10 +8551,6 @@
   "fundExchangeSinpeAddedToBalance": "Jakmile je platba odeslána, bude přidána do zůstatku na účtu.",
   "@fundExchangeSinpeAddedToBalance": {
     "description": "Message explaining that payment will be added to account balance"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Dešifrovaná klenba není nastavena",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "autoswapRecipientWalletPlaceholderRequired": "Vyberte peněženku Bitcoin *",
   "@autoswapRecipientWalletPlaceholderRequired": {
@@ -12503,5 +12465,123 @@
   "legacyStorageWarningLater": "Později",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Zpět",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Začít",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Světlý",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Tmavý",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Systémový",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Přispívám",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Nepřispívám",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Standardní protokoly",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Vždy zapnuto — umožňuje nám vidět, zda se vaše peněženka bezpečně migruje mezi verzemi aplikace.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Použijte svou zálohu",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Díky vaší záloze jsou vaše prostředky v bezpečí.\nNejprve zkuste restartovat aplikaci; pokud stále selhává, přeinstalujte ji a obnovte pomocí zálohy.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Žádná záloha?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Aplikaci nemazejte.\nKontaktujte náš tým podpory pro pokus o záchranu.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Kontaktovat podporu",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Zobrazit podrobnosti chyby",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Vysoké hodnoty stop gap výrazně prodlužují dobu synchronizace. Nechte aplikaci otevřenou v popředí, dokud se synchronizace nedokončí — přesun aplikace do pozadí ji může přerušit.",
+  "wizardSkipButton": "Přeskočit",
+  "wizardPageIndicator": "STRÁNKA {current} / {total}",
+  "wizardNextButton": "Další",
+  "wizardCustomizeTitle": "Přizpůsobte si zážitek",
+  "wizardCustomizeBody": "Používejte BULL podle svých představ s těmito nastaveními.",
+  "wizardCustomizeDefaultCurrency": "Výchozí měna",
+  "wizardMissionTitle": "Podpořte misi Bull",
+  "wizardMissionBody1": "Abyste nám pomohli vylepšit náš software a zajistit nejvyšší úroveň zabezpečení, soukromí a použitelnosti, vaše aplikace nám může odesílat protokoly chyb, které nám umožní rychle zjišťovat a opravovat problémy v dalších aktualizacích.",
+  "wizardMissionBody2": "Tyto protokoly jsou anonymizovány, nejsou spojeny s vaší IP adresou a nikdy nesdílejí informace o vašich transakcích ani identitě. Jsou čistě technické a nevystavují vás žádnému riziku. Pro nás je to velmi užitečné a vás to nic nestojí.",
+  "wizardMissionQuestion": "Souhlasíte s účastí v našem automatickém programu hlášení problémů?",
+  "wizardMissionYes": "Ano",
+  "wizardMissionNo": "Ne",
+  "wizardMissionRequired": "Před pokračováním zvolte Ano nebo Ne.",
+  "wizardJourneyTitle": "Pokračujte ve své cestě",
+  "wizardJourneyBody": "Pokud jste novým uživatelem peněženky BULL, zde je několik funkcí, které můžete využít ke zlepšení svého soukromí, zabezpečení a uživatelského zážitku.",
+  "wizardJourneyTip1": "Přidejte bezpečnostní PIN pro odemčení peněženky",
+  "wizardJourneyTip2": "Vyzkoušejte šifrované zálohování trezoru",
+  "wizardJourneyTip3": "Připojte se k vlastnímu Bitcoin uzlu",
+  "wizardJourneyTip4": "Připojte se k vlastnímu Mempool průzkumníku",
+  "wizardJourneyTip5": "Převádějte mezi Bitcoinem a Liquid bez KYC",
+  "wizardJourneyTip6": "Přizpůsobte si nastavení autoswapu",
+  "wizardJourneyTip7": "Přepínejte mezi Bitcoinem (BTC) a Satoshis (sats)",
+  "wizardJourneyTip8": "Vytvářejte air-gap transakce pro hardwarovou peněženku",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "VYŽADUJE AKCI",
+  "legacyStorageBadgeConfirm": "POTVRDIT",
+  "legacyStorageNoBackupPageTitle": "ZÁLOHUJTE A PŘEINSTALUJTE PENĚŽENKU",
+  "legacyStorageHasBackupPageTitle": "PŘEINSTALUJTE PENĚŽENKU",
+  "legacyStorageIntroDescription": "Vaše peněženka běží na softwaru, který bude brzy ukončen. Nelze jej aktualizovat bez odinstalování a opětovné instalace aplikace.",
+  "legacyStorageStepBackupWallet": "Zazálohujte si peněženku",
+  "legacyStorageStepExportLabels": "Exportujte své štítky (pokud je máte)",
+  "legacyStorageStepEnsureSwapsCompleted": "Ujistěte se, že všechny swapy jsou dokončené",
+  "legacyStorageStepUninstall": "Odinstalujte aplikaci ze svého zařízení",
+  "legacyStorageStepReinstall": "Stáhněte nejnovější verzi a znovu nainstalujte",
+  "legacyStorageStepRestoreBackup": "Obnovte zálohu",
+  "legacyStorageImportantTitle": "Důležité",
+  "legacyStorageImportantBody": "Tento postup nepřeskakujte, ledaže opravdu nemůžete teď zálohu udělat.",
+  "legacyStorageContinueFooterNoBackup": "Můžete pokračovat v používání aplikace bez zálohy, ale rozhodně to nedoporučujeme.",
+  "legacyStorageContinueFooterHasBackup": "Můžete pokračovat v používání aplikace, ale rozhodně to nedoporučujeme.",
+  "legacyStorageBackupNowButton": "Zálohovat nyní",
+  "legacyStorageRiskAckButton": "Ne, riziko chápu",
+  "legacyStorageAreYouSureTitle": "JSTE SI JISTÍ?",
+  "legacyStorageAreYouSureParagraphOne": "Software používaný k uložení Bitcoin privátních klíčů peněženky se ukončuje. Důrazně doporučujeme zálohu vytvořit teď, aby v budoucnu nedošlo k žádným potížím.",
+  "legacyStorageAreYouSureParagraphTwo": "Šifrovaná záloha (Encrypted Vault) trvá asi 1 minutu a nepotřebujete žádné speciální nástroje. Pro fyzickou zálohu vám stačí pero a papír.",
+  "legacyStorageContinueWithoutBackupButton": "Pokračovat bez zálohy",
+  "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
+  "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
+  "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku"
 }

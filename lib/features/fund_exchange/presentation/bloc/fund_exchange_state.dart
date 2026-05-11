@@ -5,7 +5,6 @@ sealed class FundExchangeState with _$FundExchangeState {
   const factory FundExchangeState({
     @Default(false) bool isStarted,
     UserSummary? userSummary,
-    ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
     @Default(false) bool isLoadingFundingInstitutions,
     List<FundingInstitution>? fundingInstitutions,

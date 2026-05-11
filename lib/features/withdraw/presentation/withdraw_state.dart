@@ -3,7 +3,6 @@ part of 'withdraw_bloc.dart';
 @freezed
 sealed class WithdrawState with _$WithdrawState {
   const factory WithdrawState.initial({
-    ApiKeyException? apiKeyException,
     GetExchangeUserSummaryException? getUserSummaryException,
   }) = WithdrawInitialState;
   const factory WithdrawState.amountInput({required UserSummary userSummary}) =
@@ -40,7 +39,7 @@ sealed class WithdrawState with _$WithdrawState {
 
   FiatCurrency get currency {
     return when(
-      initial: (_, _) => FiatCurrency.cad,
+      initial: (_) => FiatCurrency.cad,
       amountInput: (userSummary) => userSummary.currency != null
           ? FiatCurrency.fromCode(userSummary.currency!)
           : FiatCurrency.cad,

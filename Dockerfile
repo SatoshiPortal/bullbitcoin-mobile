@@ -13,6 +13,8 @@ ARG JVM_TARGET=21
 ARG ANDROID_API_LEVEL=36
 ARG ANDROID_BUILD_TOOLS=36.0.0
 ARG ANDROID_NDK=29.0.14206865
+ARG RUST_VERSION=1.95.0
+
 
 ENV ANDROID_HOME=/opt/android-sdk
 ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
@@ -38,10 +40,9 @@ RUN adduser $USER sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER $USER
 
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
-RUN sh /tmp/rustup.sh -y
-RUN rm /tmp/rustup.sh
+# Install Rust (pinned for reproducible builds; cargokit defaults to 'stable' for
+# plugins without cargokit.yaml, so this version determines their output)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path --default-toolchain ${RUST_VERSION}
 ENV PATH="/home/$USER/.cargo/bin:${PATH}"
 
 # Add Android Rust targets

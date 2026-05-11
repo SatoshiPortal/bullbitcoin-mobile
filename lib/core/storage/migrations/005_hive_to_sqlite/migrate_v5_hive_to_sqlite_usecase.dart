@@ -51,49 +51,39 @@ class MigrateToV5HiveToSqliteToUsecase {
       );
       // check if we are already on v5
       if (newMainnetDefaultWallets.length == 2) {
-        await log.migration(
-          level: Level.INFO,
-          message: 'Migration Not Required: 2 Default Wallets Exist.',
-        );
+        log.fine('Migration Not Required: 2 Default Wallets Exist.');
         return false;
       }
 
-      final oldMainnetDefaultWallets =
-          oldWallets
-              .where(
-                (e) =>
-                    e.type == OldBBWalletType.main &&
-                    e.network == OldBBNetwork.Mainnet,
-              )
-              .toList();
-      await log.migration(
-        level: Level.INFO,
-        message:
-            'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
+      final oldMainnetDefaultWallets = oldWallets
+          .where(
+            (e) =>
+                e.type == OldBBWalletType.main &&
+                e.network == OldBBNetwork.Mainnet,
+          )
+          .toList();
+      log.fine(
+        'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
       );
-      final oldMainnetExternalSignerWallets =
-          oldWallets
-              .where(
-                (e) =>
-                    e.type == OldBBWalletType.words &&
-                    e.network == OldBBNetwork.Mainnet,
-              )
-              .toList();
+      final oldMainnetExternalSignerWallets = oldWallets
+          .where(
+            (e) =>
+                e.type == OldBBWalletType.words &&
+                e.network == OldBBNetwork.Mainnet,
+          )
+          .toList();
 
-      final oldMainnetWatchOnlyWallets =
-          oldWallets
-              .where(
-                (e) =>
-                    ((e.type == OldBBWalletType.xpub) ||
-                        (e.type == OldBBWalletType.coldcard)) &&
-                    e.network == OldBBNetwork.Mainnet,
-              )
-              .toList();
+      final oldMainnetWatchOnlyWallets = oldWallets
+          .where(
+            (e) =>
+                ((e.type == OldBBWalletType.xpub) ||
+                    (e.type == OldBBWalletType.coldcard)) &&
+                e.network == OldBBNetwork.Mainnet,
+          )
+          .toList();
 
-      await log.migration(
-        level: Level.INFO,
-        message:
-            'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
+      log.fine(
+        'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
       );
 
       final oldMainnetSignerWallets =
@@ -101,10 +91,8 @@ class MigrateToV5HiveToSqliteToUsecase {
 
       final seedsImported = await _storeNewSeeds(oldMainnetSignerWallets);
 
-      await log.migration(
-        level: Level.INFO,
-        message:
-            'PROGRESS: Migrated ${seedsImported.length}/${oldMainnetSignerWallets.length} seeds',
+      log.fine(
+        'PROGRESS: Migrated ${seedsImported.length}/${oldMainnetSignerWallets.length} seeds',
       );
       if (seedsImported.isEmpty) return false;
       final mainWalletWithSwaps = await _storeMainWallets(
@@ -131,33 +119,24 @@ class MigrateToV5HiveToSqliteToUsecase {
         );
         // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
 
-        await log.migration(
-          level: Level.INFO,
-          message:
-              'PROGRESS: Migrated $recoveredSwaps/$totalSwapsLength ongoing swaps',
+        log.fine(
+          'PROGRESS: Migrated $recoveredSwaps/$totalSwapsLength ongoing swaps',
         );
       }
 
       final finalWatchOnlyCount = await _storeWatchOnlyWallet(
         oldMainnetWatchOnlyWallets,
       );
-      await log.migration(
-        level: Level.FINE,
-        message: 'SUCCESS: Migration completed',
-        context: {
-          'seedsImported': seedsImported.length,
-          'mainWalletWithSwaps': mainWalletWithSwaps.length,
-          'oldMainnetDefaultWallets': oldMainnetDefaultWallets.length,
-          'externalWalletsWithSwaps': externalWalletsWithSwaps.length,
-          'oldMainnetExternalSignerWallets':
-              oldMainnetExternalSignerWallets.length,
-          'finalWatchOnlyCount': finalWatchOnlyCount,
-          'oldMainnetWatchOnlyWallets': oldMainnetWatchOnlyWallets.length,
-          'totalWallets':
-              mainWalletWithSwaps.length +
-              externalWalletsWithSwaps.length +
-              finalWatchOnlyCount,
-        },
+      log.fine(
+        'SUCCESS: Migration completed — '
+        'seedsImported=${seedsImported.length}, '
+        'mainWalletWithSwaps=${mainWalletWithSwaps.length}, '
+        'oldMainnetDefaultWallets=${oldMainnetDefaultWallets.length}, '
+        'externalWalletsWithSwaps=${externalWalletsWithSwaps.length}, '
+        'oldMainnetExternalSignerWallets=${oldMainnetExternalSignerWallets.length}, '
+        'finalWatchOnlyCount=$finalWatchOnlyCount, '
+        'oldMainnetWatchOnlyWallets=${oldMainnetWatchOnlyWallets.length}, '
+        'totalWallets=${mainWalletWithSwaps.length + externalWalletsWithSwaps.length + finalWatchOnlyCount}',
       );
       await _secureStorage.store(
         key: OldStorageKeys.version.name,
@@ -165,11 +144,11 @@ class MigrateToV5HiveToSqliteToUsecase {
       );
       return true;
     } catch (e) {
-      await log.migration(
-        level: Level.SEVERE,
+      log.severe(
         message: 'Migration failed',
-        exception: e,
-        stackTrace: StackTrace.current,
+        error: e,
+        trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       return false;
     }
@@ -210,11 +189,11 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return seeds;
     } catch (e) {
-      await log.migration(
-        level: Level.SEVERE,
+      log.severe(
         message: 'Errored during seed migration',
-        exception: e,
-        stackTrace: StackTrace.current,
+        error: e,
+        trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -234,10 +213,9 @@ class MigrateToV5HiveToSqliteToUsecase {
         final newWallet = await _newWalletRepository.createWallet(
           seed: mainWalletSeed,
           scriptType: ScriptType.bip84,
-          network:
-              oldWallet.isBitcoin()
-                  ? Network.bitcoinMainnet
-                  : Network.liquidMainnet,
+          network: oldWallet.isBitcoin()
+              ? Network.bitcoinMainnet
+              : Network.liquidMainnet,
           isDefault: true,
         );
         final isBackupTested = oldWallet.backupTested;
@@ -301,11 +279,11 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return recovered;
     } catch (e) {
-      await log.migration(
-        level: Level.SEVERE,
+      log.severe(
         message: 'Errored during default wallet migration',
-        exception: e,
-        stackTrace: StackTrace.current,
+        error: e,
+        trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -324,12 +302,12 @@ class MigrateToV5HiveToSqliteToUsecase {
         );
         final network =
             oldExternalWallet.baseWalletType == OldBaseWalletType.Bitcoin
-                ? (oldExternalWallet.isTestnet()
-                    ? Network.bitcoinTestnet
-                    : Network.bitcoinMainnet)
-                : (oldExternalWallet.isTestnet()
-                    ? Network.liquidTestnet
-                    : Network.liquidMainnet);
+            ? (oldExternalWallet.isTestnet()
+                  ? Network.bitcoinTestnet
+                  : Network.bitcoinMainnet)
+            : (oldExternalWallet.isTestnet()
+                  ? Network.liquidTestnet
+                  : Network.liquidMainnet);
 
         final scriptType = switch (oldExternalWallet.scriptType) {
           OldScriptType.bip84 => ScriptType.bip84,
@@ -370,11 +348,11 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return recovered;
     } catch (e) {
-      await log.migration(
-        level: Level.SEVERE,
+      log.severe(
         message: 'Errored during external wallet migration',
-        exception: e,
-        stackTrace: StackTrace.current,
+        error: e,
+        trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -387,12 +365,12 @@ class MigrateToV5HiveToSqliteToUsecase {
       for (final oldWatchOnlyWallet in oldWatchOnlyWallets) {
         final network =
             oldWatchOnlyWallet.baseWalletType == OldBaseWalletType.Bitcoin
-                ? (oldWatchOnlyWallet.isTestnet()
-                    ? Network.bitcoinTestnet
-                    : Network.bitcoinMainnet)
-                : (oldWatchOnlyWallet.isTestnet()
-                    ? Network.liquidTestnet
-                    : Network.liquidMainnet);
+            ? (oldWatchOnlyWallet.isTestnet()
+                  ? Network.bitcoinTestnet
+                  : Network.bitcoinMainnet)
+            : (oldWatchOnlyWallet.isTestnet()
+                  ? Network.liquidTestnet
+                  : Network.liquidMainnet);
 
         final scriptType = switch (oldWatchOnlyWallet.scriptType) {
           OldScriptType.bip84 => ScriptType.bip84,
@@ -417,11 +395,11 @@ class MigrateToV5HiveToSqliteToUsecase {
             );
             count++;
           } catch (e) {
-            await log.migration(
-              level: Level.SEVERE,
+            log.severe(
               message: 'Failed to create watch only wallet',
-              exception: e,
-              stackTrace: StackTrace.current,
+              error: e,
+              trace: StackTrace.current,
+              category: ReportCategory.migration,
             );
             continue;
           }
@@ -429,11 +407,11 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return count;
     } catch (e) {
-      await log.migration(
-        level: Level.SEVERE,
+      log.severe(
         message: 'Errored during watch-only wallet migration',
-        exception: e,
-        stackTrace: StackTrace.current,
+        error: e,
+        trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }
@@ -491,10 +469,9 @@ class MigrateToV5HiveToSqliteToUsecase {
             await _mainnetBoltzSwapRepository.migrateOldSwap(
               primaryWalletId: item.walletIdMapping.newWalletId,
               swapId: swap.id,
-              swapType:
-                  swap.isReverse()
-                      ? SwapType.lightningToLiquid
-                      : SwapType.liquidToLightning,
+              swapType: swap.isReverse()
+                  ? SwapType.lightningToLiquid
+                  : SwapType.liquidToLightning,
               lockupTxid: swap.lockupTxid,
               counterWalletId: null,
               isCounterWalletExternal: null,
@@ -514,10 +491,9 @@ class MigrateToV5HiveToSqliteToUsecase {
             await _mainnetBoltzSwapRepository.migrateOldSwap(
               primaryWalletId: item.walletIdMapping.newWalletId,
               swapId: swap.id,
-              swapType:
-                  swap.isReverse()
-                      ? SwapType.lightningToBitcoin
-                      : SwapType.bitcoinToLightning,
+              swapType: swap.isReverse()
+                  ? SwapType.lightningToBitcoin
+                  : SwapType.bitcoinToLightning,
               lockupTxid: swap.lockupTxid,
               counterWalletId: null,
               isCounterWalletExternal: null,
@@ -531,12 +507,11 @@ class MigrateToV5HiveToSqliteToUsecase {
 
             final counterWalletIdMapping = allWalletIdMappings.firstWhere(
               (e) => e.oldWalletId == toWalletIdOld,
-              orElse:
-                  () => WalletIdMapping(
-                    oldWalletId: toWalletIdOld, // this is an address
-                    newWalletId: toWalletIdOld, // this is an address
-                    walletIdIsExternal: true,
-                  ), // this is likely an address (swap to external)
+              orElse: () => WalletIdMapping(
+                oldWalletId: toWalletIdOld, // this is an address
+                newWalletId: toWalletIdOld, // this is an address
+                walletIdIsExternal: true,
+              ), // this is likely an address (swap to external)
             );
 
             final swapSensitiveConcrete = OldChainSwapTxSensitive.fromJson(
@@ -551,9 +526,9 @@ class MigrateToV5HiveToSqliteToUsecase {
               swapId: swap.id,
               swapType:
                   swap.chainSwapDetails?.direction ==
-                          boltz.ChainSwapDirection.lbtcToBtc
-                      ? SwapType.liquidToBitcoin
-                      : SwapType.bitcoinToLiquid,
+                      boltz.ChainSwapDirection.lbtcToBtc
+                  ? SwapType.liquidToBitcoin
+                  : SwapType.bitcoinToLiquid,
               lockupTxid: swap.lockupTxid,
               counterWalletId: counterWalletIdMapping.newWalletId,
               isCounterWalletExternal:
@@ -568,11 +543,11 @@ class MigrateToV5HiveToSqliteToUsecase {
 
       return count;
     } catch (e) {
-      await log.migration(
-        level: Level.SEVERE,
+      log.severe(
         message: 'Errored during ongoing swap migration',
-        exception: e,
-        stackTrace: StackTrace.current,
+        error: e,
+        trace: StackTrace.current,
+        category: ReportCategory.migration,
       );
       rethrow;
     }

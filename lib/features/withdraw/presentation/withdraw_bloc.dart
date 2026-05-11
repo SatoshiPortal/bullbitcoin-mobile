@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/errors/withdraw_error.dart';
@@ -48,18 +47,11 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
       } else {
         initialState = const WithdrawInitialState();
       }
-      emit(
-        initialState.copyWith(
-          apiKeyException: null,
-          getUserSummaryException: null,
-        ),
-      );
+      emit(initialState.copyWith(getUserSummaryException: null));
 
       final userSummary = await _getExchangeUserSummaryUsecase.execute();
 
       emit(initialState.toAmountInputState(userSummary: userSummary));
-    } on ApiKeyException catch (e) {
-      emit(WithdrawState.initial(apiKeyException: e));
     } on GetExchangeUserSummaryException catch (e) {
       emit(WithdrawState.initial(getUserSummaryException: e));
     }

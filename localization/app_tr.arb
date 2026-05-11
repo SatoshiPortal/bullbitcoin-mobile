@@ -1808,15 +1808,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "Denge: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Access Settings Ayarlar",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2083,10 +2074,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "$ aldı",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2341,15 +2328,6 @@
   "withdrawBelowMinAmountError": "Asgari miktarın altına çekilmeye çalışıyorsunuz.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "İşlemler: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "You Pay",
   "@swapYouPay": {
@@ -3335,10 +3313,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "Boş durumu kontrol etmek için başarısız oldu",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "Lütfen yedek dosyanızı alırken bekleyin.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4052,10 +4026,6 @@
   "transactionFilterReceive": "Kabul Kabul Al",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "Invalid akışı",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "gün",
   "@exchangeDcaFrequencyDay": {
@@ -4811,10 +4781,6 @@
   "addressViewBalance": "Denge dengesi",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "Denge ve işlemlere bakmak..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "Hiçbir yedek bulunamadı",
   "@recoverbullSelectNoBackupsFound": {
@@ -8655,10 +8621,6 @@
         "type": "String"
       }
     }
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Decryptedob ayarlanmamış değildir",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "pinCodeMismatchError": "PIN'ler eşleşmez",
   "@pinCodeMismatchError": {
@@ -12503,5 +12465,123 @@
   "legacyStorageWarningLater": "Daha sonra",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Geri",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Başla",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Açık",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Koyu",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Sistem",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Katkıda bulunuyorum",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Katkıda bulunmuyorum",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Standart günlükler",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Her zaman açık — cüzdanınızın uygulama sürümleri arasında güvenle taşınıp taşınmadığını görmemizi sağlar.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Yedeğinizi kullanın",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Yedeğiniz sayesinde fonlarınız güvende.\nÖnce uygulamayı yeniden başlatmayı deneyin; yine başlamazsa kaldırıp yeniden yükleyin ve yedeğinizle kurtarın.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Yedek yok mu?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Uygulamayı silmeyin.\nKurtarma girişimi için destek ekibimizle iletişime geçin.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Destekle iletişime geç",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Hata ayrıntılarını göster",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Yüksek stop gap değerleri senkronizasyon süresini önemli ölçüde artırır. Senkronizasyon tamamlanana kadar uygulamayı ön planda açık tutun — arka plana almak işlemi kesintiye uğratabilir.",
+  "wizardSkipButton": "Atla",
+  "wizardPageIndicator": "SAYFA {current} / {total}",
+  "wizardNextButton": "İleri",
+  "wizardCustomizeTitle": "Deneyimini özelleştir",
+  "wizardCustomizeBody": "Bu ayarlarla BULL'u kendi şartlarınla kullan.",
+  "wizardCustomizeDefaultCurrency": "Varsayılan para birimi",
+  "wizardMissionTitle": "Bull misyonunu destekle",
+  "wizardMissionBody1": "Yazılımımızı geliştirmemize ve en yüksek düzeyde güvenlik, gizlilik ve kullanılabilirlik sunmamıza yardımcı olmak için uygulamanız bize hata günlükleri gönderebilir. Bu, sorunları tespit etmemizi ve sonraki güncellemelerimizde hızlıca düzeltmemizi sağlar.",
+  "wizardMissionBody2": "Bu günlükler anonimleştirilmiştir, IP adresinize bağlı değildir ve işlemleriniz veya kimliğiniz hakkında asla bilgi paylaşmaz. Tamamen tekniktir ve sizi hiçbir riske maruz bırakmaz. Bizim için çok yararlıdır ve size hiçbir maliyeti yoktur.",
+  "wizardMissionQuestion": "Otomatik sorun bildirim programımıza katılmayı kabul ediyor musunuz?",
+  "wizardMissionYes": "Evet",
+  "wizardMissionNo": "Hayır",
+  "wizardMissionRequired": "Devam etmeden önce lütfen Evet veya Hayır seçin.",
+  "wizardJourneyTitle": "Yolculuğunda ilerle",
+  "wizardJourneyBody": "BULL cüzdanında yeniyseniz, gizliliğinizi, güvenliğinizi ve kullanıcı deneyiminizi geliştirmek için yararlanabileceğiniz bazı özellikler şunlardır.",
+  "wizardJourneyTip1": "Cüzdanınızın kilidini açmak için güvenlik PIN'i ekleyin",
+  "wizardJourneyTip2": "Şifreli kasa yedeklemesini deneyin",
+  "wizardJourneyTip3": "Kendi Bitcoin düğümünüze bağlanın",
+  "wizardJourneyTip4": "Kendi Mempool gezgininize bağlanın",
+  "wizardJourneyTip5": "KYC olmadan Bitcoin ve Liquid arasında transfer yapın",
+  "wizardJourneyTip6": "Autoswap ayarlarınızı özelleştirin",
+  "wizardJourneyTip7": "Bitcoin (BTC) ve Satoshi (sats) arasında geçiş yapın",
+  "wizardJourneyTip8": "Donanım cüzdanınız için air-gap işlemleri oluşturun",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "İŞLEM GEREKLİ",
+  "legacyStorageBadgeConfirm": "ONAYLA",
+  "legacyStorageNoBackupPageTitle": "CÜZDANINIZIN YEDEĞİNİ ALIN VE YENİDEN YÜKLEYİN",
+  "legacyStorageHasBackupPageTitle": "CÜZDANINIZI YENİDEN YÜKLEYİN",
+  "legacyStorageIntroDescription": "Cüzdanınız kısa süre içinde kullanımdan kalkacak bir yazılım üzerinde çalışıyor. Uygulama kaldırılıp yeniden yüklenmeden güncellenemez.",
+  "legacyStorageStepBackupWallet": "Cüzdanınızın yedeğini alın",
+  "legacyStorageStepExportLabels": "Etiketlerinizi dışa aktarın (varsa)",
+  "legacyStorageStepEnsureSwapsCompleted": "Tüm swap işlemlerinin tamamlandığından emin olun",
+  "legacyStorageStepUninstall": "Uygulamayı cihazınızdan kaldırın",
+  "legacyStorageStepReinstall": "En güncel sürümü indirip yeniden yükleyin",
+  "legacyStorageStepRestoreBackup": "Yedeğinizi geri yükleyin",
+  "legacyStorageImportantTitle": "Önemli",
+  "legacyStorageImportantBody": "Şu an gerçekten yedek alamayacaksanız bu işlemi atlamayın.",
+  "legacyStorageContinueFooterNoBackup": "Yedek almadan da uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
+  "legacyStorageContinueFooterHasBackup": "Uygulamayı kullanmaya devam edebilirsiniz, ancak bunu kesinlikle önermiyoruz.",
+  "legacyStorageBackupNowButton": "Şimdi yedekle",
+  "legacyStorageRiskAckButton": "Hayır, riski anlıyorum",
+  "legacyStorageAreYouSureTitle": "EMİN MİSİNİZ?",
+  "legacyStorageAreYouSureParagraphOne": "Cüzdanınızın Bitcoin özel anahtarlarını saklamak için kullanılan yazılım kullanımdan kalkıyor. İleride yaşanabilecek aksaklıkları önlemek için hemen yedek almanızı kesinlikle öneririz.",
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault yedekleme seçeneği yaklaşık 1 dakika sürer ve özel araç gerektirmez. Fiziksel yedek için ihtiyacınız olan tek şey kalem ve kağıttır.",
+  "legacyStorageContinueWithoutBackupButton": "Yedek almadan devam et",
+  "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum",
+  "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
+  "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum"
 }

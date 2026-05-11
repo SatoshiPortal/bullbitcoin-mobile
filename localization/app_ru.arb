@@ -603,14 +603,6 @@
   "sellBelowMinAmountError": "Вы пытаетесь продать ниже минимальной суммы, которую можно продать с этим кошельком.",
   "buyAwaitingConfirmation": "Пробуждение подтверждения ",
   "payExpired": "Заключено",
-  "recoverbullBalance": "Остаток: {balance}",
-  "@recoverbullBalance": {
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "Параметры доступа",
   "payPaymentSuccessful": "Оплата успешно",
   "exchangeHomeWithdraw": "Выделить",
@@ -705,7 +697,6 @@
   "dcaFundAccountButton": "Фонд вашего счета",
   "transactionFilterAll": "Все",
   "arkSendTitle": "Отправить",
-  "recoverbullVaultRecovery": "Восстановление хранилища",
   "transactionDetailLabelAmountReceived": "Полученная сумма",
   "bitboxCubitOperationTimeout": "Операция была отложена. Попробуй еще раз.",
   "receivePaymentReceived": "Получена оплата!",
@@ -787,14 +778,6 @@
   "importQrDevicePassportStep11": "Введите этикетку для вашего паспортного кошелька и нажмите «Import»",
   "fundExchangeJurisdictionCanada": "🇨🇦 Канада",
   "withdrawBelowMinAmountError": "Вы пытаетесь уйти ниже минимальной суммы.",
-  "recoverbullTransactions": "Транзакции: {count}",
-  "@recoverbullTransactions": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "swapYouPay": "Вы платите",
   "encryptedVaultTitle": "Зашифрованное хранилище",
   "fundExchangeCrIbanUsdLabelIban": "Номер счета IBAN (только доллары США)",
@@ -1121,7 +1104,6 @@
   "payNameHint": "Имя получателя",
   "autoswapWarningTriggerAmount": "Максимальный баланс 0,02 BTC",
   "legacySeedViewScreenTitle": "Наследные семена",
-  "recoverbullErrorCheckStatusFailed": "Не удалось проверить состояние хранилища",
   "pleaseWaitFetching": "Подождите, пока мы заберем ваш архив.",
   "backupWalletPhysicalBackupTag": "Неверный (примите свое время)",
   "electrumReset": "Перезагрузка",
@@ -1338,7 +1320,6 @@
   "recoverbullTestCompletedTitle": "Тест завершен успешно!",
   "arkBtcAddress": "Адрес BTC",
   "transactionFilterReceive": "Получить",
-  "recoverbullErrorInvalidFlow": "Неверный поток",
   "exchangeDcaFrequencyDay": "день",
   "payBumpFee": "Bump Fee",
   "arkCancelButton": "Отмена",
@@ -1584,7 +1565,6 @@
   "ledgerWalletTypeLabel": "Тип кошелька:",
   "bip85ExperimentalWarning": "Экспериментальный\nЗаверните свои пути вывода вручную",
   "addressViewBalance": "Баланс",
-  "recoverbullLookingForBalance": "Поиск баланса и сделок..",
   "recoverbullSelectNoBackupsFound": "Никаких резервных копий не найдено",
   "importMnemonicNestedSegwit": "Nested Segwit",
   "sendReplaceByFeeActivated": "Замена по фе активирована",
@@ -2858,7 +2838,6 @@
       }
     }
   },
-  "recoverbullErrorDecryptedVaultNotSet": "Зашифрованное хранилище не установлено",
   "pinCodeMismatchError": "PIN не совпадает",
   "autoswapRecipientWalletPlaceholderRequired": "Выберите биткойн-кошелек*",
   "recoverbullGoogleDriveErrorGeneric": "Произошла ошибка. Попробуй еще раз.",
@@ -4393,9 +4372,25 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Помогите нам улучшить Bull Bitcoin, участвуя в программе отчета об ошибках. Это напрямую помогает нам сделать Bull Bitcoin лучше для всех.\n\nКогда эта функция включена, мы автоматически отправляем отчеты об ошибках при возникновении проблем в приложении. Эти данные помогают нам понять, что происходит с нашими пользователями по всему миру, и соответственно расставить приоритеты исправлений.\n\nМы не делимся этой информацией с третьми сторонами. Мы используем клиент с открытым исходным кодом Sentry с нашим собственным самостоятельно размещенным серверным сервером.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
+  "errorReportingProgramDescriptionP1": "Помогите нам улучшить Bull Bitcoin, участвуя в программе отчета об ошибках. Это напрямую помогает нам сделать Bull Bitcoin лучше для всех.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Когда эта функция включена, мы автоматически отправляем отчеты об ошибках при возникновении проблем в приложении.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Эти данные помогают нам понять, что происходит с нашими пользователями по всему миру, и соответственно расставить приоритеты исправлений.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Мы не делимся этой информацией с третьми сторонами.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Мы используем клиент с открытым исходным кодом Sentry с нашим собственным самостоятельно размещенным серверным сервером.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
   },
   "errorReportingAcceptButton": "Принять",
   "@errorReportingAcceptButton": {
@@ -4496,5 +4491,123 @@
   "legacyStorageWarningLater": "Позже",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "Назад",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Начать",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Светлая",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Тёмная",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "Системная",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Я участвую",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Я не участвую",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Стандартные журналы",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "Всегда включено — позволяет нам видеть, безопасно ли мигрирует ваш кошелёк между версиями приложения.",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "Используйте резервную копию",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Благодаря резервной копии ваши средства в безопасности.\nСначала попробуйте перезапустить приложение; если оно всё равно не запускается, переустановите его и восстановите кошелёк из резервной копии.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Нет резервной копии?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "Не удаляйте приложение.\nСвяжитесь с нашей командой поддержки для попытки восстановления.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Связаться с поддержкой",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Показать подробности ошибки",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "Высокие значения stop gap значительно увеличивают время синхронизации. Держите приложение открытым на переднем плане до завершения синхронизации — перевод в фоновый режим может прервать её.",
+  "wizardSkipButton": "Пропустить",
+  "wizardPageIndicator": "СТРАНИЦА {current} / {total}",
+  "wizardNextButton": "Далее",
+  "wizardCustomizeTitle": "Настройте под себя",
+  "wizardCustomizeBody": "Используйте BULL так, как удобно вам, с этими настройками.",
+  "wizardCustomizeDefaultCurrency": "Валюта по умолчанию",
+  "wizardMissionTitle": "Поддержите миссию Bull",
+  "wizardMissionBody1": "Чтобы помочь нам улучшать программу и обеспечивать высочайший уровень безопасности, конфиденциальности и удобства, ваше приложение может отправлять нам журналы ошибок, которые позволяют нам быстро находить и устранять проблемы в следующих обновлениях.",
+  "wizardMissionBody2": "Эти журналы анонимны, не связаны с вашим IP-адресом и никогда не передают информацию о ваших транзакциях или личности. Они носят чисто технический характер и не подвергают вас риску. Это очень помогает нам и ничего не стоит вам.",
+  "wizardMissionQuestion": "Согласны ли вы участвовать в нашей автоматической программе отчётов о проблемах?",
+  "wizardMissionYes": "Да",
+  "wizardMissionNo": "Нет",
+  "wizardMissionRequired": "Пожалуйста, выберите Да или Нет, прежде чем продолжить.",
+  "wizardJourneyTitle": "Развивайтесь на своём пути",
+  "wizardJourneyBody": "Если вы новичок в кошельке BULL, вот несколько функций, которыми вы можете воспользоваться для повышения конфиденциальности, безопасности и удобства использования.",
+  "wizardJourneyTip1": "Добавьте PIN-код для разблокировки кошелька",
+  "wizardJourneyTip2": "Попробуйте зашифрованную резервную копию хранилища",
+  "wizardJourneyTip3": "Подключитесь к собственному узлу Bitcoin",
+  "wizardJourneyTip4": "Подключитесь к собственному обозревателю Mempool",
+  "wizardJourneyTip5": "Переводите между Bitcoin и Liquid без KYC",
+  "wizardJourneyTip6": "Настройте параметры автообмена",
+  "wizardJourneyTip7": "Переключайтесь между Bitcoin (BTC) и Satoshis (sats)",
+  "wizardJourneyTip8": "Создавайте air-gap транзакции для аппаратного кошелька",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "ТРЕБУЕТСЯ ДЕЙСТВИЕ",
+  "legacyStorageBadgeConfirm": "ПОДТВЕРДИТЬ",
+  "legacyStorageNoBackupPageTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ И ПЕРЕУСТАНОВИТЕ КОШЕЛЁК",
+  "legacyStorageHasBackupPageTitle": "ПЕРЕУСТАНОВИТЕ КОШЕЛЁК",
+  "legacyStorageIntroDescription": "Ваш кошелёк работает на программном обеспечении, поддержка которого скоро прекратится. Его нельзя обновить, не удалив и не установив приложение заново.",
+  "legacyStorageStepBackupWallet": "Сделайте резервную копию кошелька",
+  "legacyStorageStepExportLabels": "Экспортируйте свои метки (если они есть)",
+  "legacyStorageStepEnsureSwapsCompleted": "Убедитесь, что все обмены (swap) завершены",
+  "legacyStorageStepUninstall": "Удалите приложение с вашего устройства",
+  "legacyStorageStepReinstall": "Скачайте последнюю версию и установите её заново",
+  "legacyStorageStepRestoreBackup": "Восстановите резервную копию",
+  "legacyStorageImportantTitle": "Важно",
+  "legacyStorageImportantBody": "Не пропускайте этот процесс, если у вас действительно нет возможности сделать резервную копию прямо сейчас.",
+  "legacyStorageContinueFooterNoBackup": "Вы можете продолжить пользоваться приложением без резервной копии, но мы настоятельно не рекомендуем этого.",
+  "legacyStorageContinueFooterHasBackup": "Вы можете продолжить пользоваться приложением, но мы настоятельно не рекомендуем этого.",
+  "legacyStorageBackupNowButton": "Сделать копию сейчас",
+  "legacyStorageRiskAckButton": "Нет, я понимаю риск",
+  "legacyStorageAreYouSureTitle": "ВЫ УВЕРЕНЫ?",
+  "legacyStorageAreYouSureParagraphOne": "Программное обеспечение, в котором хранятся приватные ключи Bitcoin вашего кошелька, прекращает поддержку. Мы настоятельно рекомендуем сделать резервную копию прямо сейчас, чтобы избежать сбоев в будущем.",
+  "legacyStorageAreYouSureParagraphTwo": "Резервная копия Encrypted Vault занимает около 1 минуты и не требует особых инструментов. Для физической копии достаточно ручки и листа бумаги.",
+  "legacyStorageContinueWithoutBackupButton": "Продолжить без копии",
+  "legacyStorageAcceptRisksCheckbox": "Я принимаю риски отказа от резервной копии",
+  "legacyStorageHasBackupImportantBody": "Пожалуйста, не пропускайте этот процесс, если только вам не нужно срочно использовать кошелёк или вы не ждёте завершения свопа.",
+  "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск"
 }

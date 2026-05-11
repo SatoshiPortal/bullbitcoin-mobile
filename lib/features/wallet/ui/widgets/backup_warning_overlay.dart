@@ -23,8 +23,7 @@ class BackupWarningOverlay extends StatelessWidget {
         return Stack(
           children: [
             child,
-            if (state.showBackupWarning())
-              const _BackupWarningBlocker(),
+            if (state.showBackupWarning()) const _BackupWarningBlocker(),
           ],
         );
       },
@@ -32,8 +31,19 @@ class BackupWarningOverlay extends StatelessWidget {
   }
 }
 
-class _BackupWarningBlocker extends StatelessWidget {
+class _BackupWarningBlocker extends StatefulWidget {
   const _BackupWarningBlocker();
+
+  @override
+  State<_BackupWarningBlocker> createState() => _BackupWarningBlockerState();
+}
+
+class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<WalletBloc>().add(const VerifyBackupStatus());
+  }
 
   @override
   Widget build(BuildContext context) {

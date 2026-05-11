@@ -11,7 +11,13 @@ class ElectrumUrlParser {
   ///   - Clearnet addresses default to SSL
   ///
   /// Throws ElectrumUrlValidationError if URL is invalid or incomplete
-  static ({String cleanUrl, bool enableSsl}) parse(String input) {
+  ///
+  /// [sslExplicit] is true when the SSL value was unambiguously determined
+  /// (explicit `:s`/`:t` suffix, or `.onion` host). It is false for plain
+  /// clearnet `host:port` where SSL is merely the default.
+  static ({String cleanUrl, bool enableSsl, bool sslExplicit}) parse(
+    String input,
+  ) {
     final trimmedInput = input.trim();
     if (trimmedInput.isEmpty) throw ElectrumUrlValidationError.empty;
 
@@ -31,7 +37,7 @@ class ElectrumUrlParser {
       final port = suffixMatch.group(2)!;
       final suffix = suffixMatch.group(3)!;
       final cleanUrl = '$host:$port';
-      return (cleanUrl: cleanUrl, enableSsl: suffix == 's');
+      return (cleanUrl: cleanUrl, enableSsl: suffix == 's', sslExplicit: true);
     }
 
     // Check if it's a valid host:port format (no suffix)
@@ -42,15 +48,21 @@ class ElectrumUrlParser {
     if (hostPortMatch != null) {
       final host = hostPortMatch.group(1)!;
       final isOnion = host.endsWith('.onion');
-      // Default: .onion = tcp (false), clearnet = ssl (true)
-      return (cleanUrl: trimmedInput, enableSsl: !isOnion);
+      // .onion → TCP is an explicit signal; clearnet → SSL is just the default
+      return (
+        cleanUrl: trimmedInput,
+        enableSsl: !isOnion,
+        sslExplicit: isOnion,
+      );
     }
 
     throw ElectrumUrlValidationError.invalidFormat;
   }
 
   /// This is a non-throwing version of parse
-  static ({String cleanUrl, bool enableSsl})? tryParse(String input) {
+  static ({String cleanUrl, bool enableSsl, bool sslExplicit})? tryParse(
+    String input,
+  ) {
     try {
       return parse(input);
     } catch (_) {

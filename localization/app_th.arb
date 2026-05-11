@@ -1816,15 +1816,6 @@
   "@payExpired": {
     "description": "Status label for expired invoice"
   },
-  "recoverbullBalance": "สมดุล: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "exchangeSecurityAccessSettingsButton": "การตั้งค่าการเข้าถึง",
   "@exchangeSecurityAccessSettingsButton": {
     "description": "Button label for accessing security settings in exchange"
@@ -2091,10 +2082,6 @@
   "@arkSendTitle": {
     "description": "AppBar title for Ark send screen"
   },
-  "recoverbullVaultRecovery": "การกู้คืน",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
   "transactionDetailLabelAmountReceived": "จํานวน",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
@@ -2349,15 +2336,6 @@
   "withdrawBelowMinAmountError": "คุณพยายามที่จะถอนขั้นต่ํา.",
   "@withdrawBelowMinAmountError": {
     "description": "Error message for amount below minimum during withdraw"
-  },
-  "recoverbullTransactions": "การทําธุรกรรม: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "swapYouPay": "คุณชําระเงิน",
   "@swapYouPay": {
@@ -3343,10 +3321,6 @@
   "@legacySeedViewScreenTitle": {
     "description": "AppBar title for legacy seeds screen"
   },
-  "recoverbullErrorCheckStatusFailed": "ตรวจสอบสถานะ",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "pleaseWaitFetching": "โปรดรอในขณะที่เราเขียนไฟล์สํารองข้อมูลของคุณ.",
   "@pleaseWaitFetching": {
     "description": "Message asking user to wait while fetching backup"
@@ -4064,10 +4038,6 @@
   "transactionFilterReceive": "ลงทะเบียน",
   "@transactionFilterReceive": {
     "description": "Filter option to show only received transactions"
-  },
-  "recoverbullErrorInvalidFlow": "การไหลของการไหล",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
   },
   "exchangeDcaFrequencyDay": "วัน",
   "@exchangeDcaFrequencyDay": {
@@ -4831,10 +4801,6 @@
   "addressViewBalance": "สมดุล",
   "@addressViewBalance": {
     "description": "Label for address balance"
-  },
-  "recoverbullLookingForBalance": "กําลังมองหายอดคงเหลือและการทําธุรกรรม ..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullSelectNoBackupsFound": "ไม่มีการสํารองข้อมูล",
   "@recoverbullSelectNoBackupsFound": {
@@ -8723,10 +8689,6 @@
       }
     }
   },
-  "recoverbullErrorDecryptedVaultNotSet": "ถอดรหัสไม่ได้ตั้งค่า",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
-  },
   "pinCodeMismatchError": "PINs ไม่จับคู่",
   "@pinCodeMismatchError": {
     "description": "Error message when PIN confirmation doesn't match"
@@ -12503,5 +12465,123 @@
   "legacyStorageWarningLater": "ภายหลัง",
   "@legacyStorageWarningLater": {
     "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  }
+  },
+  "backButton": "ย้อนกลับ",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "เริ่มต้น",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "สว่าง",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "มืด",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "ระบบ",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "ฉันมีส่วนร่วม",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "ฉันไม่มีส่วนร่วม",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "บันทึกทั่วไป",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch"
+  },
+  "errorReportingMigrationSubtitle": "เปิดอยู่เสมอ — ช่วยให้เราเห็นว่ากระเป๋าเงินของคุณย้ายข้อมูลระหว่างเวอร์ชันแอปอย่างปลอดภัยหรือไม่",
+  "@errorReportingMigrationSubtitle": {
+    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
+  },
+  "appInitErrorHasBackupTitle": "ใช้ข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "เงินของคุณปลอดภัยเพราะคุณมีข้อมูลสำรอง\nลองรีสตาร์ทแอปก่อน หากยังใช้งานไม่ได้ ให้ติดตั้งใหม่และกู้คืนด้วยข้อมูลสำรองของคุณ",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "ไม่มีข้อมูลสำรอง?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "อย่าลบแอป\nติดต่อทีมสนับสนุนของเราเพื่อพยายามกู้คืน",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "ติดต่อฝ่ายสนับสนุน",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "แสดงรายละเอียดข้อผิดพลาด",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "electrumStopGapHighWarning": "ค่า stop gap ที่สูงจะเพิ่มเวลาในการซิงค์อย่างมาก เปิดแอปไว้ด้านหน้าจนกว่าการซิงค์จะเสร็จสิ้น — การส่งแอปไปทำงานเบื้องหลังอาจทำให้การซิงค์ถูกขัดจังหวะ",
+  "wizardSkipButton": "ข้าม",
+  "wizardPageIndicator": "หน้า {current} / {total}",
+  "wizardNextButton": "ถัดไป",
+  "wizardCustomizeTitle": "ปรับแต่งประสบการณ์ของคุณ",
+  "wizardCustomizeBody": "ใช้ BULL ตามวิธีของคุณด้วยการตั้งค่าเหล่านี้",
+  "wizardCustomizeDefaultCurrency": "สกุลเงินเริ่มต้น",
+  "wizardMissionTitle": "สนับสนุนภารกิจของ Bull",
+  "wizardMissionBody1": "เพื่อช่วยเราปรับปรุงซอฟต์แวร์และให้แน่ใจว่ามีความปลอดภัย ความเป็นส่วนตัว และความสามารถในการใช้งานสูงสุด แอปของคุณสามารถส่งบันทึกข้อผิดพลาดให้เรา ซึ่งจะช่วยให้เราตรวจพบและแก้ไขปัญหาได้อย่างรวดเร็วในการอัปเดตครั้งถัดไป",
+  "wizardMissionBody2": "บันทึกเหล่านี้ไม่ระบุชื่อ ไม่เชื่อมโยงกับที่อยู่ IP ของคุณ และไม่เคยแบ่งปันข้อมูลเกี่ยวกับธุรกรรมหรือตัวตนของคุณ เป็นข้อมูลทางเทคนิคล้วนๆ และไม่ทำให้คุณเสี่ยงใดๆ มีประโยชน์มากสำหรับเราและไม่มีค่าใช้จ่ายสำหรับคุณ",
+  "wizardMissionQuestion": "คุณยินยอมที่จะเข้าร่วมโปรแกรมรายงานปัญหาอัตโนมัติของเราหรือไม่?",
+  "wizardMissionYes": "ใช่",
+  "wizardMissionNo": "ไม่",
+  "wizardMissionRequired": "กรุณาเลือก ใช่ หรือ ไม่ ก่อนดำเนินการต่อ",
+  "wizardJourneyTitle": "ก้าวหน้าในเส้นทางของคุณ",
+  "wizardJourneyBody": "หากคุณเพิ่งเริ่มใช้กระเป๋าเงิน BULL นี่คือฟีเจอร์บางอย่างที่คุณสามารถใช้ประโยชน์เพื่อปรับปรุงความเป็นส่วนตัว ความปลอดภัย และประสบการณ์การใช้งานของคุณ",
+  "wizardJourneyTip1": "เพิ่ม PIN รักษาความปลอดภัยเพื่อปลดล็อกกระเป๋าเงินของคุณ",
+  "wizardJourneyTip2": "ลองสำรองข้อมูลห้องนิรภัยที่เข้ารหัส",
+  "wizardJourneyTip3": "เชื่อมต่อกับโหนด Bitcoin ของคุณเอง",
+  "wizardJourneyTip4": "เชื่อมต่อกับเอ็กซ์พลอเรอร์ Mempool ของคุณเอง",
+  "wizardJourneyTip5": "โอนระหว่าง Bitcoin และ Liquid โดยไม่ต้องทำ KYC",
+  "wizardJourneyTip6": "ปรับแต่งการตั้งค่า autoswap ของคุณ",
+  "wizardJourneyTip7": "สลับระหว่าง Bitcoin (BTC) และ Satoshis (sats)",
+  "wizardJourneyTip8": "สร้างธุรกรรม air-gap สำหรับกระเป๋าเงินฮาร์ดแวร์ของคุณ",
+  "@wizardPageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "legacyStorageBadgeActionRequired": "ต้องดำเนินการ",
+  "legacyStorageBadgeConfirm": "ยืนยัน",
+  "legacyStorageNoBackupPageTitle": "สำรองข้อมูลและติดตั้งกระเป๋าใหม่",
+  "legacyStorageHasBackupPageTitle": "ติดตั้งกระเป๋าใหม่",
+  "legacyStorageIntroDescription": "กระเป๋าของคุณกำลังใช้ซอฟต์แวร์ที่กำลังจะถูกยกเลิกในไม่ช้า ไม่สามารถอัปเดตได้หากไม่ถอนการติดตั้งและติดตั้งแอปใหม่",
+  "legacyStorageStepBackupWallet": "สำรองข้อมูลกระเป๋าของคุณ",
+  "legacyStorageStepExportLabels": "ส่งออกป้ายของคุณ (ถ้ามี)",
+  "legacyStorageStepEnsureSwapsCompleted": "ตรวจสอบว่า swap ทั้งหมดเสร็จสมบูรณ์แล้ว",
+  "legacyStorageStepUninstall": "ถอนการติดตั้งแอปจากอุปกรณ์ของคุณ",
+  "legacyStorageStepReinstall": "ดาวน์โหลดเวอร์ชันล่าสุดและติดตั้งใหม่",
+  "legacyStorageStepRestoreBackup": "กู้คืนข้อมูลสำรองของคุณ",
+  "legacyStorageImportantTitle": "สำคัญ",
+  "legacyStorageImportantBody": "อย่าข้ามขั้นตอนนี้เว้นแต่ว่าคุณจะไม่สามารถสำรองข้อมูลได้จริง ๆ ในตอนนี้",
+  "legacyStorageContinueFooterNoBackup": "คุณสามารถใช้แอปต่อได้โดยไม่สำรองข้อมูล แต่เราแนะนำอย่างยิ่งว่าไม่ควรทำเช่นนั้น",
+  "legacyStorageContinueFooterHasBackup": "คุณสามารถใช้แอปต่อได้ แต่เราแนะนำอย่างยิ่งว่าไม่ควรทำเช่นนั้น",
+  "legacyStorageBackupNowButton": "สำรองข้อมูลตอนนี้",
+  "legacyStorageRiskAckButton": "ไม่ ฉันเข้าใจความเสี่ยง",
+  "legacyStorageAreYouSureTitle": "คุณแน่ใจหรือ?",
+  "legacyStorageAreYouSureParagraphOne": "ซอฟต์แวร์ที่ใช้เก็บคีย์ส่วนตัว Bitcoin ของกระเป๋าคุณกำลังถูกยกเลิก เราแนะนำอย่างยิ่งให้คุณสำรองข้อมูลตอนนี้เลยเพื่อหลีกเลี่ยงปัญหาในอนาคต",
+  "legacyStorageAreYouSureParagraphTwo": "ตัวเลือก Encrypted Vault ใช้เวลาประมาณ 1 นาที ไม่ต้องใช้เครื่องมือพิเศษ สำหรับการสำรองข้อมูลแบบกระดาษ คุณต้องใช้เพียงปากกาและกระดาษ",
+  "legacyStorageContinueWithoutBackupButton": "ดำเนินการต่อโดยไม่สำรองข้อมูล",
+  "legacyStorageAcceptRisksCheckbox": "ฉันยอมรับความเสี่ยงของการไม่สำรองข้อมูล",
+  "legacyStorageHasBackupImportantBody": "โปรดอย่าข้ามขั้นตอนนี้ เว้นแต่คุณจำเป็นต้องใช้กระเป๋าเงินอย่างเร่งด่วน หรือกำลังรอให้สวอปเสร็จสมบูรณ์",
+  "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง"
 }

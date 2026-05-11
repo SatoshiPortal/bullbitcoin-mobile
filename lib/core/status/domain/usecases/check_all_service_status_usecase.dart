@@ -19,8 +19,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class CheckAllServiceStatusUsecase {
   final ElectrumConnectivityPort _electrumConnectivityPort;
-  final BoltzSwapRepository _mainnetBoltzSwapRepository;
-  final BoltzSwapRepository _testnetBoltzSwapRepository;
+  final BoltzSwapRepository _boltzSwapRepository;
   final ExchangeRateRepository _exchangeRateRepository;
   final PayjoinRepository _payjoinRepository;
   final FeesRepository _feesRepository;
@@ -32,8 +31,7 @@ class CheckAllServiceStatusUsecase {
 
   CheckAllServiceStatusUsecase({
     required ElectrumConnectivityPort electrumConnectivityPort,
-    required BoltzSwapRepository mainnetBoltzSwapRepository,
-    required BoltzSwapRepository testnetBoltzSwapRepository,
+    required BoltzSwapRepository boltzSwapRepository,
     required ExchangeRateRepository exchangeRateRepository,
     required PayjoinRepository payjoinRepository,
     required FeesRepository feesRepository,
@@ -43,8 +41,7 @@ class CheckAllServiceStatusUsecase {
     required FetchArkSecretUsecase fetchArkSecretUsecase,
     required TorStatusUsecase torStatusUsecase,
   }) : _electrumConnectivityPort = electrumConnectivityPort,
-       _mainnetBoltzSwapRepository = mainnetBoltzSwapRepository,
-       _testnetBoltzSwapRepository = testnetBoltzSwapRepository,
+       _boltzSwapRepository = boltzSwapRepository,
        _exchangeRateRepository = exchangeRateRepository,
        _payjoinRepository = payjoinRepository,
        _feesRepository = feesRepository,
@@ -96,14 +93,13 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkBitcoinElectrumServer(Network network) async {
     try {
-      // Check Bitcoin Electrum servers
-      final hasOnlineServers = await _electrumConnectivityPort
+      final isOnline = await _electrumConnectivityPort
           .checkServersInUseAreOnlineForNetwork(
             network.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
           );
 
       return ServiceStatusInfo(
-        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
+        status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
         name: 'Bitcoin Electrum',
         lastChecked: DateTime.now(),
       );
@@ -118,14 +114,13 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkLiquidElectrumServer(Network network) async {
     try {
-      final hasOnlineServers = await _electrumConnectivityPort
+      final isOnline = await _electrumConnectivityPort
           .checkServersInUseAreOnlineForNetwork(
             network.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
           );
 
       return ServiceStatusInfo(
-        status: hasOnlineServers ? ServiceStatus.online : ServiceStatus.offline,
-
+        status: isOnline ? ServiceStatus.online : ServiceStatus.offline,
         name: 'Liquid Electrum',
         lastChecked: DateTime.now(),
       );
@@ -140,11 +135,7 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkBoltzService(Network network) async {
     try {
-      final boltzRepository = network == Network.bitcoinMainnet
-          ? _mainnetBoltzSwapRepository
-          : _testnetBoltzSwapRepository;
-
-      await boltzRepository.updateSwapLimitsAndFees(
+      await _boltzSwapRepository.updateSwapLimitsAndFees(
         SwapType.bitcoinToLightning,
       );
 
@@ -203,8 +194,12 @@ class CheckAllServiceStatusUsecase {
 
   Future<ServiceStatusInfo> _checkMempoolService(Network network) async {
     try {
-      // Test mempool connectivity by getting fees
-      await _feesRepository.getNetworkFees(network: network);
+      // NOTE: Mempool is a Bitcoin only service
+      // Liquid fees are hardcoded it will always return connected!
+      final onlyBitcoinNetwork = network.isTestnet
+          ? Network.bitcoinTestnet
+          : Network.bitcoinMainnet;
+      await _feesRepository.getNetworkFees(network: onlyBitcoinNetwork);
 
       return ServiceStatusInfo(
         status: ServiceStatus.online,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/screens/withdraw_amount_screen.dart';
@@ -23,23 +24,17 @@ class WithdrawRouter {
   static final route = GoRoute(
     path: WithdrawRoute.withdraw.path,
     name: WithdrawRoute.withdraw.name,
+    redirect: (context, state) {
+      final notLoggedIn = context.read<ExchangeCubit>().state.notLoggedIn;
+      if (notLoggedIn) return ExchangeRoute.exchangeHome.path;
+      return null;
+    },
     builder: (context, state) {
       return BlocProvider(
         create: (_) =>
             locator<WithdrawBloc>()..add(const WithdrawEvent.started()),
         child: MultiBlocListener(
           listeners: [
-            BlocListener<WithdrawBloc, WithdrawState>(
-              listenWhen: (previous, current) =>
-                  previous is WithdrawInitialState &&
-                  previous.apiKeyException == null &&
-                  current is WithdrawInitialState &&
-                  current.apiKeyException != null,
-              listener: (context, state) {
-                // Redirect to exchange home if API key exception occurs which means the user is not authenticated
-                context.goNamed(ExchangeRoute.exchangeHome.name);
-              },
-            ),
             BlocListener<WithdrawBloc, WithdrawState>(
               listenWhen: (previous, current) =>
                   previous is WithdrawAmountInputState &&

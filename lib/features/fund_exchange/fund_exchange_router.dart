@@ -91,14 +91,6 @@ class FundExchangeRouter {
                 ..add(const FundExchangeEvent.started()),
           child: MultiBlocListener(
             listeners: [
-              BlocListener<FundExchangeBloc, FundExchangeState>(
-                listenWhen: (previous, current) =>
-                    previous.apiKeyException == null &&
-                    current.apiKeyException != null,
-                listener: (context, state) {
-                  context.goNamed(ExchangeRoute.exchangeHome.name);
-                },
-              ),
               // Navigate to COP input screen once institutions are loaded.
               // Uses pushNamed to avoid rebuilding the parent /fund-exchange
               // route (which would dispose the BLoC passed via extra).

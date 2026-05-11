@@ -65,7 +65,10 @@ class _AddCustomServerBottomSheetState
     if (input.isEmpty) return;
 
     final result = ElectrumUrlParser.tryParse(input);
-    if (result != null) {
+    // Only override the toggle when the URL carries an unambiguous SSL signal
+    // (explicit :s/:t suffix or .onion host). Plain clearnet host:port is just
+    // the default — don't override a manual user choice.
+    if (result != null && result.sslExplicit) {
       setState(() {
         _enableSsl = result.enableSsl;
         _sslAutoDetected = true;
@@ -92,10 +95,9 @@ class _AddCustomServerBottomSheetState
       (ElectrumSettingsBloc bloc) => bloc.state.isLiquid,
     );
     final environment = context.select(
-      (ElectrumSettingsBloc bloc) =>
-          bloc.state.environment?.isTestnet == true
-              ? context.loc.electrumTestnet
-              : context.loc.electrumMainnet,
+      (ElectrumSettingsBloc bloc) => bloc.state.environment?.isTestnet == true
+          ? context.loc.electrumTestnet
+          : context.loc.electrumMainnet,
     );
 
     return GestureDetector(
