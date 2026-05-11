@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer docker-build apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app apk verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -60,14 +60,25 @@ ios-sqlite-update:
 	@echo "Updating SQLite"
 	@cd ios && pod update sqlite3 && cd -
 
-docker-build:
-	@echo "🏗️ Building Docker image"
-	@docker build -t bull-mobile \
+# Container runtime — default podman, override with CONTAINER=docker for
+# environments without podman.
+CONTAINER ?= podman
+
+container-tools:
+	@echo "🔧 Building tools image"
+	@$(CONTAINER) build -f Containerfile.tools -t bull-tools \
 		--build-arg FLUTTER_VERSION=$$(awk 'BEGIN{RS="";} { gsub(/\r/,""); s=$$0; sub(/.*"flutter"[[:space:]]*:[[:space:]]*"/,"",s); sub(/".*$$/,"",s); print s; exit }' .fvmrc) \
 		--build-arg JVM_TARGET=$$(grep 'android.jvmTarget' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_API_LEVEL=$$(grep 'android.compileSdk' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_BUILD_TOOLS=$$(grep 'android.buildToolsVersion' android/gradle.properties | cut -d= -f2) \
 		--build-arg ANDROID_NDK=$$(grep 'android.ndkVersion' android/gradle.properties | cut -d= -f2) \
+		$(if $(EXPECTED_RUST_VERSION),--build-arg EXPECTED_RUST_VERSION=$(EXPECTED_RUST_VERSION)) \
+		.
+
+container-app: container-tools
+	@echo "📦 Building app image"
+	@$(CONTAINER) build -f Containerfile.app -t bull-app \
+		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
 		.
 
 MODE ?= debug
@@ -83,26 +94,42 @@ endif
 release debug:
 	@:
 
-apk: docker-build
-	@echo "🔨 Building $(FORMAT) ($(MODE)) via Docker"
-	@docker build -f Dockerfile.apk \
-		--build-arg MODE=$(MODE) \
-		--build-arg FORMAT=$(FORMAT) \
-		--build-arg GRADLE_HEAP=$(or $(GRADLE_HEAP),4g) \
+# Flutter writes APK and AAB to different paths
+ifeq ($(FORMAT),aab)
+  CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(MODE)/app-$(MODE).aab
+  HOST_OUTPUT := ./app-$(MODE).aab
+  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE)
+else
+  CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(MODE).apk
+  HOST_OUTPUT := ./app-$(MODE).apk
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE)
+endif
+
+apk: container-app
+	@echo "🔨 Building $(FORMAT) ($(MODE)) via $(CONTAINER)"
+	@$(CONTAINER) rm -f bull-build > /dev/null 2>&1 || true
+	@$(CONTAINER) run --name bull-build \
 		--ulimit nofile=65536:65536 \
-		-t bull-mobile-apk .
-	@docker rm -f bull-apk-extract > /dev/null 2>&1 || true
-	@docker create --name bull-apk-extract bull-mobile-apk > /dev/null
-	@docker cp bull-apk-extract:/app/build/app/outputs/flutter-apk/app-$(MODE).apk ./app-$(MODE).apk
-	@docker rm bull-apk-extract > /dev/null
-	@echo "✅ APK extracted: ./app-$(MODE).apk"
-	@sha256sum ./app-$(MODE).apk
+		bull-app bash -c '\
+			SOURCE_DATE_EPOCH=$$(git -C /app log -1 --format=%ct) && \
+			CARGO_ENCODED_RUSTFLAGS=$$(printf "%s\037%s\037%s" \
+				"--remap-path-prefix=$$HOME/.cargo=/cargo" \
+				"--remap-path-prefix=$$HOME/.rustup=/rustup" \
+				"--remap-path-prefix=/app=/build") && \
+			CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 && \
+			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS && \
+			cd /app && \
+			$(FLUTTER_BUILD)'
+	@$(CONTAINER) cp bull-build:$(CONTAINER_OUTPUT) $(HOST_OUTPUT)
+	@$(CONTAINER) rm bull-build > /dev/null
+	@echo "✅ Output extracted: $(HOST_OUTPUT)"
+	@sha256sum $(HOST_OUTPUT)
 
 verify:
 	@echo "🔍 Verifying reproducible build"
 	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
 
-devcontainer:
+devcontainer: container-tools
 	@echo "🏗️ Building Dev Container"
 	@devcontainer up --workspace-folder . --config ./.devcontainer/devcontainer.json
 
