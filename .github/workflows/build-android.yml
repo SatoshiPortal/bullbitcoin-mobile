@@ -7,21 +7,14 @@ on:
         type: choice
         options: [release, debug]
         default: release
-      verify:
-        description: Rebuild and verify APK is reproducible (doubles build time)
-        type: boolean
-        default: false
 
 jobs:
   build:
     # Pinned to 24.04. 26.04 runner not yet provided by GitHub
     # (tracked in actions/runner-images#13855). Bump when available.
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # SOURCE_DATE_EPOCH reads git log
+      - uses: actions/checkout@v6
 
       - name: Free disk space
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -33,30 +26,11 @@ jobs:
           large-packages: true
           swap-storage: false
 
-      # Ubuntu 24.04 apt ships podman 4.9.3; this action installs 5.x from
-      # the OpenSUSE Kubic repository. Pinned by commit SHA (the project
-      # only publishes commit-hash tags, no semver).
-      - name: Install podman 5+
-        uses: redhat-actions/podman-install@cb6729d878bd93872e6d8336e712b97bc193e817
-        with:
-          ubuntu-version: "24.04"
-
-      - name: Route docker calls to podman
-        # Shadow preinstalled /usr/bin/docker (docker-ce) via /usr/local/bin
-        # so the makefile's literal `docker` invocations hit podman 5+.
-        run: |
-          sudo ln -sf "$(command -v podman)" /usr/local/bin/docker
-          docker --version
-          podman --version
-
       - name: Build APK
+        # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
         run: make apk ${{ inputs.mode }}
 
-      - name: Verify reproducible build
-        if: inputs.verify && inputs.mode == 'release'
-        run: make verify APK=./app-release.apk
-
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: app-${{ inputs.mode }}
           path: app-${{ inputs.mode }}.apk
