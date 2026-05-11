@@ -15,9 +15,9 @@ WORKDIR /app
 RUN fvm install
 
 # Setup the project
-RUN fvm flutter pub get
-RUN fvm dart run build_runner build --delete-conflicting-outputs
-RUN fvm flutter gen-l10n
+RUN make deps
+RUN make build-runner
+RUN make translations
 
 
 # Configure Gradle for containerized builds
