@@ -31,7 +31,10 @@ class SecureStorageLegacyDatasourceImpl
     try {
       return await body();
     } on PlatformException catch (e) {
-      if (e.details == _errSecInteractionNotAllowed) {
+      // See note in `secure_storage_data_source_impl.dart` `_isLocked`
+      // — the OSStatus field has shifted across fss releases, so we
+      // check `details` / `code` / `message` all three.
+      if (_isLocked(e)) {
         final target = key != null ? ' "$key"' : '';
         log.warning(
           'Device not unlocked since boot '
@@ -42,6 +45,11 @@ class SecureStorageLegacyDatasourceImpl
       rethrow;
     }
   }
+
+  bool _isLocked(PlatformException e) =>
+      e.details == _errSecInteractionNotAllowed ||
+      e.code == '$_errSecInteractionNotAllowed' ||
+      (e.message ?? '').contains('$_errSecInteractionNotAllowed');
 
   @override
   Future<void> saveValue({required String key, required String value}) {

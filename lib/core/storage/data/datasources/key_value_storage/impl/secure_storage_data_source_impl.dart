@@ -35,7 +35,13 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
     try {
       return await body();
     } on PlatformException catch (e) {
-      if (e.details == _errSecInteractionNotAllowed) {
+      // Belt-and-suspenders: across `flutter_secure_storage` releases,
+      // the OSStatus has historically appeared in `details` (current
+      // fork), `code` (older versions, as a string), or embedded in
+      // `message`. Match all three so a future fork bump that shifts
+      // the field doesn't silently regress this whole class of
+      // handling without a compile error.
+      if (_isLocked(e)) {
         final target = key != null ? ' "$key"' : '';
         log.warning(
           'Device not unlocked since boot (${operation.name}$target)',
@@ -45,6 +51,11 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
       rethrow;
     }
   }
+
+  bool _isLocked(PlatformException e) =>
+      e.details == _errSecInteractionNotAllowed ||
+      e.code == '$_errSecInteractionNotAllowed' ||
+      (e.message ?? '').contains('$_errSecInteractionNotAllowed');
 
   @override
   Future<void> saveValue({required String key, required String value}) {
