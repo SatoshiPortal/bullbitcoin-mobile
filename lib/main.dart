@@ -170,6 +170,12 @@ Future main() async {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
         runApp(AppInitErrorScreen(error: error));
         return;
+      } finally {
+        // Make sure the just-logged severe line is on disk before we
+        // render AppInitErrorScreen — the user typically shares logs
+        // from that screen to support, and the buffered severe write
+        // would otherwise still be pending in the IOSink.
+        await log.flush();
       }
       runApp(const BullBitcoinWalletApp());
     },
@@ -185,6 +191,14 @@ Future main() async {
         debugPrint(
           'Global Unhandled Error (logger failed): $error\n$stackTrace',
         );
+      } finally {
+        // Best-effort: push the just-queued severe write to disk before
+        // a potential subsequent crash takes the isolate down. The
+        // handler signature is synchronous so we can't await here;
+        // `_queueWrite` is itself `unawaited` for SEVERE flushes which
+        // means this scheduled flush is still racy at process death.
+        // Sentry preserves the event independently via `Report.error`.
+        unawaited(log.flush());
       }
     },
   );
@@ -248,7 +262,13 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     }
   }
 
-  void _onInactive() => log.info('inactive');
+  Future<void> _onInactive() async {
+    log.info('inactive');
+    // iOS lifecycle is `active → inactive → hidden → paused`. The
+    // user can force-quit from the app switcher during `inactive`
+    // and skip both `hidden` and `paused` flushes, so flush here too.
+    await log.flush();
+  }
 
   Future<void> _onHidden() async {
     log.info('hidden');
