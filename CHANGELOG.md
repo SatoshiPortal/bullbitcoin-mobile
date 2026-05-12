@@ -9,6 +9,17 @@ All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
 ---
 
+## [6.10.1] - 2026-05-12
+
+### Bug Fixes
+
+- **iOS background tasks now actually execute**: Registered Flutter plugins in the workmanager background isolate via `WorkmanagerPlugin.setPluginRegistrantCallback`. Without this, every iOS background fire (`bitcoin-sync`, `liquid-sync`, `swaps-sync`, `logs-prune`) crashed at plugin init with `Unable to establish connection on channel: dev.flutter.pigeon.shared_preferences_foundation.LegacyUserDefaultsApi.getAll` because the background `FlutterEngine` started with an empty plugin registry. Periodic syncs now run for the first time.
+- **No more "App Init Error -25308" on iOS**: Made the legacy Hive box open lazily — the keychain read for its encryption key now fires only when a v4/v5 migration path actually needs old data, instead of eagerly during DI bootstrap. Previously, every iOS pre-warmed app spawn (which runs `application:didFinishLaunchingWithOptions:` before the user has unlocked the device since boot) crashed app init with `errSecInteractionNotAllowed`. The Future cache also self-clears on failure so a later post-unlock attempt succeeds.
+- **Keychain-locked state no longer conflated with "seed missing"**: The iOS keychain error `-25308 / errSecInteractionNotAllowed` is now mapped to a typed `KeychainLockedException` at the secure-storage datasource layer (both fss10 and the legacy fss9 paths). The seed datasource explicitly rethrows it before its `SeedNotFoundException` fallback, preventing a transient pre-unlock failure from being mistaken for a missing wallet seed and triggering destructive recovery flows downstream.
+- **Logs no longer interleave between foreground and background isolates**: Main and workmanager isolates now write to separate files (`bull_logs.tsv` and `bull_background_logs.tsv`). When iOS spawns the app process to fire a periodic task, both engines can be alive simultaneously inside the same process; previously their concurrent writes to a single TSV file tore log lines mid-string. The log viewer and share/export paths merge both files by timestamp on read, so the user-visible behavior is unchanged.
+
+---
+
 ## [6.8.0] - 2026-03-17
 
 ### New Features
