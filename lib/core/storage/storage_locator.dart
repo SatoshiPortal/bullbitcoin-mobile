@@ -200,9 +200,12 @@ class StorageLocator {
     locator.registerLazySingleton<MigrationSecureStorageDatasource>(
       () => MigrationSecureStorageDatasource(secureStorageDatasource),
     );
-    final oldHiveBox = await OldHiveDatasource.getBox(secureStorageDatasource);
+    // OldHiveDatasource opens its Hive box (and reads the keychain for the
+    // encryption key) lazily on first `getValue`/`saveValue`. Keeping this
+    // out of DI bootstrap avoids hitting -25308 on pre-first-unlock iOS
+    // launches — the box is only needed by legacy v4/v5 migration paths.
     locator.registerLazySingleton<OldHiveDatasource>(
-      () => OldHiveDatasource(oldHiveBox),
+      () => OldHiveDatasource(secureStorageDatasource),
     );
   }
 

@@ -23,7 +23,9 @@ Future<void> doMigration0_1to0_2() async {
     final hiveDatasource = locator<OldHiveDatasource>();
     final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
 
-    final walletIdsRaw = hiveDatasource.getValue(OldStorageKeys.wallets.name);
+    final walletIdsRaw = await hiveDatasource.getValue(
+      OldStorageKeys.wallets.name,
+    );
     if (walletIdsRaw == null) throw 'No Wallets found';
 
     final walletIds = jsonDecode(walletIdsRaw)['wallets'] as List<dynamic>;
@@ -38,7 +40,7 @@ Future<void> doMigration0_1to0_2() async {
 
     for (final walletId in walletIds) {
       try {
-        final jsn = hiveDatasource.getValue(walletId as String);
+        final jsn = await hiveDatasource.getValue(walletId as String);
         if (jsn == null) {
           log.warning('0.1.*: Wallet data not found for ID: $walletId');
           continue;
@@ -115,7 +117,7 @@ Future<void> doMigration0_1to0_2() async {
       value: idsJsn,
     );
 
-    final walletIdsRawPost = hiveDatasource.getValue(
+    final walletIdsRawPost = await hiveDatasource.getValue(
       OldStorageKeys.wallets.name,
     );
     if (walletIdsRawPost == null) throw 'No Wallets found after migration';
