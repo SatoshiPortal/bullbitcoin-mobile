@@ -103,11 +103,12 @@ class Bull {
     await Future.wait(initTasks);
   }
 
-  /// [background] — when true, the logger writes to `bull_logs_bg.tsv`
-  /// instead of `bull_logs.tsv`. Required for the workmanager BG
-  /// isolate so its writes don't interleave with the main isolate's
-  /// (both engines can be alive simultaneously inside the same iOS
-  /// process when iOS spawns the app to fire a periodic task).
+  /// [background] — when true, the logger writes to
+  /// `bull_background_logs.tsv` instead of `bull_logs.tsv`. Required
+  /// for the workmanager BG isolate so its writes don't interleave
+  /// with the main isolate's (both engines can be alive simultaneously
+  /// inside the same iOS process when iOS spawns the app to fire a
+  /// periodic task).
   static Future<void> initLogs({bool background = false}) async {
     final logDirectory = await getApplicationDocumentsDirectory();
     log = Logger.replace(directory: logDirectory, background: background);

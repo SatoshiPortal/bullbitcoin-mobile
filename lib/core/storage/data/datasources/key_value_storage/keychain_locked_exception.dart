@@ -23,21 +23,14 @@
 /// On writes (`saveValue` / `deleteValue`), this exception always
 /// indicates a real failure: the caller MUST surface or rethrow,
 /// because silently swallowing means data was not persisted.
+///
+/// Debug context (which operation, which key) is emitted as a
+/// `log.warning` line at the datasource layer *before* this exception
+/// is thrown, so the exception itself doesn't need to carry it.
 class KeychainLockedException implements Exception {
-  /// The key the operation was attempting (helps debugging; never logged
-  /// with PII because BULL keychain keys are constants like
-  /// `exchange_api_key`, not user data).
-  final String key;
-
-  /// The operation that hit the lock state — `read`, `write`, `delete`,
-  /// `contains`, `readAll`, `deleteAll`.
-  final String operation;
-
-  KeychainLockedException({required this.key, required this.operation});
+  const KeychainLockedException();
 
   @override
   String toString() =>
-      'KeychainLockedException: keychain locked '
-      '(errSecInteractionNotAllowed / -25308) during $operation '
-      'of "$key". Device has not been unlocked since boot.';
+      'KeychainLockedException: device not unlocked since boot';
 }
