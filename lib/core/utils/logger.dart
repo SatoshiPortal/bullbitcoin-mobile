@@ -19,9 +19,19 @@ Logger log = Logger.replace(directory: Directory.current);
 
 class Logger {
   final Directory dir;
+  final String filename;
   final dep.LoggerColorful logger;
 
-  static const _logFilename = 'bull_logs.tsv';
+  /// Foreground (main isolate) log file.
+  static const _foregroundLogFilename = 'bull_logs.tsv';
+
+  /// Background (workmanager isolate) log file. Each isolate writes to
+  /// its own file so writes from concurrently-alive engines (main +
+  /// BG, which both exist inside the same iOS process when iOS spawns
+  /// the app to fire a periodic task) never interleave and tear lines.
+  /// `readLogs` merges both files by timestamp for display/share.
+  static const _backgroundLogFilename = 'bull_background_logs.tsv';
+
   static const _maxLogSizeKb = 100;
 
   /// Tracks the currently-active Logger so [replace] can cancel its
@@ -37,9 +47,12 @@ class Logger {
   bool _handlingLoggerFailure = false;
   StreamSubscription<dep.LogRecord>? _subscription;
 
-  File get logsFile => File('${dir.path}/$_logFilename');
+  File get logsFile => File('${dir.path}/$filename');
 
-  Logger._(this.dir, this.logger) {
+  File get _foregroundFile => File('${dir.path}/$_foregroundLogFilename');
+  File get _backgroundFile => File('${dir.path}/$_backgroundLogFilename');
+
+  Logger._(this.dir, this.filename, this.logger) {
     dep.Logger.root.level = dep.Level.ALL;
 
     _subscription = dep.Logger.root.onRecord.listen((record) {
@@ -70,11 +83,16 @@ class Logger {
   /// subscription. Idempotent: safe to call when no prior instance
   /// exists. Callers must reassign the top-level [log] holder to the
   /// returned instance — `Bull.initLogs` is the canonical caller.
-  static Logger replace({String name = 'Logger', required Directory directory}) {
+  static Logger replace({
+    String name = 'Logger',
+    required Directory directory,
+    bool background = false,
+  }) {
     _current?._subscription?.cancel();
     _current?._subscription = null;
     final next = Logger._(
       directory,
+      background ? _backgroundLogFilename : _foregroundLogFilename,
       // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
       // We don't want colors in release mode either
       dep.LoggerColorful(name, disabledColors: Platform.isIOS || kReleaseMode),
@@ -101,15 +119,36 @@ class Logger {
     }
   }
 
+  /// Reads both the foreground and background log files, merges by
+  /// timestamp (ascending), and returns the result. Foreground and BG
+  /// isolates write to separate files (see [_backgroundLogFilename])
+  /// to avoid interleaved writes when both engines are alive in the
+  /// same iOS process; callers (share/view UI) want a single unified
+  /// stream, so the merge happens at read time.
   Future<List<String>> readLogs() async {
     try {
       await flush();
-      final logs = await logsFile.readAsString();
-      return logs.split('\n').where((e) => e.isNotEmpty).toList();
+      final foreground = await _readFileLines(_foregroundFile);
+      final background = await _readFileLines(_backgroundFile);
+      if (background.isEmpty) return foreground;
+      final all = <String>[...foreground, ...background];
+      all.sort((a, b) {
+        final ta = a.split('\t');
+        final tb = b.split('\t');
+        if (ta.isEmpty || tb.isEmpty) return 0;
+        return ta.first.compareTo(tb.first);
+      });
+      return all;
     } catch (e) {
       _reportLoggerFailure('Failed to read logs', e);
       rethrow;
     }
+  }
+
+  Future<List<String>> _readFileLines(File f) async {
+    if (!await f.exists()) return const [];
+    final raw = await f.readAsString();
+    return raw.split('\n').where((e) => e.isNotEmpty).toList();
   }
 
   Future<void> prune() => _enqueue(() async {
@@ -144,7 +183,17 @@ class Logger {
       await _sink?.flush();
       await _sink?.close();
       _sink = null;
+      // Clear both files so the user's "delete logs" action wipes the
+      // unified view, not just this isolate's slice.
       await logsFile.writeAsString('');
+      if (filename != _backgroundLogFilename &&
+          await _backgroundFile.exists()) {
+        await _backgroundFile.writeAsString('');
+      }
+      if (filename != _foregroundLogFilename &&
+          await _foregroundFile.exists()) {
+        await _foregroundFile.writeAsString('');
+      }
       _ensureSinkOpen();
     });
     config('Logs deleted');
@@ -312,13 +361,7 @@ class Logger {
     String trace = '',
   }) {
     final time = DateTime.now().toIso8601String();
-    final line = [
-      time,
-      level,
-      message,
-      error,
-      trace,
-    ].map(_sanitize).join('\t');
+    final line = [time, level, message, error, trace].map(_sanitize).join('\t');
     _queueWrite(line, flush: true);
     if (kDebugMode) debugPrint('[REENTRANT] $line');
   }

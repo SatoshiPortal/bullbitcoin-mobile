@@ -20,7 +20,7 @@ void backgroundTasksHandler() {
 Future<bool> tasksHandler(String task) async {
   final startTime = DateTime.now();
 
-  await Bull.initLogs();
+  await Bull.initLogs(background: true);
   // Note: `Report.init` is intentionally NOT called here. The BG isolate
   // has its own Dart-side Sentry hub but the native plugin (Sentry
   // Android / iOS) is a process-level singleton. Calling

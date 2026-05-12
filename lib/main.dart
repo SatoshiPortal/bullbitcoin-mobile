@@ -103,10 +103,24 @@ class Bull {
     await Future.wait(initTasks);
   }
 
-  static Future<void> initLogs() async {
+  /// [background] — when true, the logger writes to `bull_logs_bg.tsv`
+  /// instead of `bull_logs.tsv`. Required for the workmanager BG
+  /// isolate so its writes don't interleave with the main isolate's
+  /// (both engines can be alive simultaneously inside the same iOS
+  /// process when iOS spawns the app to fire a periodic task).
+  static Future<void> initLogs({bool background = false}) async {
     final logDirectory = await getApplicationDocumentsDirectory();
-    log = Logger.replace(directory: logDirectory);
+    log = Logger.replace(directory: logDirectory, background: background);
     await log.ensureLogsExist();
+    if (!background) {
+      // Trim the foreground log file at startup if it has grown past the
+      // size cap. The `logs-prune` workmanager task only prunes the BG
+      // file now that each isolate has its own log (see
+      // `_backgroundLogFilename` in Logger), so without this the FG file
+      // would grow unbounded. Fire-and-forget: prune serializes against
+      // writes via `_enqueue`, and is a no-op if the file is small.
+      unawaited(log.prune());
+    }
   }
 
   static Future<void> initLocator() async {
