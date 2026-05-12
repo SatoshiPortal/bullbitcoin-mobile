@@ -81,5 +81,18 @@ Future<bool> tasksHandler(String task) async {
       trace: StackTrace.current,
     );
     return Future.value(false);
+  } finally {
+    // iOS tears down the BG `FlutterEngine` shortly after we return.
+    // Force the Dart-side IOSink buffer to disk now, otherwise any
+    // non-SEVERE writes (the success line above, every `log.fine`
+    // from the task body) are abandoned with the dying isolate and
+    // never appear in `bull_background_logs.tsv`. Foreground writes
+    // get flushed implicitly by `readLogs()`'s own `await flush()`;
+    // the BG sink has no equivalent trigger so it must flush itself.
+    //
+    // `log.flush()` swallows its own errors internally
+    // (see `_enqueue` in logger.dart), so it can't change the return
+    // value or throw past the `finally`.
+    await log.flush();
   }
 }
