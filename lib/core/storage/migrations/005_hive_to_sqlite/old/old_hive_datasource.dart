@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_storage_keys.dart';
@@ -68,12 +69,33 @@ class OldHiveDatasource {
   }
 
   Future<String?> getValue(String key) async {
+    if (_isHiveLegacyImpossible) return null;
     final box = await _ensureBox();
     return box.get(key) as String?;
   }
 
   Future<void> saveValue({required String key, required String value}) async {
+    if (_isHiveLegacyImpossible) return;
     final box = await _ensureBox();
     await box.put(key, value);
   }
+
+  /// Android is the ONLY platform that ever shipped a BULL release with
+  /// Hive as the storage backend (v0.1-v0.4, 2023-2024). Real Android
+  /// users may still be sitting on legacy Hive data awaiting v5
+  /// migration, so Android gets the real implementation.
+  ///
+  /// Every other platform — iOS, macOS, web, Linux, Windows — released
+  /// after the v5.0 Hive→SQLite migration (iOS substantive releases
+  /// began at v5.3 in June 2025), so no install on those platforms can
+  /// hold legacy Hive data. Short-circuiting non-Android:
+  ///  - eliminates the keychain read for the Hive encryption key
+  ///    (the legacy v4/v5 migration paths' main pre-unlock failure
+  ///    surface on iOS)
+  ///  - prevents the lazy box open from running, making
+  ///    `KeychainLockedException` impossible from this code path
+  ///  - is functionally identical to what the migration paths already
+  ///    do when `getValue` returns `null` — they treat it as "no
+  ///    legacy data" and skip the rest of the migration
+  bool get _isHiveLegacyImpossible => !Platform.isAndroid;
 }
