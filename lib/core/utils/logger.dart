@@ -151,6 +151,19 @@ class Logger {
     return raw.split('\n').where((e) => e.isNotEmpty).toList();
   }
 
+  /// Trims THIS isolate's log file (and only this one) to half its
+  /// line count when it exceeds [_maxLogSizeKb]. Cross-isolate prune
+  /// is intentionally avoided: `File.writeAsString` truncates the
+  /// target before writing, and if the other isolate's IOSink is
+  /// mid-flush during that window its buffered append lands at the
+  /// truncated head and gets overwritten by our subsequent rewrite.
+  /// Best-effort log loss is acceptable in isolation, but here it
+  /// destroys the most recent (and most diagnostically useful) BG
+  /// lines — the exact lines a user would share to support after a
+  /// crash. Each isolate prunes its own file: FG cold-start prunes
+  /// `bull_logs.tsv` via `Bull.initLogs`; BG `logs-prune` task fires
+  /// every 15 minutes (Android) / on iOS BGTaskScheduler windows and
+  /// prunes `bull_background_logs.tsv`.
   Future<void> prune() => _enqueue(() async {
     final sizeInKb = (await logsFile.stat()).size ~/ 1000;
     if (sizeInKb <= _maxLogSizeKb) return;
@@ -184,7 +197,14 @@ class Logger {
       await _sink?.close();
       _sink = null;
       // Clear both files so the user's "delete logs" action wipes the
-      // unified view, not just this isolate's slice.
+      // unified view, not just this isolate's slice. The same
+      // `writeAsString`-vs-`IOSink.flush` race that made cross-isolate
+      // [prune] unsafe technically applies here too — but delete is
+      // user-initiated, infrequent, and intentional ("blow away
+      // everything"). The worst case is the other isolate's last
+      // ~few buffered lines being preserved after the delete, which
+      // is the opposite of the prune case (where the race would
+      // DESTROY the most diagnostically useful recent lines).
       await logsFile.writeAsString('');
       if (filename != _backgroundLogFilename &&
           await _backgroundFile.exists()) {

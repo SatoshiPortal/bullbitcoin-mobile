@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Operation kind used by secure-storage datasources to label
-/// warning log lines when the keychain refuses an operation. Kept as
-/// an enum (rather than free-form strings) so the impls share a
-/// closed set of operation labels without each one inventing its
-/// own.
-enum Operation { read, write, delete, contains, readAll, deleteAll }
+/// File-private operation labels for keychain refusal log lines.
+/// Closed set so the impl can't drift into free-form strings; the
+/// twin file `secure_storage_legacy_datasource_impl.dart` has its
+/// own copy (intentionally — the two impls wrap distinct plugin
+/// `PlatformException` types and share no code).
+enum _Operation { read, write, delete, contains, readAll, deleteAll }
 
 /// iOS keychain `OSStatus` for `errSecInteractionNotAllowed`. Returned
 /// by `SecItemCopyMatching` / `SecItemAdd` when the item's accessibility
@@ -28,7 +28,7 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
   /// temporarily-locked keychain from a missing key or other failure.
   /// Other [PlatformException]s rethrow unchanged.
   Future<T> _wrap<T>({
-    required Operation operation,
+    required _Operation operation,
     String? key,
     required Future<T> Function() body,
   }) async {
@@ -60,7 +60,7 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
   @override
   Future<void> saveValue({required String key, required String value}) {
     return _wrap(
-      operation: Operation.write,
+      operation: _Operation.write,
       key: key,
       body: () => _storage.write(key: key, value: value),
     );
@@ -68,13 +68,13 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
 
   @override
   Future<Map<String, String>> getAll() {
-    return _wrap(operation: Operation.readAll, body: () => _storage.readAll());
+    return _wrap(operation: _Operation.readAll, body: () => _storage.readAll());
   }
 
   @override
   Future<String?> getValue(String key) {
     return _wrap(
-      operation: Operation.read,
+      operation: _Operation.read,
       key: key,
       body: () => _storage.read(key: key),
     );
@@ -83,7 +83,7 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
   @override
   Future<bool> hasValue(String key) {
     return _wrap(
-      operation: Operation.contains,
+      operation: _Operation.contains,
       key: key,
       body: () => _storage.containsKey(key: key),
     );
@@ -92,7 +92,7 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
   @override
   Future<void> deleteValue(String key) {
     return _wrap(
-      operation: Operation.delete,
+      operation: _Operation.delete,
       key: key,
       body: () => _storage.delete(key: key),
     );
@@ -101,7 +101,7 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
   @override
   Future<void> deleteAll() {
     return _wrap(
-      operation: Operation.deleteAll,
+      operation: _Operation.deleteAll,
       body: () => _storage.deleteAll(),
     );
   }

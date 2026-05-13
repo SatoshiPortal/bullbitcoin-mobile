@@ -114,12 +114,19 @@ class Bull {
     log = Logger.replace(directory: logDirectory, background: background);
     await log.ensureLogsExist();
     if (!background) {
-      // Trim the foreground log file at startup if it has grown past the
-      // size cap. The `logs-prune` workmanager task only prunes the BG
-      // file now that each isolate has its own log (see
-      // `_backgroundLogFilename` in Logger), so without this the FG file
-      // would grow unbounded. Fire-and-forget: prune serializes against
-      // writes via `_enqueue`, and is a no-op if the file is small.
+      // Cold-start prune for the FG file. `Logger.prune()` is
+      // intentionally per-isolate (see the comment above its
+      // definition — cross-isolate truncation races with the other
+      // isolate's open IOSink and can destroy recently-buffered
+      // lines). FG file pruning therefore only happens here; the BG
+      // file is pruned by the `logs-prune` workmanager fire. Long
+      // FG-only sessions (rare cold restarts, no BG fires) can let
+      // the FG file grow past the cap until the next cold launch —
+      // acceptable: worst case is a few hundred KB until the user
+      // restarts.
+      //
+      // Fire-and-forget: prune serializes against writes via
+      // `_enqueue` and is a no-op if the file is small.
       unawaited(log.prune());
     }
   }
@@ -231,19 +238,25 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
-  // Listen to the app lifecycle state changes
+  // Listen to the app lifecycle state changes. The handlers below
+  // return `Future<void>` (they each await `log.flush()`) but
+  // `AppLifecycleListener.onStateChange` is a sync void callback —
+  // Flutter does not await our return. `unawaited` documents that the
+  // flush is fire-and-forget at this layer; whether the OS lets the
+  // microtask queue drain before tearing the process down is the same
+  // race the flushes themselves are best-effort defense against.
   void _onStateChanged(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.detached:
         _onDetached();
       case AppLifecycleState.resumed:
-        _onResumed();
+        unawaited(_onResumed());
       case AppLifecycleState.inactive:
-        _onInactive();
+        unawaited(_onInactive());
       case AppLifecycleState.hidden:
-        _onHidden();
+        unawaited(_onHidden());
       case AppLifecycleState.paused:
-        _onPaused();
+        unawaited(_onPaused());
     }
   }
 
