@@ -63,8 +63,26 @@ class SqliteDatabase extends _$SqliteDatabase {
         return NativeDatabase(
           File(dbPath),
           setup: (database) {
-            database.execute('PRAGMA journal_mode = WAL;');
+            // busy_timeout MUST be set FIRST so the subsequent
+            // `journal_mode = WAL` switch retries (instead of
+            // returning `database is locked, errno=261` —
+            // SQLITE_BUSY_RECOVERY — and surfacing as the
+            // "database is locked (code 261)" the production logs
+            // showed) if the main isolate holds the file when this
+            // BG-spawned isolate opens it. The busy handler is
+            // connection-scoped (sqlite3_busy_timeout) and applies
+            // to every operation issued on this connection
+            // afterwards, including PRAGMA writes that wait for an
+            // exclusive lock to flip journal modes. 2000ms gives
+            // 2× headroom over typical FG write durations (<1s);
+            // longer values risk wedging this BG isolate behind a
+            // hung FG transaction.
             database.execute('PRAGMA busy_timeout = 2000;');
+            // With write-ahead logging (WAL) enabled, a single writer
+            // and multiple readers can operate on the database in
+            // parallel.
+            database.execute('PRAGMA journal_mode = WAL;');
+            // Maximum durability: fsync before and after every write.
             database.execute('PRAGMA synchronous = FULL;');
           },
         );
@@ -96,13 +114,22 @@ class SqliteDatabase extends _$SqliteDatabase {
         /// preventing "database is locked" errors due to concurrent transactions.
         shareAcrossIsolates: true,
         setup: (database) {
-          // This is important, as accessing the database across threads otherwise
-          // causes "database locked" errors.
-          // With write-ahead logging (WAL) enabled, a single writer and multiple
-          // readers can operate on the database in parallel.
-          database.execute('PRAGMA journal_mode = WAL;');
-          // Retry for up to 1 second when the database is locked before failing.
+          // busy_timeout MUST be set FIRST so subsequent PRAGMA
+          // writes that require an exclusive lock (notably
+          // `journal_mode = WAL`) retry instead of returning
+          // `SQLITE_BUSY_RECOVERY` (extended errno 261 — the
+          // "database is locked (code 261)" we saw in production
+          // logs) when another isolate or the BG-spawned drift
+          // isolate is holding the file. 2000ms is held conservative
+          // for the FG path: a UI-thread query blocked on the timeout
+          // freezes the app, and the FG `_openConnection` runs at
+          // startup before any BG isolate exists so contention here
+          // is essentially zero anyway.
           database.execute('PRAGMA busy_timeout = 2000;');
+          // With write-ahead logging (WAL) enabled, a single writer and
+          // multiple readers can operate on the database in parallel.
+          // Required to avoid cross-isolate "database locked" errors.
+          database.execute('PRAGMA journal_mode = WAL;');
           // Ensure maximum durability: fsync before and after every write.
           database.execute('PRAGMA synchronous = FULL;');
         },
