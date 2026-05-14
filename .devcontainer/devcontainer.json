@@ -1,7 +1,7 @@
 {
     "name": "${localWorkspaceFolderBasename}",
     "build": {
-        "dockerfile": "../Containerfile.app",
+        "dockerfile": "../Containerfile.tools",
         "args": {
             "USERNAME": "${localEnv:USER}"
         }
@@ -21,7 +21,7 @@
     ],
     "mounts": [
         "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
-        "source=/tmp/ssh-agent.sock,target=/ssh-agent,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.ssh-agent-devcontainer.sock,target=/ssh-agent,type=bind,consistency=cached",
         "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind,consistency=cached"
     ],
     "containerEnv": {

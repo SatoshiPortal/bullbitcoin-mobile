@@ -129,7 +129,7 @@ verify:
 	@echo "🔍 Verifying reproducible build"
 	@./reproducibility/verify_build.sh $(if $(VERSION),--version $(VERSION)) $(if $(APK),--apk $(APK))
 
-devcontainer: container-tools
+devcontainer:
 	@echo "🏗️ Building Dev Container"
 	@devcontainer up --workspace-folder . --config ./.devcontainer/devcontainer.json
 
