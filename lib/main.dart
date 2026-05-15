@@ -330,6 +330,13 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                 // Also fetch user summary to check if user is logged in
                 // and connect WebSocket if so (handled by ExchangeListener)
                 context.read<ExchangeCubit>().fetchUserSummary();
+                // Reconnect WebSocket here too — when AppStartupBloc retries
+                // after a pre-warm KeychainLockedException, the SettingsCubit
+                // env-change listener below has ALREADY fired during pre-warm
+                // (with the keychain locked) and won't fire again, so without
+                // this call the WebSocket stays disconnected post-unlock until
+                // the user toggles environment or cold-launches.
+                context.read<ExchangeCubit>().reconnectWebSocket();
               },
             ),
             BlocListener<SettingsCubit, SettingsState>(
