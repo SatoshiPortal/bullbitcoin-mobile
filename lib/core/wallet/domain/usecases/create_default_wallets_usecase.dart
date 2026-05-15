@@ -1,9 +1,7 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
@@ -47,52 +45,48 @@ class CreateDefaultWalletsUsecase {
       final hasLiquid = existing.any((w) => w.network.isLiquid);
       if (hasBitcoin && hasLiquid) return existing;
 
-      final Seed seed;
-      DateTime? birthday;
-      if (existing.isNotEmpty) {
-        final missing = !hasBitcoin ? 'bitcoin' : 'liquid';
-        log.severe(
-          message: 'CreateDefaultWalletsUsecase: partial default set detected',
-          error: CreateDefaultWalletsException('missing $missing default wallet'),
-          trace: StackTrace.current,
-        );
-        seed = await _seedRepository.get(existing.first.masterFingerprint);
-      } else {
-        final isGenerated = mnemonicWords == null;
-        final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
-        if (isGenerated) birthday = DateTime.now().toUtc();
-        seed = await _seedRepository.createFromMnemonic(
-          mnemonicWords: mnemonic,
-          passphrase: passphrase,
-        );
+      final isGenerated = mnemonicWords == null;
+      final mnemonic = mnemonicWords ?? _mnemonicGenerator.generate();
+      final DateTime? birthday = isGenerated ? DateTime.now().toUtc() : null;
+      final seed = await _seedRepository.createFromMnemonic(
+        mnemonicWords: mnemonic,
+        passphrase: passphrase,
+      );
+
+      final created = <Wallet>[];
+      try {
+        if (!hasBitcoin) {
+          created.add(
+            await _wallet.createWallet(
+              seed: seed,
+              network: bitcoinNetwork,
+              scriptType: scriptType,
+              isDefault: true,
+              birthday: birthday,
+            ),
+          );
+        }
+        if (!hasLiquid) {
+          created.add(
+            await _wallet.createWallet(
+              seed: seed,
+              network: liquidNetwork,
+              scriptType: scriptType,
+              isDefault: true,
+              birthday: birthday,
+            ),
+          );
+        }
+      } catch (_) {
+        for (final wallet in created) {
+          try {
+            await _wallet.deleteWallet(walletId: wallet.id);
+          } catch (_) {}
+        }
+        rethrow;
       }
 
-      final tasks = <Future<Wallet>>[];
-      if (!hasBitcoin) {
-        tasks.add(
-          _wallet.createWallet(
-            seed: seed,
-            network: bitcoinNetwork,
-            scriptType: scriptType,
-            isDefault: true,
-            birthday: birthday,
-          ),
-        );
-      }
-      if (!hasLiquid) {
-        tasks.add(
-          _wallet.createWallet(
-            seed: seed,
-            network: liquidNetwork,
-            scriptType: scriptType,
-            isDefault: true,
-            birthday: birthday,
-          ),
-        );
-      }
-
-      final newWallets = await Future.wait(tasks);
-      return [...existing, ...newWallets];
+      return [...existing, ...created];
     } catch (e) {
       throw CreateDefaultWalletsException(e.toString());
     }
