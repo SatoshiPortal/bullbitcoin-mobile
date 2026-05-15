@@ -254,10 +254,6 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           copiedRawPaymentRequest: text,
           paymentRequest: null,
-          // Don't show exception if text field is clear
-          invalidBitcoinStringException: text.isNotEmpty
-              ? InvalidBitcoinStringException()
-              : null,
         ),
       );
     }
@@ -265,18 +261,17 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> continueOnAddressConfirmed() async {
     try {
-      emit(state.copyWith(loadingBestWallet: true, invoiceHasMrh: false));
-      await unifiedBip21Prioritization();
-
       if (!state.hasValidPaymentRequest) {
         emit(
           state.copyWith(
-            loadingBestWallet: false,
             invalidBitcoinStringException: InvalidBitcoinStringException(),
           ),
         );
         return;
       }
+
+      emit(state.copyWith(loadingBestWallet: true, invoiceHasMrh: false));
+      await unifiedBip21Prioritization();
 
       if (state.paymentRequest!.isBolt11) {
         final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
