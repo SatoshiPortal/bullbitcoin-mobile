@@ -27,7 +27,7 @@ class LwkFacade {
       final dbPath = await _getDbPath(walletModel.hexId);
       final dbFile = File(dbPath);
 
-      if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
+      if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);
       log.fine('Found LwkDb');
       await dbFile.delete(recursive: true);
     } catch (e) {

@@ -194,7 +194,7 @@ class BdkFacade {
     final dbPath = await _getDbPath(walletModel.hexId);
     final dbFile = File(dbPath);
 
-    if (!await dbFile.exists()) WalletError.notFound(walletModel.id);
+    if (!await dbFile.exists()) throw WalletError.notFound(walletModel.id);
 
     await dbFile.delete();
   }
