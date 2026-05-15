@@ -1403,7 +1403,6 @@
   "buyShouldBuyAtLeast": "Você deve comprar pelo menos",
   "pinCodeCreateDescription": "Seu PIN protege o acesso à sua carteira e configurações. Mantenha-o memorável.",
   "payCorporate": "Empresas",
-  "recoverbullErrorRecoveryFailed": "Falhado para recuperar o cofre",
   "buyMax": "Max",
   "onboardingCreateNewWallet": "Criar nova carteira",
   "buyExpressWithdrawalDesc": "Receba Bitcoin instantaneamente após o pagamento",
@@ -4655,5 +4654,6 @@
   "legacyStorageContinueWithoutBackupButton": "Continuar sem backup",
   "legacyStorageAcceptRisksCheckbox": "Aceito os riscos de não fazer um backup",
   "legacyStorageHasBackupImportantBody": "Por favor, não ignore este processo, a menos que precise mesmo de usar a carteira urgentemente ou esteja à espera que uma troca seja concluída.",
-  "legacyStorageRiskAckButtonHasBackup": "Compreendo o risco"
+  "legacyStorageRiskAckButtonHasBackup": "Compreendo o risco",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

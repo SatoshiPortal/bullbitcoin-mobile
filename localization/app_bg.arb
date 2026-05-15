@@ -3443,10 +3443,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "Неуспях да възстановя сейфа",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "Макс.",
   "@buyMax": {
     "description": "Button to fill maximum amount"
@@ -9593,5 +9589,6 @@
   "legacyStorageContinueWithoutBackupButton": "Продължи без резервно копие",
   "legacyStorageAcceptRisksCheckbox": "Приемам рисковете от това да не направя резервно копие",
   "legacyStorageHasBackupImportantBody": "Моля, не пропускайте този процес, освен ако наистина не се налага спешно да използвате портфейла или не чакате суап да приключи.",
-  "legacyStorageRiskAckButtonHasBackup": "Разбирам риска"
+  "legacyStorageRiskAckButtonHasBackup": "Разбирам риска",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }
