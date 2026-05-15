@@ -4592,5 +4592,6 @@
   "legacyStorageContinueWithoutBackupButton": "Jatka ilman varmuuskopiota",
   "legacyStorageAcceptRisksCheckbox": "Hyväksyn riskit siitä, etten tee varmuuskopiota",
   "legacyStorageHasBackupImportantBody": "Älä ohita tätä prosessia, ellet ehdottomasti tarvitse lompakkoa kiireellisesti tai odota swapin valmistumista.",
-  "legacyStorageRiskAckButtonHasBackup": "Ymmärrän riskin"
+  "legacyStorageRiskAckButtonHasBackup": "Ymmärrän riskin",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

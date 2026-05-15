@@ -4589,5 +4589,6 @@
   "legacyStorageContinueWithoutBackupButton": "Continuer sans sauvegarde",
   "legacyStorageAcceptRisksCheckbox": "J'accepte les risques de ne pas faire de sauvegarde",
   "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un swap se termine.",
-  "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque"
+  "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

@@ -12583,5 +12583,6 @@
   "legacyStorageContinueWithoutBackupButton": "Pokračovat bez zálohy",
   "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
   "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
-  "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku"
+  "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

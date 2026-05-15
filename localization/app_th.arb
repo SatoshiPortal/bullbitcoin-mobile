@@ -12583,5 +12583,6 @@
   "legacyStorageContinueWithoutBackupButton": "ดำเนินการต่อโดยไม่สำรองข้อมูล",
   "legacyStorageAcceptRisksCheckbox": "ฉันยอมรับความเสี่ยงของการไม่สำรองข้อมูล",
   "legacyStorageHasBackupImportantBody": "โปรดอย่าข้ามขั้นตอนนี้ เว้นแต่คุณจำเป็นต้องใช้กระเป๋าเงินอย่างเร่งด่วน หรือกำลังรอให้สวอปเสร็จสมบูรณ์",
-  "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง"
+  "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

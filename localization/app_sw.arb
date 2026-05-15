@@ -216,5 +216,6 @@
   "legacyStorageContinueWithoutBackupButton": "Endelea bila nakala",
   "legacyStorageAcceptRisksCheckbox": "Ninakubali hatari za kutohifadhi nakala",
   "legacyStorageHasBackupImportantBody": "Tafadhali usiruke mchakato huu isipokuwa lazima utumie pochi kwa haraka au unasubiri swap ikamilike.",
-  "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari"
+  "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

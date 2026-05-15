@@ -12300,5 +12300,6 @@
   "legacyStorageContinueWithoutBackupButton": "ব্যাকআপ ছাড়াই চালিয়ে যান",
   "legacyStorageAcceptRisksCheckbox": "ব্যাকআপ না করার ঝুঁকি আমি গ্রহণ করছি",
   "legacyStorageHasBackupImportantBody": "এই প্রক্রিয়াটি এড়িয়ে যাবেন না যদি না আপনার জরুরিভাবে ওয়ালেট ব্যবহার করার একান্ত প্রয়োজন হয় অথবা একটি স্বপ সম্পন্ন হওয়ার জন্য অপেক্ষা করছেন।",
-  "legacyStorageRiskAckButtonHasBackup": "আমি ঝুঁকি বুঝতে পারছি"
+  "legacyStorageRiskAckButtonHasBackup": "আমি ঝুঁকি বুঝতে পারছি",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

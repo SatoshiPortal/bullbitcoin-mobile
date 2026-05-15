@@ -4600,5 +4600,6 @@
   "legacyStorageContinueWithoutBackupButton": "不备份继续",
   "legacyStorageAcceptRisksCheckbox": "我接受不进行备份的风险",
   "legacyStorageHasBackupImportantBody": "除非您必须紧急使用钱包或正在等待一笔兑换完成，否则请不要跳过此流程。",
-  "legacyStorageRiskAckButtonHasBackup": "我了解风险"
+  "legacyStorageRiskAckButtonHasBackup": "我了解风险",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

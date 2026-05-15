@@ -12583,5 +12583,6 @@
   "legacyStorageContinueWithoutBackupButton": "बैकअप के बिना जारी रखें",
   "legacyStorageAcceptRisksCheckbox": "मैं बैकअप न लेने के जोखिम स्वीकार करता हूँ",
   "legacyStorageHasBackupImportantBody": "कृपया इस प्रक्रिया को न छोड़ें जब तक कि आपको तत्काल वॉलेट का उपयोग करने की नितांत आवश्यकता न हो या आप किसी स्वैप के पूरा होने की प्रतीक्षा कर रहे हों।",
-  "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ"
+  "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

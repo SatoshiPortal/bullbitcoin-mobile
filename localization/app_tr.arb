@@ -12583,5 +12583,6 @@
   "legacyStorageContinueWithoutBackupButton": "Yedek almadan devam et",
   "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum",
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
-  "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum"
+  "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

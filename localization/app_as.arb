@@ -195,5 +195,6 @@
   "legacyStorageContinueWithoutBackupButton": "বেকআপ নকৰাকৈ আগবাঢ়ক",
   "legacyStorageAcceptRisksCheckbox": "মই বেকআপ নকৰাৰ বিপদ গ্ৰহণ কৰোঁ",
   "legacyStorageHasBackupImportantBody": "এই প্ৰক্ৰিয়া এৰি নাযাব যদিহে আপুনি ৱালেট জৰুৰীভাৱে ব্যৱহাৰ কৰাটো অত্যাৱশ্যক নহয় বা এটা স্বেপ সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি আছে।",
-  "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ"
+  "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

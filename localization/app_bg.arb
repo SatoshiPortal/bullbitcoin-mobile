@@ -9593,5 +9593,6 @@
   "legacyStorageContinueWithoutBackupButton": "Продължи без резервно копие",
   "legacyStorageAcceptRisksCheckbox": "Приемам рисковете от това да не направя резервно копие",
   "legacyStorageHasBackupImportantBody": "Моля, не пропускайте този процес, освен ако наистина не се налага спешно да използвате портфейла или не чакате суап да приключи.",
-  "legacyStorageRiskAckButtonHasBackup": "Разбирам риска"
+  "legacyStorageRiskAckButtonHasBackup": "Разбирам риска",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }
