@@ -55,6 +55,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.loading,
           step: OnboardingStep.create,
+          statusError: '',
         ),
       );
       await _createDefaultWalletsUsecase.execute();
@@ -75,6 +76,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.loading,
           step: OnboardingStep.recover,
+          statusError: '',
         ),
       );
       await _createDefaultWalletsUsecase.execute(
