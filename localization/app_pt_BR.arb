@@ -3793,10 +3793,6 @@
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
   },
-  "recoverbullErrorRecoveryFailed": "Falhado para recuperar o cofre",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "paySwapFee": "Taxa de balanço",
   "@paySwapFee": {
     "description": "Label for submarine swap fee"

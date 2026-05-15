@@ -4008,10 +4008,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "فشل في استعادة الخزنة",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "ماكس",
   "@buyMax": {
     "description": "Button to fill maximum amount"

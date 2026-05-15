@@ -4175,10 +4175,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "ভল্ট পুনরুদ্ধার করতে ব্যর্থ হয়েছে",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "সর্বোচ্চ",
   "@buyMax": {
     "description": "Button to fill maximum amount"

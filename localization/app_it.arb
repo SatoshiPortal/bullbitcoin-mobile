@@ -1406,7 +1406,6 @@
   "buyShouldBuyAtLeast": "Dovresti comprare almeno",
   "pinCodeCreateDescription": "Il PIN protegge l'accesso al portafoglio e alle impostazioni. Tienilo memorabile.",
   "payCorporate": "Corporate",
-  "recoverbullErrorRecoveryFailed": "Non ha recuperato il caveau",
   "buyMax": "Max",
   "onboardingCreateNewWallet": "Crea nuovo portafoglio",
   "buyExpressWithdrawalDesc": "Ricevi Bitcoin immediatamente dopo il pagamento",

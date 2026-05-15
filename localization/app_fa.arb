@@ -4840,10 +4840,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "شکست خورده برای بازیابی خزانه",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "مکس",
   "@buyMax": {
     "description": "Button to fill maximum amount"

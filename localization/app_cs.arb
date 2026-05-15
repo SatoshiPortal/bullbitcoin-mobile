@@ -4339,10 +4339,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "Zotavit klenbu",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "Čeština",
   "@buyMax": {
     "description": "Button to fill maximum amount"

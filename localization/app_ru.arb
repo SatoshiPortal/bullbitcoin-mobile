@@ -1403,7 +1403,6 @@
   "buyShouldBuyAtLeast": "Вы должны купить хотя бы",
   "pinCodeCreateDescription": "Ваш PIN защищает доступ к вашему кошельку и настройкам. Не забывай об этом.",
   "payCorporate": "Корпоративный",
-  "recoverbullErrorRecoveryFailed": "Не удалось восстановить хранилище",
   "buyMax": "Макс",
   "onboardingCreateNewWallet": "Создать новый кошелек",
   "buyExpressWithdrawalDesc": "Получить биткойн сразу после оплаты",

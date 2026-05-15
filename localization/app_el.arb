@@ -10914,10 +10914,6 @@
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
   },
-  "recoverbullErrorRecoveryFailed": "Επιθυμήθηκε να ανακτήσει το θύλακα",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "backupIdLabel": "Backup ID:",
   "@backupIdLabel": {
     "description": "Label for backup ID"

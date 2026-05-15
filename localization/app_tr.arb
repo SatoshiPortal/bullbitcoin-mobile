@@ -4242,10 +4242,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "Boşluğu kurtarmak için başarısız oldu",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "Max",
   "@buyMax": {
     "description": "Button to fill maximum amount"

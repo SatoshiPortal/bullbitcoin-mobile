@@ -1403,7 +1403,6 @@
   "buyShouldBuyAtLeast": "Você deve comprar pelo menos",
   "pinCodeCreateDescription": "Seu PIN protege o acesso à sua carteira e configurações. Mantenha-o memorável.",
   "payCorporate": "Empresas",
-  "recoverbullErrorRecoveryFailed": "Falhado para recuperar o cofre",
   "buyMax": "Max",
   "onboardingCreateNewWallet": "Criar nova carteira",
   "buyExpressWithdrawalDesc": "Receba Bitcoin instantaneamente após o pagamento",

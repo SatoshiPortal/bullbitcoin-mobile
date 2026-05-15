@@ -2644,7 +2644,6 @@
   "recoverbullErrorInvalidCredentials": "Mot de passe incorrect pour ce fichier de sauvegarde",
   "recoverbullErrorMissingBytes": "Octets manquants dans la réponse Tor. Réessayez, mais si le problème persiste, il s'agit d'un problème connu pour certains appareils avec Tor.",
   "recoverbullErrorPasswordNotSet": "Le mot de passe n'est pas défini",
-  "recoverbullErrorRecoveryFailed": "Échec de la récupération du coffre-fort",
   "recoverbullTorNotStarted": "Tor n'est pas démarré",
   "recoverbullErrorRateLimited": "Limite de taux atteinte. Veuillez réessayer dans {retryIn}",
   "@recoverbullErrorRateLimited": {

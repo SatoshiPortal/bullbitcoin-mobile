@@ -2594,7 +2594,6 @@
   "recoverbullErrorInvalidCredentials": "Väärä salasana tälle varmuuskopiolle",
   "recoverbullErrorMissingBytes": "Puuttuvia bittejä Tor-vastauksesta. Yritä uudelleen, mutta jos ongelma jatkuu, se on joillain laitteilla tunnettu Tor-ongelma.",
   "recoverbullErrorPasswordNotSet": "Salasanaa ei ole asetettu",
-  "recoverbullErrorRecoveryFailed": "Holvin palautus epäonnistui",
   "recoverbullTorNotStarted": "Tor ei ole käynnissä",
   "recoverbullErrorRateLimited": "Kutsuja rajoitettu. Yritä uudelleen {retryIn} kuluttua",
   "@recoverbullErrorRateLimited": {

@@ -8434,10 +8434,6 @@
   "@recoverbullErrorPasswordNotSet": {
     "description": "Error when attempting operation without setting password"
   },
-  "recoverbullErrorRecoveryFailed": "Failed to recover the vault",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "recoverbullTorNotStarted": "Tor is not started",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"

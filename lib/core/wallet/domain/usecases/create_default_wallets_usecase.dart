@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
@@ -81,7 +82,13 @@ class CreateDefaultWalletsUsecase {
         for (final wallet in created) {
           try {
             await _wallet.deleteWallet(walletId: wallet.id);
-          } catch (_) {}
+          } catch (e, stackTrace) {
+            log.severe(
+              message: 'CreateDefaultWalletsUsecase: rollback failed',
+              error: StateError('rollback threw ${e.runtimeType}'),
+              trace: stackTrace,
+            );
+          }
         }
         rethrow;
       }

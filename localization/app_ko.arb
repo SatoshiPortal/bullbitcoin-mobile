@@ -4258,10 +4258,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "Vault를 복구 실패",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "최대",
   "@buyMax": {
     "description": "Button to fill maximum amount"

@@ -2647,7 +2647,6 @@
   "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
   "recoverbullErrorMissingBytes": "Faltan bytes en la respuesta de Tor. Reintente, pero si el problema persiste, es un problema conocido para algunos dispositivos con Tor.",
   "recoverbullErrorPasswordNotSet": "La contraseña no está configurada",
-  "recoverbullErrorRecoveryFailed": "Error al recuperar la bóveda",
   "recoverbullTorNotStarted": "Tor no está iniciado",
   "recoverbullErrorRateLimited": "Límite de solicitudes alcanzado. Por favor, inténtalo en {retryIn}",
   "@recoverbullErrorRateLimited": {

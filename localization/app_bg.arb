@@ -3443,10 +3443,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "Неуспях да възстановя сейфа",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "Макс.",
   "@buyMax": {
     "description": "Button to fill maximum amount"

@@ -4258,10 +4258,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "दोष को ठीक करने में विफल",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "मैक्स",
   "@buyMax": {
     "description": "Button to fill maximum amount"
