@@ -1377,7 +1377,6 @@
   "buyShouldBuyAtLeast": "Empfohlener Mindestbetrag",
   "pinCodeCreateDescription": "Ihre PIN schützt Ihre Wallet und Einstellungen vor Zugriff. Sie sollten sie sich leicht merken können.",
   "payCorporate": "Unternehmen",
-  "recoverbullErrorRecoveryFailed": "Fehler beim Wiederherstellen des Tresors.",
   "buyMax": "Max",
   "onboardingCreateNewWallet": "Neue Wallet erstellen",
   "buyExpressWithdrawalDesc": "Bitcoin sofort nach Zahlung erhalten",
@@ -4489,5 +4488,6 @@
   "legacyStorageContinueWithoutBackupButton": "Ohne Sicherung fortfahren",
   "legacyStorageAcceptRisksCheckbox": "Ich akzeptiere die Risiken, keine Sicherung zu haben",
   "legacyStorageHasBackupImportantBody": "Bitte überspringen Sie diesen Vorgang nur, wenn Sie die Wallet unbedingt dringend verwenden müssen oder auf den Abschluss eines Swaps warten.",
-  "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko"
+  "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

@@ -98,8 +98,8 @@ class WalletRepository {
       }
     }
 
-    await _walletMetadataDatasource.store(metadata);
     final balance = await _getBalance(metadata, sync: sync);
+    await _walletMetadataDatasource.store(metadata);
 
     return Wallet(
       origin: metadata.id,
@@ -369,14 +369,21 @@ class WalletRepository {
     if (metadata == null) throw WalletError.notFound(walletId);
 
     if (metadata.isBitcoin) {
-      await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+      try {
+        await _bdkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+      } on WalletNotFound {
+        log.warning('deleteWallet: BDK file already absent for $walletId');
+      }
     }
 
     if (metadata.isLiquid) {
-      await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+      try {
+        await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+      } on WalletNotFound {
+        log.warning('deleteWallet: LWK file already absent for $walletId');
+      }
     }
 
-    // Delete wallet metadata from database
     await _walletMetadataDatasource.delete(walletId);
   }
 
@@ -389,7 +396,11 @@ class WalletRepository {
     );
 
     for (final metadata in liquidDefaultWallets) {
-      await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+      try {
+        await _lwkWallet.delete(wallet: WalletModel.fromMetadata(metadata));
+      } on WalletNotFound {
+        log.warning('deleteLwkDb: LWK file already absent for ${metadata.id}');
+      }
     }
   }
 

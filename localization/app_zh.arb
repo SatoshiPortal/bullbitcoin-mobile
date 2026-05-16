@@ -1406,7 +1406,6 @@
   "buyShouldBuyAtLeast": "你们至少应当购买",
   "pinCodeCreateDescription": "你的私人网络保护进出你的围墙和场所。 不要忘记.",
   "payCorporate": "公司",
-  "recoverbullErrorRecoveryFailed": "未能追回过失",
   "buyMax": "Max",
   "onboardingCreateNewWallet": "创立新墙",
   "buyExpressWithdrawalDesc": "付款后立即收到",
@@ -4600,5 +4599,6 @@
   "legacyStorageContinueWithoutBackupButton": "不备份继续",
   "legacyStorageAcceptRisksCheckbox": "我接受不进行备份的风险",
   "legacyStorageHasBackupImportantBody": "除非您必须紧急使用钱包或正在等待一笔兑换完成，否则请不要跳过此流程。",
-  "legacyStorageRiskAckButtonHasBackup": "我了解风险"
+  "legacyStorageRiskAckButtonHasBackup": "我了解风险",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

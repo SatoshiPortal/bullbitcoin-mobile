@@ -85,7 +85,7 @@ class VaultDecryptionError extends RecoverBullError {
 class VaultRecoveryError extends RecoverBullError {
   @override
   String toTranslated(BuildContext context) {
-    return context.loc.recoverbullErrorRecoveryFailed;
+    return context.loc.walletSetupErrorTryAgain;
   }
 }
 

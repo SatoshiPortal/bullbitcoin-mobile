@@ -8434,10 +8434,6 @@
   "@recoverbullErrorPasswordNotSet": {
     "description": "Error when attempting operation without setting password"
   },
-  "recoverbullErrorRecoveryFailed": "Failed to recover the vault",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "recoverbullTorNotStarted": "Tor is not started",
   "@recoverbullTorNotStarted": {
     "description": "Error message when Tor is not started"
@@ -13039,5 +13035,9 @@
   "legacyStorageRiskAckButtonHasBackup": "I understand the risk",
   "@legacyStorageRiskAckButtonHasBackup": {
     "description": "Risk-acknowledge button label on the reinstall variant of the legacy storage warning (no leading \"No,\" because there is no Backup Now alternative on this page)."
+  },
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "@walletSetupErrorTryAgain": {
+    "description": "Generic error shown when default-wallet creation or recovery fails."
   }
 }
