@@ -4258,10 +4258,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "Vault를 복구 실패",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "최대",
   "@buyMax": {
     "description": "Button to fill maximum amount"
@@ -12583,5 +12579,6 @@
   "legacyStorageContinueWithoutBackupButton": "백업 없이 계속",
   "legacyStorageAcceptRisksCheckbox": "백업을 하지 않는 위험을 감수합니다",
   "legacyStorageHasBackupImportantBody": "지갑을 긴급하게 사용해야 하거나 스왑이 완료되기를 기다리는 경우가 아니라면 이 과정을 건너뛰지 마세요.",
-  "legacyStorageRiskAckButtonHasBackup": "위험을 이해합니다"
+  "legacyStorageRiskAckButtonHasBackup": "위험을 이해합니다",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

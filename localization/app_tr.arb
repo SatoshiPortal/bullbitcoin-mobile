@@ -4242,10 +4242,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "Boşluğu kurtarmak için başarısız oldu",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "Max",
   "@buyMax": {
     "description": "Button to fill maximum amount"
@@ -12583,5 +12579,6 @@
   "legacyStorageContinueWithoutBackupButton": "Yedek almadan devam et",
   "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum",
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
-  "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum"
+  "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

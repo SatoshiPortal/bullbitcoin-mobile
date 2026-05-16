@@ -10914,10 +10914,6 @@
   "@transactionSwapDescLnReceiveDefault": {
     "description": "Default description for Lightning receive swap"
   },
-  "recoverbullErrorRecoveryFailed": "Επιθυμήθηκε να ανακτήσει το θύλακα",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "backupIdLabel": "Backup ID:",
   "@backupIdLabel": {
     "description": "Label for backup ID"
@@ -12583,5 +12579,6 @@
   "legacyStorageContinueWithoutBackupButton": "Συνέχιση χωρίς αντίγραφο",
   "legacyStorageAcceptRisksCheckbox": "Αποδέχομαι τον κίνδυνο να μην έχω αντίγραφο ασφαλείας",
   "legacyStorageHasBackupImportantBody": "Παρακαλώ μην παραλείψετε αυτή τη διαδικασία εκτός εάν είναι απολύτως απαραίτητο να χρησιμοποιήσετε επειγόντως το πορτοφόλι ή περιμένετε να ολοκληρωθεί ένα swap.",
-  "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο"
+  "legacyStorageRiskAckButtonHasBackup": "Κατανοώ τον κίνδυνο",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

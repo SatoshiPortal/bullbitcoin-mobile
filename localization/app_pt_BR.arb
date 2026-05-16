@@ -3793,10 +3793,6 @@
   "@allSeedViewSecurityWarningMessage": {
     "description": "Security warning message about displaying seed phrases"
   },
-  "recoverbullErrorRecoveryFailed": "Falhado para recuperar o cofre",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "paySwapFee": "Taxa de balanço",
   "@paySwapFee": {
     "description": "Label for submarine swap fee"
@@ -12579,5 +12575,6 @@
   "legacyStorageContinueWithoutBackupButton": "Continuar sem backup",
   "legacyStorageAcceptRisksCheckbox": "Aceito os riscos de não fazer backup",
   "legacyStorageHasBackupImportantBody": "Por favor, não pule este processo, a menos que você precise usar a carteira urgentemente ou esteja esperando uma troca ser concluída.",
-  "legacyStorageRiskAckButtonHasBackup": "Eu entendo o risco"
+  "legacyStorageRiskAckButtonHasBackup": "Eu entendo o risco",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

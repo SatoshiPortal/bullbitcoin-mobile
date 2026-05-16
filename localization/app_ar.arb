@@ -4008,10 +4008,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "فشل في استعادة الخزنة",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "ماكس",
   "@buyMax": {
     "description": "Button to fill maximum amount"
@@ -12586,5 +12582,6 @@
   "legacyStorageContinueWithoutBackupButton": "متابعة دون نسخة احتياطية",
   "legacyStorageAcceptRisksCheckbox": "أوافق على مخاطر عدم عمل نسخة احتياطية",
   "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
-  "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر"
+  "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }
