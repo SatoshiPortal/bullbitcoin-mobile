@@ -37,6 +37,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     emit(
       state.copyWith(
         onboardingStepStatus: OnboardingStepStatus.none,
+        step: OnboardingStep.splash,
         statusError: error.toString(),
       ),
     );
