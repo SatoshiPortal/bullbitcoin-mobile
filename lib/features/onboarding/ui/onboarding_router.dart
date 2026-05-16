@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
@@ -61,10 +62,9 @@ class OnboardingRouter {
                       previous.statusError != current.statusError &&
                       current.statusError.isNotEmpty,
                   listener: (context, state) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.loc.walletSetupErrorTryAgain),
-                      ),
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      context.loc.walletSetupErrorTryAgain,
                     );
                   },
                 ),
