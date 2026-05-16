@@ -85,7 +85,7 @@ class CreateDefaultWalletsUsecase {
           } catch (e, stackTrace) {
             log.severe(
               message: 'CreateDefaultWalletsUsecase: rollback failed',
-              error: StateError('rollback threw ${e.runtimeType}'),
+              error: e,
               trace: stackTrace,
             );
           }

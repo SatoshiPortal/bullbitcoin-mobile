@@ -81,7 +81,7 @@ class CheckForExistingDefaultWalletsUsecase {
         log.severe(
           message:
               'CheckForExistingDefaultWalletsUsecase: legacy heal failed',
-          error: StateError('legacy heal threw ${e.runtimeType}'),
+          error: e,
           trace: stackTrace,
         );
       }
