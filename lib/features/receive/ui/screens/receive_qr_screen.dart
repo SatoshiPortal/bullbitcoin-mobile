@@ -1,9 +1,11 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
@@ -12,8 +14,9 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_note.dart';
+import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_amount.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -29,9 +32,6 @@ class ReceiveQrPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isBitcoin = context.select(
-      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.bitcoin,
-    );
     final isLightning = context.select(
       (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
@@ -42,21 +42,18 @@ class ReceiveQrPage extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state.wallet?.signerDevice?.isBitBox ?? false,
     );
 
+    final gap = Device.screen.height * 0.02;
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: .stretch,
         children: [
           // const Gap(10),
           // const ReceiveNetworkSelection(),
-          const Gap(16),
+          Gap(gap),
           const ReceiveQRDetails(),
-          const Gap(10),
+          Gap(gap),
           ReceiveInfoDetails(wallet: wallet),
-          const Gap(16),
-          if (isBitcoin)
-            // The switch to only copy/scan the address is only for Bitcoin since
-            // the other networks don't have payjoin bip21 uri's
-            const Column(children: [ReceiveCopyAddress(), Gap(10)]),
+          Gap(gap),
           if (isLedger) const Column(children: [VerifyAddressOnLedgerButton()]),
           if (isBitBox) const Column(children: [VerifyAddressOnBitBoxButton()]),
           if (!isLightning) const ReceiveNewAddressButton(),
@@ -85,12 +82,10 @@ class ReceiveQRDetails extends StatelessWidget {
     final addressOrInvoiceOnly = context.select(
       (ReceiveBloc bloc) => bloc.state.addressOrInvoiceOnly,
     );
-    final isPayjoinAvailable = context.select(
-      (ReceiveBloc bloc) => bloc.state.isPayjoinAvailable,
-    );
     final selectedWallet = context.watch<ReceiveBloc>().state.wallet;
     final wallets = context.select((ReceiveBloc bloc) => bloc.state.wallets);
 
+    final gap = Device.screen.height * 0.02;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -100,86 +95,100 @@ class ReceiveQRDetails extends StatelessWidget {
               isBitcoin &&
               selectedWallet != null &&
               selectedWallet.isBitcoin)
-            ColoredBox(
-              color: context.appColors.onSecondary,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: DropdownButtonFormField<Wallet>(
-                  alignment: Alignment.centerLeft,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.appColors.secondary,
-                  ),
-                  iconSize: 24,
-                  dropdownColor: context.appColors.onSecondary,
-                  initialValue: selectedWallet,
-                  items: wallets.map((w) {
-                    return DropdownMenuItem(
-                      value: w,
-                      child: Text(
-                        w.displayLabel(context),
-                        style: context.font.headlineSmall?.copyWith(
-                          color: context.appColors.secondary,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null) {
-                      context.read<ReceiveBloc>().add(
-                        ReceiveEvent.receiveBitcoinStarted(value),
-                      );
-                    }
-                  },
+            BorderedTappableTile(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: DropdownButtonFormField<Wallet>(
+                alignment: Alignment.centerLeft,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
                 ),
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: context.appColors.secondary,
+                ),
+                iconSize: 24,
+                dropdownColor: context.appColors.onSecondary,
+                initialValue: selectedWallet,
+                items: wallets.map((w) {
+                  return DropdownMenuItem(
+                    value: w,
+                    child: Text(
+                      w.displayLabel(context),
+                      style: context.font.headlineSmall?.copyWith(
+                        color: context.appColors.secondary,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    context.read<ReceiveBloc>().add(
+                      ReceiveEvent.receiveBitcoinStarted(value),
+                    );
+                  }
+                },
               ),
             ),
-          const Gap(20),
+          Gap(gap),
           Center(child: QrDisplayWidget(data: qrData)),
-          if (isPayjoinAvailable) ...[
-            const Gap(16),
-            BBText(
-              context.loc.receivePayjoinActivated,
-              style: context.font.bodyLarge,
-              textAlign: .center,
+          const _PayjoinSwitch(),
+          Gap(gap),
+          BorderedTappableTile(
+            backgroundColor: context.appColors.surfaceContainerHighest,
+            onTap: () => isLightning
+                ? InvoiceViewer.showDetail(
+                    context,
+                    data: addressOrInvoiceOnly,
+                    clipboardText: clipboardData,
+                  )
+                : AddressViewer.showDetail(
+                    context,
+                    data: addressOrInvoiceOnly,
+                    clipboardText: clipboardData,
+                  ),
+            onLongPress: () {
+              Clipboard.setData(
+                ClipboardData(
+                  text: clipboardData.isNotEmpty
+                      ? clipboardData
+                      : addressOrInvoiceOnly,
+                ),
+              );
+              SnackBarUtils.showCopiedSnackBar(context);
+            },
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      BBText(
+                        isLightning
+                            ? context.loc.receiveLightningInvoice
+                            : context.loc.receiveAddress,
+                        style: context.font.bodyLarge,
+                        color: context.appColors.secondary,
+                      ),
+                      const Gap(4),
+                      isLightning
+                          ? InvoiceViewer(
+                              addressOrInvoiceOnly,
+                              clipboardText: clipboardData,
+                              style: context.font.bodyLarge,
+                              color: context.appColors.secondary,
+                            )
+                          : AddressViewer(
+                              addressOrInvoiceOnly,
+                              clipboardText: clipboardData,
+                              style: context.font.bodyLarge,
+                              color: context.appColors.secondary,
+                            ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-          const Gap(20),
-          Column(
-            crossAxisAlignment: .stretch,
-            children: [
-              BBText(
-                isLightning
-                    ? context.loc.receiveLightningInvoice
-                    : context.loc.receiveAddress,
-                style: context.font.bodyMedium,
-                color: context.appColors.secondary,
-              ),
-              const Gap(6),
-              // TODO: We should probably just make a specific widget for the
-              //  address and invoice instead of using CopyInput.
-              CopyInput(
-                text: addressOrInvoiceOnly,
-                clipboardText: clipboardData,
-                overflow: .ellipsis,
-                canShowValueModal: true,
-                modalTitle: isLightning
-                    ? context.loc.receiveLightningInvoice
-                    : context.loc.receiveAddress,
-                modalContent: isLightning
-                    ? addressOrInvoiceOnly
-                    : addressOrInvoiceOnly
-                          .replaceAllMapped(
-                            RegExp('.{1,4}'),
-                            (match) => '${match.group(0)} ',
-                          )
-                          .trim(),
-              ),
-            ],
           ),
         ],
       ),
@@ -208,136 +217,87 @@ class ReceiveInfoDetails extends StatelessWidget {
 
     if (isLn) return const ReceiveLnInfoDetails();
 
+    final gap = Device.screen.height * 0.02;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(2),
-          border: Border.all(color: context.appColors.surface),
-        ),
-        child: Column(
-          crossAxisAlignment: .stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 8,
-                right: 8,
-                top: 12,
-                bottom: 10,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        BBText(
-                          context.loc.receiveAmount,
-                          style: context.font.labelSmall,
-                          color: context.appColors.onSurfaceVariant,
-                        ),
-                        const Gap(4),
-                        Row(
-                          mainAxisAlignment: .spaceBetween,
-                          children: [
-                            Expanded(
-                              child: CurrencyText(
-                                amountSat ?? 0,
-                                showFiat: false,
-                                style: context.font.bodyMedium,
-                              ),
-                            ),
-                          ],
-                        ),
-                        BBText(
-                          '~$amountEquivalent',
-                          style: context.font.bodyLarge,
-                          color: context.appColors.onSurfaceVariant,
-                        ),
-                      ],
-                    ),
+      child: Column(
+        crossAxisAlignment: .stretch,
+        children: [
+          BorderedTappableTile(
+            onTap: () => ReceiveEnterAmount.showBottomSheet(context),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      BBText(
+                        context.loc.receiveAmount,
+                        style: context.font.bodyLarge,
+                        color: context.appColors.secondary,
+                      ),
+                      const Gap(4),
+                      CurrencyText(
+                        amountSat ?? 0,
+                        showFiat: false,
+                        style: context.font.bodyMedium,
+                      ),
+                      BBText(
+                        '~$amountEquivalent',
+                        style: context.font.bodyLarge,
+                        color: context.appColors.onSurfaceVariant,
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    onPressed: () {
-                      final receiveType = context
-                          .read<ReceiveBloc>()
-                          .state
-                          .type;
-                      switch (receiveType) {
-                        case ReceiveType.lightning:
-                          context.pushNamed(
-                            ReceiveRoute.lightningAmount.name,
-                            extra: wallet,
-                          );
-                        case ReceiveType.liquid:
-                          context.pushNamed(
-                            ReceiveRoute.liquidAmount.name,
-                            extra: wallet,
-                          );
-                        case ReceiveType.bitcoin:
-                          context.pushNamed(
-                            ReceiveRoute.bitcoinAmount.name,
-                            extra: wallet,
-                          );
-                        case _:
-                          return;
-                      }
-                    },
-                    visualDensity: VisualDensity.compact,
-                    iconSize: 20,
-                    icon: const Icon(Icons.edit),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Container(color: context.appColors.surface, height: 1),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 8,
-                right: 8,
-                top: 10,
-                bottom: 12,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 6,
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        BBText(
-                          context.loc.receiveNote,
-                          style: context.font.labelSmall,
-                          color: context.appColors.onSurfaceVariant,
-                        ),
-                        const Gap(4),
-                        BBText(
-                          note.isNotEmpty ? note : context.loc.receiveEnterHere,
-                          style: context.font.bodyMedium,
-                          maxLines: 4,
-                          overflow: .ellipsis,
-                        ),
-                      ],
-                    ),
+          ),
+          Gap(gap),
+          BorderedTappableTile(
+            onTap: () async {
+              final bloc = context.read<ReceiveBloc>();
+              final saved = await LabelEntryBottomSheet.note(
+                context,
+                title: context.loc.receiveNote,
+                initialValue: bloc.state.note,
+                hint: context.loc.receiveNotePlaceholder,
+                suggestionsFuture: bloc.fetchDistinctLabels(),
+              );
+              if (saved == null) return;
+              bloc.add(ReceiveNoteChanged(saved));
+              bloc.add(const ReceiveNoteSaved());
+            },
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      BBText(
+                        '${context.loc.receiveNote} (optional)',
+                        style: context.font.bodyLarge,
+                        color: context.appColors.secondary,
+                      ),
+                      const Gap(4),
+                      BBText(
+                        note.isNotEmpty ? note : context.loc.receiveEnterHere,
+                        style: context.font.bodyMedium,
+                        maxLines: 4,
+                        overflow: .ellipsis,
+                      ),
+                    ],
                   ),
-                  if (!isLn)
-                    IconButton(
-                      onPressed: () async {
-                        await ReceiveEnterNote.showBottomSheet(context);
-                      },
-                      visualDensity: VisualDensity.compact,
-                      iconSize: 20,
-                      icon: const Icon(Icons.edit),
-                    ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+
 
 class ReceiveLnInfoDetails extends StatelessWidget {
   const ReceiveLnInfoDetails({super.key});
@@ -610,38 +570,75 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
   }
 }
 
-class ReceiveCopyAddress extends StatelessWidget {
-  const ReceiveCopyAddress({super.key});
+class _PayjoinSwitch extends StatelessWidget {
+  const _PayjoinSwitch();
 
   @override
   Widget build(BuildContext context) {
+    final canUsePayjoin = context.select<ReceiveBloc, bool>(
+      (bloc) =>
+          bloc.state.type == ReceiveType.bitcoin &&
+          (bloc.state.wallet?.signsLocally ?? false),
+    );
+    if (!canUsePayjoin) return const SizedBox.shrink();
+
+    final hasUtxos = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.hasUtxos,
+    );
+    final isAddressOnly = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.isAddressOnly,
+    );
+    final isOn = !isAddressOnly && hasUtxos;
+
+    void toggle() {
+      final turnOn = !isOn;
+      if (turnOn && !hasUtxos) {
+        SnackBarUtils.showSnackBar(
+          context,
+          context.loc.receivePayjoinNoUtxos,
+        );
+        return;
+      }
+      context.read<ReceiveBloc>().add(
+        ReceiveEvent.receiveAddressOnlyToggled(!turnOn),
+      );
+    }
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16 + 12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  context.loc.receiveCopyAddressOnly,
-                  style: context.font.headlineSmall,
-                ),
-              ],
+      padding: const EdgeInsets.only(top: 16),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: toggle,
+          borderRadius: BorderRadius.circular(8),
+          child: Ink(
+            decoration: BoxDecoration(
+              color: context.appColors.onSecondary,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: context.appColors.secondaryFixedDim),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 4,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: BBText(
+                      context.loc.receivePayjoinActivated,
+                      style: context.font.bodyLarge,
+                      color: context.appColors.secondary,
+                    ),
+                  ),
+                  AbsorbPointer(
+                    child: Switch(value: isOn, onChanged: (_) {}),
+                  ),
+                ],
+              ),
             ),
           ),
-          const Gap(8),
-          Switch(
-            value: context.select<ReceiveBloc, bool>(
-              (bloc) =>
-                  bloc.state.type == ReceiveType.bitcoin &&
-                  bloc.state.isAddressOnly,
-            ),
-            onChanged: (addressOnly) => context.read<ReceiveBloc>().add(
-              ReceiveEvent.receiveAddressOnlyToggled(addressOnly),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -653,7 +650,7 @@ class ReceiveNewAddressButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBButton.big(
         label: context.loc.receiveNewAddress,
         onPressed: () {
@@ -674,7 +671,7 @@ class VerifyAddressOnLedgerButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBButton.big(
         label: context.loc.receiveVerifyAddressLedger,
         onPressed: () {
@@ -718,7 +715,7 @@ class VerifyAddressOnBitBoxButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBButton.big(
         label: 'Verify Address on BitBox',
         onPressed: () {

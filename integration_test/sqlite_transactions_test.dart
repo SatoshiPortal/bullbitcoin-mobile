@@ -1,9 +1,5 @@
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/fetch_electrum_transaction_usecase.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transactions/bitcoin_transaction_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,16 +9,7 @@ Future<void> main({bool isInitialized = false}) async {
   if (!isInitialized) await Bull.init();
 
   final sqlite = locator<SqliteDatabase>();
-  final electrumDatasource = ElectrumRemoteDatasource(
-    server: ElectrumServerModel(
-      url: ApiServiceConstants.bbElectrumUrl,
-      network: ElectrumServerNetwork.bitcoinMainnet,
-    ),
-    sqlite: sqlite,
-  );
-  final transactionRepository = BitcoinTransactionRepository(
-    electrumRemoteDatasource: electrumDatasource,
-  );
+  final fetchUsecase = locator<FetchElectrumTransactionUsecase>();
 
   const txid =
       'ff47a0a1dfdcf68327242d2cbfb229a5ba7e3e67572c2d4f390c51b1a89d56e5';
@@ -39,7 +26,7 @@ Future<void> main({bool isInitialized = false}) async {
       expect(sqliteTx, isNull);
 
       // Fetch a transaction and cache it in sqlite if not present
-      final tx = await transactionRepository.fetch(txid: txid);
+      final tx = await fetchUsecase.execute(txid: txid);
       expect(tx.txid, txid);
 
       // Ensure the tx is now stored in sqlite

@@ -125,6 +125,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
+      final isWalletChange =
+          event.wallet != null && state.wallet?.id != event.wallet!.id;
+      if (isWalletChange) {
+        // Clear the previous wallet's payjoin receiver and stop watching it
+        // so the URI does not embed a payjoin link from the old wallet.
+        await _payjoinSubscription?.cancel();
+        emit(state.copyWith(payjoin: null, receivePayjoinException: null));
+      }
+
       if (state.wallet != null && !state.wallet!.isBitcoin) {
         emit(state.copyWith(wallet: null, bitcoinAddress: null));
       } else {
@@ -194,7 +203,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
         );
         bitcoinAddress = address;
-        emit(state.copyWith(bitcoinAddress: bitcoinAddress));
+        final note = await _loadAddressLabel(bitcoinAddress.address);
+        emit(state.copyWith(bitcoinAddress: bitcoinAddress, note: note));
       }
 
       // If the payjoin receiver is not set yet, we need to create it, but only
@@ -405,7 +415,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
         );
         liquidAddress = address;
-        emit(state.copyWith(liquidAddress: liquidAddress));
+        final note = await _loadAddressLabel(liquidAddress.address);
+        emit(state.copyWith(liquidAddress: liquidAddress, note: note));
       }
 
       if (state.exchangeRate == 0) {
@@ -815,6 +826,33 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
     }
   }
+
+  /// Loads the most recent user-defined label stored against [address] so
+  /// the receive note tile and the note bottom sheet pre-fill with the saved
+  /// value. System labels (e.g. seed-injected metadata) are ignored.
+  Future<String> _loadAddressLabel(String address) async {
+    try {
+      final labels = await _labelsFacade.fetchByReference(address);
+      for (final label in labels) {
+        if (!LabelSystem.isSystemLabel(label.label)) {
+          return label.label;
+        }
+      }
+    } catch (e) {
+      log.severe(
+        message: 'Failed to load address label',
+        error: e,
+        trace: StackTrace.current,
+      );
+    }
+    return '';
+  }
+
+  /// Distinct user-defined labels for the suggestion chips in the note
+  /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
+  /// don't need to reach into the locator.
+  Future<Set<String>> fetchDistinctLabels() =>
+      _labelsFacade.fetchDistinctLabels();
 
   void _watchPayjoin(String payjoinId) {
     // Cancel the previous subscription if it exists

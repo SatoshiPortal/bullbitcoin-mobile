@@ -4600,5 +4600,21 @@
   "legacyStorageAcceptRisksCheckbox": "我接受不进行备份的风险",
   "legacyStorageHasBackupImportantBody": "除非您必须紧急使用钱包或正在等待一笔兑换完成，否则请不要跳过此流程。",
   "legacyStorageRiskAckButtonHasBackup": "我了解风险",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "coreScreensResolvingInputs": "正在解析交易输入...",
+  "coreScreensFeeRateLabel": "费率",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "找零输出未知 — 所有输出均等显示",
+  "coreScreensUnknown": "未知",
+  "coreScreensFetchFailed": "无法从 Electrum 获取交易 {txid}。",
+  "coreScreensInputResolutionFailed": "未找到输入：{parentTxId} 的输出 {vout} 不存在。",
+  "coreScreensParseFailed": "解析交易失败：{message}。",
+  "coreScreensUnexpectedError": "意外错误：{message}。",
+  "coreScreensNoServersAvailable": "没有可用的 Electrum 服务器。",
+  "addressViewerTitle": "地址",
+  "viewerTapToCopy": "点击复制",
+  "viewerViewInExplorer": "在浏览器中查看",
+  "transactionViewerTitle": "交易 ID",
+  "invoiceViewerTitle": "发票",
+  "viewerCopyLink": "复制链接"
 }

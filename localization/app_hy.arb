@@ -197,5 +197,22 @@
   "legacyStorageAcceptRisksCheckbox": "Ընդունում եմ պահուստավորում չանելու ռիսկերը",
   "legacyStorageHasBackupImportantBody": "Խնդրում ենք բաց չթողնել այս գործընթացը, եթե ձեզ հրատապ չի անհրաժեշտ օգտագործել դրամապանակը կամ սպասում եք սվոփի ավարտին։",
   "legacyStorageRiskAckButtonHasBackup": "Ես հասկանում եմ ռիսկը",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensFeeRateLabel": "Fee rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "addressViewerTitle": "Հասցե",
+  "viewerTapToCopy": "Հպեք պատճենելու համար",
+  "viewerViewInExplorer": "Դիտել հետախույզում",
+  "viewerCopyLink": "Պատճենել հղումը",
+  "transactionViewerTitle": "Գործարքի նույնացուցիչ",
+  "invoiceViewerTitle": "Ապրանքագիր "
 }

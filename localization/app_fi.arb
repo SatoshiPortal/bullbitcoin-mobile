@@ -4592,5 +4592,21 @@
   "legacyStorageAcceptRisksCheckbox": "Hyväksyn riskit siitä, etten tee varmuuskopiota",
   "legacyStorageHasBackupImportantBody": "Älä ohita tätä prosessia, ellet ehdottomasti tarvitse lompakkoa kiireellisesti tai odota swapin valmistumista.",
   "legacyStorageRiskAckButtonHasBackup": "Ymmärrän riskin",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "coreScreensResolvingInputs": "Selvitetään tapahtuman syötteitä...",
+  "coreScreensFeeRateLabel": "Palkkioprosentti",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Vaihtorahaulostulo tuntematon — kaikki ulostulot näytetään tasavertaisesti",
+  "coreScreensUnknown": "Tuntematon",
+  "coreScreensFetchFailed": "Tapahtumaa {txid} ei voitu noutaa Electrumista.",
+  "coreScreensInputResolutionFailed": "Syötettä ei löydy: ulostuloa {vout} kohteesta {parentTxId} ei ole olemassa.",
+  "coreScreensParseFailed": "Tapahtuman jäsennys epäonnistui: {message}.",
+  "coreScreensUnexpectedError": "Odottamaton virhe: {message}.",
+  "coreScreensNoServersAvailable": "Electrum-palvelimia ei ole saatavilla.",
+  "addressViewerTitle": "Osoite",
+  "viewerTapToCopy": "Kopioi napauttamalla",
+  "viewerViewInExplorer": "Näytä selaimessa",
+  "transactionViewerTitle": "Tapahtuman tunnus",
+  "invoiceViewerTitle": "Lasku",
+  "viewerCopyLink": "Kopioi linkki"
 }

@@ -4589,5 +4589,21 @@
   "legacyStorageAcceptRisksCheckbox": "J'accepte les risques de ne pas faire de sauvegarde",
   "legacyStorageHasBackupImportantBody": "Veuillez ne pas ignorer ce processus, sauf si vous devez absolument utiliser le portefeuille en urgence ou si vous attendez qu'un swap se termine.",
   "legacyStorageRiskAckButtonHasBackup": "Je comprends le risque",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "coreScreensResolvingInputs": "Résolution des entrées de la transaction...",
+  "coreScreensFeeRateLabel": "Taux de frais",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Sortie de monnaie inconnue — toutes les sorties sont affichées de manière égale",
+  "coreScreensUnknown": "Inconnu",
+  "coreScreensFetchFailed": "Impossible de récupérer la transaction {txid} depuis Electrum.",
+  "coreScreensInputResolutionFailed": "Entrée introuvable : la sortie {vout} de {parentTxId} n'existe pas.",
+  "coreScreensParseFailed": "Échec de l'analyse de la transaction : {message}.",
+  "coreScreensUnexpectedError": "Erreur inattendue : {message}.",
+  "coreScreensNoServersAvailable": "Aucun serveur Electrum disponible.",
+  "addressViewerTitle": "Adresse",
+  "viewerTapToCopy": "Appuyez pour copier",
+  "viewerViewInExplorer": "Voir dans l'explorateur",
+  "transactionViewerTitle": "ID de transaction",
+  "invoiceViewerTitle": "Facture",
+  "viewerCopyLink": "Copier le lien"
 }

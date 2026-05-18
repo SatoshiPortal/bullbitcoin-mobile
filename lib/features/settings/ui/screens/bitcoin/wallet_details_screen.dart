@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -35,10 +36,9 @@ class WalletDetailsScreen extends StatelessWidget {
               onPressed:
                   isDeletingWallet
                       ? null
-                      : () => showDialog(
+                      : () => BlurredDialog.show(
                         context: context,
-                        builder:
-                            (dialogContext) =>
+                        builder: (_) =>
                                 WalletDeletionConfirmationAlertDialog(
                                   walletId: wallet.id,
                                 ),

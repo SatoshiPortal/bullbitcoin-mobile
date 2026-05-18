@@ -197,5 +197,22 @@
   "legacyStorageAcceptRisksCheckbox": "Tôi chấp nhận rủi ro khi không sao lưu",
   "legacyStorageHasBackupImportantBody": "Vui lòng không bỏ qua quy trình này trừ khi bạn thực sự cần sử dụng ví khẩn cấp hoặc đang chờ một giao dịch hoán đổi hoàn tất.",
   "legacyStorageRiskAckButtonHasBackup": "Tôi hiểu rủi ro",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensFeeRateLabel": "Fee rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "addressViewerTitle": "Địa chỉ",
+  "viewerTapToCopy": "Nhấn để sao chép",
+  "viewerViewInExplorer": "Xem trong trình duyệt",
+  "viewerCopyLink": "Sao chép liên kết",
+  "transactionViewerTitle": "Mã giao dịch",
+  "invoiceViewerTitle": "Hóa đơn"
 }

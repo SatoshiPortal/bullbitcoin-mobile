@@ -1448,6 +1448,10 @@
   "@receiveSave": {
     "description": "Button label for saving receive details"
   },
+  "receivePayjoinNoUtxos": "Receive funds first to enable it.\nUTXOs are required to use payjoin.",
+  "@receivePayjoinNoUtxos": {
+    "description": "Snackbar shown when user tries to enable payjoin on a wallet without any UTXOs"
+  },
   "receivePayjoinActivated": "Payjoin activated",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -12587,6 +12591,110 @@
   "coreScreensConfirmButton": "Confirm",
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
+  },
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "@coreScreensResolvingInputs": {
+    "description": "Loading message while resolving transaction input values"
+  },
+  "coreScreensFeeRateLabel": "Fee rate",
+  "@coreScreensFeeRateLabel": {
+    "description": "Label for fee rate row in transaction review"
+  },
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "@coreScreensFeeRateValue": {
+    "description": "Fee rate value with unit",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "@coreScreensChangeOutputUnknown": {
+    "description": "Info text when change output cannot be identified"
+  },
+  "coreScreensUnknown": "Unknown",
+  "@coreScreensUnknown": {
+    "description": "Fallback text for unknown values"
+  },
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "@coreScreensFetchFailed": {
+    "description": "Error when transaction fetch fails",
+    "placeholders": {
+      "txid": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "@coreScreensInputResolutionFailed": {
+    "description": "Error when input resolution fails",
+    "placeholders": {
+      "vout": {
+        "type": "int"
+      },
+      "parentTxId": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "@coreScreensParseFailed": {
+    "description": "Error when transaction parsing fails",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "@coreScreensUnexpectedError": {
+    "description": "Generic unexpected error",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "@coreScreensNoServersAvailable": {
+    "description": "Error when no Electrum servers are available"
+  },
+  "addressViewerTitle": "Address",
+  "@addressViewerTitle": {
+    "description": "Title shown in the address detail dialog"
+  },
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
+  },
+  "viewerViewInExplorer": "View in explorer",
+  "@viewerViewInExplorer": {
+    "description": "Button to open address or transaction in block explorer"
+  },
+  "viewerCopyLink": "Copy link",
+  "@viewerCopyLink": {
+    "description": "Button to copy the block explorer URL to clipboard"
+  },
+  "transactionViewerTitle": "Transaction ID",
+  "@transactionViewerTitle": {
+    "description": "Title shown in the transaction viewer detail dialog"
+  },
+  "invoiceViewerTitle": "Invoice",
+  "@invoiceViewerTitle": {
+    "description": "Title shown in the invoice viewer detail dialog"
+  },
+  "noteVisibleToSenderNotice": "This note will be visible to the recipient of your QR or invoice.",
+  "@noteVisibleToSenderNotice": {
+    "description": "Privacy disclosure shown in the note entry bottom sheet for counterparty-visible notes (BIP21 message, lightning swap description)."
+  },
+  "viewerAddressTab": "Address",
+  "@viewerAddressTab": {
+    "description": "Segment label to show/copy the bare address in the address viewer dialog"
+  },
+  "viewerPaymentUriTab": "Payment URI",
+  "@viewerPaymentUriTab": {
+    "description": "Segment label to show/copy the BIP21 payment URI in the address viewer dialog"
   },
   "recoverbullErrorRejected": "Rejected by the Key Server",
   "@recoverbullErrorRejected": {

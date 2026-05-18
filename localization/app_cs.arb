@@ -12580,5 +12580,21 @@
   "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
   "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "coreScreensResolvingInputs": "Načítání vstupů transakce...",
+  "coreScreensFeeRateLabel": "Sazba poplatku",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Výstup drobných neznámý — všechny výstupy zobrazeny stejně",
+  "coreScreensUnknown": "Neznámé",
+  "coreScreensFetchFailed": "Nepodařilo se načíst transakci {txid} z Electrum.",
+  "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
+  "coreScreensParseFailed": "Analýza transakce selhala: {message}.",
+  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
+  "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
+  "addressViewerTitle": "Adresa",
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "viewerViewInExplorer": "Zobrazit v prohlížeči",
+  "transactionViewerTitle": "ID transakce",
+  "invoiceViewerTitle": "Faktura",
+  "viewerCopyLink": "Kopírovat odkaz"
 }

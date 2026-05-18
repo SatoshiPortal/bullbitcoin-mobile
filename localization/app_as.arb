@@ -196,5 +196,22 @@
   "legacyStorageAcceptRisksCheckbox": "মই বেকআপ নকৰাৰ বিপদ গ্ৰহণ কৰোঁ",
   "legacyStorageHasBackupImportantBody": "এই প্ৰক্ৰিয়া এৰি নাযাব যদিহে আপুনি ৱালেট জৰুৰীভাৱে ব্যৱহাৰ কৰাটো অত্যাৱশ্যক নহয় বা এটা স্বেপ সম্পূৰ্ণ হোৱালৈ অপেক্ষা কৰি আছে।",
   "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensFeeRateLabel": "Fee rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "addressViewerTitle": "ঠিকনা",
+  "viewerTapToCopy": "কপি কৰিবলৈ টিপক",
+  "viewerViewInExplorer": "এক্সপ্ল 'ৰাৰত দৰ্শন কৰক",
+  "transactionViewerTitle": "লেনদেন আইডি",
+  "invoiceViewerTitle": "চালান",
+  "viewerCopyLink": "লিংক কপি কৰক"
 }
