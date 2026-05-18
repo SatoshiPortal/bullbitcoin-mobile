@@ -4611,5 +4611,21 @@
   "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Откройте приложение в течение 24 часов, чтобы завершить своп.",
-  "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует"
+  "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
+  "coreScreensResolvingInputs": "Разрешение входов транзакции...",
+  "coreScreensFeeRateLabel": "Ставка комиссии",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Выход сдачи неизвестен — все выходы показаны одинаково",
+  "coreScreensUnknown": "Неизвестно",
+  "coreScreensFetchFailed": "Не удалось получить транзакцию {txid} из Electrum.",
+  "coreScreensInputResolutionFailed": "Вход не найден: выход {vout} из {parentTxId} не существует.",
+  "coreScreensParseFailed": "Не удалось разобрать транзакцию: {message}.",
+  "coreScreensUnexpectedError": "Непредвиденная ошибка: {message}.",
+  "coreScreensNoServersAvailable": "Нет доступных серверов Electrum.",
+  "addressViewerTitle": "Адрес",
+  "viewerTapToCopy": "Нажмите для копирования",
+  "viewerViewInExplorer": "Посмотреть в обозревателе",
+  "transactionViewerTitle": "ID транзакции",
+  "invoiceViewerTitle": "Счёт",
+  "viewerCopyLink": "Копировать ссылку"
 }

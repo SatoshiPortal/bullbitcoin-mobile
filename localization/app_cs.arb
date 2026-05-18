@@ -12582,5 +12582,21 @@
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Otevřete aplikaci do 24 hodin, abyste dokončili svůj swap.",
-  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje"
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
+  "coreScreensResolvingInputs": "Načítání vstupů transakce...",
+  "coreScreensFeeRateLabel": "Sazba poplatku",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Výstup drobných neznámý — všechny výstupy zobrazeny stejně",
+  "coreScreensUnknown": "Neznámé",
+  "coreScreensFetchFailed": "Nepodařilo se načíst transakci {txid} z Electrum.",
+  "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
+  "coreScreensParseFailed": "Analýza transakce selhala: {message}.",
+  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
+  "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
+  "addressViewerTitle": "Adresa",
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "viewerViewInExplorer": "Zobrazit v prohlížeči",
+  "transactionViewerTitle": "ID transakce",
+  "invoiceViewerTitle": "Faktura",
+  "viewerCopyLink": "Kopírovat odkaz"
 }

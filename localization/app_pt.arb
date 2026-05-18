@@ -4657,5 +4657,21 @@
   "legacyStorageRiskAckButtonHasBackup": "Compreendo o risco",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Abra a aplicação dentro de 24 horas para concluir o seu swap.",
-  "importMnemonicDuplicateError": "Esta mnemônica já existe"
+  "importMnemonicDuplicateError": "Esta mnemônica já existe",
+  "coreScreensResolvingInputs": "Resolvendo entradas da transação...",
+  "coreScreensFeeRateLabel": "Taxa de comissão",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Saída de troco desconhecida — todas as saídas mostradas igualmente",
+  "coreScreensUnknown": "Desconhecido",
+  "coreScreensFetchFailed": "Não foi possível obter a transação {txid} do Electrum.",
+  "coreScreensInputResolutionFailed": "Entrada não encontrada: a saída {vout} de {parentTxId} não existe.",
+  "coreScreensParseFailed": "Falha ao analisar a transação: {message}.",
+  "coreScreensUnexpectedError": "Erro inesperado: {message}.",
+  "coreScreensNoServersAvailable": "Nenhum servidor Electrum disponível.",
+  "addressViewerTitle": "Endereço",
+  "viewerTapToCopy": "Toque para copiar",
+  "viewerViewInExplorer": "Ver no explorador",
+  "transactionViewerTitle": "ID da transação",
+  "invoiceViewerTitle": "Fatura",
+  "viewerCopyLink": "Copiar link"
 }

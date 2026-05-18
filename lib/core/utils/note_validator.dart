@@ -45,6 +45,9 @@ class NoteValidator {
       "'",
       '`',
       '~',
+      '\n',
+      '\t',
+      '\r',
     ];
 
     for (final char in forbiddenChars) {

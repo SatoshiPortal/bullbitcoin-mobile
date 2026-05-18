@@ -4491,5 +4491,21 @@
   "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko",
   "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
   "transactionSwapOpenWithin24Hours": "Öffne die App innerhalb von 24 Stunden, um deinen Swap abzuschließen.",
-  "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits"
+  "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits",
+  "coreScreensResolvingInputs": "Transaktionseingaben werden aufgelöst...",
+  "coreScreensFeeRateLabel": "Gebührenrate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Wechselgeld-Ausgang unbekannt — alle Ausgänge werden gleichwertig angezeigt",
+  "coreScreensUnknown": "Unbekannt",
+  "coreScreensFetchFailed": "Transaktion {txid} konnte nicht von Electrum abgerufen werden.",
+  "coreScreensInputResolutionFailed": "Eingang nicht gefunden: Ausgang {vout} von {parentTxId} existiert nicht.",
+  "coreScreensParseFailed": "Transaktion konnte nicht verarbeitet werden: {message}.",
+  "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
+  "coreScreensNoServersAvailable": "Keine Electrum-Server verfügbar.",
+  "addressViewerTitle": "Adresse",
+  "viewerTapToCopy": "Zum Kopieren tippen",
+  "viewerViewInExplorer": "Im Explorer anzeigen",
+  "transactionViewerTitle": "Transaktions-ID",
+  "invoiceViewerTitle": "Rechnung",
+  "viewerCopyLink": "Link kopieren"
 }

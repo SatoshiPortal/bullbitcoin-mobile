@@ -48,6 +48,13 @@ class LabelsFacade {
         .toList();
   }
 
+  /// Distinct user-defined label strings across the entire app — used to feed
+  /// the suggestion chips in the label entry bottom sheet.
+  Future<Set<String>> fetchDistinctLabels() async {
+    final labels = await fetchAll();
+    return labels.map((l) => l.label).toSet();
+  }
+
   Future<Label> store(NewLabel label) async {
     final storedLabel = await _storeLabelsUsecase.execute(
       NewApplicationLabel(

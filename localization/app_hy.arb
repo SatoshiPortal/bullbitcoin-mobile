@@ -200,5 +200,22 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Բացեք հավելվածը 24 ժամվա ընթացքում՝ ձեր սվափը ավարտելու համար։",
   "appStartupErrorMessage": "Հավելվածը չհաջողվեց գործարկել։ Փորձեք ամբողջությամբ փակել և նորից բացել այն։ Եթե սխալը շարունակվում է, կապվեք աջակցության հետ և կիսվեք ձեր լոգերով։",
-  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի"
+  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի",
+  "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensFeeRateLabel": "Fee rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "addressViewerTitle": "Հասցե",
+  "viewerTapToCopy": "Հպեք պատճենելու համար",
+  "viewerViewInExplorer": "Դիտել հետախույզում",
+  "viewerCopyLink": "Պատճենել հղումը",
+  "transactionViewerTitle": "Գործարքի նույնացուցիչ",
+  "invoiceViewerTitle": "Ապրանքագիր "
 }
