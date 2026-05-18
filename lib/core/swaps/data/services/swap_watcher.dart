@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bip21_uri/bip21_uri.dart';
-import 'package:boltz/boltz.dart' as boltz;
+import 'package:bull_sdk/boltz.dart' as boltz;
 
 class SwapWatcherService {
   final BoltzSwapRepository _boltzRepo;

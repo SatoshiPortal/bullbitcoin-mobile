@@ -1,4 +1,4 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bull_sdk/ark.dart' as ark_wallet;
 import 'package:bb_mobile/core/ark/entities/ark_balance.dart';
 import 'package:bb_mobile/core/ark/entities/ark_wallet.dart';
 import 'package:bb_mobile/core/ark/errors.dart';
@@ -23,7 +23,7 @@ sealed class ArkState with _$ArkState {
 
     // Transaction History and Balances
     ArkBalance? arkBalance,
-    @Default([]) List<ark_wallet.Transaction> transactions,
+    @Default([]) List<ark_wallet.ArkTransaction> transactions,
 
     // Receive
     @Default(ArkReceiveMethod.offchain) ArkReceiveMethod receiveMethod,
@@ -50,7 +50,7 @@ sealed class ArkState with _$ArkState {
           : preferrredFiatCurrencyCode;
 
   bool get hasBoardingTransaction =>
-      transactions.any((tx) => tx is ark_wallet.Transaction_Boarding);
+      transactions.any((tx) => tx is ark_wallet.ArkTransaction_Boarding);
 
   bool get hasArkAddress =>
       sendAddress != null && ArkWalletEntity.isArkAddress(sendAddress!.address);
