@@ -22,7 +22,7 @@ Future<void> doMigration0_2to0_3() async {
   final List<OldWallet> wallets = [];
 
   for (final walletId in walletIds) {
-    final jsn = hiveDatasource.getValue(walletId);
+    final jsn = await hiveDatasource.getValue(walletId);
     if (jsn == null) throw 'Abort';
 
     final Map<String, dynamic> walletObj =

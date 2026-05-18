@@ -103,10 +103,32 @@ class Bull {
     await Future.wait(initTasks);
   }
 
-  static Future<void> initLogs() async {
+  /// [background] — when true, the logger writes to
+  /// `bull_background_logs.tsv` instead of `bull_logs.tsv`. Required
+  /// for the workmanager BG isolate so its writes don't interleave
+  /// with the main isolate's (both engines can be alive simultaneously
+  /// inside the same iOS process when iOS spawns the app to fire a
+  /// periodic task).
+  static Future<void> initLogs({bool background = false}) async {
     final logDirectory = await getApplicationDocumentsDirectory();
-    log = Logger.replace(directory: logDirectory);
+    log = Logger.replace(directory: logDirectory, background: background);
     await log.ensureLogsExist();
+    if (!background) {
+      // Cold-start prune for the FG file. `Logger.prune()` is
+      // intentionally per-isolate (see the comment above its
+      // definition — cross-isolate truncation races with the other
+      // isolate's open IOSink and can destroy recently-buffered
+      // lines). FG file pruning therefore only happens here; the BG
+      // file is pruned by the `logs-prune` workmanager fire. Long
+      // FG-only sessions (rare cold restarts, no BG fires) can let
+      // the FG file grow past the cap until the next cold launch —
+      // acceptable: worst case is a few hundred KB until the user
+      // restarts.
+      //
+      // Fire-and-forget: prune serializes against writes via
+      // `_enqueue` and is a no-op if the file is small.
+      unawaited(log.prune());
+    }
   }
 
   static Future<void> initLocator() async {
@@ -155,6 +177,12 @@ Future main() async {
         log.severe(message: 'App Init Error', error: error, trace: stackTrace);
         runApp(AppInitErrorScreen(error: error));
         return;
+      } finally {
+        // Make sure the just-logged severe line is on disk before we
+        // render AppInitErrorScreen — the user typically shares logs
+        // from that screen to support, and the buffered severe write
+        // would otherwise still be pending in the IOSink.
+        await log.flush();
       }
       runApp(const BullBitcoinWalletApp());
     },
@@ -170,6 +198,14 @@ Future main() async {
         debugPrint(
           'Global Unhandled Error (logger failed): $error\n$stackTrace',
         );
+      } finally {
+        // Best-effort: push the just-queued severe write to disk before
+        // a potential subsequent crash takes the isolate down. The
+        // handler signature is synchronous so we can't await here;
+        // `_queueWrite` is itself `unawaited` for SEVERE flushes which
+        // means this scheduled flush is still racy at process death.
+        // Sentry preserves the event independently via `Report.error`.
+        unawaited(log.flush());
       }
     },
   );
@@ -202,19 +238,25 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
-  // Listen to the app lifecycle state changes
+  // Listen to the app lifecycle state changes. The handlers below
+  // return `Future<void>` (they each await `log.flush()`) but
+  // `AppLifecycleListener.onStateChange` is a sync void callback —
+  // Flutter does not await our return. `unawaited` documents that the
+  // flush is fire-and-forget at this layer; whether the OS lets the
+  // microtask queue drain before tearing the process down is the same
+  // race the flushes themselves are best-effort defense against.
   void _onStateChanged(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.detached:
         _onDetached();
       case AppLifecycleState.resumed:
-        _onResumed();
+        unawaited(_onResumed());
       case AppLifecycleState.inactive:
-        _onInactive();
+        unawaited(_onInactive());
       case AppLifecycleState.hidden:
-        _onHidden();
+        unawaited(_onHidden());
       case AppLifecycleState.paused:
-        _onPaused();
+        unawaited(_onPaused());
     }
   }
 
@@ -233,7 +275,13 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     }
   }
 
-  void _onInactive() => log.info('inactive');
+  Future<void> _onInactive() async {
+    log.info('inactive');
+    // iOS lifecycle is `active → inactive → hidden → paused`. The
+    // user can force-quit from the app switcher during `inactive`
+    // and skip both `hidden` and `paused` flushes, so flush here too.
+    await log.flush();
+  }
 
   Future<void> _onHidden() async {
     log.info('hidden');
@@ -282,6 +330,13 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                 // Also fetch user summary to check if user is logged in
                 // and connect WebSocket if so (handled by ExchangeListener)
                 context.read<ExchangeCubit>().fetchUserSummary();
+                // Reconnect WebSocket here too — when AppStartupBloc retries
+                // after a pre-warm KeychainLockedException, the SettingsCubit
+                // env-change listener below has ALREADY fired during pre-warm
+                // (with the keychain locked) and won't fire again, so without
+                // this call the WebSocket stays disconnected post-unlock until
+                // the user toggles environment or cold-launches.
+                context.read<ExchangeCubit>().reconnectWebSocket();
               },
             ),
             BlocListener<SettingsCubit, SettingsState>(

@@ -24,7 +24,12 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
   DateTime? _endDate;
 
   List<String> get _filteredLogs {
-    final result = widget.logs;
+    // Copy: `widget.logs` is owned by the parent and may be aliased by
+    // sibling widgets (share-logs etc.). `.sort()` mutates in place,
+    // so without a copy the parent's list flips from `readLogs()`'s
+    // ascending order to this widget's descending order after the
+    // first build.
+    final result = List<String>.of(widget.logs);
     result.sort((a, b) {
       final partsA = a.split('\t');
       final partsB = b.split('\t');
