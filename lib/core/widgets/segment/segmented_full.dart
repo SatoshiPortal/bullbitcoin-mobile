@@ -76,7 +76,7 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
                           ),
                         )
                         : context.font.labelMedium?.copyWith(
-                          color: context.appColors.outline,
+                          color: context.appColors.secondary,
                         ),
               ),
           },

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -10,10 +11,9 @@ class DeleteCustomServerDialog {
     String serverUrl,
     bool isLastCustomServer,
   ) {
-    return showDialog<bool>(
+    return BlurredDialog.show<bool>(
       context: context,
-      builder:
-          (BuildContext dialogContext) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
             backgroundColor: context.appColors.surfaceContainer,
             title: Text(context.loc.electrumDeleteServerTitle),
             content: Column(

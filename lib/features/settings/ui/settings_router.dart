@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
 import 'package:bb_mobile/features/all_seed_view/presentation/all_seed_view_cubit.dart';
@@ -42,7 +43,7 @@ import 'package:bb_mobile/features/tor_settings/ui/tor_settings_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -240,9 +241,9 @@ class SettingsRouter {
                           current.walletDeletionError != null;
                     },
                     listener: (context, state) {
-                      showDialog(
+                      BlurredDialog.show(
                         context: context,
-                        builder: (dialogContext) =>
+                        builder: (_) =>
                             const FailedWalletDeletionAlertDialog(),
                       );
                     },

@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_status_indicator.dart';
@@ -166,7 +167,7 @@ class CustomServerCard extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
-    showDialog(
+    BlurredDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: context.appColors.surface,

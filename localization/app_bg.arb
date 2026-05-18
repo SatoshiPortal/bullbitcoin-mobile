@@ -9590,5 +9590,21 @@
   "legacyStorageAcceptRisksCheckbox": "Приемам рисковете от това да не направя резервно копие",
   "legacyStorageHasBackupImportantBody": "Моля, не пропускайте този процес, освен ако наистина не се налага спешно да използвате портфейла или не чакате суап да приключи.",
   "legacyStorageRiskAckButtonHasBackup": "Разбирам риска",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "coreScreensResolvingInputs": "Разрешаване на входовете на транзакцията...",
+  "coreScreensFeeRateLabel": "Размер на таксата",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Изходът за ресто е неизвестен — всички изходи са показани еднакво",
+  "coreScreensUnknown": "Неизвестно",
+  "coreScreensFetchFailed": "Неуспешно извличане на транзакция {txid} от Electrum.",
+  "coreScreensInputResolutionFailed": "Входът не е намерен: изход {vout} на {parentTxId} не съществува.",
+  "coreScreensParseFailed": "Неуспешен анализ на транзакцията: {message}.",
+  "coreScreensUnexpectedError": "Неочаквана грешка: {message}.",
+  "coreScreensNoServersAvailable": "Няма налични Electrum сървъри.",
+  "addressViewerTitle": "Адрес",
+  "viewerTapToCopy": "Натиснете за копиране",
+  "viewerViewInExplorer": "Виж в експлорър",
+  "transactionViewerTitle": "ID на транзакция",
+  "invoiceViewerTitle": "Фактура",
+  "viewerCopyLink": "Копиране на връзка"
 }

@@ -12583,5 +12583,21 @@
   "legacyStorageAcceptRisksCheckbox": "أوافق على مخاطر عدم عمل نسخة احتياطية",
   "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
   "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
+  "coreScreensFeeRateLabel": "معدل الرسوم",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "مخرج الباقي غير معروف — يتم عرض جميع المخرجات بالتساوي",
+  "coreScreensUnknown": "غير معروف",
+  "coreScreensFetchFailed": "تعذر جلب المعاملة {txid} من Electrum.",
+  "coreScreensInputResolutionFailed": "المدخل غير موجود: المخرج {vout} من {parentTxId} غير موجود.",
+  "coreScreensParseFailed": "فشل تحليل المعاملة: {message}.",
+  "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
+  "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
+  "addressViewerTitle": "العنوان",
+  "viewerTapToCopy": "انقر للنسخ",
+  "viewerViewInExplorer": "عرض في المستكشف",
+  "transactionViewerTitle": "معرف المعاملة",
+  "invoiceViewerTitle": "فاتورة",
+  "viewerCopyLink": "انسخ الرابط"
 }

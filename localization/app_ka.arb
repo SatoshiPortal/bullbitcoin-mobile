@@ -409,5 +409,22 @@
   "legacyStorageAcceptRisksCheckbox": "ვაღიარებ რისკებს, რომ სარეზერვო ასლი არ მაქვს",
   "legacyStorageHasBackupImportantBody": "გთხოვთ, არ გამოტოვოთ ეს პროცესი, თუ არ გჭირდებათ საფულის გადაუდებელი გამოყენება ან არ ელოდებით სვოპის დასრულებას.",
   "legacyStorageRiskAckButtonHasBackup": "მესმის რისკი",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "coreScreensFeeRateLabel": "Fee rate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "coreScreensUnknown": "Unknown",
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "addressViewerTitle": "მისამართი",
+  "viewerTapToCopy": "კოპირებისთვის შეეხეთ ღილაკს",
+  "viewerViewInExplorer": "Დათვალიერება ექსპლორერში",
+  "transactionViewerTitle": "ტრანსაქციის ID ",
+  "invoiceViewerTitle": "ინვოისი",
+  "viewerCopyLink": "ბმულის კოპირება"
 }

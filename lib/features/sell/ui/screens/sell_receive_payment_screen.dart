@@ -5,6 +5,8 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/widgets/invoice_viewer.dart';
 import 'package:bb_mobile/core/widgets/inputs/copy_input.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -274,13 +276,8 @@ class SellReceivePaymentScreen extends StatelessWidget {
             '',
     };
 
-    if (order.payinMethod == OrderPaymentMethod.lnInvoice &&
-        fullText.length > 20) {
-      final displayText =
-          '${fullText.substring(0, 36)}...${fullText.substring(fullText.length - 30)}';
-      return CopyInput(text: displayText, clipboardText: fullText);
-    }
-
-    return CopyInput(text: fullText);
+    return order.payinMethod == OrderPaymentMethod.lnInvoice
+        ? InvoiceViewer(fullText)
+        : AddressViewer(fullText);
   }
 }

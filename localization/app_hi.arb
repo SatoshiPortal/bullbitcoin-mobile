@@ -12580,5 +12580,21 @@
   "legacyStorageAcceptRisksCheckbox": "मैं बैकअप न लेने के जोखिम स्वीकार करता हूँ",
   "legacyStorageHasBackupImportantBody": "कृपया इस प्रक्रिया को न छोड़ें जब तक कि आपको तत्काल वॉलेट का उपयोग करने की नितांत आवश्यकता न हो या आप किसी स्वैप के पूरा होने की प्रतीक्षा कर रहे हों।",
   "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "coreScreensResolvingInputs": "लेन-देन इनपुट हल किए जा रहे हैं...",
+  "coreScreensFeeRateLabel": "शुल्क दर",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "परिवर्तन आउटपुट अज्ञात — सभी आउटपुट समान रूप से दिखाए गए",
+  "coreScreensUnknown": "अज्ञात",
+  "coreScreensFetchFailed": "Electrum से लेन-देन {txid} प्राप्त नहीं हो सका।",
+  "coreScreensInputResolutionFailed": "इनपुट नहीं मिला: {parentTxId} का आउटपुट {vout} मौजूद नहीं है।",
+  "coreScreensParseFailed": "लेन-देन पार्स करने में विफल: {message}।",
+  "coreScreensUnexpectedError": "अप्रत्याशित त्रुटि: {message}।",
+  "coreScreensNoServersAvailable": "कोई Electrum सर्वर उपलब्ध नहीं है।",
+  "addressViewerTitle": "पता",
+  "viewerTapToCopy": "कॉपी करने के लिए टैप करें",
+  "viewerViewInExplorer": "एक्सप्लोरर में देखें",
+  "transactionViewerTitle": "लेन-देन आईडी",
+  "invoiceViewerTitle": "चालान",
+  "viewerCopyLink": "प्रतिरूप जोड़ना"
 }

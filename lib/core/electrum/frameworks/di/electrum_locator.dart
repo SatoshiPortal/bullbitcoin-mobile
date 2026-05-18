@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/fetch_electrum_transaction_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repo
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
+import 'package:bb_mobile/core/electrum/interface_adapters/adapters/electrum_transaction_port_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/environment_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_status_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_server_repository.dart';
@@ -17,6 +19,7 @@ import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_el
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/transactions/application/transaction_port.dart';
 import 'package:get_it/get_it.dart';
 
 class ElectrumLocator {
@@ -53,6 +56,12 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<ServerStatusPort>(
       () => const ServerStatusAdapter(),
+    );
+    locator.registerLazySingleton<TransactionPort>(
+      () => ElectrumTransactionPortAdapter(
+        fetchUsecase: locator<FetchElectrumTransactionUsecase>(),
+        environmentPort: locator<EnvironmentPort>(),
+      ),
     );
   }
 
@@ -93,6 +102,13 @@ class ElectrumLocator {
     locator.registerFactory<SetAdvancedElectrumOptionsUsecase>(
       () => SetAdvancedElectrumOptionsUsecase(
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<FetchElectrumTransactionUsecase>(
+      () => FetchElectrumTransactionUsecase(
+        getServersUsecase: locator<GetElectrumServersToUseUsecase>(),
+        environmentPort: locator<EnvironmentPort>(),
+        sqlite: locator<SqliteDatabase>(),
       ),
     );
   }

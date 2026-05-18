@@ -4489,5 +4489,21 @@
   "legacyStorageAcceptRisksCheckbox": "Ich akzeptiere die Risiken, keine Sicherung zu haben",
   "legacyStorageHasBackupImportantBody": "Bitte überspringen Sie diesen Vorgang nur, wenn Sie die Wallet unbedingt dringend verwenden müssen oder auf den Abschluss eines Swaps warten.",
   "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko",
-  "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "coreScreensResolvingInputs": "Transaktionseingaben werden aufgelöst...",
+  "coreScreensFeeRateLabel": "Gebührenrate",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Wechselgeld-Ausgang unbekannt — alle Ausgänge werden gleichwertig angezeigt",
+  "coreScreensUnknown": "Unbekannt",
+  "coreScreensFetchFailed": "Transaktion {txid} konnte nicht von Electrum abgerufen werden.",
+  "coreScreensInputResolutionFailed": "Eingang nicht gefunden: Ausgang {vout} von {parentTxId} existiert nicht.",
+  "coreScreensParseFailed": "Transaktion konnte nicht verarbeitet werden: {message}.",
+  "coreScreensUnexpectedError": "Unerwarteter Fehler: {message}.",
+  "coreScreensNoServersAvailable": "Keine Electrum-Server verfügbar.",
+  "addressViewerTitle": "Adresse",
+  "viewerTapToCopy": "Zum Kopieren tippen",
+  "viewerViewInExplorer": "Im Explorer anzeigen",
+  "transactionViewerTitle": "Transaktions-ID",
+  "invoiceViewerTitle": "Rechnung",
+  "viewerCopyLink": "Link kopieren"
 }

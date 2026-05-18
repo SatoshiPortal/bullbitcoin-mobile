@@ -29,6 +29,10 @@ class BlurredBottomSheet extends StatelessWidget {
       useSafeArea: true,
       backgroundColor: context.appColors.background,
       barrierColor: context.appColors.surface.withAlpha(100),
+      shape: RoundedRectangleBorder(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+        side: BorderSide(color: context.appColors.secondaryFixedDim),
+      ),
       builder: (_) => BlurredBottomSheet(child: child),
     );
   }
