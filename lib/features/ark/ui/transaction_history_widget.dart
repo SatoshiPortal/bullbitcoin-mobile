@@ -1,4 +1,4 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bull_sdk/ark.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -14,23 +14,23 @@ class TransactionHistoryWidget extends StatelessWidget {
     this.isLoading = false,
   });
 
-  final List<ark_wallet.Transaction> transactions;
+  final List<ark_wallet.ArkTransaction> transactions;
   final bool isLoading;
 
-  DateTime? _getTransactionDate(ark_wallet.Transaction tx) {
+  DateTime? _getTransactionDate(ark_wallet.ArkTransaction tx) {
     return switch (tx) {
-      ark_wallet.Transaction_Boarding(confirmedAt: final confirmedAt?) =>
+      ark_wallet.ArkTransaction_Boarding(confirmedAt: final confirmedAt?) =>
         DateTime.fromMillisecondsSinceEpoch(confirmedAt * 1000),
-      ark_wallet.Transaction_Boarding() => DateTime.now(),
-      ark_wallet.Transaction_Commitment(createdAt: final createdAt) =>
+      ark_wallet.ArkTransaction_Boarding() => DateTime.now(),
+      ark_wallet.ArkTransaction_Commitment(createdAt: final createdAt) =>
         DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
-      ark_wallet.Transaction_Redeem(createdAt: final createdAt) =>
+      ark_wallet.ArkTransaction_Redeem(createdAt: final createdAt) =>
         DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
     };
   }
 
-  Map<int, List<ark_wallet.Transaction>> _groupTransactionsByDay() {
-    final Map<int, List<ark_wallet.Transaction>> grouped = {};
+  Map<int, List<ark_wallet.ArkTransaction>> _groupTransactionsByDay() {
+    final Map<int, List<ark_wallet.ArkTransaction>> grouped = {};
 
     for (final tx in transactions) {
       final date = _getTransactionDate(tx);

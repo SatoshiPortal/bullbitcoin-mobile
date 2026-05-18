@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:boltz/boltz.dart';
+import 'package:bull_sdk/boltz.dart';
 import 'package:drift/drift.dart';
 
 class BoltzStorageDatasource {

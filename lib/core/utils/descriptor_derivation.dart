@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
-import 'package:lwk/lwk.dart' as lwk;
+import 'package:bull_sdk/lwk.dart' as lwk;
 
 class DescriptorDerivation {
   static Future<String> derivePublicBitcoinDescriptorFromXpriv(

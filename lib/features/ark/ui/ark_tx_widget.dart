@@ -1,4 +1,4 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bull_sdk/ark.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
@@ -31,7 +31,7 @@ extension ArkTransactionTypeExtension on ArkTransactionType {
 class ArkTxWidget extends StatelessWidget {
   const ArkTxWidget({super.key, required this.tx});
 
-  final ark_wallet.Transaction tx;
+  final ark_wallet.ArkTransaction tx;
 
   @override
   Widget build(BuildContext context) {
@@ -40,19 +40,19 @@ class ArkTxWidget extends StatelessWidget {
     String txid;
     int sats;
     switch (tx) {
-      case final ark_wallet.Transaction_Boarding tx:
+      case final ark_wallet.ArkTransaction_Boarding tx:
         if (tx.confirmedAt != null) {
           date = DateTime.fromMillisecondsSinceEpoch(tx.confirmedAt! * 1000);
         }
         transactionType = ArkTransactionType.boarding;
         sats = tx.sats;
         txid = tx.txid;
-      case final ark_wallet.Transaction_Commitment tx:
+      case final ark_wallet.ArkTransaction_Commitment tx:
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         transactionType = ArkTransactionType.commitment;
         sats = tx.sats;
         txid = tx.txid;
-      case final ark_wallet.Transaction_Redeem tx:
+      case final ark_wallet.ArkTransaction_Redeem tx:
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         transactionType = ArkTransactionType.redeem;
         sats = tx.sats;
@@ -100,7 +100,7 @@ class ArkTxWidget extends StatelessWidget {
                     fiatAmount: null,
                     fiatCurrency: null,
                   ),
-                  if (tx is ark_wallet.Transaction_Boarding)
+                  if (tx is ark_wallet.ArkTransaction_Boarding)
                     GestureDetector(
                       onTap: () async {
                         final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
@@ -159,7 +159,7 @@ class ArkTxWidget extends StatelessWidget {
                       ),
                     ],
                   )
-                else if (tx is ark_wallet.Transaction_Boarding)
+                else if (tx is ark_wallet.ArkTransaction_Boarding)
                   Row(
                     children: [
                       BBText(

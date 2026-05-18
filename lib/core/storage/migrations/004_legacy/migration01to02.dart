@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_stor
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:crypto/crypto.dart';
-import 'package:lwk/lwk.dart' as lwk;
+import 'package:bull_sdk/lwk.dart' as lwk;
 
 Future<void> doMigration0_1to0_2() async {
   try {
