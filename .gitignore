@@ -94,10 +94,20 @@ app.*.map.json
 /android/app/release
 **/.cxx
 
+# Patrol generated files
+patrol_test/test_bundle.dart
+integration_test/test_bundle.dart
+ios/RunnerUITests/
+
 # FVM Version Cache
 .fvm/
 
 today.md
 
 CLAUDE.md
+SESSION_CONTEXT.md
+CARGOKIT_PATCH_NOTES.md
 .zed/
+.serena/
+.claude/
+graphify-out/

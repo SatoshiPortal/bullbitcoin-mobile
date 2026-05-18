@@ -155,12 +155,21 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  patrol: ^4.5.0
   json_serializable: ^6.11.2
   mocktail: ^1.0.4
   flutter_launcher_icons: ^0.14.4
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
+  kiri_check: ^1.3.1
+
+patrol:
+  app_name: Bull Bitcoin
+  android:
+    package_name: com.bullbitcoin.mobile
+  ios:
+    bundle_id: com.bullbitcoin.mobile
 
 flutter:
   generate: true # Needed for code generation, for example for internationalization

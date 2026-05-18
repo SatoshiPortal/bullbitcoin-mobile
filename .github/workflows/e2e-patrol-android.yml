@@ -1,0 +1,405 @@
+# =============================================================================
+# Bull Bitcoin Mobile — E2E Patrol Tests on Android
+# =============================================================================
+#
+# ARCHITECTURE DECISIONS (researched April 2026):
+#
+# 1. ARM64-ONLY APK ON x86_64 EMULATOR:
+#    Our APK is arm64-only (Cargokit Rust FFI patch). Android API 34+ x86_64
+#    emulator images include ARM ABI translation (libndk_translation/ndk_translation),
+#    allowing arm64-only APKs to run on x86_64 emulators. We use API 35 with
+#    google_apis target on x86_64 arch. This is confirmed working by:
+#    - https://github.com/ReactiveCircus/android-emulator-runner/issues/458
+#    - https://xdaforums.com/t/4713598 (API 34+ images with ABI translation)
+#    - Google's official ndk_translation in AOSP system images
+#
+# 2. KVM + DOCKER SIMULTANEOUSLY:
+#    GitHub Actions ubuntu-latest (and larger runners) support KVM for Android
+#    emulator AND Docker for Nigiri containers simultaneously. KVM is hardware
+#    virtualization, Docker uses namespaces/cgroups — they coexist fine.
+#
+# 3. RUNNER CHOICE:
+#    - ubuntu-latest (2-core): $0.006/min — KVM available since April 2024
+#    - Linux 4-core larger: $0.012/min — better for Rust compilation
+#    We use 4-core for the build job (Rust) and 2-core for the test job.
+#
+# 4. RUST COMPILATION CACHING:
+#    sccache with GitHub Actions cache backend cuts Rust builds from 15-20min
+#    to 2-5min on cache hit. We cache both sccache and Gradle outputs.
+#
+# 5. WHY NOT FIREBASE TEST LAB:
+#    Flutter team themselves declared it "too flaky" and removed their own
+#    FTL tests (github.com/flutter/flutter/issues/63419). Multiple known
+#    issues with timeouts, preprocessing errors, and WAKE_LOCK exceptions.
+#
+# 6. WHY NOT emulator.wtf / AWS Device Farm:
+#    - emulator.wtf: $2/emulator-hour, x86_64 only (no ARM translation
+#      control), adds cost without solving our core problem
+#    - AWS Device Farm: $0.17/device-minute ($10.20/hour), expensive for
+#      15-20min test runs, and Flutter/Patrol integration is poorly documented
+#    Both are viable escalation paths if local emulator proves too flaky.
+#
+# COST ESTIMATE (target: <$100/month):
+#    Build job (4-core): ~25 min/run x $0.012/min = $0.30/run
+#    Test job (2-core):  ~15 min/run x $0.006/min = $0.09/run
+#    Total per run: ~$0.39
+#    At 3 PRs/day x 22 days/month = 66 runs = ~$26/month
+#    With cache misses/retries buffer: ~$40-60/month
+#    Well under $100/month target.
+#
+# =============================================================================
+
+name: E2E Patrol Tests (Android)
+
+on:
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Enable tmate SSH debugging'
+        required: false
+        default: false
+
+concurrency:
+  # Safe: concurrency group keys are not shell-interpolated
+  group: e2e-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: '3.27.3'
+  JAVA_VERSION: '21'
+  ANDROID_API_LEVEL: 35
+  ANDROID_TARGET: google_apis
+  ANDROID_ARCH: x86_64
+  SCCACHE_GHA_ENABLED: 'true'
+  RUSTC_WRAPPER: sccache
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  # =========================================================================
+  # JOB 1: Build APK + Test APK (4-core for Rust compilation)
+  # =========================================================================
+  build:
+    name: Build APKs (Rust + Flutter)
+    runs-on: ubuntu-latest-4-cores
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # --- Rust Toolchain + sccache ---
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@v0.0.7
+        with:
+          version: v0.9.1
+
+      # --- Android SDK + NDK ---
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+
+      - name: Install Android NDK
+        run: sdkmanager --install "ndk;29.0.13113456"
+
+      # --- Flutter ---
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      # --- Dart/Flutter dependency cache ---
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: pub-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-
+
+      # --- Gradle cache ---
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: gradle-${{ hashFiles('android/app/build.gradle', 'android/build.gradle') }}
+          restore-keys: gradle-
+
+      # --- Cargokit arm64-only patch ---
+      - name: Install dependencies and patch cargokit for arm64-only
+        run: |
+          flutter pub get
+          # Patch all cargokit plugin.gradle files to arm64-only
+          # This removes x86/x86_64/armv7 debug ABI additions that cargokit
+          # injects by default, which would trigger multi-arch Rust compilation
+          for f in $(find ~/.pub-cache/git -name "plugin.gradle" -path "*/cargokit/*" 2>/dev/null); do
+            echo "Patching $f for arm64-only..."
+            sed -i '/abiFilters\.add.*armeabi-v7a/d' "$f" 2>/dev/null || true
+            sed -i '/abiFilters\.add.*x86_64/d' "$f" 2>/dev/null || true
+            sed -i '/abiFilters\.add.*x86/d' "$f" 2>/dev/null || true
+          done
+
+      # --- Build generated code ---
+      - name: Build Runner (codegen)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # --- Create .env ---
+      - name: Create .env file
+        run: |
+          echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
+          echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
+
+      # --- Install Patrol CLI ---
+      - name: Install Patrol CLI
+        run: dart pub global activate patrol_cli
+
+      # --- Build Patrol APKs ---
+      - name: Build Patrol test APKs
+        run: |
+          patrol build android \
+            --target patrol_test/app_launch_test.dart \
+            --debug \
+            --verbose
+
+      # --- Upload APKs for test job ---
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: patrol-apks
+          path: |
+            build/**/app-debug.apk
+            build/**/app-debug-androidTest.apk
+          retention-days: 1
+
+      # --- sccache stats ---
+      - name: Show sccache stats
+        if: always()
+        run: sccache --show-stats
+
+  # =========================================================================
+  # JOB 2: Run E2E Tests on Android Emulator (2-core, KVM + Docker)
+  # =========================================================================
+  test:
+    name: Run Patrol E2E Tests
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    # --- Nigiri Bitcoin regtest environment (Docker services) ---
+    # Runs alongside the KVM-accelerated Android emulator.
+    # KVM = hardware virtualization for emulator
+    # Docker = container namespaces for Nigiri
+    # They coexist without conflict on the same Linux host.
+    services:
+      nigiri:
+        image: vulpemventures/nigiri:latest
+        ports:
+          - 18443:18443  # bitcoind RPC
+          - 3000:3000    # esplora/electrs HTTP
+          - 50001:50001  # electrs TCP
+          - 5000:5000    # chopsticks (faucet)
+        options: >-
+          --health-cmd "curl -sf http://localhost:3000 || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+          --health-start-period 30s
+
+    steps:
+      - name: Checkout (scripts only)
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts
+            patrol_test
+
+      # --- Download pre-built APKs ---
+      - name: Download APKs
+        uses: actions/download-artifact@v4
+        with:
+          name: patrol-apks
+          path: apks
+
+      - name: List downloaded APKs
+        run: find apks -name "*.apk" -exec ls -lh {} \;
+
+      # --- Enable KVM for Android emulator ---
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # --- Setup Java (needed for adb/emulator tools) ---
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      # --- Setup Android SDK ---
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+
+      # --- Verify Nigiri is healthy ---
+      - name: Wait for Nigiri
+        run: |
+          echo "Waiting for Nigiri services..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000 > /dev/null 2>&1; then
+              echo "Nigiri is ready!"
+              curl -s http://localhost:5000/faucet \
+                -H 'Content-Type: application/json' \
+                -d '{"address":"bcrt1qw508d6qejxtdg4y5r3zarvary0c5xw7kygt080","amount":0.001}' || true
+              exit 0
+            fi
+            echo "  attempt $i/30..."
+            sleep 5
+          done
+          echo "ERROR: Nigiri did not start"
+          exit 1
+
+      # --- Optional SSH debug ---
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: github.event_name == 'workflow_dispatch' && inputs.debug_enabled == 'true'
+        with:
+          limit-access-to-actor: true
+
+      # --- Run tests on Android emulator ---
+      # KEY: API 35 x86_64 emulator has ARM ABI translation built-in.
+      # Our arm64-only APK runs via libndk_translation on x86_64 emulator.
+      - name: Run Patrol tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ env.ANDROID_API_LEVEL }}
+          target: ${{ env.ANDROID_TARGET }}
+          arch: ${{ env.ANDROID_ARCH }}
+          profile: pixel_6
+          ram-size: 2048M
+          disk-size: 4096M
+          heap-size: 512M
+          force-avd-creation: true
+          emulator-options: >-
+            -no-snapshot-load
+            -no-snapshot-save
+            -no-window
+            -gpu swiftshader_indirect
+            -noaudio
+            -no-boot-anim
+            -camera-back none
+            -camera-front none
+          disable-animations: true
+          script: |
+            set -euo pipefail
+
+            echo "=== Emulator Info ==="
+            adb shell getprop ro.product.cpu.abilist
+            adb shell getprop ro.build.version.sdk
+
+            echo "=== Verify ARM ABI translation ==="
+            ABI_LIST=$(adb shell getprop ro.product.cpu.abilist)
+            if echo "$ABI_LIST" | grep -q "arm64-v8a"; then
+              echo "ARM64 ABI translation confirmed: $ABI_LIST"
+            else
+              echo "ERROR: ARM64 not in ABI list: $ABI_LIST"
+              echo "Cannot install arm64-only APK on this emulator"
+              exit 1
+            fi
+
+            echo "=== Verify Nigiri from host ==="
+            curl -sf http://localhost:3000 && echo "Nigiri OK" || echo "Nigiri unreachable"
+
+            echo "=== Installing APKs ==="
+            APP_APK=$(find apks -name "app-debug.apk" -type f | head -1)
+            TEST_APK=$(find apks -name "app-debug-androidTest.apk" -type f | head -1)
+
+            echo "Installing app: $APP_APK"
+            adb install -t "$APP_APK"
+
+            echo "Installing test runner: $TEST_APK"
+            adb install -t "$TEST_APK"
+
+            echo "=== Running Patrol instrumentation tests ==="
+            adb shell am instrument -w \
+              -e clearPackageData true \
+              com.bullbitcoin.mobile.test/pl.leancode.patrol.PatrolJUnitRunner \
+              2>&1 | tee test-output.txt
+
+            echo "=== Test Results ==="
+            cat test-output.txt
+
+            if grep -q "FAILURES" test-output.txt; then
+              echo "::error::Patrol tests had failures"
+              exit 1
+            fi
+
+            if grep -q "OK (0 tests)" test-output.txt; then
+              echo "::error::No tests were executed"
+              exit 1
+            fi
+
+      # --- Capture artifacts on failure ---
+      - name: Capture failure artifacts
+        if: failure()
+        run: |
+          mkdir -p test-artifacts
+          adb logcat -d > test-artifacts/logcat.txt 2>/dev/null || true
+          adb shell screencap -p /sdcard/failure.png 2>/dev/null && \
+            adb pull /sdcard/failure.png test-artifacts/ 2>/dev/null || true
+          adb pull /sdcard/Android/data/com.bullbitcoin.mobile/files/ test-artifacts/ 2>/dev/null || true
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-failure-artifacts
+          path: test-artifacts/
+          retention-days: 7
+
+  # =========================================================================
+  # ESCALATION PATH: AWS Device Farm (uncomment when needed)
+  # =========================================================================
+  # Real ARM devices, no ABI translation, $0.17/device-minute.
+  # Use for release branch validation or when emulator is too flaky.
+  #
+  # device-farm:
+  #   name: AWS Device Farm (Real Devices)
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   steps:
+  #     - uses: actions/download-artifact@v4
+  #       with:
+  #         name: patrol-apks
+  #         path: apks
+  #     - name: Run on Device Farm
+  #       uses: aws-actions/aws-devicefarm-mobile-device-testing@v2
+  #       with:
+  #         project-arn: ${{ secrets.AWS_DEVICE_FARM_PROJECT_ARN }}
+  #         device-pool-arn: ${{ secrets.AWS_DEVICE_FARM_DEVICE_POOL_ARN }}
+  #         app-file: apks/**/app-debug.apk
+  #         test-type: INSTRUMENTATION
+  #         test-file: apks/**/app-debug-androidTest.apk
