@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
+        context.read<WalletBloc>().add(const WalletRefreshed());
         context.go(WalletRoute.walletHome.path);
       },
       child: Scaffold(
@@ -32,7 +34,10 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
           flexibleSpace: TopBar(
             title: context.loc.receiveTitle,
             actionIcon: Icons.close,
-            onAction: () => context.go(WalletRoute.walletHome.path),
+            onAction: () {
+              context.read<WalletBloc>().add(const WalletRefreshed());
+              context.go(WalletRoute.walletHome.path);
+            },
           ),
         ),
         body: const PaymentReceivedPage(),

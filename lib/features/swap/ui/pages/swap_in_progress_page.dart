@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -136,7 +137,10 @@ class SwapInProgressPage extends StatelessWidget {
                 ],
                 BBButton.big(
                   label: context.loc.swapGoHomeButton,
-                  onPressed: () => context.goNamed(WalletRoute.walletHome.name),
+                  onPressed: () {
+                    context.read<WalletBloc>().add(const WalletRefreshed());
+                    context.goNamed(WalletRoute.walletHome.name);
+                  },
                   bgColor: context.appColors.secondary,
                   textColor: context.appColors.onSecondary,
                 ),
