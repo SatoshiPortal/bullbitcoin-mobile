@@ -4489,5 +4489,5 @@
   "legacyStorageAcceptRisksCheckbox": "Ich akzeptiere die Risiken, keine Sicherung zu haben",
   "legacyStorageHasBackupImportantBody": "Bitte überspringen Sie diesen Vorgang nur, wenn Sie die Wallet unbedingt dringend verwenden müssen oder auf den Abschluss eines Swaps warten.",
   "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
 }
