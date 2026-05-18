@@ -161,8 +161,8 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
-    final isValidPaymentRequest = context.select(
-      (SendCubit cubit) => cubit.state.paymentRequest != null,
+    final hasRecipientInput = context.select(
+      (SendCubit cubit) => cubit.state.copiedRawPaymentRequest.trim().isNotEmpty,
     );
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
@@ -173,7 +173,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
+      disabled: !hasRecipientInput || loadingBestWallet || creatingSwap,
       bgColor: context.appColors.secondary,
       textColor: context.appColors.onSecondary,
     );
