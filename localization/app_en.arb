@@ -4,13 +4,13 @@
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
   },
-  "translationWarningDescription": "Most translations in this app were generated using AI and may contain inaccuracies. If you notice any errors or would like to help improve the translations, you can contribute through our community translation platform.",
+  "translationWarningDescription": "Most translations in this app were generated using AI and may contain inaccuracies. If you notice any errors or would like to help improve the translations, you can submit a fix on our GitHub repository.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "translationWarningContributeButton": "Help Improve Translations",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "translationWarningDismissButton": "Got It",
   "@translationWarningDismissButton": {

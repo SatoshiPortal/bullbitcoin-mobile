@@ -1,7 +1,7 @@
 {
   "@@locale": "fi",
   "translationWarningTitle": "Tekoälyn luomat käännökset",
-  "translationWarningDescription": "Suurin osa tämän sovelluksen käännöksistä on luotu tekoälyllä ja ne voivat sisältää epätarkkuuksia. Jos huomaat virheitä tai haluat auttaa parantamaan käännöksiä, voit osallistua yhteisön käännösalustan kautta.",
+  "translationWarningDescription": "Suurin osa tämän sovelluksen käännöksistä on luotu tekoälyllä ja ne voivat sisältää epätarkkuuksia. Jos huomaat virheitä tai haluat auttaa parantamaan käännöksiä, voit lähettää korjauksen GitHub-tietovarastoomme.",
   "translationWarningContributeButton": "Auta parantamaan käännöksiä",
   "translationWarningDismissButton": "Selvä",
   "durationSeconds": "{seconds} sekuntia",

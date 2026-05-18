@@ -134,13 +134,13 @@
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
   },
-  "translationWarningDescription": "Český překlad nebyl vytvořen pomocí AI. Pokud si všimneš chyby, máš návrh na vhodnější použití slov nebo na zlepšení čitelnosti, můžeš přispět prostřednictvím naší platformy pro komunitní překlady.",
+  "translationWarningDescription": "Většina překladů v této aplikaci byla vytvořena pomocí AI a může obsahovat nepřesnosti. Pokud si všimnete chyb nebo chcete pomoci zlepšit překlady, můžete odeslat opravu do našeho GitHub repozitáře.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "translationWarningContributeButton": "Chci pomoci vylepšit překlad",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "translationWarningDismissButton": "Rozumím",
   "@translationWarningDismissButton": {

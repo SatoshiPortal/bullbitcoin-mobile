@@ -37,7 +37,7 @@
   },
   "translationWarningContributeButton": "अनुवाद में सुधार",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "Swap ID",
   "@transactionLabelSwapId": {
@@ -945,7 +945,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "इस ऐप में अधिकांश अनुवाद एआई का उपयोग करके उत्पन्न किए गए थे और इसमें अशुद्धता हो सकती है। यदि आप किसी त्रुटि को नोटिस करते हैं या अनुवाद को बेहतर बनाने में मदद करना चाहते हैं, तो आप हमारे सामुदायिक अनुवाद मंच के माध्यम से योगदान कर सकते हैं।।",
+  "translationWarningDescription": "इस ऐप में अधिकांश अनुवाद AI का उपयोग करके बनाए गए हैं और इनमें अशुद्धियाँ हो सकती हैं। यदि आपको कोई त्रुटि दिखाई दे या आप अनुवाद सुधारने में मदद करना चाहते हैं, तो आप हमारे GitHub रिपॉजिटरी पर एक सुधार सबमिट कर सकते हैं।",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },

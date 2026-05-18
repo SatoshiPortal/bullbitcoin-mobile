@@ -37,7 +37,7 @@
   },
   "translationWarningContributeButton": "Βοηθήστε στη βελτίωση των μεταφράσεων",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "Swap ID",
   "@transactionLabelSwapId": {
@@ -824,7 +824,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "Οι περισσότερες μεταφράσεις σε αυτή την εφαρμογή δημιουργήθηκαν χρησιμοποιώντας AI και ενδέχεται να περιέχουν ανακρίβειες. Αν παρατηρήσετε τυχόν σφάλματα ή θέλετε να βοηθήσετε στη βελτίωση των μεταφράσεων, μπορείτε να συμβάλετε μέσω της πλατφόρμας μετάφρασης της κοινότητας μας.",
+  "translationWarningDescription": "Οι περισσότερες μεταφράσεις σε αυτήν την εφαρμογή δημιουργήθηκαν με χρήση AI και ενδέχεται να περιέχουν ανακρίβειες. Εάν παρατηρήσετε σφάλματα ή θέλετε να βοηθήσετε στη βελτίωση των μεταφράσεων, μπορείτε να υποβάλετε μια διόρθωση στο αποθετήριό μας στο GitHub.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
