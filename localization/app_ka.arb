@@ -408,5 +408,6 @@
   "legacyStorageContinueWithoutBackupButton": "გაგრძელება სარეზერვო ასლის გარეშე",
   "legacyStorageAcceptRisksCheckbox": "ვაღიარებ რისკებს, რომ სარეზერვო ასლი არ მაქვს",
   "legacyStorageHasBackupImportantBody": "გთხოვთ, არ გამოტოვოთ ეს პროცესი, თუ არ გჭირდებათ საფულის გადაუდებელი გამოყენება ან არ ელოდებით სვოპის დასრულებას.",
-  "legacyStorageRiskAckButtonHasBackup": "მესმის რისკი"
+  "legacyStorageRiskAckButtonHasBackup": "მესმის რისკი",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

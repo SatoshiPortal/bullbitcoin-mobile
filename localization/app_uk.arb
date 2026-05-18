@@ -2103,7 +2103,6 @@
   "psbtFlowSeedSignerTitle": "SeedSigner Інструкції",
   "appUnlockAttemptSingular": "невдала спроба",
   "importQrDevicePassportStep2": "Введіть Ваш кошик",
-  "recoverbullErrorRecoveryFailed": "Зловживати, щоб відновити спереду",
   "buyExpressWithdrawalDesc": "Отримати Bitcoin миттєво після оплати",
   "arkSendRecipientTitle": "Надіслати одержувачу",
   "importMnemonicImport": "Імпорт",
@@ -4597,5 +4596,6 @@
   "legacyStorageContinueWithoutBackupButton": "Продовжити без копії",
   "legacyStorageAcceptRisksCheckbox": "Я приймаю ризики відсутності резервної копії",
   "legacyStorageHasBackupImportantBody": "Будь ласка, не пропускайте цей процес, якщо тільки вам не потрібно терміново скористатися гаманцем або ви не очікуєте на завершення свопу.",
-  "legacyStorageRiskAckButtonHasBackup": "Я розумію ризик"
+  "legacyStorageRiskAckButtonHasBackup": "Я розумію ризик",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

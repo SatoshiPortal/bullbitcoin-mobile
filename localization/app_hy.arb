@@ -196,5 +196,6 @@
   "legacyStorageContinueWithoutBackupButton": "Շարունակել առանց պահուստավորման",
   "legacyStorageAcceptRisksCheckbox": "Ընդունում եմ պահուստավորում չանելու ռիսկերը",
   "legacyStorageHasBackupImportantBody": "Խնդրում ենք բաց չթողնել այս գործընթացը, եթե ձեզ հրատապ չի անհրաժեշտ օգտագործել դրամապանակը կամ սպասում եք սվոփի ավարտին։",
-  "legacyStorageRiskAckButtonHasBackup": "Ես հասկանում եմ ռիսկը"
+  "legacyStorageRiskAckButtonHasBackup": "Ես հասկանում եմ ռիսկը",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

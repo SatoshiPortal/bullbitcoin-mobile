@@ -1,9 +1,11 @@
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,6 +55,17 @@ class OnboardingRouter {
                     if (state.step == OnboardingStep.create) {
                       context.goNamed(WalletRoute.walletHome.name);
                     }
+                  },
+                ),
+                BlocListener<OnboardingBloc, OnboardingState>(
+                  listenWhen: (previous, current) =>
+                      previous.statusError != current.statusError &&
+                      current.statusError.isNotEmpty,
+                  listener: (context, state) {
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      context.loc.walletSetupErrorTryAgain,
+                    );
                   },
                 ),
               ],

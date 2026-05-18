@@ -1403,7 +1403,6 @@
   "buyShouldBuyAtLeast": "Вы должны купить хотя бы",
   "pinCodeCreateDescription": "Ваш PIN защищает доступ к вашему кошельку и настройкам. Не забывай об этом.",
   "payCorporate": "Корпоративный",
-  "recoverbullErrorRecoveryFailed": "Не удалось восстановить хранилище",
   "buyMax": "Макс",
   "onboardingCreateNewWallet": "Создать новый кошелек",
   "buyExpressWithdrawalDesc": "Получить биткойн сразу после оплаты",
@@ -4609,5 +4608,6 @@
   "legacyStorageContinueWithoutBackupButton": "Продолжить без копии",
   "legacyStorageAcceptRisksCheckbox": "Я принимаю риски отказа от резервной копии",
   "legacyStorageHasBackupImportantBody": "Пожалуйста, не пропускайте этот процесс, если только вам не нужно срочно использовать кошелёк или вы не ждёте завершения свопа.",
-  "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск"
+  "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

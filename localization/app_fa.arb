@@ -4840,10 +4840,6 @@
   "@payCorporate": {
     "description": "Label for corporate checkbox"
   },
-  "recoverbullErrorRecoveryFailed": "شکست خورده برای بازیابی خزانه",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
   "buyMax": "مکس",
   "@buyMax": {
     "description": "Button to fill maximum amount"
@@ -12583,5 +12579,6 @@
   "legacyStorageContinueWithoutBackupButton": "ادامه بدون پشتیبان",
   "legacyStorageAcceptRisksCheckbox": "ریسک‌های نگرفتن پشتیبان را می‌پذیرم",
   "legacyStorageHasBackupImportantBody": "لطفاً این فرآیند را رد نکنید مگر اینکه واقعاً نیاز فوری به استفاده از کیف پول داشته باشید یا منتظر تکمیل یک سواپ هستید.",
-  "legacyStorageRiskAckButtonHasBackup": "خطر را درک می‌کنم"
+  "legacyStorageRiskAckButtonHasBackup": "خطر را درک می‌کنم",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }

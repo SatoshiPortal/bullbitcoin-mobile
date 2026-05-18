@@ -2647,7 +2647,6 @@
   "recoverbullErrorInvalidCredentials": "Contraseña incorrecta para este archivo de respaldo",
   "recoverbullErrorMissingBytes": "Faltan bytes en la respuesta de Tor. Reintente, pero si el problema persiste, es un problema conocido para algunos dispositivos con Tor.",
   "recoverbullErrorPasswordNotSet": "La contraseña no está configurada",
-  "recoverbullErrorRecoveryFailed": "Error al recuperar la bóveda",
   "recoverbullTorNotStarted": "Tor no está iniciado",
   "recoverbullErrorRateLimited": "Límite de solicitudes alcanzado. Por favor, inténtalo en {retryIn}",
   "@recoverbullErrorRateLimited": {
@@ -4606,5 +4605,6 @@
   "legacyStorageContinueWithoutBackupButton": "Continuar sin respaldo",
   "legacyStorageAcceptRisksCheckbox": "Acepto los riesgos de no hacer un respaldo",
   "legacyStorageHasBackupImportantBody": "Por favor, no omita este proceso a menos que necesite usar la billetera urgentemente o esté esperando a que se complete un intercambio.",
-  "legacyStorageRiskAckButtonHasBackup": "Entiendo el riesgo"
+  "legacyStorageRiskAckButtonHasBackup": "Entiendo el riesgo",
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
 }
