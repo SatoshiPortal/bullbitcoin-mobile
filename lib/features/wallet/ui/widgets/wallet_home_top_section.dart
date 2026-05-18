@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/cards/action_card.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/price_chart_widget.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shimmer/shimmer.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
   const WalletHomeTopSection({super.key});
@@ -130,9 +132,22 @@ class _BtcTotalAmt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final btcTotal = context.select(
-      (WalletBloc bloc) => bloc.state.totalBalance(),
+    final walletState = context.select((WalletBloc bloc) => bloc.state);
+    final bitcoinUnit = context.select(
+      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
+
+    final showSkeleton =
+        walletState.status == WalletStatus.initial ||
+        walletState.status == WalletStatus.loading ||
+        walletState.isArkWalletLoading ||
+        bitcoinUnit == null;
+
+    if (showSkeleton) {
+      return const _WalletHomeBtcAmountSkeleton();
+    }
+
+    final btcTotal = walletState.totalBalance();
 
     return CurrencyText(
       btcTotal,
@@ -148,11 +163,38 @@ class _FiatAmt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalBal = context.select(
-      (WalletBloc bloc) => bloc.state.totalBalance(),
-    );
+    final walletState = context.select((WalletBloc bloc) => bloc.state);
+    final showBalanceLoading =
+        walletState.status == WalletStatus.initial ||
+        walletState.status == WalletStatus.loading ||
+        walletState.isArkWalletLoading;
 
-    return HomeFiatBalance(balanceSat: totalBal);
+    return HomeFiatBalance(
+      balanceSat: walletState.totalBalance(),
+      showBalanceLoading: showBalanceLoading,
+    );
+  }
+}
+
+class _WalletHomeBtcAmountSkeleton extends StatelessWidget {
+  const _WalletHomeBtcAmountSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: context.appColors.shimmerBase,
+      highlightColor: context.appColors.shimmerHighlight,
+      child: SizedBox(
+        width: 200,
+        height: 40,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: context.appColors.surface,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      ),
+    );
   }
 }
 
