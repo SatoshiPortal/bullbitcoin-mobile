@@ -1,5 +1,4 @@
 {
-  "@@locale": "hi",
   "bitboxErrorMultipleDevicesFound": "एकाधिक बिटबॉक्स उपकरण पाए गए। कृपया सुनिश्चित करें कि केवल एक डिवाइस जुड़ा हुआ है।।",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -12430,30 +12429,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "अत्यावश्यक: बैकअप और पुनः इंस्टॉलेशन आवश्यक",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "कार्रवाई आवश्यक: ऐप पुनः इंस्टॉल करें",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "आप जो ऐप उपयोग कर रहे हैं वह ऐसे सॉफ़्टवेयर का उपयोग करता है जो जल्द ही बंद हो जाएगा। कृपया इन चरणों का पालन करें:\n\n1. अपने वॉलेट का बैकअप लें\n2. ऐप को अनइंस्टॉल करें। इसे अपने फ़ोन से पूरी तरह हटा दें।\n3. ऐप का नवीनतम संस्करण फिर से इंस्टॉल करें\n4. \"नया वॉलेट बनाएं\" के बजाय रिकवरी विकल्प का उपयोग करें।\n\nआपके फंड सुरक्षित हैं और आप अभी ऐप का उपयोग जारी रख सकते हैं, लेकिन निकट भविष्य में ऐप बंद होने से पहले यह जितनी जल्दी हो सके करें।",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "अभी बैकअप करें",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "बाद में",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "backButton": "वापस",
   "@backButton": {
     "description": "Generic back button label"
@@ -12485,10 +12460,6 @@
   "errorReportingStandardLogsTitle": "मानक लॉग",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "हमेशा चालू — हमें यह देखने देता है कि आपका वॉलेट ऐप संस्करणों के बीच सुरक्षित रूप से माइग्रेट होता है या नहीं।",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "अपने बैकअप का उपयोग करें",
   "@appInitErrorHasBackupTitle": {
@@ -12573,48 +12544,6 @@
   "legacyStorageHasBackupImportantBody": "कृपया इस प्रक्रिया को न छोड़ें जब तक कि आपको तत्काल वॉलेट का उपयोग करने की नितांत आवश्यकता न हो या आप किसी स्वैप के पूरा होने की प्रतीक्षा कर रहे हों।",
   "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "recoverbullBalance": "शेष: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
-  "recoverbullVaultRecovery": "वॉल्ट रिकवरी",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
-  },
-  "recoverbullTransactions": "लेनदेन: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "recoverbullErrorCheckStatusFailed": "दोष स्थिति की जांच करने में विफल",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
-  "recoverbullErrorInvalidFlow": "अवैध प्रवाह",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
-  },
-  "recoverbullErrorRecoveryFailed": "दोष को ठीक करने में विफल",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
-  },
-  "recoverbullLookingForBalance": "बैलेंस और लेनदेन की तलाश में..",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "डिक्रिप्टेड वॉल्ट सेट नहीं है",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
-  },
   "mempoolServerStatusOnline": "ऑनलाइन",
   "mempoolServerStatusOffline": "ऑफलाइन",
   "mempoolServerStatusChecking": "जाँच हो रही है...",
@@ -12748,10 +12677,6 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "हमारे त्रुटि रिपोर्टिंग कार्यक्रम में भाग लेकर Bull Bitcoin को बेहतर बनाने में हमारी मदद करें। इससे सीधे हमें सभी के लिए Bull Bitcoin को बेहतर बनाने में सहायता मिलती है।\n\nसक्षम होने पर, ऐप में कोई समस्या आने पर हम स्वचालित रूप से त्रुटि रिपोर्ट भेजते हैं। यह डेटा हमें दुनिया भर के हमारे उपयोगकर्ताओं के लिए क्या हो रहा है यह समझने और उसी के अनुसार सुधारों को प्राथमिकता देने में मदद करता है।\n\nहम यह जानकारी किसी तृतीय पक्ष के साथ साझा नहीं करते। हम Sentry के ओपन-सोर्स क्लाइंट का उपयोग अपने स्वयं के सेल्फ-होस्टेड बैकएंड सर्वर के साथ करते हैं।",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
   "errorReportingAcceptButton": "स्वीकार करें",
   "@errorReportingAcceptButton": {
     "description": "Button to accept error reporting"
@@ -12779,5 +12704,85 @@
   "backupWarningBackupLater": "नहीं, मैं जोखिम समझता/समझती हूँ",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "transactionListLoadingFailed": "Could not load transactions.",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
+  },
+  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "@fundExchangeCopSelectBankError": {
+    "description": "Validation error when no bank is selected"
+  },
+  "fundExchangeCopOpenPaymentLink": "Open Payment Link",
+  "@fundExchangeCopOpenPaymentLink": {
+    "description": "Button label to open COP payment link"
+  },
+  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "@fundExchangeCopDailyLimitWarning": {
+    "description": "Warning about daily transaction limit for COP bank transfer"
+  },
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "@fundExchangeCopIssuingBank": {
+    "description": "Label for issuing bank dropdown in COP bank transfer"
+  },
+  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
+  },
+  "fundExchangeCopGeneratePaymentLink": "Generate Payment Link",
+  "@fundExchangeCopGeneratePaymentLink": {
+    "description": "Button label to generate COP payment link"
+  },
+  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "@fundExchangeCopRedirectMessage": {
+    "description": "Message about redirect to external payment page"
+  },
+  "payViewReceipt": "View receipt",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "fundExchangeCopAmount": "Amount",
+  "@fundExchangeCopAmount": {
+    "description": "Label for amount field in COP bank transfer"
+  },
+  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "@fundExchangeCopValidAmountError": {
+    "description": "Validation error when amount is invalid"
+  },
+  "fundExchangeCopSenderName": "Sender Name",
+  "@fundExchangeCopSenderName": {
+    "description": "Label for sender name field in COP bank transfer"
+  },
+  "fundExchangeCopEnterAmountError": "Please enter an amount",
+  "@fundExchangeCopEnterAmountError": {
+    "description": "Validation error when amount is empty"
+  },
+  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
+  "@fundExchangeCopFailedToOpenLink": {
+    "description": "Error shown when the COP payment link fails to open"
   }
 }

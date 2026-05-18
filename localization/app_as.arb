@@ -53,30 +53,6 @@
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
   },
-  "homeLegacyStorageWithNoBackupTitle": "জৰুৰী: বেকআপ আৰু পুনৰায় ইনষ্টল কৰা প্ৰয়োজন",
-  "@homeLegacyStorageWithNoBackupTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageWithNoBackupDescription": "আপুনি ব্যৱহাৰ কৰা এপটো এনে চফটৱেৰ ব্যৱহাৰ কৰিছে যি শীঘ্ৰে পুৰণি হৈ পৰিব। অনুগ্ৰহ কৰি এই পদক্ষেপবোৰ অনুসৰণ কৰক:\n\n1. আপোনাৰ ৱালেট বেকআপ কৰক\n2. এপটো আনইনষ্টল কৰক। আপোনাৰ ফোনৰ পৰা সম্পূৰ্ণকৈ মচি পেলাওক।\n3. এপৰ শেহতীয়া সংস্কৰণ পুনৰায় ইনষ্টল কৰক\n4. \"নতুন ৱালেট তৈয়াৰ কৰক\" ৰ সলনি পুনৰুদ্ধাৰ বিকল্প ব্যৱহাৰ কৰক।\n\nআপোনাৰ ধন সুৰক্ষিত আছে আৰু আপুনি এতিয়া এপটো ব্যৱহাৰ কৰি থাকিব পাৰে, কিন্তু ভৱিষ্যতে এপটো বিকল হোৱাৰ আগতে যিমান সোনকালে পাৰে এইটো কৰক।",
-  "@homeLegacyStorageWithNoBackupDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage AND has no backup"
-  },
-  "homeLegacyStorageTitle": "পদক্ষেপ প্ৰয়োজন: এপ পুনৰায় ইনষ্টল কৰক",
-  "@homeLegacyStorageTitle": {
-    "description": "Warning card title when the wallet is on deprecated storage but has a backup"
-  },
-  "homeLegacyStorageDescription": "আপুনি ব্যৱহাৰ কৰা এপটো এনে চফটৱেৰ ব্যৱহাৰ কৰিছে যি শীঘ্ৰে পুৰণি হৈ পৰিব। অনুগ্ৰহ কৰি এই পদক্ষেপবোৰ অনুসৰণ কৰক:\n\n1. আপোনাৰ ৱালেট বেকআপ কৰক\n2. এপটো আনইনষ্টল কৰক। আপোনাৰ ফোনৰ পৰা সম্পূৰ্ণকৈ মচি পেলাওক।\n3. এপৰ শেহতীয়া সংস্কৰণ পুনৰায় ইনষ্টল কৰক\n4. \"নতুন ৱালেট তৈয়াৰ কৰক\" ৰ সলনি পুনৰুদ্ধাৰ বিকল্প ব্যৱহাৰ কৰক।\n\nআপোনাৰ ধন সুৰক্ষিত আছে আৰু আপুনি এতিয়া এপটো ব্যৱহাৰ কৰি থাকিব পাৰে, কিন্তু ভৱিষ্যতে এপটো বিকল হোৱাৰ আগতে যিমান সোনকালে পাৰে এইটো কৰক।",
-  "@homeLegacyStorageDescription": {
-    "description": "Warning card description when the wallet is on deprecated storage but has a backup"
-  },
-  "legacyStorageWarningBackupNow": "এতিয়াই বেকআপ কৰক",
-  "@legacyStorageWarningBackupNow": {
-    "description": "Primary action button on the legacy storage warning overlay"
-  },
-  "legacyStorageWarningLater": "পিছত",
-  "@legacyStorageWarningLater": {
-    "description": "Dismiss button on the legacy storage warning overlay (only shown when backup exists)"
-  },
   "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
   "backButton": "উভতি যাওক",
   "@backButton": {
@@ -109,10 +85,6 @@
   "errorReportingStandardLogsTitle": "মানক লগসমূহ",
   "@errorReportingStandardLogsTitle": {
     "description": "Title of the standard error reporting switch"
-  },
-  "errorReportingMigrationSubtitle": "সদায় সক্ৰিয় — এই ফিচাৰে এপৰ সংস্কৰণসমূহৰ মাজত আপোনাৰ ৱালেটৰ সুৰক্ষিত স্থানান্তৰ নিশ্চিত কৰে।",
-  "@errorReportingMigrationSubtitle": {
-    "description": "Subtitle explaining why the migration logs switch cannot be disabled"
   },
   "appInitErrorHasBackupTitle": "আপোনাৰ বেকআপ ব্যৱহাৰ কৰক",
   "@appInitErrorHasBackupTitle": {
@@ -1573,7 +1545,6 @@
       }
     }
   },
-
   "fundExchangeScamConsentError": "আপোনাৰ সন্মতি পঞ্জীয়ন কৰিবলৈ ব্যৰ্থ হৈছে। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
   "@fundExchangeScamConsentError": {
     "description": "Error message shown when the scam warning consent API call fails"
@@ -5277,15 +5248,6 @@
       }
     }
   },
-  "recoverbullBalance": "ব্যালেন্স: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "RecoverBull-ৰ সংযোগ পৰীক্ষা কৰা হৈছে",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -5375,17 +5337,9 @@
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
-  "recoverbullErrorCheckStatusFailed": "Vault স্থিতি পৰীক্ষা কৰিবলৈ বিফল হৈছে",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "recoverbullErrorConnectionFailed": "লক্ষ্য key server-ত সংযোগ কৰিবলৈ বিফল হৈছে। অনুগ্ৰহ কৰি পিছত পুনৰ চেষ্টা কৰক!",
   "@recoverbullErrorConnectionFailed": {
     "description": "Error message when server connection fails"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "ডিক্ৰিপ্ট কৰা vault ছেট কৰা হোৱা নাই",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "recoverbullErrorDecryptFailed": "Vault ডিক্ৰিপ্ট কৰিবলৈ বিফল হৈছে",
   "@recoverbullErrorDecryptFailed": {
@@ -5399,10 +5353,6 @@
   "@recoverbullErrorInvalidCredentials": {
     "description": "Error message when wrong password is entered for vault"
   },
-  "recoverbullErrorInvalidFlow": "অবৈধ flow",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
-  },
   "recoverbullErrorMissingBytes": "Tor সঁহাৰিৰ পৰা bytes হেৰাই গৈছে। পুনৰ চেষ্টা কৰক, কিন্তু যদি সমস্যা অব্যাহত থাকে, Tor-ৰ সৈতে কিছুমান ডিভাইচত এইটো এটা জ্ঞাত সমস্যা।",
   "@recoverbullErrorMissingBytes": {
     "description": "Error message when Tor response is incomplete"
@@ -5410,10 +5360,6 @@
   "recoverbullErrorPasswordNotSet": "পাছৱৰ্ড ছেট কৰা হোৱা নাই",
   "@recoverbullErrorPasswordNotSet": {
     "description": "Error when attempting operation without setting password"
-  },
-  "recoverbullErrorRecoveryFailed": "Vault পুনৰুদ্ধাৰ কৰিবলৈ বিফল হৈছে",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
   },
   "recoverbullTorNotStarted": "Tor আৰম্ভ হোৱা নাই",
   "@recoverbullTorNotStarted": {
@@ -5475,10 +5421,6 @@
   "recoverbullKeyServer": "Key Server ",
   "@recoverbullKeyServer": {
     "description": "Label for key server connection status"
-  },
-  "recoverbullLookingForBalance": "ব্যালেন্স আৰু লেনদেন বিচাৰি চোৱা হৈছে…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullMemorizeWarning": "আপোনাৰ wallet-লৈ প্ৰৱেশ পুনৰুদ্ধাৰ কৰিবলৈ আপুনি এই {inputType} মনত ৰাখিব লাগিব। ই কমেও ৬টা অংকৰ হ'ব লাগিব। যদি আপুনি এই {inputType} হেৰুৱায়, আপুনি বেকআপ পুনৰুদ্ধাৰ কৰিব নোৱাৰিব।",
   "@recoverbullMemorizeWarning": {
@@ -5687,15 +5629,6 @@
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
   },
-  "recoverbullTransactions": "লেনদেন: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Vault সফলভাৱে তৈয়াৰ হৈছে",
   "@recoverbullVaultCreatedSuccess": {
     "description": "Success message after vault creation"
@@ -5711,10 +5644,6 @@
   "recoverbullVaultKeyInput": "Vault Key",
   "@recoverbullVaultKeyInput": {
     "description": "Input field label for vault key entry"
-  },
-  "recoverbullVaultRecovery": "Vault পুনৰুদ্ধাৰ",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
   },
   "recoverbullVaultSelected": "Vault বাছনি কৰা হৈছে",
   "@recoverbullVaultSelected": {
@@ -7354,18 +7283,6 @@
   "exchangeLandingLoginToUseSupport": "Exchange সম্পৰ্কীয় সমস্যাৰ বাবে সহায় চেট ব্যৱহাৰ কৰিবলৈ অনুগ্ৰহ কৰি লগইন বা চাইন আপ কৰক।",
   "@exchangeLandingLoginToUseSupport": {
     "description": "Message prompting user to login to access support chat"
-  },
-  "exchangeSupportLoginSubtitle": "Bull Bitcoin সহায় একাউণ্টৰ সৈতে সংযোগ কৰক",
-  "@exchangeSupportLoginSubtitle": {
-    "description": "Subtitle on support chat login screen"
-  },
-  "exchangeSupportLoginAccessMessage": "আপোনাৰ কেৱল সহায় চেট সুবিধাত প্ৰৱেশ থাকিব।",
-  "@exchangeSupportLoginAccessMessage": {
-    "description": "Message explaining limited access on support-only login"
-  },
-  "exchangeSupportLoginAccountInfo": "আপুনি bullbitcoin.com ত এটা একাউণ্ট তৈয়াৰ কৰিব যি আপুনি সদায় আমাৰ ৱেব এপৰ জৰিয়তে প্ৰৱেশ কৰিব পাৰিব।",
-  "@exchangeSupportLoginAccountInfo": {
-    "description": "Information about account creation on support login screen"
   },
   "exchangeHomeDeposit": "জমা",
   "@exchangeHomeDeposit": {
@@ -9646,10 +9563,6 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "আমাৰ ত্ৰুটি প্ৰতিবেদন কাৰ্যক্ৰমত অংশগ্ৰহণ কৰি Bull Bitcoin উন্নত কৰাত সহায় কৰক। ই সকলোৰ বাবে Bull Bitcoin আৰু ভাল কৰিবলৈ প্ৰত্যক্ষভাৱে সহায় কৰে।\n\nসামৰ্থ্য কৰিলে, এপ্পত সমস্যা হ'লে আমি স্বয়ংক্ৰিয়ভাৱে ত্ৰুটি প্ৰতিবেদন পঠাওঁ। এই তথ্যই বিশ্বব্যাপী আমাৰ ব্যৱহাৰকাৰীসকলৰ বাবে কি হৈছে বুজিবলৈ আৰু সমাধানৰ অগ্ৰাধিকাৰ দিবলৈ সহায় কৰে।\n\nআমি এই তথ্য কোনো তৃতীয় পক্ষৰ সৈতে ভাগ নকৰোঁ। আমি আমাৰ নিজস্ব self-hosted backend চাৰ্ভাৰৰ সৈতে Sentry-ৰ open-source client ব্যৱহাৰ কৰোঁ।",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
   "errorReportingAcceptButton": "গ্ৰহণ কৰক",
   "@errorReportingAcceptButton": {
     "description": "Button to accept error reporting"
@@ -9677,5 +9590,85 @@
   "backupWarningBackupLater": "নহয়, মই বিপদৰ বিষয়ে জানো",
   "@backupWarningBackupLater": {
     "description": "Button to dismiss backup warning"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "transactionListLoadingFailed": "Could not load transactions.",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
+  "errorReportingProgramDescriptionP2": "Bull Bitcoin sends anonymized error reports when something breaks.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin is open source, so you can verify what is sent.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
+  },
+  "fundExchangeCopSelectBankError": "Please select an issuing bank",
+  "@fundExchangeCopSelectBankError": {
+    "description": "Validation error when no bank is selected"
+  },
+  "fundExchangeCopOpenPaymentLink": "Open Payment Link",
+  "@fundExchangeCopOpenPaymentLink": {
+    "description": "Button label to open COP payment link"
+  },
+  "fundExchangeCopDailyLimitWarning": "If you exceed your daily transaction limit, the transaction will fail. You will have to contact customer support.",
+  "@fundExchangeCopDailyLimitWarning": {
+    "description": "Warning about daily transaction limit for COP bank transfer"
+  },
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "@fundExchangeCopIssuingBank": {
+    "description": "Label for issuing bank dropdown in COP bank transfer"
+  },
+  "errorReportingProgramDescriptionP1": "Help us improve Bull by contributing to our error reporting program.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
+  },
+  "fundExchangeCopGeneratePaymentLink": "Generate Payment Link",
+  "@fundExchangeCopGeneratePaymentLink": {
+    "description": "Button label to generate COP payment link"
+  },
+  "fundExchangeCopRedirectMessage": "You will be redirected to an external page to make the payment.",
+  "@fundExchangeCopRedirectMessage": {
+    "description": "Message about redirect to external payment page"
+  },
+  "payViewReceipt": "View receipt",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "errorReportingProgramDescriptionP3": "This lets us see how many users each bug affects and prioritize fixes accordingly, without it, we have no way to measure impact.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "fundExchangeCopAmount": "Amount",
+  "@fundExchangeCopAmount": {
+    "description": "Label for amount field in COP bank transfer"
+  },
+  "errorReportingProgramDescriptionP4": "Reports go only to Bull's server, never to third parties.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "fundExchangeCopValidAmountError": "Please enter a valid amount",
+  "@fundExchangeCopValidAmountError": {
+    "description": "Validation error when amount is invalid"
+  },
+  "fundExchangeCopSenderName": "Sender Name",
+  "@fundExchangeCopSenderName": {
+    "description": "Label for sender name field in COP bank transfer"
+  },
+  "fundExchangeCopEnterAmountError": "Please enter an amount",
+  "@fundExchangeCopEnterAmountError": {
+    "description": "Validation error when amount is empty"
+  },
+  "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
+  "@fundExchangeCopFailedToOpenLink": {
+    "description": "Error shown when the COP payment link fails to open"
   }
 }

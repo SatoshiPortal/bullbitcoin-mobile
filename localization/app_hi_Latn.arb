@@ -7446,15 +7446,6 @@
       }
     }
   },
-  "recoverbullBalance": "Balance: {balance}",
-  "@recoverbullBalance": {
-    "description": "Label showing wallet balance during vault recovery",
-    "placeholders": {
-      "balance": {
-        "type": "String"
-      }
-    }
-  },
   "recoverbullCheckingConnection": "RecoverBull ka connection check ho raha hai",
   "@recoverbullCheckingConnection": {
     "description": "Screen title while checking connection status"
@@ -7544,17 +7535,9 @@
   "@recoverbullEnterVaultKeyInstead": {
     "description": "Button text to switch to manual vault key entry"
   },
-  "recoverbullErrorCheckStatusFailed": "Vault status check karne mein dikkat aayi",
-  "@recoverbullErrorCheckStatusFailed": {
-    "description": "Error message when vault status check fails"
-  },
   "recoverbullErrorConnectionFailed": "Target key server se connect nahi ho paya. Baad mein phir try karo!",
   "@recoverbullErrorConnectionFailed": {
     "description": "Error message when server connection fails"
-  },
-  "recoverbullErrorDecryptedVaultNotSet": "Decrypted vault set nahi hai",
-  "@recoverbullErrorDecryptedVaultNotSet": {
-    "description": "Error when attempting operation without decrypted vault"
   },
   "recoverbullErrorDecryptFailed": "Vault decrypt karne mein dikkat aayi",
   "@recoverbullErrorDecryptFailed": {
@@ -7568,10 +7551,6 @@
   "@recoverbullErrorInvalidCredentials": {
     "description": "Error message when wrong password is entered for vault"
   },
-  "recoverbullErrorInvalidFlow": "Invalid flow",
-  "@recoverbullErrorInvalidFlow": {
-    "description": "Error message for invalid operation flow"
-  },
   "recoverbullErrorMissingBytes": "Tor response mein bytes missing hain. Phir try karo. Agar problem bani rahe, toh kuch devices mein Tor ke saath yeh problem hoti hai.",
   "@recoverbullErrorMissingBytes": {
     "description": "Error message when Tor response is incomplete"
@@ -7579,10 +7558,6 @@
   "recoverbullErrorPasswordNotSet": "Password set nahi hai",
   "@recoverbullErrorPasswordNotSet": {
     "description": "Error when attempting operation without setting password"
-  },
-  "recoverbullErrorRecoveryFailed": "Vault recover karne mein dikkat aayi",
-  "@recoverbullErrorRecoveryFailed": {
-    "description": "Error message when vault recovery fails"
   },
   "recoverbullTorNotStarted": "Tor shuru nahi hua",
   "@recoverbullTorNotStarted": {
@@ -7644,10 +7619,6 @@
   "recoverbullKeyServer": "Key Server ",
   "@recoverbullKeyServer": {
     "description": "Label for key server connection status"
-  },
-  "recoverbullLookingForBalance": "Balance aur transactions dhoondh rahe hain…",
-  "@recoverbullLookingForBalance": {
-    "description": "Loading message while scanning wallet"
   },
   "recoverbullMemorizeWarning": "Wallet access recover karne ke liye yeh {inputType} yaad rakhna zaroori hai. Kam se kam 6 digits hone chahiye. Agar yeh {inputType} bhool gaye toh backup recover nahi hoga.",
   "@recoverbullMemorizeWarning": {
@@ -7856,15 +7827,6 @@
   "@recoverbullTorNetwork": {
     "description": "Label for Tor network connection status"
   },
-  "recoverbullTransactions": "Transactions: {count}",
-  "@recoverbullTransactions": {
-    "description": "Label showing transaction count during vault recovery",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "recoverbullVaultCreatedSuccess": "Vault kamyabi se ban gayi",
   "@recoverbullVaultCreatedSuccess": {
     "description": "Success message after vault creation"
@@ -7880,10 +7842,6 @@
   "recoverbullVaultKeyInput": "Vault Key",
   "@recoverbullVaultKeyInput": {
     "description": "Input field label for vault key entry"
-  },
-  "recoverbullVaultRecovery": "Vault Recovery",
-  "@recoverbullVaultRecovery": {
-    "description": "Screen title for vault recovery process"
   },
   "recoverbullVaultSelected": "Vault Select Ho Gaya",
   "@recoverbullVaultSelected": {
@@ -11807,10 +11765,6 @@
   "@errorReportingProgramTitle": {
     "description": "Title for the error reporting program explanation bottom sheet"
   },
-  "errorReportingProgramDescription": "Hamare error reporting program mein participate karke Bull Bitcoin improve karne mein madad karo. Ye seedha Bull Bitcoin ko sabke liye behtar banane mein help karta hai.\n\nEnable hone par, hum automatically error reports bhejte hain jab app mein issues aate hain. Ye data hume worldwide users ke liye kya ho raha hai samajhne aur accordingly fixes prioritize karne mein help karta hai.\n\nHum ye information kisi third party ke saath share nahi karte. Hum apne self-hosted backend server ke saath Sentry's open-source client use karte hain.",
-  "@errorReportingProgramDescription": {
-    "description": "Description of the error reporting program"
-  },
   "errorReportingAcceptButton": "Accept",
   "@errorReportingAcceptButton": {
     "description": "Button to accept error reporting"
@@ -11886,5 +11840,1204 @@
   "deleteAccountSuccessClose": "Band Karo",
   "@deleteAccountSuccessClose": {
     "description": "Close button label for delete account success bottom sheet"
+  },
+  "pinCodeBackupRequiredWarning": "PIN set karne se pehle kripya wallet backup poora karein",
+  "@pinCodeBackupRequiredWarning": {
+    "description": "Warning shown when user tries to set a PIN without having tested their wallet backup"
+  },
+  "paySecurityQuestion": "Security Question",
+  "@paySecurityQuestion": {
+    "description": "Label for security question field"
+  },
+  "paySecurityQuestionHint": "Security question enter karein (10-40 characters)",
+  "@paySecurityQuestionHint": {
+    "description": "Hint for security question input"
+  },
+  "paySecurityQuestionLength": "{count}/40 characters",
+  "@paySecurityQuestionLength": {
+    "description": "Character count for security question",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "paySecurityQuestionLengthError": "10-40 characters hone chahiye",
+  "@paySecurityQuestionLengthError": {
+    "description": "Error for invalid security question length"
+  },
+  "paySecurityAnswer": "Security Answer",
+  "@paySecurityAnswer": {
+    "description": "Label for security answer field"
+  },
+  "paySecurityAnswerHint": "Security answer enter karein",
+  "@paySecurityAnswerHint": {
+    "description": "Hint for security answer input"
+  },
+  "payLabelOptional": "Label (optional)",
+  "@payLabelOptional": {
+    "description": "Label for optional label field"
+  },
+  "payLabelHint": "Is recipient ke liye ek label enter karein",
+  "@payLabelHint": {
+    "description": "Hint for label input"
+  },
+  "payBillerName": "Biller Name",
+  "@payBillerName": {
+    "description": "Label for biller name field"
+  },
+  "payBillerNameValue": "Selected Biller Name",
+  "@payBillerNameValue": {
+    "description": "Placeholder for biller name"
+  },
+  "payBillerSearchHint": "Biller name ke pehle 3 letters enter karein",
+  "@payBillerSearchHint": {
+    "description": "Hint for biller search field"
+  },
+  "payPayeeAccountNumber": "Payee Account Number",
+  "@payPayeeAccountNumber": {
+    "description": "Label for payee account number"
+  },
+  "payPayeeAccountNumberHint": "Account number enter karein",
+  "@payPayeeAccountNumberHint": {
+    "description": "Hint for account number input"
+  },
+  "payInstitutionNumber": "Institution Number",
+  "@payInstitutionNumber": {
+    "description": "Label for institution number"
+  },
+  "payInstitutionNumberHint": "Institution number enter karein",
+  "@payInstitutionNumberHint": {
+    "description": "Hint for institution number input"
+  },
+  "payTransitNumber": "Transit Number",
+  "@payTransitNumber": {
+    "description": "Label for transit number"
+  },
+  "payTransitNumberHint": "Transit number enter karein",
+  "@payTransitNumberHint": {
+    "description": "Hint for transit number input"
+  },
+  "payAccountNumber": "Account Number",
+  "@payAccountNumber": {
+    "description": "Label for account number"
+  },
+  "payAccountNumberHint": "Account number enter karein",
+  "@payAccountNumberHint": {
+    "description": "Hint for account number input"
+  },
+  "payDefaultCommentOptional": "Default Comment (optional)",
+  "@payDefaultCommentOptional": {
+    "description": "Label for default comment field"
+  },
+  "payDefaultCommentHint": "Default comment enter karein",
+  "@payDefaultCommentHint": {
+    "description": "Hint for default comment input"
+  },
+  "payIban": "IBAN",
+  "@payIban": {
+    "description": "Label for IBAN field"
+  },
+  "payIbanHint": "IBAN enter karein",
+  "@payIbanHint": {
+    "description": "Hint for IBAN input"
+  },
+  "payCorporate": "Corporate",
+  "@payCorporate": {
+    "description": "Label for corporate checkbox"
+  },
+  "payIsCorporateAccount": "Kya yeh ek corporate account hai?",
+  "@payIsCorporateAccount": {
+    "description": "Question for corporate account checkbox"
+  },
+  "payFirstName": "First Name",
+  "@payFirstName": {
+    "description": "Label for first name field"
+  },
+  "payFirstNameHint": "First name enter karein",
+  "@payFirstNameHint": {
+    "description": "Hint for first name input"
+  },
+  "payLastName": "Last Name",
+  "@payLastName": {
+    "description": "Label for last name field"
+  },
+  "payLastNameHint": "Last name enter karein",
+  "@payLastNameHint": {
+    "description": "Hint for last name input"
+  },
+  "payCorporateName": "Corporate Name",
+  "@payCorporateName": {
+    "description": "Label for corporate name field"
+  },
+  "payCorporateNameHint": "Corporate name enter karein",
+  "@payCorporateNameHint": {
+    "description": "Hint for corporate name input"
+  },
+  "payClabe": "CLABE",
+  "@payClabe": {
+    "description": "Label for CLABE field"
+  },
+  "payClabeHint": "CLABE number enter karein",
+  "@payClabeHint": {
+    "description": "Hint for CLABE input"
+  },
+  "payInstitutionCode": "Institution Code",
+  "@payInstitutionCode": {
+    "description": "Label for institution code field"
+  },
+  "payInstitutionCodeHint": "Institution code enter karein",
+  "@payInstitutionCodeHint": {
+    "description": "Hint for institution code input"
+  },
+  "payPhoneNumber": "Phone Number",
+  "@payPhoneNumber": {
+    "description": "Label for phone number field"
+  },
+  "payPhoneNumberHint": "Phone number enter karein",
+  "@payPhoneNumberHint": {
+    "description": "Hint for phone number input"
+  },
+  "payDebitCardNumber": "Debit Card Number",
+  "@payDebitCardNumber": {
+    "description": "Label for debit card number field"
+  },
+  "payDebitCardNumberHint": "Debit card number enter karein",
+  "@payDebitCardNumberHint": {
+    "description": "Hint for debit card number input"
+  },
+  "payOwnerName": "Owner Name",
+  "@payOwnerName": {
+    "description": "Label for owner name field"
+  },
+  "payOwnerNameHint": "Owner name enter karein",
+  "@payOwnerNameHint": {
+    "description": "Hint for owner name input"
+  },
+  "payValidating": "Validate ho raha hai...",
+  "@payValidating": {
+    "description": "Text shown while validating SINPE"
+  },
+  "payInvalidSinpe": "Invalid Sinpe",
+  "@payInvalidSinpe": {
+    "description": "Error message for invalid SINPE"
+  },
+  "payFilterByType": "Type ke hisaab se filter karein",
+  "@payFilterByType": {
+    "description": "Label for type filter dropdown"
+  },
+  "payAllTypes": "Sabhi types",
+  "@payAllTypes": {
+    "description": "Option for all types filter"
+  },
+  "payAllCountries": "Sabhi countries",
+  "@payAllCountries": {
+    "description": "Option for all countries filter"
+  },
+  "payRecipientType": "Recipient type",
+  "@payRecipientType": {
+    "description": "Label for recipient type"
+  },
+  "payRecipientName": "Recipient name",
+  "@payRecipientName": {
+    "description": "Label for recipient name"
+  },
+  "payRecipientDetails": "Recipient details",
+  "@payRecipientDetails": {
+    "description": "Label for recipient details"
+  },
+  "payAccount": "Account",
+  "@payAccount": {
+    "description": "Label for account details"
+  },
+  "payPayee": "Payee",
+  "@payPayee": {
+    "description": "Label for payee details"
+  },
+  "payCard": "Card",
+  "@payCard": {
+    "description": "Label for card details"
+  },
+  "payPhone": "Phone",
+  "@payPhone": {
+    "description": "Label for phone details"
+  },
+  "payNoDetailsAvailable": "Koi details uplabdh nahi",
+  "@payNoDetailsAvailable": {
+    "description": "Message when recipient details not available"
+  },
+  "paySelectWallet": "Wallet Chunein",
+  "@paySelectWallet": {
+    "description": "Label for wallet selection dropdown in payment"
+  },
+  "payWhichWalletQuestion": "Aap kis wallet se pay karna chahte hain?",
+  "@payWhichWalletQuestion": {
+    "description": "Question prompting user to select wallet"
+  },
+  "payExternalWallet": "External wallet",
+  "@payExternalWallet": {
+    "description": "Option for external wallet"
+  },
+  "payFromAnotherWallet": "Kisi aur Bitcoin wallet se pay karein",
+  "@payFromAnotherWallet": {
+    "description": "Subtitle for external wallet option"
+  },
+  "payAboveMaxAmountError": "Aap is wallet se maximum pay-able amount se zyada pay karne ki koshish kar rahe hain.",
+  "@payAboveMaxAmountError": {
+    "description": "Error message for amount above maximum"
+  },
+  "payBelowMinAmountError": "Aap is wallet se minimum pay-able amount se kam pay karne ki koshish kar rahe hain.",
+  "@payBelowMinAmountError": {
+    "description": "Error message for amount below minimum"
+  },
+  "payInsufficientBalanceError": "Is pay order ko poora karne ke liye selected wallet mein balance kam hai.",
+  "@payInsufficientBalanceError": {
+    "description": "Error message for insufficient balance"
+  },
+  "payUnauthenticatedError": "Aap authenticated nahi hain. Jaari rakhne ke liye kripya log in karein.",
+  "@payUnauthenticatedError": {
+    "description": "Error message for unauthenticated user"
+  },
+  "payOrderNotFoundError": "Pay order nahi mila. Kripya phir se try karein.",
+  "@payOrderNotFoundError": {
+    "description": "Error message for order not found"
+  },
+  "payOrderAlreadyConfirmedError": "Yeh pay order pehle hi confirm ho chuka hai.",
+  "@payOrderAlreadyConfirmedError": {
+    "description": "Error message for already confirmed order"
+  },
+  "paySelectNetwork": "Network Chunein",
+  "@paySelectNetwork": {
+    "description": "Screen title for network selection"
+  },
+  "payHowToPayInvoice": "Aap is invoice ko kaise pay karna chahte hain?",
+  "@payHowToPayInvoice": {
+    "description": "Question for payment method selection"
+  },
+  "payBitcoinOnChain": "Bitcoin on-chain",
+  "@payBitcoinOnChain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "payLightningNetwork": "Lightning Network",
+  "@payLightningNetwork": {
+    "description": "Option for Lightning Network payment"
+  },
+  "payLiquidNetwork": "Liquid Network",
+  "@payLiquidNetwork": {
+    "description": "Option for Liquid Network payment"
+  },
+  "payConfirmPayment": "Payment Confirm Karein",
+  "@payConfirmPayment": {
+    "description": "Button text to confirm and execute payment"
+  },
+  "payPriceWillRefreshIn": "Price refresh hoga ",
+  "@payPriceWillRefreshIn": {
+    "description": "Text before countdown timer for price refresh"
+  },
+  "payOrderNumber": "Order number",
+  "@payOrderNumber": {
+    "description": "Label for order number"
+  },
+  "payPayinAmount": "Payin amount",
+  "@payPayinAmount": {
+    "description": "Label for amount user pays in"
+  },
+  "payPayoutAmount": "Payout amount",
+  "@payPayoutAmount": {
+    "description": "Label for amount user receives"
+  },
+  "payExchangeRate": "Exchange rate",
+  "@payExchangeRate": {
+    "description": "Label for exchange rate"
+  },
+  "payPayFromWallet": "Wallet se pay karein",
+  "@payPayFromWallet": {
+    "description": "Label for wallet used for payment"
+  },
+  "payInstantPayments": "Instant payments",
+  "@payInstantPayments": {
+    "description": "Display text for instant payment wallet"
+  },
+  "paySecureBitcoinWallet": "Surakshit Bitcoin wallet",
+  "@paySecureBitcoinWallet": {
+    "description": "Display text for secure Bitcoin wallet"
+  },
+  "payFeePriority": "Fee Priority",
+  "@payFeePriority": {
+    "description": "Label for fee priority selection"
+  },
+  "payFastest": "Sabse tez",
+  "@payFastest": {
+    "description": "Display text for fastest fee option"
+  },
+  "payNetworkFees": "Network fees",
+  "@payNetworkFees": {
+    "description": "Label for network fees amount"
+  },
+  "payCalculating": "Calculate ho raha hai...",
+  "@payCalculating": {
+    "description": "Text shown while calculating fees"
+  },
+  "payAdvancedSettings": "Advanced Settings",
+  "@payAdvancedSettings": {
+    "description": "Button for advanced settings"
+  },
+  "payAdvancedOptions": "Advanced options",
+  "@payAdvancedOptions": {
+    "description": "Title for advanced options bottom sheet"
+  },
+  "payReplaceByFeeActivated": "Replace-by-fee activated",
+  "@payReplaceByFeeActivated": {
+    "description": "Label for RBF toggle"
+  },
+  "paySelectCoinsManually": "Coins manually chunein",
+  "@paySelectCoinsManually": {
+    "description": "Option to manually select UTXOs"
+  },
+  "payDone": "Ho gaya",
+  "@payDone": {
+    "description": "Button to close bottom sheet"
+  },
+  "payContinue": "Aage badhein",
+  "@payContinue": {
+    "description": "Button to continue to next step"
+  },
+  "payPleasePayInvoice": "Kripya is invoice ko pay karein",
+  "@payPleasePayInvoice": {
+    "description": "Title for receive payment screen"
+  },
+  "payBitcoinAmount": "Bitcoin amount",
+  "@payBitcoinAmount": {
+    "description": "Label for Bitcoin amount"
+  },
+  "payBitcoinPrice": "Bitcoin Price",
+  "@payBitcoinPrice": {
+    "description": "Label for Bitcoin exchange rate"
+  },
+  "payCopyInvoice": "Invoice Copy karein",
+  "@payCopyInvoice": {
+    "description": "Button text to copy invoice to clipboard"
+  },
+  "payShowQrCode": "QR code dikhayein",
+  "@payShowQrCode": {
+    "description": "Button to show QR code"
+  },
+  "payQrCode": "QR Code",
+  "@payQrCode": {
+    "description": "Title for QR code bottom sheet"
+  },
+  "payNoInvoiceData": "Koi invoice data uplabdh nahi",
+  "@payNoInvoiceData": {
+    "description": "Message when no invoice data available"
+  },
+  "payInvalidState": "Invalid state",
+  "@payInvalidState": {
+    "description": "Error message for invalid state"
+  },
+  "payInProgress": "Payment Jaari Hai!",
+  "@payInProgress": {
+    "description": "Title for payment in progress screen"
+  },
+  "payInProgressDescription": "Aapka payment shuru ho gaya hai aur aapke transaction ko onchain 1 confirmation milne ke baad recipient ko funds mil jaayenge.",
+  "@payInProgressDescription": {
+    "description": "Description for payment in progress"
+  },
+  "payViewDetails": "Details dekhein",
+  "@payViewDetails": {
+    "description": "Button to view order details"
+  },
+  "payViewReceipt": "Receipt dekhein",
+  "@payViewReceipt": {
+    "description": "Button to view SINPE payment receipt"
+  },
+  "paySinpeReceipt": "SINPE Receipt",
+  "@paySinpeReceipt": {
+    "description": "Title for SINPE receipt bottom sheet"
+  },
+  "payCompleted": "Payment Poora Hua!",
+  "@payCompleted": {
+    "description": "Title for payment completed screen"
+  },
+  "payCompletedDescription": "Aapka payment poora ho gaya hai aur recipient ko funds mil gaye hain.",
+  "@payCompletedDescription": {
+    "description": "Description for payment completed"
+  },
+  "paySinpeEnviado": "SINPE ENVIADO!",
+  "@paySinpeEnviado": {
+    "description": "Success message for SINPE payment (Spanish, kept as is)"
+  },
+  "payOrderDetails": "Order Details",
+  "@payOrderDetails": {
+    "description": "Title for SINPE order details screen"
+  },
+  "paySinpeMonto": "Amount",
+  "@paySinpeMonto": {
+    "description": "Label for amount in SINPE order details"
+  },
+  "paySinpeNumeroOrden": "Order number",
+  "@paySinpeNumeroOrden": {
+    "description": "Label for order number in SINPE details"
+  },
+  "paySinpeNumeroComprobante": "Reference number",
+  "@paySinpeNumeroComprobante": {
+    "description": "Label for reference number in SINPE details"
+  },
+  "paySinpeBeneficiario": "Beneficiary",
+  "@paySinpeBeneficiario": {
+    "description": "Label for beneficiary in SINPE details"
+  },
+  "paySinpeOrigen": "Origin",
+  "@paySinpeOrigen": {
+    "description": "Label for origin in SINPE details"
+  },
+  "payNotAvailable": "N/A",
+  "@payNotAvailable": {
+    "description": "Placeholder for unavailable information"
+  },
+  "payBitcoinOnchain": "Bitcoin on-chain",
+  "@payBitcoinOnchain": {
+    "description": "Option for Bitcoin on-chain payment"
+  },
+  "payAboveMaxAmount": "Aap is wallet se maximum pay-able amount se zyada pay karne ki koshish kar rahe hain.",
+  "@payAboveMaxAmount": {
+    "description": "Error message when payment amount exceeds maximum"
+  },
+  "transactionListLoadingFailed": "Transactions load nahi ho sake.",
+  "@transactionListLoadingFailed": {
+    "description": "Error message when transaction loading fails"
+  },
+  "fundExchangeWarningTactic3": "Woh kehte hain ki woh karz ya tax vasooli ke liye kaam karte hain",
+  "@fundExchangeWarningTactic3": {
+    "description": "Third scammer tactic warning"
+  },
+  "fundExchangeWarningTactic4": "Woh apne address par Bitcoin bhejne ke liye keh rahe hain",
+  "@fundExchangeWarningTactic4": {
+    "description": "Fourth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic5": "Woh kisi aur platform par Bitcoin bhejne ke liye keh rahe hain",
+  "@fundExchangeWarningTactic5": {
+    "description": "Fifth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic6": "Woh chahte hain ki aap apni screen share karein",
+  "@fundExchangeWarningTactic6": {
+    "description": "Sixth scammer tactic warning"
+  },
+  "fundExchangeWarningTactic7": "Woh aapko is warning ki chinta na karne ke liye keh rahe hain",
+  "@fundExchangeWarningTactic7": {
+    "description": "Seventh scammer tactic warning"
+  },
+  "fundExchangeWarningTactic8": "Woh aap par jaldi action karne ka pressure daal rahe hain",
+  "@fundExchangeWarningTactic8": {
+    "description": "Eighth scammer tactic warning"
+  },
+  "fundExchangeWarningConfirmation": "Main confirm karta/karti hoon ki mujhe kisi aur dwara Bitcoin kharidne ke liye nahi kaha ja raha.",
+  "@fundExchangeWarningConfirmation": {
+    "description": "Confirmation checkbox text that user is not being coerced to buy Bitcoin"
+  },
+  "fundExchangeContinueButton": "Aage badhein",
+  "@fundExchangeContinueButton": {
+    "description": "Button label to continue from warning screen to payment method details"
+  },
+  "fundExchangeScamConsentError": "Aapki consent register karne mein vifal. Kripya phir se try karein.",
+  "@fundExchangeScamConsentError": {
+    "description": "Error message shown when the scam warning consent API call fails"
+  },
+  "fundExchangeDoneButton": "Ho gaya",
+  "@fundExchangeDoneButton": {
+    "description": "Button label to finish and exit the funding flow"
+  },
+  "fundExchangeJurisdictionCanada": "🇨🇦 Canada",
+  "@fundExchangeJurisdictionCanada": {
+    "description": "Dropdown option for Canada jurisdiction"
+  },
+  "fundExchangeJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "@fundExchangeJurisdictionEurope": {
+    "description": "Dropdown option for Europe SEPA jurisdiction"
+  },
+  "fundExchangeJurisdictionMexico": "🇲🇽 Mexico",
+  "@fundExchangeJurisdictionMexico": {
+    "description": "Dropdown option for Mexico jurisdiction"
+  },
+  "fundExchangeJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "@fundExchangeJurisdictionCostaRica": {
+    "description": "Dropdown option for Costa Rica jurisdiction"
+  },
+  "fundExchangeJurisdictionArgentina": "🇦🇷 Argentina",
+  "@fundExchangeJurisdictionArgentina": {
+    "description": "Dropdown option for Argentina jurisdiction"
+  },
+  "fundExchangeJurisdictionColombia": "🇨🇴 Colombia",
+  "@fundExchangeJurisdictionColombia": {
+    "description": "Dropdown option for Colombia jurisdiction"
+  },
+  "fundExchangeMethodEmailETransfer": "Email E-Transfer",
+  "@fundExchangeMethodEmailETransfer": {
+    "description": "Payment method: Email E-Transfer (Canada)"
+  },
+  "fundExchangeMethodEmailETransferSubtitle": "Sabse aasaan aur tez method (instant)",
+  "@fundExchangeMethodEmailETransferSubtitle": {
+    "description": "Subtitle for Email E-Transfer payment method"
+  },
+  "fundExchangeMethodBankTransferWire": "Bank Transfer (Wire ya EFT)",
+  "@fundExchangeMethodBankTransferWire": {
+    "description": "Payment method: Bank Transfer Wire or EFT (Canada)"
+  },
+  "fundExchangeMethodBankTransferWireSubtitle": "Badi amounts ke liye sabse acha aur reliable option (usi din ya agle din)",
+  "@fundExchangeMethodBankTransferWireSubtitle": {
+    "description": "Subtitle for Bank Transfer Wire payment method"
+  },
+  "fundExchangeMethodOnlineBillPayment": "Online Bill Payment",
+  "@fundExchangeMethodOnlineBillPayment": {
+    "description": "Payment method: Online Bill Payment (Canada)"
+  },
+  "fundExchangeMethodOnlineBillPaymentSubtitle": "Sabse dheema option, lekin online banking ke through kiya ja sakta hai (3-4 business days)",
+  "@fundExchangeMethodOnlineBillPaymentSubtitle": {
+    "description": "Subtitle for Online Bill Payment method"
+  },
+  "fundExchangeMethodCanadaPost": "Canada Post par in-person cash ya debit",
+  "@fundExchangeMethodCanadaPost": {
+    "description": "Payment method: In-person at Canada Post"
+  },
+  "fundExchangeMethodCanadaPostSubtitle": "Un logon ke liye sabse acha jo in-person pay karna pasand karte hain",
+  "@fundExchangeMethodCanadaPostSubtitle": {
+    "description": "Subtitle for Canada Post payment method"
+  },
+  "fundExchangeMethodInstantSepa": "Instant SEPA",
+  "@fundExchangeMethodInstantSepa": {
+    "description": "Payment method: Instant SEPA (Europe)"
+  },
+  "fundExchangeMethodInstantSepaSubtitle": "Sabse tez - Sirf €20,000 se kam transactions ke liye",
+  "@fundExchangeMethodInstantSepaSubtitle": {
+    "description": "Subtitle for Instant SEPA payment method"
+  },
+  "fundExchangeMethodRegularSepa": "Regular SEPA",
+  "@fundExchangeMethodRegularSepa": {
+    "description": "Payment method: Regular SEPA (Europe)"
+  },
+  "fundExchangeMethodRegularSepaSubtitle": "Sirf €20,000 se zyada badi transactions ke liye use karein",
+  "@fundExchangeMethodRegularSepaSubtitle": {
+    "description": "Subtitle for Regular SEPA payment method"
+  },
+  "fundExchangeMethodSpeiTransfer": "SPEI transfer",
+  "@fundExchangeMethodSpeiTransfer": {
+    "description": "Payment method: SPEI transfer (Mexico)"
+  },
+  "fundExchangeMethodSpeiTransferSubtitle": "Apne CLABE ka use karke funds transfer karein",
+  "@fundExchangeMethodSpeiTransferSubtitle": {
+    "description": "Subtitle for SPEI transfer payment method"
+  },
+  "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
+  "@fundExchangeMethodSinpeTransfer": {
+    "description": "Payment method: SINPE Transfer (Costa Rica)"
+  },
+  "fundExchangeMethodSinpeTransferSubtitle": "SINPE ka use karke Colones transfer karein",
+  "@fundExchangeMethodSinpeTransferSubtitle": {
+    "description": "Subtitle for SINPE Transfer payment method"
+  },
+  "fundExchangeMethodCrIbanCrc": "Costa Rica IBAN (CRC)",
+  "@fundExchangeMethodCrIbanCrc": {
+    "description": "Payment method: Costa Rica IBAN in Colones"
+  },
+  "fundExchangeMethodCrIbanCrcSubtitle": "Costa Rican Colón (CRC) mein funds transfer karein",
+  "@fundExchangeMethodCrIbanCrcSubtitle": {
+    "description": "Subtitle for Costa Rica IBAN CRC payment method"
+  },
+  "fundExchangeMethodCrIbanUsd": "Costa Rica IBAN (USD)",
+  "@fundExchangeMethodCrIbanUsd": {
+    "description": "Payment method: Costa Rica IBAN in US Dollars"
+  },
+  "fundExchangeMethodCrIbanUsdSubtitle": "US Dollars (USD) mein funds transfer karein",
+  "@fundExchangeMethodCrIbanUsdSubtitle": {
+    "description": "Subtitle for Costa Rica IBAN USD payment method"
+  },
+  "fundExchangeMethodArsBankTransfer": "Bank Transfer",
+  "@fundExchangeMethodArsBankTransfer": {
+    "description": "Payment method: Bank Transfer (Argentina)"
+  },
+  "fundExchangeMethodArsBankTransferSubtitle": "Apne bank account se ek bank transfer bhejein",
+  "@fundExchangeMethodArsBankTransferSubtitle": {
+    "description": "Subtitle for Argentina bank transfer payment method"
+  },
+  "fundExchangeBankTransferWireTitle": "Bank transfer (wire)",
+  "@fundExchangeBankTransferWireTitle": {
+    "description": "Screen title for bank transfer wire payment details"
+  },
+  "fundExchangeBankTransferWireDescription": "Neeche diye Bull Bitcoin ke bank details ka use karke apne bank account se ek wire transfer bhejein. Aapke bank ko in details ke kuch hisson ki hi zaroorat ho sakti hai.",
+  "@fundExchangeBankTransferWireDescription": {
+    "description": "Description of how to use bank transfer wire method"
+  },
+  "fundExchangeBankTransferWireTimeframe": "Aapke dwara bheje gaye koi bhi funds 1-2 business days ke andar aapke Bull Bitcoin mein jud jaayenge.",
+  "@fundExchangeBankTransferWireTimeframe": {
+    "description": "Timeframe for bank transfer wire funds to be credited"
+  },
+  "fundExchangeLabelBeneficiaryName": "Beneficiary name",
+  "@fundExchangeLabelBeneficiaryName": {
+    "description": "Label for beneficiary name field"
+  },
+  "fundExchangeHelpBeneficiaryName": "Hamare official corporate name ka use karein. \"Bull Bitcoin\" ka use na karein.",
+  "@fundExchangeHelpBeneficiaryName": {
+    "description": "Help text for beneficiary name field"
+  },
+  "fundExchangeLabelTransferCode": "Transfer code (ise payment description ke roop mein jodein)",
+  "@fundExchangeLabelTransferCode": {
+    "description": "Label for transfer code field"
+  },
+  "fundExchangeHelpTransferCode": "Ise transfer ke reason ke roop mein jodein",
+  "@fundExchangeHelpTransferCode": {
+    "description": "Help text for transfer code field"
+  },
+  "fundExchangeInfoTransferCode": "Payment karte samay aapko transfer code ko \"message\" ya \"reason\" ke roop mein jodna hoga.",
+  "@fundExchangeInfoTransferCode": {
+    "description": "Info card message about transfer code importance"
+  },
+  "fundExchangeLabelBankAccountDetails": "Bank account details",
+  "@fundExchangeLabelBankAccountDetails": {
+    "description": "Label for bank account details field"
+  },
+  "fundExchangeLabelSwiftCode": "SWIFT code",
+  "@fundExchangeLabelSwiftCode": {
+    "description": "Label for SWIFT code field"
+  },
+  "fundExchangeLabelInstitutionNumber": "Institution number",
+  "@fundExchangeLabelInstitutionNumber": {
+    "description": "Label for institution number field"
+  },
+  "fundExchangeLabelTransitNumber": "Transit number",
+  "@fundExchangeLabelTransitNumber": {
+    "description": "Label for transit number field"
+  },
+  "fundExchangeLabelRoutingNumber": "Routing number",
+  "@fundExchangeLabelRoutingNumber": {
+    "description": "Label for routing number field"
+  },
+  "fundExchangeLabelBeneficiaryAddress": "Beneficiary address",
+  "@fundExchangeLabelBeneficiaryAddress": {
+    "description": "Label for beneficiary address field"
+  },
+  "fundExchangeLabelBankName": "Bank ka naam",
+  "@fundExchangeLabelBankName": {
+    "description": "Label for bank name field"
+  },
+  "fundExchangeLabelBankAddress": "Hamare bank ka address",
+  "@fundExchangeLabelBankAddress": {
+    "description": "Label for bank address field"
+  },
+  "fundExchangeETransferTitle": "E-Transfer details",
+  "@fundExchangeETransferTitle": {
+    "description": "Screen title for E-Transfer payment details"
+  },
+  "fundExchangeETransferDescription": "Neeche di gayi information ka use karke aap apne bank se Email E-Transfer ke through jo bhi amount bhejenge, woh kuch hi minutes mein aapke Bull Bitcoin account balance mein credit ho jaayegi.",
+  "@fundExchangeETransferDescription": {
+    "description": "Description of how E-Transfer works and timeframe"
+  },
+  "fundExchangeETransferLabelBeneficiaryName": "Ise E-transfer beneficiary name ke roop mein use karein",
+  "@fundExchangeETransferLabelBeneficiaryName": {
+    "description": "Label for E-transfer beneficiary name"
+  },
+  "fundExchangeETransferLabelEmail": "Is email par E-transfer bhejein",
+  "@fundExchangeETransferLabelEmail": {
+    "description": "Label for E-transfer recipient email"
+  },
+  "fundExchangeETransferLabelSecretQuestion": "Secret question",
+  "@fundExchangeETransferLabelSecretQuestion": {
+    "description": "Label for E-transfer security question"
+  },
+  "fundExchangeETransferLabelSecretAnswer": "Secret answer",
+  "@fundExchangeETransferLabelSecretAnswer": {
+    "description": "Label for E-transfer security answer"
+  },
+  "fundExchangeOnlineBillPaymentTitle": "Online Bill Payment",
+  "@fundExchangeOnlineBillPaymentTitle": {
+    "description": "Screen title for Online Bill Payment details"
+  },
+  "fundExchangeOnlineBillPaymentDescription": "Neeche di gayi information ka use karke aap apne bank ki online bill payment feature ke through jo bhi amount bhejenge, woh 3-4 business days ke andar aapke Bull Bitcoin account balance mein credit ho jaayegi.",
+  "@fundExchangeOnlineBillPaymentDescription": {
+    "description": "Description of how online bill payment works and timeframe"
+  },
+  "fundExchangeOnlineBillPaymentLabelBillerName": "Apne bank ki billers list mein is naam ko search karein",
+  "@fundExchangeOnlineBillPaymentLabelBillerName": {
+    "description": "Label for biller name in online bill payment"
+  },
+  "fundExchangeOnlineBillPaymentHelpBillerName": "Is company ko payee ke roop mein jodein - yeh Bull Bitcoin ka payment processor hai",
+  "@fundExchangeOnlineBillPaymentHelpBillerName": {
+    "description": "Help text for biller name field"
+  },
+  "fundExchangeOnlineBillPaymentLabelAccountNumber": "Ise account number ke roop mein jodein",
+  "@fundExchangeOnlineBillPaymentLabelAccountNumber": {
+    "description": "Label for account number in online bill payment"
+  },
+  "fundExchangeOnlineBillPaymentHelpAccountNumber": "Yeh unique account number sirf aapke liye banaya gaya hai",
+  "@fundExchangeOnlineBillPaymentHelpAccountNumber": {
+    "description": "Help text for account number field"
+  },
+  "fundExchangeCanadaPostTitle": "Canada Post par in-person cash ya debit",
+  "@fundExchangeCanadaPostTitle": {
+    "description": "Screen title for Canada Post payment method"
+  },
+  "fundExchangeCanadaPostStep1": "1. Kisi bhi Canada Post location par jaayein",
+  "@fundExchangeCanadaPostStep1": {
+    "description": "Step 1 for Canada Post payment process"
+  },
+  "fundExchangeCanadaPostStep2": "2. Cashier ko \"Loadhub\" QR code scan karne ke liye kahein",
+  "@fundExchangeCanadaPostStep2": {
+    "description": "Step 2 for Canada Post payment process"
+  },
+  "swapTotalFees": "Total Fees ",
+  "@swapTotalFees": {
+    "description": "Total fees label"
+  },
+  "swapContinueButton": "Aage badhein",
+  "@swapContinueButton": {
+    "description": "Button to proceed from amount page to confirmation"
+  },
+  "swapGoHomeButton": "Home jaayein",
+  "@swapGoHomeButton": {
+    "description": "Button to return home from progress page"
+  },
+  "swapTransferPendingTitle": "Transfer Pending",
+  "@swapTransferPendingTitle": {
+    "description": "Title during pending swap status"
+  },
+  "swapTransferPendingMessage": "Transfer jaari hai. Bitcoin transactions ko confirm hone mein kuch samay lag sakta hai. Aap home wapas ja sakte hain aur wait kar sakte hain.",
+  "@swapTransferPendingMessage": {
+    "description": "Message shown during pending swap"
+  },
+  "swapTransferCompletedTitle": "Transfer poora hua",
+  "@swapTransferCompletedTitle": {
+    "description": "Title when swap completes successfully"
+  },
+  "swapTransferCompletedMessage": "Wow, aapne wait kiya! Transfer safaltapoorvak poora ho gaya hai.",
+  "@swapTransferCompletedMessage": {
+    "description": "Success message after transfer completion"
+  },
+  "swapTransferRefundInProgressTitle": "Transfer Refund Jaari Hai",
+  "@swapTransferRefundInProgressTitle": {
+    "description": "Title when swap is being refunded"
+  },
+  "swapTransferRefundInProgressMessage": "Transfer mein ek error tha. Aapka refund jaari hai.",
+  "@swapTransferRefundInProgressMessage": {
+    "description": "Message during refund process"
+  },
+  "swapTransferRefundedTitle": "Transfer Refund Ho Gaya",
+  "@swapTransferRefundedTitle": {
+    "description": "Title when swap has been refunded"
+  },
+  "swapTransferRefundedMessage": "Transfer safaltapoorvak refund kar diya gaya hai.",
+  "@swapTransferRefundedMessage": {
+    "description": "Refund completion message"
+  },
+  "swapAmountPlaceholder": "0",
+  "@swapAmountPlaceholder": {
+    "description": "Placeholder for amount input fields"
+  },
+  "swapErrorBalanceTooLow": "Minimum swap amount ke liye balance bahut kam hai",
+  "@swapErrorBalanceTooLow": {
+    "description": "Error when balance is below minimum swap limit"
+  },
+  "swapErrorAmountExceedsMaximum": "Amount maximum swap amount se zyada hai",
+  "@swapErrorAmountExceedsMaximum": {
+    "description": "Error when amount is above maximum swap limit"
+  },
+  "swapErrorAmountBelowMinimum": "Amount minimum swap amount se kam hai: {min} sats",
+  "@swapErrorAmountBelowMinimum": {
+    "description": "Error shown when amount is below minimum",
+    "placeholders": {
+      "min": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorAmountAboveMaximum": "Amount maximum swap amount se zyada hai: {max} sats",
+  "@swapErrorAmountAboveMaximum": {
+    "description": "Error shown when amount is above maximum",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "swapErrorInsufficientFunds": "Transaction build nahi ho saka. Shayad fees aur amount cover karne ke liye funds kam hain.",
+  "@swapErrorInsufficientFunds": {
+    "description": "Error when transaction cannot be built due to insufficient funds"
+  },
+  "swapTransferTitle": "Transfer",
+  "@swapTransferTitle": {
+    "description": "AppBar title on the main swap page"
+  },
+  "swapExternalTransferLabel": "External Transfer",
+  "@swapExternalTransferLabel": {
+    "description": "Label for external transfer toggle"
+  },
+  "swapFromLabel": "Se",
+  "@swapFromLabel": {
+    "description": "Label for source wallet dropdown"
+  },
+  "swapToLabel": "Tak",
+  "@swapToLabel": {
+    "description": "Label for destination wallet dropdown or address input"
+  },
+  "swapAmountLabel": "Amount",
+  "@swapAmountLabel": {
+    "description": "Label for amount input section"
+  },
+  "swapReceiveExactAmountLabel": "Exact amount receive karein",
+  "@swapReceiveExactAmountLabel": {
+    "description": "Label when receive exact amount toggle is on"
+  },
+  "swapSubtractFeesLabel": "Amount se fees ghatayein",
+  "@swapSubtractFeesLabel": {
+    "description": "Label when receive exact amount toggle is off"
+  },
+  "swapExternalAddressHint": "External wallet address enter karein",
+  "@swapExternalAddressHint": {
+    "description": "Hint text for external address input"
+  },
+  "swapValidationEnterAmount": "Kripya amount enter karein",
+  "@swapValidationEnterAmount": {
+    "description": "Validation error when amount is empty"
+  },
+  "swapValidationPositiveAmount": "Positive amount enter karein",
+  "@swapValidationPositiveAmount": {
+    "description": "Validation error when amount is not positive"
+  },
+  "swapValidationInsufficientBalance": "Balance kam hai",
+  "@swapValidationInsufficientBalance": {
+    "description": "Validation error when amount exceeds wallet balance"
+  },
+  "swapValidationMinimumAmount": "Minimum amount hai {amount} {currency}",
+  "@swapValidationMinimumAmount": {
+    "description": "Validation error when amount is below minimum",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "currency": {
+        "type": "String"
+      }
+    }
+  },
+  "fundExchangeCopDailyLimitWarning": "Agar aap apni daily transaction limit se zyada karte hain, toh transaction fail ho jaayegi. Aapko customer support se contact karna hoga.",
+  "@fundExchangeCopDailyLimitWarning": {
+    "description": "Warning about daily transaction limit for COP bank transfer"
+  },
+  "fundExchangeCopSenderName": "Sender Name",
+  "@fundExchangeCopSenderName": {
+    "description": "Label for sender name field in COP bank transfer"
+  },
+  "fundExchangeCopIssuingBank": "Issuing Bank",
+  "@fundExchangeCopIssuingBank": {
+    "description": "Label for issuing bank dropdown in COP bank transfer"
+  },
+  "fundExchangeCopSelectBankError": "Kripya ek issuing bank chunein",
+  "@fundExchangeCopSelectBankError": {
+    "description": "Validation error when no bank is selected"
+  },
+  "fundExchangeCopAmount": "Amount",
+  "@fundExchangeCopAmount": {
+    "description": "Label for amount field in COP bank transfer"
+  },
+  "fundExchangeCopEnterAmountError": "Kripya amount enter karein",
+  "@fundExchangeCopEnterAmountError": {
+    "description": "Validation error when amount is empty"
+  },
+  "fundExchangeCopValidAmountError": "Kripya ek valid amount enter karein",
+  "@fundExchangeCopValidAmountError": {
+    "description": "Validation error when amount is invalid"
+  },
+  "fundExchangeCopGeneratePaymentLink": "Payment Link Generate Karein",
+  "@fundExchangeCopGeneratePaymentLink": {
+    "description": "Button label to generate COP payment link"
+  },
+  "fundExchangeCopRedirectMessage": "Payment karne ke liye aapko ek external page par redirect kiya jaayega.",
+  "@fundExchangeCopRedirectMessage": {
+    "description": "Message about redirect to external payment page"
+  },
+  "fundExchangeCopOpenPaymentLink": "Payment Link Kholein",
+  "@fundExchangeCopOpenPaymentLink": {
+    "description": "Button label to open COP payment link"
+  },
+  "fundExchangeCopFailedToOpenLink": "Payment link nahi khul saka. Kripya phir se try karein ya support se contact karein.",
+  "@fundExchangeCopFailedToOpenLink": {
+    "description": "Error shown when the COP payment link fails to open"
+  },
+  "electrumStopGapHighWarning": "High stop gap values sync time ko kaafi badha deti hain. Sync poora hone tak app ko foreground mein khula rakhein — app ko background mein daalne se yeh ruk sakta hai.",
+  "@electrumStopGapHighWarning": {
+    "description": "Warning shown when the user enters a Stop Gap larger than 1000"
+  },
+  "errorReportingProgramDescriptionP1": "Hamare error reporting program mein contribute karke Bull ko behtar banane mein hamari madad karein.",
+  "@errorReportingProgramDescriptionP1": {
+    "description": "Intro paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP2": "Jab kuch break hota hai toh Bull Bitcoin anonymized error reports bhejta hai.",
+  "@errorReportingProgramDescriptionP2": {
+    "description": "Bold paragraph: anonymized error reports fact"
+  },
+  "errorReportingProgramDescriptionP3": "Isse hum dekh paate hain ki har bug se kitne users prabhavit hain aur usi hisaab se fixes ko priority dete hain, iske bina humare paas impact maapne ka koi tareeka nahi hai.",
+  "@errorReportingProgramDescriptionP3": {
+    "description": "Impact paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP4": "Reports sirf Bull ke server par jaati hain, kabhi bhi third parties ko nahi.",
+  "@errorReportingProgramDescriptionP4": {
+    "description": "Privacy paragraph of error reporting program description"
+  },
+  "errorReportingProgramDescriptionP5": "Bull Bitcoin open source hai, isliye aap verify kar sakte hain ki kya bheja jaata hai.",
+  "@errorReportingProgramDescriptionP5": {
+    "description": "Bold paragraph: open source verification fact"
+  },
+  "legacyStorageBadgeActionRequired": "ACTION REQUIRED",
+  "@legacyStorageBadgeActionRequired": {
+    "description": "Red pill badge above the legacy storage warning page title"
+  },
+  "legacyStorageBadgeConfirm": "CONFIRM",
+  "@legacyStorageBadgeConfirm": {
+    "description": "Red pill badge above the are-you-sure confirmation title"
+  },
+  "legacyStorageNoBackupPageTitle": "APNA WALLET BACKUP LEIN AUR RE-INSTALL KAREIN",
+  "@legacyStorageNoBackupPageTitle": {
+    "description": "Full-page warning title shown when the wallet has no backup"
+  },
+  "legacyStorageHasBackupPageTitle": "APNA WALLET RE-INSTALL KAREIN",
+  "@legacyStorageHasBackupPageTitle": {
+    "description": "Full-page warning title shown when the wallet already has a backup"
+  },
+  "legacyStorageIntroDescription": "Aapka wallet aise software par chal raha hai jo jald deprecate ho jaayega. Ise app ko uninstall aur re-install kiye bina update nahi kiya ja sakta.",
+  "@legacyStorageIntroDescription": {
+    "description": "Intro paragraph below the full-page warning title"
+  },
+  "legacyStorageStepBackupWallet": "Apna wallet backup lein",
+  "@legacyStorageStepBackupWallet": {
+    "description": "Step 1 in the legacy storage warning checklist"
+  },
+  "legacyStorageStepExportLabels": "Apne labels export karein (agar hain)",
+  "@legacyStorageStepExportLabels": {
+    "description": "Step 2 in the legacy storage warning checklist"
+  },
+  "legacyStorageStepEnsureSwapsCompleted": "Ensure karein ki sabhi swaps poore ho chuke hain",
+  "@legacyStorageStepEnsureSwapsCompleted": {
+    "description": "Step in the legacy storage warning checklist instructing the user to wait for in-flight swaps"
+  },
+  "legacyStorageStepUninstall": "Apne device se app ko uninstall karein",
+  "@legacyStorageStepUninstall": {
+    "description": "Uninstall step in the legacy storage warning checklist"
+  },
+  "legacyStorageStepReinstall": "Latest version download karein aur re-install karein",
+  "@legacyStorageStepReinstall": {
+    "description": "Reinstall step in the legacy storage warning checklist"
+  },
+  "legacyStorageStepRestoreBackup": "Apna backup restore karein",
+  "@legacyStorageStepRestoreBackup": {
+    "description": "Final step in the legacy storage warning checklist"
+  },
+  "legacyStorageImportantTitle": "Important",
+  "@legacyStorageImportantTitle": {
+    "description": "Title of the red callout box on the legacy storage warning page"
+  },
+  "legacyStorageImportantBody": "Kripya is process ko mat chhodein jab tak ki aap is samay bilkul backup nahi le sakte.",
+  "@legacyStorageImportantBody": {
+    "description": "Body of the red callout box on the legacy storage warning page"
+  },
+  "legacyStorageContinueFooterNoBackup": "Aap backup liye bina bhi app ka use jaari rakh sakte hain, lekin hum iski sakht salaah nahi dete.",
+  "@legacyStorageContinueFooterNoBackup": {
+    "description": "Footer text on the legacy storage warning page when the wallet has no backup"
+  },
+  "legacyStorageContinueFooterHasBackup": "Aap app ka use jaari rakh sakte hain, lekin hum iski sakht salaah nahi dete.",
+  "@legacyStorageContinueFooterHasBackup": {
+    "description": "Footer text on the legacy storage warning page when the wallet already has a backup"
+  },
+  "legacyStorageBackupNowButton": "Abhi backup lein",
+  "@legacyStorageBackupNowButton": {
+    "description": "Primary CTA on the legacy storage warning and confirmation pages"
+  },
+  "legacyStorageRiskAckButton": "Nahi, main risk samajhta hoon",
+  "@legacyStorageRiskAckButton": {
+    "description": "Secondary CTA on the legacy storage warning page that acknowledges the risk"
+  },
+  "legacyStorageAreYouSureTitle": "KYA AAP SURE HAIN?",
+  "@legacyStorageAreYouSureTitle": {
+    "description": "Title of the legacy storage are-you-sure confirmation page"
+  },
+  "legacyStorageAreYouSureParagraphOne": "Wallet ki Bitcoin private keys store karne wala software deprecate ho raha hai. Future mein kisi rukawat se bachne ke liye hum sakht salaah dete hain ki aap abhi backup lein.",
+  "@legacyStorageAreYouSureParagraphOne": {
+    "description": "First paragraph of the are-you-sure confirmation page"
+  },
+  "legacyStorageAreYouSureParagraphTwo": "Encrypted Vault backup option mein lagbhag 1 minute lagega, koi special tools nahi chahiye. Physical backup ke liye sirf pen aur paper chahiye.",
+  "@legacyStorageAreYouSureParagraphTwo": {
+    "description": "Second paragraph of the are-you-sure confirmation page"
+  },
+  "legacyStorageContinueWithoutBackupButton": "Backup ke bina jaari rakhein",
+  "@legacyStorageContinueWithoutBackupButton": {
+    "description": "Confirm button on the are-you-sure page that dismisses the warning"
+  },
+  "legacyStorageAcceptRisksCheckbox": "Main backup na lene ke risks accept karta hoon",
+  "@legacyStorageAcceptRisksCheckbox": {
+    "description": "Checkbox label that gates the continue-without-backup button"
+  },
+  "backButton": "Wapas",
+  "@backButton": {
+    "description": "Generic back button label"
+  },
+  "getStartedButton": "Shuru karein",
+  "@getStartedButton": {
+    "description": "Final call-to-action button that finishes the install/upgrade wizard"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option label"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option label"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System (follow OS) theme option label"
+  },
+  "errorReportingIContribute": "Main contribute karta hoon",
+  "@errorReportingIContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts in"
+  },
+  "errorReportingIDoNotContribute": "Main contribute nahi karta",
+  "@errorReportingIDoNotContribute": {
+    "description": "Label shown next to the error reporting switch when the user opts out"
+  },
+  "errorReportingStandardLogsTitle": "Standard logs",
+  "@errorReportingStandardLogsTitle": {
+    "description": "Title of the standard error reporting switch shown in the wizard and settings"
+  },
+  "appInitErrorHasBackupTitle": "Apne backup ka use karein",
+  "@appInitErrorHasBackupTitle": {
+    "description": "Reassurance headline shown on the init-error screen when the user already has a backup"
+  },
+  "appInitErrorHasBackupMessage": "Aapke backup ki wajah se aapke funds safe hain.\nPehle app restart karke dekhein, agar phir bhi fail ho toh reinstall karein aur apne backup se recover karein.",
+  "@appInitErrorHasBackupMessage": {
+    "description": "Reassurance body explaining the user's funds can be recovered via backup"
+  },
+  "appInitErrorNoBackupTitle": "Koi backup nahi?",
+  "@appInitErrorNoBackupTitle": {
+    "description": "Headline for the no-backup section of the init-error screen"
+  },
+  "appInitErrorNoBackupMessage": "App ko delete na karein.\nRescue ke liye hamari support team se contact karein.",
+  "@appInitErrorNoBackupMessage": {
+    "description": "Body asking users without a backup to reach out to support before touching the app"
+  },
+  "appInitErrorContactSupportButton": "Support se contact karein",
+  "@appInitErrorContactSupportButton": {
+    "description": "Button label that opens the support website from the init-error screen"
+  },
+  "appInitErrorDetailsToggle": "Error details dikhayein",
+  "@appInitErrorDetailsToggle": {
+    "description": "Label on the collapsed section that reveals the raw exception text"
+  },
+  "wizardSkipButton": "Skip",
+  "@wizardSkipButton": {
+    "description": "Top-right action in the install/upgrade wizard that finishes it immediately with current selections"
+  },
+  "wizardPageIndicator": "PAGE {current} / {total}",
+  "@wizardPageIndicator": {
+    "description": "Eyebrow label above each wizard page title indicating progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "wizardNextButton": "Agla",
+  "@wizardNextButton": {
+    "description": "Primary action that advances the wizard to the next page"
+  },
+  "wizardCustomizeTitle": "Apna experience customize karein",
+  "@wizardCustomizeTitle": {
+    "description": "Title of the wizard's settings/customize page"
+  },
+  "wizardCustomizeBody": "In settings ke saath BULL ko apni shartein par use karein.",
+  "@wizardCustomizeBody": {
+    "description": "Subtitle on the wizard's settings/customize page"
+  },
+  "wizardCustomizeDefaultCurrency": "Default currency",
+  "@wizardCustomizeDefaultCurrency": {
+    "description": "Label for the default fiat currency row on the wizard customize page"
+  },
+  "wizardMissionTitle": "Bull mission mein madad karein",
+  "@wizardMissionTitle": {
+    "description": "Title of the wizard's error-reporting consent page"
+  },
+  "wizardMissionBody1": "Hamare software ko behtar banane aur security, privacy aur usability ka uchchatam level dene mein madad karne ke liye, aapka app humein error logs bhej sakta hai jo hamein issues detect karne aur agle updates mein jaldi fix karne ki anumati dete hain.",
+  "@wizardMissionBody1": {
+    "description": "First explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionBody2": "Ye logs anonymized hain, aapke IP address se linked nahi hain, aur kabhi bhi aapke transactions ya identity ke baare mein koi information share nahi karte. Ye poori tarah technical hain aur aapko kisi bhi risk mein nahi daalte. Yeh hamare liye bahut helpful hai, aur aapko kuch bhi cost nahi padta.",
+  "@wizardMissionBody2": {
+    "description": "Second explanatory paragraph on the wizard error-reporting page"
+  },
+  "wizardMissionQuestion": "Kya aap hamare automated issue reporting program ka hissa banne ke liye sehmat hain?",
+  "@wizardMissionQuestion": {
+    "description": "Yes/No question on the wizard error-reporting page"
+  },
+  "wizardMissionYes": "Haan",
+  "@wizardMissionYes": {
+    "description": "Affirmative response button on the wizard error-reporting page"
+  },
+  "wizardMissionNo": "Nahi",
+  "@wizardMissionNo": {
+    "description": "Negative response button on the wizard error-reporting page"
+  },
+  "wizardMissionRequired": "Kripya jaari rakhne se pehle Haan ya Nahi chunein.",
+  "@wizardMissionRequired": {
+    "description": "Snackbar shown when the user tries to leave the wizard without answering the error-reporting question"
+  },
+  "wizardJourneyTitle": "Apni journey mein aage badhein",
+  "@wizardJourneyTitle": {
+    "description": "Title of the wizard's final tips page"
+  },
+  "wizardJourneyBody": "Agar aap BULL wallet mein naye hain, toh yahan kuch features hain jinka faayda aap apni privacy, security aur user experience ko behtar banane ke liye utha sakte hain.",
+  "@wizardJourneyBody": {
+    "description": "Intro paragraph on the wizard journey/tips page"
+  },
+  "wizardJourneyTip1": "Apne wallet ko unlock karne ke liye security PIN jodein",
+  "@wizardJourneyTip1": {
+    "description": "Tip 1 on the wizard journey page"
+  },
+  "wizardJourneyTip2": "Encrypted vault backup try karein",
+  "@wizardJourneyTip2": {
+    "description": "Tip 2 on the wizard journey page"
+  },
+  "wizardJourneyTip3": "Apne khud ke Bitcoin node se connect karein",
+  "@wizardJourneyTip3": {
+    "description": "Tip 3 on the wizard journey page"
+  },
+  "wizardJourneyTip4": "Apne khud ke Mempool explorer se connect karein",
+  "@wizardJourneyTip4": {
+    "description": "Tip 4 on the wizard journey page"
+  },
+  "wizardJourneyTip5": "Bina KYC ke Bitcoin aur Liquid ke beech transfer karein",
+  "@wizardJourneyTip5": {
+    "description": "Tip 5 on the wizard journey page"
+  },
+  "wizardJourneyTip6": "Apni autoswap settings customize karein",
+  "@wizardJourneyTip6": {
+    "description": "Tip 6 on the wizard journey page"
+  },
+  "wizardJourneyTip7": "Bitcoin (BTC) aur Satoshis (sats) ke beech switch karein",
+  "@wizardJourneyTip7": {
+    "description": "Tip 7 on the wizard journey page"
+  },
+  "wizardJourneyTip8": "Apne hardware wallet ke liye air-gapped transactions banayein",
+  "@wizardJourneyTip8": {
+    "description": "Tip 8 on the wizard journey page"
+  },
+  "legacyStorageHasBackupImportantBody": "Kripya is process ko mat chhodein jab tak ki aapko wallet ka urgent use karne ki bahut zaroorat na ho ya aap kisi swap ke poora hone ka intezaar na kar rahe hon.",
+  "@legacyStorageHasBackupImportantBody": {
+    "description": "Important callout body shown only on the reinstall variant of the legacy storage warning (when the user already has a verified backup)."
+  },
+  "legacyStorageRiskAckButtonHasBackup": "Main risk samajhta hoon",
+  "@legacyStorageRiskAckButtonHasBackup": {
+    "description": "Risk-acknowledge button label on the reinstall variant of the legacy storage warning (no leading \"No,\" because there is no Backup Now alternative on this page)."
+  },
+  "walletSetupErrorTryAgain": "Aapka wallet setup karte samay kuch galat ho gaya. Kripya phir se try karein.",
+  "@walletSetupErrorTryAgain": {
+    "description": "Generic error shown when default-wallet creation or recovery fails."
   }
 }
