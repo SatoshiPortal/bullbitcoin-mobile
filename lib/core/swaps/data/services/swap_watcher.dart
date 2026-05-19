@@ -1,13 +1,11 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/application/dtos/requests/get_electrum_servers_to_use_request.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap_tx_outspend.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/electrum_settings_port.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -19,7 +17,7 @@ class SwapWatcherService {
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
   final SettingsRepository _settingsRepository;
-  final GetElectrumServersToUseUsecase _getElectrumServersToUseUsecase;
+  final ElectrumSettingsPort _electrumSettingsPort;
 
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
@@ -31,31 +29,32 @@ class SwapWatcherService {
     required WalletAddressRepository walletAddressRepository,
     required FeesRepository feesRepository,
     required SettingsRepository settingsRepository,
-    required GetElectrumServersToUseUsecase getElectrumServersToUseUsecase,
+    required ElectrumSettingsPort electrumSettingsPort,
   }) : _boltzRepo = boltzRepo,
        _walletAddressRepository = walletAddressRepository,
        _feesRepository = feesRepository,
        _settingsRepository = settingsRepository,
-       _getElectrumServersToUseUsecase = getElectrumServersToUseUsecase {
+       _electrumSettingsPort = electrumSettingsPort {
     unawaited(startWatching());
   }
 
-  Future<boltz.ElectrumSettings?> _resolveElectrumSettings(
-    ElectrumServerNetwork network,
-  ) async {
+  Future<boltz.ElectrumSettings?> _resolveElectrumSettings({
+    required bool isTestnet,
+    required bool isLiquid,
+  }) async {
     try {
-      final response = await _getElectrumServersToUseUsecase.execute(
-        GetElectrumServersToUseRequest(network: network),
+      final config = await _electrumSettingsPort.getPreferredServer(
+        isTestnet: isTestnet,
+        isLiquid: isLiquid,
       );
-      if (response.servers.isEmpty) {
+      if (config == null) {
         return null;
       }
-      final server = response.servers.first;
       return boltz.ElectrumSettings(
-        url: server.url,
-        validateDomain: response.settings.validateDomain,
-        tls: server.enableSsl,
-        timeout: response.settings.timeout,
+        url: config.url,
+        validateDomain: config.validateDomain,
+        tls: config.tls,
+        timeout: config.timeout,
       );
     } catch (_) {
       return null;
@@ -199,10 +198,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: swap.environment.isTestnet,
-          isLiquid: false,
-        ),
+        isTestnet: swap.environment.isTestnet,
+        isLiquid: false,
       );
 
       String claimTxId;
@@ -273,10 +270,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: swap.environment.isTestnet,
-          isLiquid: true,
-        ),
+        isTestnet: swap.environment.isTestnet,
+        isLiquid: true,
       );
 
       String claimTxId;
@@ -446,10 +441,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: environment.isTestnet,
-          isLiquid: true,
-        ),
+        isTestnet: environment.isTestnet,
+        isLiquid: true,
       );
 
       String refundTxid;
@@ -550,10 +543,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: environment.isTestnet,
-          isLiquid: false,
-        ),
+        isTestnet: environment.isTestnet,
+        isLiquid: false,
       );
 
       String refundTxid;
@@ -658,10 +649,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: swap.environment.isTestnet,
-          isLiquid: false,
-        ),
+        isTestnet: swap.environment.isTestnet,
+        isLiquid: false,
       );
 
       String claimTxid;
@@ -761,10 +750,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: swap.environment.isTestnet,
-          isLiquid: true,
-        ),
+        isTestnet: swap.environment.isTestnet,
+        isLiquid: true,
       );
 
       String claimTxid;
@@ -861,10 +848,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: environment.isTestnet,
-          isLiquid: true,
-        ),
+        isTestnet: environment.isTestnet,
+        isLiquid: true,
       );
 
       String refundTxid;
@@ -967,10 +952,8 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        ElectrumServerNetwork.fromEnvironment(
-          isTestnet: environment.isTestnet,
-          isLiquid: false,
-        ),
+        isTestnet: environment.isTestnet,
+        isLiquid: false,
       );
 
       String refundTxid;

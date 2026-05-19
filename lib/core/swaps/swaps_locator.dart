@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
+import 'package:bb_mobile/core/electrum/electrum_facade.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.d
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher.dart';
 import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/electrum_settings_port.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
@@ -26,6 +27,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/interface_adapters/blockchain_adapter.dart';
+import 'package:bb_mobile/core/swaps/interface_adapters/electrum_settings_adapter.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
@@ -64,6 +66,10 @@ class SwapsLocator {
             locator<BroadcastLiquidTransactionUsecase>(),
       ),
     );
+    locator.registerLazySingleton<ElectrumSettingsPort>(
+      () =>
+          ElectrumSettingsAdapter(electrumFacade: locator<ElectrumFacade>()),
+    );
   }
 
   static void registerServices(GetIt locator) {
@@ -76,8 +82,7 @@ class SwapsLocator {
         walletAddressRepository: locator<WalletAddressRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         feesRepository: locator<FeesRepository>(),
-        getElectrumServersToUseUsecase:
-            locator<GetElectrumServersToUseUsecase>(),
+        electrumSettingsPort: locator<ElectrumSettingsPort>(),
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
