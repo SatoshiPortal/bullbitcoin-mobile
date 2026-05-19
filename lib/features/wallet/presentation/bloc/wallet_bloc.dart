@@ -205,9 +205,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     emit(state.copyWith(isRefreshing: true));
     try {
       // SyncCoordinator schedules bitcoin → liquid → swaps sequentially with
-      // per-kind dedup and a lifecycle gate. It returns once the queue drains
-      // (or immediately if the app is paused / every kind was deduped).
-      await _syncCoordinator.sync();
+      // per-kind dedup, throttling, and a lifecycle gate. `event.force`
+      // bypasses the throttle for explicit user gestures (pull-to-refresh);
+      // route-driven navigation triggers leave it at `false`.
+      await _syncCoordinator.sync(force: event.force);
 
       final wallets = await _getWalletsUsecase.execute();
       final syncStatus = {for (final wallet in wallets) wallet.id: false};

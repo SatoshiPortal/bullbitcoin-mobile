@@ -63,9 +63,7 @@ class BackupSuccessScreen extends StatelessWidget {
                 bgColor: context.appColors.secondary,
                 textColor: context.appColors.onSecondary,
                 onPressed: () {
-                  final wallet = context.read<WalletBloc>();
-                  wallet.add(const VerifyBackupStatus());
-                  wallet.add(const WalletRefreshed());
+                  context.read<WalletBloc>().add(const VerifyBackupStatus());
                   context.goNamed(WalletRoute.walletHome.name);
                 },
               ),

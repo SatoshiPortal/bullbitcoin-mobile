@@ -36,7 +36,6 @@ class ArkSetupRouter {
               (previous, current) =>
                   previous.arkWallet == null && current.arkWallet != null,
           listener: (context, state) {
-            context.read<WalletBloc>().add(const WalletRefreshed());
             context.goNamed(WalletRoute.walletHome.name);
           },
           child: const ArkSetupPage(),

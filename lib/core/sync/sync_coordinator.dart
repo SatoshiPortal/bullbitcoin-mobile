@@ -15,13 +15,21 @@ import 'package:flutter/widgets.dart'
 /// Schedules per-kind sync work (bitcoin, liquid, swaps) so that:
 ///  - the same kind is **never** run concurrently — duplicate requests are
 ///    dropped while one is queued or running;
-///  - different kinds are **queued** and executed sequentially in FIFO order,
-///    avoiding concurrent writes to the shared drift database (e.g. a wallet
-///    sync committing wallet_metadata while the swap watcher restart writes
-///    swaps_table) which were observed to cause "database is locked" errors;
-///  - sync requests issued while the app is not resumed are dropped — there
-///    is no point burning bandwidth/CPU for a UI no-one is looking at;
-///  - the transition `paused → resumed` triggers a fresh `requestAll()`.
+///  - different kinds are **queued** and executed sequentially in FIFO order
+///    (matching the [SyncKind] enum declaration), avoiding concurrent writes
+///    to the shared drift database (e.g. a wallet sync committing
+///    wallet_metadata while the swap watcher restart writes swaps_table)
+///    which were observed to cause "database is locked" errors;
+///  - sync requests issued while the app is paused or hidden are dropped —
+///    there is no point burning bandwidth/CPU for a UI no-one is looking at;
+///  - returning to the foreground after being backgrounded triggers a fresh
+///    sync. Flutter routes the lifecycle state machine through intermediate
+///    states (`paused → hidden → inactive → resumed`), so we track whether
+///    the app entered `paused`/`hidden` since the last `resumed` rather than
+///    relying on a direct paused→resumed transition that never fires;
+///  - per-kind successes are throttled: a kind that completed within
+///    [_minSyncInterval] is skipped on the next enqueue unless the caller
+///    passes `force: true` (pull-to-refresh and other explicit gestures).
 ///
 /// Background tasks (`lib/core/background_tasks/handler.dart`) intentionally
 /// do **not** use this coordinator — they run in a separate Dart isolate with
@@ -42,44 +50,87 @@ class SyncCoordinator {
     _lifecycleListener = AppLifecycleListener(onStateChange: _onLifecycleChange);
   }
 
+  /// Minimum time between successful syncs of the same kind. A second
+  /// `sync()` call within this window is a no-op for that kind unless the
+  /// caller passes `force: true`.
+  static const Duration _minSyncInterval = Duration(seconds: 2);
+
   final GetWalletsUsecase _getWallets;
   final SyncWalletUsecase _syncWallet;
   final RestartSwapWatcherUsecase _restartSwaps;
 
   late final AppLifecycleListener _lifecycleListener;
   bool _isAppResumed = true;
-  AppLifecycleState? _previousLifecycleState;
+
+  /// Tracks whether the app entered `paused` or `hidden` since the last
+  /// `resumed` transition. Flutter inserts `hidden → inactive` between
+  /// `paused` and `resumed`, so a direct `paused→resumed` transition never
+  /// fires — we use this flag to detect a foregrounding regardless of the
+  /// exact intermediate path.
+  bool _wasBackgrounded = false;
 
   final Queue<SyncKind> _queue = Queue<SyncKind>();
   final Set<SyncKind> _enqueued = <SyncKind>{};
   SyncKind? _running;
   bool _draining = false;
+  final Map<SyncKind, Object> _lastErrors = <SyncKind, Object>{};
+  final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
 
   final StreamController<SyncCoordinatorState> _stateController =
       StreamController<SyncCoordinatorState>.broadcast();
 
   Stream<SyncCoordinatorState> get stream => _stateController.stream;
 
-  SyncCoordinatorState get state =>
-      SyncCoordinatorState(running: _running, queued: Set.unmodifiable(_enqueued));
+  SyncCoordinatorState get state => SyncCoordinatorState(
+    running: _running,
+    queued: Set.unmodifiable(_enqueued),
+    errors: Map.unmodifiable(_lastErrors),
+  );
 
   /// Schedule `kinds` (or all kinds when `only` is null) and resolve once the
-  /// queue has drained. Returns immediately if the app is paused or every
-  /// requested kind was deduped.
-  Future<void> sync({Set<SyncKind>? only}) async {
-    final kinds = only ?? SyncKind.values.toSet();
-    for (final kind in kinds) {
-      _enqueue(kind);
+  /// queue has drained. Iteration order follows the [SyncKind] enum
+  /// declaration (bitcoin → liquid → swaps) regardless of how callers
+  /// constructed `only`.
+  ///
+  /// Pass `force: true` to bypass the per-kind throttle — reserved for
+  /// explicit user gestures (pull-to-refresh). Default callers (route-aware
+  /// triggers, lifecycle resumption) should leave `force` at `false`.
+  ///
+  /// Returns immediately if the app is paused/hidden or every requested kind
+  /// was deduped/throttled. Throws [SyncCoordinatorException] when any
+  /// requested kind failed during the drain pass that satisfied this call.
+  Future<void> sync({Set<SyncKind>? only, bool force = false}) async {
+    final requested = SyncKind.values
+        .where((k) => only?.contains(k) ?? true)
+        .toList(growable: false);
+    for (final kind in requested) {
+      _enqueue(kind, force: force);
     }
     unawaited(_drain());
-    if (!state.isBusy) return;
-    await stream.firstWhere((s) => !s.isBusy);
+    final settled = state.isBusy
+        ? await stream.firstWhere((s) => !s.isBusy)
+        : state;
+    final failures = <SyncKind, Object>{
+      for (final kind in requested)
+        if (settled.errors[kind] != null) kind: settled.errors[kind]!,
+    };
+    if (failures.isNotEmpty) {
+      throw SyncCoordinatorException(failures);
+    }
   }
 
-  void _enqueue(SyncKind kind) {
+  void _enqueue(SyncKind kind, {required bool force}) {
     if (!_isAppResumed) {
       log.fine('[SyncCoordinator] skip $kind: app not resumed');
       return;
+    }
+    if (!force) {
+      final last = _lastSuccessAt[kind];
+      if (last != null &&
+          DateTime.now().difference(last) < _minSyncInterval) {
+        log.fine('[SyncCoordinator] throttle $kind: ran recently');
+        return;
+      }
     }
     if (_running == kind || _enqueued.contains(kind)) {
       log.fine('[SyncCoordinator] drop $kind: already pending');
@@ -93,6 +144,7 @@ class SyncCoordinator {
   Future<void> _drain() async {
     if (_draining) return;
     _draining = true;
+    _lastErrors.clear();
     try {
       while (_queue.isNotEmpty) {
         final kind = _queue.removeFirst();
@@ -101,10 +153,15 @@ class SyncCoordinator {
         _emit();
         try {
           await _runTask(kind);
+          _lastSuccessAt[kind] = DateTime.now();
         } catch (e, st) {
+          _lastErrors[kind] = e;
+          // Sanitize: substitute a synthetic error carrying only the kind
+          // and the runtimeType so wallet identifiers that exception
+          // messages may embed don't flow to Sentry.
           log.severe(
-            message: '[SyncCoordinator] $kind failed',
-            error: e,
+            message: '[SyncCoordinator] $kind sync failed',
+            error: StateError('$kind sync threw ${e.runtimeType}'),
             trace: st,
           );
         }
@@ -134,12 +191,20 @@ class SyncCoordinator {
   }
 
   void _onLifecycleChange(AppLifecycleState state) {
-    _isAppResumed = state == AppLifecycleState.resumed;
-    if (_previousLifecycleState == AppLifecycleState.paused &&
-        state == AppLifecycleState.resumed) {
-      unawaited(sync());
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden) {
+      _wasBackgrounded = true;
     }
-    _previousLifecycleState = state;
+    _isAppResumed =
+        state != AppLifecycleState.paused &&
+        state != AppLifecycleState.hidden;
+    if (state == AppLifecycleState.resumed && _wasBackgrounded) {
+      _wasBackgrounded = false;
+      // sync() may throw SyncCoordinatorException; ignore here — the drain
+      // path already logged a sanitized SEVERE for any failed kind, and the
+      // lifecycle-triggered refresh is best-effort with no awaiting caller.
+      sync().ignore();
+    }
   }
 
   void _emit() => _stateController.add(state);

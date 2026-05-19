@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +22,6 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
 
         // Navigate to the wallet home screen when the user wants to exit the
         // buy success screen.
-        context.read<WalletBloc>().add(const WalletRefreshed());
         context.goNamed(WalletRoute.walletHome.name);
       },
       child: Scaffold(
@@ -33,10 +31,8 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.close),
-              onPressed: () {
-                context.read<WalletBloc>().add(const WalletRefreshed());
-                context.goNamed(WalletRoute.walletHome.name);
-              },
+              onPressed: () =>
+                  context.goNamed(WalletRoute.walletHome.name),
             ),
           ],
         ),
