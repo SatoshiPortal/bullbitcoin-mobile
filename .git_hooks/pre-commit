@@ -1,6 +1,13 @@
 #!/bin/bash
 echo "Begin pre-commit hook"
 
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Git sets GIT_DIR/etc. for hook subprocesses; Flutter's bin/flutter
+# uses `git describe` to detect its own SDK version and these vars
+# point it at the wrong repo. Clear them before invoking Flutter.
+unset GIT_DIR GIT_INDEX_FILE GIT_WORK_TREE GIT_PREFIX
+
 # Prefer FVM Flutter if present; else try `fvm flutter`; else global flutter
 if [[ -x "$REPO_ROOT/.fvm/flutter_sdk/bin/flutter" ]]; then
   FLUTTER="$REPO_ROOT/.fvm/flutter_sdk/bin/flutter"
@@ -12,14 +19,11 @@ fi
 
 echo "Using Flutter: $($FLUTTER --version | head -n1)"
 
-result=$($FLUTTER analyze)
+$FLUTTER analyze
 exitCode=$?
 
-if [ $exitCode  -ne 0 ]; then
-  echo "$result"
+if [ $exitCode -ne 0 ]; then
   echo "Flutter analyze found issues, please fix them."
   exit 1
 fi
-echo "Finished running flutter analyze command."
-
 echo "End pre-commit hook"
