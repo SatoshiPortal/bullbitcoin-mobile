@@ -3,9 +3,9 @@ import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:bip21_uri/bip21_uri.dart';
-import 'package:boltz/boltz.dart' as boltz;
+import 'package:bull_sdk/boltz.dart' as boltz;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:lwk/lwk.dart' as lwk;
+import 'package:bull_sdk/lwk.dart' as lwk;
 
 part 'payment_request.freezed.dart';
 

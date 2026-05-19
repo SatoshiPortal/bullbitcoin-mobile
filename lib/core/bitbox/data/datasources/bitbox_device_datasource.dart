@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/bitbox/data/models/bitbox_device_model.dart';
 import 'package:bb_mobile/core/bitbox/domain/entities/bitbox_device_entity.dart';
 import 'package:bb_mobile/core/bitbox/domain/errors/bitbox_errors.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bitbox_flutter/bitbox_flutter.dart';
+import 'package:bitbox_transport/bitbox_transport.dart';
 
 class BitBoxDeviceDatasource {
   final Set<String> _connectedDevices = <String>{};
@@ -15,7 +15,7 @@ class BitBoxDeviceDatasource {
         throw const BitBoxError.operationFailed(message: 'BitBox is only supported on Android');
       }
       
-      final devices = await BitBoxFlutterApi.scanDevices();
+      final devices = await BitBoxApi.scanDevices();
       
       return devices.map((device) => BitBoxDeviceModel.fromBitBoxDevice(
         deviceName: device.deviceName,
@@ -35,12 +35,12 @@ class BitBoxDeviceDatasource {
         throw const BitBoxError.operationFailed(message: 'BitBox is only supported on Android');
       }
       
-      final hasPermission = await BitBoxFlutterApi.requestPermission(device.deviceName);
+      final hasPermission = await BitBoxApi.requestPermission(device.deviceName);
       if (!hasPermission) {
         throw const BitBoxError.permissionDenied();
       }
       
-      final opened = await BitBoxFlutterApi.openDevice(
+      final opened = await BitBoxApi.openDevice(
         device.deviceName, 
         device.serialNumber,
       );
@@ -59,7 +59,7 @@ class BitBoxDeviceDatasource {
 
   Future<String> unlockDevice(BitBoxDeviceModel device) async {
     try {
-      final pairingCode = await BitBoxFlutterApi.startPairing(device.serialNumber);
+      final pairingCode = await BitBoxApi.startPairing(device.serialNumber);
       
       if (pairingCode != null && pairingCode.isNotEmpty) {
         return pairingCode;
@@ -73,13 +73,13 @@ class BitBoxDeviceDatasource {
 
   Future<String> pairDevice(BitBoxDeviceModel device) async {
     try {
-      final confirmed = await BitBoxFlutterApi.confirmPairing(device.serialNumber);
+      final confirmed = await BitBoxApi.confirmPairing(device.serialNumber);
       
       if (!confirmed) {
         throw const BitBoxError.operationFailed(message: 'Pairing confirmation failed');
       }
       
-      return await BitBoxFlutterApi.getRootFingerprint(device.serialNumber);
+      return await BitBoxApi.getRootFingerprint(device.serialNumber);
     } catch (e) {
       throw BitBoxError.operationFailed(message: e.toString());
     }
@@ -94,7 +94,7 @@ class BitBoxDeviceDatasource {
     try {
       final xpubType = isTestnet ? 'tpub' : 'xpub';
       
-      final xpub = await BitBoxFlutterApi.getBtcXpub(
+      final xpub = await BitBoxApi.getBtcXpub(
         serialNumber: device.serialNumber,
         keypath: derivationPath,
         xpubType: xpubType,
@@ -107,7 +107,7 @@ class BitBoxDeviceDatasource {
 
   Future<String> getMasterFingerprint(BitBoxDeviceModel device) async {
     try {
-      return await BitBoxFlutterApi.getRootFingerprint(device.serialNumber);
+      return await BitBoxApi.getRootFingerprint(device.serialNumber);
     } catch (e) {
       throw BitBoxError.operationFailed(message: e.toString());
     }
@@ -121,7 +121,7 @@ class BitBoxDeviceDatasource {
     required bool isTestnet,
   }) async {
     try {
-      final signedPsbt = await BitBoxFlutterApi.signPsbt(
+      final signedPsbt = await BitBoxApi.signPsbt(
         serialNumber: device.serialNumber,
         psbt: psbt,
         testnet: isTestnet,
@@ -142,7 +142,7 @@ class BitBoxDeviceDatasource {
     try {
       final String bitboxScriptType = scriptType == ScriptType.bip49 ? 'p2wpkhp2sh' : 'p2wpkh';
       
-      final verifiedAddress = await BitBoxFlutterApi.verifyAddress(
+      final verifiedAddress = await BitBoxApi.verifyAddress(
         serialNumber: device.serialNumber,
         keypath: derivationPath,
         testnet: isTestnet,
@@ -156,7 +156,7 @@ class BitBoxDeviceDatasource {
 
   Future<void> disconnectConnection(BitBoxDeviceModel device) async {
     try {
-      await BitBoxFlutterApi.closeDevice(device.serialNumber);
+      await BitBoxApi.closeDevice(device.serialNumber);
       
       _connectedDevices.remove(device.serialNumber);
       if (_cachedDevice?.serialNumber == device.serialNumber) {
@@ -175,7 +175,7 @@ class BitBoxDeviceDatasource {
       final connectedDevices = List<String>.from(_connectedDevices);
       for (final serialNumber in connectedDevices) {
         try {
-          await BitBoxFlutterApi.closeDevice(serialNumber);
+          await BitBoxApi.closeDevice(serialNumber);
         } catch (e) {
           // Ignore individual device close errors during disposal
         }

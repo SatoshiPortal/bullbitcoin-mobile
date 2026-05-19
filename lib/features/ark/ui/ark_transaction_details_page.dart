@@ -1,4 +1,4 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bull_sdk/ark.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
@@ -19,7 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 class ArkTransactionDetailsPage extends StatelessWidget {
   const ArkTransactionDetailsPage({super.key, required this.transaction});
 
-  final ark_wallet.Transaction transaction;
+  final ark_wallet.ArkTransaction transaction;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
     bool isSwap = false;
 
     switch (transaction) {
-      case final ark_wallet.Transaction_Boarding tx:
+      case final ark_wallet.ArkTransaction_Boarding tx:
         txid = tx.txid;
         sats = tx.sats;
         if (tx.confirmedAt != null) {
@@ -40,7 +40,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         }
         type = context.loc.arkTxBoarding;
         statusLabel = date != null ? context.loc.arkStatusConfirmed : context.loc.arkTxPending;
-      case final ark_wallet.Transaction_Commitment tx:
+      case final ark_wallet.ArkTransaction_Commitment tx:
         txid = tx.txid;
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
@@ -48,7 +48,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         statusLabel = context.loc.arkStatusConfirmed;
         isIncoming = false;
         isSwap = true;
-      case final ark_wallet.Transaction_Redeem tx:
+      case final ark_wallet.ArkTransaction_Redeem tx:
         txid = tx.txid;
         sats = tx.sats;
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
@@ -57,7 +57,7 @@ class ArkTransactionDetailsPage extends StatelessWidget {
         isIncoming = false;
     }
 
-    final isBoarding = transaction is ark_wallet.Transaction_Boarding;
+    final isBoarding = transaction is ark_wallet.ArkTransaction_Boarding;
 
     return Scaffold(
       appBar: AppBar(

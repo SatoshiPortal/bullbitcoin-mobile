@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:convert/convert.dart';
-import 'package:dart_bbqr/bbqr.dart' as bbqr;
+import 'package:bull_sdk/bbqr.dart' as bbqr;
 
 enum TxFormat { psbt, hex }
 

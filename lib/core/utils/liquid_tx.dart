@@ -1,4 +1,4 @@
-import 'package:lwk/lwk.dart' as lwk;
+import 'package:bull_sdk/lwk.dart' as lwk;
 
 class LiquidTx {
   final String txid;
