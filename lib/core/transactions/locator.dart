@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/transactions/application/transaction_port.dart';
+import 'package:bb_mobile/core/transactions/domain/ports/transaction_port.dart';
 import 'package:bb_mobile/core/transactions/application/build_transaction_usecase.dart';
 import 'package:get_it/get_it.dart';
 

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
-import 'package:bb_mobile/core/transactions/application/transaction_port.dart';
+import 'package:bb_mobile/core/transactions/data/mappers/transaction_mapper.dart';
+import 'package:bb_mobile/core/transactions/domain/ports/transaction_port.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction_entity.dart';
 import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';

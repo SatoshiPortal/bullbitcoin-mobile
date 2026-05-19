@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_server
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_priority_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
@@ -13,6 +14,7 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
+import 'package:bb_mobile/core/electrum/interface_adapters/adapters/electrum_servers_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/electrum_transaction_port_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/environment_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_status_adapter.dart';
@@ -22,7 +24,7 @@ import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_el
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transactions/application/transaction_port.dart';
+import 'package:bb_mobile/core/transactions/domain/ports/transaction_port.dart';
 import 'package:get_it/get_it.dart';
 
 class ElectrumLocator {
@@ -69,9 +71,15 @@ class ElectrumLocator {
     locator.registerLazySingleton<ServerStatusPort>(
       () => const ServerStatusAdapter(),
     );
+    locator.registerLazySingleton<ElectrumServersPort>(
+      () => ElectrumServersAdapter(
+        getServersUsecase: locator<GetElectrumServersToUseUsecase>(),
+      ),
+    );
     locator.registerLazySingleton<TransactionPort>(
       () => ElectrumTransactionPortAdapter(
         fetchUsecase: locator<FetchElectrumTransactionUsecase>(),
+        environmentPort: locator<EnvironmentPort>(),
       ),
     );
   }
@@ -118,8 +126,7 @@ class ElectrumLocator {
     locator.registerLazySingleton<FetchElectrumTransactionUsecase>(
       () => FetchElectrumTransactionUsecase(
         repository: locator<ElectrumTransactionRepository>(),
-        getServersUsecase: locator<GetElectrumServersToUseUsecase>(),
-        environmentPort: locator<EnvironmentPort>(),
+        serversPort: locator<ElectrumServersPort>(),
       ),
     );
   }

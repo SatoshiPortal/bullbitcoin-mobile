@@ -26,7 +26,7 @@ Future<void> main({bool isInitialized = false}) async {
       expect(sqliteTx, isNull);
 
       // Fetch a transaction and cache it in sqlite if not present
-      final tx = await fetchUsecase.execute(txid: txid);
+      final tx = await fetchUsecase.execute(txid: txid, isTestnet: false);
       expect(tx.txid, txid);
 
       // Ensure the tx is now stored in sqlite
