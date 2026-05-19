@@ -9,6 +9,8 @@ import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction_repository.dart';
+import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/electrum_transaction_port_adapter.dart';
@@ -16,6 +18,7 @@ import 'package:bb_mobile/core/electrum/interface_adapters/adapters/environment_
 import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_status_adapter.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_settings_repository.dart';
+import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_transaction_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -30,6 +33,9 @@ class ElectrumLocator {
     locator.registerLazySingleton<ElectrumSettingsStorageDatasource>(
       () =>
           ElectrumSettingsStorageDatasource(sqlite: locator<SqliteDatabase>()),
+    );
+    locator.registerLazySingleton<ElectrumRemoteDatasource>(
+      () => ElectrumRemoteDatasource(sqlite: locator<SqliteDatabase>()),
     );
   }
 
@@ -47,6 +53,12 @@ class ElectrumLocator {
             locator<ElectrumSettingsStorageDatasource>(),
       ),
     );
+
+    locator.registerLazySingleton<ElectrumTransactionRepository>(
+      () => DriftElectrumTransactionRepository(
+        datasource: locator<ElectrumRemoteDatasource>(),
+      ),
+    );
   }
 
   static void registerPorts(GetIt locator) {
@@ -60,7 +72,6 @@ class ElectrumLocator {
     locator.registerLazySingleton<TransactionPort>(
       () => ElectrumTransactionPortAdapter(
         fetchUsecase: locator<FetchElectrumTransactionUsecase>(),
-        environmentPort: locator<EnvironmentPort>(),
       ),
     );
   }
@@ -106,9 +117,9 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<FetchElectrumTransactionUsecase>(
       () => FetchElectrumTransactionUsecase(
+        repository: locator<ElectrumTransactionRepository>(),
         getServersUsecase: locator<GetElectrumServersToUseUsecase>(),
         environmentPort: locator<EnvironmentPort>(),
-        sqlite: locator<SqliteDatabase>(),
       ),
     );
   }

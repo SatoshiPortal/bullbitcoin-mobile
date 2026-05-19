@@ -1,17 +1,14 @@
 import 'package:bb_mobile/core/transactions/application/build_transaction_usecase.dart';
-import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
-import 'package:bb_mobile/core/transactions/domain/entity/transaction_entity.dart';
 import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_state.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Cubit managing the state of a transaction being reviewed.
 ///
-/// Supports two entry points:
-/// - [loadFromTransaction] — for external transactions (PSBT/HEX),
-///   resolves input values asynchronously via Electrum.
-/// - [setEntity] — for pre-built [TransactionEntity] instances,
-///   sets the entity directly without async resolution.
+/// Takes a raw parsed [btc_utils.BitcoinTx] (from PSBT/HEX) and resolves
+/// it to a [TransactionEntity] via [BuildTransactionUsecase], which handles
+/// both domain mapping and asynchronous input-value resolution via Electrum.
 class TransactionCubit extends Cubit<TransactionState> {
   final BuildTransactionUsecase _buildTransactionUsecase;
 
@@ -19,15 +16,17 @@ class TransactionCubit extends Cubit<TransactionState> {
     : _buildTransactionUsecase = buildTransactionUsecase,
       super(const TransactionState.initial());
 
-  /// Load and resolve an external transaction (from PSBT or HEX).
-  ///
-  /// This is async because it needs to fetch parent transactions
-  /// via Electrum to resolve input values.
-  Future<void> loadFromTransaction(Transaction tx) async {
+  Future<void> loadFromBitcoinTx(
+    btc_utils.BitcoinTx bitcoinTx, {
+    required bool isTestnet,
+  }) async {
     if (state is TransactionLoading) return;
     emit(const TransactionState.loading());
     try {
-      final entity = await _buildTransactionUsecase.executeFromTransaction(tx);
+      final entity = await _buildTransactionUsecase.executeFromBitcoinTx(
+        bitcoinTx,
+        isTestnet: isTestnet,
+      );
       emit(TransactionState.loaded(entity: entity));
     } on TransactionError catch (e) {
       emit(TransactionState.error(error: e));
@@ -38,12 +37,5 @@ class TransactionCubit extends Cubit<TransactionState> {
         ),
       );
     }
-  }
-
-  /// Directly set a pre-built [TransactionEntity].
-  ///
-  /// Useful when the entity has already been constructed elsewhere.
-  void setEntity(TransactionEntity entity) {
-    emit(TransactionState.loaded(entity: entity));
   }
 }

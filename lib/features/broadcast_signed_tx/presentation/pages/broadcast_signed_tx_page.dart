@@ -1,10 +1,8 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/application/build_transaction_usecase.dart';
-import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/core/transactions/ui/transaction_screen.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
@@ -188,18 +186,15 @@ class _TransactionReviewSection extends StatefulWidget {
 }
 
 class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
-  late final Transaction _transaction;
-
   @override
   void initState() {
     super.initState();
     final isTestnet =
         context.read<SettingsCubit>().state.environment?.isTestnet ?? false;
-    _transaction = TransactionMapper.fromBitcoinTx(
+    context.read<TransactionCubit>().loadFromBitcoinTx(
       widget.bitcoinTx,
       isTestnet: isTestnet,
     );
-    context.read<TransactionCubit>().loadFromTransaction(_transaction);
   }
 
   @override

@@ -1,7 +1,9 @@
+import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/application/transaction_port.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/entity/transaction_entity.dart';
 import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 
@@ -14,7 +16,23 @@ class BuildTransactionUsecase {
   BuildTransactionUsecase({required TransactionPort transactionPort})
     : _transactionPort = transactionPort;
 
-  /// Build from an external [Transaction] (parsed from PSBT or HEX).
+  /// Build from a parsed [btc_utils.BitcoinTx] (PSBT/HEX-derived).
+  ///
+  /// Maps the parsed utility transaction to the domain [Transaction] using
+  /// [isTestnet] to decode output addresses, then resolves input values by
+  /// fetching parent transactions via [TransactionPort].
+  Future<TransactionEntity> executeFromBitcoinTx(
+    btc_utils.BitcoinTx bitcoinTx, {
+    required bool isTestnet,
+  }) {
+    final tx = TransactionMapper.fromBitcoinTx(
+      bitcoinTx,
+      isTestnet: isTestnet,
+    );
+    return executeFromTransaction(tx);
+  }
+
+  /// Build from an external [Transaction] (already mapped to domain).
   ///
   /// For each input, fetches the parent transaction via [TransactionPort]
   /// and looks up the output at the referenced vout to resolve the value.
