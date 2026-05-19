@@ -53,14 +53,14 @@ Each feature folder (e.g. `/secrets`, `/labels`, `/settings`, `/wallets`) repres
 > [!NOTE]
 > Together, `domain/ + application/` form what many texts call the "inside" of Clean/Hex (i.e., the business logic isolated from frameworks).
 
-- `interface_adapters/` contains secondary/driven adapters (e.g., repository implementations).
+- `adapters/` contains secondary/driven adapters (e.g., repository implementations).
 - `frameworks/` contains external dependencies and infrastructure code (e.g., datasources, API clients, drivers) generally used by the secondary adapters if it makes sense to keep them separate for better organization, reusability or further abstraction if needed.
 - `presentation/` contains the primary (driving) UI adapters namely BLoCs/Cubits and View Models if any.
 - `ui/` contains UI widgets and screens that compose the visual parts of the feature. They depend on the BLoCs/Cubits from the `presentation/` layer to get their state and invoke actions.
 - `public/` contains the Facade/API of the feature for cross-feature interaction.
 - `watchers/` optionally contains event watchers or listeners that listen to events or data streams from external systems and invoke use cases accordingly.
 
-Something to note is that all secondary adapters are grouped together in the `interface_adapters/` folder, while the primary adapters have their own dedicated folder, like `presentation/`, `public/` and `watchers/`. This is mostly just for clarity, organization and ease of navigation.
+Something to note is that all secondary adapters are grouped together in the `adapters/` folder, while the primary adapters have their own dedicated folder, like `presentation/`, `public/` and `watchers/`. This is mostly just for clarity, organization and ease of navigation.
 
 In the end, these folders can be mapped to the layers of Clean/Hexagonal Architecture and their interactions can be visualized like this:
 
@@ -95,9 +95,11 @@ Each layer and feature should handle errors appropriately according to its respo
 
 A simple convention to follow is to just create an error file per layer:
 
-- `domain/` → `<feature_name>_domain_error.dart`
-- `application/` → `<feature_name>_application_errors.dart`
-- `presentation/` → `<feature_name>_presentation_errors.dart`
+- `domain/` → `domain_errors.dart`
+- `application/` → `application_errors.dart`
+- `presentation/` → `presentation_errors.dart`
+
+The feature name is already implied by the path (`lib/features/<feature>/<layer>/`), so the filename stays short.
 
 You can add a sealed class with different error types or exceptions as needed. As well as mappers from errors from the used layers to the layer's error types. This way each layer has its own clearly defined error types and can handle errors appropriately without leaking implementation details or error types from other layers.
 
@@ -149,9 +151,6 @@ While the architecture described above represents our current standards, the cod
 - **Impact**: Makes state management unpredictable and harder to test
 - **Solution**: Use local widget state (StatefulWidget) for UI-only concerns; use BLoC only for business state
 
-## 🤖 Rules for AI:
+## 🤖 Rules for AI
 
-- Always follow the architecture of the project when developing features.
-- Always use colors from the theme; never use raw colors. When the user explains something using raw color language; find the closest color in the theme and based on the application use a color from the theme that would make sense in dark mode too but do not try to change the color theme file by yourself ever.
-- When the user asks for code that breaks the architecture rules, explain why it is not a good idea and suggest an alternative that follows the architecture.
-- Always write unit tests for at least the use cases and entities if they contain business rules.
+See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refuse-and-suggest on rule breaks, and unit-test requirements for use cases and entities are documented there alongside the rest of the agent contract.
