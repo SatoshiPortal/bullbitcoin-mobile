@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
+import 'package:bull_sdk/boltz.dart' show ElectrumSettings;
 import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
@@ -52,18 +53,21 @@ class BoltzSwapRepository {
     required String bitcoinAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final txid = await _boltz.claimBtcReverseSwap(
       swapId: swapId,
       claimAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastBtcLnSwap(
       swapId: swapId,
       signedTxHex: txid,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 
@@ -97,18 +101,21 @@ class BoltzSwapRepository {
     required String liquidAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final signedTxHex = await _boltz.claimLBtcReverseSwap(
       swapId: swapId,
       claimAddress: liquidAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 
@@ -144,18 +151,21 @@ class BoltzSwapRepository {
     required String bitcoinAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final signedTxHex = await _boltz.refundBtcSubmarineSwap(
       swapId: swapId,
       refundAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastBtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 
@@ -191,18 +201,21 @@ class BoltzSwapRepository {
     required String liquidAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final signedTxHex = await _boltz.refundLbtcSubmarineSwap(
       swapId: swapId,
       refundAddress: liquidAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 
@@ -261,18 +274,21 @@ class BoltzSwapRepository {
     required String bitcoinClaimAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final signedTxHex = await _boltz.claimLbtcToBtcChainSwap(
       swapId: swapId,
       claimBitcoinAddress: bitcoinClaimAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastChainSwapClaim(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 
@@ -281,18 +297,21 @@ class BoltzSwapRepository {
     required String liquidClaimAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final signedTxHex = await _boltz.claimBtcToLbtcChainSwap(
       swapId: swapId,
       claimLiquidAddress: liquidClaimAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastChainSwapClaim(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 
@@ -301,18 +320,21 @@ class BoltzSwapRepository {
     required String bitcoinRefundAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
       swapId: swapId,
       refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 
@@ -321,18 +343,21 @@ class BoltzSwapRepository {
     required String liquidRefundAddress,
     required int absoluteFees,
     bool cooperate = true,
+    ElectrumSettings? electrumSettings,
   }) async {
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: cooperate,
+      electrumSettings: electrumSettings,
     );
 
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
       broadcastViaBoltz: false,
+      electrumSettings: electrumSettings,
     );
   }
 

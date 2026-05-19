@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/electrum/application/dtos/requests/get_electrum_servers_to_use_request.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
@@ -16,6 +19,7 @@ class SwapWatcherService {
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
   final SettingsRepository _settingsRepository;
+  final GetElectrumServersToUseUsecase _getElectrumServersToUseUsecase;
 
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
@@ -27,11 +31,35 @@ class SwapWatcherService {
     required WalletAddressRepository walletAddressRepository,
     required FeesRepository feesRepository,
     required SettingsRepository settingsRepository,
+    required GetElectrumServersToUseUsecase getElectrumServersToUseUsecase,
   }) : _boltzRepo = boltzRepo,
        _walletAddressRepository = walletAddressRepository,
        _feesRepository = feesRepository,
-       _settingsRepository = settingsRepository {
+       _settingsRepository = settingsRepository,
+       _getElectrumServersToUseUsecase = getElectrumServersToUseUsecase {
     unawaited(startWatching());
+  }
+
+  Future<boltz.ElectrumSettings?> _resolveElectrumSettings(
+    ElectrumServerNetwork network,
+  ) async {
+    try {
+      final response = await _getElectrumServersToUseUsecase.execute(
+        GetElectrumServersToUseRequest(network: network),
+      );
+      if (response.servers.isEmpty) {
+        return null;
+      }
+      final server = response.servers.first;
+      return boltz.ElectrumSettings(
+        url: server.url,
+        validateDomain: response.settings.validateDomain,
+        tls: server.enableSsl,
+        timeout: response.settings.timeout,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   Stream<Swap> get swapStream => _swapStreamController.stream;
@@ -170,12 +198,20 @@ class SwapWatcherService {
       // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: swap.environment.isTestnet,
+          isLiquid: false,
+        ),
+      );
+
       String claimTxId;
       try {
         claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
           swapId: swap.id,
           absoluteFees: swap.fees!.claimFee!,
           bitcoinAddress: swap.receiveAddress!,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -189,6 +225,7 @@ class SwapWatcherService {
           absoluteFees: swap.fees!.claimFee!,
           bitcoinAddress: swap.receiveAddress!,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(
@@ -235,6 +272,13 @@ class SwapWatcherService {
       // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: swap.environment.isTestnet,
+          isLiquid: true,
+        ),
+      );
+
       String claimTxId;
       log.fine(
         '{"swapId": "${swap.id}", "function": "_processReceiveLnToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -244,6 +288,7 @@ class SwapWatcherService {
           swapId: swap.id,
           absoluteFees: swap.fees!.claimFee!,
           liquidAddress: receiveAddress,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -257,6 +302,7 @@ class SwapWatcherService {
           absoluteFees: swap.fees!.claimFee!,
           liquidAddress: receiveAddress,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(
@@ -399,6 +445,13 @@ class SwapWatcherService {
       // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: environment.isTestnet,
+          isLiquid: true,
+        ),
+      );
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -410,6 +463,7 @@ class SwapWatcherService {
           swapId: swap.id,
           liquidAddress: refundAddress,
           absoluteFees: actualFeesUsed,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -429,6 +483,7 @@ class SwapWatcherService {
           liquidAddress: refundAddress,
           absoluteFees: actualFeesUsed,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(
@@ -494,6 +549,13 @@ class SwapWatcherService {
       // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: environment.isTestnet,
+          isLiquid: false,
+        ),
+      );
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -505,6 +567,7 @@ class SwapWatcherService {
           swapId: swap.id,
           bitcoinAddress: refundAddress,
           absoluteFees: actualFeesUsed,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -524,6 +587,7 @@ class SwapWatcherService {
           bitcoinAddress: refundAddress,
           absoluteFees: actualFeesUsed,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(
@@ -593,6 +657,13 @@ class SwapWatcherService {
       // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: swap.environment.isTestnet,
+          isLiquid: false,
+        ),
+      );
+
       String claimTxid;
       log.fine(
         '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -602,6 +673,7 @@ class SwapWatcherService {
           swapId: swap.id,
           absoluteFees: swap.fees!.claimFee!,
           bitcoinClaimAddress: finalClaimAddress,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -615,6 +687,7 @@ class SwapWatcherService {
           absoluteFees: swap.fees!.claimFee!,
           bitcoinClaimAddress: finalClaimAddress,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(
@@ -687,6 +760,13 @@ class SwapWatcherService {
       // Unsubscribe BEFORE claiming to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: swap.environment.isTestnet,
+          isLiquid: true,
+        ),
+      );
+
       String claimTxid;
       log.fine(
         '{"swapId": "${swap.id}", "function": "_processChainBitcoinToLiquidClaim", "action": "coop_claim_started", "timestamp": "${DateTime.now().toIso8601String()}"}',
@@ -696,6 +776,7 @@ class SwapWatcherService {
           swapId: swap.id,
           absoluteFees: swap.fees!.claimFee!,
           liquidClaimAddress: finalClaimAddress,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -709,6 +790,7 @@ class SwapWatcherService {
           absoluteFees: swap.fees!.claimFee!,
           liquidClaimAddress: finalClaimAddress,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(
@@ -778,6 +860,13 @@ class SwapWatcherService {
       // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: environment.isTestnet,
+          isLiquid: true,
+        ),
+      );
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -789,6 +878,7 @@ class SwapWatcherService {
           swapId: swap.id,
           absoluteFees: actualFeesUsed,
           liquidRefundAddress: refundAddress,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -810,6 +900,7 @@ class SwapWatcherService {
           absoluteFees: actualFeesUsed,
           liquidRefundAddress: refundAddress,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(
@@ -875,6 +966,13 @@ class SwapWatcherService {
       // Unsubscribe BEFORE refunding to prevent race condition with WebSocket updates
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
+      final electrumSettings = await _resolveElectrumSettings(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: environment.isTestnet,
+          isLiquid: false,
+        ),
+      );
+
       String refundTxid;
       int actualFeesUsed;
       log.fine(
@@ -886,6 +984,7 @@ class SwapWatcherService {
           swapId: swap.id,
           absoluteFees: actualFeesUsed,
           bitcoinRefundAddress: refundAddress,
+          electrumSettings: electrumSettings,
         );
       } catch (e, st) {
         log.severe(
@@ -907,6 +1006,7 @@ class SwapWatcherService {
           absoluteFees: actualFeesUsed,
           bitcoinRefundAddress: refundAddress,
           cooperate: false,
+          electrumSettings: electrumSettings,
         );
       }
       final updatedSwap = swap.copyWith(

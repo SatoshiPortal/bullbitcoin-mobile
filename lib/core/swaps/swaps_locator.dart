@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -75,6 +76,8 @@ class SwapsLocator {
         walletAddressRepository: locator<WalletAddressRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         feesRepository: locator<FeesRepository>(),
+        getElectrumServersToUseUsecase:
+            locator<GetElectrumServersToUseUsecase>(),
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
