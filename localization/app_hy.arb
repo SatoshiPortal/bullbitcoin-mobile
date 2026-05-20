@@ -197,5 +197,6 @@
   "legacyStorageAcceptRisksCheckbox": "Ընդունում եմ պահուստավորում չանելու ռիսկերը",
   "legacyStorageHasBackupImportantBody": "Խնդրում ենք բաց չթողնել այս գործընթացը, եթե ձեզ հրատապ չի անհրաժեշտ օգտագործել դրամապանակը կամ սպասում եք սվոփի ավարտին։",
   "legacyStorageRiskAckButtonHasBackup": "Ես հասկանում եմ ռիսկը",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "Բացեք հավելվածը 24 ժամվա ընթացքում՝ ձեր սվափը ավարտելու համար։"
 }

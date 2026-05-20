@@ -12580,5 +12580,6 @@
   "legacyStorageAcceptRisksCheckbox": "ریسک‌های نگرفتن پشتیبان را می‌پذیرم",
   "legacyStorageHasBackupImportantBody": "لطفاً این فرآیند را رد نکنید مگر اینکه واقعاً نیاز فوری به استفاده از کیف پول داشته باشید یا منتظر تکمیل یک سواپ هستید.",
   "legacyStorageRiskAckButtonHasBackup": "خطر را درک می‌کنم",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "برای تکمیل سواپ خود، ظرف ۲۴ ساعت برنامه را باز کنید"
 }
