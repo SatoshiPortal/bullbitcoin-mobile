@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/viewer_action_button.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -276,31 +277,21 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
   }
 
   Widget _buildCopyAction(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return ViewerActionButton(
+      icon: Icons.copy,
+      label: context.loc.viewerTapToCopy,
       onTap: () {
         Clipboard.setData(ClipboardData(text: _activeText));
         Navigator.of(widget.dialogContext).pop();
         SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.copy, size: 14, color: context.appColors.primary),
-          const Gap(4),
-          BBText(
-            context.loc.viewerTapToCopy,
-            style: context.font.bodySmall,
-            color: context.appColors.secondary,
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildCopyLinkAction(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return ViewerActionButton(
+      icon: Icons.link,
+      label: context.loc.viewerCopyLink,
       onTap: () async {
         final url = await widget.getExplorerUrl();
         if (url == null) return;
@@ -310,44 +301,21 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
           SnackBarUtils.showCopiedSnackBar(widget.dialogContext);
         }
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.link, size: 14, color: context.appColors.primary),
-          const Gap(4),
-          BBText(
-            context.loc.viewerCopyLink,
-            style: context.font.bodySmall,
-            color: context.appColors.secondary,
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildOpenLinkAction(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return ViewerActionButton(
+      icon: Icons.open_in_new,
+      label: context.loc.viewerViewInExplorer,
       onTap: () async {
         final url = await widget.getExplorerUrl();
         if (url == null) return;
         if (widget.dialogContext.mounted) {
           Navigator.of(widget.dialogContext).pop();
         }
-        await launchUrl(Uri.parse(url));
+        await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
       },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.open_in_new, size: 14, color: context.appColors.primary),
-          const Gap(4),
-          BBText(
-            context.loc.viewerViewInExplorer,
-            style: context.font.bodySmall,
-            color: context.appColors.secondary,
-          ),
-        ],
-      ),
     );
   }
 }
