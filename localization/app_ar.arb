@@ -2377,7 +2377,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "(آب) فشل في البدء حاول إيقاف التطبيق تماماً و إعادة التشغيل إذا استمر الخطأ، الإبلاغ عن المسألة لدعم وتشاطر سجلاتك.",
+  "appStartupErrorMessage": "فشل تشغيل التطبيق. حاول إيقاف التطبيق بالكامل وإعادة تشغيله. إذا استمر الخطأ، تواصل مع الدعم وشارك السجلات.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

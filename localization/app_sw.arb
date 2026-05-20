@@ -218,5 +218,6 @@
   "legacyStorageHasBackupImportantBody": "Tafadhali usiruke mchakato huu isipokuwa lazima utumie pochi kwa haraka au unasubiri swap ikamilike.",
   "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Fungua programu ndani ya saa 24 ili kukamilisha swap yako."
+  "transactionSwapOpenWithin24Hours": "Fungua programu ndani ya saa 24 ili kukamilisha swap yako.",
+  "appStartupErrorMessage": "Programu imeshindwa kuanza. Jaribu kuifunga kabisa na kuanzisha upya. Ikiwa tatizo linaendelea, wasiliana na usaidizi na shiriki logi zako."
 }

@@ -2494,7 +2494,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "অ্যাপটি শুরু করতে ব্যর্থ হয়েছে। অ্যাপটিকে সম্পূর্ণভাবে বন্ধ করে পুনরায় শুরু করার চেষ্টা করুন। যদি ত্রুটি থেকে যায়, সমর্থনকে সমস্যা জানান এবং আপনার লগ শেয়ার করুন।",
+  "appStartupErrorMessage": "অ্যাপ চালু হতে ব্যর্থ হয়েছে। অ্যাপ সম্পূর্ণভাবে বন্ধ করে আবার চালু করার চেষ্টা করুন। সমস্যা চলতে থাকলে সাপোর্টের সাথে যোগাযোগ করুন এবং আপনার লগ শেয়ার করুন।",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

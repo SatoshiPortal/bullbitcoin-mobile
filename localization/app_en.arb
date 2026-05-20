@@ -11613,7 +11613,7 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "appStartupErrorMessage": "App failed to startup. Try completely stop the app and restart. If the error persists, report the issue to support and share your logs.",
+  "appStartupErrorMessage": "App failed to start up. Try completely stopping the app and restarting it. If the error persists, contact support and share your logs.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

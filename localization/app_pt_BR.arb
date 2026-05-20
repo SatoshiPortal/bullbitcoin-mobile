@@ -2901,7 +2901,7 @@
   "@backupCompletedTitle": {
     "description": "Title shown when backup is completed successfully"
   },
-  "appStartupErrorMessage": "O aplicativo falhou na inicialização. Tente parar completamente o aplicativo e reiniciar. Se o erro persistir, informe o problema para apoiar e compartilhar seus registros.",
+  "appStartupErrorMessage": "Falha ao iniciar o aplicativo. Tente fechá-lo completamente e reiniciá-lo. Se o erro persistir, entre em contato com o suporte e compartilhe seus logs.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
