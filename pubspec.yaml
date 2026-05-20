@@ -109,7 +109,7 @@ dependencies:
   satoshifier:
     git:
       url: https://github.com/SatoshiPortal/dart-satoshifier
-      ref: b2978285d6e45d62f57d545d0f87d3ee474784c8
+      ref: 535eeea782ffb610a69dbee2eac4739c6a45c99e
   flutter_nfc_kit: ^3.6.1
   ledger_bitcoin:
     git:
