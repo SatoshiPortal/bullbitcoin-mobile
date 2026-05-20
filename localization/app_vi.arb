@@ -197,5 +197,6 @@
   "legacyStorageAcceptRisksCheckbox": "Tôi chấp nhận rủi ro khi không sao lưu",
   "legacyStorageHasBackupImportantBody": "Vui lòng không bỏ qua quy trình này trừ khi bạn thực sự cần sử dụng ví khẩn cấp hoặc đang chờ một giao dịch hoán đổi hoàn tất.",
   "legacyStorageRiskAckButtonHasBackup": "Tôi hiểu rủi ro",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "Mở ứng dụng trong vòng 24 giờ để hoàn tất hoán đổi của bạn."
 }

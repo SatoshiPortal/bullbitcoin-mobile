@@ -13039,5 +13039,9 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "@walletSetupErrorTryAgain": {
     "description": "Generic error shown when default-wallet creation or recovery fails."
+  },
+  "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
+  "@transactionSwapOpenWithin24h": {
+    "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
   }
 }

@@ -4609,5 +4609,6 @@
   "legacyStorageAcceptRisksCheckbox": "Я принимаю риски отказа от резервной копии",
   "legacyStorageHasBackupImportantBody": "Пожалуйста, не пропускайте этот процесс, если только вам не нужно срочно использовать кошелёк или вы не ждёте завершения свопа.",
   "legacyStorageRiskAckButtonHasBackup": "Я понимаю риск",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "Откройте приложение в течение 24 часов, чтобы завершить своп."
 }

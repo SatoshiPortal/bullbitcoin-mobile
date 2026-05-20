@@ -12576,5 +12576,6 @@
   "legacyStorageAcceptRisksCheckbox": "Aceito os riscos de não fazer backup",
   "legacyStorageHasBackupImportantBody": "Por favor, não pule este processo, a menos que você precise usar a carteira urgentemente ou esteja esperando uma troca ser concluída.",
   "legacyStorageRiskAckButtonHasBackup": "Eu entendo o risco",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "Abra o aplicativo em até 24 horas para concluir seu swap."
 }

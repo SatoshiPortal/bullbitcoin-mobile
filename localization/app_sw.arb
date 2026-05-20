@@ -217,5 +217,6 @@
   "legacyStorageAcceptRisksCheckbox": "Ninakubali hatari za kutohifadhi nakala",
   "legacyStorageHasBackupImportantBody": "Tafadhali usiruke mchakato huu isipokuwa lazima utumie pochi kwa haraka au unasubiri swap ikamilike.",
   "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "Fungua programu ndani ya saa 24 ili kukamilisha swap yako."
 }
