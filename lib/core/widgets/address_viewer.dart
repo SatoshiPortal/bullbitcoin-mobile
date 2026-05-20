@@ -106,12 +106,17 @@ class AddressViewer extends StatelessWidget {
   static Future<String?> _getExplorerUrlFor(String data) async {
     final builder = locator<MempoolUrlBuilder>();
     final parsed = await Satoshifier.tryParse(data);
-    if (parsed is BitcoinAddress) {
-      return builder.bitcoinAddress(data, isTestnet: parsed.network.isTestnet);
-    } else if (parsed is LiquidAddress) {
-      return builder.liquidAddress(data, isTestnet: parsed.network.isTestnet);
-    }
-    return null;
+    return switch (parsed) {
+      BitcoinAddress(:final address, :final network) =>
+        builder.bitcoinAddress(address, isTestnet: network.isTestnet),
+      LiquidAddress(:final address, :final network) =>
+        builder.liquidAddress(address, isTestnet: network.isTestnet),
+      // BIP21 URI: route by inner network, use the embedded bare address.
+      Bip21(:final address, :final network) => network.isLiquid
+          ? builder.liquidAddress(address, isTestnet: network.isTestnet)
+          : builder.bitcoinAddress(address, isTestnet: network.isTestnet),
+      _ => null,
+    };
   }
 
   /// Opens the address detail dialog without needing a rendered
