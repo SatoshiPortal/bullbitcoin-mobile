@@ -1676,8 +1676,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: b2978285d6e45d62f57d545d0f87d3ee474784c8
-      resolved-ref: b2978285d6e45d62f57d545d0f87d3ee474784c8
+      ref: "535eeea782ffb610a69dbee2eac4739c6a45c99e"
+      resolved-ref: "535eeea782ffb610a69dbee2eac4739c6a45c99e"
       url: "https://github.com/SatoshiPortal/dart-satoshifier"
     source: git
     version: "0.0.1"
