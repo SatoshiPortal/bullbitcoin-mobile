@@ -2523,7 +2523,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "App başlangıçta başarısız oldu. Uygulamayı tamamen durdur ve yeniden başlayın. Hata devam ederse, konuyu destekle ve günlüklerinizi paylaş.",
+  "appStartupErrorMessage": "Uygulama başlatılamadı. Uygulamayı tamamen kapatıp yeniden başlatmayı deneyin. Hata devam ederse destek ekibiyle iletişime geçin ve loglarınızı paylaşın.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

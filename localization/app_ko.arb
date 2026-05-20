@@ -2531,7 +2531,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "앱이 시작되었습니다. 앱을 완전히 중지하고 다시 시작하십시오. 오류가 발생하면 로그를 지원하고 공유하는 문제를 보고합니다.",
+  "appStartupErrorMessage": "앱을 시작하지 못했습니다. 앱을 완전히 종료한 후 다시 시작해 보세요. 오류가 계속되면 지원팀에 문의하고 로그를 공유하세요.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

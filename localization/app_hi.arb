@@ -2531,7 +2531,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "ऐप स्टार्टअप में विफल रहा। पूरी तरह से एप्लिकेशन को रोकने और पुनः आरंभ करने की कोशिश करें। यदि त्रुटि बनी रहती है, तो अपने लॉग को समर्थन देने और साझा करने के लिए मुद्दे को रिपोर्ट करें।।",
+  "appStartupErrorMessage": "ऐप शुरू नहीं हो सका। कृपया ऐप को पूरी तरह बंद करके फिर से शुरू करें। यदि समस्या बनी रहती है, तो सपोर्ट से संपर्क करें और अपने लॉग साझा करें।",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

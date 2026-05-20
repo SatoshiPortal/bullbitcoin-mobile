@@ -2723,7 +2723,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "Aplikace se nepodařilo spustit. Zkuste zcela zastavit aplikaci a restartovat. Pokud se chyba přetrvává, nahlásit problém pro podporu a sdílení protokolů.",
+  "appStartupErrorMessage": "Aplikaci se nepodařilo spustit. Zkuste ji úplně zavřít a znovu spustit. Pokud problém přetrvává, kontaktujte podporu a sdílejte své logy.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

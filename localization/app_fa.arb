@@ -212,7 +212,7 @@
   "@arkAboutSecretKey": {
     "description": "Label for secret key field in about page"
   },
-  "appStartupErrorMessage": "برنامه در راه اندازی شکست خورد. سعی کنید برنامه را به طور کامل متوقف کنید و دوباره شروع کنید. اگر این خطا ادامه داشته باشد، موضوع را برای حمایت و به اشتراک گذاری اطلاعات خود گزارش کنید.",
+  "appStartupErrorMessage": "برنامه اجرا نشد. برنامه را کاملاً ببندید و دوباره راه‌اندازی کنید. اگر خطا ادامه داشت، با پشتیبانی تماس بگیرید و لاگ‌های خود را ارسال کنید.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },

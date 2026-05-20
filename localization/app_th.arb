@@ -2531,7 +2531,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "ผู้ใช้สามารถเริ่มต้น ลองหยุดแอปและเริ่มต้น หากข้อผิดพลาดยังคงมีรายงานเพื่อสนับสนุนและแชร์บันทึกของคุณ.",
+  "appStartupErrorMessage": "แอปไม่สามารถเริ่มต้นได้ ลองปิดแอปทั้งหมดแล้วเปิดใหม่อีกครั้ง หากยังมีปัญหา กรุณาติดต่อฝ่ายสนับสนุนและส่งบันทึกของคุณ",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
