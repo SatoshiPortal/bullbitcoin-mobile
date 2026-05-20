@@ -67,6 +67,7 @@ abstract class SendState with _$SendState {
     PaymentRequest? paymentRequest,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
+    @Default(false) bool isWalletManuallySelected,
     bool? isToSelf,
     @Default('') String amount,
     int? confirmedAmountSat,

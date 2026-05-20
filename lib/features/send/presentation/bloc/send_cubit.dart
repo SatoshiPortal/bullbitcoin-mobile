@@ -310,16 +310,6 @@ class SendCubit extends Cubit<SendState> {
             amountSat: state.paymentRequest!.amountSat,
           );
 
-      // Listen to the wallet syncing status to update the wallet balance and its utxos
-      // Do we need to do this? The wallet selected may change in the amount page
-      await _selectedWalletSyncingSubscription?.cancel();
-      _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
-          .execute(walletId: wallet.id)
-          .listen((wallet) async {
-            emit(state.copyWith(selectedWallet: wallet));
-            await loadUtxos();
-          });
-
       final sendType = SendType.from(state.paymentRequest!);
 
       // Pre-populate label from the embedded invoice description or BIP21 label
@@ -333,7 +323,8 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(label: embeddedLabel));
       }
 
-      emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
+      await _setSelectedWallet(wallet, manual: false);
+      emit(state.copyWith(sendType: sendType));
       await loadFees();
 
       if (state.invoiceHasMrh) {
@@ -872,15 +863,13 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> updateBestWallet() async {
+    if (state.paymentRequest == null || state.selectedWallet == null) return;
+    // Respect the user's manual wallet pick — auto-switching it silently
+    // can route funds from the wrong wallet (e.g. cold → hot). See #1918.
+    if (state.isWalletManuallySelected) return;
+
+    emit(state.copyWith(loadingBestWallet: true));
     try {
-      // clearAllExceptions();
-      if (state.paymentRequest == null || state.selectedWallet == null) return;
-      final previousSelectedWallet = state.selectedWallet!;
-
-      emit(state.copyWith(loadingBestWallet: true));
-
-      // Use the preselected wallet passed in the constructor if available,
-      //  otherwise use the best wallet for the payment request and amount
       final wallet =
           _wallet ??
           _bestWalletUsecase.execute(
@@ -888,25 +877,10 @@ class SendCubit extends Cubit<SendState> {
             request: state.paymentRequest!,
             amountSat: state.inputAmountSat,
           );
-      emit(
-        state.copyWith(
-          selectedWallet: wallet,
-          loadingBestWallet: false,
-          insufficientBalanceException: null,
-        ),
-      );
-
-      if (state.selectedWallet!.id != previousSelectedWallet.id) {
-        setSelectedSwapLimits();
-        await _selectedWalletSyncingSubscription?.cancel();
-        _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
-            .execute(walletId: wallet.id)
-            .listen((wallet) async {
-              emit(state.copyWith(selectedWallet: wallet));
-              await loadUtxos();
-            });
-      }
-    } catch (e) {
+      await _setSelectedWallet(wallet, manual: false);
+    } catch (_) {
+      // swallow — auto-pick is best-effort; the user's current selection stays.
+    } finally {
       emit(state.copyWith(loadingBestWallet: false));
     }
   }
@@ -1736,7 +1710,31 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(signedBitcoinTx: signedTx));
   }
 
-  void updateSelectedWallet(Wallet newWallet) {
-    emit(state.copyWith(selectedWallet: newWallet));
+  Future<void> updateSelectedWallet(Wallet newWallet) =>
+      _setSelectedWallet(newWallet, manual: true);
+
+  /// Central path for every wallet change in the send flow.
+  /// `manual: true` locks the pick so [updateBestWallet]'s auto-switching
+  /// (used as the user types an amount) doesn't override the user's choice —
+  /// the silent override regressed cold-wallet sends. See #1918.
+  Future<void> _setSelectedWallet(
+    Wallet wallet, {
+    required bool manual,
+  }) async {
+    emit(
+      state.copyWith(
+        selectedWallet: wallet,
+        isWalletManuallySelected: manual,
+        insufficientBalanceException: null,
+      ),
+    );
+    setSelectedSwapLimits();
+    await _selectedWalletSyncingSubscription?.cancel();
+    _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
+        .execute(walletId: wallet.id)
+        .listen((synced) async {
+          emit(state.copyWith(selectedWallet: synced));
+          await loadUtxos();
+        });
   }
 }
