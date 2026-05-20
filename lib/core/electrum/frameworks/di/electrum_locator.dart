@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/fetch_electrum_transaction_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
@@ -78,7 +77,8 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<TransactionPort>(
       () => ElectrumTransactionPortAdapter(
-        fetchUsecase: locator<FetchElectrumTransactionUsecase>(),
+        serversPort: locator<ElectrumServersPort>(),
+        repository: locator<ElectrumTransactionRepository>(),
         environmentPort: locator<EnvironmentPort>(),
       ),
     );
@@ -121,12 +121,6 @@ class ElectrumLocator {
     locator.registerFactory<SetAdvancedElectrumOptionsUsecase>(
       () => SetAdvancedElectrumOptionsUsecase(
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
-      ),
-    );
-    locator.registerLazySingleton<FetchElectrumTransactionUsecase>(
-      () => FetchElectrumTransactionUsecase(
-        repository: locator<ElectrumTransactionRepository>(),
-        serversPort: locator<ElectrumServersPort>(),
       ),
     );
   }
