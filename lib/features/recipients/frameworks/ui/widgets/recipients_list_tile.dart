@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_type_text.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_view_model.dart';
@@ -70,68 +71,73 @@ class RecipientsListTile extends StatelessWidget {
             ),
             switch (recipient.type) {
               RecipientType.interacEmailCad => _InfoRow(
-                label: 'Email',
+                label: context.loc.recipientsInfoEmail,
                 value: recipient.email,
               ),
               RecipientType.billPaymentCad => Column(
                 crossAxisAlignment: .start,
                 children: [
-                  _InfoRow(label: 'Payee', value: recipient.payeeName),
                   _InfoRow(
-                    label: 'Account Number',
+                    label: context.loc.recipientsInfoPayee,
+                    value: recipient.payeeName,
+                  ),
+                  _InfoRow(
+                    label: context.loc.recipientsFieldAccountNumber,
                     value: recipient.payeeAccountNumber,
                   ),
                 ],
               ),
               RecipientType.bankTransferCad => _InfoRow(
-                label: 'Account',
+                label: context.loc.recipientsInfoAccount,
                 value:
                     '${recipient.institutionNumber ?? ''}-${recipient.transitNumber ?? ''}-${recipient.accountNumber ?? ''}',
               ),
               RecipientType.sepaEur => _InfoRow(
-                label: 'IBAN',
+                label: context.loc.recipientsFieldIban,
                 value: recipient.iban,
               ),
               RecipientType.speiClabeMxn => _InfoRow(
-                label: 'CLABE',
+                label: context.loc.recipientsFieldClabe,
                 value: recipient.clabe,
               ),
               RecipientType.speiSmsMxn => _InfoRow(
-                label: 'Phone',
+                label: context.loc.recipientsInfoPhone,
                 value: recipient.phoneNumber,
               ),
               RecipientType.speiCardMxn => _InfoRow(
-                label: 'Card',
+                label: context.loc.recipientsInfoCard,
                 value: recipient.debitcard,
               ),
               RecipientType.sinpeIbanUsd => _InfoRow(
-                label: 'IBAN',
+                label: context.loc.recipientsFieldIban,
                 value: recipient.iban,
               ),
               RecipientType.sinpeIbanCrc => _InfoRow(
-                label: 'IBAN',
+                label: context.loc.recipientsFieldIban,
                 value: recipient.iban,
               ),
               RecipientType.sinpeMovilCrc => _InfoRow(
-                label: 'Phone',
+                label: context.loc.recipientsInfoPhone,
                 value: recipient.phoneNumber,
               ),
               RecipientType.bankAccountArgentina => _InfoRow(
-                label: 'CBU/CVU',
+                label: context.loc.recipientsFieldCvuCbu,
                 value: recipient.bankAccount,
               ),
-              // TODO: Handle this case.
               RecipientType.pseColombia => _InfoRow(
-                label: 'Account Number',
+                label: context.loc.recipientsFieldAccountNumber,
                 value: recipient.bankAccount,
               ),
               RecipientType.nequiColombia => _InfoRow(
-                label: 'Phone',
+                label: context.loc.recipientsInfoPhone,
                 value: recipient.phoneNumber,
               ),
             },
             if (recipient.label != null)
-              _InfoRow(label: 'Label', value: recipient.label),
+              _InfoRow(
+                label: context.loc.recipientsInfoLabel,
+                value: recipient.label,
+              ),
           ],
         ),
       ),
