@@ -81,7 +81,7 @@ abstract class ReceiveState with _$ReceiveState {
 
     if (invoice == null) return '';
 
-    return invoice.trim().replaceAll(' ', '').toUpperCase();
+    return invoice.trim().toUpperCase();
   }
 
   // The payment request can be an address, invoice or bip21 URI depending on
