@@ -9,7 +9,7 @@
     "remoteUser": "${localEnv:USER}",
     "updateRemoteUserUID": true,
     "shutdownAction": "stopContainer",
-    "initializeCommand": ".devcontainer/init-ssh-agent.sh",
+    "initializeCommand": ".devcontainer/init-ssh-agent.sh && make container-tools",
     "runArgs": [
         "--name",
         "${localWorkspaceFolderBasename}",
