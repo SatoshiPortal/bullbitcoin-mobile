@@ -171,6 +171,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "২৪ ঘণ্টার মধ্যে আপনার অ্যাপ খুলে আপনার সোয়াপ সম্পন্ন করুন।",
   "appStartupErrorMessage": "অ্যাপ চালু হতে ব্যর্থ হয়েছে। অ্যাপ সম্পূর্ণভাবে বন্ধ করে পুনরায় চালু করার চেষ্টা করুন। যদি সমস্যা থেকে যায়, সাপোর্টের সাথে যোগাযোগ করুন এবং আপনার লগ শেয়ার করুন।",
+  "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
   "translationWarningTitle": "AI-দ্বাৰা উৎপাদিত অনুবাদ",
   "translationWarningDescription": "এই এপ্পৰ অধিকাংশ অনুবাদ AI ব্যৱহাৰ কৰি তৈয়াৰ কৰা হৈছে আৰু ইয়াত ভুল থাকিব পাৰে। যদি আপুনি কোনো ভুল লক্ষ্য কৰে বা অনুবাদ উন্নত কৰাত সহায় কৰিব বিচাৰে, তেন্তে আমাৰ সমাজ অনুবাদ প্লেটফৰ্মৰ জৰিয়তে অৱদান দিব পাৰে।",
   "translationWarningContributeButton": "অনুবাদ উন্নত কৰাত সহায় কৰক",

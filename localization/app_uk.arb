@@ -4598,5 +4598,6 @@
   "legacyStorageHasBackupImportantBody": "Будь ласка, не пропускайте цей процес, якщо тільки вам не потрібно терміново скористатися гаманцем або ви не очікуєте на завершення свопу.",
   "legacyStorageRiskAckButtonHasBackup": "Я розумію ризик",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Відкрийте застосунок протягом 24 годин, щоб завершити своп."
+  "transactionSwapOpenWithin24Hours": "Відкрийте застосунок протягом 24 годин, щоб завершити своп.",
+  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує"
 }

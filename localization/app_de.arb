@@ -4490,5 +4490,6 @@
   "legacyStorageHasBackupImportantBody": "Bitte überspringen Sie diesen Vorgang nur, wenn Sie die Wallet unbedingt dringend verwenden müssen oder auf den Abschluss eines Swaps warten.",
   "legacyStorageRiskAckButtonHasBackup": "Ich verstehe das Risiko",
   "walletSetupErrorTryAgain": "Beim Einrichten Ihrer Wallet ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-  "transactionSwapOpenWithin24Hours": "Öffne die App innerhalb von 24 Stunden, um deinen Swap abzuschließen."
+  "transactionSwapOpenWithin24Hours": "Öffne die App innerhalb von 24 Stunden, um deinen Swap abzuschließen.",
+  "importMnemonicDuplicateError": "Diese Mnemonic existiert bereits"
 }

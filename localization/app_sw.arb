@@ -219,5 +219,6 @@
   "legacyStorageRiskAckButtonHasBackup": "Ninaelewa hatari",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Fungua programu ndani ya saa 24 ili kukamilisha swap yako.",
-  "appStartupErrorMessage": "Programu imeshindwa kuanza. Jaribu kuifunga kabisa na kuanzisha upya. Ikiwa tatizo linaendelea, wasiliana na usaidizi na shiriki logi zako."
+  "appStartupErrorMessage": "Programu imeshindwa kuanza. Jaribu kuifunga kabisa na kuanzisha upya. Ikiwa tatizo linaendelea, wasiliana na usaidizi na shiriki logi zako.",
+  "importMnemonicDuplicateError": "Msemo huu tayari upo"
 }

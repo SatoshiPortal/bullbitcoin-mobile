@@ -12574,6 +12574,7 @@
   "legacyStorageRiskAckButtonHasBackup": "मैं जोखिम समझता हूँ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "अपने स्वैप को पूरा करने के लिए 24 घंटों के भीतर ऐप खोलें।",
+  "importMnemonicDuplicateError": "यह नेमोनिक पहले से मौजूद है",
   "recoverbullBalance": "शेष: {balance}",
   "@recoverbullBalance": {
     "description": "Label showing wallet balance during vault recovery",

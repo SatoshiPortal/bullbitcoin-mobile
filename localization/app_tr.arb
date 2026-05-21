@@ -12581,5 +12581,6 @@
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
   "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın."
+  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın.",
+  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut"
 }

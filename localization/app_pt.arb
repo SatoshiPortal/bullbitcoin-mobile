@@ -4656,5 +4656,6 @@
   "legacyStorageHasBackupImportantBody": "Por favor, não ignore este processo, a menos que precise mesmo de usar a carteira urgentemente ou esteja à espera que uma troca seja concluída.",
   "legacyStorageRiskAckButtonHasBackup": "Compreendo o risco",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Abra a aplicação dentro de 24 horas para concluir o seu swap."
+  "transactionSwapOpenWithin24Hours": "Abra a aplicação dentro de 24 horas para concluir o seu swap.",
+  "importMnemonicDuplicateError": "Esta mnemônica já existe"
 }

@@ -12581,5 +12581,6 @@
   "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Otevřete aplikaci do 24 hodin, abyste dokončili svůj swap."
+  "transactionSwapOpenWithin24Hours": "Otevřete aplikaci do 24 hodin, abyste dokončili svůj swap.",
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje"
 }

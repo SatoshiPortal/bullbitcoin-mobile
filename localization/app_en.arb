@@ -13043,5 +13043,9 @@
   "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
   "@transactionSwapOpenWithin24h": {
     "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
+  },
+  "importMnemonicDuplicateError": "This mnemonic already exists",
+  "@importMnemonicDuplicateError": {
+    "description": "Error message when user tries to import a mnemonic that already exists"
   }
 }
