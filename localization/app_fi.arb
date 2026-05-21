@@ -4714,5 +4714,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Käyttöoikeus evätty. Myönnä pääsy valokuvakirjastoon asetuksissa.",
   "exchangeSupportChatPickFilesFailed": "Tiedostojen valinta epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatAttachLogsFailed": "Lokien liittäminen epäonnistui. Yritä uudelleen.",
-  "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui."
+  "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui.",
+  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa"
 }

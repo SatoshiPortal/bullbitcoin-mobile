@@ -199,5 +199,6 @@
   "legacyStorageRiskAckButtonHasBackup": "Ես հասկանում եմ ռիսկը",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Բացեք հավելվածը 24 ժամվա ընթացքում՝ ձեր սվափը ավարտելու համար։",
-  "appStartupErrorMessage": "Հավելվածը չհաջողվեց գործարկել։ Փորձեք ամբողջությամբ փակել և նորից բացել այն։ Եթե սխալը շարունակվում է, կապվեք աջակցության հետ և կիսվեք ձեր լոգերով։"
+  "appStartupErrorMessage": "Հավելվածը չհաջողվեց գործարկել։ Փորձեք ամբողջությամբ փակել և նորից բացել այն։ Եթե սխալը շարունակվում է, կապվեք աջակցության հետ և կիսվեք ձեր լոգերով։",
+  "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի"
 }

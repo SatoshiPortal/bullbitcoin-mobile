@@ -4722,5 +4722,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Autorizzazione negata. Concedi l'accesso alla libreria foto nelle Impostazioni.",
   "exchangeSupportChatPickFilesFailed": "Selezione dei file non riuscita. Riprova.",
   "exchangeSupportChatAttachLogsFailed": "Allegato dei log non riuscito. Riprova.",
-  "exchangeSupportChatFetchFileDataFailed": "Recupero dei dati del file non riuscito."
+  "exchangeSupportChatFetchFileDataFailed": "Recupero dei dati del file non riuscito.",
+  "importMnemonicDuplicateError": "Questo mnemonic esiste già"
 }

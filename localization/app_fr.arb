@@ -4711,5 +4711,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Autorisation refusée. Veuillez accorder l'accès à la photothèque dans les Réglages.",
   "exchangeSupportChatPickFilesFailed": "Échec de la sélection des fichiers. Veuillez réessayer.",
   "exchangeSupportChatAttachLogsFailed": "Échec de l'ajout des journaux. Veuillez réessayer.",
-  "exchangeSupportChatFetchFileDataFailed": "Échec de la récupération des données du fichier."
+  "exchangeSupportChatFetchFileDataFailed": "Échec de la récupération des données du fichier.",
+  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà"
 }

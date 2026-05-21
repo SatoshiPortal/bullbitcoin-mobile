@@ -13500,5 +13500,9 @@
   "exchangeSupportChatFetchFileDataFailed": "Failed to fetch file data",
   "@exchangeSupportChatFetchFileDataFailed": {
     "description": "Snackbar shown when downloading a support chat attachment fails because no file data was returned."
+  },
+  "importMnemonicDuplicateError": "This mnemonic already exists",
+  "@importMnemonicDuplicateError": {
+    "description": "Error message when user tries to import a mnemonic that already exists"
   }
 }

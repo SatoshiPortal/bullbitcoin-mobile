@@ -4719,5 +4719,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Доступ заборонено. Будь ласка, надайте доступ до бібліотеки фотографій у Налаштуваннях.",
   "exchangeSupportChatPickFilesFailed": "Не вдалося вибрати файли. Спробуйте ще раз.",
   "exchangeSupportChatAttachLogsFailed": "Не вдалося прикріпити журнали. Спробуйте ще раз.",
-  "exchangeSupportChatFetchFileDataFailed": "Не вдалося отримати дані файлу."
+  "exchangeSupportChatFetchFileDataFailed": "Не вдалося отримати дані файлу.",
+  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує"
 }

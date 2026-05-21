@@ -12584,5 +12584,6 @@
   "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
   "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك"
+  "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
+  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل"
 }

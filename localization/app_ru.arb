@@ -4731,5 +4731,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Доступ запрещён. Пожалуйста, предоставьте доступ к фотоальбому в настройках.",
   "exchangeSupportChatPickFilesFailed": "Не удалось выбрать файлы. Попробуйте снова.",
   "exchangeSupportChatAttachLogsFailed": "Не удалось прикрепить журналы. Попробуйте снова.",
-  "exchangeSupportChatFetchFileDataFailed": "Не удалось получить данные файла."
+  "exchangeSupportChatFetchFileDataFailed": "Не удалось получить данные файла.",
+  "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует"
 }

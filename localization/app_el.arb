@@ -12702,5 +12702,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Η άδεια απορρίφθηκε. Παραχωρήστε πρόσβαση στη βιβλιοθήκη φωτογραφιών στις Ρυθμίσεις.",
   "exchangeSupportChatPickFilesFailed": "Η επιλογή αρχείων απέτυχε. Δοκιμάστε ξανά.",
   "exchangeSupportChatAttachLogsFailed": "Η επισύναψη αρχείων καταγραφής απέτυχε. Δοκιμάστε ξανά.",
-  "exchangeSupportChatFetchFileDataFailed": "Η ανάκτηση δεδομένων αρχείου απέτυχε."
+  "exchangeSupportChatFetchFileDataFailed": "Η ανάκτηση δεδομένων αρχείου απέτυχε.",
+  "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη"
 }

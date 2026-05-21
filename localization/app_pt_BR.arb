@@ -12698,5 +12698,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Permissão negada. Conceda acesso à biblioteca de fotos nas Configurações.",
   "exchangeSupportChatPickFilesFailed": "Falha ao selecionar arquivos. Tente novamente.",
   "exchangeSupportChatAttachLogsFailed": "Falha ao anexar logs. Tente novamente.",
-  "exchangeSupportChatFetchFileDataFailed": "Falha ao buscar os dados do arquivo."
+  "exchangeSupportChatFetchFileDataFailed": "Falha ao buscar os dados do arquivo.",
+  "importMnemonicDuplicateError": "Esta mnemônica já existe"
 }

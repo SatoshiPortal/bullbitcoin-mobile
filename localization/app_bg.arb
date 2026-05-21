@@ -9713,5 +9713,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Достъпът е отказан. Моля, разрешете достъпа до фотогалерията в Настройките.",
   "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
   "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
-  "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя."
+  "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",
+  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува"
 }

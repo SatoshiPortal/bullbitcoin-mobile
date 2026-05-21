@@ -12702,5 +12702,6 @@
   "exchangeSupportChatPermissionDeniedSettings": "Oprávnění zamítnuto. Povolte přístup k fotogalerii v Nastavení.",
   "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
   "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
-  "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo."
+  "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje"
 }
