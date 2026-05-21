@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/electrum/application/usecases/add_custom_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/delete_custom_server_usecase.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/load_electrum_server_data_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_advanced_electrum_options_usecase.dart';
 import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_priority_usecase.dart';
@@ -13,17 +12,17 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_remote_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/adapters/electrum_servers_adapter.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/adapters/electrum_transaction_port_adapter.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/adapters/environment_adapter.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/adapters/server_status_adapter.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_server_repository.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_settings_repository.dart';
-import 'package:bb_mobile/core/electrum/interface_adapters/repositories/drift_electrum_transaction_repository.dart';
+import 'package:bb_mobile/core/electrum/adapters/drift_electrum_server_repository.dart';
+import 'package:bb_mobile/core/electrum/adapters/drift_electrum_settings_repository.dart';
+import 'package:bb_mobile/core/electrum/adapters/drift_electrum_transaction_repository.dart';
+import 'package:bb_mobile/core/electrum/adapters/electrum_servers_adapter.dart';
+import 'package:bb_mobile/core/electrum/adapters/electrum_transaction_port_adapter.dart';
+import 'package:bb_mobile/core/electrum/adapters/environment_adapter.dart';
+import 'package:bb_mobile/core/electrum/adapters/server_status_adapter.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transactions/domain/ports/transaction_port.dart';
+import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
 import 'package:get_it/get_it.dart';
 
 class ElectrumLocator {
@@ -72,7 +71,7 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<ElectrumServersPort>(
       () => ElectrumServersAdapter(
-        getServersUsecase: locator<GetElectrumServersToUseUsecase>(),
+        repository: locator<ElectrumServerRepository>(),
       ),
     );
     locator.registerLazySingleton<TransactionPort>(
@@ -100,13 +99,6 @@ class ElectrumLocator {
     locator.registerFactory<DeleteCustomServerUsecase>(
       () => DeleteCustomServerUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
-      ),
-    );
-    locator.registerFactory<GetElectrumServersToUseUsecase>(
-      () => GetElectrumServersToUseUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<LoadElectrumServerDataUsecase>(

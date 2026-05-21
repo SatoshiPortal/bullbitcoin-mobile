@@ -6,8 +6,9 @@ import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/interface_adapters/adapters/electrum_server_adapter.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
+import 'package:bb_mobile/core/blockchain/adapters/electrum_server_adapter.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:get_it/get_it.dart';
 
@@ -39,8 +40,9 @@ class BlockchainLocator {
   static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<ElectrumServerPort>(
       () => ElectrumServerAdapter(
-        getElectrumServersToUseUsecase:
-            locator<GetElectrumServersToUseUsecase>(),
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

@@ -16,5 +16,12 @@ abstract class ElectrumServerRepository {
   Future<List<ElectrumServer>> fetchDefaultServers({
     required ElectrumServerNetwork network,
   });
+
+  /// Servers to actually connect to for [network], in priority order.
+  /// Returns custom servers when any exist, otherwise the default set.
+  Future<List<ElectrumServer>> fetchActiveServers({
+    required ElectrumServerNetwork network,
+  });
+
   Future<void> delete({required String url});
 }
