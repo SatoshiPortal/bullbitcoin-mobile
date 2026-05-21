@@ -76,6 +76,14 @@ abstract class ReceiveState with _$ReceiveState {
   String get clipboardData =>
       paymentRequest.isEmpty ? addressOrInvoiceOnly : paymentRequest;
 
+  String get lightningInvoiceNormalized {
+    final invoice = lightningSwap?.invoice;
+
+    if (invoice == null) return '';
+
+    return invoice.trim().replaceAll(' ', '').toUpperCase();
+  }
+
   // The payment request can be an address, invoice or bip21 URI depending on
   // the type of receive and some set parameters. It waits for all data to
   // be available before returning anything.
@@ -115,7 +123,7 @@ abstract class ReceiveState with _$ReceiveState {
         }
         return bip21Uri.toString();
       case ReceiveType.lightning:
-        return lightningSwap?.invoice ?? '';
+        return lightningInvoiceNormalized;
       case ReceiveType.liquid:
         if (liquidAddress == null) return '';
 
@@ -145,7 +153,7 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.bitcoin:
         return bitcoinAddress?.address ?? '';
       case ReceiveType.lightning:
-        return lightningSwap?.invoice ?? '';
+        return lightningInvoiceNormalized;
       case ReceiveType.liquid:
         return liquidAddress?.address ?? '';
       case _:
