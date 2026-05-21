@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transactions/domain/ports/transaction_port.dart';
+import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:flutter_test/flutter_test.dart';

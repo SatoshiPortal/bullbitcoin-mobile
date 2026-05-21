@@ -964,7 +964,7 @@ class _OnchainTransactionReview extends StatelessWidget {
 ///
 /// For Liquid wallets, `walletTransaction` is not populated during the confirm
 /// step (only `unsignedPsbt` and `liquidAbsoluteFees` are set). Instead of
-/// using [TransactionScreen] (which requires a [TransactionEntity]), this
+/// using [TransactionReviewView] (which requires a [ReviewableTransaction]), this
 /// widget reads directly from [SendState] and delegates to
 /// [CommonOnchainSendInfoSection].
 class _LiquidOnchainSendInfoSection extends StatelessWidget {

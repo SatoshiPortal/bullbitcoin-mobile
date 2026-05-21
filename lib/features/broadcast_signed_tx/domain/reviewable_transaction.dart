@@ -1,12 +1,12 @@
-import 'package:bb_mobile/core/transactions/domain/entity/liquid_transaction.dart';
-import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
+import 'package:bb_mobile/core/transactions/domain/entities/liquid_transaction.dart';
+import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 
-/// The display/review model for a transaction.
+/// The display/review aggregate for a transaction.
 ///
 /// Wraps a [Transaction] with resolved input values and optional change
 /// identification. Provides computed properties for fees, send amount,
 /// and recipient outputs.
-class TransactionEntity {
+class ReviewableTransaction {
   /// The underlying parsed transaction.
   final Transaction transaction;
 
@@ -19,7 +19,7 @@ class TransactionEntity {
   /// Null for external transactions where we cannot identify change.
   final int? changeOutputIndex;
 
-  const TransactionEntity({
+  const ReviewableTransaction({
     required this.transaction,
     required this.resolvedInputs,
     this.changeOutputIndex,

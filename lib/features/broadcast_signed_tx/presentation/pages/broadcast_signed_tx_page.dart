@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/transactions/application/build_transaction_usecase.dart';
-import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
-import 'package:bb_mobile/core/transactions/ui/transaction_screen.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
@@ -90,14 +89,11 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                 ],
 
-                // Transaction review using TransactionScreen
+                // Transaction review using TransactionReviewView
                 if (state.transaction != null &&
                     state.isBroadcasted == false) ...[
                   BlocProvider(
-                    create: (_) => TransactionCubit(
-                      buildTransactionUsecase:
-                          locator<BuildTransactionUsecase>(),
-                    ),
+                    create: (_) => locator<TransactionReviewCubit>(),
                     child: _TransactionReviewSection(
                       bitcoinTx: state.transaction!.tx,
                     ),
@@ -191,7 +187,7 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
     super.initState();
     final isTestnet =
         context.read<SettingsCubit>().state.environment?.isTestnet ?? false;
-    context.read<TransactionCubit>().loadFromBitcoinTx(
+    context.read<TransactionReviewCubit>().loadFromBitcoinTx(
       widget.bitcoinTx,
       isTestnet: isTestnet,
     );
@@ -199,6 +195,6 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
 
   @override
   Widget build(BuildContext context) {
-    return const TransactionScreen(bottomActions: _BroadcastActions());
+    return const TransactionReviewView(bottomActions: _BroadcastActions());
   }
 }

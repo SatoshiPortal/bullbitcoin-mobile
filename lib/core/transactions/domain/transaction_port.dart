@@ -1,9 +1,10 @@
-import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
+import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
+import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 
 /// Port for fetching parsed transactions by txid.
 ///
-/// Used by [BuildTransactionUsecase] to resolve input values
-/// by fetching parent transactions.
+/// Implementations throw [TransactionPortError] on failure so consumers
+/// can map the typed port-layer error into their own domain.
 abstract class TransactionPort {
   /// Fetch a parsed [Transaction] by its txid.
   ///

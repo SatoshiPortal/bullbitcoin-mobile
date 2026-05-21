@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
+import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 
 /// Concrete Bitcoin transaction implementing the abstract [Transaction].
 class BitcoinTransaction extends Transaction {

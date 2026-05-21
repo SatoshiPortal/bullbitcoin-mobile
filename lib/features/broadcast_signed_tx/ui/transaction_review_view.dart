@@ -1,13 +1,14 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/transactions/domain/entity/transaction.dart';
-import 'package:bb_mobile/core/transactions/domain/entity/transaction_entity.dart';
-import 'package:bb_mobile/core/transactions/domain/error/transaction_error.dart';
-import 'package:bb_mobile/core/transactions/presentation/transaction_cubit.dart';
-import 'package:bb_mobile/core/transactions/presentation/transaction_state.dart';
+import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
+import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -32,8 +33,8 @@ import 'package:gap/gap.dart';
 /// - [feePriorityWidget] — fee priority selector (e.g. fastest/medium/slow)
 /// - [topWidget] — custom widget shown above the transaction details
 /// - [bottomActions] — action buttons (confirm, broadcast, etc.)
-class TransactionScreen extends StatelessWidget {
-  const TransactionScreen({
+class TransactionReviewView extends StatelessWidget {
+  const TransactionReviewView({
     super.key,
     this.title,
     this.fromLabel,
@@ -70,13 +71,13 @@ class TransactionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocBuilder<TransactionReviewCubit, TransactionReviewState>(
       builder: (context, state) {
         return switch (state) {
-          TransactionInitial() => const _InitialView(),
-          TransactionLoading() => const _LoadingView(),
-          TransactionLoaded(:final entity) => _LoadedView(
-            entity: entity,
+          TransactionReviewInitial() => const _InitialView(),
+          TransactionReviewLoading() => const _LoadingView(),
+          TransactionReviewLoaded(:final transaction) => _LoadedView(
+            transaction: transaction,
             title: title,
             fromLabel: fromLabel,
             toLabel: toLabel,
@@ -85,7 +86,7 @@ class TransactionScreen extends StatelessWidget {
             topWidget: topWidget,
             bottomActions: bottomActions,
           ),
-          TransactionErrorState(:final error) => _ErrorView(error: error),
+          TransactionReviewErrorState(:final error) => _ErrorView(error: error),
         };
       },
     );
@@ -125,19 +126,18 @@ class _LoadingView extends StatelessWidget {
 class _ErrorView extends StatelessWidget {
   const _ErrorView({required this.error});
 
-  final TransactionError error;
+  final TransactionReviewError error;
 
   String _message(BuildContext context) => switch (error) {
-    TransactionFetchFailed(:final txid) => context.loc.coreScreensFetchFailed(
-      txid,
-    ),
-    TransactionInputResolutionFailed(:final parentTxId, :final vout) =>
+    TransactionReviewInputResolutionFailed(:final parentTxId, :final vout) =>
       context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
-    TransactionParseFailed(:final message) =>
-      context.loc.coreScreensParseFailed(message ?? 'unknown'),
-    TransactionNoServersAvailable() =>
-      context.loc.coreScreensNoServersAvailable,
-    UnexpectedTransactionError(:final message) =>
+    TransactionReviewPortFailure(:final portError) => switch (portError) {
+      TransactionPortFetchFailed(:final txid) =>
+        context.loc.coreScreensFetchFailed(txid),
+      TransactionPortNoServersAvailable() =>
+        context.loc.coreScreensNoServersAvailable,
+    },
+    UnexpectedTransactionReviewError(:final message) =>
       context.loc.coreScreensUnexpectedError(message ?? 'unknown'),
   };
 
@@ -167,7 +167,7 @@ class _ErrorView extends StatelessWidget {
 
 class _LoadedView extends StatelessWidget {
   const _LoadedView({
-    required this.entity,
+    required this.transaction,
     this.title,
     this.fromLabel,
     this.toLabel,
@@ -177,7 +177,7 @@ class _LoadedView extends StatelessWidget {
     this.bottomActions,
   });
 
-  final TransactionEntity entity;
+  final ReviewableTransaction transaction;
   final String? title;
   final String? fromLabel;
   final String? toLabel;
@@ -195,7 +195,7 @@ class _LoadedView extends StatelessWidget {
         children: [
           if (topWidget != null) ...[topWidget!, const Gap(16)],
           _SummarySection(
-            entity: entity,
+            transaction: transaction,
             fromLabel: fromLabel,
             toLabel: toLabel,
             fiatAmount: fiatAmount,
@@ -212,14 +212,14 @@ class _LoadedView extends StatelessWidget {
 
 class _SummarySection extends StatelessWidget {
   const _SummarySection({
-    required this.entity,
+    required this.transaction,
     this.fromLabel,
     this.toLabel,
     this.fiatAmount,
     this.feePriorityWidget,
   });
 
-  final TransactionEntity entity;
+  final ReviewableTransaction transaction;
   final String? fromLabel;
   final String? toLabel;
   final String? fiatAmount;
@@ -231,7 +231,7 @@ class _SummarySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final recipientOutputs = entity.recipientOutputs;
+    final recipientOutputs = transaction.recipientOutputs;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -251,9 +251,9 @@ class _SummarySection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               BBText(
-                entity.sendAmountSat != null
-                    ? '${_formatSats(entity.sendAmountSat!)} sats'
-                    : '${_formatSats(entity.totalOutputsSat)} sats',
+                transaction.sendAmountSat != null
+                    ? '${_formatSats(transaction.sendAmountSat!)} sats'
+                    : '${_formatSats(transaction.totalOutputsSat)} sats',
                 style: context.font.bodyLarge,
                 color: context.appColors.secondary,
               ),
@@ -272,7 +272,7 @@ class _SummarySection extends StatelessWidget {
         _InfoRow(
           label: context.loc.coreScreensNetworkFeesLabel,
           child: BBText(
-            '${_formatSats(entity.feeSat)} sats',
+            '${_formatSats(transaction.feeSat)} sats',
             style: context.font.bodyLarge,
             color: context.appColors.secondary,
             textAlign: TextAlign.end,
@@ -280,13 +280,13 @@ class _SummarySection extends StatelessWidget {
         ),
 
         // --- Fee rate row (optional) ---
-        if (entity.feeRate != null) ...[
+        if (transaction.feeRate != null) ...[
           _divider(context),
           _InfoRow(
             label: context.loc.coreScreensFeeRateLabel,
             child: BBText(
               context.loc.coreScreensFeeRateValue(
-                entity.feeRate!.toStringAsFixed(1),
+                transaction.feeRate!.toStringAsFixed(1),
               ),
               style: context.font.bodyLarge,
               color: context.appColors.secondary,
@@ -303,7 +303,7 @@ class _SummarySection extends StatelessWidget {
         _divider(context),
 
         // --- Change unknown info — only for external transactions ---
-        if (!entity.hasChange)
+        if (!transaction.hasChange)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Row(
@@ -347,7 +347,7 @@ class _SummarySection extends StatelessWidget {
     }
 
     // No wallet name — show input addresses + amounts
-    final inputs = entity.resolvedInputs;
+    final inputs = transaction.resolvedInputs;
     if (inputs.isEmpty) {
       return _InfoRow(
         label: context.loc.coreScreensFromLabel,
