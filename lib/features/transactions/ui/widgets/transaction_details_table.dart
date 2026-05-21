@@ -88,22 +88,15 @@ class TransactionDetailsTable extends StatelessWidget {
                 label: context.loc.transactionDetailLabelLiquidTxId,
                 displayValue: StringFormatting.truncateMiddle(liquidTxId),
                 copyValue: liquidTxId,
-                displayWidget: GestureDetector(
-                  onTap: () async {
-                    final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
-                    final unblindedUrl = liquidTxId == txId
-                        ? (walletTransaction?.unblindedUrl ?? 'tx/$liquidTxId')
-                        : 'tx/$liquidTxId';
-                    final mempoolUrl = await mempoolUrlBuilder.liquidTxidUrl(
-                      unblindedUrl,
-                      isTestnet: isTestnet,
-                    );
-                    await launchUrl(Uri.parse(mempoolUrl));
-                  },
-                  child: Text(
-                    StringFormatting.truncateMiddle(liquidTxId),
-                    style: TextStyle(color: context.appColors.primary),
-                    textAlign: TextAlign.end,
+                displayWidget: _mempoolLink(
+                  context,
+                  liquidTxId,
+                  buildUrl: () => locator<MempoolUrlBuilder>().liquidTxid(
+                    liquidTxId,
+                    isTestnet: isTestnet,
+                    unblindedUrl: liquidTxId == txId
+                        ? walletTransaction?.unblindedUrl
+                        : null,
                   ),
                 ),
               ),
@@ -144,19 +137,12 @@ class TransactionDetailsTable extends StatelessWidget {
                 label: context.loc.transactionDetailLabelBitcoinTxId,
                 displayValue: StringFormatting.truncateMiddle(bitcoinTxId),
                 copyValue: bitcoinTxId,
-                displayWidget: GestureDetector(
-                  onTap: () async {
-                    final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
-                    final mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
-                      bitcoinTxId,
-                      isTestnet: isTestnet,
-                    );
-                    await launchUrl(Uri.parse(mempoolUrl));
-                  },
-                  child: Text(
-                    StringFormatting.truncateMiddle(bitcoinTxId),
-                    style: TextStyle(color: context.appColors.primary),
-                    textAlign: TextAlign.end,
+                displayWidget: _mempoolLink(
+                  context,
+                  bitcoinTxId,
+                  buildUrl: () => locator<MempoolUrlBuilder>().bitcoinTxid(
+                    bitcoinTxId,
+                    isTestnet: isTestnet,
                   ),
                 ),
               ),
@@ -197,30 +183,20 @@ class TransactionDetailsTable extends StatelessWidget {
               label: context.loc.transactionDetailLabelTransactionId,
               displayValue: StringFormatting.truncateMiddle(txId),
               copyValue: txId,
-              displayWidget: GestureDetector(
-                onTap: () async {
-                  final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
-
-                  final String mempoolUrl;
-                  if (isLiquid) {
-                    mempoolUrl = await mempoolUrlBuilder.liquidTxidUrl(
-                      transaction?.walletTransaction?.unblindedUrl ?? '',
-                      isTestnet: isTestnet,
-                    );
-                  } else {
-                    mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
-                      txId,
-                      isTestnet: isTestnet,
-                    );
-                  }
-
-                  await launchUrl(Uri.parse(mempoolUrl));
-                },
-                child: Text(
-                  StringFormatting.truncateMiddle(txId),
-                  style: TextStyle(color: context.appColors.primary),
-                  textAlign: TextAlign.end,
-                ),
+              displayWidget: _mempoolLink(
+                context,
+                txId,
+                buildUrl: () => isLiquid
+                    ? locator<MempoolUrlBuilder>().liquidTxid(
+                        txId,
+                        isTestnet: isTestnet,
+                        unblindedUrl:
+                            transaction?.walletTransaction?.unblindedUrl,
+                      )
+                    : locator<MempoolUrlBuilder>().bitcoinTxid(
+                        txId,
+                        isTestnet: isTestnet,
+                      ),
               ),
             ),
           if (labels.isNotEmpty && txId != null)
@@ -925,29 +901,21 @@ class TransactionDetailsTable extends StatelessWidget {
                   : context.loc.transactionDetailLabelAddress,
               displayValue: StringFormatting.truncateMiddle(toAddress),
               copyValue: toAddress,
-              displayWidget: GestureDetector(
-                onTap: () async {
-                  final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
-                  final String mempoolUrl;
+              displayWidget: _mempoolLink(
+                context,
+                toAddress,
+                buildUrl: () {
                   final addressIsLiquid = swap.isChainSwap ? !isLiquid : false;
-                  if (addressIsLiquid) {
-                    mempoolUrl = await mempoolUrlBuilder.liquidAddressUrl(
-                      toAddress,
-                      isTestnet: isTestnet,
-                    );
-                  } else {
-                    mempoolUrl = await mempoolUrlBuilder.bitcoinAddressUrl(
-                      toAddress,
-                      isTestnet: isTestnet,
-                    );
-                  }
-                  await launchUrl(Uri.parse(mempoolUrl));
+                  return addressIsLiquid
+                      ? locator<MempoolUrlBuilder>().liquidAddress(
+                          toAddress,
+                          isTestnet: isTestnet,
+                        )
+                      : locator<MempoolUrlBuilder>().bitcoinAddress(
+                          toAddress,
+                          isTestnet: isTestnet,
+                        );
                 },
-                child: Text(
-                  StringFormatting.truncateMiddle(toAddress),
-                  style: TextStyle(color: context.appColors.primary),
-                  textAlign: TextAlign.end,
-                ),
               ),
             ),
           if (addressLabels.isNotEmpty && toAddress != null)
@@ -1144,10 +1112,28 @@ Widget _sectionHeader(BuildContext context, String title) {
     padding: const EdgeInsets.only(bottom: 6),
     child: Text(
       title,
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+      style: context.font.labelMedium?.copyWith(
         color: context.appColors.onSurfaceVariant,
         fontWeight: FontWeight.w600,
       ),
+    ),
+  );
+}
+
+Widget _mempoolLink(
+  BuildContext context,
+  String value, {
+  required Future<String> Function() buildUrl,
+}) {
+  return GestureDetector(
+    onTap: () async {
+      final mempoolUrl = await buildUrl();
+      await launchUrl(Uri.parse(mempoolUrl));
+    },
+    child: Text(
+      StringFormatting.truncateMiddle(value),
+      style: TextStyle(color: context.appColors.primary),
+      textAlign: TextAlign.end,
     ),
   );
 }
