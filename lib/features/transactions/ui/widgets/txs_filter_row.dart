@@ -46,8 +46,6 @@ class _TxsFilterRowState extends State<TxsFilterRow> {
                       context.loc.transactionFilterReward,
                     TransactionsFilter.refund =>
                       context.loc.transactionFilterRefund,
-                    TransactionsFilter.balanceAdjustment =>
-                      context.loc.transactionFilterBalanceAdjustment,
                   },
                   isSelected: selectedFilter == filter,
                   onTap: () {
