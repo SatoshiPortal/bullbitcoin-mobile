@@ -848,11 +848,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     return '';
   }
 
-  /// Distinct user-defined labels for the suggestion chips in the note
-  /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
-  /// don't need to reach into the locator.
+  /// Distinct user-defined address labels for the suggestion chips in
+  /// the note bottom sheet. Scoped to [LabelType.address] because the
+  /// chosen string becomes a counterparty-visible BIP21 `message=` —
+  /// private transaction labels must never be surfaced here.
   Future<Set<String>> fetchDistinctLabels() =>
-      _labelsFacade.fetchDistinctLabels();
+      _labelsFacade.fetchDistinctLabels(type: LabelType.address);
 
   void _watchPayjoin(String payjoinId) {
     // Cancel the previous subscription if it exists
