@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:flutter/material.dart';
 
@@ -12,25 +13,25 @@ class RecipientTypeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(switch (recipientType) {
-      // TODO: Use localization labels instead of hardcoded strings.
       // CANADA types
-      RecipientType.interacEmailCad => 'Interac e-Transfer',
-      RecipientType.billPaymentCad => 'Bill Payment',
-      RecipientType.bankTransferCad => 'Bank Transfer',
+      RecipientType.interacEmailCad => context.loc.recipientsTypeInteracEmail,
+      RecipientType.billPaymentCad => context.loc.recipientsTypeBillPayment,
+      RecipientType.bankTransferCad => context.loc.recipientsTypeBankTransfer,
       // EUROPE types
-      RecipientType.sepaEur => 'SEPA Transfer',
+      RecipientType.sepaEur => context.loc.recipientsTypeSepa,
       // MEXICO types
-      RecipientType.speiClabeMxn => 'SPEI CLABE',
-      RecipientType.speiSmsMxn => 'SPEI SMS',
-      RecipientType.speiCardMxn => 'SPEI Card',
+      RecipientType.speiClabeMxn => context.loc.recipientsTypeSpeiClabe,
+      RecipientType.speiSmsMxn => context.loc.recipientsTypeSpeiSms,
+      RecipientType.speiCardMxn => context.loc.recipientsTypeSpeiCard,
       // COSTA RICA types
-      RecipientType.sinpeIbanUsd => 'SINPE IBAN (USD)',
-      RecipientType.sinpeIbanCrc => 'SINPE IBAN (CRC)',
-      RecipientType.sinpeMovilCrc => 'SINPE Móvil',
+      RecipientType.sinpeIbanUsd => context.loc.recipientsTypeSinpeIbanUsd,
+      RecipientType.sinpeIbanCrc => context.loc.recipientsTypeSinpeIbanCrc,
+      RecipientType.sinpeMovilCrc => context.loc.recipientsTypeSinpeMovil,
       // ARGENTINA types
-      RecipientType.bankAccountArgentina => 'CBU/CVU Argentina',
-      RecipientType.pseColombia => 'Bank Account COP',
-      RecipientType.nequiColombia => 'Nequi',
+      RecipientType.bankAccountArgentina =>
+        context.loc.recipientsTypeBankAccountAr,
+      RecipientType.pseColombia => context.loc.recipientsTypeBankAccountCo,
+      RecipientType.nequiColombia => context.loc.recipientsTypeNequi,
     }, style: style);
   }
 }

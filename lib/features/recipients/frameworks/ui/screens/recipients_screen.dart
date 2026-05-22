@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/new_recipient_tab.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/tabs/recipients_list_tab.dart';
@@ -67,7 +68,7 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Recipient'),
+        title: Text(context.loc.recipientsScreenTitle),
         // TODO: he app bar with the loading indicator below like this should
         // be a shared widget so all screens have the loading indicator out-of-the-box
         // and in the same place/way. This new shared widget should replace
@@ -96,7 +97,7 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
             children: [
               const Gap(16.0),
               Text(
-                'Who are you paying?',
+                context.loc.recipientsScreenSubtitle,
                 style: context.font.labelMedium?.copyWith(
                   color: context.appColors.secondary,
                 ),
@@ -106,8 +107,9 @@ class _RecipientsScreenContentState extends State<_RecipientsScreenContent> {
               BBSegmentedButton(
                 items: RecipientsTab.values.map((e) => e.name).toSet(),
                 labels: {
-                  RecipientsTab.newRecipient.name: 'New Recipient',
-                  RecipientsTab.recipientsList.name: 'My Fiat Recipients',
+                  RecipientsTab.newRecipient.name: context.loc.recipientsTabNew,
+                  RecipientsTab.recipientsList.name:
+                      context.loc.recipientsTabList,
                 },
                 selected: _currentTab.name,
                 onChanged: (value) {

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -82,14 +83,14 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: 'Institution Number',
-            hintText: 'Enter institution number',
+            labelText: context.loc.recipientsFieldInstitutionNumber,
+            hintText: context.loc.recipientsFieldInstitutionNumberHint,
             focusNode: _institutionNumberFocusNode,
             autofocus: true,
             textInputAction: .next,
             onFieldSubmitted: (_) => _transitNumberFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -99,13 +100,13 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Transit Number',
-            hintText: 'Enter transit number',
+            labelText: context.loc.recipientsFieldTransitNumber,
+            hintText: context.loc.recipientsFieldTransitNumberHint,
             focusNode: _transitNumberFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _accountNumberFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -115,13 +116,13 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Account Number',
-            hintText: 'Enter account number',
+            labelText: context.loc.recipientsFieldAccountNumber,
+            hintText: context.loc.recipientsFieldAccountNumberHint,
             focusNode: _accountNumberFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -131,13 +132,13 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Name',
-            hintText: 'Enter recipient name',
+            labelText: context.loc.recipientsFieldName,
+            hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _defaultCommentFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -147,8 +148,8 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Default Comment (optional)',
-            hintText: 'Enter default comment',
+            labelText: context.loc.recipientsFieldDefaultComment,
+            hintText: context.loc.recipientsFieldDefaultCommentHint,
             focusNode: _defaultCommentFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
@@ -161,8 +162,8 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
@@ -175,7 +176,7 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
           ),
           const Gap(16.0),
           Text(
-            'Who does this account belong to?',
+            context.loc.recipientsAccountOwnerQuestion,
             style: TextStyle(
               fontSize: 14,
               fontWeight: .w500,
@@ -192,17 +193,17 @@ class BankTransferCadFormState extends State<BankTransferCadForm> {
                 });
               }
             },
-            child: const Column(
+            child: Column(
               children: [
                 RadioListTile<bool>(
-                  title: Text('This is my account'),
+                  title: Text(context.loc.recipientsAccountOwnerMine),
                   value: true,
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
-                Gap(8.0),
+                const Gap(8.0),
                 RadioListTile<bool>(
-                  title: Text("This is someone else's account"),
+                  title: Text(context.loc.recipientsAccountOwnerSomeoneElse),
                   value: false,
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
