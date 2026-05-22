@@ -245,6 +245,8 @@ class AddressErrorSection extends StatelessWidget {
       return BBText(
         swapError is AmountlessInvoiceException
             ? context.loc.sendErrorInvoiceMustContainAmount
+            : swapError is ExpiredInvoiceException
+            ? context.loc.sendErrorInvoiceExpired
             : swapError.message,
         style: context.font.bodyMedium,
         color: context.appColors.error,

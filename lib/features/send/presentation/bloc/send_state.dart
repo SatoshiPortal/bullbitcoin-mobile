@@ -456,6 +456,10 @@ class AmountlessInvoiceException extends SwapCreationException {
   AmountlessInvoiceException(super.message);
 }
 
+class ExpiredInvoiceException extends SwapCreationException {
+  ExpiredInvoiceException() : super('Expired invoice');
+}
+
 class InsufficientBalanceException extends BullException {
   InsufficientBalanceException([
     super.message = 'Not enough balance to cover this payment',

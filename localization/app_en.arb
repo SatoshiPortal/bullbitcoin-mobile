@@ -7201,6 +7201,10 @@
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
   },
+  "sendErrorInvoiceExpired": "This invoice is expired. Ask the recipient for a new invoice.",
+  "@sendErrorInvoiceExpired": {
+    "description": "Error when an expired Lightning invoice is used"
+  },
   "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
   "@sendErrorInsufficientBalanceForPayment": {
     "description": "Error when wallet balance is insufficient for payment"
