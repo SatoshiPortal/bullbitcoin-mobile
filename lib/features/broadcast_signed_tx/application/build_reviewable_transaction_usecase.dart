@@ -1,13 +1,11 @@
-import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
 import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
+import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
-import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/reviewable_transaction.dart';
 
-/// Build a [ReviewableTransaction] from a parsed [btc_utils.BitcoinTx]
-/// (PSBT/HEX-derived), resolving each input's value by fetching the parent
-/// transaction via [TransactionPort].
+/// Build a [ReviewableTransaction] from a domain [Transaction], resolving
+/// each input's value by fetching the parent transaction via [TransactionPort].
 ///
 /// Change output is left unresolved (`null`) since external transactions
 /// don't carry wallet-side ownership data.
@@ -17,13 +15,10 @@ class BuildReviewableTransactionUsecase {
   BuildReviewableTransactionUsecase({required TransactionPort transactionPort})
     : _transactionPort = transactionPort;
 
-  /// Throws [TransactionReviewError] on failure (port errors are wrapped at
-  /// the boundary as `portFailure`).
-  Future<ReviewableTransaction> execute(
-    btc_utils.BitcoinTx bitcoinTx, {
-    required bool isTestnet,
-  }) async {
-    final tx = TransactionMapper.fromBitcoinTx(bitcoinTx, isTestnet: isTestnet);
+  /// Throws [TransactionReviewError] on failure. Port-layer errors are
+  /// translated into feature-layer variants at the boundary so the
+  /// presentation layer never sees a foreign error type.
+  Future<ReviewableTransaction> execute(Transaction tx) async {
     final resolvedInputs = <ResolvedInput>[];
 
     for (final input in tx.inputs) {
@@ -49,7 +44,7 @@ class BuildReviewableTransactionUsecase {
       } on TransactionReviewError {
         rethrow;
       } on TransactionPortError catch (e) {
-        throw TransactionReviewError.portFailure(portError: e);
+        throw _mapPortError(e);
       } catch (e) {
         throw TransactionReviewError.unexpected(e.toString());
       }
@@ -60,4 +55,12 @@ class BuildReviewableTransactionUsecase {
       resolvedInputs: resolvedInputs,
     );
   }
+
+  TransactionReviewError _mapPortError(TransactionPortError e) =>
+      switch (e) {
+        TransactionPortFetchFailed(:final txid, :final message) =>
+          TransactionReviewError.fetchFailed(txid: txid, message: message),
+        TransactionPortNoServersAvailable(:final network) =>
+          TransactionReviewError.noServersAvailable(network: network),
+      };
 }

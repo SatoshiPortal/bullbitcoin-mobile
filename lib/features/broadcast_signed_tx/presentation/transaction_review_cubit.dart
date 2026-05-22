@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/transactions/adapters/transaction_mapper.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
 import 'package:bb_mobile/features/broadcast_signed_tx/application/build_reviewable_transaction_usecase.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/domain/domain_errors.dart';
@@ -6,9 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Drives the transaction-review screen for the broadcast flow.
 ///
-/// Resolves a parsed [btc_utils.BitcoinTx] into a [ReviewableTransaction]
-/// (input values fetched via the transaction port) and surfaces failures
-/// as [TransactionReviewError] for the view to render.
+/// Translates the raw [btc_utils.BitcoinTx] (parsed from PSBT/HEX at the
+/// scan/paste boundary) into a domain [Transaction] before handing it to
+/// the usecase — the application layer stays free of foreign BDK types.
 class TransactionReviewCubit extends Cubit<TransactionReviewState> {
   final BuildReviewableTransactionUsecase _buildReviewableTransactionUsecase;
 
@@ -25,11 +26,12 @@ class TransactionReviewCubit extends Cubit<TransactionReviewState> {
     if (state is TransactionReviewLoading) return;
     emit(const TransactionReviewState.loading());
     try {
-      final transaction = await _buildReviewableTransactionUsecase.execute(
+      final tx = TransactionMapper.fromBitcoinTx(
         bitcoinTx,
         isTestnet: isTestnet,
       );
-      emit(TransactionReviewState.loaded(transaction: transaction));
+      final reviewable = await _buildReviewableTransactionUsecase.execute(tx);
+      emit(TransactionReviewState.loaded(transaction: reviewable));
     } on TransactionReviewError catch (e) {
       emit(TransactionReviewState.error(error: e));
     } catch (e) {

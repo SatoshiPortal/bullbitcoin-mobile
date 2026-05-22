@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/transactions/domain/domain_errors.dart';
 import 'package:bb_mobile/core/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/address_viewer.dart';
@@ -129,14 +128,12 @@ class _ErrorView extends StatelessWidget {
   final TransactionReviewError error;
 
   String _message(BuildContext context) => switch (error) {
+    TransactionReviewFetchFailed(:final txid) =>
+      context.loc.coreScreensFetchFailed(txid),
+    TransactionReviewNoServersAvailable() =>
+      context.loc.coreScreensNoServersAvailable,
     TransactionReviewInputResolutionFailed(:final parentTxId, :final vout) =>
       context.loc.coreScreensInputResolutionFailed(vout, parentTxId),
-    TransactionReviewPortFailure(:final portError) => switch (portError) {
-      TransactionPortFetchFailed(:final txid) =>
-        context.loc.coreScreensFetchFailed(txid),
-      TransactionPortNoServersAvailable() =>
-        context.loc.coreScreensNoServersAvailable,
-    },
     UnexpectedTransactionReviewError(:final message) =>
       context.loc.coreScreensUnexpectedError(message ?? 'unknown'),
   };
