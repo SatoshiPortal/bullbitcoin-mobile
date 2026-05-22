@@ -13048,6 +13048,463 @@
   "@transactionSwapOpenWithin24h": {
     "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
   },
+  "recipientsScreenTitle": "Select Recipient",
+  "@recipientsScreenTitle": {
+    "description": "App bar title for the recipients selection screen."
+  },
+  "recipientsScreenSubtitle": "Who are you paying?",
+  "@recipientsScreenSubtitle": {
+    "description": "Subtitle shown on the recipients screen prompting the user to choose a recipient."
+  },
+  "recipientsTabNew": "New Recipient",
+  "@recipientsTabNew": {
+    "description": "Label for the tab to add a new recipient."
+  },
+  "recipientsTabList": "My Fiat Recipients",
+  "@recipientsTabList": {
+    "description": "Label for the tab listing the user's saved fiat recipients."
+  },
+  "recipientsPayoutMethod": "Payout method",
+  "@recipientsPayoutMethod": {
+    "description": "Label for the payout method selector in the new recipient form."
+  },
+  "recipientsFilterByJurisdiction": "Filter by Jurisdiction:",
+  "@recipientsFilterByJurisdiction": {
+    "description": "Label above the jurisdiction filter on the recipients list."
+  },
+  "recipientsListEmpty": "No recipients found.",
+  "@recipientsListEmpty": {
+    "description": "Empty state message when no recipients match the current filters."
+  },
+  "recipientsContinue": "Continue",
+  "@recipientsContinue": {
+    "description": "Continue button label used on recipient forms and the recipients list."
+  },
+  "recipientsJurisdictionAll": "All Jurisdictions",
+  "@recipientsJurisdictionAll": {
+    "description": "Dropdown option to show recipients from all jurisdictions."
+  },
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "@recipientsJurisdictionCanada": {
+    "description": "Canada jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "@recipientsJurisdictionEurope": {
+    "description": "Europe (SEPA) jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "@recipientsJurisdictionMexico": {
+    "description": "Mexico jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "@recipientsJurisdictionCostaRica": {
+    "description": "Costa Rica jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "@recipientsJurisdictionArgentina": {
+    "description": "Argentina jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "@recipientsJurisdictionColombia": {
+    "description": "Colombia jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "@recipientsTypeInteracEmail": {
+    "description": "Display name for the Canadian Interac e-Transfer recipient type."
+  },
+  "recipientsTypeBillPayment": "Bill Payment",
+  "@recipientsTypeBillPayment": {
+    "description": "Display name for the Canadian Bill Payment recipient type."
+  },
+  "recipientsTypeBankTransfer": "Bank Transfer",
+  "@recipientsTypeBankTransfer": {
+    "description": "Display name for the Canadian Bank Transfer recipient type."
+  },
+  "recipientsTypeSepa": "SEPA Transfer",
+  "@recipientsTypeSepa": {
+    "description": "Display name for the European SEPA Transfer recipient type."
+  },
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "@recipientsTypeSpeiClabe": {
+    "description": "Display name for the Mexican SPEI CLABE recipient type."
+  },
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "@recipientsTypeSpeiSms": {
+    "description": "Display name for the Mexican SPEI SMS recipient type."
+  },
+  "recipientsTypeSpeiCard": "SPEI Card",
+  "@recipientsTypeSpeiCard": {
+    "description": "Display name for the Mexican SPEI debit card recipient type."
+  },
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "@recipientsTypeSinpeIbanUsd": {
+    "description": "Display name for the Costa Rican SINPE IBAN USD recipient type."
+  },
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "@recipientsTypeSinpeIbanCrc": {
+    "description": "Display name for the Costa Rican SINPE IBAN CRC recipient type."
+  },
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "@recipientsTypeSinpeMovil": {
+    "description": "Display name for the Costa Rican SINPE Móvil recipient type."
+  },
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "@recipientsTypeBankAccountAr": {
+    "description": "Display name for the Argentinian CBU/CVU bank account recipient type."
+  },
+  "recipientsTypeBankAccountCo": "Bank Account COP",
+  "@recipientsTypeBankAccountCo": {
+    "description": "Display name for the Colombian bank account (COP) recipient type."
+  },
+  "recipientsTypeNequi": "Nequi",
+  "@recipientsTypeNequi": {
+    "description": "Display name for the Colombian Nequi recipient type."
+  },
+  "recipientsInfoEmail": "Email",
+  "@recipientsInfoEmail": {
+    "description": "Info-row label for an email value on a recipient list tile."
+  },
+  "recipientsInfoPayee": "Payee",
+  "@recipientsInfoPayee": {
+    "description": "Info-row label for a payee value on a recipient list tile."
+  },
+  "recipientsInfoAccount": "Account",
+  "@recipientsInfoAccount": {
+    "description": "Info-row label for a bank account value on a recipient list tile."
+  },
+  "recipientsInfoPhone": "Phone",
+  "@recipientsInfoPhone": {
+    "description": "Info-row label for a phone number value on a recipient list tile."
+  },
+  "recipientsInfoCard": "Card",
+  "@recipientsInfoCard": {
+    "description": "Info-row label for a card value on a recipient list tile."
+  },
+  "recipientsInfoLabel": "Label",
+  "@recipientsInfoLabel": {
+    "description": "Info-row label for the user-set label of a recipient on a list tile."
+  },
+  "recipientsValidationFieldRequired": "This field can't be empty",
+  "@recipientsValidationFieldRequired": {
+    "description": "Validation error shown when a required recipient form field is empty."
+  },
+  "recipientsLabelOptional": "Label (optional)",
+  "@recipientsLabelOptional": {
+    "description": "Label for the optional recipient label/nickname field in recipient forms."
+  },
+  "recipientsLabelHint": "Enter a label for this recipient",
+  "@recipientsLabelHint": {
+    "description": "Hint text for the optional recipient label/nickname field."
+  },
+  "recipientsFieldName": "Name",
+  "@recipientsFieldName": {
+    "description": "Label for the recipient name field used in several recipient forms."
+  },
+  "recipientsFieldNameHint": "Enter recipient name",
+  "@recipientsFieldNameHint": {
+    "description": "Hint text for the recipient name field."
+  },
+  "recipientsFieldRecipientNameLabel": "Name of the recipient",
+  "@recipientsFieldRecipientNameLabel": {
+    "description": "Longer label for the recipient name field used in the Colombia forms."
+  },
+  "recipientsFieldPhoneNumber": "Phone Number",
+  "@recipientsFieldPhoneNumber": {
+    "description": "Label for the recipient phone number field."
+  },
+  "recipientsFieldPhoneNumberHint": "Enter phone number",
+  "@recipientsFieldPhoneNumberHint": {
+    "description": "Hint text for the recipient phone number field."
+  },
+  "recipientsFieldDocumentType": "ID Document Type",
+  "@recipientsFieldDocumentType": {
+    "description": "Label for the ID document type selector in Colombia recipient forms."
+  },
+  "recipientsFieldDocumentNumberHint": "Enter document number",
+  "@recipientsFieldDocumentNumberHint": {
+    "description": "Hint text for the ID document number field."
+  },
+  "recipientsFieldOwnerName": "Owner Name",
+  "@recipientsFieldOwnerName": {
+    "description": "Label for the account owner name field in SINPE recipient forms."
+  },
+  "recipientsFieldOwnerNameHint": "Enter owner name",
+  "@recipientsFieldOwnerNameHint": {
+    "description": "Hint text for the account owner name field."
+  },
+  "recipientsAccountOwnerQuestion": "Who does this account belong to?",
+  "@recipientsAccountOwnerQuestion": {
+    "description": "Section header asking whose account is being added in recipient forms."
+  },
+  "recipientsAccountOwnerMine": "This is my account",
+  "@recipientsAccountOwnerMine": {
+    "description": "Radio option indicating the recipient account belongs to the current user."
+  },
+  "recipientsAccountOwnerSomeoneElse": "This is someone else's account",
+  "@recipientsAccountOwnerSomeoneElse": {
+    "description": "Radio option indicating the recipient account belongs to a third party."
+  },
+  "recipientsFieldIban": "IBAN",
+  "@recipientsFieldIban": {
+    "description": "Label for the IBAN field used in SEPA and SINPE forms."
+  },
+  "recipientsFieldIbanHint": "Enter IBAN",
+  "@recipientsFieldIbanHint": {
+    "description": "Hint text for the IBAN field."
+  },
+  "recipientsFieldClabe": "CLABE",
+  "@recipientsFieldClabe": {
+    "description": "Label for the Mexican CLABE field."
+  },
+  "recipientsFieldClabeHint": "Enter CLABE number",
+  "@recipientsFieldClabeHint": {
+    "description": "Hint text for the Mexican CLABE field."
+  },
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "@recipientsFieldCvuCbu": {
+    "description": "Label for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldCvuCbuHint": "Enter CVU/CBU number",
+  "@recipientsFieldCvuCbuHint": {
+    "description": "Hint text for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldBankInstitution": "Bank Institution",
+  "@recipientsFieldBankInstitution": {
+    "description": "Label for the bank institution selector in the Colombia bank account form."
+  },
+  "recipientsFieldBankInstitutionPlaceholder": "Select Bank Institution",
+  "@recipientsFieldBankInstitutionPlaceholder": {
+    "description": "Placeholder option in the bank institution selector."
+  },
+  "recipientsValidationBankInstitution": "Please select a bank institution",
+  "@recipientsValidationBankInstitution": {
+    "description": "Validation error when no bank institution is selected."
+  },
+  "recipientsFieldAccountType": "Account Type",
+  "@recipientsFieldAccountType": {
+    "description": "Label for the bank account type selector in the Colombia bank account form."
+  },
+  "recipientsAccountTypeSavings": "Savings",
+  "@recipientsAccountTypeSavings": {
+    "description": "Bank account type option for savings."
+  },
+  "recipientsAccountTypeChecking": "Checking",
+  "@recipientsAccountTypeChecking": {
+    "description": "Bank account type option for checking."
+  },
+  "recipientsFieldBankAccountNumber": "Bank Account Number",
+  "@recipientsFieldBankAccountNumber": {
+    "description": "Label for the bank account number field in the Colombia bank account form."
+  },
+  "recipientsFieldBankAccountNumberHint": "Enter bank account number",
+  "@recipientsFieldBankAccountNumberHint": {
+    "description": "Hint text for the bank account number field."
+  },
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "@recipientsCopDocCc": {
+    "description": "Colombia ID document type: citizenship card."
+  },
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "@recipientsCopDocCe": {
+    "description": "Colombia ID document type: foreign resident ID."
+  },
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "@recipientsCopDocNit": {
+    "description": "Colombia ID document type: tax identification number."
+  },
+  "recipientsCopDocPassport": "Passport",
+  "@recipientsCopDocPassport": {
+    "description": "Colombia ID document type: passport."
+  },
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "@recipientsCopDocTi": {
+    "description": "Colombia ID document type: minor identity card."
+  },
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "@recipientsCopDocRegistroCivil": {
+    "description": "Colombia ID document type: civil registry."
+  },
+  "recipientsFieldDebitCard": "Debit Card Number",
+  "@recipientsFieldDebitCard": {
+    "description": "Label for the debit card number field in the SPEI Card form."
+  },
+  "recipientsFieldDebitCardHint": "Enter debit card number",
+  "@recipientsFieldDebitCardHint": {
+    "description": "Hint text for the debit card number field."
+  },
+  "recipientsFieldOwnerNameSinpeHint": "Owner name will appear here",
+  "@recipientsFieldOwnerNameSinpeHint": {
+    "description": "Hint text for the owner name field while SINPE Móvil validation runs."
+  },
+  "recipientsValidationSinpePhone": "Please enter a valid 8-digit phone number",
+  "@recipientsValidationSinpePhone": {
+    "description": "Validation error for an invalid SINPE Móvil phone number."
+  },
+  "recipientsValidationSinpeOwner": "Please validate the phone number",
+  "@recipientsValidationSinpeOwner": {
+    "description": "Validation error when SINPE Móvil owner name is not validated yet."
+  },
+  "recipientsFieldEmailAddress": "Email Address",
+  "@recipientsFieldEmailAddress": {
+    "description": "Label for the email address field in the Interac e-Transfer form."
+  },
+  "recipientsFieldEmailAddressHint": "Enter email address",
+  "@recipientsFieldEmailAddressHint": {
+    "description": "Hint text for the email address field."
+  },
+  "recipientsFieldSecurityQuestion": "Security Question",
+  "@recipientsFieldSecurityQuestion": {
+    "description": "Label for the security question field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityQuestionHint": "Enter security question (10-40 characters)",
+  "@recipientsFieldSecurityQuestionHint": {
+    "description": "Hint text for the security question field."
+  },
+  "recipientsFieldSecurityAnswer": "Security Answer",
+  "@recipientsFieldSecurityAnswer": {
+    "description": "Label for the security answer field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityAnswerHint": "Enter security answer",
+  "@recipientsFieldSecurityAnswerHint": {
+    "description": "Hint text for the security answer field."
+  },
+  "recipientsValidationSecurityQuestionMin": "Security question must be at least 10 characters",
+  "@recipientsValidationSecurityQuestionMin": {
+    "description": "Validation error shown when the security question is shorter than 10 characters."
+  },
+  "recipientsCharCounter": "{count}/40 characters",
+  "@recipientsCharCounter": {
+    "description": "Character counter displayed below the security question field.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recipientsFieldInstitutionCode": "Institution Code",
+  "@recipientsFieldInstitutionCode": {
+    "description": "Label for the institution code field in SPEI SMS/Card forms."
+  },
+  "recipientsFieldInstitutionCodeHint": "Enter institution code",
+  "@recipientsFieldInstitutionCodeHint": {
+    "description": "Hint text for the institution code field."
+  },
+  "recipientsFieldInstitutionNumber": "Institution Number",
+  "@recipientsFieldInstitutionNumber": {
+    "description": "Label for the institution number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldInstitutionNumberHint": "Enter institution number",
+  "@recipientsFieldInstitutionNumberHint": {
+    "description": "Hint text for the institution number field."
+  },
+  "recipientsFieldTransitNumber": "Transit Number",
+  "@recipientsFieldTransitNumber": {
+    "description": "Label for the transit number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldTransitNumberHint": "Enter transit number",
+  "@recipientsFieldTransitNumberHint": {
+    "description": "Hint text for the transit number field."
+  },
+  "recipientsFieldAccountNumber": "Account Number",
+  "@recipientsFieldAccountNumber": {
+    "description": "Label for the account number field used in multiple recipient forms."
+  },
+  "recipientsFieldAccountNumberHint": "Enter account number",
+  "@recipientsFieldAccountNumberHint": {
+    "description": "Hint text for the account number field."
+  },
+  "recipientsFieldDefaultComment": "Default Comment (optional)",
+  "@recipientsFieldDefaultComment": {
+    "description": "Label for the optional default comment field in the Canadian bank transfer form."
+  },
+  "recipientsFieldDefaultCommentHint": "Enter default comment",
+  "@recipientsFieldDefaultCommentHint": {
+    "description": "Hint text for the optional default comment field."
+  },
+  "recipientsFieldCorporateAccount": "Corporate account",
+  "@recipientsFieldCorporateAccount": {
+    "description": "Checkbox label indicating the SEPA recipient is a corporate account."
+  },
+  "recipientsFieldFirstName": "First Name",
+  "@recipientsFieldFirstName": {
+    "description": "Label for the first name field in the SEPA recipient form."
+  },
+  "recipientsFieldFirstNameHint": "Enter first name",
+  "@recipientsFieldFirstNameHint": {
+    "description": "Hint text for the first name field."
+  },
+  "recipientsFieldLastName": "Last Name",
+  "@recipientsFieldLastName": {
+    "description": "Label for the last name field in the SEPA recipient form."
+  },
+  "recipientsFieldLastNameHint": "Enter last name",
+  "@recipientsFieldLastNameHint": {
+    "description": "Hint text for the last name field."
+  },
+  "recipientsFieldCorporateName": "Corporate Name",
+  "@recipientsFieldCorporateName": {
+    "description": "Label for the corporate name field in the SEPA recipient form."
+  },
+  "recipientsFieldCorporateNameHint": "Enter corporate name",
+  "@recipientsFieldCorporateNameHint": {
+    "description": "Hint text for the corporate name field."
+  },
+  "recipientsFieldBillerName": "Biller Name",
+  "@recipientsFieldBillerName": {
+    "description": "Label for the biller search field in the Canadian bill payment form."
+  },
+  "recipientsFieldBillerNameHint": "Search and select a biller",
+  "@recipientsFieldBillerNameHint": {
+    "description": "Hint text for the biller search field."
+  },
+  "recipientsValidationBillerSearchMin": "Enter 3 or more characters to search",
+  "@recipientsValidationBillerSearchMin": {
+    "description": "Validation error shown when biller search input is too short."
+  },
+  "recipientsValidationBillerSelect": "Please select a biller from the list",
+  "@recipientsValidationBillerSelect": {
+    "description": "Validation error shown when no biller is selected from the list."
+  },
+  "recipientsFieldPayeeAccountNumber": "Payee Account Number",
+  "@recipientsFieldPayeeAccountNumber": {
+    "description": "Label for the payee account number field in the bill payment form."
+  },
+  "exchangeFileUploadStatusRejectedBadge": "Rejected",
+  "@exchangeFileUploadStatusRejectedBadge": {
+    "description": "Short rejected-status badge shown next to a re-upload action in the secure file upload screen."
+  },
+  "exchangeFileUploadTapToReupload": "Tap to re-upload",
+  "@exchangeFileUploadTapToReupload": {
+    "description": "Call-to-action shown when a rejected upload can be retried by tapping."
+  },
+  "exchangeSupportChatAttachmentImage": "Image",
+  "@exchangeSupportChatAttachmentImage": {
+    "description": "Fallback display name for an image attachment in the support chat when no file name is available."
+  },
+  "exchangeSupportChatAttachmentUnknownFile": "Unknown file",
+  "@exchangeSupportChatAttachmentUnknownFile": {
+    "description": "Fallback display name for a non-image attachment in the support chat when no file name is available."
+  },
+  "exchangeSupportChatPermissionDenied": "Permission denied.",
+  "@exchangeSupportChatPermissionDenied": {
+    "description": "Snackbar shown when a runtime permission needed to attach photos is denied."
+  },
+  "exchangeSupportChatPermissionDeniedSettings": "Permission denied. Please grant photo library access in Settings.",
+  "@exchangeSupportChatPermissionDeniedSettings": {
+    "description": "Snackbar shown when photo library permission is permanently denied and the user must enable it from Settings."
+  },
+  "exchangeSupportChatPickFilesFailed": "Failed to pick files. Please try again.",
+  "@exchangeSupportChatPickFilesFailed": {
+    "description": "Snackbar shown when picking files for a support chat attachment fails."
+  },
+  "exchangeSupportChatAttachLogsFailed": "Failed to attach logs. Please try again.",
+  "@exchangeSupportChatAttachLogsFailed": {
+    "description": "Snackbar shown when attaching log files to a support chat message fails."
+  },
+  "exchangeSupportChatFetchFileDataFailed": "Failed to fetch file data",
+  "@exchangeSupportChatFetchFileDataFailed": {
+    "description": "Snackbar shown when downloading a support chat attachment fails because no file data was returned."
+  },
   "importMnemonicDuplicateError": "This mnemonic already exists",
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"

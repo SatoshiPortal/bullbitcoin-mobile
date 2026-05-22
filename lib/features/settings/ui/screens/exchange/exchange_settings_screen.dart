@@ -90,7 +90,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   ),
                   SettingsEntryItem(
                     icon: Icons.currency_bitcoin,
-                    title: 'Default Bitcoin Wallets',
+                    title: context.loc.exchangeBitcoinWalletsTitle,
                     onTap: () {
                       if (state.notLoggedIn) {
                         NotLoggedInBottomSheet.show(context);
@@ -103,7 +103,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   ),
                   SettingsEntryItem(
                     icon: Icons.settings,
-                    title: 'App Settings',
+                    title: context.loc.settingsAppSettingsTitle,
                     onTap: () {
                       if (state.notLoggedIn) {
                         NotLoggedInBottomSheet.show(context);
@@ -116,7 +116,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   ),
                   SettingsEntryItem(
                     icon: Icons.upload_file,
-                    title: 'Secure File Upload',
+                    title: context.loc.exchangeFileUploadTitle,
                     onTap: () {
                       if (state.notLoggedIn) {
                         NotLoggedInBottomSheet.show(context);
@@ -129,7 +129,7 @@ class ExchangeSettingsScreen extends StatelessWidget {
                   ),
                   SettingsEntryItem(
                     icon: Icons.bar_chart,
-                    title: 'Statistics',
+                    title: context.loc.exchangeStatisticsTitle,
                     onTap: () {
                       if (state.notLoggedIn) {
                         NotLoggedInBottomSheet.show(context);

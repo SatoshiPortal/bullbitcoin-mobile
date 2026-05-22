@@ -362,7 +362,7 @@ class _RejectedStatusWithReupload extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               BBText(
-                'Rejected',
+                context.loc.exchangeFileUploadStatusRejectedBadge,
                 style: context.font.labelSmall?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: context.appColors.error,
@@ -401,7 +401,7 @@ class _RejectedStatusWithReupload extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       BBText(
-                        'Tap to re-upload',
+                        context.loc.exchangeFileUploadTapToReupload,
                         style: context.font.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: context.appColors.onSurface,
