@@ -413,6 +413,7 @@
   "transactionSwapOpenWithin24Hours": "გახსენით აპი 24 საათის განმავლობაში, რათა დაასრულოთ თქვენი სვოპი.",
   "appStartupErrorMessage": "აპის გაშვება ვერ მოხერხდა. სცადეთ მისი სრულად დახურვა და თავიდან გაშვება. თუ შეცდომა გაგრძელდა, დაუკავშირდით მხარდაჭერას და გააზიარეთ ლოგები.",
   "importMnemonicDuplicateError": "ეს მნემონიკი უკვე არსებობს",
+  "transactionStatusPayjoinCompleted": "Payjoin დასრულდა",
   "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",

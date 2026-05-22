@@ -4754,7 +4754,6 @@
   "exchangeSupportChatPickFilesFailed": "Не удалось выбрать файлы. Попробуйте снова.",
   "exchangeSupportChatAttachLogsFailed": "Не удалось прикрепить журналы. Попробуйте снова.",
   "exchangeSupportChatFetchFileDataFailed": "Не удалось получить данные файла.",
-  "importMnemonicDuplicateError": "Эта мнемоническая фраза уже существует",
   "recipientsFieldSinpePhoneNumberHint": "8 цифр без кода страны",
   "recipientsCopDocCcRecipientNumber": "Номер cédula получателя",
   "recipientsCopDocCeRecipientNumber": "Номер cédula de extranjería получателя",
@@ -4764,5 +4763,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Номер записи гражданского реестра получателя",
   "recipientsValidationSinpePhoneCountryCode": "Удалите код страны (+506). Введите только 8-значный номер",
   "recipientsValidationSinpePhoneInvalidChars": "Используйте только цифры (без букв или символов)",
-  "recipientsValidationSinpePhoneTooShort": "Введите все 8 цифр номера телефона"
+  "recipientsValidationSinpePhoneTooShort": "Введите все 8 цифр номера телефона",
+  "transactionStatusPayjoinCompleted": "Payjoin завершён"
 }

@@ -4737,7 +4737,6 @@
   "exchangeSupportChatPickFilesFailed": "Tiedostojen valinta epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatAttachLogsFailed": "Lokien liittäminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui.",
-  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa",
   "recipientsFieldSinpePhoneNumberHint": "8 numeroa ilman maakoodia",
   "recipientsCopDocCcRecipientNumber": "Vastaanottajan cédula-numero",
   "recipientsCopDocCeRecipientNumber": "Vastaanottajan cédula de extranjería -numero",
@@ -4747,5 +4746,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Vastaanottajan väestörekisterinumero",
   "recipientsValidationSinpePhoneCountryCode": "Poista maakoodi (+506). Anna vain 8-numeroinen numero",
   "recipientsValidationSinpePhoneInvalidChars": "Käytä vain numeroita (ei kirjaimia tai symboleita)",
-  "recipientsValidationSinpePhoneTooShort": "Anna kaikki 8 puhelinnumeron numeroa"
+  "recipientsValidationSinpePhoneTooShort": "Anna kaikki 8 puhelinnumeron numeroa",
+  "transactionStatusPayjoinCompleted": "Payjoin suoritettu"
 }

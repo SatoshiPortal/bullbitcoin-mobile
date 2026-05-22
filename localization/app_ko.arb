@@ -12591,6 +12591,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "스왑을 완료하려면 24시간 이내에 앱을 여세요.",
   "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
+  "transactionStatusPayjoinCompleted": "Payjoin 완료됨",
   "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
   "coreScreensFeeRateLabel": "수수료율",
   "coreScreensFeeRateValue": "{rate} sat/vB",

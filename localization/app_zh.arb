@@ -4608,6 +4608,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "请在24小时内打开应用以完成您的兑换。",
   "importMnemonicDuplicateError": "该助记词已存在",
+  "transactionStatusPayjoinCompleted": "Payjoin 已完成",
   "coreScreensResolvingInputs": "正在解析交易输入...",
   "coreScreensFeeRateLabel": "费率",
   "coreScreensFeeRateValue": "{rate} sat/vB",
