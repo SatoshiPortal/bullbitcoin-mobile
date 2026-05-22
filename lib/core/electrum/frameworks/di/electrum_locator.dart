@@ -19,7 +19,6 @@ import 'package:bb_mobile/core/electrum/adapters/electrum_servers_adapter.dart';
 import 'package:bb_mobile/core/electrum/adapters/electrum_transaction_port_adapter.dart';
 import 'package:bb_mobile/core/electrum/adapters/environment_adapter.dart';
 import 'package:bb_mobile/core/electrum/adapters/server_status_adapter.dart';
-import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
@@ -63,8 +62,9 @@ class ElectrumLocator {
 
   static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<EnvironmentPort>(
-      () =>
-          EnvironmentAdapter(getSettingsUsecase: locator<GetSettingsUsecase>()),
+      () => EnvironmentAdapter(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
     );
     locator.registerLazySingleton<ServerStatusPort>(
       () => const ServerStatusAdapter(),
