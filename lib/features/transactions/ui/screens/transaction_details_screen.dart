@@ -36,7 +36,8 @@ class TransactionDetailsScreen extends StatelessWidget {
     final returnHome =
         GoRouterState.of(context).uri.queryParameters['returnHome'] == 'true';
     final returnToExchange =
-        GoRouterState.of(context).uri.queryParameters['returnToExchange'] == 'true';
+        GoRouterState.of(context).uri.queryParameters['returnToExchange'] ==
+        'true';
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -173,19 +174,20 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ],
                 if (swap != null && swap.requiresAction) ...[
                   const Gap(16),
-                  BBButton.big(
-                    disabled: retryingSwap,
-                    label: isChainSwap
-                        ? context.loc.transactionDetailRetryTransfer(swapAction)
-                        : context.loc.transactionDetailRetrySwap(swapAction),
-                    onPressed: () async {
-                      await context.read<TransactionDetailsCubit>().processSwap(
-                        swap,
-                      );
-                    },
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
-                  ),
+                  if (isChainSwap)
+                    BBButton.big(
+                      disabled: retryingSwap,
+                      label: context.loc.transactionDetailRetryTransfer(
+                        swapAction,
+                      ),
+                      onPressed: () async {
+                        await context
+                            .read<TransactionDetailsCubit>()
+                            .processSwap(swap);
+                      },
+                      bgColor: context.appColors.primary,
+                      textColor: context.appColors.onPrimary,
+                    ),
                 ],
                 const Gap(16),
                 if (tx?.isOngoingPayjoinSender == true &&
