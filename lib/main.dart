@@ -74,7 +74,9 @@ class Bull {
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
     final settings = locator<SettingsRepository>();
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
-    await initWorkmanager();
+    if (Platform.isAndroid || Platform.isIOS) {
+      await initWorkmanager();
+    }
     // Emits the install/upgrade transition event (no-op on a normal
     // launch) and advances the persisted version marker. The shout is
     // awaited so a crash between scheduling and capture cannot lose
