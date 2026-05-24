@@ -5,7 +5,6 @@ docs/zola/public/
 
 # # Untrack unused platform files
 macos/
-linux/
 windows/
 
 # Files and directories created by pub
