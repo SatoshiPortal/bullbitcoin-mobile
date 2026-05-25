@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/dca/domain/dca.dart';
@@ -91,44 +92,42 @@ class _DcaListTileState extends State<DcaListTile> {
                 context.pushNamed(DcaRoute.dca.name);
               } else {
                 // Deactivate DCA - show confirmation dialog
-                showDialog(
+                BlurredDialog.show(
                   context: context,
-                  builder: (BuildContext dialogContext) {
-                    return AlertDialog(
-                      backgroundColor: context.appColors.surfaceFixed,
-                      title: Text(
-                        context.loc.exchangeDcaCancelDialogTitle,
-                        style: TextStyle(
-                          color: context.appColors.onSurfaceFixed,
+                  builder: (dialogContext) => AlertDialog(
+                    backgroundColor: context.appColors.surfaceFixed,
+                    title: Text(
+                      context.loc.exchangeDcaCancelDialogTitle,
+                      style: TextStyle(
+                        color: context.appColors.onSurfaceFixed,
+                      ),
+                    ),
+                    content: Text(
+                      context.loc.exchangeDcaCancelDialogMessage,
+                      style: TextStyle(
+                        color: context.appColors.onSurfaceFixed,
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                        },
+                        child: Text(
+                          context.loc.exchangeDcaCancelDialogCancelButton,
                         ),
                       ),
-                      content: Text(
-                        context.loc.exchangeDcaCancelDialogMessage,
-                        style: TextStyle(
-                          color: context.appColors.onSurfaceFixed,
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          context.read<ExchangeCubit>().stopDca();
+                        },
+                        child: Text(
+                          context.loc.exchangeDcaCancelDialogConfirmButton,
                         ),
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop();
-                          },
-                          child: Text(
-                            context.loc.exchangeDcaCancelDialogCancelButton,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(dialogContext).pop();
-                            context.read<ExchangeCubit>().stopDca();
-                          },
-                          child: Text(
-                            context.loc.exchangeDcaCancelDialogConfirmButton,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+                    ],
+                  ),
                 );
               }
             },

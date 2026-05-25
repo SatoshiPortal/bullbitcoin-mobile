@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
@@ -36,7 +37,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/core/wallet/interface_adapters/electrum_server_adapter.dart';
+import 'package:bb_mobile/core/wallet/adapters/electrum_server_adapter.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
@@ -61,8 +62,9 @@ class WalletLocator {
   static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<ElectrumServerPort>(
       () => ElectrumServerAdapter(
-        getElectrumServersToUseUsecase:
-            locator<GetElectrumServersToUseUsecase>(),
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

@@ -13,7 +13,6 @@ class PriceInput extends StatelessWidget {
     required this.amountEquivalent,
     required this.availableCurrencies,
     required this.onCurrencyChanged,
-    required this.onNoteChanged,
     required this.amountController,
     this.error,
     required this.focusNode,
@@ -25,7 +24,6 @@ class PriceInput extends StatelessWidget {
   final String amountEquivalent;
   final List<String> availableCurrencies;
   final Function(String)? onCurrencyChanged;
-  final Function(String)? onNoteChanged;
   final TextEditingController amountController;
   final String? error;
   final FocusNode? focusNode;
@@ -135,32 +133,6 @@ class PriceInput extends StatelessWidget {
             color: context.appColors.onSurfaceVariant,
           ),
         ),
-        const Gap(14),
-        if (onNoteChanged != null)
-          Center(
-            child: Container(
-              height: 50,
-              width: 200,
-              alignment: Alignment.center,
-              child: TextField(
-                onChanged: onNoteChanged,
-                textAlignVertical: TextAlignVertical.center,
-                textAlign: .center,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(2),
-                    borderSide: BorderSide.none,
-                  ),
-                  fillColor: context.appColors.secondaryFixedDim,
-                  filled: true,
-                  hintText: 'Add note',
-                  hintStyle: context.font.labelSmall!.copyWith(
-                    color: context.appColors.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

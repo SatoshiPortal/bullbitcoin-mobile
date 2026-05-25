@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
@@ -160,52 +161,50 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
   }
 
   Future<void> _showWarningDialog(BuildContext context) {
-    return showDialog<void>(
+    return BlurredDialog.show<void>(
       context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          backgroundColor: context.appColors.surface,
-          title: Text(
-            context.loc.allSeedViewSecurityWarningTitle,
-            style: context.font.headlineSmall?.copyWith(
+      isDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.appColors.surface,
+        title: Text(
+          context.loc.allSeedViewSecurityWarningTitle,
+          style: context.font.headlineSmall?.copyWith(
+            color: context.appColors.onSurface,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            context.loc.allSeedViewSecurityWarningMessage,
+            style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurface,
             ),
           ),
-          content: SingleChildScrollView(
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(
-              context.loc.allSeedViewSecurityWarningMessage,
+              context.loc.cancel,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,
               ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                context.loc.cancel,
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.appColors.onSurface,
-                ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.read<AllSeedViewCubit>().showSeeds();
+            },
+            child: Text(
+              context.loc.allSeedViewIUnderstandButton,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.primary,
+                fontWeight: .bold,
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                context.read<AllSeedViewCubit>().showSeeds();
-              },
-              child: Text(
-                context.loc.allSeedViewIUnderstandButton,
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.appColors.primary,
-                  fontWeight: .bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
     );
   }
 
@@ -213,55 +212,53 @@ class AllSeedViewScreen extends StatelessWidget with PrivacyScreen {
     BuildContext context,
     MnemonicSeed seed,
   ) {
-    return showDialog<void>(
+    return BlurredDialog.show<void>(
       context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          backgroundColor: context.appColors.surface,
-          title: Text(
-            context.loc.allSeedViewDeleteWarningTitle,
-            style: context.font.headlineSmall?.copyWith(
-              color: context.appColors.error,
-              fontWeight: .bold,
+      isDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: context.appColors.surface,
+        title: Text(
+          context.loc.allSeedViewDeleteWarningTitle,
+          style: context.font.headlineSmall?.copyWith(
+            color: context.appColors.error,
+            fontWeight: .bold,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Text(
+            context.loc.allSeedViewDeleteWarningMessage,
+            style: context.font.bodyMedium?.copyWith(
+              color: context.appColors.onSurface,
             ),
           ),
-          content: SingleChildScrollView(
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
             child: Text(
-              context.loc.allSeedViewDeleteWarningMessage,
+              context.loc.cancel,
               style: context.font.bodyMedium?.copyWith(
                 color: context.appColors.onSurface,
               ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(
-                context.loc.cancel,
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.appColors.onSurface,
-                ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              context.read<AllSeedViewCubit>().deleteSeed(
+                seed.masterFingerprint,
+              );
+            },
+            child: Text(
+              context.loc.delete,
+              style: context.font.bodyMedium?.copyWith(
+                color: context.appColors.error,
+                fontWeight: .bold,
               ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                context.read<AllSeedViewCubit>().deleteSeed(
-                  seed.masterFingerprint,
-                );
-              },
-              child: Text(
-                context.loc.delete,
-                style: context.font.bodyMedium?.copyWith(
-                  color: context.appColors.error,
-                  fontWeight: .bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
     );
   }
 

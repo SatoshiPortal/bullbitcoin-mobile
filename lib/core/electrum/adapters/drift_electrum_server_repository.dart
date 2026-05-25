@@ -64,6 +64,20 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
   }
 
   @override
+  Future<List<ElectrumServer>> fetchActiveServers({
+    required ElectrumServerNetwork network,
+  }) async {
+    final servers = await fetchAll(
+      isTestnet: network.isTestnet,
+      isLiquid: network.isLiquid,
+    );
+    final customServers = servers.where((s) => s.isCustom).toList();
+    final activeServers = customServers.isNotEmpty ? customServers : servers;
+    activeServers.sort((a, b) => a.priority.compareTo(b.priority));
+    return activeServers;
+  }
+
+  @override
   Future<void> delete({required String url}) {
     return _datasource.deleteServer(url);
   }

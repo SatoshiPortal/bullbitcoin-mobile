@@ -1,15 +1,19 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/bitcoin_tx.dart' as btc_utils;
+import 'package:bb_mobile/features/broadcast_signed_tx/presentation/transaction_review_cubit.dart';
+import 'package:bb_mobile/features/broadcast_signed_tx/ui/transaction_review_view.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/paste_input.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/core/widgets/transaction_details_widget.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_cubit.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/presentation/broadcast_signed_tx_state.dart';
 import 'package:bb_mobile/features/broadcast_signed_tx/router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -75,10 +79,9 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   const Gap(32),
                   BBButton.small(
                     label: context.loc.broadcastSignedTxPushTxButton,
-                    onPressed:
-                        () => context.pushNamed(
-                          BroadcastSignedTxRoute.broadcastScanNfc.name,
-                        ),
+                    onPressed: () => context.pushNamed(
+                      BroadcastSignedTxRoute.broadcastScanNfc.name,
+                    ),
                     bgColor: context.appColors.surface,
                     textColor: context.appColors.text,
                     iconData: Icons.nfc,
@@ -86,43 +89,16 @@ class BroadcastSignedTxPage extends StatelessWidget {
                   ),
                 ],
 
-                // Broadcast button
+                // Transaction review using TransactionReviewView
                 if (state.transaction != null &&
                     state.isBroadcasted == false) ...[
-                  TransactionDetailsWidget(tx: state.transaction!.tx),
-                ],
-
-                if (state.transaction != null)
-                  Row(
-                    children: [
-                      if (state.pushTxUri != null &&
-                          state.isBroadcasted == false)
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: BBButton.big(
-                              label: context.loc.broadcastSignedTxPushTxButton,
-                              bgColor: context.appColors.primary,
-                              textColor: context.appColors.onPrimary,
-                              onPressed: cubit.pushTxUri,
-                            ),
-                          ),
-                        ),
-
-                      if (state.isBroadcasted == false)
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: BBButton.big(
-                              label: context.loc.broadcastSignedTxBroadcast,
-                              bgColor: context.appColors.primary,
-                              textColor: context.appColors.onPrimary,
-                              onPressed: cubit.broadcastTransaction,
-                            ),
-                          ),
-                        ),
-                    ],
+                  BlocProvider(
+                    create: (_) => locator<TransactionReviewCubit>(),
+                    child: _TransactionReviewSection(
+                      bitcoinTx: state.transaction!.tx,
+                    ),
                   ),
+                ],
 
                 if (state.isBroadcasted == true) ...[
                   Gif(
@@ -137,8 +113,8 @@ class BroadcastSignedTxPage extends StatelessWidget {
                       label: context.loc.broadcastSignedTxDoneButton,
                       bgColor: context.appColors.primary,
                       textColor: context.appColors.onPrimary,
-                      onPressed:
-                          () => context.goNamed(WalletRoute.walletHome.name),
+                      onPressed: () =>
+                          context.goNamed(WalletRoute.walletHome.name),
                     ),
                   ),
                 ],
@@ -148,5 +124,77 @@ class BroadcastSignedTxPage extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class _BroadcastActions extends StatelessWidget {
+  const _BroadcastActions();
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<BroadcastSignedTxCubit>();
+    final pushTxUri = context.select(
+      (BroadcastSignedTxCubit c) => c.state.pushTxUri,
+    );
+    final isBroadcasting = context.select(
+      (BroadcastSignedTxCubit c) => c.state.isBroadcasting,
+    );
+    return Row(
+      children: [
+        if (pushTxUri != null)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: BBButton.big(
+                label: context.loc.broadcastSignedTxPushTxButton,
+                bgColor: context.appColors.primary,
+                textColor: context.appColors.onPrimary,
+                onPressed: cubit.pushTxUri,
+                disabled: isBroadcasting,
+              ),
+            ),
+          ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: BBButton.big(
+              label: context.loc.broadcastSignedTxBroadcast,
+              bgColor: context.appColors.primary,
+              textColor: context.appColors.onPrimary,
+              onPressed: cubit.broadcastTransaction,
+              disabled: isBroadcasting,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TransactionReviewSection extends StatefulWidget {
+  const _TransactionReviewSection({required this.bitcoinTx});
+
+  final btc_utils.BitcoinTx bitcoinTx;
+
+  @override
+  State<_TransactionReviewSection> createState() =>
+      _TransactionReviewSectionState();
+}
+
+class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
+  @override
+  void initState() {
+    super.initState();
+    final isTestnet =
+        context.read<SettingsCubit>().state.environment?.isTestnet ?? false;
+    context.read<TransactionReviewCubit>().loadFromBitcoinTx(
+      widget.bitcoinTx,
+      isTestnet: isTestnet,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const TransactionReviewView(bottomActions: _BroadcastActions());
   }
 }
