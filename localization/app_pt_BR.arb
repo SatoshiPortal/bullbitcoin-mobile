@@ -4322,6 +4322,9 @@
     "description": "Option to use CoinJoin for privacy"
   },
   "payTitle": "Pagamento",
+  "payDescriptionLabel": "Descrição do pagamento (opcional)",
+  "payDescriptionHint": "Adicione uma nota a este pagamento",
+  "payPaymentDescription": "Descrição do pagamento",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -8660,6 +8663,7 @@
     "description": "Processing subtext shown while signing transaction"
   },
   "transactionDetailLabelOrderNumber": "Número de ordem",
+  "transactionDetailLabelPaymentDescription": "Descrição do pagamento",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

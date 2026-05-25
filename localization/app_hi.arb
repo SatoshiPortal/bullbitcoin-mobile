@@ -5047,6 +5047,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "भुगतान करें",
+  "payDescriptionLabel": "भुगतान विवरण (वैकल्पिक)",
+  "payDescriptionHint": "इस भुगतान के लिए एक नोट जोड़ें",
+  "payPaymentDescription": "भुगतान विवरण",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10364,6 +10367,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ऑर्डर संख्या",
+  "transactionDetailLabelPaymentDescription": "भुगतान विवरण",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

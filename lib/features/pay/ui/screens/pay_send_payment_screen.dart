@@ -128,6 +128,12 @@ class PaySendPaymentScreen extends StatelessWidget {
               value: order?.orderNumber.toString(),
               copyValue: order?.orderNumber.toString(),
             ),
+            if (order?.paymentDescription != null &&
+                order!.paymentDescription!.isNotEmpty)
+              _DetailRow(
+                title: context.loc.payPaymentDescription,
+                value: order.paymentDescription,
+              ),
             _DetailRow(
               title: context.loc.payRecipientType,
               value:

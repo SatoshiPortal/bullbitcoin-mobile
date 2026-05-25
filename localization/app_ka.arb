@@ -429,5 +429,9 @@
   "viewerViewInExplorer": "Დათვალიერება ექსპლორერში",
   "transactionViewerTitle": "ტრანსაქციის ID ",
   "invoiceViewerTitle": "ინვოისი",
-  "viewerCopyLink": "ბმულის კოპირება"
+  "viewerCopyLink": "ბმულის კოპირება",
+  "payDescriptionLabel": "გადახდის აღწერა (არასავალდებულო)",
+  "payDescriptionHint": "დაამატეთ შენიშვნა ამ გადახდისთვის",
+  "payPaymentDescription": "გადახდის აღწერა",
+  "transactionDetailLabelPaymentDescription": "გადახდის აღწერა"
 }

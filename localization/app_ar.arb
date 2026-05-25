@@ -4772,6 +4772,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "الأجر",
+  "payDescriptionLabel": "وصف الدفعة (اختياري)",
+  "payDescriptionHint": "أضف ملاحظة لهذه الدفعة",
+  "payPaymentDescription": "وصف الدفعة",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -9701,6 +9704,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "العدد",
+  "transactionDetailLabelPaymentDescription": "وصف الدفعة",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

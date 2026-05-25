@@ -5031,6 +5031,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "Pay",
+  "payDescriptionLabel": "Ödeme açıklaması (isteğe bağlı)",
+  "payDescriptionHint": "Bu ödeme için bir not ekleyin",
+  "payPaymentDescription": "Ödeme açıklaması",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10293,6 +10296,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "Sipariş Numarası",
+  "transactionDetailLabelPaymentDescription": "Ödeme açıklaması",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

@@ -334,6 +334,12 @@ class TransactionDetailsTable extends StatelessWidget {
                   displayValue: order.orderNumber.toString(),
                   copyValue: order.orderNumber.toString(),
                 ),
+                if (order.paymentDescription != null &&
+                    order.paymentDescription!.isNotEmpty)
+                  DetailsTableItem(
+                    label: context.loc.transactionDetailLabelPaymentDescription,
+                    displayValue: order.paymentDescription,
+                  ),
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayoutAmount,
                   displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
