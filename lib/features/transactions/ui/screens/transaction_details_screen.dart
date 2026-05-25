@@ -62,11 +62,8 @@ class TransactionDetailsScreen extends StatelessWidget {
     final isOrderType = tx?.isOrder == true;
     final walletTransaction = tx?.walletTransaction;
     final swap = tx?.swap;
-    final swapAction = swap?.swapAction(context) ?? '';
     final isChainSwap = swap?.isChainSwap ?? false;
-    final retryingSwap = context.select(
-      (TransactionDetailsCubit bloc) => bloc.state.retryingSwap,
-    );
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -171,23 +168,6 @@ class TransactionDetailsScreen extends StatelessWidget {
                     bgColor: context.appColors.secondary,
                     textColor: context.appColors.onSecondary,
                   ),
-                ],
-                if (swap != null && swap.requiresAction) ...[
-                  const Gap(16),
-                  if (isChainSwap)
-                    BBButton.big(
-                      disabled: retryingSwap,
-                      label: context.loc.transactionDetailRetryTransfer(
-                        swapAction,
-                      ),
-                      onPressed: () async {
-                        await context
-                            .read<TransactionDetailsCubit>()
-                            .processSwap(swap);
-                      },
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                    ),
                 ],
                 const Gap(16),
                 if (tx?.isOngoingPayjoinSender == true &&
