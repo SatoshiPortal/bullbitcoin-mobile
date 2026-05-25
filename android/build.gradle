@@ -43,6 +43,21 @@ subprojects {
     }
 }
 
+// Workaround: no_screenshot 1.1.0 lists `src/main/kotlin` twice, which the K2
+// frontend (Kotlin 2.2.10) rejects as "Conflicting declarations". Dedup its
+// Kotlin source dirs by canonical path.
+// TODO: consider moving to a more maintained screenshot-prevention plugin.
+subprojects {
+    afterEvaluate { project ->
+        if (project.name == 'no_screenshot') {
+            def kotlinExt = project.extensions.findByName('kotlin')
+            kotlinExt?.sourceSets?.configureEach { ss ->
+                ss.kotlin.setSrcDirs(ss.kotlin.srcDirs.collect { it.canonicalFile }.unique())
+            }
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
