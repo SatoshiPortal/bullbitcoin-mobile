@@ -659,7 +659,6 @@
   "transactionOrderLabelOriginName": "Назва походження",
   "transactionOrderLabelOriginCedula": "Походження Cedula",
   "transactionDetailAccelerate": "Прискорити",
-  "transactionDetailLabelTransactionId": "Код транзакції",
   "transactionDetailLabelToWallet": "Гаманець",
   "transactionDetailLabelFromWallet": "Від гаманця",
   "transactionDetailLabelRecipientAddress": "Адреса одержувача",
@@ -4752,5 +4751,4 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Номер запису цивільного реєстру отримувача",
   "recipientsValidationSinpePhoneCountryCode": "Видаліть код країни (+506). Введіть лише 8-значний номер",
   "recipientsValidationSinpePhoneInvalidChars": "Використовуйте лише цифри (без літер чи символів)",
-  "recipientsValidationSinpePhoneTooShort": "Введіть усі 8 цифр номера телефону"
-}
+  "recipientsValidationSinpePhoneTooShort": "Введіть усі 8 цифр номера телефону"}

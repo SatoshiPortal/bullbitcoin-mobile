@@ -11228,10 +11228,6 @@
   "@appleICloudProvider": {
     "description": "Name of Apple iCloud provider"
   },
-  "transactionDetailLabelTransactionId": "Σύνδεση ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "arkReceiveTitle": "Ark παραλαβή",
   "@arkReceiveTitle": {
     "description": "AppBar title for Ark receive screen"
@@ -12738,5 +12734,4 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Αριθμός ληξιαρχικής εγγραφής παραλήπτη",
   "recipientsValidationSinpePhoneCountryCode": "Αφαιρέστε τον κωδικό χώρας (+506). Εισαγάγετε μόνο τον 8ψήφιο αριθμό",
   "recipientsValidationSinpePhoneInvalidChars": "Χρησιμοποιήστε μόνο ψηφία (όχι γράμματα ή σύμβολα)",
-  "recipientsValidationSinpePhoneTooShort": "Εισαγάγετε και τα 8 ψηφία του αριθμού τηλεφώνου"
-}
+  "recipientsValidationSinpePhoneTooShort": "Εισαγάγετε και τα 8 ψηφία του αριθμού τηλεφώνου"}

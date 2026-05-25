@@ -2704,10 +2704,6 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "transactionDetailLabelTransactionId": "Transaction ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "transactionDetailLabelToWallet": "Wallet ko",
   "@transactionDetailLabelToWallet": {
     "description": "Label for destination wallet"

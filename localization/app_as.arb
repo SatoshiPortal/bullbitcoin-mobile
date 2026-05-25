@@ -170,7 +170,7 @@
   "legacyStorageRiskAckButtonHasBackup": "মই বিপদটো বুজি পাইছোঁ",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "২৪ ঘণ্টার মধ্যে আপনার অ্যাপ খুলে আপনার সোয়াপ সম্পন্ন করুন।",
-  "appStartupErrorMessage": "অ্যাপ চালু হতে ব্যর্থ হয়েছে। অ্যাপ সম্পূর্ণভাবে বন্ধ করে পুনরায় চালু করার চেষ্টা করুন। যদি সমস্যা থেকে যায়, সাপোর্টের সাথে যোগাযোগ করুন এবং আপনার লগ শেয়ার করুন।",
+  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
   "importMnemonicDuplicateError": "এই নেমনিক ইতিমধ্যে বিদ্যমান",
   "translationWarningTitle": "AI-দ্বাৰা উৎপাদিত অনুবাদ",
   "translationWarningDescription": "এই এপ্পৰ অধিকাংশ অনুবাদ AI ব্যৱহাৰ কৰি তৈয়াৰ কৰা হৈছে আৰু ইয়াত ভুল থাকিব পাৰে। যদি আপুনি কোনো ভুল লক্ষ্য কৰে বা অনুবাদ উন্নত কৰাত সহায় কৰিব বিচাৰে, তেন্তে আমাৰ সমাজ অনুবাদ প্লেটফৰ্মৰ জৰিয়তে অৱদান দিব পাৰে।",
@@ -1072,7 +1072,6 @@
   "transactionOrderLabelOriginName": "উৎসৰ নাম",
   "transactionOrderLabelOriginCedula": "উৎসৰ Cedula",
   "transactionDetailAccelerate": "ত্বৰান্বিত কৰক",
-  "transactionDetailLabelTransactionId": "লেনদেন ID",
   "transactionDetailLabelToWallet": "Wallet লৈ",
   "transactionDetailLabelFromWallet": "Wallet-ৰ পৰা",
   "transactionDetailLabelRecipientAddress": "প্ৰাপকৰ ঠিকনা",
@@ -8495,7 +8494,6 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "appStartupErrorMessage": "এপটো আৰম্ভ হ'বলৈ বিফল হৈছে। এপটো সম্পূৰ্ণৰূপে বন্ধ কৰি পুনৰ আৰম্ভ কৰক। সমস্যাটো অব্যাহত থাকিলে, সহায়লৈ প্ৰতিবেদন দিয়ক আৰু আপোনাৰ লগ শ্বেয়াৰ কৰক।",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -9678,7 +9676,6 @@
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
-  "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
   "coreScreensFeeRateValue": "{rate} sat/vB",

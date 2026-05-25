@@ -5993,10 +5993,6 @@
   "@fundExchangeWarningDescription": {
     "description": "Warning message about potential scammers when funding account"
   },
-  "transactionDetailLabelTransactionId": "ID transakce",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "arkReceiveTitle": "Ark Obdržet",
   "@arkReceiveTitle": {
     "description": "AppBar title for Ark receive screen"
@@ -12738,5 +12734,4 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Číslo z matriky příjemce",
   "recipientsValidationSinpePhoneCountryCode": "Odstraňte kód země (+506). Zadejte pouze 8místné číslo",
   "recipientsValidationSinpePhoneInvalidChars": "Použijte pouze číslice (žádná písmena ani symboly)",
-  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla"
-}
+  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla"}

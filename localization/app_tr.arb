@@ -5968,10 +5968,6 @@
   "@fundExchangeWarningDescription": {
     "description": "Warning message about potential scammers when funding account"
   },
-  "transactionDetailLabelTransactionId": "İşlem ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "arkReceiveTitle": "Ark Kabul Edildi",
   "@arkReceiveTitle": {
     "description": "AppBar title for Ark receive screen"

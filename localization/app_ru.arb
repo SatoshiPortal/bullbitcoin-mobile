@@ -1966,7 +1966,6 @@
   "appleICloudProvider": "Apple iCloud",
   "exchangeAccountInfoVerificationNotVerified": "Не подтверждена",
   "fundExchangeWarningDescription": "Если кто-то просит вас купить биткойн или «помочь вам», будьте осторожны, они могут попытаться обмануть вас!",
-  "transactionDetailLabelTransactionId": "ID транзакции",
   "arkReceiveTitle": "Арк Получить",
   "payDebitCardNumberHint": "Введите номер дебетовой карты",
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Зашифрованное хранилище: ",
@@ -4764,5 +4763,4 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Номер записи гражданского реестра получателя",
   "recipientsValidationSinpePhoneCountryCode": "Удалите код страны (+506). Введите только 8-значный номер",
   "recipientsValidationSinpePhoneInvalidChars": "Используйте только цифры (без букв или символов)",
-  "recipientsValidationSinpePhoneTooShort": "Введите все 8 цифр номера телефона"
-}
+  "recipientsValidationSinpePhoneTooShort": "Введите все 8 цифр номера телефона"}

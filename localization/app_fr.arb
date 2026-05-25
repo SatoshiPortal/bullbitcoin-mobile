@@ -759,7 +759,6 @@
   "transactionOrderLabelOriginName": "Nom d'origine",
   "transactionOrderLabelOriginCedula": "Cédula d'origine",
   "transactionDetailAccelerate": "Accélérer",
-  "transactionDetailLabelTransactionId": "ID de transaction",
   "transactionDetailLabelToWallet": "Vers le portefeuille",
   "transactionDetailLabelFromWallet": "Du portefeuille",
   "transactionDetailLabelRecipientAddress": "Adresse du destinataire",
@@ -4744,5 +4743,4 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Numéro d'état civil du bénéficiaire",
   "recipientsValidationSinpePhoneCountryCode": "Retirez l'indicatif du pays (+506). Saisissez uniquement le numéro à 8 chiffres",
   "recipientsValidationSinpePhoneInvalidChars": "Utilisez uniquement des chiffres (pas de lettres ni de symboles)",
-  "recipientsValidationSinpePhoneTooShort": "Saisissez les 8 chiffres du numéro de téléphone"
-}
+  "recipientsValidationSinpePhoneTooShort": "Saisissez les 8 chiffres du numéro de téléphone"}

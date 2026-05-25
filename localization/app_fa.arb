@@ -6256,10 +6256,6 @@
   "@fundExchangeWarningDescription": {
     "description": "Warning message about potential scammers when funding account"
   },
-  "transactionDetailLabelTransactionId": "تراکنش ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "arkReceiveTitle": "کشتی دریافت",
   "@arkReceiveTitle": {
     "description": "AppBar title for Ark receive screen"

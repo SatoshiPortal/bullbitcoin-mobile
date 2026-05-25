@@ -180,7 +180,9 @@ class TransactionDetailsTable extends StatelessWidget {
         if (swap == null) ...[
           if (txId != null)
             DetailsTableItem(
-              label: context.loc.transactionDetailLabelTransactionId,
+              label: isLiquid
+                  ? context.loc.transactionDetailLabelLiquidTxId
+                  : context.loc.transactionDetailLabelBitcoinTxId,
               displayValue: StringFormatting.truncateMiddle(txId),
               copyValue: txId,
               displayWidget: _mempoolLink(
@@ -241,7 +243,7 @@ class TransactionDetailsTable extends StatelessWidget {
                       transaction?.isIncoming == true
                           ? amountReceived
                           : amountSent,
-                    ).toUpperCase()
+                    )
                   : FormatAmount.btc(
                       ConvertAmount.satsToBtc(
                         transaction?.isIncoming == true
@@ -255,7 +257,7 @@ class TransactionDetailsTable extends StatelessWidget {
               DetailsTableItem(
                 label: context.loc.transactionDetailLabelAmountReceived,
                 displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountReceived).toUpperCase()
+                    ? FormatAmount.sats(amountReceived)
                     : FormatAmount.btc(
                         ConvertAmount.satsToBtc(amountReceived),
                       ).toUpperCase(),
@@ -264,7 +266,7 @@ class TransactionDetailsTable extends StatelessWidget {
               DetailsTableItem(
                 label: context.loc.transactionDetailLabelTransactionFee,
                 displayValue: bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(txFee ?? 0).toUpperCase()
+                    ? FormatAmount.sats(txFee ?? 0)
                     : FormatAmount.btc(
                         ConvertAmount.satsToBtc(txFee ?? 0),
                       ).toUpperCase(),
@@ -377,7 +379,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 DetailsTableItem(
                   label: context.loc.transactionDetailLabelPayinAmount,
                   displayValue: bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(payinAmountSat).toUpperCase()
+                      ? FormatAmount.sats(payinAmountSat)
                       : FormatAmount.btc(
                           ConvertAmount.satsToBtc(payinAmountSat),
                         ).toUpperCase(),

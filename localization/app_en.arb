@@ -3182,15 +3182,11 @@
   "@transactionDetailAccelerate": {
     "description": "Button label for accelerating (RBF) an unconfirmed transaction"
   },
-  "transactionDetailLabelTransactionId": "Transaction ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
-  "transactionDetailLabelToWallet": "To wallet",
+  "transactionDetailLabelToWallet": "To Wallet",
   "@transactionDetailLabelToWallet": {
     "description": "Label for destination wallet"
   },
-  "transactionDetailLabelFromWallet": "From wallet",
+  "transactionDetailLabelFromWallet": "From Wallet",
   "@transactionDetailLabelFromWallet": {
     "description": "Label for source wallet"
   },
@@ -3202,15 +3198,15 @@
   "@transactionDetailLabelAddress": {
     "description": "Label for address"
   },
-  "transactionDetailLabelAddressNotes": "Address notes",
+  "transactionDetailLabelAddressNotes": "Address Notes",
   "@transactionDetailLabelAddressNotes": {
     "description": "Label for address notes"
   },
-  "transactionDetailLabelAmountReceived": "Amount received",
+  "transactionDetailLabelAmountReceived": "Amount Received",
   "@transactionDetailLabelAmountReceived": {
     "description": "Label for amount received"
   },
-  "transactionDetailLabelAmountSent": "Amount sent",
+  "transactionDetailLabelAmountSent": "Amount Sent",
   "@transactionDetailLabelAmountSent": {
     "description": "Label for amount sent"
   },
@@ -3222,7 +3218,7 @@
   "@transactionDetailLabelStatus": {
     "description": "Label for status"
   },
-  "transactionDetailLabelConfirmationTime": "Confirmation time",
+  "transactionDetailLabelConfirmationTime": "Confirmation Time",
   "@transactionDetailLabelConfirmationTime": {
     "description": "Label for confirmation time"
   },
@@ -3238,23 +3234,23 @@
   "@transactionDetailLabelPaymentDescription": {
     "description": "Label for the payment description on the order details screen"
   },
-  "transactionDetailLabelPayinAmount": "Payin amount",
+  "transactionDetailLabelPayinAmount": "Payin Amount",
   "@transactionDetailLabelPayinAmount": {
     "description": "Label for payin amount"
   },
-  "transactionDetailLabelPayoutAmount": "Payout amount",
+  "transactionDetailLabelPayoutAmount": "Payout Amount",
   "@transactionDetailLabelPayoutAmount": {
     "description": "Label for payout amount"
   },
-  "transactionDetailLabelExchangeRate": "Exchange rate",
+  "transactionDetailLabelExchangeRate": "Exchange Rate",
   "@transactionDetailLabelExchangeRate": {
     "description": "Label for exchange rate"
   },
-  "transactionDetailLabelPayinMethod": "Payin method",
+  "transactionDetailLabelPayinMethod": "Payin Method",
   "@transactionDetailLabelPayinMethod": {
     "description": "Label for payin method"
   },
-  "transactionDetailLabelPayoutMethod": "Payout method",
+  "transactionDetailLabelPayoutMethod": "Payout Method",
   "@transactionDetailLabelPayoutMethod": {
     "description": "Label for payout method"
   },
@@ -3330,7 +3326,7 @@
   "@transactionDetailLabelTransferFee": {
     "description": "Label for transfer fee (Boltz fee)"
   },
-  "transactionDetailLabelPayjoinStatus": "Payjoin status",
+  "transactionDetailLabelPayjoinStatus": "Payjoin Status",
   "@transactionDetailLabelPayjoinStatus": {
     "description": "Label for payjoin status"
   },
@@ -3342,7 +3338,7 @@
   "@transactionDetailLabelPayjoinExpired": {
     "description": "Payjoin expired status"
   },
-  "transactionDetailLabelPayjoinCreationTime": "Payjoin creation time",
+  "transactionDetailLabelPayjoinCreationTime": "Payjoin Creation Time",
   "@transactionDetailLabelPayjoinCreationTime": {
     "description": "Label for payjoin creation time"
   },

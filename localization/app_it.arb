@@ -1969,7 +1969,6 @@
   "appleICloudProvider": "Apple iCloud",
   "exchangeAccountInfoVerificationNotVerified": "Non verificato",
   "fundExchangeWarningDescription": "Se qualcuno ti sta chiedendo di comprare Bitcoin o \"aiutarti\", stai attento, potrebbero essere cercando di truffarti!",
-  "transactionDetailLabelTransactionId": "ID transazione",
   "arkReceiveTitle": "Ark Ricevimento",
   "payDebitCardNumberHint": "Inserisci il numero della carta di debito",
   "backupWalletHowToDecideBackupEncryptedRecommendation": "Criptato: ",
@@ -4755,5 +4754,4 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Numero di registro civile del destinatario",
   "recipientsValidationSinpePhoneCountryCode": "Rimuovi il prefisso internazionale (+506). Inserisci solo il numero a 8 cifre",
   "recipientsValidationSinpePhoneInvalidChars": "Usa solo cifre (no lettere o simboli)",
-  "recipientsValidationSinpePhoneTooShort": "Inserisci tutte le 8 cifre del numero di telefono"
-}
+  "recipientsValidationSinpePhoneTooShort": "Inserisci tutte le 8 cifre del numero di telefono"}

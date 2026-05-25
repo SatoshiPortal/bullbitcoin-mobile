@@ -4671,10 +4671,6 @@
   "@fundExchangeWarningDescription": {
     "description": "Warning message about potential scammers when funding account"
   },
-  "transactionDetailLabelTransactionId": "ID на транзакцията",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "arkReceiveTitle": "Ark получаване",
   "@arkReceiveTitle": {
     "description": "AppBar title for Ark receive screen"
@@ -9749,5 +9745,4 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Номер от гражданския регистър на получателя",
   "recipientsValidationSinpePhoneCountryCode": "Премахнете кода на държавата (+506). Въведете само 8-цифрения номер",
   "recipientsValidationSinpePhoneInvalidChars": "Използвайте само цифри (без букви или символи)",
-  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер"
-}
+  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер"}

@@ -5996,10 +5996,6 @@
   "@fundExchangeWarningDescription": {
     "description": "Warning message about potential scammers when funding account"
   },
-  "transactionDetailLabelTransactionId": "거래 ID",
-  "@transactionDetailLabelTransactionId": {
-    "description": "Label for transaction ID in details"
-  },
   "arkReceiveTitle": "Ark 수신",
   "@arkReceiveTitle": {
     "description": "AppBar title for Ark receive screen"
