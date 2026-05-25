@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/ports/blockchain_port.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/electrum_settings_port.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
@@ -21,6 +22,7 @@ class AutoSwapExecutionUsecase {
   final SeedRepository _seedRepository;
   final WalletTransactionRepository _walletTxRepository;
   final LabelsFacade _labelsFacade;
+  final ElectrumSettingsPort _electrumSettingsPort;
 
   AutoSwapExecutionUsecase({
     required BoltzSwapRepository repository,
@@ -30,13 +32,15 @@ class AutoSwapExecutionUsecase {
     required SeedRepository seedRepository,
     required WalletTransactionRepository walletTxRepository,
     required LabelsFacade labelsFacade,
+    required ElectrumSettingsPort electrumSettingsPort,
   }) : _repository = repository,
        _walletRepository = walletRepository,
        _liquidWalletRepository = liquidWalletRepository,
        _blockchainPort = blockchainPort,
        _seedRepository = seedRepository,
        _walletTxRepository = walletTxRepository,
-       _labelsFacade = labelsFacade;
+       _labelsFacade = labelsFacade,
+       _electrumSettingsPort = electrumSettingsPort;
 
   Future<Swap> execute({required bool feeBlock}) async {
     final swapRepository = _repository;
@@ -124,13 +128,23 @@ class AutoSwapExecutionUsecase {
         await _seedRepository.get(defaultLiquidWallet.masterFingerprint)
             as MnemonicSeed;
 
-    final btcElectrumUrl = defaultBitcoinWallet.isTestnet
-        ? ApiServiceConstants.publicElectrumTestUrl
-        : ApiServiceConstants.bbElectrumUrl;
+    final btcElectrumUrl =
+        (await _electrumSettingsPort.getPreferredServer(
+          isTestnet: defaultBitcoinWallet.isTestnet,
+          isLiquid: false,
+        ))?.url ??
+        (defaultBitcoinWallet.isTestnet
+            ? ApiServiceConstants.publicElectrumTestUrl
+            : ApiServiceConstants.bbElectrumUrl);
 
-    final lbtcElectrumUrl = defaultLiquidWallet.isTestnet
-        ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-        : ApiServiceConstants.bbLiquidElectrumUrlPath;
+    final lbtcElectrumUrl =
+        (await _electrumSettingsPort.getPreferredServer(
+          isTestnet: defaultLiquidWallet.isTestnet,
+          isLiquid: true,
+        ))?.url ??
+        (defaultLiquidWallet.isTestnet
+            ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+            : ApiServiceConstants.bbLiquidElectrumUrlPath);
 
     debugPrint(
       'Creating swap with amount: ${autoSwapSettings.swapAmount(walletBalance)} sats',

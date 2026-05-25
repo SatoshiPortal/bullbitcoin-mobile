@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/electrum_settings_port.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
@@ -13,6 +14,7 @@ class CreateReceiveSwapUsecase {
   final SeedRepository _seedRepository;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final LabelsFacade _labelsFacade;
+  final ElectrumSettingsPort _electrumSettingsPort;
 
   CreateReceiveSwapUsecase({
     required WalletRepository walletRepository,
@@ -20,11 +22,13 @@ class CreateReceiveSwapUsecase {
     required SeedRepository seedRepository,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required LabelsFacade labelsFacade,
+    required ElectrumSettingsPort electrumSettingsPort,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
        _seedRepository = seedRepository,
        _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _labelsFacade = labelsFacade;
+       _labelsFacade = labelsFacade,
+       _electrumSettingsPort = electrumSettingsPort;
 
   Future<LnReceiveSwap> execute({
     required String walletId,
@@ -63,13 +67,23 @@ class CreateReceiveSwapUsecase {
         );
       }
 
-      final btcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.publicElectrumTestUrl
-          : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl =
+          (await _electrumSettingsPort.getPreferredServer(
+            isTestnet: wallet.network.isTestnet,
+            isLiquid: false,
+          ))?.url ??
+          (wallet.network.isTestnet
+              ? ApiServiceConstants.publicElectrumTestUrl
+              : ApiServiceConstants.bbElectrumUrl);
 
-      final lbtcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-          : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl =
+          (await _electrumSettingsPort.getPreferredServer(
+            isTestnet: wallet.network.isTestnet,
+            isLiquid: true,
+          ))?.url ??
+          (wallet.network.isTestnet
+              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+              : ApiServiceConstants.bbLiquidElectrumUrlPath);
 
       final claimAddress = await _getReceiveAddressUsecase.execute(
         walletId: walletId,

@@ -42,23 +42,22 @@ class SwapWatcherService {
     required bool isTestnet,
     required bool isLiquid,
   }) async {
-    try {
-      final config = await _electrumSettingsPort.getPreferredServer(
-        isTestnet: isTestnet,
-        isLiquid: isLiquid,
-      );
-      if (config == null) {
-        return null;
-      }
-      return boltz.ElectrumSettings(
-        url: config.url,
-        validateDomain: config.validateDomain,
-        tls: config.tls,
-        timeout: config.timeout,
-      );
-    } catch (_) {
+    final config = await _electrumSettingsPort.getPreferredServer(
+      isTestnet: isTestnet,
+      isLiquid: isLiquid,
+    );
+    if (config == null) {
       return null;
     }
+    // TODO: boltz.ElectrumSettings exposes no socks5 field, so Tor/proxy is not
+    // applied to swap claim/refund/broadcast. Plumb socks5 through once the
+    // boltz SDK supports it (tracked separately).
+    return boltz.ElectrumSettings(
+      url: config.url,
+      validateDomain: config.validateDomain,
+      tls: config.tls,
+      timeout: config.timeout,
+    );
   }
 
   Stream<Swap> get swapStream => _swapStreamController.stream;
@@ -441,7 +440,7 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        isTestnet: environment.isTestnet,
+        isTestnet: swap.environment.isTestnet,
         isLiquid: true,
       );
 
@@ -543,7 +542,7 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        isTestnet: environment.isTestnet,
+        isTestnet: swap.environment.isTestnet,
         isLiquid: false,
       );
 
@@ -848,7 +847,7 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        isTestnet: environment.isTestnet,
+        isTestnet: swap.environment.isTestnet,
         isLiquid: true,
       );
 
@@ -952,7 +951,7 @@ class SwapWatcherService {
       _boltzRepo.unsubscribeFromSwaps([swap.id]);
 
       final electrumSettings = await _resolveElectrumSettings(
-        isTestnet: environment.isTestnet,
+        isTestnet: swap.environment.isTestnet,
         isLiquid: false,
       );
 

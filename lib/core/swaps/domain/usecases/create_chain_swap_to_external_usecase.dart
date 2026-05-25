@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/electrum_settings_port.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
@@ -9,14 +10,17 @@ class CreateChainSwapToExternalUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
   final SeedRepository _seedRepository;
+  final ElectrumSettingsPort _electrumSettingsPort;
 
   CreateChainSwapToExternalUsecase({
     required WalletRepository walletRepository,
     required BoltzSwapRepository swapRepository,
     required SeedRepository seedRepository,
+    required ElectrumSettingsPort electrumSettingsPort,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
-       _seedRepository = seedRepository;
+       _seedRepository = seedRepository,
+       _electrumSettingsPort = electrumSettingsPort;
 
   Future<ChainSwap> execute({
     required String sendWalletId,
@@ -37,14 +41,22 @@ class CreateChainSwapToExternalUsecase {
               as MnemonicSeed;
 
       final btcElectrumUrl =
-          sendWallet.network.isTestnet
+          (await _electrumSettingsPort.getPreferredServer(
+            isTestnet: sendWallet.network.isTestnet,
+            isLiquid: false,
+          ))?.url ??
+          (sendWallet.network.isTestnet
               ? ApiServiceConstants.publicElectrumTestUrl
-              : ApiServiceConstants.bbElectrumUrl;
+              : ApiServiceConstants.bbElectrumUrl);
 
       final lbtcElectrumUrl =
-          sendWallet.network.isTestnet
+          (await _electrumSettingsPort.getPreferredServer(
+            isTestnet: sendWallet.network.isTestnet,
+            isLiquid: true,
+          ))?.url ??
+          (sendWallet.network.isTestnet
               ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-              : ApiServiceConstants.bbLiquidElectrumUrlPath;
+              : ApiServiceConstants.bbLiquidElectrumUrlPath);
 
       switch (type) {
         case SwapType.bitcoinToLiquid:

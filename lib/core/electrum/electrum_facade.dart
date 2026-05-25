@@ -34,14 +34,13 @@ class ElectrumFacade {
       isTestnet: isTestnet,
       isLiquid: isLiquid,
     );
-    final (servers, settings) =
-        await (
-          _electrumServerRepository.fetchAll(
-            isTestnet: network.isTestnet,
-            isLiquid: network.isLiquid,
-          ),
-          _electrumSettingsRepository.fetchByNetwork(network),
-        ).wait;
+    final (servers, settings) = await (
+      _electrumServerRepository.fetchAll(
+        isTestnet: network.isTestnet,
+        isLiquid: network.isLiquid,
+      ),
+      _electrumSettingsRepository.fetchByNetwork(network),
+    ).wait;
 
     final customServers = servers.where((s) => s.isCustom).toList();
     final candidates = customServers.isNotEmpty ? customServers : servers;
@@ -53,7 +52,7 @@ class ElectrumFacade {
 
     return ElectrumServerToUse(
       url: server.url,
-      tls: true,
+      tls: !server.url.startsWith('tcp://'),
       validateDomain: settings.validateDomain,
       timeout: settings.timeout,
     );

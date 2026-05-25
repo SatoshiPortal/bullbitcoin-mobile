@@ -67,8 +67,7 @@ class SwapsLocator {
       ),
     );
     locator.registerLazySingleton<ElectrumSettingsPort>(
-      () =>
-          ElectrumSettingsAdapter(electrumFacade: locator<ElectrumFacade>()),
+      () => ElectrumSettingsAdapter(electrumFacade: locator<ElectrumFacade>()),
     );
   }
 
@@ -194,6 +193,7 @@ class SwapsLocator {
         seedRepository: locator<SeedRepository>(),
         walletTxRepository: locator<WalletTransactionRepository>(),
         labelsFacade: locator<LabelsFacade>(),
+        electrumSettingsPort: locator<ElectrumSettingsPort>(),
       ),
     );
     locator.registerFactory<CreateChainSwapUsecase>(
@@ -204,6 +204,7 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+        electrumSettingsPort: locator<ElectrumSettingsPort>(),
       ),
     );
     locator.registerFactory<CreateChainSwapToExternalUsecase>(
@@ -214,6 +215,7 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+        electrumSettingsPort: locator<ElectrumSettingsPort>(),
       ),
     );
     locator.registerFactory<ProcessSwapUsecase>(
