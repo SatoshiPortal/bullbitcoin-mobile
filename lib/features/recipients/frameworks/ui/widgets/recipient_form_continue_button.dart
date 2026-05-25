@@ -10,10 +10,12 @@ class RecipientFormContinueButton extends StatelessWidget {
     super.key,
     required this.onPressed,
     this.hookError,
+    this.formDisabled = false,
   });
 
   final VoidCallback onPressed;
   final String? hookError;
+  final bool formDisabled;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class RecipientFormContinueButton extends StatelessWidget {
           ),
         BBButton.big(
           label: context.loc.recipientsContinue,
-          disabled: isLoading,
+          disabled: isLoading || formDisabled,
           onPressed: onPressed,
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,

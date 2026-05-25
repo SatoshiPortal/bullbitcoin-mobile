@@ -77,17 +77,17 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           // Institution Number Dropdown
           Text(
             context.loc.recipientsFieldBankInstitution,
-            style: TextStyle(
-              fontSize: 14,
+            style: context.font.bodyLarge?.copyWith(
+              color: context.appColors.secondary,
               fontWeight: .w500,
-              color: context.appColors.onSurface,
             ),
             textAlign: .left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.appColors.onPrimary,
+            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -95,10 +95,11 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
                 isExpanded: true,
                 alignment: Alignment.centerLeft,
                 borderRadius: BorderRadius.circular(4.0),
+                dropdownColor: context.appColors.surface,
                 decoration: const InputDecoration(border: InputBorder.none),
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                 ),
                 initialValue: _institutionNumber,
                 onChanged: (value) {
@@ -133,17 +134,17 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           // Account Type Dropdown
           Text(
             context.loc.recipientsFieldAccountType,
-            style: TextStyle(
-              fontSize: 14,
+            style: context.font.bodyLarge?.copyWith(
+              color: context.appColors.secondary,
               fontWeight: .w500,
-              color: context.appColors.onSurface,
             ),
             textAlign: .left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.appColors.onPrimary,
+            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -152,9 +153,10 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
                 borderRadius: BorderRadius.circular(4.0),
+                dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                 ),
                 value: _accountType,
                 onChanged: (value) {
@@ -199,17 +201,17 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           const Gap(12.0), // Account Type Dropdown
           Text(
             context.loc.recipientsFieldDocumentType,
-            style: TextStyle(
-              fontSize: 14,
+            style: context.font.bodyLarge?.copyWith(
+              color: context.appColors.secondary,
               fontWeight: .w500,
-              color: context.appColors.onSurface,
             ),
             textAlign: .left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.appColors.onPrimary,
+            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -218,9 +220,10 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
                 borderRadius: BorderRadius.circular(4.0),
+                dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                 ),
                 value: _documentType,
                 onChanged: (value) {
@@ -242,7 +245,10 @@ class BankAccountCopFormState extends State<BankAccountCopForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: copDocumentTypeLabel(context, _documentType),
+            labelText: copDocumentTypeRecipientNumberLabel(
+              context,
+              _documentType,
+            ),
             hintText: context.loc.recipientsFieldDocumentNumberHint,
             focusNode: _documentIdFocusNode,
             textInputAction: .next,
