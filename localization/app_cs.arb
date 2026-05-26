@@ -4790,6 +4790,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro swapy.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Nejsou k dispozici žádné údaje o rovnováze",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

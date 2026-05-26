@@ -1515,6 +1515,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Versäumt, Swap zu erstellen.",
+  "sendErrorHardwareWalletCannotSwap": "Hardware-Wallets können nicht für Swaps verwendet werden.",
   "sendErrorInvoiceMustContainAmount": "Die Rechnung muss einen Betrag enthalten.",
   "arkNoBalanceData": "Keine Bilanzdaten verfügbar",
   "autoswapWarningCardTitle": "Autoswap ist aktiviert",

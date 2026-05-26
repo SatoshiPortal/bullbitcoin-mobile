@@ -3778,6 +3778,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Хардуерните портфейли не могат да се използват за суапове.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Няма налични данни за баланса",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

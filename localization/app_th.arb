@@ -4733,6 +4733,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "ไม่สามารถใช้กระเป๋าเงินฮาร์ดแวร์สำหรับการแลกเปลี่ยนได้",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "ไม่มีข้อมูล",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

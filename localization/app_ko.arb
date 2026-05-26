@@ -4733,6 +4733,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "하드웨어 지갑은 스왑에 사용할 수 없습니다.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "유효한 균형 자료 없음",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

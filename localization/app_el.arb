@@ -3972,6 +3972,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Τα hardware πορτοφόλια δεν μπορούν να χρησιμοποιηθούν για ανταλλαγές.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Δεν υπάρχουν διαθέσιμα δεδομένα ισορροπίας",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

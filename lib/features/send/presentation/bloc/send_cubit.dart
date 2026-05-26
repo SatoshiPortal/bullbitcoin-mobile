@@ -889,6 +889,16 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> onAmountConfirmed() async {
     clearAllExceptions();
+
+    if (state.blocksSwapDueToBitcoinHardwareWallet) {
+      emit(
+        state.copyWith(
+          swapCreationException: HardwareWalletSwapException(),
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         amountConfirmedClicked: true,

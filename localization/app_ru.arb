@@ -1542,6 +1542,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Не удалось создать свопы.",
+  "sendErrorHardwareWalletCannotSwap": "Аппаратные кошельки нельзя использовать для свапов.",
   "sendErrorInvoiceMustContainAmount": "Счёт должен содержать сумму",
   "arkNoBalanceData": "Данные о балансе отсутствуют",
   "autoswapWarningCardTitle": "Автообмен включен",

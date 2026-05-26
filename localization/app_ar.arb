@@ -4470,6 +4470,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "لا يمكن استخدام المحافظ الأجهزة للمبادلات.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
