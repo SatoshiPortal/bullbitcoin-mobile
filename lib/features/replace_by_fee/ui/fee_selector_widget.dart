@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
@@ -27,13 +28,16 @@ class BumpFeeSelectorWidget extends StatefulWidget {
 class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
   final _controller = TextEditingController();
 
+  // The user types sat/vByte; we keep the typed double locally for the text
+  // field and only convert to RelativeFee (the SDK-native sat/kwu unit) once,
+  // when emitting up to the cubit.
   double _customFeeRate = 0;
   String get _customFeeRateString => _customFeeRate.toStringAsFixed(1);
 
   @override
   void initState() {
     super.initState();
-    _customFeeRate = widget.selected.feeRate;
+    _customFeeRate = widget.selected.feeRate.satPerVbyte;
     _controller.text = _customFeeRateString;
   }
 
@@ -48,7 +52,10 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
     if (parsed != null) {
       _customFeeRate = parsed.toDouble();
       widget.onChanged(
-        FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
+        FeeEntity(
+          type: FeeType.custom,
+          feeRate: NetworkFee.relativeFromSatPerVbyte(_customFeeRate),
+        ),
       );
     } else {
       _customFeeRate = 0;
@@ -106,7 +113,8 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                     const Gap(2),
                     BBText(
                       context.loc.replaceByFeeFeeRateDisplay(
-                        widget.fastestFeeRate.feeRate.toStringAsFixed(1),
+                        widget.fastestFeeRate.feeRate.satPerVbyte
+                            .toStringAsFixed(1),
                       ),
                       style: context.font.labelMedium,
                     ),
@@ -132,7 +140,10 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
       radius: 2,
       onTap:
           () => widget.onChanged(
-            FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
+            FeeEntity(
+              type: FeeType.custom,
+              feeRate: NetworkFee.relativeFromSatPerVbyte(_customFeeRate),
+            ),
           ),
       child: Material(
         elevation: isSelected ? 4 : 1,
@@ -173,6 +184,23 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                   style: context.font.bodySmall,
                 ),
               ),
+              if (_customFeeRate > 0 && _customFeeRate < 0.1) ...[
+                const Gap(8),
+                BBText(
+                  context.loc.sendBelowMinFeeRateError,
+                  style: context.font.labelMedium?.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+              ] else if (_customFeeRate >= 0.1 && _customFeeRate < 1.0) ...[
+                const Gap(8),
+                BBText(
+                  context.loc.sendSubSatVbyteWarning,
+                  style: context.font.labelMedium?.copyWith(
+                    color: context.appColors.warning,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

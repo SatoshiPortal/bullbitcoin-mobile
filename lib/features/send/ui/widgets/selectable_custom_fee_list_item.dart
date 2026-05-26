@@ -58,7 +58,7 @@ class _SelectableCustomFeeListItemState
     if (parsed != null) {
       final fee = _isAbsolute
           ? NetworkFee.absolute(parsed.toInt())
-          : NetworkFee.relative(parsed.toDouble());
+          : NetworkFee.relativeFromSatPerVbyte(parsed.toDouble());
       setState(() {
         _customFee = fee;
       });
@@ -67,6 +67,20 @@ class _SelectableCustomFeeListItemState
         _customFee = null;
       });
     }
+  }
+
+  /// Effective fee rate in sat/vByte, derived from the typed input. Used to
+  /// decide whether to show the sub-1 warning and to enforce the 0.1 floor.
+  /// Returns null when [_customFee] is null or when an absolute amount can't
+  /// be converted to a rate yet (vsize unknown).
+  double? _effectiveSatPerVbyte(int? txSize) {
+    final fee = _customFee;
+    if (fee == null) return null;
+    if (fee is RelativeFee) return fee.satPerVbyte;
+    if (fee is AbsoluteFee && txSize != null && txSize > 0) {
+      return fee.sats / txSize;
+    }
+    return null;
   }
 
   @override
@@ -105,7 +119,17 @@ class _SelectableCustomFeeListItemState
         ? ''
         : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = $customAbsValue ${context.loc.sendSats} (~ $fiatEq $fiatCurrencyCode)';
 
+    // Fee-rate guards. The 0.1 floor matches Bitcoin Core's lowest sensible
+    // policy and Liquid's network minrelayfee. Below 1 sat/vByte we warn the
+    // user that the tx may take longer to confirm and may not propagate to
+    // every node.
+    final effectiveRate = _effectiveSatPerVbyte(txSize);
+    final bool belowFloor = effectiveRate != null && effectiveRate < 0.1;
+    final bool subOneSatPerVbyte =
+        effectiveRate != null && effectiveRate < 1.0 && !belowFloor;
+
     Future<void> submitCustomFee() async {
+      if (_customFee == null || belowFloor) return;
       await context.read<SendCubit>().customFeesChanged(_customFee!);
       // ignore: use_build_context_synchronously
       Navigator.pop(context, context.loc.sendCustomFee);
@@ -227,9 +251,27 @@ class _SelectableCustomFeeListItemState
                 onFieldSubmitted: (_) => submitCustomFee(),
                 onChanged: _onValueChanged,
               ),
+              if (subOneSatPerVbyte) ...[
+                const Gap(8),
+                BBText(
+                  context.loc.sendSubSatVbyteWarning,
+                  style: context.font.labelMedium?.copyWith(
+                    color: context.appColors.warning,
+                  ),
+                ),
+              ],
+              if (belowFloor) ...[
+                const Gap(8),
+                BBText(
+                  context.loc.sendBelowMinFeeRateError,
+                  style: context.font.labelMedium?.copyWith(
+                    color: context.appColors.error,
+                  ),
+                ),
+              ],
               const Gap(12),
               BBButton.big(
-                disabled: _customFee == null,
+                disabled: _customFee == null || belowFloor,
                 label: context.loc.sendConfirmCustomFee,
                 onPressed: submitCustomFee,
                 bgColor: context.appColors.secondary,

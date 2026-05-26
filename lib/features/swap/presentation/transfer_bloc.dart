@@ -396,7 +396,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
             walletId: liquidWalletId,
             address: swap.paymentAddress,
             amountSat: isMaxSend ? null : swap.paymentAmount,
-            networkFee: state.liquidNetworkFees!.fastest,
+            // FeeOptions.fastest is always RelativeFee — see fees_datasource.dart.
+          feeRate: state.liquidNetworkFees!.fastest as RelativeFee,
             drain: isMaxSend,
           );
 
@@ -534,7 +535,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           walletId: liquidWalletId,
           address: swap.paymentAddress,
           amountSat: isMaxSend ? null : swap.paymentAmount,
-          networkFee: state.liquidNetworkFees!.fastest,
+          // FeeOptions.fastest is always RelativeFee — see fees_datasource.dart.
+          feeRate: state.liquidNetworkFees!.fastest as RelativeFee,
           drain: isMaxSend,
         );
 
@@ -1117,7 +1119,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: fromWallet.id,
           address: dummySwapAddress,
-          networkFee: networkFee,
+          // networkFee was selected from the Liquid FeeOptions, always RelativeFee.
+          feeRate: networkFee as RelativeFee,
           drain: true,
         );
 

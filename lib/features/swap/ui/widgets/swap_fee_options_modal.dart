@@ -125,7 +125,7 @@ class _SwapSelectableCustomFeeListItemState
     if (parsed != null) {
       final fee = _isAbsolute
           ? NetworkFee.absolute(parsed.toInt())
-          : NetworkFee.relative(parsed.toDouble());
+          : NetworkFee.relativeFromSatPerVbyte(parsed.toDouble());
       setState(() {
         _customFee = fee;
       });

@@ -33,6 +33,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -75,6 +76,7 @@ class SendCubit extends Cubit<SendState> {
     required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
     required CalculateLiquidAbsoluteFeesUsecase
     calculateLiquidAbsoluteFeesUsecase,
+    required CalculateLiquidPsetSizeUsecase calculateLiquidPsetSizeUsecase,
     required CreateChainSwapToExternalUsecase createChainSwapToExternalUsecase,
     required WatchWalletTransactionByTxIdUsecase
     watchWalletTransactionByTxIdUsecase,
@@ -107,6 +109,7 @@ class SendCubit extends Cubit<SendState> {
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
        _decodeInvoiceUsecase = decodeInvoiceUsecase,
        _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
+       _calculateLiquidPsetSizeUsecase = calculateLiquidPsetSizeUsecase,
        _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
        _watchWalletTransactionByTxIdUsecase =
            watchWalletTransactionByTxIdUsecase,
@@ -136,6 +139,7 @@ class SendCubit extends Cubit<SendState> {
   final GetWalletUsecase _getWalletUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
+  final CalculateLiquidPsetSizeUsecase _calculateLiquidPsetSizeUsecase;
   final CreateSendSwapUsecase _createSendSwapUsecase;
   final SignBitcoinTxUsecase _signBitcoinTxUsecase;
   final SignLiquidTxUsecase _signLiquidTxUsecase;
@@ -171,6 +175,38 @@ class SendCubit extends Cubit<SendState> {
       _txSubscription?.cancel() ?? Future.value(),
     ).wait;
     return super.close();
+  }
+
+  /// LWK and the RBF builder are rate-only at the SDK boundary. When the user
+  /// picked an absolute custom fee, we need a tx vsize to convert the absolute
+  /// amount back to a rate. We get vsize by building a placeholder PSET at
+  /// Liquid's minrelayfee — vsize is essentially independent of the fee rate,
+  /// so the placeholder is accurate to within a single vbyte.
+  Future<RelativeFee> _resolveLiquidFeeRate({
+    required NetworkFee fee,
+    required String walletId,
+    required String address,
+    required int? amountSat,
+    required bool drain,
+  }) async {
+    if (fee is RelativeFee) return fee;
+    if (fee is! AbsoluteFee) {
+      throw StateError('Unexpected NetworkFee variant: $fee');
+    }
+    final placeholderPset = await _prepareLiquidSendUsecase.execute(
+      walletId: walletId,
+      address: address,
+      amountSat: amountSat,
+      feeRate: const RelativeFee(25),
+      drain: drain,
+    );
+    final vsize = await _calculateLiquidPsetSizeUsecase.execute(
+      pset: placeholderPset,
+    );
+    return NetworkFee.relativeFromAbsoluteAndVsize(
+      absoluteSats: fee.sats,
+      vsize: vsize,
+    );
   }
 
   void clearAllExceptions() {
@@ -1180,13 +1216,21 @@ class SendCubit extends Cubit<SendState> {
           : state.confirmedAmountSat;
       // Fees can be selectedFee as it defaults to Fastest
       if (state.selectedWallet!.network.isLiquid) {
+        // ignore: avoid_bool_literals_in_conditional_expressions
+        final drain = state.lightningSwap != null ? false : state.sendMax;
+        final liquidFeeRate = await _resolveLiquidFeeRate(
+          fee: state.selectedFee!,
+          walletId: state.selectedWallet!.id,
+          address: address,
+          amountSat: amount,
+          drain: drain,
+        );
         final pset = await _prepareLiquidSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
-          networkFee: state.selectedFee!,
+          feeRate: liquidFeeRate,
           amountSat: amount,
-          // ignore: avoid_bool_literals_in_conditional_expressions
-          drain: state.lightningSwap != null ? false : state.sendMax,
+          drain: drain,
         );
         if (state.chainSwap != null) {
           // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
@@ -1739,10 +1783,17 @@ class SendCubit extends Cubit<SendState> {
         // P2TR dummy matching Boltz's L-BTC P2TR lockup script.
         const String dummySwapAddress =
             "lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24";
+        final liquidFeeRate = await _resolveLiquidFeeRate(
+          fee: networkFee,
+          walletId: state.selectedWallet!.id,
+          address: dummySwapAddress,
+          amountSat: null,
+          drain: true,
+        );
         final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: dummySwapAddress,
-          networkFee: networkFee,
+          feeRate: liquidFeeRate,
           drain: true,
         );
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(

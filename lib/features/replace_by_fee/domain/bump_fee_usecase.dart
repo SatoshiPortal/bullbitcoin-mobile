@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 
@@ -10,7 +11,7 @@ class BumpFeeUsecase {
   Future<String> execute({
     required String walletId,
     required String txid,
-    required double newFeeRate,
+    required RelativeFee newFeeRate,
   }) async {
     try {
       final psbt = await _bitcoinWalletRepository.bumpFee(

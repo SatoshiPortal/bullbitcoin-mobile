@@ -54,9 +54,9 @@ class FeesDatasource {
     final minimumFee = data['minimumFee'] as int;
 
     final feeOptions = FeeOptions(
-      fastest: NetworkFee.relative(fastestFee.toDouble()),
-      economic: NetworkFee.relative(economyFee.toDouble()),
-      slow: NetworkFee.relative(minimumFee.toDouble()),
+      fastest: NetworkFee.relativeFromSatPerVbyte(fastestFee.toDouble()),
+      economic: NetworkFee.relativeFromSatPerVbyte(economyFee.toDouble()),
+      slow: NetworkFee.relativeFromSatPerVbyte(minimumFee.toDouble()),
     );
 
     return feeOptions;
@@ -65,10 +65,13 @@ class FeesDatasource {
   Future<FeeOptions> getLiquidNetworkFeeOptions({
     required bool isTestnet,
   }) async {
+    // Liquid blocks are typically empty, so the network's minrelayfee
+    // (0.1 sat/vByte = 25 sat/kwu) is the only relevant fee tier today.
+    // The three presets are kept for UI parity with the Bitcoin path.
     const feeOptions = FeeOptions(
-      fastest: NetworkFee.relative(0.1),
-      economic: NetworkFee.relative(0.1),
-      slow: NetworkFee.relative(0.1),
+      fastest: RelativeFee(25),
+      economic: RelativeFee(25),
+      slow: RelativeFee(25),
     );
 
     return feeOptions;

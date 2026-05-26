@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -100,6 +101,11 @@ class SendLocator {
         liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
+    locator.registerFactory<CalculateLiquidPsetSizeUsecase>(
+      () => CalculateLiquidPsetSizeUsecase(
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+      ),
+    );
     locator.registerFactory<CreateChainSwapToExternalUsecase>(
       () => CreateChainSwapToExternalUsecase(
         walletRepository: locator<WalletRepository>(),
@@ -157,6 +163,8 @@ class SendLocator {
         decodeInvoiceUsecase: locator<DecodeInvoiceUsecase>(),
         calculateLiquidAbsoluteFeesUsecase:
             locator<CalculateLiquidAbsoluteFeesUsecase>(),
+        calculateLiquidPsetSizeUsecase:
+            locator<CalculateLiquidPsetSizeUsecase>(),
         createChainSwapToExternalUsecase:
             locator<CreateChainSwapToExternalUsecase>(),
         watchWalletTransactionByTxIdUsecase:

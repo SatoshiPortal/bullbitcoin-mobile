@@ -23,7 +23,7 @@ class LiquidWalletRepository {
     required String walletId,
     required String address,
     int? amountSat,
-    required NetworkFee networkFee,
+    required RelativeFee feeRate,
     bool? drain,
   }) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
@@ -45,7 +45,7 @@ class LiquidWalletRepository {
       wallet: wallet,
       address: address,
       amountSat: amountSat,
-      networkFee: networkFee,
+      feeRate: feeRate,
       drain: drain ?? false,
     );
 

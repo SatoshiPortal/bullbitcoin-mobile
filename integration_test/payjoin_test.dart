@@ -165,7 +165,8 @@ Future<void> main({bool isInitialized = false}) async {
           walletId: senderWallet.id,
           address: address.address,
           amountSat: 10000,
-          networkFee: const NetworkFee.relative(networkFeesSatPerVb),
+          // 1000 sat/vByte * 250 = 250000 sat/kwu.
+          networkFee: const RelativeFee(250000),
           ignoreUnspendableInputs: false,
         );
 
