@@ -351,6 +351,10 @@ abstract class SendState with _$SendState {
       return selectedSwapLimits != null &&
           inputAmountSat > selectedSwapLimits!.max;
     }
+    if (requireChainSwap && inputAmountSat != 0) {
+      return selectedSwapLimits != null &&
+          inputAmountSat > selectedSwapLimits!.max;
+    }
     return false;
   }
 
