@@ -42,35 +42,41 @@ enum BitcoinUnit {
 }
 
 enum Language {
-  unitedStatesEnglish('en', 'US', 'English'),
-  arabic('ar', null, 'العربية'),
-  bulgarian('bg', null, 'Български'),
-  bengali('bn', null, 'বাংলা'),
-  czech('cs', null, 'Čeština'),
-  german('de', 'DE', 'Deutsch'),
-  greek('el', null, 'Ελληνικά'),
-  spanish('es', 'ES', 'Español'),
-  persian('fa', null, 'فارسی'),
-  finnish('fi', 'FI', 'Suomi'),
-  franceFrench('fr', 'FR', 'Français'),
-  hindi('hi', null, 'हिन्दी'),
-  hinglish('hi', 'Latn', 'Hinglish'),
-  italian('it', 'IT', 'Italiano'),
-  korean('ko', null, '한국어'),
-  portuguese('pt', 'PT', 'Português'),
-  brazilianPortuguese('pt', 'BR', 'Português (Brasil)'),
-  russian('ru', 'RU', 'Русский'),
-  thai('th', null, 'ภาษาไทย'),
-  turkish('tr', null, 'Türkçe'),
-  ukrainian('uk', 'UA', 'Українська'),
-  simplifiedChinese('zh', 'CN', '简体中文'),
-  assamese('as', null, 'অসমীয়া');
+  unitedStatesEnglish('en', label: 'English'),
+  arabic('ar', label: 'العربية'),
+  bulgarian('bg', label: 'Български'),
+  bengali('bn', label: 'বাংলা'),
+  czech('cs', label: 'Čeština'),
+  german('de', label: 'Deutsch'),
+  greek('el', label: 'Ελληνικά'),
+  spanish('es', label: 'Español'),
+  persian('fa', label: 'فارسی'),
+  finnish('fi', label: 'Suomi'),
+  franceFrench('fr', label: 'Français'),
+  hindi('hi', label: 'हिन्दी'),
+  hinglish('hi', label: 'Hinglish', scriptCode: 'Latn'),
+  italian('it', label: 'Italiano'),
+  korean('ko', label: '한국어'),
+  portuguese('pt', label: 'Português'),
+  brazilianPortuguese('pt', label: 'Português (Brasil)', countryCode: 'BR'),
+  russian('ru', label: 'Русский'),
+  thai('th', label: 'ภาษาไทย'),
+  turkish('tr', label: 'Türkçe'),
+  ukrainian('uk', label: 'Українська'),
+  simplifiedChinese('zh', label: '简体中文'),
+  assamese('as', label: 'অসমীয়া');
 
   final String languageCode;
   final String? countryCode;
+  final String? scriptCode;
   final String label;
 
-  const Language(this.languageCode, this.countryCode, this.label);
+  const Language(
+    this.languageCode, {
+    required this.label,
+    this.countryCode,
+    this.scriptCode,
+  });
 
   static Language fromName(String name) {
     try {
@@ -86,7 +92,8 @@ enum Language {
     final exact = Language.values.where(
       (l) =>
           l.languageCode == locale.languageCode &&
-          l.countryCode == locale.countryCode,
+          l.countryCode == locale.countryCode &&
+          l.scriptCode == locale.scriptCode,
     );
     if (exact.isNotEmpty) return exact.first;
     final langOnly = Language.values.where(
@@ -111,9 +118,15 @@ enum AppThemeMode {
 }
 
 extension LanguageExtension on Language {
-  Locale get locale => Locale(languageCode, countryCode);
+  Locale get locale => Locale.fromSubtags(
+    languageCode: languageCode,
+    scriptCode: scriptCode,
+    countryCode: countryCode,
+  );
   bool isLocale(Locale locale) =>
-      locale.languageCode == languageCode && locale.countryCode == countryCode;
+      locale.languageCode == languageCode &&
+      locale.scriptCode == scriptCode &&
+      locale.countryCode == countryCode;
 }
 
 @freezed
