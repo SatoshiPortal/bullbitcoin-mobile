@@ -2523,7 +2523,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "App başlangıçta başarısız oldu. Uygulamayı tamamen durdur ve yeniden başlayın. Hata devam ederse, konuyu destekle ve günlüklerinizi paylaş.",
+  "appStartupErrorMessage": "Uygulama başlatılamadı. Uygulamayı tamamen kapatıp yeniden başlatmayı deneyin. Hata devam ederse destek ekibiyle iletişime geçin ve loglarınızı paylaşın.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -12585,5 +12585,22 @@
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
   "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın."
+  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın.",
+  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
+  "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
+  "coreScreensFeeRateLabel": "Ücret oranı",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Para üstü çıktısı bilinmiyor — tüm çıktılar eşit gösteriliyor",
+  "coreScreensUnknown": "Bilinmiyor",
+  "coreScreensFetchFailed": "İşlem {txid} Electrum'dan alınamadı.",
+  "coreScreensInputResolutionFailed": "Girdi bulunamadı: {parentTxId} çıktısı {vout} mevcut değil.",
+  "coreScreensParseFailed": "İşlem ayrıştırılamadı: {message}.",
+  "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
+  "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok.",
+  "addressViewerTitle": "Adres",
+  "viewerTapToCopy": "Kopyalamak için dokunun",
+  "viewerViewInExplorer": "Gezginde görüntüle",
+  "transactionViewerTitle": "İşlem kimliği",
+  "invoiceViewerTitle": "Fatura",
+  "viewerCopyLink": "Bağlantıyı kopyala"
 }

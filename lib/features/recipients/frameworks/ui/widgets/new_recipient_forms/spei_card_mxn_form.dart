@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -58,14 +59,14 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: 'Institution Code',
-            hintText: 'Enter institution code',
+            labelText: context.loc.recipientsFieldInstitutionCode,
+            hintText: context.loc.recipientsFieldInstitutionCodeHint,
             focusNode: _institutionCodeFocusNode,
             autofocus: true,
             textInputAction: .next,
             onFieldSubmitted: (_) => _debitCardFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -75,13 +76,13 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Debit Card Number',
-            hintText: 'Enter debit card number',
+            labelText: context.loc.recipientsFieldDebitCard,
+            hintText: context.loc.recipientsFieldDebitCardHint,
             focusNode: _debitCardFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -91,13 +92,13 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Name',
-            hintText: 'Enter recipient name',
+            labelText: context.loc.recipientsFieldName,
+            hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -107,8 +108,8 @@ class SpeiCardMxnFormState extends State<SpeiCardMxnForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),

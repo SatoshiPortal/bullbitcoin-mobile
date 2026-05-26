@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,20 +44,20 @@ class JurisdictionsDropdown extends StatelessWidget {
           onChanged: onChanged,
           items: [
             if (includeAllOption && jurisdictions.length > 1)
-              const DropdownMenuItem<String?>(
+              DropdownMenuItem<String?>(
                 value: null,
-                child: Text('All Jurisdictions'),
+                child: Text(context.loc.recipientsJurisdictionAll),
               ),
             ...jurisdictions.map((jurisdiction) {
               return DropdownMenuItem<String?>(
                 value: jurisdiction,
                 child: Text(switch (jurisdiction) {
-                  'CA' => '🇨🇦 Canada',
-                  'EU' => '🇪🇺 Europe (SEPA)',
-                  'MX' => '🇲🇽 Mexico',
-                  'CR' => '🇨🇷 Costa Rica',
-                  'AR' => '🇦🇷 Argentina',
-                  'CO' => '🇨🇴 Colombia',
+                  'CA' => context.loc.recipientsJurisdictionCanada,
+                  'EU' => context.loc.recipientsJurisdictionEurope,
+                  'MX' => context.loc.recipientsJurisdictionMexico,
+                  'CR' => context.loc.recipientsJurisdictionCostaRica,
+                  'AR' => context.loc.recipientsJurisdictionArgentina,
+                  'CO' => context.loc.recipientsJurisdictionColombia,
                   _ => jurisdiction,
                 }),
               );

@@ -2531,7 +2531,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "ผู้ใช้สามารถเริ่มต้น ลองหยุดแอปและเริ่มต้น หากข้อผิดพลาดยังคงมีรายงานเพื่อสนับสนุนและแชร์บันทึกของคุณ.",
+  "appStartupErrorMessage": "แอปไม่สามารถเริ่มต้นได้ ลองปิดแอปทั้งหมดแล้วเปิดใหม่อีกครั้ง หากยังมีปัญหา กรุณาติดต่อฝ่ายสนับสนุนและส่งบันทึกของคุณ",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -12585,5 +12585,22 @@
   "legacyStorageHasBackupImportantBody": "โปรดอย่าข้ามขั้นตอนนี้ เว้นแต่คุณจำเป็นต้องใช้กระเป๋าเงินอย่างเร่งด่วน หรือกำลังรอให้สวอปเสร็จสมบูรณ์",
   "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24Hours": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำสว็อปของคุณให้เสร็จสมบูรณ์"
+  "transactionSwapOpenWithin24Hours": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำสว็อปของคุณให้เสร็จสมบูรณ์",
+  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
+  "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
+  "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "ไม่ทราบเอาต์พุตทอน — แสดงเอาต์พุตทั้งหมดเท่าเทียมกัน",
+  "coreScreensUnknown": "ไม่ทราบ",
+  "coreScreensFetchFailed": "ไม่สามารถดึงธุรกรรม {txid} จาก Electrum",
+  "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
+  "coreScreensParseFailed": "วิเคราะห์ธุรกรรมล้มเหลว: {message}",
+  "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
+  "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้",
+  "addressViewerTitle": "ที่อยู่",
+  "viewerTapToCopy": "แตะเพื่อคัดลอก",
+  "viewerViewInExplorer": "ดูในเอ็กซ์พลอเรอร์",
+  "transactionViewerTitle": "รหัสธุรกรรม",
+  "invoiceViewerTitle": "ใบแจ้งหนี้",
+  "viewerCopyLink": "คัดลอกลิงก์"
 }

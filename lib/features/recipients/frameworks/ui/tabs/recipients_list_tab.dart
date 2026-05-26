@@ -146,7 +146,10 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           },
         ),
         const Gap(16.0),
-        Text('Filter by Jurisdiction:', style: context.font.bodyMedium),
+        Text(
+          context.loc.recipientsFilterByJurisdiction,
+          style: context.font.bodyMedium,
+        ),
         const Gap(8.0),
         JurisdictionsDropdown(
           selectedJurisdiction: _jurisdictionFilter,
@@ -175,7 +178,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
               : _recipients!.isEmpty
               ? Center(
                   child: Text(
-                    'No recipients found.',
+                    context.loc.recipientsListEmpty,
                     style: context.font.bodyLarge,
                   ),
                 )
@@ -224,7 +227,7 @@ class RecipientsListTabState extends State<RecipientsListTab> {
           },
         ),
         BBButton.big(
-          label: 'Continue',
+          label: context.loc.recipientsContinue,
           disabled: _selectedRecipient == null,
           onPressed: () {
             context.read<RecipientsBloc>().add(

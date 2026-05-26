@@ -116,6 +116,12 @@ class SendCubit extends Cubit<SendState> {
        _verifyChainSwapAmountSendUsecase = verifyChainSwapAmountSendUsecase,
        super(const SendState());
 
+  /// Distinct user-defined labels for the suggestion chips in the label
+  /// bottom sheet. Wraps [LabelsFacade.fetchDistinctLabels] so widgets
+  /// don't need to reach into the locator.
+  Future<Set<String>> fetchDistinctLabels() =>
+      _labelsFacade.fetchDistinctLabels();
+
   // ignore: unused_field
   final Wallet? _wallet;
   final LabelsFacade _labelsFacade;
@@ -277,6 +283,15 @@ class SendCubit extends Cubit<SendState> {
         final invoice = await _decodeInvoiceUsecase.execute(
           invoice: paymentRequest.invoice,
         );
+        if (invoice.isExpired) {
+          emit(
+            state.copyWith(
+              loadingBestWallet: false,
+              swapCreationException: ExpiredInvoiceException(),
+            ),
+          );
+          return;
+        }
         if (invoice.sats == 0) {
           emit(
             state.copyWith(

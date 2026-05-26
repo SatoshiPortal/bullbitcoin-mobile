@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/labels/application/usecases/trash_label_useca
 import 'package:bb_mobile/features/labels/application/usecases/fetch_all_labels_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/fetch_label_by_reference_usecase.dart';
 import 'package:bb_mobile/features/labels/application/usecases/store_labels_usecase.dart';
+import 'package:bb_mobile/features/labels/domain/primitive/label_type.dart';
 import 'package:bb_mobile/features/labels/new_label.dart';
 import 'package:bb_mobile/features/labels/label.dart';
 
@@ -46,6 +47,21 @@ class LabelsFacade {
     return labels
         .map((label) => LabelMapper.applicationLabelToLabel(label))
         .toList();
+  }
+
+  /// Distinct user-defined label strings used to feed the suggestion chips
+  /// in the label entry bottom sheet.
+  ///
+  /// Pass [type] to scope the suggestions — e.g. callers on the receive
+  /// flow (where the chosen string becomes a counterparty-visible BIP21
+  /// `message=`) must restrict to [LabelType.address] so private
+  /// transaction labels don't leak into outgoing messages.
+  Future<Set<String>> fetchDistinctLabels({LabelType? type}) async {
+    final labels = await fetchAll();
+    return labels
+        .where((l) => type == null || l.type == type)
+        .map((l) => l.label)
+        .toSet();
   }
 
   Future<Label> store(NewLabel label) async {

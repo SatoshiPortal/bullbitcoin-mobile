@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -65,10 +66,10 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
 
   String? _validatePhoneNumberInput(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return "This field can't be empty";
+      return context.loc.recipientsValidationFieldRequired;
     }
     if (!RegExp(r'^\d{8}$').hasMatch(value.trim())) {
-      return 'Please enter a valid 8-digit phone number';
+      return context.loc.recipientsValidationSinpePhone;
     }
     return null;
   }
@@ -83,8 +84,8 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: 'Phone Number',
-            hintText: 'Enter phone number',
+            labelText: context.loc.recipientsFieldPhoneNumber,
+            hintText: context.loc.recipientsFieldPhoneNumberHint,
             focusNode: _phoneNumberFocusNode,
             autofocus: true,
             prefixText: '+506',
@@ -112,8 +113,8 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
             selector: (state) => state.isCheckingSinpe,
             builder: (context, isChecking) {
               return BBTextFormField(
-                labelText: 'Owner Name',
-                hintText: 'Owner name will appear here',
+                labelText: context.loc.recipientsFieldOwnerName,
+                hintText: context.loc.recipientsFieldOwnerNameSinpeHint,
                 controller: _ownerNameController,
                 disabled: true,
                 suffix: _ownerNameController.text.isNotEmpty
@@ -136,7 +137,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                       ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return "Please validate the phone number";
+                    return context.loc.recipientsValidationSinpeOwner;
                   }
                   return null;
                 },
@@ -145,8 +146,8 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
