@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -197,29 +198,26 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
             isLiquid: isLiquid,
           );
 
-          for (int i = 0; i < electrumServers.length; i++) {
-            try {
-              final electrumServer = electrumServers[i];
+          if (electrumServers.isEmpty) return;
+
+          await runElectrumFallback<ElectrumServer, void>(
+            servers: electrumServers,
+            urlOf: (server) => server.url,
+            isCustomOf: (server) => server.isCustom,
+            operation: (server) async {
               if (isLiquid) {
                 await _lwkWalletTransactionDatasource.sync(
                   wallet: walletModel,
-                  electrumServer: electrumServer,
+                  electrumServer: server,
                 );
               } else {
                 await _bdkWalletTransactionDatasource.sync(
                   wallet: walletModel,
-                  electrumServer: electrumServer,
+                  electrumServer: server,
                 );
               }
-              return;
-            } catch (e) {
-              // Log the error and try the next server
-              if (i == electrumServers.length - 1) {
-                throw Exception('All Electrum servers failed to sync.');
-              }
-              continue;
-            }
-          }
+            },
+          );
         }),
       );
     }

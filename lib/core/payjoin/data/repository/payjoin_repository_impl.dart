@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
+import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/frameworks/drift/datasources/electrum_settings_storage_datasource.dart';
@@ -272,45 +273,28 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       PayjoinModel? model;
       if (payjoin is PayjoinReceiver) {
-        for (int i = 0; i < servers.length; i++) {
-          final serverToUse = servers[i];
-          try {
-            await _blockchain.broadcastTransaction(
-              payjoin.originalTxBytes!,
-              electrumServer: serverToUse,
-            );
-          } catch (e) {
-            log.warning(
-              'Error broadcasting original transaction with server ${serverToUse.url}',
-              error: e,
-            );
-            if (i == servers.length - 1) {
-              rethrow; // If it's the last server, rethrow the error
-            }
-            continue;
-          }
-        }
+        await runElectrumFallback<ElectrumServer, void>(
+          servers: servers,
+          urlOf: (server) => server.url,
+          isCustomOf: (server) => server.isCustom,
+          operation: (server) => _blockchain.broadcastTransaction(
+            payjoin.originalTxBytes!,
+            electrumServer: server,
+          ),
+        );
 
         model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
       } else {
         payjoin as PayjoinSender;
-        for (int i = 0; i < servers.length; i++) {
-          final serverToUse = servers[i];
-          try {
-            await _blockchain.broadcastPsbt(
-              payjoin.originalPsbt,
-              electrumServer: serverToUse,
-            );
-          } catch (e) {
-            log.warning(
-              'Error broadcasting original PSBT with server ${serverToUse.url}: $e',
-            );
-            if (i == servers.length - 1) {
-              rethrow; // If it's the last server, rethrow the error
-            }
-            continue;
-          }
-        }
+        await runElectrumFallback<ElectrumServer, void>(
+          servers: servers,
+          urlOf: (server) => server.url,
+          isCustomOf: (server) => server.isCustom,
+          operation: (server) => _blockchain.broadcastPsbt(
+            payjoin.originalPsbt,
+            electrumServer: server,
+          ),
+        );
         model = await _localPayjoinDatasource.fetchSender(payjoin.id);
       }
       log.info(
@@ -538,23 +522,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       throw Exception('No Electrum servers available for Bitcoin network.');
     }
 
-    for (int i = 0; i < servers.length; i++) {
-      final serverToUse = servers[i];
-      try {
-        await _blockchain.broadcastPsbt(
-          finalizedPsbt,
-          electrumServer: serverToUse,
-        );
-      } catch (e) {
-        log.warning(
-          'Error broadcasting finalized PSBT with server ${serverToUse.url}: $e',
-        );
-        if (i == servers.length - 1) {
-          rethrow; // If it's the last server, rethrow the error
-        }
-        continue;
-      }
-    }
+    await runElectrumFallback<ElectrumServer, void>(
+      servers: servers,
+      urlOf: (server) => server.url,
+      isCustomOf: (server) => server.isCustom,
+      operation: (server) =>
+          _blockchain.broadcastPsbt(finalizedPsbt, electrumServer: server),
+    );
 
     // Update the local database with the completed payjoin
     final model = await _localPayjoinDatasource.fetchSender(payjoinId);

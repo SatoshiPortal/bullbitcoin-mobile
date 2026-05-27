@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -29,26 +30,25 @@ class TheDirtyUsecase {
         isLiquid: false,
       );
 
-      for (var i = 0; i < electrumServers.length; i++) {
-        try {
-          return await _bitcoinWalletRepository.dryScan(
-            entropy: mnemonic.entropy,
-            passphrase: mnemonic.passphrase,
-            scriptType: scriptType,
-            isTestnet: isTestnet,
-            electrumServer: electrumServers[i],
-          );
-        } catch (e) {
-          log.warning(
-            'Failed to sync with ${electrumServers[i].url}',
-            error: e,
-          );
-          if (i == electrumServers.length - 1) {
-            throw Exception('All Electrum servers failed to sync.');
-          }
-        }
+      if (electrumServers.isEmpty) {
+        throw Exception('No Electrum servers configured.');
       }
-      throw Exception('No Electrum servers configured.');
+
+      return await runElectrumFallback<
+        ElectrumServer,
+        ({BigInt satoshis, int transactions})
+      >(
+        servers: electrumServers,
+        urlOf: (server) => server.url,
+        isCustomOf: (server) => server.isCustom,
+        operation: (server) => _bitcoinWalletRepository.dryScan(
+          entropy: mnemonic.entropy,
+          passphrase: mnemonic.passphrase,
+          scriptType: scriptType,
+          isTestnet: isTestnet,
+          electrumServer: server,
+        ),
+      );
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
       throw CheckWalletStatusException(e.toString());

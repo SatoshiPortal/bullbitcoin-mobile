@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
+import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
 
 class BitcoinBlockchainRepository {
   final BdkBitcoinBlockchainDatasource _blockchain;
@@ -13,44 +14,28 @@ class BitcoinBlockchainRepository {
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
     required List<ElectrumServer> electrumServers,
-  }) async {
-    for (int i = 0; i < electrumServers.length; i++) {
-      final electrumServer = electrumServers[i];
-
-      try {
-        final txId = await _blockchain.broadcastPsbt(
-          finalizedPsbt,
-          electrumServer: electrumServer,
-        );
-        return txId;
-      } catch (e) {
-        // If broadcasting fails, try the next server
-        continue;
-      }
-    }
-
-    throw Exception('Failed to broadcast PSBT on all Electrum servers.');
+  }) {
+    return runElectrumFallback<ElectrumServer, String>(
+      servers: electrumServers,
+      urlOf: (server) => server.url,
+      isCustomOf: (server) => server.isCustom,
+      operation: (server) =>
+          _blockchain.broadcastPsbt(finalizedPsbt, electrumServer: server),
+    );
   }
 
   Future<String> broadcastTransaction(
     List<int> transaction, {
     required List<ElectrumServer> electrumServers,
-  }) async {
-    for (int i = 0; i < electrumServers.length; i++) {
-      final electrumServer = electrumServers[i];
-
-      try {
-        final txId = await _blockchain.broadcastTransaction(
-          Uint8List.fromList(transaction),
-          electrumServer: electrumServer,
-        );
-        return txId;
-      } catch (e) {
-        // If broadcasting fails, try the next server
-        continue;
-      }
-    }
-
-    throw Exception('Failed to broadcast transaction on all Electrum servers.');
+  }) {
+    return runElectrumFallback<ElectrumServer, String>(
+      servers: electrumServers,
+      urlOf: (server) => server.url,
+      isCustomOf: (server) => server.isCustom,
+      operation: (server) => _blockchain.broadcastTransaction(
+        Uint8List.fromList(transaction),
+        electrumServer: server,
+      ),
+    );
   }
 }

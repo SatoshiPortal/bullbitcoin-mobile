@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_sync_result.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -481,49 +483,41 @@ class WalletRepository {
   }
 
   Future<void> _syncWallet(WalletModel wallet) async {
-    try {
-      final isLiquid = wallet is PublicLwkWalletModel;
-      final electrumServers = await _electrumServerPort.getElectrumServers(
-        isTestnet: wallet.isTestnet,
-        isLiquid: isLiquid,
-      );
+    final isLiquid = wallet is PublicLwkWalletModel;
+    final electrumServers = await _electrumServerPort.getElectrumServers(
+      isTestnet: wallet.isTestnet,
+      isLiquid: isLiquid,
+    );
 
-      for (int i = 0; i < electrumServers.length; i++) {
-        final electrumServer = electrumServers[i];
-        try {
+    if (electrumServers.isEmpty) {
+      _electrumSyncResultController.add(
+        ElectrumSyncResult(isLiquid: isLiquid, success: false),
+      );
+      throw Exception('No Electrum servers configured to sync.');
+    }
+
+    try {
+      await runElectrumFallback<ElectrumServer, void>(
+        servers: electrumServers,
+        urlOf: (server) => server.url,
+        isCustomOf: (server) => server.isCustom,
+        operation: (server) async {
           if (isLiquid) {
-            await _lwkWallet.sync(
-              wallet: wallet,
-              electrumServer: electrumServer,
-            );
+            await _lwkWallet.sync(wallet: wallet, electrumServer: server);
           } else {
-            await _bdkWallet.sync(
-              wallet: wallet,
-              electrumServer: electrumServer,
-            );
+            await _bdkWallet.sync(wallet: wallet, electrumServer: server);
           }
-          _electrumSyncResultController.add(
-            ElectrumSyncResult(isLiquid: isLiquid, success: true),
-          );
-          return;
-        } catch (e, stackTrace) {
-          log.severe(
-            message:
-                'sync wallet error with electrum server: ${electrumServer.url}',
-            error: e,
-            trace: stackTrace,
-          );
-          if (i == electrumServers.length - 1) {
-            _electrumSyncResultController.add(
-              ElectrumSyncResult(isLiquid: isLiquid, success: false),
-            );
-            throw Exception('All Electrum servers failed to sync.');
-          }
-          continue;
-        }
-      }
-    } catch (e) {
-      rethrow;
+        },
+      );
+      _electrumSyncResultController.add(
+        ElectrumSyncResult(isLiquid: isLiquid, success: true),
+      );
+    } on AllElectrumServersFailedException catch (e, stackTrace) {
+      log.severe(message: e.message, error: e, trace: stackTrace);
+      _electrumSyncResultController.add(
+        ElectrumSyncResult(isLiquid: isLiquid, success: false),
+      );
+      throw Exception('All Electrum servers failed to sync.');
     }
   }
 
