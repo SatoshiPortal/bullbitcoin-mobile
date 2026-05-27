@@ -31,7 +31,10 @@ class _SelectableCustomFeeListItemState
   void initState() {
     super.initState();
     _customFee = context.read<SendCubit>().state.customFee;
-    _isAbsolute = _customFee?.isAbsolute ?? true;
+    // Default to relative (sat/vByte): it's the unit users reason about and
+    // the one that survives to the SDK without a size estimate. Absolute stays
+    // available via the toggle.
+    _isAbsolute = _customFee?.isAbsolute ?? false;
     final value = _customFee?.value.toString() ?? '';
     _controller = TextEditingController(text: value);
     _focusNode = FocusNode();
