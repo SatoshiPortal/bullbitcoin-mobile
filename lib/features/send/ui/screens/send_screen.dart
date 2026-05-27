@@ -320,6 +320,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appColors.background,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -398,11 +399,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   );
                   return IgnorePointer(
                     ignoring: state.amountConfirmedClicked,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: .stretch,
-                        children: [
+                    child: Column(
+                      crossAxisAlignment: .stretch,
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: .stretch,
+                              children: [
                           ColoredBox(
                             color: context.appColors.onSecondary,
                             child: Padding(
@@ -567,18 +572,22 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                             const Gap(16),
                             const _SendError(),
                           ],
-
-                          const Spacer(),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              bottom: Device.screen.height * 0.04,
-                            ),
-                            child: SendAmountConfirmButton(
-                              amountController: _amountController,
+                              ],
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            16,
+                            8,
+                            16,
+                            math.max(16, Device.screen.height * 0.04),
+                          ),
+                          child: SendAmountConfirmButton(
+                            amountController: _amountController,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 },
