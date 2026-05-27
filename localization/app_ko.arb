@@ -5051,6 +5051,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "결제하기",
+  "payDescriptionLabel": "결제 설명 (선택 사항)",
+  "payDescriptionHint": "이 결제에 대한 메모를 추가하세요",
+  "payPaymentDescription": "결제 설명",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10372,6 +10375,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "주문 번호",
+  "transactionDetailLabelPaymentDescription": "결제 설명",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

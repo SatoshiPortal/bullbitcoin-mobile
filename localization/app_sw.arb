@@ -237,5 +237,9 @@
   "viewerViewInExplorer": "Tazama kwenye kivinjari",
   "viewerCopyLink": "Nakili kiungo",
   "transactionViewerTitle": "Kitambulisho cha muamala",
-  "invoiceViewerTitle": "Ankara"
+  "invoiceViewerTitle": "Ankara",
+  "payDescriptionLabel": "Maelezo ya malipo (hiari)",
+  "payDescriptionHint": "Ongeza dokezo kwa malipo haya",
+  "payPaymentDescription": "Maelezo ya malipo",
+  "transactionDetailLabelPaymentDescription": "Maelezo ya malipo"
 }

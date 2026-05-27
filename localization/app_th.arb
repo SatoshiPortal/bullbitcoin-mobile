@@ -5051,6 +5051,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "ชําระเงิน",
+  "payDescriptionLabel": "รายละเอียดการชำระเงิน (ไม่บังคับ)",
+  "payDescriptionHint": "เพิ่มหมายเหตุสำหรับการชำระเงินนี้",
+  "payPaymentDescription": "รายละเอียดการชำระเงิน",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10364,6 +10367,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ราคา",
+  "transactionDetailLabelPaymentDescription": "รายละเอียดการชำระเงิน",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

@@ -3998,6 +3998,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "Плати",
+  "payDescriptionLabel": "Описание на плащането (по избор)",
+  "payDescriptionHint": "Добавете бележка към това плащане",
+  "payPaymentDescription": "Описание на плащането",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7846,6 +7849,7 @@
     "description": "Payment method: Email E-Transfer (Canada)"
   },
   "transactionDetailLabelOrderNumber": "Номер на поръчката",
+  "transactionDetailLabelPaymentDescription": "Описание на плащането",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

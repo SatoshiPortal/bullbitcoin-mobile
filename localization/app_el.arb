@@ -4219,6 +4219,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "Pay",
+  "payDescriptionLabel": "Περιγραφή πληρωμής (προαιρετικό)",
+  "payDescriptionHint": "Προσθέστε μια σημείωση για αυτήν την πληρωμή",
+  "payPaymentDescription": "Περιγραφή πληρωμής",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -12067,6 +12070,7 @@
     "description": "Instruction to select camera load option on device"
   },
   "transactionDetailLabelOrderNumber": "Αριθμός αριθμών",
+  "transactionDetailLabelPaymentDescription": "Περιγραφή πληρωμής",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

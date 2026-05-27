@@ -5084,6 +5084,9 @@
     }
   },
   "payTitle": "Čeština",
+  "payDescriptionLabel": "Popis platby (volitelné)",
+  "payDescriptionHint": "Přidejte poznámku k této platbě",
+  "payPaymentDescription": "Popis platby",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10135,6 +10138,7 @@
     "description": "Payment method: Email E-Transfer (Canada)"
   },
   "transactionDetailLabelOrderNumber": "Číslo objednávky",
+  "transactionDetailLabelPaymentDescription": "Popis platby",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

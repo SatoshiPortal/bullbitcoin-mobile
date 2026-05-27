@@ -217,5 +217,9 @@
   "viewerViewInExplorer": "Xem trong trình duyệt",
   "viewerCopyLink": "Sao chép liên kết",
   "transactionViewerTitle": "Mã giao dịch",
-  "invoiceViewerTitle": "Hóa đơn"
+  "invoiceViewerTitle": "Hóa đơn",
+  "payDescriptionLabel": "Mô tả thanh toán (tùy chọn)",
+  "payDescriptionHint": "Thêm ghi chú cho khoản thanh toán này",
+  "payPaymentDescription": "Mô tả thanh toán",
+  "transactionDetailLabelPaymentDescription": "Mô tả thanh toán"
 }

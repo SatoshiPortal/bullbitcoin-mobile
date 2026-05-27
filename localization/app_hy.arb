@@ -217,5 +217,9 @@
   "viewerViewInExplorer": "Դիտել հետախույզում",
   "viewerCopyLink": "Պատճենել հղումը",
   "transactionViewerTitle": "Գործարքի նույնացուցիչ",
-  "invoiceViewerTitle": "Ապրանքագիր "
+  "invoiceViewerTitle": "Ապրանքագիր ",
+  "payDescriptionLabel": "Վճարման նկարագրություն (ըստ ցանկության)",
+  "payDescriptionHint": "Ավելացրեք նշում այս վճարման համար",
+  "payPaymentDescription": "Վճարման նկարագրություն",
+  "transactionDetailLabelPaymentDescription": "Վճարման նկարագրություն"
 }
