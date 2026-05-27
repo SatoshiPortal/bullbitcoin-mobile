@@ -25,7 +25,7 @@ class BBKeyboardActions extends StatelessWidget {
       disableScroll: disableScroll,
       tapOutsideBehavior: TapOutsideBehavior.translucentDismiss,
       config: KeyboardActionsConfig(
-        keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+        keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
         keyboardBarColor: context.appColors.surface,
         keyboardSeparatorColor: context.appColors.border,
         nextFocus: nextFocus,
