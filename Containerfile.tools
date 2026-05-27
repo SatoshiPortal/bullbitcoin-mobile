@@ -65,6 +65,7 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     dbus \
     gnome-keyring \
+    libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Workaround for CVE-2024-32020 hardlink check failing on overlayfs:
