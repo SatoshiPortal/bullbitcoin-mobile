@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
@@ -66,7 +67,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       // Log app version on startup
       final packageInfo = await PackageInfo.fromPlatform();
       log.info(
-        'App started: ${packageInfo.appName} v${packageInfo.version}+${packageInfo.buildNumber}',
+        'App started: ${packageInfo.appName} '
+        'v${packageInfo.version}+${packageInfo.buildNumber} '
+        'platform=${Platform.operatingSystem} '
+        'osVersion=${Platform.operatingSystemVersion}',
       );
 
       // SQL Migrations

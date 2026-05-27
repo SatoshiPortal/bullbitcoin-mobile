@@ -90,12 +90,29 @@ class CheckForExistingDefaultWalletsUsecase {
     log.fine('FINE: found default wallet');
     await Future.wait(
       defaultWallets.map((wallet) async {
+        final backedUp =
+            wallet.isEncryptedVaultTested || wallet.isPhysicalBackupTested;
         try {
           await _seedRepository.get(wallet.masterFingerprint);
-          log.fine('FINE: Seed Found');
+          log.info(
+            'Wallet diagnostic: fingerprint=${wallet.masterFingerprint} '
+            'network=${wallet.network.name} seed=found '
+            'encryptedVaultBackup=${wallet.isEncryptedVaultTested} '
+            'physicalBackup=${wallet.isPhysicalBackupTested}',
+          );
         } catch (e) {
+          final seedExistsInStorage = await _seedRepository.exists(
+            wallet.masterFingerprint,
+          );
           log.severe(
-            message: 'Seed not found for default wallet ',
+            message:
+                'Seed not found for default wallet: '
+                'fingerprint=${wallet.masterFingerprint} '
+                'network=${wallet.network.name} '
+                'seedExistsInStorage=$seedExistsInStorage '
+                'encryptedVaultBackup=${wallet.isEncryptedVaultTested} '
+                'physicalBackup=${wallet.isPhysicalBackupTested} '
+                'recoverableFromBackup=$backedUp',
             error: e,
             trace: StackTrace.current,
           );
