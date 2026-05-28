@@ -6692,6 +6692,15 @@
       }
     }
   },
+  "transactionHistoryTitle": "লেনদেনৰ ইতিহাস",
+  "transactionHistoryHeading": "লেনদেনৰ ইতিহাস",
+  "exportTransactionsDescription": "আপোনাৰ সকলো ৱালেট লেনদেন (বিটকইন, লিকুইড, লাইটনিং আৰু চোৱাপ) CSV ফাইল হিচাপে এক্সপৰ্ট কৰক। ইচ্ছাকৃতভাৱে তাৰিখৰ পৰিসৰৰ দ্বাৰা ফিল্টাৰ কৰক।",
+  "exportTransactionsStartDate": "আৰম্ভৰ তাৰিখ",
+  "exportTransactionsEndDate": "শেষৰ তাৰিখ",
+  "exportTransactionsAnyDate": "যিকোনো",
+  "exportTransactionsButton": "CSV এক্সপৰ্ট কৰক",
+  "exportTransactionsSuccess": "লেনদেন সফলতাৰে এক্সপৰ্ট কৰা হ'ল",
+  "exportTransactionsEmpty": "নিৰ্বাচিত সময়ছোৱাৰ বাবে এক্সপৰ্ট কৰিবলৈ কোনো লেনদেন নাই",
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

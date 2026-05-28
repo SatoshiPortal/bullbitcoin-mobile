@@ -3105,6 +3105,15 @@
       }
     }
   },
+  "transactionHistoryTitle": "Historial de transacciones",
+  "transactionHistoryHeading": "Historial de transacciones",
+  "exportTransactionsDescription": "Exporta todas las transacciones de tu monedero (Bitcoin, Liquid, Lightning y swaps) como archivo CSV. Filtra por rango de fechas opcionalmente.",
+  "exportTransactionsStartDate": "Fecha de inicio",
+  "exportTransactionsEndDate": "Fecha final",
+  "exportTransactionsAnyDate": "Cualquiera",
+  "exportTransactionsButton": "Exportar CSV",
+  "exportTransactionsSuccess": "Transacciones exportadas correctamente",
+  "exportTransactionsEmpty": "No hay transacciones para exportar en el período seleccionado",
   "bip329LabelsTitle": "Etiquetas BIP329",
   "bip329LabelsHeading": "Importar/Exportar etiquetas BIP329",
   "bip329LabelsDescription": "Importa o exporta etiquetas de monedero usando el formato estándar BIP329.",

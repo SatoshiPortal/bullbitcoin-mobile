@@ -8887,6 +8887,15 @@
       }
     }
   },
+  "transactionHistoryTitle": "Lenden Itihaas",
+  "transactionHistoryHeading": "Lenden Itihaas",
+  "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur swaps) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
+  "exportTransactionsStartDate": "Shuru ki taarikh",
+  "exportTransactionsEndDate": "Antim taarikh",
+  "exportTransactionsAnyDate": "Koi bhi",
+  "exportTransactionsButton": "CSV export karein",
+  "exportTransactionsSuccess": "Lenden safaltaapoorvak export ho gaye",
+  "exportTransactionsEmpty": "Chayanit avadhi ke liye koi lenden nahi hai",
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

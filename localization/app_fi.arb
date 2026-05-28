@@ -3052,6 +3052,15 @@
       }
     }
   },
+  "transactionHistoryTitle": "Tapahtumahistoria",
+  "transactionHistoryHeading": "Tapahtumahistoria",
+  "exportTransactionsDescription": "Vie kaikki lompakkosi tapahtumat (Bitcoin, Liquid, Lightning ja swapit) CSV-tiedostona. Halutessasi suodata päivämääräväliltä.",
+  "exportTransactionsStartDate": "Alkupäivä",
+  "exportTransactionsEndDate": "Loppupäivä",
+  "exportTransactionsAnyDate": "Mikä tahansa",
+  "exportTransactionsButton": "Vie CSV",
+  "exportTransactionsSuccess": "Tapahtumat viety onnistuneesti",
+  "exportTransactionsEmpty": "Ei vietäviä tapahtumia valitulla ajanjaksolla",
   "bip329LabelsTitle": "BIP329-tunnisteet",
   "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
   "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",

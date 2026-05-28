@@ -7291,6 +7291,15 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "سجل المعاملات",
+  "transactionHistoryHeading": "سجل المعاملات",
+  "exportTransactionsDescription": "صدّر جميع معاملات محفظتك (بيتكوين، ليكويد، لايتنينغ، والمبادلات) كملف CSV. يمكنك تصفية النطاق الزمني اختيارياً.",
+  "exportTransactionsStartDate": "تاريخ البدء",
+  "exportTransactionsEndDate": "تاريخ الانتهاء",
+  "exportTransactionsAnyDate": "أي",
+  "exportTransactionsButton": "تصدير CSV",
+  "exportTransactionsSuccess": "تم تصدير المعاملات بنجاح",
+  "exportTransactionsEmpty": "لا توجد معاملات للتصدير في الفترة المحددة",
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

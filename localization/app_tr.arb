@@ -7726,6 +7726,15 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "transactionHistoryHeading": "İşlem geçmişi",
+  "exportTransactionsDescription": "Cüzdanınızın tüm işlemlerini (Bitcoin, Liquid, Lightning ve takasları) CSV dosyası olarak dışa aktarın. İsteğe bağlı olarak tarih aralığına göre filtreleyin.",
+  "exportTransactionsStartDate": "Başlangıç tarihi",
+  "exportTransactionsEndDate": "Bitiş tarihi",
+  "exportTransactionsAnyDate": "Herhangi",
+  "exportTransactionsButton": "CSV olarak dışa aktar",
+  "exportTransactionsSuccess": "İşlemler başarıyla dışa aktarıldı",
+  "exportTransactionsEmpty": "Seçilen dönem için dışa aktarılacak işlem yok",
   "bip329LabelsTitle": "BIP329 Etiketler",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

@@ -6485,6 +6485,15 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "Ιστορικό συναλλαγών",
+  "transactionHistoryHeading": "Ιστορικό συναλλαγών",
+  "exportTransactionsDescription": "Εξαγωγή όλων των συναλλαγών του πορτοφολιού σας (Bitcoin, Liquid, Lightning και swaps) ως αρχείο CSV. Προαιρετικά φιλτράρετε ανά εύρος ημερομηνιών.",
+  "exportTransactionsStartDate": "Ημερομηνία έναρξης",
+  "exportTransactionsEndDate": "Ημερομηνία λήξης",
+  "exportTransactionsAnyDate": "Οποιαδήποτε",
+  "exportTransactionsButton": "Εξαγωγή CSV",
+  "exportTransactionsSuccess": "Οι συναλλαγές εξήχθησαν με επιτυχία",
+  "exportTransactionsEmpty": "Δεν υπάρχουν συναλλαγές προς εξαγωγή για την επιλεγμένη περίοδο",
   "bip329LabelsTitle": "BIP329 ετικέτες",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

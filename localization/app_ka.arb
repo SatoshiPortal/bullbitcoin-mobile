@@ -433,5 +433,14 @@
   "payDescriptionLabel": "გადახდის აღწერა (არასავალდებულო)",
   "payDescriptionHint": "დაამატეთ შენიშვნა ამ გადახდისთვის",
   "payPaymentDescription": "გადახდის აღწერა",
-  "transactionDetailLabelPaymentDescription": "გადახდის აღწერა"
+  "transactionDetailLabelPaymentDescription": "გადახდის აღწერა",
+  "transactionHistoryTitle": "ტრანზაქციების ისტორია",
+  "transactionHistoryHeading": "ტრანზაქციების ისტორია",
+  "exportTransactionsDescription": "გადმოწერეთ თქვენი საფულის ყველა ტრანზაქცია (Bitcoin, Liquid, Lightning და სვაპები) CSV ფაილის სახით. სურვილისამებრ გაფილტრეთ თარიღების მიხედვით.",
+  "exportTransactionsStartDate": "დაწყების თარიღი",
+  "exportTransactionsEndDate": "დასრულების თარიღი",
+  "exportTransactionsAnyDate": "ნებისმიერი",
+  "exportTransactionsButton": "CSV-ის ექსპორტი",
+  "exportTransactionsSuccess": "ტრანზაქციები წარმატებით ექსპორტირდა",
+  "exportTransactionsEmpty": "მითითებულ პერიოდში ექსპორტისთვის ტრანზაქცია არ არის"
 }

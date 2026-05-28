@@ -9782,6 +9782,42 @@
       }
     }
   },
+  "transactionHistoryTitle": "Transaction History",
+  "@transactionHistoryTitle": {
+    "description": "Title for the transaction history page and settings entry"
+  },
+  "transactionHistoryHeading": "Transaction History",
+  "@transactionHistoryHeading": {
+    "description": "Main heading on the transaction history page"
+  },
+  "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and swaps) as a CSV file. Optionally filter by date range.",
+  "@exportTransactionsDescription": {
+    "description": "Description of the CSV export functionality"
+  },
+  "exportTransactionsStartDate": "Start date",
+  "@exportTransactionsStartDate": {
+    "description": "Label for the export start date field"
+  },
+  "exportTransactionsEndDate": "End date",
+  "@exportTransactionsEndDate": {
+    "description": "Label for the export end date field"
+  },
+  "exportTransactionsAnyDate": "Any",
+  "@exportTransactionsAnyDate": {
+    "description": "Placeholder shown when no date filter is selected"
+  },
+  "exportTransactionsButton": "Export CSV",
+  "@exportTransactionsButton": {
+    "description": "Button text to export transactions as CSV"
+  },
+  "exportTransactionsSuccess": "Transactions exported successfully",
+  "@exportTransactionsSuccess": {
+    "description": "Success message after exporting transactions"
+  },
+  "exportTransactionsEmpty": "No transactions to export for the selected period",
+  "@exportTransactionsEmpty": {
+    "description": "Message shown when there are no transactions to export"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

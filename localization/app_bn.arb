@@ -12582,6 +12582,15 @@
       }
     }
   },
+  "transactionHistoryTitle": "লেনদেনের ইতিহাস",
+  "transactionHistoryHeading": "লেনদেনের ইতিহাস",
+  "exportTransactionsDescription": "আপনার সমস্ত ওয়ালেট লেনদেন (Bitcoin, Liquid, Lightning এবং সোয়াপ) CSV ফাইল হিসাবে এক্সপোর্ট করুন। ঐচ্ছিকভাবে তারিখের পরিসর দ্বারা ফিল্টার করুন।",
+  "exportTransactionsStartDate": "শুরুর তারিখ",
+  "exportTransactionsEndDate": "শেষ তারিখ",
+  "exportTransactionsAnyDate": "যেকোনো",
+  "exportTransactionsButton": "CSV এক্সপোর্ট করুন",
+  "exportTransactionsSuccess": "লেনদেন সফলভাবে এক্সপোর্ট হয়েছে",
+  "exportTransactionsEmpty": "নির্বাচিত সময়ের জন্য কোনো লেনদেন নেই",
   "bip329LabelsTitle": "BIP329 লেবেল",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

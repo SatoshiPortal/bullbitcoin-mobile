@@ -7684,6 +7684,15 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "Historie transakcí",
+  "transactionHistoryHeading": "Historie transakcí",
+  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
+  "exportTransactionsStartDate": "Datum od",
+  "exportTransactionsEndDate": "Datum do",
+  "exportTransactionsAnyDate": "Jakékoli",
+  "exportTransactionsButton": "Exportovat CSV",
+  "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
+  "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
   "bip329LabelsTitle": "BIP329 Štítky",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

@@ -7701,6 +7701,15 @@
   "@dcaConfirmNetwork": {
     "description": "Field label for network"
   },
+  "transactionHistoryTitle": "تاریخچه تراکنش‌ها",
+  "transactionHistoryHeading": "تاریخچه تراکنش‌ها",
+  "exportTransactionsDescription": "همه تراکنش‌های کیف پول خود (بیت‌کوین، لیکویید، لایتنینگ و سوآپ‌ها) را به‌صورت فایل CSV صادر کنید. به‌صورت اختیاری بر اساس بازه زمانی فیلتر کنید.",
+  "exportTransactionsStartDate": "تاریخ شروع",
+  "exportTransactionsEndDate": "تاریخ پایان",
+  "exportTransactionsAnyDate": "هر تاریخ",
+  "exportTransactionsButton": "خروجی CSV",
+  "exportTransactionsSuccess": "تراکنش‌ها با موفقیت صادر شدند",
+  "exportTransactionsEmpty": "هیچ تراکنشی برای صادر کردن در بازه انتخاب‌شده وجود ندارد",
   "bip329LabelsTitle": "برچسب های BIP30",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

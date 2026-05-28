@@ -241,5 +241,14 @@
   "payDescriptionLabel": "Maelezo ya malipo (hiari)",
   "payDescriptionHint": "Ongeza dokezo kwa malipo haya",
   "payPaymentDescription": "Maelezo ya malipo",
-  "transactionDetailLabelPaymentDescription": "Maelezo ya malipo"
+  "transactionDetailLabelPaymentDescription": "Maelezo ya malipo",
+  "transactionHistoryTitle": "Historia ya muamala",
+  "transactionHistoryHeading": "Historia ya muamala",
+  "exportTransactionsDescription": "Hamisha miamala yote ya pochi yako (Bitcoin, Liquid, Lightning na swaps) kama faili la CSV. Chagua kuchuja kwa muda wa tarehe.",
+  "exportTransactionsStartDate": "Tarehe ya kuanza",
+  "exportTransactionsEndDate": "Tarehe ya mwisho",
+  "exportTransactionsAnyDate": "Yoyote",
+  "exportTransactionsButton": "Hamisha CSV",
+  "exportTransactionsSuccess": "Miamala imehamishwa kwa mafanikio",
+  "exportTransactionsEmpty": "Hakuna miamala ya kuhamisha kwa kipindi kilichochaguliwa"
 }

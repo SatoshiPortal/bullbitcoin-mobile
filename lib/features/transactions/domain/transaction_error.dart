@@ -7,3 +7,7 @@ class TransactionError extends BullException {
 class TransactionNotFoundError extends TransactionError {
   TransactionNotFoundError() : super('Transaction not found');
 }
+
+class NoTransactionsToExportError extends TransactionError {
+  NoTransactionsToExportError() : super('No transactions to export');
+}

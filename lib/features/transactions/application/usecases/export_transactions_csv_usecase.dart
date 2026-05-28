@@ -1,0 +1,55 @@
+// TODO(architecture): the other usecases in this feature still live under
+// `domain/usecases/` (GetTransactionsUsecase, GetTransactionsByTxIdUsecase).
+// They should be moved here to `application/usecases/` per ARCHITECTURE.md.
+import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
+
+// this covers self-custodial wallet activity only, not exchange orders
+class ExportTransactionsCsvUsecase {
+  final GetTransactionsUsecase _getTransactionsUsecase;
+  final TransactionExportFormatter _formatter;
+
+  ExportTransactionsCsvUsecase({
+    required GetTransactionsUsecase getTransactionsUsecase,
+    required TransactionExportFormatter formatter,
+  }) : _getTransactionsUsecase = getTransactionsUsecase,
+       _formatter = formatter;
+
+  Future<String> execute({DateTime? start, DateTime? end}) async {
+    final transactions = await _getTransactionsUsecase.execute();
+
+    final inclusiveEnd = end == null
+        ? null
+        : DateTime(end.year, end.month, end.day, 23, 59, 59);
+
+    final rows =
+        transactions.where((tx) {
+            if (tx.isOrder) return false;
+            final timestamp = tx.timestamp;
+            if (timestamp == null) return start == null && inclusiveEnd == null;
+            if (start != null && timestamp.isBefore(start)) return false;
+            if (inclusiveEnd != null && timestamp.isAfter(inclusiveEnd)) {
+              return false;
+            }
+            return true;
+          }).toList()
+          ..sort(_byTimestamp);
+
+    if (rows.isEmpty) {
+      throw NoTransactionsToExportError();
+    }
+
+    return _formatter.format(rows);
+  }
+
+  int _byTimestamp(Transaction a, Transaction b) {
+    final at = a.timestamp;
+    final bt = b.timestamp;
+    if (at == null && bt == null) return 0;
+    if (at == null) return -1;
+    if (bt == null) return 1;
+    return at.compareTo(bt);
+  }
+}

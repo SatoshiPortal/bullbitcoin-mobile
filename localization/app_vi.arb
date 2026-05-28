@@ -221,5 +221,14 @@
   "payDescriptionLabel": "Mô tả thanh toán (tùy chọn)",
   "payDescriptionHint": "Thêm ghi chú cho khoản thanh toán này",
   "payPaymentDescription": "Mô tả thanh toán",
-  "transactionDetailLabelPaymentDescription": "Mô tả thanh toán"
+  "transactionDetailLabelPaymentDescription": "Mô tả thanh toán",
+  "transactionHistoryTitle": "Lịch sử giao dịch",
+  "transactionHistoryHeading": "Lịch sử giao dịch",
+  "exportTransactionsDescription": "Xuất tất cả giao dịch ví của bạn (Bitcoin, Liquid, Lightning và swap) dưới dạng tệp CSV. Tùy chọn lọc theo khoảng thời gian.",
+  "exportTransactionsStartDate": "Ngày bắt đầu",
+  "exportTransactionsEndDate": "Ngày kết thúc",
+  "exportTransactionsAnyDate": "Bất kỳ",
+  "exportTransactionsButton": "Xuất CSV",
+  "exportTransactionsSuccess": "Đã xuất giao dịch thành công",
+  "exportTransactionsEmpty": "Không có giao dịch nào để xuất trong khoảng thời gian đã chọn"
 }
