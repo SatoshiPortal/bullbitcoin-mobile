@@ -4470,6 +4470,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "لا يمكن استخدام المحافظ الأجهزة للمبادلات.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
@@ -12614,5 +12618,18 @@
   "viewerViewInExplorer": "عرض في المستكشف",
   "transactionViewerTitle": "معرف المعاملة",
   "invoiceViewerTitle": "فاتورة",
-  "viewerCopyLink": "انسخ الرابط"
+  "viewerCopyLink": "انسخ الرابط",
+  "recipientsFieldSinpePhoneNumberHint": "8 أرقام بدون رمز الدولة",
+  "recipientsCopDocCcRecipientNumber": "رقم cédula المستلم",
+  "recipientsCopDocCeRecipientNumber": "رقم cédula de extranjería للمستلم",
+  "recipientsCopDocNitRecipientNumber": "الرقم الضريبي للمستلم",
+  "recipientsCopDocPassportRecipientNumber": "رقم جواز سفر المستلم",
+  "recipientsCopDocTiRecipientNumber": "رقم بطاقة هوية المستلم",
+  "recipientsCopDocRegistroCivilRecipientNumber": "رقم السجل المدني للمستلم",
+  "recipientsValidationSinpePhoneCountryCode": "احذف رمز الدولة (506+). أدخل الأرقام الثمانية فقط",
+  "recipientsValidationSinpePhoneInvalidChars": "استخدم الأرقام فقط (بدون حروف أو رموز)",
+  "recipientsValidationSinpePhoneTooShort": "أدخل جميع الأرقام الثمانية لرقم الهاتف",
+  "recipientsFieldDocumentType": "نوع هوية المستلم",
+  "recipientsFieldDocumentNumberHint": "أدخل رقم هوية المستلم",
+  "recipientsValidationSinpePhone": "أدخل رقم هاتف كوستاريكي صالح من 8 أرقام بدون رمز الدولة"
 }

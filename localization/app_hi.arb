@@ -4729,6 +4729,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "हार्डवेयर वॉलेट का उपयोग स्वैप के लिए नहीं किया जा सकता।",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "उपलब्ध बैलेंस डेटा",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -12890,5 +12894,18 @@
   "viewerViewInExplorer": "एक्सप्लोरर में देखें",
   "transactionViewerTitle": "लेन-देन आईडी",
   "invoiceViewerTitle": "चालान",
-  "viewerCopyLink": "प्रतिरूप जोड़ना"
+  "viewerCopyLink": "प्रतिरूप जोड़ना",
+  "recipientsFieldSinpePhoneNumberHint": "देश कोड के बिना 8 अंक",
+  "recipientsCopDocCcRecipientNumber": "प्राप्तकर्ता का cédula नंबर",
+  "recipientsCopDocCeRecipientNumber": "प्राप्तकर्ता का cédula de extranjería नंबर",
+  "recipientsCopDocNitRecipientNumber": "प्राप्तकर्ता का कर आईडी नंबर",
+  "recipientsCopDocPassportRecipientNumber": "प्राप्तकर्ता का पासपोर्ट नंबर",
+  "recipientsCopDocTiRecipientNumber": "प्राप्तकर्ता का पहचान पत्र नंबर",
+  "recipientsCopDocRegistroCivilRecipientNumber": "प्राप्तकर्ता का नागरिक पंजीकरण नंबर",
+  "recipientsValidationSinpePhoneCountryCode": "देश कोड (+506) हटाएँ। केवल 8-अंकों का नंबर दर्ज करें",
+  "recipientsValidationSinpePhoneInvalidChars": "केवल अंकों का उपयोग करें (कोई अक्षर या प्रतीक नहीं)",
+  "recipientsValidationSinpePhoneTooShort": "फ़ोन नंबर के सभी 8 अंक दर्ज करें",
+  "recipientsFieldDocumentType": "प्राप्तकर्ता का आईडी प्रकार",
+  "recipientsFieldDocumentNumberHint": "प्राप्तकर्ता का आईडी नंबर दर्ज करें",
+  "recipientsValidationSinpePhone": "देश कोड के बिना एक वैध 8-अंकों का कोस्टा रिकन फ़ोन नंबर दर्ज करें"
 }

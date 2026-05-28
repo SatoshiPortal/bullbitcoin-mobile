@@ -51,6 +51,10 @@ RUN apt-get update && apt-get install -y \
 #   libcurl4-openssl-dev — required by sentry-native (sentry_flutter) HTTP transport
 #   dbus, gnome-keyring — Secret Service provider for libsecret at runtime
 #     (bootstrapped by .devcontainer/init-keyring.sh on container start)
+#   fonts-noto-* — Indic/etc. glyph coverage so non-Latin locales render
+#     (Flutter Linux falls back to system fonts via fontconfig; without these
+#     scripts like Devanagari/Bengali can't render. cjk is for Chinese/Japanese/Korean
+#     glyphs shipped separately from core)
 RUN apt-get update && apt-get install -y \
     clang \
     lld \
@@ -66,6 +70,8 @@ RUN apt-get update && apt-get install -y \
     dbus \
     gnome-keyring \
     libsqlite3-dev \
+    fonts-noto-core \
+    fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 
 # Workaround for CVE-2024-32020 hardlink check failing on overlayfs:

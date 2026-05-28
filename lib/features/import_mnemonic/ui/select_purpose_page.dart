@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -31,15 +32,7 @@ class SelectScriptTypePage extends StatelessWidget {
       body: BlocConsumer<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: BBText(
-                  state.error!.toString(),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  color: Theme.of(context).colorScheme.onError,
-                ),
-              ),
-            );
+            SnackBarUtils.showSnackBar(context, state.error!.toString());
           }
         },
         builder: (context, state) {
@@ -182,25 +175,22 @@ class _WalletTypeCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: .circle,
                 border: Border.all(
-                  color:
-                      isSelected
-                          ? context.appColors.primary
-                          : context.appColors.border,
+                  color: isSelected
+                      ? context.appColors.primary
+                      : context.appColors.border,
                   width: 2,
                 ),
-                color:
-                    isSelected
-                        ? context.appColors.primary
-                        : context.appColors.transparent,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.transparent,
               ),
-              child:
-                  isSelected
-                      ? Icon(
-                        Icons.circle,
-                        size: 12,
-                        color: context.appColors.onPrimary,
-                      )
-                      : null,
+              child: isSelected
+                  ? Icon(
+                      Icons.circle,
+                      size: 12,
+                      color: context.appColors.onPrimary,
+                    )
+                  : null,
             ),
           ],
         ),

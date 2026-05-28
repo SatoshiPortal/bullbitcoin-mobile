@@ -4713,6 +4713,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Donanım cüzdanları takaslar için kullanılamaz.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Mevcut herhangi bir denge veri mevcut",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -12611,5 +12615,18 @@
   "viewerViewInExplorer": "Gezginde görüntüle",
   "transactionViewerTitle": "İşlem kimliği",
   "invoiceViewerTitle": "Fatura",
-  "viewerCopyLink": "Bağlantıyı kopyala"
+  "viewerCopyLink": "Bağlantıyı kopyala",
+  "recipientsFieldSinpePhoneNumberHint": "Ülke kodu olmadan 8 hane",
+  "recipientsCopDocCcRecipientNumber": "Alıcının cédula numarası",
+  "recipientsCopDocCeRecipientNumber": "Alıcının cédula de extranjería numarası",
+  "recipientsCopDocNitRecipientNumber": "Alıcının vergi kimlik numarası",
+  "recipientsCopDocPassportRecipientNumber": "Alıcının pasaport numarası",
+  "recipientsCopDocTiRecipientNumber": "Alıcının kimlik kartı numarası",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Alıcının nüfus kayıt numarası",
+  "recipientsValidationSinpePhoneCountryCode": "Ülke kodunu (+506) kaldırın. Yalnızca 8 haneli numarayı girin",
+  "recipientsValidationSinpePhoneInvalidChars": "Yalnızca rakam kullanın (harf veya sembol yok)",
+  "recipientsValidationSinpePhoneTooShort": "Telefon numarasının 8 hanesini de girin",
+  "recipientsFieldDocumentType": "Alıcı kimlik türü",
+  "recipientsFieldDocumentNumberHint": "Alıcının kimlik numarasını girin",
+  "recipientsValidationSinpePhone": "Ülke kodu olmadan geçerli 8 haneli bir Kosta Rika telefon numarası girin"
 }

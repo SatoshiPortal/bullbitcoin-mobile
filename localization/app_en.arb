@@ -7217,6 +7217,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets cannot be used for swaps.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
@@ -13376,11 +13380,15 @@
   "@recipientsFieldPhoneNumberHint": {
     "description": "Hint text for the recipient phone number field."
   },
-  "recipientsFieldDocumentType": "ID Document Type",
+  "recipientsFieldSinpePhoneNumberHint": "8 digits without country code",
+  "@recipientsFieldSinpePhoneNumberHint": {
+    "description": "Hint text for the SINPE Móvil phone number field."
+  },
+  "recipientsFieldDocumentType": "Recipient ID type",
   "@recipientsFieldDocumentType": {
     "description": "Label for the ID document type selector in Colombia recipient forms."
   },
-  "recipientsFieldDocumentNumberHint": "Enter document number",
+  "recipientsFieldDocumentNumberHint": "Enter recipient ID number",
   "@recipientsFieldDocumentNumberHint": {
     "description": "Hint text for the ID document number field."
   },
@@ -13484,6 +13492,30 @@
   "@recipientsCopDocRegistroCivil": {
     "description": "Colombia ID document type: civil registry."
   },
+  "recipientsCopDocCcRecipientNumber": "Recipient cédula number",
+  "@recipientsCopDocCcRecipientNumber": {
+    "description": "Label for the recipient cédula de ciudadanía number field."
+  },
+  "recipientsCopDocCeRecipientNumber": "Recipient cédula de extranjería number",
+  "@recipientsCopDocCeRecipientNumber": {
+    "description": "Label for the recipient cédula de extranjería number field."
+  },
+  "recipientsCopDocNitRecipientNumber": "Recipient tax ID number",
+  "@recipientsCopDocNitRecipientNumber": {
+    "description": "Label for the recipient NIT number field."
+  },
+  "recipientsCopDocPassportRecipientNumber": "Recipient passport number",
+  "@recipientsCopDocPassportRecipientNumber": {
+    "description": "Label for the recipient passport number field."
+  },
+  "recipientsCopDocTiRecipientNumber": "Recipient identity card number",
+  "@recipientsCopDocTiRecipientNumber": {
+    "description": "Label for the recipient tarjeta de identidad number field."
+  },
+  "recipientsCopDocRegistroCivilRecipientNumber": "Recipient civil registry number",
+  "@recipientsCopDocRegistroCivilRecipientNumber": {
+    "description": "Label for the recipient registro civil number field."
+  },
   "recipientsFieldDebitCard": "Debit Card Number",
   "@recipientsFieldDebitCard": {
     "description": "Label for the debit card number field in the SPEI Card form."
@@ -13496,9 +13528,21 @@
   "@recipientsFieldOwnerNameSinpeHint": {
     "description": "Hint text for the owner name field while SINPE Móvil validation runs."
   },
-  "recipientsValidationSinpePhone": "Please enter a valid 8-digit phone number",
+  "recipientsValidationSinpePhone": "Enter a valid 8-digit Costa Rican phone number without the country code",
   "@recipientsValidationSinpePhone": {
     "description": "Validation error for an invalid SINPE Móvil phone number."
+  },
+  "recipientsValidationSinpePhoneCountryCode": "Remove the country code (+506). Enter only the 8-digit number",
+  "@recipientsValidationSinpePhoneCountryCode": {
+    "description": "Validation error when a SINPE Móvil phone number includes the Costa Rica country code."
+  },
+  "recipientsValidationSinpePhoneInvalidChars": "Use digits only (no letters or symbols)",
+  "@recipientsValidationSinpePhoneInvalidChars": {
+    "description": "Validation error when a SINPE Móvil phone number contains non-digit characters."
+  },
+  "recipientsValidationSinpePhoneTooShort": "Enter all 8 digits of the phone number",
+  "@recipientsValidationSinpePhoneTooShort": {
+    "description": "Validation error when a SINPE Móvil phone number has fewer than 8 digits."
   },
   "recipientsValidationSinpeOwner": "Please validate the phone number",
   "@recipientsValidationSinpeOwner": {

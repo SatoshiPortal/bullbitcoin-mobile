@@ -4109,6 +4109,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "As carteiras hardware não podem ser utilizadas para trocas.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "payDefaultCommentHint": "Insira o comentário padrão",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
@@ -12658,8 +12662,8 @@
   "recipientsFieldRecipientNameLabel": "Nome do destinatário",
   "recipientsFieldPhoneNumber": "Número de telefone",
   "recipientsFieldPhoneNumberHint": "Insira o número de telefone",
-  "recipientsFieldDocumentType": "Tipo de documento de identidade",
-  "recipientsFieldDocumentNumberHint": "Insira o número do documento",
+  "recipientsFieldDocumentType": "Tipo de documento do destinatário",
+  "recipientsFieldDocumentNumberHint": "Digite o número de documento do destinatário",
   "recipientsFieldOwnerName": "Nome do titular",
   "recipientsFieldOwnerNameHint": "Insira o nome do titular",
   "recipientsAccountOwnerQuestion": "De quem é esta conta?",
@@ -12688,7 +12692,7 @@
   "recipientsFieldDebitCard": "Número do cartão de débito",
   "recipientsFieldDebitCardHint": "Insira o número do cartão de débito",
   "recipientsFieldOwnerNameSinpeHint": "O nome do titular aparecerá aqui",
-  "recipientsValidationSinpePhone": "Insira um número de telefone válido de 8 dígitos",
+  "recipientsValidationSinpePhone": "Digite um número de telefone costa-riquenho válido de 8 dígitos sem o código do país",
   "recipientsValidationSinpeOwner": "Valide o número de telefone",
   "recipientsFieldEmailAddress": "Endereço de e-mail",
   "recipientsFieldEmailAddressHint": "Insira o endereço de e-mail",
@@ -12729,5 +12733,15 @@
   "exchangeSupportChatPickFilesFailed": "Falha ao selecionar arquivos. Tente novamente.",
   "exchangeSupportChatAttachLogsFailed": "Falha ao anexar logs. Tente novamente.",
   "exchangeSupportChatFetchFileDataFailed": "Falha ao buscar os dados do arquivo.",
-  "importMnemonicDuplicateError": "Esta mnemônica já existe"
+  "importMnemonicDuplicateError": "Esta mnemônica já existe",
+  "recipientsFieldSinpePhoneNumberHint": "8 dígitos sem código do país",
+  "recipientsCopDocCcRecipientNumber": "Número de cédula do destinatário",
+  "recipientsCopDocCeRecipientNumber": "Número de cédula de extranjería do destinatário",
+  "recipientsCopDocNitRecipientNumber": "CPF/CNPJ do destinatário",
+  "recipientsCopDocPassportRecipientNumber": "Número de passaporte do destinatário",
+  "recipientsCopDocTiRecipientNumber": "Número de carteira de identidade do destinatário",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Número de registro civil do destinatário",
+  "recipientsValidationSinpePhoneCountryCode": "Remova o código do país (+506). Digite apenas o número de 8 dígitos",
+  "recipientsValidationSinpePhoneInvalidChars": "Use apenas dígitos (sem letras ou símbolos)",
+  "recipientsValidationSinpePhoneTooShort": "Digite todos os 8 dígitos do número de telefone"
 }

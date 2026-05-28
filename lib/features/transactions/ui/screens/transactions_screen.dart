@@ -50,9 +50,10 @@ class _Screen extends StatelessWidget {
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return BBPullableBody(
       onRefresh: () async {
+        // User gesture — bypass the coordinator throttle.
         final bloc = context.read<WalletBloc>();
-        bloc.add(const WalletRefreshed());
-        await bloc.stream.firstWhere((state) => !state.isSyncing);
+        bloc.add(const WalletRefreshed(force: true));
+        await bloc.stream.firstWhere((state) => !state.isRefreshing);
         if (!context.mounted) return;
         await context.read<TransactionsCubit>().loadTxs();
       },

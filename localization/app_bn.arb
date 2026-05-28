@@ -4621,6 +4621,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "হার্ডওয়্যার ওয়ালেট সোয়াপের জন্য ব্যবহার করা যাবে না।",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "ব্যালেন্স তথ্য উপলব্ধ নয়",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -12892,5 +12896,18 @@
   "viewerViewInExplorer": "এক্সপ্লোরারে দেখুন",
   "transactionViewerTitle": "লেনদেন আইডি",
   "invoiceViewerTitle": "চালান",
-  "viewerCopyLink": "লিঙ্ক কপি করুন"
+  "viewerCopyLink": "লিঙ্ক কপি করুন",
+  "recipientsFieldSinpePhoneNumberHint": "দেশের কোড ছাড়া 8 সংখ্যা",
+  "recipientsCopDocCcRecipientNumber": "প্রাপকের cédula নম্বর",
+  "recipientsCopDocCeRecipientNumber": "প্রাপকের cédula de extranjería নম্বর",
+  "recipientsCopDocNitRecipientNumber": "প্রাপকের ট্যাক্স আইডি নম্বর",
+  "recipientsCopDocPassportRecipientNumber": "প্রাপকের পাসপোর্ট নম্বর",
+  "recipientsCopDocTiRecipientNumber": "প্রাপকের পরিচয়পত্রের নম্বর",
+  "recipientsCopDocRegistroCivilRecipientNumber": "প্রাপকের নাগরিক নিবন্ধনের নম্বর",
+  "recipientsValidationSinpePhoneCountryCode": "দেশের কোড (+506) সরান। শুধু 8-সংখ্যার নম্বর লিখুন",
+  "recipientsValidationSinpePhoneInvalidChars": "শুধু সংখ্যা ব্যবহার করুন (অক্ষর বা চিহ্ন নয়)",
+  "recipientsValidationSinpePhoneTooShort": "ফোন নম্বরের সব 8 সংখ্যা লিখুন",
+  "recipientsFieldDocumentType": "প্রাপকের আইডির ধরন",
+  "recipientsFieldDocumentNumberHint": "প্রাপকের আইডি নম্বর লিখুন",
+  "recipientsValidationSinpePhone": "দেশের কোড ছাড়া একটি বৈধ 8-সংখ্যার কোস্টা রিকান ফোন নম্বর লিখুন"
 }
