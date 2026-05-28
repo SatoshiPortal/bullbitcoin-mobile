@@ -83,17 +83,17 @@ class NequiCopFormState extends State<NequiCopForm> {
           const Gap(12.0), // Account Type Dropdown
           Text(
             context.loc.recipientsFieldDocumentType,
-            style: TextStyle(
-              fontSize: 14,
+            style: context.font.bodyLarge?.copyWith(
+              color: context.appColors.secondary,
               fontWeight: .w500,
-              color: context.appColors.onSurface,
             ),
             textAlign: .left,
           ),
           const Gap(8.0),
           Material(
             elevation: 4,
-            color: context.appColors.onPrimary,
+            shadowColor: context.appColors.onSurface.withValues(alpha: 0.7),
+            color: context.appColors.surface,
             borderRadius: BorderRadius.circular(4.0),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -102,9 +102,10 @@ class NequiCopFormState extends State<NequiCopForm> {
                 alignment: Alignment.centerLeft,
                 underline: const SizedBox.shrink(),
                 borderRadius: BorderRadius.circular(4.0),
+                dropdownColor: context.appColors.surface,
                 icon: Icon(
                   Icons.keyboard_arrow_down,
-                  color: context.appColors.secondary,
+                  color: context.appColors.onSurface,
                 ),
                 value: _documentType,
                 onChanged: (value) {
@@ -126,7 +127,10 @@ class NequiCopFormState extends State<NequiCopForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: copDocumentTypeLabel(context, _documentType),
+            labelText: copDocumentTypeRecipientNumberLabel(
+              context,
+              _documentType,
+            ),
             hintText: context.loc.recipientsFieldDocumentNumberHint,
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),

@@ -4623,5 +4623,18 @@
   "viewerViewInExplorer": "在浏览器中查看",
   "transactionViewerTitle": "交易 ID",
   "invoiceViewerTitle": "发票",
-  "viewerCopyLink": "复制链接"
+  "viewerCopyLink": "复制链接",
+  "recipientsFieldSinpePhoneNumberHint": "不含国家代码的8位数字",
+  "recipientsCopDocCcRecipientNumber": "收件人cédula号码",
+  "recipientsCopDocCeRecipientNumber": "收件人cédula de extranjería号码",
+  "recipientsCopDocNitRecipientNumber": "收件人税务ID号码",
+  "recipientsCopDocPassportRecipientNumber": "收件人护照号码",
+  "recipientsCopDocTiRecipientNumber": "收件人身份证号码",
+  "recipientsCopDocRegistroCivilRecipientNumber": "收件人民事登记号码",
+  "recipientsValidationSinpePhoneCountryCode": "移除国家代码 (+506)。仅输入8位数字",
+  "recipientsValidationSinpePhoneInvalidChars": "只使用数字（不包含字母或符号）",
+  "recipientsValidationSinpePhoneTooShort": "请输入完整的8位电话号码",
+  "recipientsFieldDocumentType": "收件人证件类型",
+  "recipientsFieldDocumentNumberHint": "输入收件人证件号码",
+  "recipientsValidationSinpePhone": "请输入有效的8位哥斯达黎加电话号码（不含国家代码）"
 }

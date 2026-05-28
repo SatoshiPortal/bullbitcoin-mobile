@@ -571,11 +571,20 @@ sealed class Order with _$Order {
   (num, String) amountAndCurrencyToDisplay() {
     if (orderType == OrderType.buy) {
       return (ConvertAmount.btcToSats(payoutAmount), 'sats');
-    } else if (orderType == OrderType.sell) {
-      return (ConvertAmount.btcToSats(payinAmount), 'sats');
-    } else {
-      return (payoutAmount, payoutCurrency);
     }
+    if (orderType == OrderType.sell) {
+      return (ConvertAmount.btcToSats(payinAmount), 'sats');
+    }
+
+    final (amount, currency) = switch (orderType) {
+      OrderType.reward => (payinAmount, payinCurrency),
+      OrderType.refund => (payoutAmount, payoutCurrency),
+      _ => (payoutAmount, payoutCurrency),
+    };
+    if (currency == 'BTC' || currency == 'LBTC') {
+      return (ConvertAmount.btcToSats(amount), 'sats');
+    }
+    return (amount, currency);
   }
 
   double absoluteUnbatchedBuyOnchainFees() {
