@@ -10887,8 +10887,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "birkaç saat",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "birkaç saat",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "Her ay",

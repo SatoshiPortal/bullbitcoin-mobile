@@ -51,15 +51,12 @@ class FeesDatasource {
     final data = resp.data as Map<String, dynamic>;
     final fastestFee = data['fastestFee'] as int;
     final economyFee = data['economyFee'] as int;
-    final minimumFee = data['minimumFee'] as int;
 
-    final feeOptions = FeeOptions(
-      fastest: NetworkFee.relativeFromSatPerVbyte(fastestFee.toDouble()),
-      economic: NetworkFee.relativeFromSatPerVbyte(economyFee.toDouble()),
-      slow: NetworkFee.relativeFromSatPerVbyte(minimumFee.toDouble()),
+    // Policy lives in domain — datasource is pure HTTP + delegate.
+    return BitcoinFeePresetPolicy.fromMempool(
+      fastestSatPerVbyte: fastestFee.toDouble(),
+      economicSatPerVbyte: economyFee.toDouble(),
     );
-
-    return feeOptions;
   }
 
   Future<FeeOptions> getLiquidNetworkFeeOptions({

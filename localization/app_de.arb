@@ -3574,7 +3574,7 @@
   "autoswapMaxFeeInfoText": "Wenn die Gesamtgebühr den festgelegten Prozentsatz überschreitet, wird der automatische Tausch pausiert.",
   "backupWalletSuccessDescription": "Jetzt testen wir Ihr Backup, um sicherzustellen, dass alles korrekt ist.",
   "rbfBroadcast": "Senden",
-  "sendEstimatedDeliveryFewHours": "In wenigen Stunden",
+  "sendEstimatedDeliveryHours": "In wenigen Stunden",
   "dcaConfirmFrequencyMonthly": "Jeden Monat",
   "importWatchOnlyScriptType": "Skript-Typ / Adressformat",
   "electrumCustomServers": "Eigene Electrum-Server",

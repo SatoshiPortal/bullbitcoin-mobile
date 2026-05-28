@@ -10970,8 +10970,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "몇 시간",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "몇 시간",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "매월",

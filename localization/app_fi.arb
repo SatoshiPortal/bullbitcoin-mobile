@@ -237,7 +237,7 @@
   "sendConfirmCustomFee": "Hyväksy mukautettu kulutaso",
   "sendEstimatedDelivery10Minutes": "10 minuuttia",
   "sendEstimatedDelivery10to30Minutes": "10-30 minuuttia",
-  "sendEstimatedDeliveryFewHours": "muutama tunti",
+  "sendEstimatedDeliveryHours": "muutama tunti",
   "sendEstimatedDeliveryHoursToDays": "tunneista vuorokausiin",
   "sendEstimatedDelivery": "Arvioitu viive ~ ",
   "sendAddress": "Osoite: ",

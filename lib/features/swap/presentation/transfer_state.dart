@@ -40,6 +40,11 @@ sealed class TransferState with _$TransferState {
     // gates the rollback. UI must not read these directly.
     FeeSelection? armPriorSelection,
     NetworkFee? armPriorCustomFee,
+    // Real-fee previews + cached unsigned PSBTs per FeeSelection slot.
+    // Mirrors SendState.feePreviewCache exactly — see that doc for the
+    // BDK-coin-selection rationale. Cleared on any input-shape change.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
     List<WalletUtxo>? utxos,
     int? bitcoinTxSize,
     double? exchangeRate,

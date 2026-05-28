@@ -8312,8 +8312,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "няколко часа",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "няколко часа",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "importWatchOnlyScriptType": "Тип на скрипта",

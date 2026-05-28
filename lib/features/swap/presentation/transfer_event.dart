@@ -43,4 +43,13 @@ sealed class TransferEvent with _$TransferEvent {
   /// for the old explicit "Confirm Custom Fee" button.
   const factory TransferEvent.customFeeFinalized() =
       TransferCustomFeeFinalized;
+  /// Builds an unsigned PSBT at the typed rate and stores the slot
+  /// (real fee + cached PSBT + txSize) into
+  /// `feePreviewCache.custom`. Debounced from the widget.
+  const factory TransferEvent.customFeePreviewRequested(NetworkFee fee) =
+      TransferCustomFeePreviewRequested;
+  /// Fires 3 prepare-only builds (Fastest / Economic / Slow) so the
+  /// modal can render real per-preset fees instead of rate × vsize.
+  const factory TransferEvent.presetFeesPreviewRequested() =
+      TransferPresetFeesPreviewRequested;
 }

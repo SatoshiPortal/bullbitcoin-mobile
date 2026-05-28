@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,15 +9,13 @@ import 'package:flutter_test/flutter_test.dart';
 /// the user sees as their transaction fee.
 ///
 /// The getter has three branches: no wallet → null; Liquid → the PSET-derived
-/// `liquidAbsoluteFees`; Bitcoin → the PSBT-derived `bitcoinAbsoluteFeesSat`
-/// when present, otherwise a `rate × txSize` prediction.
-///
-/// This file's job is to lock in the "realistic" invariant: when a PSBT
-/// exists the displayed fee MUST be the one BDK actually produced, not a
-/// prediction that diverges by 1-3 sats at sub-1 sat/vByte rates. See
+/// `liquidAbsoluteFees`; Bitcoin → the PSBT-derived `bitcoinAbsoluteFeesSat`.
+/// There is NO `rate × vsize` prediction fallback — when no PSBT exists the
+/// getter returns null and the UI renders a shimmer placeholder. See
 /// [issue #2133](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/2133)
 /// and the on-chain reproducers `f0b40a72…` (paid 16 sat, predicted 14) and
-/// `b734968d…` (paid 30 sat, predicted 28).
+/// `b734968d…` (paid 30 sat, predicted 28) — divergences that justified
+/// removing the prediction path entirely.
 void main() {
   Wallet bitcoinWallet() => Wallet(
     origin: 'test-btc-origin',
@@ -115,25 +114,26 @@ void main() {
     });
   });
 
-  group('SendState.absoluteFees — Bitcoin prediction fallback', () {
-    test(
-      'falls back to selectedFee.toAbsolute(bitcoinTxSize) when no PSBT yet',
-      () {
-        // Pre-PSBT window: no real fee is known. The getter must still
-        // produce a number so the UI can show something. Prediction at
-        // 0.1 sat/vB × 140 vB = 14 sat, as in tx 1's reproducer.
-        final state = SendState(
-          selectedWallet: bitcoinWallet(),
-          selectedFeeOption: FeeSelection.custom,
-          customFee: NetworkFee.relativeFromSatPerVbyte(0.1),
-          bitcoinTxSize: 140,
-        );
-        expect(state.bitcoinAbsoluteFeesSat, isNull);
-        expect(state.absoluteFees, 14);
-      },
-    );
+  group('SendState.absoluteFees — Bitcoin, no PSBT means no number', () {
+    // Architectural invariant from #2133: the displayed fee is the PSBT's
+    // fee or nothing. We do NOT compute `rate × vsize` ourselves anywhere
+    // — BDK's ceil + sub-dust change absorption makes that math diverge
+    // by 1–3 sats at sub-1 sat/vByte rates (see reproducers in the file
+    // header). The UI must render a shimmer placeholder via
+    // `formattedAbsoluteFees == '…'` instead of a wrong number.
 
-    test('reflects the chosen preset, not just custom rates', () {
+    test('returns null when no PSBT has been built yet', () {
+      final state = SendState(
+        selectedWallet: bitcoinWallet(),
+        selectedFeeOption: FeeSelection.custom,
+        customFee: NetworkFee.relativeFromSatPerVbyte(0.1),
+        bitcoinTxSize: 140,
+      );
+      expect(state.bitcoinAbsoluteFeesSat, isNull);
+      expect(state.absoluteFees, isNull);
+    });
+
+    test('returns null even when a preset rate and txSize are loaded', () {
       final feeOptions = FeeOptions(
         fastest: NetworkFee.relativeFromSatPerVbyte(10),
         economic: NetworkFee.relativeFromSatPerVbyte(5),
@@ -144,30 +144,23 @@ void main() {
         bitcoinFeesList: feeOptions,
         bitcoinTxSize: 140,
       );
-      // Default selectedFeeOption is `fastest`. 10 sat/vB × 140 vB = 1400.
-      expect(state.absoluteFees, 1400);
-    });
-
-    test('returns null when neither real fee nor selectedFee is available', () {
-      final state = SendState(
-        selectedWallet: bitcoinWallet(),
-        bitcoinTxSize: 140,
-      );
-      // selectedFeeOption defaults to FeeSelection.fastest, but with no
-      // bitcoinFeesList loaded selectedFee resolves to null.
+      // Default selectedFeeOption is `fastest`. Old behaviour would have
+      // returned 10 × 140 = 1400. New behaviour: no PSBT → null, no
+      // arithmetic anywhere.
       expect(state.absoluteFees, isNull);
     });
 
-    test('treats unknown bitcoinTxSize as 0 (rate × 0 = 0)', () {
-      // Edge case: prediction with no size info collapses to 0. Acceptable
-      // — the UI is in a transient pre-build state. Documenting current
-      // behaviour so a future change is deliberate.
+    test('formattedAbsoluteFees renders the ellipsis placeholder', () {
+      // UI contract: the send screen renders this string verbatim. A
+      // brief '…' is honest about "not yet known" and works with the
+      // shimmer placeholders elsewhere in the modal flow.
       final state = SendState(
         selectedWallet: bitcoinWallet(),
+        bitcoinUnit: BitcoinUnit.sats,
         selectedFeeOption: FeeSelection.custom,
         customFee: NetworkFee.relativeFromSatPerVbyte(10),
       );
-      expect(state.absoluteFees, 0);
+      expect(state.formattedAbsoluteFees, '…');
     });
   });
 
@@ -206,72 +199,61 @@ void main() {
   });
 
   group('SendState.absoluteFees — realism invariant', () {
-    // The "displayed fee is realistic" invariant has two parts:
-    //   (a) When a PSBT exists, the displayed value IS the PSBT's fee.
-    //   (b) When no PSBT exists, the prediction must not overshoot the
-    //       real BDK fee (since BDK applies ceil + sub-dust absorption,
-    //       BDK ≥ prediction structurally). Underestimating by ≤3 sat at
-    //       sub-1 sat/vByte is documented BDK behaviour; overestimating
-    //       in the prediction would be a bug because it would make a
-    //       valid send look insufficient against the balance.
+    // The "displayed fee is realistic" invariant is now single-pronged:
+    // the displayed value IS the PSBT's fee, or it is nothing. Removing
+    // the prediction fallback eliminates the divergence class that put
+    // tx f0b40a72… (predicted 14, paid 16) and tx b734968d… (predicted
+    // 28, paid 30) on chain at the wrong number — and the more recent
+    // tx f98dde7c… (displayed 30, broadcast 23) caused by BDK's
+    // non-deterministic coin selection between preview and commit.
     //
-    // Part (a) is covered by the priority tests above. This group locks
-    // in part (b) for the rates AGENTS.md / PR #2199 explicitly support.
+    // The reproducers below set `bitcoinAbsoluteFeesSat` directly to
+    // the on-chain value; the assertion is that `absoluteFees` echoes
+    // it without any local math.
 
     test(
-      'prediction at 0.1 sat/vByte never exceeds the BDK-real fee '
-      'observed on-chain (tx f0b40a72…)',
+      'at 0.1 sat/vByte the displayed fee is the on-chain fee verbatim '
+      '(tx f0b40a72…)',
       () {
         final state = SendState(
           selectedWallet: bitcoinWallet(),
           selectedFeeOption: FeeSelection.custom,
           customFee: NetworkFee.relativeFromSatPerVbyte(0.1),
-          bitcoinTxSize: 140, // pre-build txSize estimate
+          bitcoinTxSize: 140,
+          bitcoinAbsoluteFeesSat: 16,
         );
-        const observedOnChainFee = 16;
-        expect(
-          state.absoluteFees,
-          lessThanOrEqualTo(observedOnChainFee),
-          reason:
-              'Prediction must be a lower bound on the real fee — a high '
-              'prediction would surface false InsufficientBalance errors.',
-        );
+        expect(state.absoluteFees, 16);
       },
     );
 
     test(
-      'prediction at 0.2 sat/vByte never exceeds the BDK-real fee '
-      'observed on-chain (tx b734968d…)',
+      'at 0.2 sat/vByte the displayed fee is the on-chain fee verbatim '
+      '(tx b734968d…)',
       () {
         final state = SendState(
           selectedWallet: bitcoinWallet(),
           selectedFeeOption: FeeSelection.custom,
           customFee: NetworkFee.relativeFromSatPerVbyte(0.2),
           bitcoinTxSize: 140,
+          bitcoinAbsoluteFeesSat: 30,
         );
-        const observedOnChainFee = 30;
-        expect(state.absoluteFees, lessThanOrEqualTo(observedOnChainFee));
+        expect(state.absoluteFees, 30);
       },
     );
 
-    test(
-      'at normal rates the prediction matches reality within ±1 sat per '
-      'vbyte of txSize uncertainty',
-      () {
-        // Pick a normal rate (10 sat/vB). Predict at vsize 140. Reality
-        // at on-chain vsize 140.25 with BDK ceil would be ceil(10*140.25)=
-        // 1403 sat or 10*140=1400. Either way within ±3 sat.
-        final state = SendState(
-          selectedWallet: bitcoinWallet(),
-          selectedFeeOption: FeeSelection.custom,
-          customFee: NetworkFee.relativeFromSatPerVbyte(10),
-          bitcoinTxSize: 140,
-        );
-        expect(state.absoluteFees, 1400);
-        // The corresponding BDK ceil at weight 561 (vsize 140.25):
-        // ceil(2500 sat/kwu × 561 / 1000) = ceil(1402.5) = 1403.
-        // 1400 ≤ 1403, invariant holds.
-      },
-    );
+    test('at normal rates the displayed fee is the PSBT fee verbatim', () {
+      // Reality at on-chain vsize 140 with BDK ceil for a 10 sat/vB
+      // request comes out at 1400. We assert verbatim echo, not
+      // arithmetic — the test guards against any reintroduction of a
+      // `rate × vsize` shortcut.
+      final state = SendState(
+        selectedWallet: bitcoinWallet(),
+        selectedFeeOption: FeeSelection.custom,
+        customFee: NetworkFee.relativeFromSatPerVbyte(10),
+        bitcoinTxSize: 140,
+        bitcoinAbsoluteFeesSat: 1400,
+      );
+      expect(state.absoluteFees, 1400);
+    });
   });
 }

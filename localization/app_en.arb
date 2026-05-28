@@ -1352,9 +1352,9 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryFewHours": "few hours",
-  "@sendEstimatedDeliveryFewHours": {
-    "description": "Estimated delivery time of a few hours"
+  "sendEstimatedDeliveryHours": "hours",
+  "@sendEstimatedDeliveryHours": {
+    "description": "Estimated delivery time for the slow preset (0.1 sat/vByte)."
   },
   "sendEstimatedDeliveryHoursToDays": "hours to days",
   "@sendEstimatedDeliveryHoursToDays": {

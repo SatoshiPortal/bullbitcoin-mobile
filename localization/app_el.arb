@@ -9011,8 +9011,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "λίγες ώρες",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "λίγες ώρες",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "Κάθε μήνα",

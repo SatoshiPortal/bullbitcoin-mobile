@@ -6,9 +6,9 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// Send-flow wrapper around [CustomFeeListItem] — binds the shared widget to
-/// the [SendCubit]. The widget owns the local edit state; this binding lifts
-/// commits to the cubit and provides theme tokens specific to the send modal.
+/// Send-flow wrapper around [CustomFeeListItem]. Binds the shared widget
+/// to [SendCubit]: typing fires the cubit's preview path (unsigned PSBT
+/// build → real `psbt.fee()`), modal dismissal triggers the full commit.
 class SelectableCustomFeeListItem extends StatefulWidget {
   const SelectableCustomFeeListItem({super.key});
 
@@ -19,8 +19,6 @@ class SelectableCustomFeeListItem extends StatefulWidget {
 
 class _SelectableCustomFeeListItemState
     extends State<SelectableCustomFeeListItem> {
-  // Hold the cubit ref so `onDisarm` can fire during dispose, when reading
-  // it from context would be unsafe.
   late SendCubit _cubit;
 
   @override
@@ -39,8 +37,11 @@ class _SelectableCustomFeeListItemState
           prev.bitcoinTxSize != curr.bitcoinTxSize ||
           prev.exchangeRate != curr.exchangeRate ||
           prev.fiatCurrencyCode != curr.fiatCurrencyCode ||
-          prev.bitcoinAbsoluteFeesSat != curr.bitcoinAbsoluteFeesSat,
+          prev.feePreviewCache.custom != curr.feePreviewCache.custom ||
+          prev.feePreviewCache.customLoading !=
+              curr.feePreviewCache.customLoading,
       builder: (context, state) {
+        final customSlot = state.feePreviewCache.custom;
         return CustomFeeListItem(
           initialFee: state.customFee,
           isCommittedAsCustom: state.selectedFeeOption == FeeSelection.custom,
@@ -52,17 +53,16 @@ class _SelectableCustomFeeListItemState
           tileColor: context.appColors.surface,
           tileShadowColor: context.appColors.border,
           unselectedIconColor: context.appColors.textMuted,
-          // Real fee from the last built PSBT — armCustomFee nulls this on
-          // first keystroke, so the modal preview tracks the prediction
-          // during editing and only shows the real value when the typed
-          // input matches the currently committed customFee.
-          committedAbsoluteFeesSat: state.bitcoinAbsoluteFeesSat,
+          // Real fee from a debounced unsigned-PSBT build. Null while
+          // the build is in flight (or user hasn't typed yet) — widget
+          // renders shimmer when previewLoading is true.
+          previewFeeSat: customSlot.feeSat,
+          previewLoading: state.feePreviewCache.customLoading,
           onArm: _cubit.armCustomFee,
-          // Modal mode never invokes onCommit from the widget — the
-          // parent (send_screen) calls finalizeArmedCustomFee on
-          // modal dismissal. Passing a no-op satisfies the required
-          // parameter without coupling the widget to commit logic
-          // that isn't its job.
+          onPreview: _cubit.previewBitcoinCustomFee,
+          // Modal mode: onCommit is unused at the widget level — the
+          // parent (send_screen) runs finalizeArmedCustomFee on
+          // dismissal, which calls customFeesChanged.
           onCommit: (_) async {},
         );
       },

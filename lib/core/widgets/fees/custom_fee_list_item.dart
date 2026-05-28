@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
@@ -5,6 +7,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
+import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +24,13 @@ import 'package:gap/gap.dart';
 /// the final apply happens at the parent's level when the user dismisses
 /// the bottom sheet — see `SendCubit.finalizeArmedCustomFee` and the
 /// equivalent `TransferEvent.customFeeFinalized` event for swap.
+///
+/// **No predictions.** The preview line never computes `rate × vsize`
+/// math itself. In modal mode it shows a shimmer while a real PSBT is
+/// built (via [onPreview], debounced) and renders the actual
+/// `psbt.fee()` value once [previewFeeSat] arrives from the caller's
+/// cubit/bloc. If [previewFeeSat] is null and [previewLoading] is
+/// false (e.g. user hasn't typed yet), nothing is shown.
 ///
 /// Visual selection rule: `isCommittedAsCustom || _focusNode.hasFocus`.
 /// Focus highlights the tile the instant the user taps anywhere on it
@@ -40,9 +50,11 @@ class CustomFeeListItem extends StatefulWidget {
     required this.unselectedIconColor,
     required this.onCommit,
     this.onArm,
+    this.onPreview,
+    this.previewFeeSat,
+    this.previewLoading = false,
     this.allowAbsoluteToggle = true,
     this.commitOnChange = false,
-    this.committedAbsoluteFeesSat,
   });
 
   /// The currently committed `customFee` from the caller's state. Used to
@@ -99,14 +111,23 @@ class CustomFeeListItem extends StatefulWidget {
   /// latest commit is.
   final bool commitOnChange;
 
-  /// Real absolute fee (from the built PSBT) that corresponds to
-  /// [initialFee]. When the user hasn't edited the input, the preview line
-  /// renders this value — it accounts for BDK's ceil rounding and sub-dust
-  /// change absorption, so the modal matches what the send screen shows.
-  /// Caller passes `state.bitcoinAbsoluteFeesSat` when not armed, or null
-  /// when armed (the cubit clears it on arm, so the modal falls back to a
-  /// prediction during editing).
-  final int? committedAbsoluteFeesSat;
+  /// Modal mode. Called on a debounced pause (~350 ms after the last
+  /// keystroke) so the caller can build a real unsigned PSBT at the
+  /// typed rate and report back via [previewFeeSat] / [previewLoading].
+  /// Ignored in RBF mode (commitOnChange=true) — RBF parents track the
+  /// rate on every keystroke and don't need a separate preview path.
+  final void Function(NetworkFee fee)? onPreview;
+
+  /// Real previewed fee (from an unsigned PSBT build, `psbt.fee()` =
+  /// Σ inputs − Σ outputs). Null while the preview is in flight or
+  /// when no preview has been built yet. The widget never falls back
+  /// to local arithmetic — when this is null and [previewLoading] is
+  /// false, no preview line is shown.
+  final int? previewFeeSat;
+
+  /// True while the caller is building a preview PSBT for the latest
+  /// typed rate. The preview line renders a shimmer placeholder.
+  final bool previewLoading;
 
   @override
   State<CustomFeeListItem> createState() => _CustomFeeListItemState();
@@ -118,16 +139,61 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
   NetworkFee? _customFee;
   late FocusNode _focusNode;
 
+  /// Debounces the preview-build trigger in modal mode. Per keystroke we
+  /// fire [onArm] synchronously (cheap state update), then after this
+  /// pause [onPreview] runs — the caller builds a real unsigned PSBT at
+  /// the typed rate and reports the actual fee back via
+  /// [CustomFeeListItem.previewFeeSat]. Never doing `rate × vsize` math
+  /// ourselves was the whole point of the rework: BDK pays 1-3 sats more
+  /// at sub-1 sat/vByte due to ceil + sub-dust change absorption, and
+  /// the vsize coin selection picks isn't the wallet's worst-case.
+  Timer? _previewDebounce;
+  static const _previewDebounceDuration = Duration(milliseconds: 350);
+
   @override
   void initState() {
     super.initState();
-    _customFee = widget.initialFee;
-    _isAbsolute = widget.allowAbsoluteToggle
-        ? (_customFee?.isAbsolute ?? widget.defaultAbsolute)
-        : false;
-    final value = _customFee?.value.toString() ?? '';
-    _controller = TextEditingController(text: value);
+    // Prefill from [initialFee] when present so reopening the modal
+    // shows the value the user previously committed instead of an empty
+    // field. The sat/kwu round-trip drifts by up to 0.002 sat/vB for
+    // unusual rates (e.g. 0.55 → 0.552), well below any meaningful UX
+    // threshold; for the rates users actually type (0.1, 0.2, 0.5, 1, 2,
+    // …) it's exact. The toggle picks the variant that matches the
+    // committed fee — falls back to [defaultAbsolute] only when nothing
+    // is committed yet.
+    final committed = widget.initialFee;
+    final useAbsolute = widget.allowAbsoluteToggle &&
+        (committed is AbsoluteFee ||
+            (committed == null && widget.defaultAbsolute));
+    _isAbsolute = useAbsolute;
+    _customFee = committed;
+    _controller = TextEditingController(
+      text: _formatForInput(committed, asAbsolute: useAbsolute),
+    );
     _focusNode = FocusNode()..addListener(_onFocusChanged);
+  }
+
+  /// Renders a committed fee back into the same string format the input
+  /// accepts. Returns '' when there's nothing to show. Kept short and
+  /// deliberate — the input formatter trims trailing zeros, so a typed
+  /// "0.50" round-trips back as "0.5"; that's fine and matches user
+  /// expectations for the rates we support.
+  static String _formatForInput(NetworkFee? fee, {required bool asAbsolute}) {
+    if (fee == null) return '';
+    if (asAbsolute) {
+      if (fee is AbsoluteFee) return fee.sats.toString();
+      return '';
+    }
+    if (fee is RelativeFee) {
+      final v = fee.satPerVbyte;
+      // Strip trailing zeros — "0.50" → "0.5", "1.00" → "1".
+      var s = v.toStringAsFixed(2);
+      if (s.contains('.')) {
+        s = s.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+      }
+      return s;
+    }
+    return '';
   }
 
   @override
@@ -144,6 +210,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
 
   @override
   void dispose() {
+    _previewDebounce?.cancel();
     _focusNode.removeListener(_onFocusChanged);
     _controller.dispose();
     _focusNode.dispose();
@@ -167,22 +234,38 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
           : NetworkFee.relativeFromSatPerVbyte(parsed.toDouble());
       setState(() => _customFee = fee);
       if (widget.commitOnChange) {
-        // RBF mode — each keystroke is the commit.
+        // RBF mode — each keystroke is the commit. Parent's onChanged
+        // is light (no PSBT build), so no debounce needed.
         widget.onCommit(fee);
       } else {
-        // Modal mode — light up the selection without rebuilding.
+        // Modal mode: arm immediately for visual selection (cheap —
+        // just a cubit emit clears stale preview state). Then debounce
+        // the real-PSBT preview build via onPreview; the caller's
+        // cubit will populate previewFeeSat/previewLoading and we'll
+        // render shimmer-then-real-fee.
         widget.onArm?.call(fee);
+        _previewDebounce?.cancel();
+        _previewDebounce = Timer(_previewDebounceDuration, () {
+          if (!mounted) return;
+          widget.onPreview?.call(fee);
+        });
       }
     } else {
       setState(() => _customFee = null);
+      _previewDebounce?.cancel();
     }
   }
 
   /// Effective fee rate in sat/vByte from the typed input. Used for the
-  /// sub-1 warning and the 0.1 floor. Returns null when there's no value or
-  /// an absolute amount can't be converted (vsize unknown).
-  double? _effectiveSatPerVbyte() {
-    final fee = _customFee;
+  /// sub-1 warning, the 0.1 floor, and to bucket the typed value against
+  /// preset rates for the "Estimated delivery" subtitle. Returns null
+  /// when there's no value or an absolute amount can't be converted
+  /// (vsize unknown).
+  double? _effectiveSatPerVbyte() => _rateOf(_customFee);
+
+  /// Same conversion logic, applied to any [NetworkFee] — used both for
+  /// the user's typed value and for preset rates.
+  double? _rateOf(NetworkFee? fee) {
     if (fee == null) return null;
     if (fee is RelativeFee) return fee.satPerVbyte;
     if (fee is AbsoluteFee && widget.txSize > 0) {
@@ -195,67 +278,40 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
   Widget build(BuildContext context) {
     final showAsSelected = widget.isCommittedAsCustom || _focusNode.hasFocus;
     final feeOptions = widget.feePresets;
-    final txSize = widget.txSize;
 
-    // Integer predictions only — `rate × vsize` as a raw double leaks IEEE
-    // noise (e.g. 14.100000000000001) and gives a fractional sat that can't
-    // actually be paid. NetworkFee.toAbsolute does half-up integer rounding.
-    final fastestAbsSats =
-        feeOptions?.fastest.toAbsolute(txSize).value.toInt() ?? 0;
-    final economicAbsSats =
-        feeOptions?.economic.toAbsolute(txSize).value.toInt() ?? 0;
-    final slowAbsSats =
-        feeOptions?.slow.toAbsolute(txSize).value.toInt() ?? 0;
-    final customPredictedSats =
-        _customFee?.toAbsolute(txSize).value.toInt() ?? 0;
-
-    // Show the real PSBT-derived fee when the typed value still matches the
-    // committed `initialFee` AND the caller has a real fee for it. The
-    // caller passes null whenever the typed value diverges from what was
-    // last built (the cubit nulls bitcoinAbsoluteFeesSat in armCustomFee).
-    // Without this, the modal would re-display its own naive prediction
-    // (e.g. 27 sats) even though the send screen behind it shows the real
-    // BDK-broadcast fee (e.g. 29 sats after ceil + dust absorption).
-    final bool useCommittedReal =
-        _customFee != null &&
-        _customFee == widget.initialFee &&
-        widget.committedAbsoluteFeesSat != null;
-    final customDisplaySats = useCommittedReal
-        ? widget.committedAbsoluteFeesSat!
-        : customPredictedSats;
-    final fiatEq = ConvertAmount.satsToFiat(
-      customDisplaySats,
-      widget.exchangeRate,
-    );
-
-    final subtitle1 = _customFee == null || feeOptions == null
+    // Subtitle1 ("Estimated delivery ~ X minutes") is decided by comparing
+    // the user's TYPED RATE against preset rates — no absolute math, no
+    // vsize needed. The buckets are: ≥ fastest → 10m, ≥ economic → 30m,
+    // ≥ slow → hours, else → hours to days.
+    final customRate = _effectiveSatPerVbyte();
+    final fastestRate = _rateOf(feeOptions?.fastest);
+    final economicRate = _rateOf(feeOptions?.economic);
+    final slowRate = _rateOf(feeOptions?.slow);
+    final subtitle1 =
+        (_customFee == null ||
+            feeOptions == null ||
+            customRate == null ||
+            fastestRate == null ||
+            economicRate == null ||
+            slowRate == null)
         ? ''
-        : 'Estimated delivery ~ ${customDisplaySats >= fastestAbsSats
+        : 'Estimated delivery ~ ${customRate >= fastestRate
               ? context.loc.sendEstimatedDelivery10Minutes
-              : customDisplaySats >= economicAbsSats
+              : customRate >= economicRate
               ? context.loc.sendEstimatedDelivery10to30Minutes
-              : customDisplaySats >= slowAbsSats
-              ? context.loc.sendEstimatedDeliveryFewHours
+              : customRate >= slowRate
+              ? context.loc.sendEstimatedDeliveryHours
               : context.loc.sendEstimatedDeliveryHoursToDays}';
 
-    final bool showFiatInPreview =
-        widget.exchangeRate > 0 && widget.fiatCurrencyCode.isNotEmpty;
-    // `~` not `=` between rate and sat-count: when editing, the count is
-    // a prediction; when reopened-with-committed-value, BDK may have
-    // paid 1-3 sats more (ceil + dust absorption at sub-1 sat/vByte).
-    // Either way, "approximately" is the honest connector.
-    final subtitle2 = _customFee == null
-        ? ''
-        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} ~ ${FormatAmount.satsApprox(customDisplaySats)} ${context.loc.sendSats}'
-              '${showFiatInPreview ? ' (~ $fiatEq ${widget.fiatCurrencyCode})' : ''}';
-
-    // Fee-rate guards. 0.1 floor = Bitcoin Core's lowest sensible policy and
-    // Liquid minrelayfee. Below 1 sat/vByte we warn the tx may take longer
-    // to confirm and may not propagate to every node.
-    final effectiveRate = _effectiveSatPerVbyte();
-    final bool belowFloor = effectiveRate != null && effectiveRate < 0.1;
+    // Fee-rate guards. Single source for the floor is
+    // NetworkFeeRelayPolicy.minRelaySatPerVbyte (= 0.1, Bitcoin Core's
+    // lowest sensible policy and Liquid's minrelayfee). Below 1 sat/vByte
+    // we still warn the tx may take longer to confirm and may not
+    // propagate to every node.
+    final bool belowFloor = customRate != null &&
+        customRate < NetworkFeeRelayPolicy.minRelaySatPerVbyte;
     final bool subOneSatPerVbyte =
-        effectiveRate != null && effectiveRate < 1.0 && !belowFloor;
+        customRate != null && customRate < 1.0 && !belowFloor;
 
     return InkWell(
       radius: 2,
@@ -295,9 +351,20 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                           const Gap(4),
                           BBText(subtitle1, style: context.font.labelMedium),
                         ],
-                        if (subtitle2.isNotEmpty) ...[
+                        // Preview line: shimmer while the caller is
+                        // building the unsigned PSBT; real fee once
+                        // previewFeeSat lands. No prediction math —
+                        // when neither loading nor a real fee, hide.
+                        if (_customFee != null) ...[
                           const Gap(2),
-                          BBText(subtitle2, style: context.font.labelMedium),
+                          _PreviewLine(
+                            customFee: _customFee!,
+                            isAbsolute: _isAbsolute,
+                            previewFeeSat: widget.previewFeeSat,
+                            previewLoading: widget.previewLoading,
+                            exchangeRate: widget.exchangeRate,
+                            fiatCurrencyCode: widget.fiatCurrencyCode,
+                          ),
                         ],
                       ],
                     ),
@@ -405,5 +472,73 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
         ),
       ),
     );
+  }
+}
+
+/// The "rate ~ X sats (~ fiat)" preview row. Three states:
+/// - [previewLoading] true → shimmer placeholder
+/// - [previewFeeSat] non-null → render real fee + fiat conversion
+/// - neither → render nothing (no math fallback by design)
+class _PreviewLine extends StatelessWidget {
+  const _PreviewLine({
+    required this.customFee,
+    required this.isAbsolute,
+    required this.previewFeeSat,
+    required this.previewLoading,
+    required this.exchangeRate,
+    required this.fiatCurrencyCode,
+  });
+
+  final NetworkFee customFee;
+  final bool isAbsolute;
+  final int? previewFeeSat;
+  final bool previewLoading;
+  final double exchangeRate;
+  final String fiatCurrencyCode;
+
+  @override
+  Widget build(BuildContext context) {
+    final unit = isAbsolute
+        ? context.loc.sendSats
+        : context.loc.sendSatsPerVB;
+    final rateLabel = '${customFee.value} $unit';
+
+    if (previewLoading) {
+      return Row(
+        children: [
+          BBText(rateLabel, style: context.font.labelMedium),
+          const Gap(8),
+          // Shimmer fills the rest of the line where "~ X sats" would
+          // appear once the real fee lands.
+          Expanded(
+            child: LoadingLineContent(
+              padding: EdgeInsets.zero,
+              height: 12,
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (previewFeeSat == null) {
+      // No preview built yet (e.g. user just typed but debounce hasn't
+      // fired). Show only the rate — never compute a fee ourselves.
+      return BBText(rateLabel, style: context.font.labelMedium);
+    }
+
+    final showFiat = exchangeRate > 0 && fiatCurrencyCode.isNotEmpty;
+    final fiatEq = showFiat
+        ? ConvertAmount.satsToFiat(previewFeeSat!, exchangeRate)
+        : null;
+    final text = StringBuffer()
+      ..write(rateLabel)
+      ..write(' ~ ')
+      ..write(FormatAmount.satsApprox(previewFeeSat!))
+      ..write(' ')
+      ..write(context.loc.sendSats);
+    if (showFiat) {
+      text..write(' (~ ')..write(fiatEq)..write(' ')..write(fiatCurrencyCode)..write(')');
+    }
+    return BBText(text.toString(), style: context.font.labelMedium);
   }
 }

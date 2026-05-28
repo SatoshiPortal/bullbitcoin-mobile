@@ -10962,8 +10962,8 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryFewHours": "कुछ घंटे",
-  "@sendEstimatedDeliveryFewHours": {
+  "sendEstimatedDeliveryHours": "कुछ घंटे",
+  "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
   "dcaConfirmFrequencyMonthly": "हर माह",

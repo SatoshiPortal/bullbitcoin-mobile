@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
+import 'package:bb_mobile/core/fees/domain/fee_preview_cache.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -95,6 +96,20 @@ abstract class SendState with _$SendState {
     // directly — they exist only to gate the rollback.
     FeeSelection? armPriorSelection,
     NetworkFee? armPriorCustomFee,
+    // Real-fee previews + cached unsigned PSBTs per FeeSelection slot.
+    // Built on modal open (presets) and on debounced custom-rate typing.
+    // Cached PSBTs are REUSED at commit so the broadcast tx has the
+    // EXACT vsize/fee the modal showed — BDK's TxBuilder.finish() picks
+    // UTXOs via a randomized BnB→SRD algorithm (113/154/195 vbyte
+    // variance for identical inputs in our logs), so rebuilding at
+    // commit would diverge from the preview.
+    //
+    // Cleared on any input-shape change (wallet, recipient, amount,
+    // UTXO selection, replaceByFee, or a new armCustomFee/preview
+    // request). The principle: NEVER display a fee derived from
+    // rate × vsize math — only what BDK produces from a real PSBT.
+    @Default(BitcoinFeePreviewCache.empty)
+    BitcoinFeePreviewCache feePreviewCache,
     int? bitcoinTxSize,
     int? liquidAbsoluteFees,
     // Real Bitcoin absolute fee, read from the built PSBT (not a prediction).
@@ -313,7 +328,10 @@ abstract class SendState with _$SendState {
   }
 
   String get formattedAbsoluteFees {
-    if (absoluteFees == null) return '0';
+    // `…` not `0` when no PSBT has been built yet — we never compute a
+    // fee ourselves from `rate × vsize`. Send screen will render this
+    // string verbatim; the brief `…` is honest about "not yet known".
+    if (absoluteFees == null) return '…';
     if (bitcoinUnit == BitcoinUnit.sats) {
       return FormatAmount.sats(absoluteFees!);
     } else {
@@ -443,16 +461,19 @@ abstract class SendState with _$SendState {
       ? liquidFeesList
       : bitcoinFeesList;
 
-  /// Absolute fee the user will (or did) pay, in sats. Realistic — prefers the
-  /// fee read off the built PSBT over a rate × vsize prediction. Falls back to
-  /// the prediction in the pre-build window where no PSBT exists yet. Returns
-  /// null while no wallet is selected.
+  /// Absolute fee the user will (or did) pay, in sats. **Real PSBT fee
+  /// only** when `bitcoinAbsoluteFeesSat` is populated (`psbt.fee()` =
+  /// Σ inputs − Σ outputs). Returns null otherwise; UI must render a
+  /// shimmer / loading placeholder, **never** fall back to local
+  /// `rate × vsize` arithmetic.
+  ///
+  /// The Liquid branch uses `liquidAbsoluteFees` — same contract,
+  /// populated by the LWK build.
   int? get absoluteFees => selectedWallet == null
       ? null
       : selectedWallet!.isLiquid
       ? liquidAbsoluteFees
-      : bitcoinAbsoluteFeesSat ??
-            selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+      : bitcoinAbsoluteFeesSat;
 
   int? get totalSwapFees {
     if (lightningSwap == null) return null;

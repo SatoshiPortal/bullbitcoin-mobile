@@ -275,7 +275,7 @@
   "sendConfirmCustomFee": "Confirmar comisión personalizada",
   "sendEstimatedDelivery10Minutes": "~10 minutos",
   "sendEstimatedDelivery10to30Minutes": "10-30 minutos",
-  "sendEstimatedDeliveryFewHours": "Pocas horas",
+  "sendEstimatedDeliveryHours": "Pocas horas",
   "sendEstimatedDeliveryHoursToDays": "Horas a días",
   "sendEstimatedDelivery": "Entrega estimada ~ ",
   "sendAddress": "Dirección: ",

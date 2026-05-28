@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'fees_entity.freezed.dart';
@@ -96,6 +95,49 @@ extension RelativeFeeDisplay on RelativeFee {
   double get satPerKvbyte => satPerKwu * 4.0;
 }
 
+/// Minimum-relay policy for transaction fees — single source of truth used
+/// by the cubit/bloc commit gates, the custom-fee widget's "below floor"
+/// banner, and the slow-preset pin in [BitcoinFeePresetPolicy]. The value
+/// matches both Bitcoin Core's lowest sensible relay policy and Liquid's
+/// network minrelayfee, so the same constant is correct on both chains.
+extension NetworkFeeRelayPolicy on NetworkFee {
+  /// 0.1 sat/vByte = 25 sat/kwu, exact.
+  static const double minRelaySatPerVbyte = 0.1;
+  static const int minRelaySatPerKwu = 25;
+
+  /// True when this fee is at or above the network minrelayfee. Absolute
+  /// fees need a [txSize] to express as a rate; [txSize] ≤ 0 → false (the
+  /// caller is in a transient pre-build state and shouldn't be allowed to
+  /// commit yet).
+  bool aboveMinRelay({int? txSize}) => switch (this) {
+    RelativeFee(:final satPerKwu) => satPerKwu >= minRelaySatPerKwu,
+    AbsoluteFee(:final sats) =>
+      txSize != null && txSize > 0 && (sats / txSize) >= minRelaySatPerVbyte,
+  };
+}
+
+/// Maps a mempool API response into the three preset tiers. Slow is pinned
+/// to the network minrelayfee instead of mempool's `minimumFee` — the whole
+/// point of #2133 was to offer a real sub-1 sat/vByte slot for users
+/// willing to wait, which `minimumFee` (typically 1 at quiet blocks) defeats.
+class BitcoinFeePresetPolicy {
+  const BitcoinFeePresetPolicy._();
+
+  /// Constructs the preset triple from the two mempool fields we still
+  /// trust. `fastestFee` and `economyFee` come straight from the API;
+  /// `slow` is pinned to [NetworkFeeRelayPolicy.minRelaySatPerVbyte].
+  static FeeOptions fromMempool({
+    required double fastestSatPerVbyte,
+    required double economicSatPerVbyte,
+  }) => FeeOptions(
+    fastest: NetworkFee.relativeFromSatPerVbyte(fastestSatPerVbyte),
+    economic: NetworkFee.relativeFromSatPerVbyte(economicSatPerVbyte),
+    slow: NetworkFee.relativeFromSatPerVbyte(
+      NetworkFeeRelayPolicy.minRelaySatPerVbyte,
+    ),
+  );
+}
+
 @freezed
 abstract class FeeOptions with _$FeeOptions {
   const factory FeeOptions({
@@ -128,52 +170,6 @@ abstract class FeeOptions with _$FeeOptions {
   }
 }
 
-extension FeeOptionsDisplay on FeeOptions {
-  List<(String, String, String)> display(
-    int txSize,
-    double exchangeRate,
-    String currencySymbol,
-  ) {
-    // Predictions only — preset tiles never have a real PSBT to read from
-    // (no commit happened yet). Use integer math via NetworkFee.toAbsolute
-    // so the line doesn't render IEEE-noisy doubles like 208.0 or
-    // 14.100000000000001. BDK may still pay 1-3 sats more at sub-1
-    // sat/vByte rates due to ceil + dust absorption — that's documented
-    // BDK behaviour we can't predict without building a real tx.
-    final fastestAbsSats = fastest.toAbsolute(txSize).value.toInt();
-    final economicAbsSats = economic.toAbsolute(txSize).value.toInt();
-    final slowAbsSats = slow.toAbsolute(txSize).value.toInt();
-    final fastestFiatEq = ConvertAmount.satsToFiat(
-      fastestAbsSats,
-      exchangeRate,
-    );
-    final economicFiatEq = ConvertAmount.satsToFiat(
-      economicAbsSats,
-      exchangeRate,
-    );
-    final slowFiatEq = ConvertAmount.satsToFiat(slowAbsSats, exchangeRate);
-    // `~` not `=` between rate and sat-count: the sat-count is a
-    // prediction (rate × vsize, integer-rounded). BDK pays 1-3 sats more
-    // at sub-1 sat/vByte due to ceil + sub-dust change absorption.
-    return [
-      (
-        'Fastest',
-        'Estimated delivery ~ 10 minutes',
-        '${fastest.value} sats/byte ~ $fastestAbsSats sats (~ $fastestFiatEq) $currencySymbol',
-      ),
-      (
-        'Economic',
-        'Estimated delivery ~ 30 minutes',
-        '${economic.value} sats/byte ~ $economicAbsSats sats (~ $economicFiatEq) $currencySymbol',
-      ),
-      (
-        'Slow',
-        'Estimated delivery ~ few hours',
-        '${slow.value} sats/byte ~ $slowAbsSats sats (~ $slowFiatEq) $currencySymbol',
-      ),
-    ];
-  }
-}
 
 enum FeeSelection { fastest, economic, slow, custom }
 
