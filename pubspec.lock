@@ -1361,10 +1361,10 @@ packages:
     dependency: "direct main"
     description:
       name: no_screenshot
-      sha256: "967ae6356a7e83b44bebed2e72c8a4bb0b5f0f9032a1e57cdeccff05bfedd84d"
+      sha256: "373cc7d9ec62f2fe0898318bfa38ad8f717e5b9729be78cd00112d3ab278cb18"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.6"
+    version: "1.1.0"
   node_preamble:
     dependency: transitive
     description:

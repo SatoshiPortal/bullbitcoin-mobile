@@ -2377,7 +2377,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "(آب) فشل في البدء حاول إيقاف التطبيق تماماً و إعادة التشغيل إذا استمر الخطأ، الإبلاغ عن المسألة لدعم وتشاطر سجلاتك.",
+  "appStartupErrorMessage": "فشل تشغيل التطبيق. حاول إيقاف التطبيق بالكامل وإعادة تشغيله. إذا استمر الخطأ، تواصل مع الدعم وشارك السجلات.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -4470,6 +4470,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "لا يمكن استخدام المحافظ الأجهزة للمبادلات.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
@@ -4772,6 +4776,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "الأجر",
+  "payDescriptionLabel": "وصف الدفعة (اختياري)",
+  "payDescriptionHint": "أضف ملاحظة لهذه الدفعة",
+  "payPaymentDescription": "وصف الدفعة",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -9701,6 +9708,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "العدد",
+  "transactionDetailLabelPaymentDescription": "وصف الدفعة",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -12584,5 +12592,35 @@
   "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
   "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر",
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
-  "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك"
+  "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
+  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
+  "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
+  "coreScreensFeeRateLabel": "معدل الرسوم",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "مخرج الباقي غير معروف — يتم عرض جميع المخرجات بالتساوي",
+  "coreScreensUnknown": "غير معروف",
+  "coreScreensFetchFailed": "تعذر جلب المعاملة {txid} من Electrum.",
+  "coreScreensInputResolutionFailed": "المدخل غير موجود: المخرج {vout} من {parentTxId} غير موجود.",
+  "coreScreensParseFailed": "فشل تحليل المعاملة: {message}.",
+  "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
+  "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
+  "addressViewerTitle": "العنوان",
+  "viewerTapToCopy": "انقر للنسخ",
+  "viewerViewInExplorer": "عرض في المستكشف",
+  "transactionViewerTitle": "معرف المعاملة",
+  "invoiceViewerTitle": "فاتورة",
+  "viewerCopyLink": "انسخ الرابط",
+  "recipientsFieldSinpePhoneNumberHint": "8 أرقام بدون رمز الدولة",
+  "recipientsCopDocCcRecipientNumber": "رقم cédula المستلم",
+  "recipientsCopDocCeRecipientNumber": "رقم cédula de extranjería للمستلم",
+  "recipientsCopDocNitRecipientNumber": "الرقم الضريبي للمستلم",
+  "recipientsCopDocPassportRecipientNumber": "رقم جواز سفر المستلم",
+  "recipientsCopDocTiRecipientNumber": "رقم بطاقة هوية المستلم",
+  "recipientsCopDocRegistroCivilRecipientNumber": "رقم السجل المدني للمستلم",
+  "recipientsValidationSinpePhoneCountryCode": "احذف رمز الدولة (506+). أدخل الأرقام الثمانية فقط",
+  "recipientsValidationSinpePhoneInvalidChars": "استخدم الأرقام فقط (بدون حروف أو رموز)",
+  "recipientsValidationSinpePhoneTooShort": "أدخل جميع الأرقام الثمانية لرقم الهاتف",
+  "recipientsFieldDocumentType": "نوع هوية المستلم",
+  "recipientsFieldDocumentNumberHint": "أدخل رقم هوية المستلم",
+  "recipientsValidationSinpePhone": "أدخل رقم هاتف كوستاريكي صالح من 8 أرقام بدون رمز الدولة"
 }

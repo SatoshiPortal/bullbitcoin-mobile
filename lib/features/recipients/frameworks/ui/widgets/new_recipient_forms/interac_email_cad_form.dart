@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/inputs/lowercase_input_formatter.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
@@ -80,8 +81,8 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: 'Email Address',
-            hintText: 'Enter email address',
+            labelText: context.loc.recipientsFieldEmailAddress,
+            hintText: context.loc.recipientsFieldEmailAddressHint,
             focusNode: _emailFocusNode,
             autofocus: true,
             inputFormatters: [
@@ -93,7 +94,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             textInputAction: .next,
             onFieldSubmitted: (_) => _nameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -103,13 +104,13 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Name',
-            hintText: 'Enter recipient name',
+            labelText: context.loc.recipientsFieldName,
+            hintText: context.loc.recipientsFieldNameHint,
             focusNode: _nameFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _securityQuestionFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -119,18 +120,18 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Security Question',
-            hintText: 'Enter security question (10-40 characters)',
+            labelText: context.loc.recipientsFieldSecurityQuestion,
+            hintText: context.loc.recipientsFieldSecurityQuestionHint,
             focusNode: _securityQuestionFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _securityAnswerFocusNode.requestFocus(),
             inputFormatters: [LengthLimitingTextInputFormatter(40)],
             validator: (v) {
               if (v == null || v.trim().isEmpty) {
-                return "This field can't be empty";
+                return context.loc.recipientsValidationFieldRequired;
               }
               if (v.trim().length < 10) {
-                return "Security question must be at least 10 characters";
+                return context.loc.recipientsValidationSecurityQuestionMin;
               }
               return null;
             },
@@ -144,7 +145,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             Padding(
               padding: const EdgeInsets.only(top: 4.0),
               child: Text(
-                '${_securityQuestion.length}/40 characters',
+                context.loc.recipientsCharCounter(_securityQuestion.length),
                 style: TextStyle(
                   fontSize: 12,
                   color: _securityQuestion.length < 10
@@ -155,13 +156,13 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
             ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Security Answer',
-            hintText: 'Enter security answer',
+            labelText: context.loc.recipientsFieldSecurityAnswer,
+            hintText: context.loc.recipientsFieldSecurityAnswerHint,
             focusNode: _securityAnswerFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -171,8 +172,8 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
@@ -185,7 +186,7 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
           ),
           const Gap(16.0),
           Text(
-            'Who does this account belong to?',
+            context.loc.recipientsAccountOwnerQuestion,
             style: TextStyle(
               fontSize: 14,
               fontWeight: .w500,
@@ -202,17 +203,17 @@ class InteracEmailCadFormState extends State<InteracEmailCadForm> {
                 });
               }
             },
-            child: const Column(
+            child: Column(
               children: [
                 RadioListTile<bool>(
-                  title: Text('This is my account'),
+                  title: Text(context.loc.recipientsAccountOwnerMine),
                   value: true,
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
-                Gap(8.0),
+                const Gap(8.0),
                 RadioListTile<bool>(
-                  title: Text("This is someone else's account"),
+                  title: Text(context.loc.recipientsAccountOwnerSomeoneElse),
                   value: false,
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,

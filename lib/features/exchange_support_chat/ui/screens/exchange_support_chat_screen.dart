@@ -113,10 +113,11 @@ class _ChatBodyState extends State<_ChatBody> {
           child:
               BlocConsumer<ExchangeSupportChatCubit, ExchangeSupportChatState>(
                 listener: (context, state) {
-                  if (state.errorPermissionDenied.isNotEmpty) {
+                  final code = state.errorCode;
+                  if (code != null) {
                     SnackBarUtils.showSnackBar(
                       context,
-                      state.errorPermissionDenied,
+                      _supportChatErrorMessage(context, code),
                     );
                   }
                 },
@@ -510,7 +511,7 @@ class _AttachmentWidget extends StatelessWidget {
                   child: BBText(
                     attachment.fileName != null
                         ? _shortenFileName(attachment.fileName!)
-                        : 'Image',
+                        : context.loc.exchangeSupportChatAttachmentImage,
                     style: context.font.bodySmall?.copyWith(
                       color: isUserMessage
                           ? context.appColors.onSecondary
@@ -602,7 +603,7 @@ class _AttachmentWidget extends StatelessWidget {
                 child: BBText(
                   attachment.fileName != null
                       ? _shortenFileName(attachment.fileName!)
-                      : 'Unknown file',
+                      : context.loc.exchangeSupportChatAttachmentUnknownFile,
                   style: context.font.bodySmall?.copyWith(
                     color: isUserMessage ? context.appColors.onSecondary : null,
                   ),
@@ -695,3 +696,19 @@ class _AttachmentPreviewWidget extends StatelessWidget {
     );
   }
 }
+
+String _supportChatErrorMessage(
+  BuildContext context,
+  SupportChatErrorCode code,
+) => switch (code) {
+  SupportChatErrorCode.permissionDenied =>
+    context.loc.exchangeSupportChatPermissionDenied,
+  SupportChatErrorCode.permissionDeniedNeedsSettings =>
+    context.loc.exchangeSupportChatPermissionDeniedSettings,
+  SupportChatErrorCode.pickFilesFailed =>
+    context.loc.exchangeSupportChatPickFilesFailed,
+  SupportChatErrorCode.attachLogsFailed =>
+    context.loc.exchangeSupportChatAttachLogsFailed,
+  SupportChatErrorCode.fetchFileDataFailed =>
+    context.loc.exchangeSupportChatFetchFileDataFailed,
+};

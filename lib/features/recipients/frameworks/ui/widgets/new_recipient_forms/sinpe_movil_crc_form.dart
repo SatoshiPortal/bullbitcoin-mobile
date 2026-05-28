@@ -1,13 +1,39 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/models/recipient_form_data_model.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
+String? validateSinpeMovilPhone(String? value, AppLocalizations loc) {
+  if (value == null || value.trim().isEmpty) {
+    return loc.recipientsValidationFieldRequired;
+  }
+
+  final raw = value.trim().replaceAll(RegExp(r'\s'), '');
+
+  if (raw.contains('+') || raw.startsWith('506')) {
+    return loc.recipientsValidationSinpePhoneCountryCode;
+  }
+  if (RegExp(r'[^0-9]').hasMatch(raw)) {
+    return loc.recipientsValidationSinpePhoneInvalidChars;
+  }
+  if (raw.length < 8) {
+    return loc.recipientsValidationSinpePhoneTooShort;
+  }
+  if (raw.length > 8) {
+    return loc.recipientsValidationSinpePhoneCountryCode;
+  }
+
+  return null;
+}
 
 class SinpeMovilCrcForm extends StatefulWidget {
   const SinpeMovilCrcForm({super.key, this.hookError});
@@ -27,13 +53,15 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   String _label = '';
   late StreamSubscription<RecipientsState> _stateSubscription;
 
+  bool get _isPhoneValid =>
+      validateSinpeMovilPhone(_phoneNumber, context.loc) == null;
+
+  bool get _isOwnerValidated => _ownerNameController.text.trim().isNotEmpty;
+
   @override
   void initState() {
     super.initState();
     _stateSubscription = context.read<RecipientsBloc>().stream.listen((state) {
-      // Update SINPE owner name when it changes in the state, which happens
-      // when a check happens, resetting the owner name and after a successful
-      // SINPE validation with the correct owner name.
       if (_ownerNameController.text != state.sinpeOwnerName) {
         setState(() {
           _ownerNameController.text = state.sinpeOwnerName;
@@ -54,7 +82,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
       final formData = SinpeMovilCrcFormDataModel(
-        phoneNumber: _phoneNumber,
+        phoneNumber: _phoneNumber.trim(),
         ownerName: _ownerNameController.text,
         label: _label.isEmpty ? null : _label,
       );
@@ -64,60 +92,58 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
   }
 
   String? _validatePhoneNumberInput(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return "This field can't be empty";
-    }
-    if (!RegExp(r'^\d{8}$').hasMatch(value.trim())) {
-      return 'Please enter a valid 8-digit phone number';
-    }
-    return null;
+    return validateSinpeMovilPhone(value, context.loc);
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      autovalidateMode: AutovalidateMode.disabled,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         crossAxisAlignment: .start,
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: 'Phone Number',
-            hintText: 'Enter phone number',
+            labelText: context.loc.recipientsFieldPhoneNumber,
+            hintText: context.loc.recipientsFieldSinpePhoneNumberHint,
             focusNode: _phoneNumberFocusNode,
             autofocus: true,
             prefixText: '+506',
             textInputAction: .next,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(8),
+            ],
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: _validatePhoneNumberInput,
             onChanged: (value) {
               setState(() {
                 _phoneNumber = value;
               });
-              // Clear the owner name when phone number changes
               _ownerNameController.text = '';
 
-              // Check SINPE if phone number is valid
-              if (_validatePhoneNumberInput(value) == null) {
+              if (_isPhoneValid) {
                 context.read<RecipientsBloc>().add(
-                  RecipientsEvent.sinpeChecked(value),
+                  RecipientsEvent.sinpeChecked(value.trim()),
                 );
               }
             },
           ),
           const Gap(8.0),
-          // Validation status
           BlocSelector<RecipientsBloc, RecipientsState, bool>(
             selector: (state) => state.isCheckingSinpe,
             builder: (context, isChecking) {
               return BBTextFormField(
-                labelText: 'Owner Name',
-                hintText: 'Owner name will appear here',
+                labelText: context.loc.recipientsFieldOwnerName,
+                hintText: context.loc.recipientsFieldOwnerNameSinpeHint,
                 controller: _ownerNameController,
                 disabled: true,
                 suffix: _ownerNameController.text.isNotEmpty
-                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    ? Icon(
+                        Icons.check_circle,
+                        color: context.appColors.primary,
+                      )
                     : isChecking
                     ? SizedBox(
                         width: 20,
@@ -130,13 +156,13 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
                           ),
                         ),
                       )
-                    : const Icon(
+                    : Icon(
                         Icons.check_circle_outline,
-                        color: Colors.grey,
+                        color: context.appColors.outline,
                       ),
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) {
-                    return "Please validate the phone number";
+                    return context.loc.recipientsValidationSinpeOwner;
                   }
                   return null;
                 },
@@ -145,8 +171,8 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
@@ -161,6 +187,7 @@ class SinpeMovilCrcFormState extends State<SinpeMovilCrcForm> {
           RecipientFormContinueButton(
             onPressed: _submitForm,
             hookError: widget.hookError,
+            formDisabled: !_isPhoneValid || !_isOwnerValidated,
           ),
         ],
       ),

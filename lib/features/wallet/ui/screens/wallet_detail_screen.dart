@@ -56,9 +56,10 @@ class WalletDetailScreen extends StatelessWidget {
                   locator<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: BBPullableBody(
                 onRefresh: () async {
+                  // User gesture — bypass the coordinator throttle.
                   final bloc = context.read<WalletBloc>();
-                  bloc.add(const WalletRefreshed());
-                  await bloc.stream.firstWhere((state) => !state.isSyncing);
+                  bloc.add(const WalletRefreshed(force: true));
+                  await bloc.stream.firstWhere((state) => !state.isRefreshing);
                 },
                 slivers: [
                   SliverToBoxAdapter(

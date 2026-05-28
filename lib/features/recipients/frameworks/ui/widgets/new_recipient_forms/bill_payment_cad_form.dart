@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -100,8 +101,8 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
                 (context, controller, focusNode, onFieldSubmitted) {
                   return BBTextFormField(
                     prefix: const Icon(Icons.search),
-                    labelText: 'Biller Name',
-                    hintText: 'Search and select a biller',
+                    labelText: context.loc.recipientsFieldBillerName,
+                    hintText: context.loc.recipientsFieldBillerNameHint,
                     controller: controller,
                     focusNode: focusNode,
                     onChanged: (value) {
@@ -110,9 +111,9 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
                       });
                     },
                     validator: (v) => (v == null || v.trim().isEmpty)
-                        ? "Enter 3 or more characters to search"
+                        ? context.loc.recipientsValidationBillerSearchMin
                         : _selectedBiller == null
-                        ? "Please select a biller from the list"
+                        ? context.loc.recipientsValidationBillerSelect
                         : null,
                     textInputAction: .next,
                   );
@@ -120,13 +121,13 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Payee Account Number',
-            hintText: 'Enter account number',
+            labelText: context.loc.recipientsFieldPayeeAccountNumber,
+            hintText: context.loc.recipientsFieldAccountNumberHint,
             focusNode: _accountNumberFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -136,8 +137,8 @@ class BillPaymentCadFormState extends State<BillPaymentCadForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),

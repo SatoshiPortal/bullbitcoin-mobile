@@ -50,10 +50,8 @@ class BuySuccessScreen extends StatelessWidget {
           actions: [
             IconButton(
               icon: const Icon(Icons.close),
-              onPressed: () {
-                // Navigate to the wallet home screen after a successful buy
-                context.goNamed(WalletRoute.walletHome.name);
-              },
+              onPressed: () =>
+                  context.goNamed(WalletRoute.walletHome.name),
             ),
           ],
         ),

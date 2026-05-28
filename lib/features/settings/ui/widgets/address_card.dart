@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class AddressCard extends StatelessWidget {
@@ -42,20 +41,10 @@ class AddressCard extends StatelessWidget {
               ),
             ),
             const Gap(8),
-            GestureDetector(
-              onTap: () {
-                Clipboard.setData(ClipboardData(text: address));
-                SnackBarUtils.showSnackBar(
-                  context,
-                  context.loc.addressCardCopiedMessage,
-                );
-              },
-              child: Text(
-                StringFormatting.truncateMiddle(address, head: 10, tail: 20),
-                style: context.font.headlineMedium?.copyWith(
-                  color: context.appColors.primary,
-                ),
-              ),
+            AddressViewer(
+              address,
+              style: context.font.headlineMedium,
+              color: context.appColors.primary,
             ),
             const Gap(8),
             Text(

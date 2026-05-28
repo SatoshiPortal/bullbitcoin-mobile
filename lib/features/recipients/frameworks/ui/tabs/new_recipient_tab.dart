@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/jurisdiction_dropdown.dart';
@@ -82,7 +83,7 @@ class NewRecipientTabState extends State<NewRecipientTab> {
         ),
         const Gap(16.0),
         Text(
-          'Payout method',
+          context.loc.recipientsPayoutMethod,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.secondary,
             fontWeight: .w500,

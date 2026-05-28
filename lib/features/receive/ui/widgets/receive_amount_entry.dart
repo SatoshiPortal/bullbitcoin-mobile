@@ -3,15 +3,48 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ReceiveAmountEntry extends StatelessWidget {
-  const ReceiveAmountEntry({
-    super.key,
-    required this.amountController,
-    required this.focusNode,
-  });
+class ReceiveAmountEntry extends StatefulWidget {
+  const ReceiveAmountEntry({super.key});
 
-  final TextEditingController amountController;
-  final FocusNode focusNode;
+  @override
+  State<ReceiveAmountEntry> createState() => _ReceiveAmountEntryState();
+}
+
+class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
+  late final TextEditingController _amountController;
+  late final FocusNode _amountFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<ReceiveBloc>();
+    _amountController = TextEditingController(text: bloc.state.inputAmount);
+    _amountController.addListener(() {
+      final text = _amountController.text;
+      if (text != bloc.state.inputAmount) {
+        bloc.add(ReceiveAmountInputChanged(text));
+      }
+    });
+    _amountFocusNode = FocusNode();
+    _amountFocusNode.addListener(() {
+      if (!_amountFocusNode.hasFocus) {
+        // Reset selection to end without showing the cursor when the field
+        // loses focus.
+        final currentText = _amountController.text;
+        _amountController.value = TextEditingValue(
+          text: currentText,
+          selection: TextSelection.collapsed(offset: currentText.length),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _amountFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,21 +61,23 @@ class ReceiveAmountEntry extends StatelessWidget {
       (bloc) => bloc.state.amountException,
     );
 
-    return PriceInput(
-      currency: inputCurrency,
-      amountEquivalent: amountEquivalent,
-      availableCurrencies: availableInputCurrencies,
-      amountController: amountController,
-      focusNode: focusNode,
-      onNoteChanged: (note) {
-        context.read<ReceiveBloc>().add(ReceiveNoteChanged(note));
-      },
-      onCurrencyChanged: (currencyCode) {
-        context.read<ReceiveBloc>().add(
-          ReceiveAmountCurrencyChanged(currencyCode),
-        );
-      },
-      error: amountException?.message,
+    return BlocListener<ReceiveBloc, ReceiveState>(
+      listenWhen: (previous, current) =>
+          previous.inputAmountCurrencyCode != current.inputAmountCurrencyCode,
+      listener: (_, _) => _amountController.clear(),
+      child: PriceInput(
+        currency: inputCurrency,
+        amountEquivalent: amountEquivalent,
+        availableCurrencies: availableInputCurrencies,
+        amountController: _amountController,
+        focusNode: _amountFocusNode,
+        onCurrencyChanged: (currencyCode) {
+          context.read<ReceiveBloc>().add(
+            ReceiveAmountCurrencyChanged(currencyCode),
+          );
+        },
+        error: amountException?.message,
+      ),
     );
   }
 }
