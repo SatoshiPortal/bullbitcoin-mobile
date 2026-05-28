@@ -64,6 +64,16 @@ class SeedRepository {
   @pragma('vm:entry-point')
   static Seed _toEntityInIsolate(SeedModel model) => model.toEntity();
 
+  String fingerprintFor({
+    required List<String> mnemonicWords,
+    String? passphrase,
+  }) {
+    return SeedModel.mnemonic(
+      mnemonicWords: mnemonicWords,
+      passphrase: passphrase,
+    ).masterFingerprint;
+  }
+
   Future<bool> exists(String fingerprint) async {
     try {
       return await _source.exists(fingerprint);

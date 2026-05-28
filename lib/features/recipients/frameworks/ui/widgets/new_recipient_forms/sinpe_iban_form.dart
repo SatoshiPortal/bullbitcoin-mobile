@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/domain/value_objects/recipient_type.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
@@ -68,14 +69,14 @@ class SinpeIbanFormState extends State<SinpeIbanForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: 'IBAN',
-            hintText: 'Enter IBAN',
+            labelText: context.loc.recipientsFieldIban,
+            hintText: context.loc.recipientsFieldIbanHint,
             focusNode: _ibanFocusNode,
             autofocus: true,
             textInputAction: .next,
             onFieldSubmitted: (_) => _ownerNameFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -85,13 +86,13 @@ class SinpeIbanFormState extends State<SinpeIbanForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Owner Name',
-            hintText: 'Enter owner name',
+            labelText: context.loc.recipientsFieldOwnerName,
+            hintText: context.loc.recipientsFieldOwnerNameHint,
             focusNode: _ownerNameFocusNode,
             textInputAction: .next,
             onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -101,8 +102,8 @@ class SinpeIbanFormState extends State<SinpeIbanForm> {
           ),
           const Gap(12.0),
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),

@@ -389,6 +389,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
+    String? paymentDescription,
   }) async {
     final params = <String, dynamic>{
       'recipientId': recipientId,
@@ -399,6 +400,10 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       params['fiatAmount'] = orderAmount.amount;
     } else if (orderAmount.isBitcoin) {
       params['bitcoinAmount'] = orderAmount.amount;
+    }
+
+    if (paymentDescription != null && paymentDescription.isNotEmpty) {
+      params['paymentDescription'] = paymentDescription;
     }
 
     final requestData = {

@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hiv
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:boltz/boltz.dart';
+import 'package:bull_sdk/boltz.dart';
 
 Future<void> doMigration0_2to0_3() async {
   final secureStorageDatasource = locator<MigrationSecureStorageDatasource>();

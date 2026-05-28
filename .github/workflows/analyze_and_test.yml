@@ -31,6 +31,12 @@ jobs:
       - name: Linter shouldn't raise errors, warnings or infos
         run: fvm flutter analyze --fatal-warnings --fatal-infos
 
+      - name: dart fix should have nothing to suggest
+        run: |
+          output=$(fvm dart fix --dry-run)
+          echo "$output"
+          echo "$output" | grep -q "Nothing to fix!"
+
       - name: Unit tests must pass
         run: make unit-test
 

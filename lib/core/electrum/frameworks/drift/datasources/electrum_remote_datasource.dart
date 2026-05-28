@@ -1,33 +1,26 @@
 import 'dart:convert';
 import 'dart:io' show SecureSocket;
 
-import 'package:bb_mobile/core/electrum/frameworks/drift/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/bitcoin_tx.dart';
 import 'package:convert/convert.dart';
 
 class ElectrumRemoteDatasource {
-  final ElectrumServerModel _server;
   final SqliteDatabase _sqlite;
-  late Uri _uri;
 
-  ElectrumRemoteDatasource({
-    required ElectrumServerModel server,
-    required SqliteDatabase sqlite,
-  }) : _server = server,
-       _sqlite = sqlite {
-    _uri = Uri.parse(_server.url);
-  }
+  ElectrumRemoteDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
 
-  Future<TransactionModel> fetch({required String txid}) async {
+  Future<TransactionModel> fetch({
+    required String serverUrl,
+    required String txid,
+  }) async {
     final cachedTransaction = await _sqlite.managers.transactions
         .filter((e) => e.txid(txid))
         .getSingleOrNull();
 
     if (cachedTransaction != null) return cachedTransaction;
 
-    // If not found in cache, fetch from Electrum
-    final txBytes = await _getTransaction(txid);
+    final txBytes = await _getTransaction(Uri.parse(serverUrl), txid);
     final tx = await BitcoinTx.fromBytes(txBytes);
 
     final txModel = TransactionModel(
@@ -44,9 +37,9 @@ class ElectrumRemoteDatasource {
     return txModel;
   }
 
-  Future<List<int>> _getTransaction(String txid) async {
+  Future<List<int>> _getTransaction(Uri serverUri, String txid) async {
     try {
-      final socket = await SecureSocket.connect(_uri.host, _uri.port);
+      final socket = await SecureSocket.connect(serverUri.host, serverUri.port);
 
       final request = {
         'id': 1,

@@ -126,12 +126,16 @@ class SwapInProgressPage extends StatelessWidget {
                 ),
                 const Spacer(flex: 2),
                 if (swap?.status != SwapStatus.completed) ...[
-                  InfoCard(
-                    description: context.loc.swapDoNotUninstallWarning,
-                    tagColor: context.appColors.tertiary,
-                    bgColor: context.appColors.warningContainer,
-                    boldDescription: true,
-                  ),
+                  if (swap?.status != SwapStatus.completed) ...[
+                    InfoCard(
+                      description:
+                          '${context.loc.swapDoNotUninstallWarning}\n\n'
+                          '${context.loc.transactionSwapOpenWithin24h}',
+                      tagColor: context.appColors.tertiary,
+                      bgColor: context.appColors.warningContainer,
+                      boldDescription: true,
+                    ),
+                  ],
                   const Gap(16),
                 ],
                 BBButton.big(

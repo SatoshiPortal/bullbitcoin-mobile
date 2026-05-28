@@ -24,18 +24,16 @@ class SwapStatusDescription extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color:
-                isFailedOrExpired
-                    ? context.appColors.errorContainer.withValues(alpha: 0.15)
-                    : context.appColors.surfaceContainerHighest.withValues(
-                      alpha: 0.5,
-                    ),
+            color: isFailedOrExpired
+                ? context.appColors.errorContainer.withValues(alpha: 0.15)
+                : context.appColors.surfaceContainerHighest.withValues(
+                    alpha: 0.5,
+                  ),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color:
-                  isFailedOrExpired
-                      ? context.appColors.error.withValues(alpha: 0.5)
-                      : context.appColors.outline.withValues(alpha: 0.3),
+              color: isFailedOrExpired
+                  ? context.appColors.error.withValues(alpha: 0.5)
+                  : context.appColors.outline.withValues(alpha: 0.3),
             ),
           ),
           child: Column(
@@ -51,29 +49,29 @@ class SwapStatusDescription extends StatelessWidget {
                     size: 20,
                     color:
                         swap.status == SwapStatus.failed ||
-                                swap.status == SwapStatus.expired
-                            ? context.appColors.error
-                            : context.appColors.secondary,
+                            swap.status == SwapStatus.expired
+                        ? context.appColors.error
+                        : context.appColors.secondary,
                   ),
                   const Gap(8),
                   BBText(
                     swap.status == SwapStatus.failed
                         ? (swap.isChainSwap
-                            ? context.loc.transactionStatusTransferFailed
-                            : context.loc.transactionStatusSwapFailed)
+                              ? context.loc.transactionStatusTransferFailed
+                              : context.loc.transactionStatusSwapFailed)
                         : swap.status == SwapStatus.expired
                         ? (swap.isChainSwap
-                            ? context.loc.transactionStatusTransferExpired
-                            : context.loc.transactionStatusSwapExpired)
+                              ? context.loc.transactionStatusTransferExpired
+                              : context.loc.transactionStatusSwapExpired)
                         : (swap.isChainSwap
-                            ? context.loc.transactionSwapStatusTransferStatus
-                            : context.loc.transactionSwapStatusSwapStatus),
+                              ? context.loc.transactionSwapStatusTransferStatus
+                              : context.loc.transactionSwapStatusSwapStatus),
                     style: context.font.titleSmall?.copyWith(
                       color:
                           swap.status == SwapStatus.failed ||
-                                  swap.status == SwapStatus.expired
-                              ? context.appColors.error
-                              : context.appColors.secondary,
+                              swap.status == SwapStatus.expired
+                          ? context.appColors.error
+                          : context.appColors.secondary,
                       fontWeight: .bold,
                     ),
                   ),
@@ -85,9 +83,9 @@ class SwapStatusDescription extends StatelessWidget {
                 style: context.font.bodySmall?.copyWith(
                   color:
                       swap.status == SwapStatus.failed ||
-                              swap.status == SwapStatus.expired
-                          ? context.appColors.error
-                          : context.appColors.onSurfaceVariant,
+                          swap.status == SwapStatus.expired
+                      ? context.appColors.error
+                      : context.appColors.onSurfaceVariant,
                 ),
               ),
               if (_getAdditionalInfo(context).isNotEmpty) ...[
@@ -97,9 +95,9 @@ class SwapStatusDescription extends StatelessWidget {
                   style: context.font.bodySmall?.copyWith(
                     color:
                         swap.status == SwapStatus.failed ||
-                                swap.status == SwapStatus.expired
-                            ? context.appColors.error.withValues(alpha: 0.8)
-                            : context.appColors.outline,
+                            swap.status == SwapStatus.expired
+                        ? context.appColors.error.withValues(alpha: 0.8)
+                        : context.appColors.outline,
                     fontStyle: .italic,
                   ),
                 ),
@@ -110,7 +108,10 @@ class SwapStatusDescription extends StatelessWidget {
         if (shouldShowWarning) ...[
           const Gap(16),
           InfoCard(
-            description: context.loc.transactionSwapDoNotUninstall,
+            description: swap.isChainSwap
+                ? '${context.loc.transactionSwapDoNotUninstall}\n\n'
+                      '${context.loc.transactionSwapOpenWithin24h}'
+                : context.loc.transactionSwapDoNotUninstall,
             tagColor: context.appColors.tertiary,
             bgColor: context.appColors.warningContainer,
             boldDescription: true,

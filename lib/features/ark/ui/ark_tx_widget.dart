@@ -1,17 +1,14 @@
-import 'package:ark_wallet/ark_wallet.dart' as ark_wallet;
+import 'package:bull_sdk/ark.dart' as ark_wallet;
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/mempool/domain/services/mempool_url_builder.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/widgets/transaction_viewer.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/router.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:url_launcher/url_launcher.dart';
 
 enum ArkTransactionType { boarding, commitment, redeem }
 
@@ -31,7 +28,7 @@ extension ArkTransactionTypeExtension on ArkTransactionType {
 class ArkTxWidget extends StatelessWidget {
   const ArkTxWidget({super.key, required this.tx});
 
-  final ark_wallet.Transaction tx;
+  final ark_wallet.ArkTransaction tx;
 
   @override
   Widget build(BuildContext context) {
@@ -40,19 +37,19 @@ class ArkTxWidget extends StatelessWidget {
     String txid;
     int sats;
     switch (tx) {
-      case final ark_wallet.Transaction_Boarding tx:
+      case final ark_wallet.ArkTransaction_Boarding tx:
         if (tx.confirmedAt != null) {
           date = DateTime.fromMillisecondsSinceEpoch(tx.confirmedAt! * 1000);
         }
         transactionType = ArkTransactionType.boarding;
         sats = tx.sats;
         txid = tx.txid;
-      case final ark_wallet.Transaction_Commitment tx:
+      case final ark_wallet.ArkTransaction_Commitment tx:
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         transactionType = ArkTransactionType.commitment;
         sats = tx.sats;
         txid = tx.txid;
-      case final ark_wallet.Transaction_Redeem tx:
+      case final ark_wallet.ArkTransaction_Redeem tx:
         date = DateTime.fromMillisecondsSinceEpoch(tx.createdAt * 1000);
         transactionType = ArkTransactionType.redeem;
         sats = tx.sats;
@@ -100,24 +97,11 @@ class ArkTxWidget extends StatelessWidget {
                     fiatAmount: null,
                     fiatCurrency: null,
                   ),
-                  if (tx is ark_wallet.Transaction_Boarding)
-                    GestureDetector(
-                      onTap: () async {
-                        final mempoolUrlBuilder = locator<MempoolUrlBuilder>();
-
-                        final mempoolUrl = await mempoolUrlBuilder.bitcoinTxidUrl(
-                          txid,
-                          isTestnet: false,
-                        );
-
-                        await launchUrl(Uri.parse(mempoolUrl));
-                      },
-                      child: Text(
-                        StringFormatting.truncateMiddle(txid),
-                        style: context.font.labelSmall?.copyWith(
-                          color: context.appColors.primary,
-                        ),
-                      ),
+                  if (tx is ark_wallet.ArkTransaction_Boarding)
+                    TransactionViewer.ark(
+                      txid,
+                      style: context.font.labelSmall,
+                      color: context.appColors.primary,
                     ),
                 ],
               ),
@@ -159,7 +143,7 @@ class ArkTxWidget extends StatelessWidget {
                       ),
                     ],
                   )
-                else if (tx is ark_wallet.Transaction_Boarding)
+                else if (tx is ark_wallet.ArkTransaction_Boarding)
                   Row(
                     children: [
                       BBText(

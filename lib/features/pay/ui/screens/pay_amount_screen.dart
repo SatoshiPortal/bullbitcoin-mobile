@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
@@ -21,6 +22,8 @@ class PayAmountScreen extends StatefulWidget {
 class _PayAmountScreenState extends State<PayAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
+  late final TextEditingController _descriptionController =
+      TextEditingController();
   bool _needsKycUpgrade = false;
 
   @override
@@ -46,6 +49,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
   void dispose() {
     _amountController.removeListener(_onAmountChanged);
     _amountController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
@@ -69,6 +73,29 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
               PayAmountInputFields(
                 amountController: _amountController,
                 fiatCurrency: currency,
+              ),
+              const Gap(24.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: .start,
+                  children: [
+                    Text(
+                      context.loc.payDescriptionLabel,
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.appColors.onSurfaceVariant,
+                      ),
+                    ),
+                    const Gap(8.0),
+                    BBInputText(
+                      controller: _descriptionController,
+                      value: _descriptionController.text,
+                      hint: context.loc.payDescriptionHint,
+                      maxLength: 140,
+                      onChanged: (_) {},
+                    ),
+                  ],
+                ),
               ),
               const Spacer(),
               if (_needsKycUpgrade) ...[
@@ -99,6 +126,8 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
                         PayEvent.amountInputContinuePressed(
                           amountInput: _amountController.text,
                           fiatCurrency: bloc.state.currency,
+                          paymentDescription:
+                              _descriptionController.text.trim(),
                         ),
                       );
                     }

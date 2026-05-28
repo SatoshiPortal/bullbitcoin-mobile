@@ -213,4 +213,6 @@ abstract class Wallet with _$Wallet {
   bool get isWatchSigner => signer == SignerEntity.remote;
   bool get signsLocally => signer == SignerEntity.local;
   bool get signsRemotely => isWatchSigner;
+  bool get isHardwareWallet => signerDevice != null;
+  bool get isBitcoinHardwareWallet => isBitcoin && isHardwareWallet;
 }
