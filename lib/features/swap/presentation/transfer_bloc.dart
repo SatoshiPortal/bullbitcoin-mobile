@@ -906,6 +906,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     TransferCustomFeeArmed event,
     Emitter<TransferState> emit,
   ) async {
+    // Also null bitcoinAbsoluteFeesSat — mirrors SendCubit.armCustomFee.
+    // Keeps the send screen and modal preview agreeing on the prediction
+    // during editing instead of one showing the stale pre-arm real fee.
     if (state.armPriorSelection == null) {
       emit(
         state.copyWith(
@@ -913,10 +916,16 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
           armPriorCustomFee: state.customFee,
           selectedFeeOption: FeeSelection.custom,
           customFee: event.fee,
+          bitcoinAbsoluteFeesSat: null,
         ),
       );
     } else {
-      emit(state.copyWith(customFee: event.fee));
+      emit(
+        state.copyWith(
+          customFee: event.fee,
+          bitcoinAbsoluteFeesSat: null,
+        ),
+      );
     }
   }
 

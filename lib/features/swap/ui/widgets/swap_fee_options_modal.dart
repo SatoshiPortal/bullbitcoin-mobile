@@ -100,7 +100,8 @@ class _SwapSelectableCustomFeeListItemState
           prev.bitcoinNetworkFees != curr.bitcoinNetworkFees ||
           prev.bitcoinTxSize != curr.bitcoinTxSize ||
           prev.exchangeRate != curr.exchangeRate ||
-          prev.fiatCurrencyCode != curr.fiatCurrencyCode,
+          prev.fiatCurrencyCode != curr.fiatCurrencyCode ||
+          prev.bitcoinAbsoluteFeesSat != curr.bitcoinAbsoluteFeesSat,
       builder: (context, state) {
         return CustomFeeListItem(
           initialFee: state.customFee,
@@ -113,6 +114,10 @@ class _SwapSelectableCustomFeeListItemState
           tileColor: context.appColors.onSecondary,
           tileShadowColor: context.appColors.secondary,
           unselectedIconColor: context.appColors.surface,
+          // See SelectableCustomFeeListItem for the contract — caller
+          // passes the real fee, the bloc nulls it on customFeeArmed so
+          // the modal preview falls back to the prediction during edit.
+          committedAbsoluteFeesSat: state.bitcoinAbsoluteFeesSat,
           onArm: (fee) =>
               widget.bloc.add(TransferEvent.customFeeArmed(fee)),
           onCommit: (fee) async {

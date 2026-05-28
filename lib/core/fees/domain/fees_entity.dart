@@ -134,39 +134,39 @@ extension FeeOptionsDisplay on FeeOptions {
     double exchangeRate,
     String currencySymbol,
   ) {
-    //title
-    // subtitle - Estimated delivery ～ 10 minutes
-    // subtitle2 - 10 sats/byte = 2,083 sats ($1,37) fee
-    final fastestAbsValue = fastest.value * txSize;
-    final economicAbsValue = economic.value * txSize;
-    final slowAbsValue = slow.value * txSize;
+    // Predictions only — preset tiles never have a real PSBT to read from
+    // (no commit happened yet). Use integer math via NetworkFee.toAbsolute
+    // so the line doesn't render IEEE-noisy doubles like 208.0 or
+    // 14.100000000000001. BDK may still pay 1-3 sats more at sub-1
+    // sat/vByte rates due to ceil + dust absorption — that's documented
+    // BDK behaviour we can't predict without building a real tx.
+    final fastestAbsSats = fastest.toAbsolute(txSize).value.toInt();
+    final economicAbsSats = economic.toAbsolute(txSize).value.toInt();
+    final slowAbsSats = slow.toAbsolute(txSize).value.toInt();
     final fastestFiatEq = ConvertAmount.satsToFiat(
-      fastestAbsValue.toInt(),
+      fastestAbsSats,
       exchangeRate,
     );
     final economicFiatEq = ConvertAmount.satsToFiat(
-      economicAbsValue.toInt(),
+      economicAbsSats,
       exchangeRate,
     );
-    final slowFiatEq = ConvertAmount.satsToFiat(
-      slowAbsValue.toInt(),
-      exchangeRate,
-    );
+    final slowFiatEq = ConvertAmount.satsToFiat(slowAbsSats, exchangeRate);
     return [
       (
         'Fastest',
         'Estimated delivery ~ 10 minutes',
-        '${fastest.value} sats/byte = $fastestAbsValue sats (~ $fastestFiatEq) $currencySymbol',
+        '${fastest.value} sats/byte = $fastestAbsSats sats (~ $fastestFiatEq) $currencySymbol',
       ),
       (
         'Economic',
         'Estimated delivery ~ 30 minutes',
-        '${economic.value} sats/byte = $economicAbsValue sats (~ $economicFiatEq) $currencySymbol',
+        '${economic.value} sats/byte = $economicAbsSats sats (~ $economicFiatEq) $currencySymbol',
       ),
       (
         'Slow',
         'Estimated delivery ~ few hours',
-        '${slow.value} sats/byte = $slowAbsValue sats (~ $slowFiatEq) $currencySymbol',
+        '${slow.value} sats/byte = $slowAbsSats sats (~ $slowFiatEq) $currencySymbol',
       ),
     ];
   }

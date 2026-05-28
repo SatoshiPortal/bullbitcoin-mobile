@@ -44,6 +44,7 @@ class CustomFeeListItem extends StatefulWidget {
     this.allowAbsoluteToggle = true,
     this.showConfirmButton = true,
     this.commitOnChange = false,
+    this.committedAbsoluteFeesSat,
   });
 
   /// The currently committed `customFee` from the caller's state. Used to
@@ -109,6 +110,15 @@ class CustomFeeListItem extends StatefulWidget {
   /// [onArm]. RBF passes true — its parent screen takes whatever the
   /// latest commit is. In this mode [onArm] / [onDisarm] are ignored.
   final bool commitOnChange;
+
+  /// Real absolute fee (from the built PSBT) that corresponds to
+  /// [initialFee]. When the user hasn't edited the input, the preview line
+  /// renders this value — it accounts for BDK's ceil rounding and sub-dust
+  /// change absorption, so the modal matches what the send screen shows.
+  /// Caller passes `state.bitcoinAbsoluteFeesSat` when not armed, or null
+  /// when armed (the cubit clears it on arm, so the modal falls back to a
+  /// prediction during editing).
+  final int? committedAbsoluteFeesSat;
 
   @override
   State<CustomFeeListItem> createState() => _CustomFeeListItemState();
@@ -200,26 +210,44 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     final feeOptions = widget.feePresets;
     final txSize = widget.txSize;
 
-    final fastestAbsValue = (feeOptions?.fastest.value ?? 0) * txSize;
-    final economicAbsValue = (feeOptions?.economic.value ?? 0) * txSize;
-    final slowAbsValue = (feeOptions?.slow.value ?? 0) * txSize;
-    final customAbsValue = _customFee == null
-        ? 0
-        : _customFee is AbsoluteFee
-        ? _customFee!.value
-        : (_customFee?.value ?? 0) * txSize;
+    // Integer predictions only — `rate × vsize` as a raw double leaks IEEE
+    // noise (e.g. 14.100000000000001) and gives a fractional sat that can't
+    // actually be paid. NetworkFee.toAbsolute does half-up integer rounding.
+    final fastestAbsSats =
+        feeOptions?.fastest.toAbsolute(txSize).value.toInt() ?? 0;
+    final economicAbsSats =
+        feeOptions?.economic.toAbsolute(txSize).value.toInt() ?? 0;
+    final slowAbsSats =
+        feeOptions?.slow.toAbsolute(txSize).value.toInt() ?? 0;
+    final customPredictedSats =
+        _customFee?.toAbsolute(txSize).value.toInt() ?? 0;
+
+    // Show the real PSBT-derived fee when the typed value still matches the
+    // committed `initialFee` AND the caller has a real fee for it. The
+    // caller passes null whenever the typed value diverges from what was
+    // last built (the cubit nulls bitcoinAbsoluteFeesSat in armCustomFee).
+    // Without this, the modal would re-display its own naive prediction
+    // (e.g. 27 sats) even though the send screen behind it shows the real
+    // BDK-broadcast fee (e.g. 29 sats after ceil + dust absorption).
+    final bool useCommittedReal =
+        _customFee != null &&
+        _customFee == widget.initialFee &&
+        widget.committedAbsoluteFeesSat != null;
+    final customDisplaySats = useCommittedReal
+        ? widget.committedAbsoluteFeesSat!
+        : customPredictedSats;
     final fiatEq = ConvertAmount.satsToFiat(
-      customAbsValue.toInt(),
+      customDisplaySats,
       widget.exchangeRate,
     );
 
     final subtitle1 = _customFee == null || feeOptions == null
         ? ''
-        : 'Estimated delivery ~ ${customAbsValue >= fastestAbsValue
+        : 'Estimated delivery ~ ${customDisplaySats >= fastestAbsSats
               ? context.loc.sendEstimatedDelivery10Minutes
-              : customAbsValue >= economicAbsValue
+              : customDisplaySats >= economicAbsSats
               ? context.loc.sendEstimatedDelivery10to30Minutes
-              : customAbsValue >= slowAbsValue
+              : customDisplaySats >= slowAbsSats
               ? context.loc.sendEstimatedDeliveryFewHours
               : context.loc.sendEstimatedDeliveryHoursToDays}';
 
@@ -227,7 +255,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
         widget.exchangeRate > 0 && widget.fiatCurrencyCode.isNotEmpty;
     final subtitle2 = _customFee == null
         ? ''
-        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = ${FormatAmount.satsApprox(customAbsValue)} ${context.loc.sendSats}'
+        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = ${FormatAmount.satsApprox(customDisplaySats)} ${context.loc.sendSats}'
               '${showFiatInPreview ? ' (~ $fiatEq ${widget.fiatCurrencyCode})' : ''}';
 
     // Fee-rate guards. 0.1 floor = Bitcoin Core's lowest sensible policy and

@@ -1206,6 +1206,12 @@ class SendCubit extends Cubit<SendState> {
   /// calls only update `customFee` — the snapshot stays pinned to the
   /// pre-arm state.
   void armCustomFee(NetworkFee fee) {
+    // Also null out bitcoinAbsoluteFeesSat so the send screen and the modal
+    // both fall back to the same prediction during editing. Without this,
+    // the send screen keeps showing the pre-arm committed real fee (e.g.,
+    // 29 sats from the last build) while the modal preview shows the new
+    // typed value's prediction (e.g., 27 sats) — they disagree until the
+    // user hits Confirm. See the audit "real fee vs prediction" note.
     if (state.armPriorSelection == null) {
       emit(
         state.copyWith(
@@ -1213,10 +1219,13 @@ class SendCubit extends Cubit<SendState> {
           armPriorCustomFee: state.customFee,
           selectedFeeOption: FeeSelection.custom,
           customFee: fee,
+          bitcoinAbsoluteFeesSat: null,
         ),
       );
     } else {
-      emit(state.copyWith(customFee: fee));
+      emit(
+        state.copyWith(customFee: fee, bitcoinAbsoluteFeesSat: null),
+      );
     }
   }
 

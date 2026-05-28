@@ -39,7 +39,8 @@ class _SelectableCustomFeeListItemState
           prev.feeOptions != curr.feeOptions ||
           prev.bitcoinTxSize != curr.bitcoinTxSize ||
           prev.exchangeRate != curr.exchangeRate ||
-          prev.fiatCurrencyCode != curr.fiatCurrencyCode,
+          prev.fiatCurrencyCode != curr.fiatCurrencyCode ||
+          prev.bitcoinAbsoluteFeesSat != curr.bitcoinAbsoluteFeesSat,
       builder: (context, state) {
         return CustomFeeListItem(
           initialFee: state.customFee,
@@ -52,6 +53,11 @@ class _SelectableCustomFeeListItemState
           tileColor: context.appColors.surface,
           tileShadowColor: context.appColors.border,
           unselectedIconColor: context.appColors.textMuted,
+          // Real fee from the last built PSBT — armCustomFee nulls this on
+          // first keystroke, so the modal preview tracks the prediction
+          // during editing and only shows the real value when the typed
+          // input matches the currently committed customFee.
+          committedAbsoluteFeesSat: state.bitcoinAbsoluteFeesSat,
           onArm: _cubit.armCustomFee,
           onCommit: _cubit.customFeesChanged,
           onDisarm: _cubit.disarmCustomFee,
