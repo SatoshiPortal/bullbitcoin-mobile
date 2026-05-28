@@ -73,6 +73,7 @@ class SyncCoordinator {
   final Set<SyncKind> _enqueued = <SyncKind>{};
   SyncKind? _running;
   bool _draining = false;
+  Future<Map<SyncKind, Object>>? _activeDrain;
   final Map<SyncKind, Object> _lastErrors = <SyncKind, Object>{};
   final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
 
@@ -103,20 +104,27 @@ class SyncCoordinator {
     final requested = SyncKind.values
         .where((k) => only?.contains(k) ?? true)
         .toList(growable: false);
+    log.fine(
+      '[SyncCoordinator] sync requested kinds=$requested force=$force running=$_running queued=${_queue.toList()} draining=$_draining hasActiveDrain=${_activeDrain != null}',
+    );
     for (final kind in requested) {
       _enqueue(kind, force: force);
     }
-    unawaited(_drain());
-    final settled = state.isBusy
-        ? await stream.firstWhere((s) => !s.isBusy)
-        : state;
+    final settledErrors = await _drain();
+    log.fine(
+      '[SyncCoordinator] sync settled kinds=$requested errors=${settledErrors.keys.toList()}',
+    );
     final failures = <SyncKind, Object>{
       for (final kind in requested)
-        if (settled.errors[kind] != null) kind: settled.errors[kind]!,
+        if (settledErrors[kind] != null) kind: settledErrors[kind]!,
     };
     if (failures.isNotEmpty) {
+      log.warning(
+        '[SyncCoordinator] sync failures kinds=${failures.keys.toList()}',
+      );
       throw SyncCoordinatorException(failures);
     }
+    log.fine('[SyncCoordinator] sync completed kinds=$requested');
   }
 
   void _enqueue(SyncKind kind, {required bool force}) {
@@ -138,22 +146,45 @@ class SyncCoordinator {
     }
     _enqueued.add(kind);
     _queue.add(kind);
+    log.fine('[SyncCoordinator] enqueued $kind queue=${_queue.toList()}');
     _emit();
   }
 
-  Future<void> _drain() async {
-    if (_draining) return;
+  Future<Map<SyncKind, Object>> _drain() {
+    final inFlight = _activeDrain;
+    if (inFlight != null) {
+      log.fine('[SyncCoordinator] join in-flight drain');
+      return inFlight;
+    }
+    log.fine('[SyncCoordinator] start drain pass');
+    final future = _drainOnce();
+    _activeDrain = future;
+    return future.whenComplete(() {
+      if (identical(_activeDrain, future)) {
+        _activeDrain = null;
+      }
+      if (_queue.isNotEmpty && !_draining) {
+        log.fine('[SyncCoordinator] follow-up drain scheduled');
+        unawaited(_drain());
+      }
+    });
+  }
+
+  Future<Map<SyncKind, Object>> _drainOnce() async {
     _draining = true;
     _lastErrors.clear();
+    log.fine('[SyncCoordinator] drain pass begin queue=${_queue.toList()}');
     try {
       while (_queue.isNotEmpty) {
         final kind = _queue.removeFirst();
         _enqueued.remove(kind);
         _running = kind;
+        log.fine('[SyncCoordinator] run $kind remainingQueue=${_queue.toList()}');
         _emit();
         try {
           await _runTask(kind);
           _lastSuccessAt[kind] = DateTime.now();
+          log.fine('[SyncCoordinator] success $kind');
         } catch (e, st) {
           _lastErrors[kind] = e;
           // Sanitize: substitute a synthetic error carrying only the kind
@@ -167,6 +198,11 @@ class SyncCoordinator {
         }
         _running = null;
       }
+      log.fine(
+        '[SyncCoordinator] drain pass end errors=${_lastErrors.keys.toList()}',
+      );
+      final errors = Map<SyncKind, Object>.of(_lastErrors);
+      return errors;
     } finally {
       _draining = false;
       _emit();
