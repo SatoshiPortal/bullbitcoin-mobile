@@ -180,6 +180,26 @@ void main() {
     );
 
     testWidgets(
+      'RBF mode does NOT commit a below-floor rate (BDK would build a '
+      'PSBT no node would relay)',
+      (tester) async {
+        NetworkFee? committed;
+        await pumpTile(
+          tester,
+          commitOnChange: true,
+          onCommit: (fee) async => committed = fee,
+        );
+        // 0.05 sat/vByte < NetworkFeeRelayPolicy.minRelaySatPerVbyte.
+        // The build-time banner ("Fee Rate Too Low") shows the user why
+        // nothing's being committed; the modal-mode equivalent gate
+        // lives in finalizeArmedCustomFee/_onCustomFeeFinalized.
+        await tester.enterText(find.byType(TextFormField), '0.05');
+        await tester.pump();
+        expect(committed, isNull);
+      },
+    );
+
+    testWidgets(
       'fast typing only previews once after the user pauses',
       (tester) async {
         var previewCount = 0;

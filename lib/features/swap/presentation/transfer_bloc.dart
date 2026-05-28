@@ -28,10 +28,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -321,8 +321,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
       ),
     );
     // Wallet swap invalidates every cached preview (different UTXOs +
-    // descriptor + script type).
-    _clearBitcoinFeePreviews(emit);
+    // descriptor + script type). Skip when the picker landed on the
+    // same fromWallet.
+    if (wasFromWalletChanged) _clearBitcoinFeePreviews(emit);
 
     final maxAmountSat = await getMaxAmountSat(newFromWallet);
     emit(state.copyWith(maxAmountSat: maxAmountSat));
@@ -336,6 +337,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferAmountChanged event,
     Emitter<TransferState> emit,
   ) async {
+    if (state.amount == event.amount) return;
     emit(state.copyWith(amount: event.amount));
     // Amount is part of the cache fingerprint (see _clearBitcoinFeePreviews).
     _clearBitcoinFeePreviews(emit);
@@ -697,8 +699,9 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferExternalAddressChanged event,
     Emitter<TransferState> emit,
   ) async {
+    if (state.externalAddress == event.address) return;
     // Recipient is part of the cache fingerprint — drop every cached
-    // preview regardless of whether the new value parses.
+    // preview when the new value differs from what we had cached against.
     _clearBitcoinFeePreviews(emit);
     if (event.address.isEmpty) {
       emit(state.copyWith(externalAddress: '', externalAddressError: null));
@@ -860,6 +863,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferReplaceByFeeChanged event,
     Emitter<TransferState> emit,
   ) async {
+    if (state.replaceByFee == event.replaceByFee) return;
     emit(state.copyWith(replaceByFee: event.replaceByFee));
     _clearBitcoinFeePreviews(emit);
     await _rebuildTransaction(emit);
@@ -869,8 +873,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferUtxosSelected event,
     Emitter<TransferState> emit,
   ) async {
+    // The UTXO set is an unordered selection — compare as sets so a
+    // re-emit of the same set (different list order) doesn't invalidate.
+    final utxosChanged =
+        state.selectedUtxos.toSet().difference(event.utxos.toSet()).isNotEmpty ||
+            event.utxos.toSet().difference(state.selectedUtxos.toSet()).isNotEmpty;
     emit(state.copyWith(selectedUtxos: event.utxos));
-    _clearBitcoinFeePreviews(emit);
+    if (utxosChanged) _clearBitcoinFeePreviews(emit);
     await _rebuildTransaction(emit);
   }
 
@@ -930,9 +939,15 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     TransferCustomFeeArmed event,
     Emitter<TransferState> emit,
   ) async {
-    // Also null bitcoinAbsoluteFeesSat — mirrors SendCubit.armCustomFee.
-    // Keeps the send screen and modal preview agreeing on the prediction
-    // during editing instead of one showing the stale pre-arm real fee.
+    // Mirrors SendCubit.armCustomFee — clear the cached custom-slot
+    // PSBT (it was built for the OLD typed rate) so commit can't reuse
+    // it. Without this, dismissing within the debounce window would
+    // broadcast the previous rate's PSBT while showing the new rate.
+    // Same divergence class the PR fixes elsewhere.
+    final cleared = state.feePreviewCache.withSlot(
+      FeeSelection.custom,
+      const BitcoinFeePreviewSlot(),
+    );
     if (state.armPriorSelection == null) {
       emit(
         state.copyWith(
@@ -941,6 +956,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
           selectedFeeOption: FeeSelection.custom,
           customFee: event.fee,
           bitcoinAbsoluteFeesSat: null,
+          feePreviewCache: cleared,
         ),
       );
     } else {
@@ -948,6 +964,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
         state.copyWith(
           customFee: event.fee,
           bitcoinAbsoluteFeesSat: null,
+          feePreviewCache: cleared,
         ),
       );
     }

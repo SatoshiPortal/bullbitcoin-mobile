@@ -234,8 +234,13 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
           : NetworkFee.relativeFromSatPerVbyte(parsed.toDouble());
       setState(() => _customFee = fee);
       if (widget.commitOnChange) {
-        // RBF mode — each keystroke is the commit. Parent's onChanged
-        // is light (no PSBT build), so no debounce needed.
+        // RBF mode — each keystroke is the commit. Skip below-floor
+        // values: BDK would happily build the PSBT but no relay would
+        // propagate it. The build() banner ("Fee Rate Too Low") shows
+        // the user why nothing's getting committed; modal-mode does
+        // the same gating in [SendCubit.finalizeArmedCustomFee] /
+        // [TransferBloc._onCustomFeeFinalized] via aboveMinRelay.
+        if (!fee.aboveMinRelay(txSize: widget.txSize)) return;
         widget.onCommit(fee);
       } else {
         // Modal mode: arm immediately for visual selection (cheap —
@@ -274,32 +279,50 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     return null;
   }
 
+  /// Canonical sat/kwu representation for preset-bucket comparisons.
+  /// Comparing the typed rate against preset rates as ints removes the
+  /// floating-point fragility (`satPerVbyte` round-trips through `sat /
+  /// 250.0` and only happens to be exact for the values users actually
+  /// type). For [AbsoluteFee] we compute via [widget.txSize] — same
+  /// fallback as `_rateOf`, just scaled.
+  int? _satPerKwuOf(NetworkFee? fee) {
+    if (fee == null) return null;
+    if (fee is RelativeFee) return fee.satPerKwu;
+    if (fee is AbsoluteFee && widget.txSize > 0) {
+      // sat/kwu = (sats / vsize) * 250, rounded half-up.
+      return (fee.sats * 250 + widget.txSize ~/ 2) ~/ widget.txSize;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final showAsSelected = widget.isCommittedAsCustom || _focusNode.hasFocus;
     final feeOptions = widget.feePresets;
 
     // Subtitle1 ("Estimated delivery ~ X minutes") is decided by comparing
-    // the user's TYPED RATE against preset rates — no absolute math, no
-    // vsize needed. The buckets are: ≥ fastest → 10m, ≥ economic → 30m,
-    // ≥ slow → hours, else → hours to days.
+    // the user's TYPED RATE against preset rates on the canonical
+    // sat/kwu int axis — no float math, no precision-loss surprises at
+    // the bucket boundary. The buckets are: ≥ fastest → 10m, ≥ economic
+    // → 30m, ≥ slow → hours, else → hours to days.
     final customRate = _effectiveSatPerVbyte();
-    final fastestRate = _rateOf(feeOptions?.fastest);
-    final economicRate = _rateOf(feeOptions?.economic);
-    final slowRate = _rateOf(feeOptions?.slow);
+    final customKwu = _satPerKwuOf(_customFee);
+    final fastestKwu = _satPerKwuOf(feeOptions?.fastest);
+    final economicKwu = _satPerKwuOf(feeOptions?.economic);
+    final slowKwu = _satPerKwuOf(feeOptions?.slow);
     final subtitle1 =
         (_customFee == null ||
             feeOptions == null ||
-            customRate == null ||
-            fastestRate == null ||
-            economicRate == null ||
-            slowRate == null)
+            customKwu == null ||
+            fastestKwu == null ||
+            economicKwu == null ||
+            slowKwu == null)
         ? ''
-        : 'Estimated delivery ~ ${customRate >= fastestRate
+        : 'Estimated delivery ~ ${customKwu >= fastestKwu
               ? context.loc.sendEstimatedDelivery10Minutes
-              : customRate >= economicRate
+              : customKwu >= economicKwu
               ? context.loc.sendEstimatedDelivery10to30Minutes
-              : customRate >= slowRate
+              : customKwu >= slowKwu
               ? context.loc.sendEstimatedDeliveryHours
               : context.loc.sendEstimatedDeliveryHoursToDays}';
 
