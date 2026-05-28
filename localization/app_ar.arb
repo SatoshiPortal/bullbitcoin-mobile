@@ -4470,6 +4470,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "لا يمكن استخدام المحافظ الأجهزة للمبادلات.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
@@ -4772,6 +4776,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "الأجر",
+  "payDescriptionLabel": "وصف الدفعة (اختياري)",
+  "payDescriptionHint": "أضف ملاحظة لهذه الدفعة",
+  "payPaymentDescription": "وصف الدفعة",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -9701,6 +9708,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "العدد",
+  "transactionDetailLabelPaymentDescription": "وصف الدفعة",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

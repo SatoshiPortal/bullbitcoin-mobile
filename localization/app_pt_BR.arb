@@ -4109,6 +4109,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "As carteiras hardware não podem ser utilizadas para trocas.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "payDefaultCommentHint": "Insira o comentário padrão",
   "@payDefaultCommentHint": {
     "description": "Hint for default comment input"
@@ -4322,6 +4326,9 @@
     "description": "Option to use CoinJoin for privacy"
   },
   "payTitle": "Pagamento",
+  "payDescriptionLabel": "Descrição do pagamento (opcional)",
+  "payDescriptionHint": "Adicione uma nota a este pagamento",
+  "payPaymentDescription": "Descrição do pagamento",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -8660,6 +8667,7 @@
     "description": "Processing subtext shown while signing transaction"
   },
   "transactionDetailLabelOrderNumber": "Número de ordem",
+  "transactionDetailLabelPaymentDescription": "Descrição do pagamento",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

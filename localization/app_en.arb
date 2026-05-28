@@ -1990,6 +1990,18 @@
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
+  "payDescriptionLabel": "Payment description (optional)",
+  "@payDescriptionLabel": {
+    "description": "Label for the optional payment description input in the pay flow"
+  },
+  "payDescriptionHint": "Add a note for this payment",
+  "@payDescriptionHint": {
+    "description": "Hint text for the optional payment description input in the pay flow"
+  },
+  "payPaymentDescription": "Payment description",
+  "@payPaymentDescription": {
+    "description": "Label for the payment description on the pay confirmation screen"
+  },
   "paySelectRecipient": "Select recipient",
   "@paySelectRecipient": {
     "description": "Screen title for recipient selection"
@@ -3221,6 +3233,10 @@
   "transactionDetailLabelOrderNumber": "Order Number",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
+  },
+  "transactionDetailLabelPaymentDescription": "Payment description",
+  "@transactionDetailLabelPaymentDescription": {
+    "description": "Label for the payment description on the order details screen"
   },
   "transactionDetailLabelPayinAmount": "Payin amount",
   "@transactionDetailLabelPayinAmount": {
@@ -7200,6 +7216,10 @@
   "sendErrorSwapCreationFailed": "Failed to create swap.",
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
+  },
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets cannot be used for swaps.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
   },
   "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
   "@sendErrorInvoiceMustContainAmount": {

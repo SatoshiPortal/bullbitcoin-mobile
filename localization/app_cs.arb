@@ -4790,6 +4790,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro swapy.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Nejsou k dispozici žádné údaje o rovnováze",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5084,6 +5088,9 @@
     }
   },
   "payTitle": "Čeština",
+  "payDescriptionLabel": "Popis platby (volitelné)",
+  "payDescriptionHint": "Přidejte poznámku k této platbě",
+  "payPaymentDescription": "Popis platby",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10135,6 +10142,7 @@
     "description": "Payment method: Email E-Transfer (Canada)"
   },
   "transactionDetailLabelOrderNumber": "Číslo objednávky",
+  "transactionDetailLabelPaymentDescription": "Popis platby",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

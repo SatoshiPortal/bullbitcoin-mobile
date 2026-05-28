@@ -442,5 +442,9 @@
   "recipientsValidationSinpePhoneTooShort": "შეიყვანეთ ტელეფონის ნომრის ყველა 8 ციფრი",
   "recipientsFieldDocumentType": "მიმღების პირადობის ტიპი",
   "recipientsFieldDocumentNumberHint": "შეიყვანეთ მიმღების პირადობის ნომერი",
-  "recipientsValidationSinpePhone": "შეიყვანეთ მოქმედი 8-ციფრიანი კოსტა რიკის ტელეფონის ნომერი ქვეყნის კოდის გარეშე"
+  "recipientsValidationSinpePhone": "შეიყვანეთ მოქმედი 8-ციფრიანი კოსტა რიკის ტელეფონის ნომერი ქვეყნის კოდის გარეშე",
+  "payDescriptionLabel": "გადახდის აღწერა (არასავალდებულო)",
+  "payDescriptionHint": "დაამატეთ შენიშვნა ამ გადახდისთვის",
+  "payPaymentDescription": "გადახდის აღწერა",
+  "transactionDetailLabelPaymentDescription": "გადახდის აღწერა"
 }

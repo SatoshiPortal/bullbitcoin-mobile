@@ -250,5 +250,9 @@
   "recipientsValidationSinpePhoneTooShort": "Weka tarakimu zote 8 za nambari ya simu",
   "recipientsFieldDocumentType": "Aina ya kitambulisho cha mpokeaji",
   "recipientsFieldDocumentNumberHint": "Weka nambari ya kitambulisho cha mpokeaji",
-  "recipientsValidationSinpePhone": "Weka nambari halali ya simu ya Costa Rica yenye tarakimu 8 bila msimbo wa nchi"
+  "recipientsValidationSinpePhone": "Weka nambari halali ya simu ya Costa Rica yenye tarakimu 8 bila msimbo wa nchi",
+  "payDescriptionLabel": "Maelezo ya malipo (hiari)",
+  "payDescriptionHint": "Ongeza dokezo kwa malipo haya",
+  "payPaymentDescription": "Maelezo ya malipo",
+  "transactionDetailLabelPaymentDescription": "Maelezo ya malipo"
 }

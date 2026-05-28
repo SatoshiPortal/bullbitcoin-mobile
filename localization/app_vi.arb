@@ -230,5 +230,9 @@
   "recipientsValidationSinpePhoneTooShort": "Nhập đầy đủ 8 chữ số của số điện thoại",
   "recipientsFieldDocumentType": "Loại giấy tờ tùy thân của người nhận",
   "recipientsFieldDocumentNumberHint": "Nhập số giấy tờ tùy thân của người nhận",
-  "recipientsValidationSinpePhone": "Nhập số điện thoại Costa Rica hợp lệ 8 chữ số không bao gồm mã quốc gia"
+  "recipientsValidationSinpePhone": "Nhập số điện thoại Costa Rica hợp lệ 8 chữ số không bao gồm mã quốc gia",
+  "payDescriptionLabel": "Mô tả thanh toán (tùy chọn)",
+  "payDescriptionHint": "Thêm ghi chú cho khoản thanh toán này",
+  "payPaymentDescription": "Mô tả thanh toán",
+  "transactionDetailLabelPaymentDescription": "Mô tả thanh toán"
 }

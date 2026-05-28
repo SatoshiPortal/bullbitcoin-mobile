@@ -4729,6 +4729,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "हार्डवेयर वॉलेट का उपयोग स्वैप के लिए नहीं किया जा सकता।",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "उपलब्ध बैलेंस डेटा",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5047,6 +5051,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "भुगतान करें",
+  "payDescriptionLabel": "भुगतान विवरण (वैकल्पिक)",
+  "payDescriptionHint": "इस भुगतान के लिए एक नोट जोड़ें",
+  "payPaymentDescription": "भुगतान विवरण",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10364,6 +10371,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ऑर्डर संख्या",
+  "transactionDetailLabelPaymentDescription": "भुगतान विवरण",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

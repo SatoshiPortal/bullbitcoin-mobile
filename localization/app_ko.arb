@@ -4733,6 +4733,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "하드웨어 지갑은 스왑에 사용할 수 없습니다.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "유효한 균형 자료 없음",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5051,6 +5055,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "결제하기",
+  "payDescriptionLabel": "결제 설명 (선택 사항)",
+  "payDescriptionHint": "이 결제에 대한 메모를 추가하세요",
+  "payPaymentDescription": "결제 설명",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10372,6 +10379,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "주문 번호",
+  "transactionDetailLabelPaymentDescription": "결제 설명",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

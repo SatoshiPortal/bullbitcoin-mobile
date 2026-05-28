@@ -1979,6 +1979,9 @@
     "description": "Information about balance crediting"
   },
   "payTitle": "Pay Karo",
+  "payDescriptionLabel": "Bhugtan vivaran (vaikalpik)",
+  "payDescriptionHint": "Is bhugtan ke liye ek note jodein",
+  "payPaymentDescription": "Bhugtan vivaran",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -2750,6 +2753,7 @@
     "description": "Label for order type"
   },
   "transactionDetailLabelOrderNumber": "Order number",
+  "transactionDetailLabelPaymentDescription": "Bhugtan vivaran",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

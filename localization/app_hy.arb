@@ -230,5 +230,9 @@
   "recipientsValidationSinpePhoneTooShort": "Մուտքագրեք հեռախոսահամարի բոլոր 8 թվերը",
   "recipientsFieldDocumentType": "Ստացողի ID-ի տեսակ",
   "recipientsFieldDocumentNumberHint": "Մուտքագրեք ստացողի ID համարը",
-  "recipientsValidationSinpePhone": "Մուտքագրեք վավեր 8-նիշանոց կոստա ռիկական հեռախոսահամար առանց երկրի կոդի"
+  "recipientsValidationSinpePhone": "Մուտքագրեք վավեր 8-նիշանոց կոստա ռիկական հեռախոսահամար առանց երկրի կոդի",
+  "payDescriptionLabel": "Վճարման նկարագրություն (ըստ ցանկության)",
+  "payDescriptionHint": "Ավելացրեք նշում այս վճարման համար",
+  "payPaymentDescription": "Վճարման նկարագրություն",
+  "transactionDetailLabelPaymentDescription": "Վճարման նկարագրություն"
 }

@@ -315,8 +315,15 @@ class SendCubit extends Cubit<SendState> {
         }
       }
 
-      // Use the preselected wallet passed in the constructor if available,
-      //  otherwise use the best wallet for the payment request and amount
+      // [CHAIN SWAP LIFECYCLE — Step 1: trigger]
+      // SelectBestWalletUsecase picks a same-network wallet with sufficient
+      // funds first. A chain swap is only triggered when:
+      //   (a) no same-network wallet has enough balance, so a wallet from the
+      //       OTHER network is chosen (BTC <-> L-BTC), OR
+      //   (b) the user explicitly pre-selected a different-network wallet via
+      //       `_wallet`.
+      // The `state.isChainSwap` getter (see send_state.dart) flips true when
+      // selectedWallet.network does not match the payment request's network.
       final wallet =
           _wallet ??
           _bestWalletUsecase.execute(
@@ -324,16 +331,6 @@ class SendCubit extends Cubit<SendState> {
             request: state.paymentRequest!,
             amountSat: state.paymentRequest!.amountSat,
           );
-
-      // Listen to the wallet syncing status to update the wallet balance and its utxos
-      // Do we need to do this? The wallet selected may change in the amount page
-      await _selectedWalletSyncingSubscription?.cancel();
-      _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
-          .execute(walletId: wallet.id)
-          .listen((wallet) async {
-            emit(state.copyWith(selectedWallet: wallet));
-            await loadUtxos();
-          });
 
       final sendType = SendType.from(state.paymentRequest!);
 
@@ -348,7 +345,8 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(label: embeddedLabel));
       }
 
-      emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
+      await _setSelectedWallet(wallet, manual: false);
+      emit(state.copyWith(sendType: sendType));
       await loadFees();
 
       if (state.invoiceHasMrh) {
@@ -544,6 +542,23 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
+  // [CHAIN SWAP LIFECYCLE — Step 2: create the swap]
+  // Single chain-swap orchestration point. Runs to completion BEFORE the
+  // real funding tx is built. The sequence is:
+  //   (a) If sendMax: drain to a dummy P2TR address (matching Boltz's
+  //       P2TR lockup) to discover absolute fees and derive
+  //       state.amount = balance - fees. See buildDummyTxsForMaxSwapAmount.
+  //   (b) Load swap limits + fees, compute paymentAmount:
+  //         - sendMax: paymentAmount = state.inputAmountSat
+  //           (already balance - txFees from Step 2a; Boltz deducts its
+  //           fees from this amount before paying the receiver).
+  //         - otherwise: paymentAmount = receivable + boltz fees, so the
+  //           receiver gets the exact requested amount.
+  //   (c) Call createChainSwapToExternalUsecase → Boltz LOCKS IN
+  //       swap.paymentAmount and swap.paymentAddress (P2TR lockup). From
+  //       this point, the final funding tx MUST send exactly
+  //       swap.paymentAmount to swap.paymentAddress.
+  // After this returns, createTransaction is invoked to build the funding tx.
   Future<void> handleChainSwap() async {
     final isChainSwap =
         (state.sendType == SendType.liquid &&
@@ -553,6 +568,9 @@ class SendCubit extends Cubit<SendState> {
     if (isChainSwap) {
       try {
         if (state.sendMax) {
+          // [CHAIN SWAP LIFECYCLE — Step 2a: first drain (dummy address)]
+          // Computes fees against a dummy address. Result feeds state.amount,
+          // which becomes the swap paymentAmount below.
           await buildDummyTxsForMaxSwapAmount();
         }
         final swapType = state.selectedWallet!.isLiquid
@@ -600,9 +618,22 @@ class SendCubit extends Cubit<SendState> {
           );
           return;
         }
-        final paymentAmount = swapFees.calculateSwapAmountFromReceivableAmount(
-          receivableAmount,
-        );
+        // For sendMax, state.inputAmountSat is already balance - txFees
+        // (set by buildDummyTxsForMaxSwapAmount). It IS the funding
+        // amount, not a receivable — Boltz deducts its fees from this
+        // before paying the receiver. Running it through
+        // calculateSwapAmountFromReceivableAmount would add boltz fees on
+        // top, over-quoting paymentAmount and tripping Step 3b. #1735.
+        final paymentAmount = state.sendMax
+            ? state.inputAmountSat
+            : swapFees.calculateSwapAmountFromReceivableAmount(
+                receivableAmount,
+              );
+        // [CHAIN SWAP LIFECYCLE — Step 2c: commit paymentAmount]
+        // Boltz locks in the exact amount that must be paid to its lockup
+        // address. swap.paymentAmount and swap.paymentAddress are now fixed.
+        // Any deviation in the final funding tx will be rejected by
+        // VerifyChainSwapAmountSendUsecase (the fail-safe at Step 3b).
         final swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.selectedWallet!.id,
           receiveAddress: state.paymentRequest!.isBip21
@@ -887,15 +918,13 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> updateBestWallet() async {
+    if (state.paymentRequest == null || state.selectedWallet == null) return;
+    // Respect the user's manual wallet pick — auto-switching it silently
+    // can route funds from the wrong wallet (e.g. cold → hot). See #1918.
+    if (state.isWalletManuallySelected) return;
+
+    emit(state.copyWith(loadingBestWallet: true));
     try {
-      // clearAllExceptions();
-      if (state.paymentRequest == null || state.selectedWallet == null) return;
-      final previousSelectedWallet = state.selectedWallet!;
-
-      emit(state.copyWith(loadingBestWallet: true));
-
-      // Use the preselected wallet passed in the constructor if available,
-      //  otherwise use the best wallet for the payment request and amount
       final wallet =
           _wallet ??
           _bestWalletUsecase.execute(
@@ -903,25 +932,10 @@ class SendCubit extends Cubit<SendState> {
             request: state.paymentRequest!,
             amountSat: state.inputAmountSat,
           );
-      emit(
-        state.copyWith(
-          selectedWallet: wallet,
-          loadingBestWallet: false,
-          insufficientBalanceException: null,
-        ),
-      );
-
-      if (state.selectedWallet!.id != previousSelectedWallet.id) {
-        setSelectedSwapLimits();
-        await _selectedWalletSyncingSubscription?.cancel();
-        _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
-            .execute(walletId: wallet.id)
-            .listen((wallet) async {
-              emit(state.copyWith(selectedWallet: wallet));
-              await loadUtxos();
-            });
-      }
-    } catch (e) {
+      await _setSelectedWallet(wallet, manual: false);
+    } catch (_) {
+      // swallow — auto-pick is best-effort; the user's current selection stays.
+    } finally {
       emit(state.copyWith(loadingBestWallet: false));
     }
   }
@@ -930,6 +944,16 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> onAmountConfirmed() async {
     clearAllExceptions();
+
+    if (state.blocksSwapDueToBitcoinHardwareWallet) {
+      emit(
+        state.copyWith(
+          swapCreationException: HardwareWalletSwapException(),
+        ),
+      );
+      return;
+    }
+
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
@@ -1121,6 +1145,15 @@ class SendCubit extends Cubit<SendState> {
     // updateSwapLockupFees();
   }
 
+  // [CHAIN SWAP LIFECYCLE — Step 3: build the funding tx]
+  // When state.chainSwap is set, this builds the tx that funds the Boltz
+  // lockup. For sendMax chain swaps, drain=true is passed down so the prepare
+  // usecase drains the wallet to swap.paymentAddress — this is the SECOND
+  // drain (the first was Step 2a). The dummy in Step 2a is P2TR by design,
+  // matching Boltz's P2TR lockup, so dummyFees == realFees and the drained
+  // output equals swap.paymentAmount. If Boltz ever switches lockup script
+  // type the dummies in Step 2a must be updated to match, otherwise Step 3b
+  // will fire.
   Future<void> createTransaction() async {
     try {
       if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
@@ -1156,6 +1189,13 @@ class SendCubit extends Cubit<SendState> {
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
         if (state.chainSwap != null) {
+          // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
+          // Confirms the built pset pays swap.paymentAmount to
+          // swap.paymentAddress. Guards against any future flow that
+          // desyncs the funding tx from the swap's locked-in
+          // amount/address, and against a Boltz lockup script-type
+          // change that would invalidate the P2TR dummy assumption in
+          // Step 2a.
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: pset,
             swap: state.chainSwap!,
@@ -1234,6 +1274,8 @@ class SendCubit extends Cubit<SendState> {
         );
 
         if (state.chainSwap != null) {
+          // [CHAIN SWAP LIFECYCLE — Step 3b: fail-safe verification]
+          // See note on the liquid branch above. Do not remove.
           await _verifyChainSwapAmountSendUsecase.execute(
             psbtOrPset: txPreparation.unsignedPsbt,
             swap: state.chainSwap!,
@@ -1668,6 +1710,18 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
+  // [CHAIN SWAP LIFECYCLE — Step 2a: first drain, against a dummy address]
+  // Used only when sendMax is selected for a chain swap. Drains the wallet
+  // against a dummy P2TR address to discover the absolute fees, then
+  // publishes state.amount = balance - fees so the caller can use it as
+  // the swap paymentAmount.
+  //
+  // The dummies below are P2TR by design — Boltz returns P2TR lockup
+  // addresses today, so dummyFees == realFees and Step 3's drain to the
+  // real swap.paymentAddress produces an output equal to the committed
+  // swap.paymentAmount. If Boltz ever switches lockup script type,
+  // dummyFees != realFees and Step 3b (verify) will fire — replace the
+  // dummies below with addresses matching the new lockup type.
   Future<void> buildDummyTxsForMaxSwapAmount() async {
     try {
       if (state.selectedWallet == null) return;
@@ -1682,6 +1736,7 @@ class SendCubit extends Cubit<SendState> {
       final networkFee = state.selectedFee!;
       int absoluteFees;
       if (state.selectedWallet!.isLiquid) {
+        // P2TR dummy matching Boltz's L-BTC P2TR lockup script.
         const String dummySwapAddress =
             "lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24";
         final dummyPset = await _prepareLiquidSendUsecase.execute(
@@ -1695,6 +1750,7 @@ class SendCubit extends Cubit<SendState> {
         );
         emit(state.copyWith(liquidAbsoluteFees: absoluteFees));
       } else {
+        // P2TR dummy matching Boltz's BTC P2TR lockup script.
         const String dummySwapAddress =
             "bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4";
         final dummyDrainTxInfo = await _prepareBitcoinSendUsecase.execute(
@@ -1751,7 +1807,31 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(signedBitcoinTx: signedTx));
   }
 
-  void updateSelectedWallet(Wallet newWallet) {
-    emit(state.copyWith(selectedWallet: newWallet));
+  Future<void> updateSelectedWallet(Wallet newWallet) =>
+      _setSelectedWallet(newWallet, manual: true);
+
+  /// Central path for every wallet change in the send flow.
+  /// `manual: true` locks the pick so [updateBestWallet]'s auto-switching
+  /// (used as the user types an amount) doesn't override the user's choice —
+  /// the silent override regressed cold-wallet sends. See #1918.
+  Future<void> _setSelectedWallet(
+    Wallet wallet, {
+    required bool manual,
+  }) async {
+    emit(
+      state.copyWith(
+        selectedWallet: wallet,
+        isWalletManuallySelected: manual,
+        insufficientBalanceException: null,
+      ),
+    );
+    setSelectedSwapLimits();
+    await _selectedWalletSyncingSubscription?.cancel();
+    _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
+        .execute(walletId: wallet.id)
+        .listen((synced) async {
+          emit(state.copyWith(selectedWallet: synced));
+          await loadUtxos();
+        });
   }
 }

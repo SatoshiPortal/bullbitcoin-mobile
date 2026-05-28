@@ -21,6 +21,7 @@ class PlacePayOrderUsecase {
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
+    String? paymentDescription,
   }) async {
     try {
       final settings = await _settingsRepository.fetch();
@@ -33,6 +34,7 @@ class PlacePayOrderUsecase {
         orderAmount: orderAmount,
         recipientId: recipientId,
         network: network,
+        paymentDescription: paymentDescription,
       );
 
       return order;

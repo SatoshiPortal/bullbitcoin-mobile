@@ -4621,6 +4621,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "হার্ডওয়্যার ওয়ালেট সোয়াপের জন্য ব্যবহার করা যাবে না।",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "ব্যালেন্স তথ্য উপলব্ধ নয়",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -4922,6 +4926,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "পরিশোধ করুন",
+  "payDescriptionLabel": "পেমেন্টের বিবরণ (ঐচ্ছিক)",
+  "payDescriptionHint": "এই পেমেন্টের জন্য একটি নোট যোগ করুন",
+  "payPaymentDescription": "পেমেন্টের বিবরণ",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10122,6 +10129,7 @@
     "description": "Payment method: Email E-Transfer (Canada)"
   },
   "transactionDetailLabelOrderNumber": "আদেশ নম্বর",
+  "transactionDetailLabelPaymentDescription": "পেমেন্টের বিবরণ",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

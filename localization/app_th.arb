@@ -4733,6 +4733,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "ไม่สามารถใช้กระเป๋าเงินฮาร์ดแวร์สำหรับการแลกเปลี่ยนได้",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "ไม่มีข้อมูล",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5051,6 +5055,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "ชําระเงิน",
+  "payDescriptionLabel": "รายละเอียดการชำระเงิน (ไม่บังคับ)",
+  "payDescriptionHint": "เพิ่มหมายเหตุสำหรับการชำระเงินนี้",
+  "payPaymentDescription": "รายละเอียดการชำระเงิน",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -10364,6 +10371,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ราคา",
+  "transactionDetailLabelPaymentDescription": "รายละเอียดการชำระเงิน",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },

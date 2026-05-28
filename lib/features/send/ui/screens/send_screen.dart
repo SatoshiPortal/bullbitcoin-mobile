@@ -464,7 +464,12 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     context,
                                     swapLimitsError,
                                   )
-                                : swapCreationError?.message,
+                                : swapCreationError != null
+                                ? _swapCreationErrorMessage(
+                                    context,
+                                    swapCreationError,
+                                  )
+                                : null,
                             focusNode: _amountFocusNode,
                             readOnly: _isMax,
                             isMax: _isMax,
@@ -1911,7 +1916,19 @@ class SignBitBoxButton extends StatelessWidget {
   }
 }
 
-/// Helper function to get localized error message for SwapLimitsException
+String _swapCreationErrorMessage(
+  BuildContext context,
+  SwapCreationException error,
+) {
+  if (error is HardwareWalletSwapException) {
+    return context.loc.sendErrorHardwareWalletCannotSwap;
+  }
+  if (error is AmountlessInvoiceException) {
+    return context.loc.sendErrorInvoiceMustContainAmount;
+  }
+  return error.message;
+}
+
 String _getSwapLimitsErrorMessage(
   BuildContext context,
   SwapLimitsException error,
