@@ -103,14 +103,22 @@ class _SwapSelectableCustomFeeListItemState
     _isAbsolute = _customFee?.isAbsolute ?? true;
     final value = _customFee?.value.toString() ?? '';
     _controller = TextEditingController(text: value);
-    _focusNode = FocusNode();
+    _focusNode = FocusNode()..addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  /// Visual selection follows focus so the tile lights up the instant the
+  /// user taps into the input (or anywhere on the tile via the InkWell).
+  /// The bloc-level selection is only committed by submitCustomFee.
+  void _onFocusChanged() {
+    setState(() {});
   }
 
   void _onSwitchChanged(bool newValue) {
@@ -141,6 +149,7 @@ class _SwapSelectableCustomFeeListItemState
   Widget build(BuildContext context) {
     final state = widget.bloc.state;
     final isCustomFeeSelected = state.selectedFeeOption == FeeSelection.custom;
+    final showAsSelected = isCustomFeeSelected || _focusNode.hasFocus;
     final feeOptions = state.bitcoinNetworkFees;
     final txSize = state.bitcoinTxSize ?? 140;
     final exchangeRate = state.exchangeRate ?? 0.0;
@@ -187,7 +196,7 @@ class _SwapSelectableCustomFeeListItemState
         _focusNode.requestFocus();
       },
       child: Material(
-        elevation: isCustomFeeSelected ? 4 : 1,
+        elevation: showAsSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: .hardEdge,
         color: context.appColors.onSecondary,
@@ -222,7 +231,7 @@ class _SwapSelectableCustomFeeListItemState
                   const Gap(8),
                   Icon(
                     Icons.radio_button_checked_outlined,
-                    color: isCustomFeeSelected
+                    color: showAsSelected
                         ? context.appColors.primary
                         : context.appColors.surface,
                   ),

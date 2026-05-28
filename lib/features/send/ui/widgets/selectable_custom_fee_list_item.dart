@@ -38,14 +38,23 @@ class _SelectableCustomFeeListItemState
     _isAbsolute = _customFee?.isAbsolute ?? false;
     final value = _customFee?.value.toString() ?? '';
     _controller = TextEditingController(text: value);
-    _focusNode = FocusNode();
+    _focusNode = FocusNode()..addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
     _controller.dispose();
     _focusNode.dispose();
     super.dispose();
+  }
+
+  /// Visual selection follows focus so the tile lights up the instant the
+  /// user taps into the input (or anywhere on the tile via the InkWell).
+  /// The cubit-level selection is only committed by submitCustomFee — we
+  /// don't want a `createTransaction` rebuild on every keystroke.
+  void _onFocusChanged() {
+    setState(() {});
   }
 
   void _onSwitchChanged(bool newValue) {
@@ -92,6 +101,7 @@ class _SelectableCustomFeeListItemState
     final isCustomFeeSelected = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption == FeeSelection.custom,
     );
+    final showAsSelected = isCustomFeeSelected || _focusNode.hasFocus;
     final feeOptions = context.read<SendCubit>().state.feeOptions;
     final txSize = context.read<SendCubit>().state.bitcoinTxSize ?? 140;
     final exchangeRate = context.read<SendCubit>().state.exchangeRate;
@@ -146,7 +156,7 @@ class _SelectableCustomFeeListItemState
         _focusNode.requestFocus();
       },
       child: Material(
-        elevation: isCustomFeeSelected ? 4 : 1,
+        elevation: showAsSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: .hardEdge,
         color: context.appColors.surface,
@@ -181,7 +191,7 @@ class _SelectableCustomFeeListItemState
                   const Gap(8),
                   Icon(
                     Icons.radio_button_checked_outlined,
-                    color: isCustomFeeSelected
+                    color: showAsSelected
                         ? context.appColors.primary
                         : context.appColors.textMuted,
                   ),
