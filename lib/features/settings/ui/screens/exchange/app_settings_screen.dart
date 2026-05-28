@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -37,26 +38,9 @@ class _ExchangeAppSettingsScreenState extends State<ExchangeAppSettingsScreen> {
     return BlocListener<ExchangeCubit, ExchangeState>(
       listenWhen: (previous, current) => previous.isSaving && !current.isSaving,
       listener: (context, state) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              context.loc.exchangeAppSettingsSaveSuccessMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: context.appColors.surfaceFixed,
-              ),
-            ),
-            duration: const Duration(seconds: 2),
-            backgroundColor: context.appColors.onSurface.withAlpha(204),
-            behavior: SnackBarBehavior.floating,
-            elevation: 4,
-            margin: const EdgeInsets.only(bottom: 100, left: 40, right: 40),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
+        SnackBarUtils.showSnackBar(
+          context,
+          context.loc.exchangeAppSettingsSaveSuccessMessage,
         );
       },
       child: Scaffold(

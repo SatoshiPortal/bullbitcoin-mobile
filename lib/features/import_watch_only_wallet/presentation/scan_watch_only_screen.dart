@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/qr_scanner_widget.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -130,21 +131,9 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
 }
 
 void showCopiedSnackBar(BuildContext context) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(
-        context.loc.importWatchOnlyCopiedToClipboard,
-        textAlign: .center,
-        style: TextStyle(fontSize: 14, color: context.appColors.onPrimary),
-      ),
-      duration: const Duration(seconds: 2),
-      backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(204),
-      behavior: .floating,
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-    ),
+  SnackBarUtils.showSnackBar(
+    context,
+    context.loc.importWatchOnlyCopiedToClipboard,
   );
 }
 

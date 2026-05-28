@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:share_plus/share_plus.dart';
@@ -42,21 +43,7 @@ class ShareLogsWidget extends StatelessWidget {
   Future<void> _deleteLogs(BuildContext context) async {
     await log.deleteLogs();
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          context.loc.logsDeletedMessage,
-          textAlign: .center,
-          style: const TextStyle(fontSize: 14),
-        ),
-        duration: const Duration(seconds: 2),
-        behavior: .floating,
-        elevation: 4,
-        margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-    );
+    SnackBarUtils.showSnackBar(context, context.loc.logsDeletedMessage);
   }
 
   Future<void> _shareLogs(BuildContext context) async {
@@ -66,22 +53,9 @@ class ShareLogsWidget extends StatelessWidget {
       await _shareTextLogs(logs.join('\n'));
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            context.loc.errorSharingLogsMessage(e.toString()),
-            textAlign: .center,
-            style: const TextStyle(fontSize: 14),
-          ),
-          duration: const Duration(seconds: 2),
-          behavior: .floating,
-          elevation: 4,
-          margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
+      SnackBarUtils.showSnackBar(
+        context,
+        context.loc.errorSharingLogsMessage(e.toString()),
       );
     }
   }
