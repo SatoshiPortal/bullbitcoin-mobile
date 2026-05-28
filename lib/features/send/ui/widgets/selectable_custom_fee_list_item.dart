@@ -1,18 +1,15 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
-import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
+import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
+/// Send-flow wrapper around [CustomFeeListItem] — binds the shared widget to
+/// the [SendCubit]. The widget owns the local edit state; this binding lifts
+/// commits to the cubit and provides theme tokens specific to the send modal.
 class SelectableCustomFeeListItem extends StatefulWidget {
   const SelectableCustomFeeListItem({super.key});
 
@@ -23,278 +20,45 @@ class SelectableCustomFeeListItem extends StatefulWidget {
 
 class _SelectableCustomFeeListItemState
     extends State<SelectableCustomFeeListItem> {
-  late bool _isAbsolute;
-  late TextEditingController _controller;
-  late NetworkFee? _customFee;
-  late FocusNode _focusNode;
+  // Hold the cubit ref so `onDisarm` can fire during dispose, when reading
+  // it from context would be unsafe.
+  late SendCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _customFee = context.read<SendCubit>().state.customFee;
-    // Default to relative (sat/vByte): it's the unit users reason about and
-    // the one that survives to the SDK without a size estimate. Absolute stays
-    // available via the toggle.
-    _isAbsolute = _customFee?.isAbsolute ?? false;
-    final value = _customFee?.value.toString() ?? '';
-    _controller = TextEditingController(text: value);
-    _focusNode = FocusNode()..addListener(_onFocusChanged);
-  }
-
-  @override
-  void dispose() {
-    _focusNode.removeListener(_onFocusChanged);
-    _controller.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  /// Visual selection follows focus so the tile lights up the instant the
-  /// user taps into the input (or anywhere on the tile via the InkWell).
-  /// The cubit-level selection is only committed by submitCustomFee — we
-  /// don't want a `createTransaction` rebuild on every keystroke.
-  void _onFocusChanged() {
-    setState(() {});
-  }
-
-  void _onSwitchChanged(bool newValue) {
-    setState(() {
-      _isAbsolute = newValue;
-    });
-    // Clear the custom fee when the switch is changed
-    _controller.clear();
-    _customFee = null;
-  }
-
-  void _onValueChanged(String text) {
-    final parsed = num.tryParse(text);
-    if (parsed != null) {
-      final fee = _isAbsolute
-          ? NetworkFee.absolute(parsed.toInt())
-          : NetworkFee.relativeFromSatPerVbyte(parsed.toDouble());
-      setState(() {
-        _customFee = fee;
-      });
-    } else {
-      setState(() {
-        _customFee = null;
-      });
-    }
-  }
-
-  /// Effective fee rate in sat/vByte, derived from the typed input. Used to
-  /// decide whether to show the sub-1 warning and to enforce the 0.1 floor.
-  /// Returns null when [_customFee] is null or when an absolute amount can't
-  /// be converted to a rate yet (vsize unknown).
-  double? _effectiveSatPerVbyte(int? txSize) {
-    final fee = _customFee;
-    if (fee == null) return null;
-    if (fee is RelativeFee) return fee.satPerVbyte;
-    if (fee is AbsoluteFee && txSize != null && txSize > 0) {
-      return fee.sats / txSize;
-    }
-    return null;
+    _cubit = context.read<SendCubit>();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isCustomFeeSelected = context.select(
-      (SendCubit cubit) => cubit.state.selectedFeeOption == FeeSelection.custom,
-    );
-    final showAsSelected = isCustomFeeSelected || _focusNode.hasFocus;
-    final feeOptions = context.read<SendCubit>().state.feeOptions;
-    final txSize = context.read<SendCubit>().state.bitcoinTxSize ?? 140;
-    final exchangeRate = context.read<SendCubit>().state.exchangeRate;
-    final fiatCurrencyCode = context.read<SendCubit>().state.fiatCurrencyCode;
-    final fastestAbsValue = (feeOptions?.fastest.value ?? 0) * txSize;
-    final economicAbsValue = (feeOptions?.economic.value ?? 0) * txSize;
-    final slowAbsValue = (feeOptions?.slow.value ?? 0) * txSize;
-    final customAbsValue = _customFee == null
-        ? 0
-        : _customFee is AbsoluteFee
-        ? _customFee!.value
-        : (_customFee?.value ?? 0) * txSize;
-    final fiatEq = ConvertAmount.satsToFiat(
-      customAbsValue.toInt(),
-      exchangeRate,
-    );
-
-    final subtitle1 = _customFee == null || feeOptions == null
-        ? ''
-        : 'Estimated delivery ~ ${customAbsValue >= fastestAbsValue
-              ? context.loc.sendEstimatedDelivery10Minutes
-              : customAbsValue >= economicAbsValue
-              ? context.loc.sendEstimatedDelivery10to30Minutes
-              : customAbsValue >= slowAbsValue
-              ? context.loc.sendEstimatedDeliveryFewHours
-              : context.loc.sendEstimatedDeliveryHoursToDays}';
-
-    final subtitle2 = _customFee == null
-        ? ''
-        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = ${FormatAmount.satsApprox(customAbsValue)} ${context.loc.sendSats} (~ $fiatEq $fiatCurrencyCode)';
-
-    // Fee-rate guards. The 0.1 floor matches Bitcoin Core's lowest sensible
-    // policy and Liquid's network minrelayfee. Below 1 sat/vByte we warn the
-    // user that the tx may take longer to confirm and may not propagate to
-    // every node.
-    final effectiveRate = _effectiveSatPerVbyte(txSize);
-    final bool belowFloor = effectiveRate != null && effectiveRate < 0.1;
-    final bool subOneSatPerVbyte =
-        effectiveRate != null && effectiveRate < 1.0 && !belowFloor;
-
-    Future<void> submitCustomFee() async {
-      if (_customFee == null || belowFloor) return;
-      await context.read<SendCubit>().customFeesChanged(_customFee!);
-      // ignore: use_build_context_synchronously
-      Navigator.pop(context, context.loc.sendCustomFee);
-    }
-
-    return InkWell(
-      radius: 2,
-      onTap: () {
-        // Focus on the text field
-        _focusNode.requestFocus();
+    return BlocBuilder<SendCubit, SendState>(
+      buildWhen: (prev, curr) =>
+          prev.customFee != curr.customFee ||
+          prev.selectedFeeOption != curr.selectedFeeOption ||
+          prev.feeOptions != curr.feeOptions ||
+          prev.bitcoinTxSize != curr.bitcoinTxSize ||
+          prev.exchangeRate != curr.exchangeRate ||
+          prev.fiatCurrencyCode != curr.fiatCurrencyCode,
+      builder: (context, state) {
+        return CustomFeeListItem(
+          initialFee: state.customFee,
+          isCommittedAsCustom: state.selectedFeeOption == FeeSelection.custom,
+          feePresets: state.feeOptions,
+          txSize: state.bitcoinTxSize ?? 140,
+          exchangeRate: state.exchangeRate,
+          fiatCurrencyCode: state.fiatCurrencyCode,
+          defaultAbsolute: false,
+          tileColor: context.appColors.surface,
+          tileShadowColor: context.appColors.border,
+          unselectedIconColor: context.appColors.textMuted,
+          onArm: _cubit.armCustomFee,
+          onCommit: _cubit.customFeesChanged,
+          onDisarm: _cubit.disarmCustomFee,
+          onConfirmed: () =>
+              Navigator.pop(context, context.loc.sendCustomFee),
+        );
       },
-      child: Material(
-        elevation: showAsSelected ? 4 : 1,
-        borderRadius: BorderRadius.circular(2),
-        clipBehavior: .hardEdge,
-        color: context.appColors.surface,
-        shadowColor: context.appColors.border,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: .stretch,
-            children: [
-              Row(
-                crossAxisAlignment: .start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: .stretch,
-                      children: [
-                        BBText(
-                          context.loc.sendCustomFee,
-                          style: context.font.headlineLarge,
-                        ),
-                        if (subtitle1.isNotEmpty) ...[
-                          const Gap(4),
-                          BBText(subtitle1, style: context.font.labelMedium),
-                        ],
-                        if (subtitle2.isNotEmpty) ...[
-                          const Gap(2),
-                          BBText(subtitle2, style: context.font.labelMedium),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const Gap(8),
-                  Icon(
-                    Icons.radio_button_checked_outlined,
-                    color: showAsSelected
-                        ? context.appColors.primary
-                        : context.appColors.textMuted,
-                  ),
-                ],
-              ),
-              const Gap(12),
-              Row(
-                children: [
-                  BBText(
-                    _isAbsolute
-                        ? context.loc.sendAbsoluteFees
-                        : context.loc.sendRelativeFees,
-                    style: context.font.bodySmall,
-                  ),
-                  const Spacer(),
-                  Switch(value: _isAbsolute, onChanged: _onSwitchChanged),
-                ],
-              ),
-              const Gap(8),
-              TextFormField(
-                controller: _controller,
-                focusNode: _focusNode,
-                keyboardType: TextInputType.numberWithOptions(
-                  decimal: !_isAbsolute,
-                ),
-                textInputAction: .done,
-                inputFormatters: [
-                  if (_isAbsolute)
-                    FilteringTextInputFormatter.digitsOnly
-                  else
-                    AmountInputFormatter(BitcoinUnit.btc.code),
-                ],
-                style: TextStyle(color: context.appColors.onSurface),
-                decoration: InputDecoration(
-                  fillColor: context.appColors.surfaceContainer,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: context.appColors.border,
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: context.appColors.border,
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: context.appColors.border.withValues(
-                        alpha: 0.5,
-                      ),
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  hintText: _isAbsolute
-                      ? context.loc.sendEnterAbsoluteFee
-                      : context.loc.sendEnterRelativeFee,
-                  hintStyle: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface,
-                  ),
-                  suffixText: _isAbsolute
-                      ? context.loc.sendSats
-                      : context.loc.sendSatsPerVB,
-                  suffixStyle: context.font.bodyMedium?.copyWith(
-                    color: context.appColors.onSurface,
-                  ),
-                ),
-                onFieldSubmitted: (_) => submitCustomFee(),
-                onChanged: _onValueChanged,
-              ),
-              if (subOneSatPerVbyte) ...[
-                const Gap(8),
-                BBText(
-                  context.loc.sendSubSatVbyteWarning,
-                  style: context.font.labelMedium?.copyWith(
-                    color: context.appColors.warning,
-                  ),
-                ),
-              ],
-              if (belowFloor) ...[
-                const Gap(8),
-                BBText(
-                  context.loc.sendBelowMinFeeRateError,
-                  style: context.font.labelMedium?.copyWith(
-                    color: context.appColors.error,
-                  ),
-                ),
-              ],
-              const Gap(12),
-              BBButton.big(
-                disabled: _customFee == null || belowFloor,
-                label: context.loc.sendConfirmCustomFee,
-                onPressed: submitCustomFee,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

@@ -26,4 +26,13 @@ sealed class TransferEvent with _$TransferEvent {
       TransferFeeOptionSelected;
   const factory TransferEvent.customFeeChanged(NetworkFee fee) =
       TransferCustomFeeChanged;
+  /// Eagerly commits `selectedFeeOption: custom` + the typed [fee] so the
+  /// preset tiles deselect while the user is still editing — without
+  /// triggering the PSBT rebuild that `customFeeChanged` does. The actual
+  /// commit happens on `customFeeChanged` (Confirm button).
+  const factory TransferEvent.customFeeArmed(NetworkFee fee) =
+      TransferCustomFeeArmed;
+  /// Rolls back to the pre-arm `selectedFeeOption`/`customFee` if no
+  /// `customFeeChanged` ran (i.e. user closed the modal without submitting).
+  const factory TransferEvent.customFeeDisarmed() = TransferCustomFeeDisarmed;
 }

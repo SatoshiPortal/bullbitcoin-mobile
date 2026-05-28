@@ -34,6 +34,12 @@ sealed class TransferState with _$TransferState {
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
     NetworkFee? customFee,
+    // Arm/disarm snapshot — set by TransferCustomFeeArmed, cleared by
+    // TransferCustomFeeChanged / TransferFeeOptionSelected /
+    // TransferCustomFeeDisarmed. Internal to the custom-fee modal flow;
+    // gates the rollback. UI must not read these directly.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
     List<WalletUtxo>? utxos,
     int? bitcoinTxSize,
     double? exchangeRate,

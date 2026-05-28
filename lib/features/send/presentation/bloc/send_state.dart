@@ -85,6 +85,16 @@ abstract class SendState with _$SendState {
     FeeOptions? liquidFeesList,
     NetworkFee? customFee,
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
+    // Arm/disarm snapshot — internal to the custom-fee modal flow. When the
+    // user enters a value in the custom-fee field we eagerly commit
+    // `selectedFeeOption: custom` + typed `customFee` so the preset tiles
+    // visually deselect, without triggering a `createTransaction` rebuild.
+    // `armPriorSelection != null` iff the modal currently holds the arm;
+    // `disarmCustomFee` rolls back if the user closes the modal without
+    // `customFeesChanged` (which clears the arm). UI must not read these
+    // directly — they exist only to gate the rollback.
+    FeeSelection? armPriorSelection,
+    NetworkFee? armPriorCustomFee,
     int? bitcoinTxSize,
     int? liquidAbsoluteFees,
     // Real Bitcoin absolute fee, read from the built PSBT (not a prediction).

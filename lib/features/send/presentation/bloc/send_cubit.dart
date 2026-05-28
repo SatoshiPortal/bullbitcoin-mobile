@@ -1167,18 +1167,73 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> feeOptionSelected(FeeSelection feeSelection) async {
-    emit(state.copyWith(selectedFeeOption: feeSelection));
+    // Clears any in-flight custom-fee arm — picking a preset is itself a
+    // commit, no rollback needed.
+    emit(
+      state.copyWith(
+        selectedFeeOption: feeSelection,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
+    );
     await createTransaction();
     // updateSwapLockupFees();
   }
 
   Future<void> customFeesChanged(NetworkFee fee) async {
+    // Real commit — discard the arm snapshot (no rollback path needed
+    // anymore) and trigger the PSBT rebuild.
     emit(
-      state.copyWith(customFee: fee, selectedFeeOption: FeeSelection.custom),
+      state.copyWith(
+        customFee: fee,
+        selectedFeeOption: FeeSelection.custom,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
     );
 
     await createTransaction();
     // updateSwapLockupFees();
+  }
+
+  /// Called when the user enters a value in the custom-fee modal. Eagerly
+  /// commits `selectedFeeOption: custom` + the typed [fee] so the preset
+  /// tiles visually deselect, without triggering a `createTransaction`
+  /// rebuild (the rebuild happens once on submit via [customFeesChanged]).
+  ///
+  /// On the first call, snapshots the prior selection so [disarmCustomFee]
+  /// can roll back if the user closes the modal without submitting. Later
+  /// calls only update `customFee` — the snapshot stays pinned to the
+  /// pre-arm state.
+  void armCustomFee(NetworkFee fee) {
+    if (state.armPriorSelection == null) {
+      emit(
+        state.copyWith(
+          armPriorSelection: state.selectedFeeOption,
+          armPriorCustomFee: state.customFee,
+          selectedFeeOption: FeeSelection.custom,
+          customFee: fee,
+        ),
+      );
+    } else {
+      emit(state.copyWith(customFee: fee));
+    }
+  }
+
+  /// Rolls back `selectedFeeOption` and `customFee` to the values snapshotted
+  /// by [armCustomFee], if the arm is still active. No-op once cleared
+  /// (the user submitted or picked a preset). Called from the custom-fee
+  /// widget's `dispose` so closing the modal without `Confirm` reverts.
+  void disarmCustomFee() {
+    if (state.armPriorSelection == null) return;
+    emit(
+      state.copyWith(
+        selectedFeeOption: state.armPriorSelection!,
+        customFee: state.armPriorCustomFee,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
+    );
   }
 
   // [CHAIN SWAP LIFECYCLE — Step 3: build the funding tx]

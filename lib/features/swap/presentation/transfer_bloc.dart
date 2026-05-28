@@ -107,6 +107,8 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     on<TransferLoadUtxos>(_onLoadUtxos);
     on<TransferFeeOptionSelected>(_onFeeOptionSelected);
     on<TransferCustomFeeChanged>(_onCustomFeeChanged);
+    on<TransferCustomFeeArmed>(_onCustomFeeArmed);
+    on<TransferCustomFeeDisarmed>(_onCustomFeeDisarmed);
   }
 
   final GetSettingsUsecase _getSettingsUsecase;
@@ -871,7 +873,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     TransferFeeOptionSelected event,
     Emitter<TransferState> emit,
   ) async {
-    final updatedState = state.copyWith(selectedFeeOption: event.feeSelection);
+    // Clears any in-flight custom-fee arm — picking a preset is itself a
+    // commit, no rollback needed.
+    final updatedState = state.copyWith(
+      selectedFeeOption: event.feeSelection,
+      armPriorSelection: null,
+      armPriorCustomFee: null,
+    );
     emit(updatedState);
     await _rebuildTransactionWithState(emit, updatedState);
   }
@@ -880,12 +888,52 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     TransferCustomFeeChanged event,
     Emitter<TransferState> emit,
   ) async {
+    // Real commit — discard the arm snapshot and rebuild.
     final updatedState = state.copyWith(
       customFee: event.fee,
       selectedFeeOption: FeeSelection.custom,
+      armPriorSelection: null,
+      armPriorCustomFee: null,
     );
     emit(updatedState);
     await _rebuildTransactionWithState(emit, updatedState);
+  }
+
+  /// See [TransferEvent.customFeeArmed]. Snapshots the pre-arm selection on
+  /// the first call so [_onCustomFeeDisarmed] can roll back. Subsequent calls
+  /// only update `customFee` — snapshot stays pinned to the pre-arm state.
+  Future<void> _onCustomFeeArmed(
+    TransferCustomFeeArmed event,
+    Emitter<TransferState> emit,
+  ) async {
+    if (state.armPriorSelection == null) {
+      emit(
+        state.copyWith(
+          armPriorSelection: state.selectedFeeOption,
+          armPriorCustomFee: state.customFee,
+          selectedFeeOption: FeeSelection.custom,
+          customFee: event.fee,
+        ),
+      );
+    } else {
+      emit(state.copyWith(customFee: event.fee));
+    }
+  }
+
+  /// See [TransferEvent.customFeeDisarmed]. No-op if no arm is active.
+  Future<void> _onCustomFeeDisarmed(
+    TransferCustomFeeDisarmed event,
+    Emitter<TransferState> emit,
+  ) async {
+    if (state.armPriorSelection == null) return;
+    emit(
+      state.copyWith(
+        selectedFeeOption: state.armPriorSelection!,
+        customFee: state.armPriorCustomFee,
+        armPriorSelection: null,
+        armPriorCustomFee: null,
+      ),
+    );
   }
 
   Future<void> _rebuildTransactionWithState(
