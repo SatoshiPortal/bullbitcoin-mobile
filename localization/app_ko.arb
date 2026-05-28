@@ -12598,5 +12598,18 @@
   "viewerViewInExplorer": "탐색기에서 보기",
   "transactionViewerTitle": "거래 ID",
   "invoiceViewerTitle": "인보이스",
-  "viewerCopyLink": "링크 복사"
+  "viewerCopyLink": "링크 복사",
+  "recipientsFieldSinpePhoneNumberHint": "국가 코드 없이 8자리",
+  "recipientsCopDocCcRecipientNumber": "수신자 cédula 번호",
+  "recipientsCopDocCeRecipientNumber": "수신자 cédula de extranjería 번호",
+  "recipientsCopDocNitRecipientNumber": "수신자 세금 ID 번호",
+  "recipientsCopDocPassportRecipientNumber": "수신자 여권 번호",
+  "recipientsCopDocTiRecipientNumber": "수신자 신분증 번호",
+  "recipientsCopDocRegistroCivilRecipientNumber": "수신자 민법등록 번호",
+  "recipientsValidationSinpePhoneCountryCode": "국가 코드(+506)를 제거하세요. 8자리 번호만 입력하세요",
+  "recipientsValidationSinpePhoneInvalidChars": "숫자만 사용하세요 (글자나 기호 금지)",
+  "recipientsValidationSinpePhoneTooShort": "전화번호 8자리를 모두 입력하세요",
+  "recipientsFieldDocumentType": "수신자 신분증 유형",
+  "recipientsFieldDocumentNumberHint": "수신자 신분증 번호 입력",
+  "recipientsValidationSinpePhone": "국가 코드 없이 8자리 코스타리카 전화번호를 입력하세요"
 }

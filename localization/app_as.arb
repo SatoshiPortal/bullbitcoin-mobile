@@ -9690,5 +9690,18 @@
   "viewerViewInExplorer": "এক্সপ্ল 'ৰাৰত দৰ্শন কৰক",
   "transactionViewerTitle": "লেনদেন আইডি",
   "invoiceViewerTitle": "চালান",
-  "viewerCopyLink": "লিংক কপি কৰক"
+  "viewerCopyLink": "লিংক কপি কৰক",
+  "recipientsFieldSinpePhoneNumberHint": "দেশৰ ক'ড অবিহনে 8 ডিজিট",
+  "recipientsCopDocCcRecipientNumber": "প্ৰাপকৰ cédula নম্বৰ",
+  "recipientsCopDocCeRecipientNumber": "প্ৰাপকৰ cédula de extranjería নম্বৰ",
+  "recipientsCopDocNitRecipientNumber": "প্ৰাপকৰ টেক্স আইডি নম্বৰ",
+  "recipientsCopDocPassportRecipientNumber": "প্ৰাপকৰ পাছপৰ্ট নম্বৰ",
+  "recipientsCopDocTiRecipientNumber": "প্ৰাপকৰ পৰিচয়পত্ৰৰ নম্বৰ",
+  "recipientsCopDocRegistroCivilRecipientNumber": "প্ৰাপকৰ অসামৰিক পঞ্জীয়ন নম্বৰ",
+  "recipientsValidationSinpePhoneCountryCode": "দেশৰ ক'ড (506+) আঁতৰাওক। কেৱল 8-ডিজিটৰ নম্বৰ দিয়ক",
+  "recipientsValidationSinpePhoneInvalidChars": "কেৱল ডিজিট ব্যৱহাৰ কৰক (আখৰ বা চিন নাথাকিব)",
+  "recipientsValidationSinpePhoneTooShort": "ফোন নম্বৰৰ সকলো 8 ডিজিট দিয়ক",
+  "recipientsFieldDocumentType": "প্ৰাপকৰ আইডিৰ ধৰণ",
+  "recipientsFieldDocumentNumberHint": "প্ৰাপকৰ আইডি নম্বৰ দিয়ক",
+  "recipientsValidationSinpePhone": "দেশৰ ক'ড অবিহনে এটা বৈধ 8-অংকৰ কোষ্টা ৰিকান ফোন নম্বৰ দিয়ক"
 }

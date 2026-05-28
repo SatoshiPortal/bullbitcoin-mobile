@@ -217,5 +217,18 @@
   "viewerViewInExplorer": "Դիտել հետախույզում",
   "viewerCopyLink": "Պատճենել հղումը",
   "transactionViewerTitle": "Գործարքի նույնացուցիչ",
-  "invoiceViewerTitle": "Ապրանքագիր "
+  "invoiceViewerTitle": "Ապրանքագիր ",
+  "recipientsFieldSinpePhoneNumberHint": "8 թիվ առանց երկրի կոդի",
+  "recipientsCopDocCcRecipientNumber": "Ստացողի cédula համար",
+  "recipientsCopDocCeRecipientNumber": "Ստացողի cédula de extranjería համար",
+  "recipientsCopDocNitRecipientNumber": "Ստացողի հարկային ID համար",
+  "recipientsCopDocPassportRecipientNumber": "Ստացողի անձնագրի համարը",
+  "recipientsCopDocTiRecipientNumber": "Ստացողի անձը հաստատող քարտի համար",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Ստացողի քաղաքացիական գրանցման համար",
+  "recipientsValidationSinpePhoneCountryCode": "Հեռացրեք երկրի կոդը (+506)։ Մուտքագրեք միայն 8-նիշանոց համարը",
+  "recipientsValidationSinpePhoneInvalidChars": "Օգտագործեք միայն թվեր (առանց տառերի կամ նշանների)",
+  "recipientsValidationSinpePhoneTooShort": "Մուտքագրեք հեռախոսահամարի բոլոր 8 թվերը",
+  "recipientsFieldDocumentType": "Ստացողի ID-ի տեսակ",
+  "recipientsFieldDocumentNumberHint": "Մուտքագրեք ստացողի ID համարը",
+  "recipientsValidationSinpePhone": "Մուտքագրեք վավեր 8-նիշանոց կոստա ռիկական հեռախոսահամար առանց երկրի կոդի"
 }

@@ -237,5 +237,18 @@
   "viewerViewInExplorer": "Tazama kwenye kivinjari",
   "viewerCopyLink": "Nakili kiungo",
   "transactionViewerTitle": "Kitambulisho cha muamala",
-  "invoiceViewerTitle": "Ankara"
+  "invoiceViewerTitle": "Ankara",
+  "recipientsFieldSinpePhoneNumberHint": "Tarakimu 8 bila msimbo wa nchi",
+  "recipientsCopDocCcRecipientNumber": "Nambari ya cédula ya mpokeaji",
+  "recipientsCopDocCeRecipientNumber": "Nambari ya cédula de extranjería ya mpokeaji",
+  "recipientsCopDocNitRecipientNumber": "Nambari ya utambulisho wa kodi ya mpokeaji",
+  "recipientsCopDocPassportRecipientNumber": "Nambari ya pasipoti ya mpokeaji",
+  "recipientsCopDocTiRecipientNumber": "Nambari ya kadi ya kitambulisho ya mpokeaji",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Nambari ya usajili wa kiraia ya mpokeaji",
+  "recipientsValidationSinpePhoneCountryCode": "Ondoa msimbo wa nchi (+506). Weka nambari ya tarakimu 8 tu",
+  "recipientsValidationSinpePhoneInvalidChars": "Tumia tarakimu tu (hakuna herufi au alama)",
+  "recipientsValidationSinpePhoneTooShort": "Weka tarakimu zote 8 za nambari ya simu",
+  "recipientsFieldDocumentType": "Aina ya kitambulisho cha mpokeaji",
+  "recipientsFieldDocumentNumberHint": "Weka nambari ya kitambulisho cha mpokeaji",
+  "recipientsValidationSinpePhone": "Weka nambari halali ya simu ya Costa Rica yenye tarakimu 8 bila msimbo wa nchi"
 }

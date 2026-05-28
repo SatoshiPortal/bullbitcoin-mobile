@@ -217,5 +217,18 @@
   "viewerViewInExplorer": "Xem trong trình duyệt",
   "viewerCopyLink": "Sao chép liên kết",
   "transactionViewerTitle": "Mã giao dịch",
-  "invoiceViewerTitle": "Hóa đơn"
+  "invoiceViewerTitle": "Hóa đơn",
+  "recipientsFieldSinpePhoneNumberHint": "8 chữ số không bao gồm mã quốc gia",
+  "recipientsCopDocCcRecipientNumber": "Số cédula của người nhận",
+  "recipientsCopDocCeRecipientNumber": "Số cédula de extranjería của người nhận",
+  "recipientsCopDocNitRecipientNumber": "Mã số thuế của người nhận",
+  "recipientsCopDocPassportRecipientNumber": "Số hộ chiếu của người nhận",
+  "recipientsCopDocTiRecipientNumber": "Số chứng minh thư của người nhận",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Số đăng ký hộ tịch của người nhận",
+  "recipientsValidationSinpePhoneCountryCode": "Bỏ mã quốc gia (+506). Chỉ nhập số 8 chữ số",
+  "recipientsValidationSinpePhoneInvalidChars": "Chỉ dùng chữ số (không chữ cái hay ký hiệu)",
+  "recipientsValidationSinpePhoneTooShort": "Nhập đầy đủ 8 chữ số của số điện thoại",
+  "recipientsFieldDocumentType": "Loại giấy tờ tùy thân của người nhận",
+  "recipientsFieldDocumentNumberHint": "Nhập số giấy tờ tùy thân của người nhận",
+  "recipientsValidationSinpePhone": "Nhập số điện thoại Costa Rica hợp lệ 8 chữ số không bao gồm mã quốc gia"
 }

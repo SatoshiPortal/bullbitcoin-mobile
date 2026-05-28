@@ -13039,5 +13039,18 @@
   "walletSetupErrorTryAgain": "Aapka wallet setup karte samay kuch galat ho gaya. Kripya phir se try karein.",
   "@walletSetupErrorTryAgain": {
     "description": "Generic error shown when default-wallet creation or recovery fails."
-  }
+  },
+  "recipientsFieldSinpePhoneNumberHint": "Country code ke bina 8 digits",
+  "recipientsCopDocCcRecipientNumber": "Recipient ka cédula number",
+  "recipientsCopDocCeRecipientNumber": "Recipient ka cédula de extranjería number",
+  "recipientsCopDocNitRecipientNumber": "Recipient ka tax ID number",
+  "recipientsCopDocPassportRecipientNumber": "Recipient ka passport number",
+  "recipientsCopDocTiRecipientNumber": "Recipient ka identity card number",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Recipient ka civil registry number",
+  "recipientsValidationSinpePhoneCountryCode": "Country code (+506) hatayein. Sirf 8-digit number daalein",
+  "recipientsValidationSinpePhoneInvalidChars": "Sirf digits ka istemaal karein (koi letters ya symbols nahin)",
+  "recipientsValidationSinpePhoneTooShort": "Phone number ke saare 8 digits daalein",
+  "recipientsFieldDocumentType": "Recipient ka ID type",
+  "recipientsFieldDocumentNumberHint": "Recipient ka ID number daalein",
+  "recipientsValidationSinpePhone": "Country code ke bina ek valid 8-digit Costa Rican phone number daalein"
 }
