@@ -25,10 +25,15 @@ class PinCodeUnlockScreen extends StatelessWidget {
       child: BlocListener<AppUnlockBloc, AppUnlockState>(
         listener: (context, state) async {
           if (state.status == AppUnlockStatus.success) {
-            // If onSuccess is provided, call it, otherwise go to home as default
-            onSuccess != null
-                ? onSuccess!()
-                : context.goNamed(WalletRoute.walletHome.name);
+            // If onSuccess is provided, call it, otherwise go to home as default.
+            // WalletHomeScreen subscribes to the root RouteObserver and
+            // dispatches a throttled WalletRefreshed on `didPush`, so no
+            // explicit refresh dispatch is needed here.
+            if (onSuccess != null) {
+              onSuccess!();
+            } else {
+              context.goNamed(WalletRoute.walletHome.name);
+            }
           } else if (state.timeoutSeconds > 0) {
             await Future.delayed(const Duration(seconds: 1), () {
               if (context.mounted) {
