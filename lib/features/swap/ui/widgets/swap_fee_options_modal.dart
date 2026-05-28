@@ -52,9 +52,15 @@ class SwapFeeOptionsModal extends StatelessWidget {
                 style: context.font.headlineMedium,
               ),
               const Gap(16),
-              Builder(
-                builder: (context) => SelectableList(
-                  selectedValue: state.selectedFeeOption.title(),
+              // Watch selectedFeeOption so the preset list re-renders when
+              // CustomFeeArmed moves the selection to custom while the user
+              // types — otherwise the preset radio stays lit and the user
+              // sees two tiles selected at once.
+              BlocSelector<TransferBloc, TransferState, FeeSelection>(
+                bloc: bloc,
+                selector: (state) => state.selectedFeeOption,
+                builder: (context, selectedFeeOption) => SelectableList(
+                  selectedValue: selectedFeeOption.title(),
                   items: feeOptions,
                 ),
               ),

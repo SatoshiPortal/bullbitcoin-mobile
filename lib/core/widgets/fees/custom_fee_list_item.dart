@@ -37,10 +37,13 @@ class CustomFeeListItem extends StatefulWidget {
     required this.tileColor,
     required this.tileShadowColor,
     required this.unselectedIconColor,
-    required this.onArm,
     required this.onCommit,
+    this.onArm,
     this.onDisarm,
     this.onConfirmed,
+    this.allowAbsoluteToggle = true,
+    this.showConfirmButton = true,
+    this.commitOnChange = false,
   });
 
   /// The currently committed `customFee` from the caller's state. Used to
@@ -73,24 +76,39 @@ class CustomFeeListItem extends StatefulWidget {
   final Color tileShadowColor;
   final Color unselectedIconColor;
 
-  /// Called on the first valid keystroke and on every subsequent valid
-  /// keystroke. Caller should make this idempotent / cheap (no PSBT
-  /// rebuild). See [SendCubit.armCustomFee].
-  final void Function(NetworkFee fee) onArm;
-
-  /// Called when the user taps "Confirm Custom Fee". Caller should commit
-  /// + rebuild here. The returned future is awaited before [onConfirmed]
-  /// (typically a `Navigator.pop`) fires.
+  /// Called when the user submits via the Confirm button, or on every
+  /// valid keystroke when [commitOnChange] is true (RBF mode). Caller
+  /// commits + (for send/swap) rebuilds the PSBT here.
   final Future<void> Function(NetworkFee fee) onCommit;
 
-  /// Called from `dispose`. If the user submitted via Confirm, the caller
-  /// will have already cleared the arm — this becomes a no-op. If they
-  /// closed the modal without submitting, this rolls back to the pre-arm
-  /// selection.
+  /// Modal mode only ([commitOnChange] = false). Called on every valid
+  /// keystroke so the caller can light up the tile in its state container
+  /// without triggering a heavy rebuild — see [SendCubit.armCustomFee].
+  /// Idempotent on the caller side.
+  final void Function(NetworkFee fee)? onArm;
+
+  /// Modal mode only. Called from `dispose`. If the user submitted via
+  /// Confirm, the caller will have already cleared the arm — no-op.
+  /// Otherwise rolls back to the pre-arm selection.
   final VoidCallback? onDisarm;
 
   /// Called after [onCommit] resolves — typically `Navigator.pop(modalResult)`.
+  /// Not used in RBF mode (no Confirm button).
   final VoidCallback? onConfirmed;
+
+  /// When false, hide the absolute/relative toggle. Input is treated as
+  /// relative (sat/vByte) only. RBF passes false — its fee API is
+  /// rate-only.
+  final bool allowAbsoluteToggle;
+
+  /// When false, hide the "Confirm Custom Fee" button. RBF passes false —
+  /// confirmation lives on the parent screen.
+  final bool showConfirmButton;
+
+  /// When true, call [onCommit] on every valid keystroke instead of
+  /// [onArm]. RBF passes true — its parent screen takes whatever the
+  /// latest commit is. In this mode [onArm] / [onDisarm] are ignored.
+  final bool commitOnChange;
 
   @override
   State<CustomFeeListItem> createState() => _CustomFeeListItemState();
@@ -106,7 +124,9 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
   void initState() {
     super.initState();
     _customFee = widget.initialFee;
-    _isAbsolute = _customFee?.isAbsolute ?? widget.defaultAbsolute;
+    _isAbsolute = widget.allowAbsoluteToggle
+        ? (_customFee?.isAbsolute ?? widget.defaultAbsolute)
+        : false;
     final value = _customFee?.value.toString() ?? '';
     _controller = TextEditingController(text: value);
     _focusNode = FocusNode()..addListener(_onFocusChanged);
@@ -129,7 +149,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     _focusNode.removeListener(_onFocusChanged);
     _controller.dispose();
     _focusNode.dispose();
-    widget.onDisarm?.call();
+    if (!widget.commitOnChange) widget.onDisarm?.call();
     super.dispose();
   }
 
@@ -149,9 +169,13 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
           ? NetworkFee.absolute(parsed.toInt())
           : NetworkFee.relativeFromSatPerVbyte(parsed.toDouble());
       setState(() => _customFee = fee);
-      // Eager arm so the preset tiles deselect. Caller's implementation is
-      // idempotent — repeated calls during typing just update the fee.
-      widget.onArm(fee);
+      if (widget.commitOnChange) {
+        // RBF mode — each keystroke is the commit.
+        widget.onCommit(fee);
+      } else {
+        // Modal mode — light up the selection without rebuilding.
+        widget.onArm?.call(fee);
+      }
     } else {
       setState(() => _customFee = null);
     }
@@ -199,9 +223,12 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
               ? context.loc.sendEstimatedDeliveryFewHours
               : context.loc.sendEstimatedDeliveryHoursToDays}';
 
+    final bool showFiatInPreview =
+        widget.exchangeRate > 0 && widget.fiatCurrencyCode.isNotEmpty;
     final subtitle2 = _customFee == null
         ? ''
-        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = ${FormatAmount.satsApprox(customAbsValue)} ${context.loc.sendSats} (~ $fiatEq ${widget.fiatCurrencyCode})';
+        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = ${FormatAmount.satsApprox(customAbsValue)} ${context.loc.sendSats}'
+              '${showFiatInPreview ? ' (~ $fiatEq ${widget.fiatCurrencyCode})' : ''}';
 
     // Fee-rate guards. 0.1 floor = Bitcoin Core's lowest sensible policy and
     // Liquid minrelayfee. Below 1 sat/vByte we warn the tx may take longer
@@ -219,7 +246,16 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
 
     return InkWell(
       radius: 2,
-      onTap: _focusNode.requestFocus,
+      onTap: () {
+        _focusNode.requestFocus();
+        // RBF mode: tapping the tile with a prefilled value also commits,
+        // so the parent's "current selection" is the rate shown in the
+        // input even if the user doesn't type. Matches the pre-refactor
+        // RBF behaviour where the tile's InkWell committed on tap.
+        if (widget.commitOnChange && _customFee != null && !belowFloor) {
+          widget.onCommit(_customFee!);
+        }
+      },
       child: Material(
         elevation: showAsSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
@@ -262,19 +298,21 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   ),
                 ],
               ),
-              const Gap(12),
-              Row(
-                children: [
-                  BBText(
-                    _isAbsolute
-                        ? context.loc.sendAbsoluteFees
-                        : context.loc.sendRelativeFees,
-                    style: context.font.bodySmall,
-                  ),
-                  const Spacer(),
-                  Switch(value: _isAbsolute, onChanged: _onSwitchChanged),
-                ],
-              ),
+              if (widget.allowAbsoluteToggle) ...[
+                const Gap(12),
+                Row(
+                  children: [
+                    BBText(
+                      _isAbsolute
+                          ? context.loc.sendAbsoluteFees
+                          : context.loc.sendRelativeFees,
+                      style: context.font.bodySmall,
+                    ),
+                    const Spacer(),
+                    Switch(value: _isAbsolute, onChanged: _onSwitchChanged),
+                  ],
+                ),
+              ],
               const Gap(8),
               TextFormField(
                 controller: _controller,
@@ -342,14 +380,16 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   ),
                 ),
               ],
-              const Gap(12),
-              BBButton.big(
-                disabled: _customFee == null || belowFloor,
-                label: context.loc.sendConfirmCustomFee,
-                onPressed: submitCustomFee,
-                bgColor: context.appColors.secondary,
-                textColor: context.appColors.onSecondary,
-              ),
+              if (widget.showConfirmButton) ...[
+                const Gap(12),
+                BBButton.big(
+                  disabled: _customFee == null || belowFloor,
+                  label: context.loc.sendConfirmCustomFee,
+                  onPressed: submitCustomFee,
+                  bgColor: context.appColors.secondary,
+                  textColor: context.appColors.onSecondary,
+                ),
+              ],
             ],
           ),
         ),
