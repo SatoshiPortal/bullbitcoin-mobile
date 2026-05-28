@@ -33,12 +33,12 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_presets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/preview_bitcoin_fee_usecase.dart';
@@ -269,6 +269,8 @@ class SendCubit extends Cubit<SendState>
       RegExp(r'^["\"]+|["\"]+$'),
       '',
     );
+    final recipientChanged = state.paymentRequest != paymentRequest ||
+        state.scannedRawPaymentRequest != scannedRawPaymentRequest;
     emit(
       state.copyWith(
         scannedRawPaymentRequest: scannedRawPaymentRequest,
@@ -277,8 +279,10 @@ class SendCubit extends Cubit<SendState>
       ),
     );
     // Recipient is part of the cache fingerprint — a different address
-    // means a different output script in the PSBT.
-    clearBitcoinFeePreviews();
+    // means a different output script in the PSBT. Skip the clear when
+    // nothing actually changed so the modal doesn't re-shimmer on a
+    // no-op scan.
+    if (recipientChanged) clearBitcoinFeePreviews();
     await continueOnAddressConfirmed();
   }
 
@@ -293,6 +297,7 @@ class SendCubit extends Cubit<SendState>
       final paymentRequest = await _detectBitcoinStringUsecase.execute(
         data: sanitizedText,
       );
+      final recipientChanged = state.paymentRequest != paymentRequest;
       emit(
         state.copyWith(
           copiedRawPaymentRequest: sanitizedText,
@@ -300,9 +305,10 @@ class SendCubit extends Cubit<SendState>
         ),
       );
       // Same invalidation reason as onScannedPaymentRequest — recipient
-      // changed.
-      clearBitcoinFeePreviews();
+      // changed. Skip when paste/typing resolves to the same paymentRequest.
+      if (recipientChanged) clearBitcoinFeePreviews();
     } catch (e) {
+      final recipientCleared = state.paymentRequest != null;
       emit(
         state.copyWith(
           copiedRawPaymentRequest: text,
@@ -313,7 +319,7 @@ class SendCubit extends Cubit<SendState>
               : null,
         ),
       );
-      clearBitcoinFeePreviews();
+      if (recipientCleared) clearBitcoinFeePreviews();
     }
   }
 
@@ -928,13 +934,16 @@ class SendCubit extends Cubit<SendState>
         }
       }
 
+      final amountChanged =
+          state.amount != validatedAmount || state.sendMax != isMax;
       emit(state.copyWith(amount: validatedAmount, sendMax: isMax));
       // Amount is part of the cache fingerprint — any change invalidates
       // every previously-built preview PSBT. Without this clear, the user
       // can open the fee modal at amount A, change the amount to B
       // without re-opening the modal, and `createTransaction` reads back
-      // a stale cached PSBT for A.
-      clearBitcoinFeePreviews();
+      // a stale cached PSBT for A. Skip the clear when the validator
+      // bounced the input (validatedAmount == state.amount).
+      if (amountChanged) clearBitcoinFeePreviews();
       // Don't update wallet when MAX is clicked to avoid changing network and triggering chain swaps
       if (!isMax) {
         await updateBestWallet();
@@ -1172,6 +1181,7 @@ class SendCubit extends Cubit<SendState>
   }
 
   Future<void> replaceByFeeChanged(bool replaceByFee) async {
+    if (state.replaceByFee == replaceByFee) return;
     emit(state.copyWith(replaceByFee: replaceByFee));
     // RBF flag changes the sequence numbers in the PSBT — flipping it
     // makes the cached PSBT semantically wrong even if vsize matches.
@@ -1184,6 +1194,8 @@ class SendCubit extends Cubit<SendState>
     try {
       final bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
       final liquidFees = await _getNetworkFeesUsecase.execute(isLiquid: true);
+      final ratesChanged = state.bitcoinFeesList != bitcoinFees ||
+          state.liquidFeesList != liquidFees;
       emit(
         state.copyWith(
           bitcoinFeesList: bitcoinFees,
@@ -1194,8 +1206,10 @@ class SendCubit extends Cubit<SendState>
       // Mempool rates changed — preset PSBTs were built at the old
       // rates and are now stale. Custom slot is keyed by the typed rate
       // so it's unaffected, but `clearBitcoinFeePreviews` is whole-batch
-      // by design and the next modal open will rebuild it.
-      clearBitcoinFeePreviews();
+      // by design and the next modal open will rebuild it. Skip the
+      // clear when the API returned identical rates (which freezed
+      // equality on FeeOptions makes cheap to check).
+      if (ratesChanged) clearBitcoinFeePreviews();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -2211,6 +2225,7 @@ class SendCubit extends Cubit<SendState>
     Wallet wallet, {
     required bool manual,
   }) async {
+    final walletChanged = state.selectedWallet?.id != wallet.id;
     emit(
       state.copyWith(
         selectedWallet: wallet,
@@ -2220,8 +2235,9 @@ class SendCubit extends Cubit<SendState>
     );
     // Wallet swap invalidates every cached preview: the PSBT was built
     // from a different wallet's UTXOs and descriptor. Clear after the
-    // emit so the loading flags don't race with the wallet swap.
-    clearBitcoinFeePreviews();
+    // emit so the loading flags don't race with the wallet swap. Skip
+    // when the "swap" picks the same wallet — common via updateBestWallet.
+    if (walletChanged) clearBitcoinFeePreviews();
     setSelectedSwapLimits();
     await _selectedWalletSyncingSubscription?.cancel();
     _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
