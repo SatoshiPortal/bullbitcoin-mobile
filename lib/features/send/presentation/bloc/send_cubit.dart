@@ -32,6 +32,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_pset_size_usecase.dart';
@@ -50,7 +51,8 @@ import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SendCubit extends Cubit<SendState> {
+class SendCubit extends Cubit<SendState>
+    implements FeeModalActions, FeeModalViewState {
   SendCubit({
     Wallet? wallet,
     required LabelsFacade labelsFacade,
@@ -1238,6 +1240,7 @@ class SendCubit extends Cubit<SendState> {
   /// can roll back if the user closes the modal without submitting. Later
   /// calls only update `customFee` — the snapshot stays pinned to the
   /// pre-arm state.
+  @override
   void armCustomFee(NetworkFee fee) {
     // The typed rate just changed — the cached custom-slot PSBT is for
     // the old rate and would broadcast the wrong fee. Clear it; the
@@ -1291,6 +1294,7 @@ class SendCubit extends Cubit<SendState> {
   /// sat/vB floor → commit via [customFeesChanged] (which also triggers
   /// `createTransaction`). If below the floor → roll back via
   /// [disarmCustomFee]. If not armed (user never typed) → no-op.
+  @override
   Future<void> finalizeArmedCustomFee() async {
     if (state.armPriorSelection == null) return;
     final fee = state.customFee;
@@ -2227,4 +2231,39 @@ class SendCubit extends Cubit<SendState> {
           await loadUtxos();
         });
   }
+
+  // ────── FeeModalViewState + FeeModalActions adoption ──────
+  // SendCubit is the driving adapter for the Bitcoin-send path; the
+  // shared modal in lib/core/widgets/fees/ depends on these ports.
+  // Method bodies just delegate to the existing internal API so the
+  // port surface stays a stable contract while the cubit's own
+  // naming can evolve.
+
+  static FeeModalSnapshot _modalSnapshotFromState(SendState s) =>
+      FeeModalSnapshot(
+        feePresets: s.bitcoinFeesList,
+        customFee: s.customFee,
+        selectedFeeOption: s.selectedFeeOption,
+        feePreviewCache: s.feePreviewCache,
+        exchangeRate: s.exchangeRate,
+        fiatCurrencyCode: s.fiatCurrencyCode,
+        txSize: s.bitcoinTxSize ?? 140,
+      );
+
+  @override
+  FeeModalSnapshot get snapshot => _modalSnapshotFromState(state);
+
+  @override
+  Stream<FeeModalSnapshot> get snapshots => stream.map(_modalSnapshotFromState);
+
+  @override
+  void requestPresetPreviews() => unawaited(loadBitcoinFeePresetPreviews());
+
+  @override
+  void requestCustomFeePreview(NetworkFee fee) =>
+      unawaited(previewBitcoinCustomFee(fee));
+
+  @override
+  void selectFeeOption(FeeSelection selection) =>
+      unawaited(feeOptionSelected(selection));
 }

@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
-import 'package:bb_mobile/features/swap/ui/widgets/swap_fee_options_modal.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_options_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -109,11 +109,19 @@ class SwapConfirmPage extends StatelessWidget {
                               absoluteFees: absoluteFeesFormatted,
                               selectedFeeOptionTitle: selectedFeeOptionTitle,
                               onFeePriorityTap: () {
+                                final bloc = context.read<TransferBloc>();
                                 BlurredBottomSheet.show(
                                   context: context,
-                                  child: BlocProvider.value(
-                                    value: context.read<TransferBloc>(),
-                                    child: const SwapFeeOptionsModal(),
+                                  child: FeeOptionsModal(
+                                    viewState: bloc,
+                                    actions: bloc,
+                                    defaultAbsoluteCustomFee: true,
+                                    customFeeColors: FeeModalCustomFeeColors(
+                                      tile: context.appColors.onSecondary,
+                                      shadow: context.appColors.secondary,
+                                      unselectedIcon:
+                                          context.appColors.surface,
+                                    ),
                                   ),
                                 ).then((selected) {
                                   if (!context.mounted) return;

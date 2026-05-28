@@ -27,6 +27,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_usecase.dart';
+import 'package:bb_mobile/core/widgets/fees/fee_modal_controller.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -44,7 +45,8 @@ part 'transfer_state.dart';
 
 part 'transfer_bloc.freezed.dart';
 
-class TransferBloc extends Bloc<TransferEvent, TransferState> {
+class TransferBloc extends Bloc<TransferEvent, TransferState>
+    implements FeeModalActions, FeeModalViewState {
   TransferBloc({
     required GetSettingsUsecase getSettingsUsecase,
     required GetWalletsUsecase getWalletsUsecase,
@@ -1399,4 +1401,47 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       }
     });
   }
+
+  // ────── FeeModalViewState + FeeModalActions adoption ──────
+  // Mirrors SendCubit's adoption. The shared modal sees an identical
+  // [FeeModalSnapshot] / action surface regardless of whether it's
+  // mounted by send or swap; differences in state-field naming and
+  // event-vs-method dispatch all collapse here.
+
+  static FeeModalSnapshot _modalSnapshotFromState(TransferState s) =>
+      FeeModalSnapshot(
+        feePresets: s.bitcoinNetworkFees,
+        customFee: s.customFee,
+        selectedFeeOption: s.selectedFeeOption,
+        feePreviewCache: s.feePreviewCache,
+        exchangeRate: s.exchangeRate ?? 0.0,
+        fiatCurrencyCode: s.fiatCurrencyCode ?? 'CAD',
+        txSize: s.bitcoinTxSize ?? 140,
+      );
+
+  @override
+  FeeModalSnapshot get snapshot => _modalSnapshotFromState(state);
+
+  @override
+  Stream<FeeModalSnapshot> get snapshots => stream.map(_modalSnapshotFromState);
+
+  @override
+  void requestPresetPreviews() =>
+      add(const TransferEvent.presetFeesPreviewRequested());
+
+  @override
+  void requestCustomFeePreview(NetworkFee fee) =>
+      add(TransferEvent.customFeePreviewRequested(fee));
+
+  @override
+  void armCustomFee(NetworkFee fee) =>
+      add(TransferEvent.customFeeArmed(fee));
+
+  @override
+  void finalizeArmedCustomFee() =>
+      add(const TransferEvent.customFeeFinalized());
+
+  @override
+  void selectFeeOption(FeeSelection selection) =>
+      add(TransferEvent.feeOptionSelected(selection));
 }
