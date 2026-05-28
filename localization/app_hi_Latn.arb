@@ -1340,7 +1340,7 @@
   "@sendEstimatedDelivery10to30Minutes": {
     "description": "Estimated delivery time of 10 to 30 minutes"
   },
-  "sendEstimatedDeliveryHours": "kuch ghante",
+  "sendEstimatedDeliveryHours": "ghante",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },

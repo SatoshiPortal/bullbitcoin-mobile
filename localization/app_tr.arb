@@ -10887,7 +10887,7 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "birkaç saat",
+  "sendEstimatedDeliveryHours": "saatler",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },

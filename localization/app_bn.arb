@@ -10716,7 +10716,7 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "কয়েক ঘণ্টা",
+  "sendEstimatedDeliveryHours": "ঘণ্টা",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },

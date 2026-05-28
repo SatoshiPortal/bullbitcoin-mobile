@@ -9011,7 +9011,7 @@
   "@rbfBroadcast": {
     "description": "Button text to broadcast the bumped transaction"
   },
-  "sendEstimatedDeliveryHours": "λίγες ώρες",
+  "sendEstimatedDeliveryHours": "ώρες",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },

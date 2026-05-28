@@ -776,7 +776,7 @@
   "sendConfirmCustomFee": "Підтвердити збір",
   "sendEstimatedDelivery10Minutes": "10 хвилин",
   "sendEstimatedDelivery10to30Minutes": "10-30 хвилин",
-  "sendEstimatedDeliveryHours": "кілька годин",
+  "sendEstimatedDeliveryHours": "години",
   "sendEstimatedDeliveryHoursToDays": "час",
   "sendEstimatedDelivery": "Орієнтовна доставка ~ ",
   "sendAddress": "Адреса: ",

@@ -582,7 +582,7 @@
   "sendConfirmCustomFee": "কাষ্টম মাচুল নিশ্চিত কৰক",
   "sendEstimatedDelivery10Minutes": "10 মিনিট",
   "sendEstimatedDelivery10to30Minutes": "10-30 মিনিট",
-  "sendEstimatedDeliveryHours": "কেইঘণ্টামান",
+  "sendEstimatedDeliveryHours": "ঘণ্টা",
   "sendEstimatedDeliveryHoursToDays": "ঘণ্টাৰ পৰা দিনলৈ",
   "sendEstimatedDelivery": "আনুমানিক ডেলিভাৰি ~ ",
   "sendAddress": "ঠিকনা: ",

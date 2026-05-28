@@ -10876,7 +10876,7 @@
   "@transactionLabelBoltzSwapFee": {
     "description": "Label for Boltz swap fee component"
   },
-  "sendEstimatedDeliveryHours": "poucas horas",
+  "sendEstimatedDeliveryHours": "horas",
   "@sendEstimatedDeliveryHours": {
     "description": "Estimated delivery time of a few hours"
   },
