@@ -14,7 +14,8 @@ enum SignerDeviceEntity {
   ledgerStax,
   passport,
   seedsigner,
-  specter;
+  specter,
+  trezor;
 
   String get displayName =>
       StringFormatting.camelCaseToTitleCase(name, separator: ' ');

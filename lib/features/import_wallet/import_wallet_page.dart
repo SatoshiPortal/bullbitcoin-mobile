@@ -120,6 +120,16 @@ class ImportWalletPage extends StatelessWidget {
                           'BitBox is only supported on Android',
                         ),
                 ),
+                const Gap(16),
+                TabMenuVerticalButton(
+                  title: 'Trezor',
+                  onTap: () {
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      'Trezor support is coming soon',
+                    );
+                  },
+                ),
               ],
             ],
           ),

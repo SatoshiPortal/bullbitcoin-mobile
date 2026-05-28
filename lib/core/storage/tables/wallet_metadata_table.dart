@@ -36,7 +36,8 @@ enum SignerDevice {
   ledgerStax,
   passport,
   seedsigner,
-  specter;
+  specter,
+  trezor;
 
   static SignerDevice fromEntity(SignerDeviceEntity entity) => switch (entity) {
     SignerDeviceEntity.bitbox02 => SignerDevice.bitbox02,
@@ -51,6 +52,7 @@ enum SignerDevice {
     SignerDeviceEntity.passport => SignerDevice.passport,
     SignerDeviceEntity.seedsigner => SignerDevice.seedsigner,
     SignerDeviceEntity.specter => SignerDevice.specter,
+    SignerDeviceEntity.trezor => SignerDevice.trezor,
   };
 
   SignerDeviceEntity toEntity() => switch (this) {
@@ -66,6 +68,7 @@ enum SignerDevice {
     SignerDevice.passport => SignerDeviceEntity.passport,
     SignerDevice.seedsigner => SignerDeviceEntity.seedsigner,
     SignerDevice.specter => SignerDeviceEntity.specter,
+    SignerDevice.trezor => SignerDeviceEntity.trezor,
   };
 }
 
