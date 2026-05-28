@@ -2199,6 +2199,7 @@
   "swapProgressCompleted": "Трансфер завершено",
   "keystoneStep2": "Натисніть сканування",
   "sendErrorSwapCreationFailed": "В'язаний для створення застібки.",
+  "sendErrorHardwareWalletCannotSwap": "Апаратні гаманці не можна використовувати для обмінів.",
   "sendErrorInvoiceMustContainAmount": "Рахунок повинен містити суму",
   "arkNoBalanceData": "Немає даних балансу",
   "autoswapWarningCardTitle": "Автообмін увімкнено.",

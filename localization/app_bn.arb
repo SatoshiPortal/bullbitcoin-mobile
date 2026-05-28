@@ -4621,6 +4621,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "হার্ডওয়্যার ওয়ালেট সোয়াপের জন্য ব্যবহার করা যাবে না।",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "ব্যালেন্স তথ্য উপলব্ধ নয়",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

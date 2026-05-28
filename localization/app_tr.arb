@@ -4713,6 +4713,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Donanım cüzdanları takaslar için kullanılamaz.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Mevcut herhangi bir denge veri mevcut",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

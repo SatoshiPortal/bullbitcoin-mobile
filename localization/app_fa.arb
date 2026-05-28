@@ -5257,6 +5257,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "کیف پول‌های سخت‌افزاری را نمی‌توان برای مبادله استفاده کرد.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "هیچ اطلاعات تعادلی در دسترس نیست",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"

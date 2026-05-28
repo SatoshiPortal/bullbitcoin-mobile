@@ -1542,6 +1542,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Falhado para criar swap.",
+  "sendErrorHardwareWalletCannotSwap": "As carteiras hardware não podem ser utilizadas para trocas.",
   "sendErrorInvoiceMustContainAmount": "A fatura deve conter um valor",
   "arkNoBalanceData": "Sem dados de equilíbrio disponíveis",
   "autoswapWarningCardTitle": "O Autoswap está ativado.",

@@ -1545,6 +1545,7 @@
     }
   },
   "sendErrorSwapCreationFailed": "Non sono riuscito a creare swap.",
+  "sendErrorHardwareWalletCannotSwap": "I portafogli hardware non possono essere utilizzati per gli swap.",
   "sendErrorInvoiceMustContainAmount": "La fattura deve contenere un importo",
   "arkNoBalanceData": "Nessun dato di bilancio disponibile",
   "autoswapWarningCardTitle": "Autoswap è attivo",
