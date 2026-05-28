@@ -87,6 +87,14 @@ abstract class SendState with _$SendState {
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
     int? bitcoinTxSize,
     int? liquidAbsoluteFees,
+    // Real Bitcoin absolute fee, read from the built PSBT (not a prediction).
+    // BDK overshoots a rate-based fee by 1–3 sat at sub-1 sat/vByte rates due
+    // to ceil rounding and sub-dust change absorption (documented BDK
+    // behaviour, see bdk_wallet TxBuilder docs and rust-bitcoin
+    // FeeRate::mul_by_weight which uses div_ceil). At normal rates the
+    // overshoot is invisible; at the sub-1 sat/vByte rates allowed by #2133
+    // it's significant (e.g. 14 → 16, 28 → 30). Set whenever a PSBT exists.
+    int? bitcoinAbsoluteFeesSat,
     // prepare
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
@@ -425,11 +433,16 @@ abstract class SendState with _$SendState {
       ? liquidFeesList
       : bitcoinFeesList;
 
+  /// Absolute fee the user will (or did) pay, in sats. Realistic — prefers the
+  /// fee read off the built PSBT over a rate × vsize prediction. Falls back to
+  /// the prediction in the pre-build window where no PSBT exists yet. Returns
+  /// null while no wallet is selected.
   int? get absoluteFees => selectedWallet == null
       ? null
       : selectedWallet!.isLiquid
       ? liquidAbsoluteFees
-      : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+      : bitcoinAbsoluteFeesSat ??
+            selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
 
   int? get totalSwapFees {
     if (lightningSwap == null) return null;

@@ -1199,8 +1199,17 @@ class SendCubit extends Cubit<SendState> {
         }
       }
       clearAllExceptions();
+      // Clear the previous build's absolute fee before loadUtxos so the UI
+      // doesn't briefly pair a stale Bitcoin fee with newly-changed inputs
+      // (rate / amount / utxo selection). The getter falls back to the
+      // rate × txSize prediction until the rebuild emits a fresh value.
+      emit(
+        state.copyWith(
+          buildingTransaction: true,
+          bitcoinAbsoluteFeesSat: null,
+        ),
+      );
       await loadUtxos();
-      emit(state.copyWith(buildingTransaction: true));
       final address = state.lightningSwap != null
           ? state.lightningSwap!.paymentAddress
           : (state.chainSwap != null)
@@ -1328,10 +1337,17 @@ class SendCubit extends Cubit<SendState> {
         }
 
         if (state.selectedWallet!.signsRemotely) {
+          // psbt.fee() reads input/output deltas — works on unsigned PSBTs
+          // since BDK finalizes coin selection at build time.
+          final bitcoinAbsoluteFeesSat =
+              await _calculateBitcoinAbsoluteFeesUsecase.execute(
+                psbt: txPreparation.unsignedPsbt,
+              );
           emit(
             state.copyWith(
               unsignedPsbt: txPreparation.unsignedPsbt,
               bitcoinTxSize: txPreparation.txSize,
+              bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
               isToSelf: txPreparation.isToSelf,
               buildingTransaction: false,
             ),
@@ -1355,6 +1371,7 @@ class SendCubit extends Cubit<SendState> {
                 unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 isToSelf: txPreparation.isToSelf,
                 chainSwap: updatedSwap as ChainSwap,
                 buildingTransaction: false,
@@ -1370,6 +1387,7 @@ class SendCubit extends Cubit<SendState> {
                 unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 isToSelf: txPreparation.isToSelf,
                 lightningSwap: updatedSwap as LnSendSwap,
                 buildingTransaction: false,
@@ -1381,6 +1399,7 @@ class SendCubit extends Cubit<SendState> {
                 unsignedPsbt: txPreparation.unsignedPsbt,
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
                 bitcoinTxSize: signedPsbtAndTxSize.txSize,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 isToSelf: txPreparation.isToSelf,
                 buildingTransaction: false,
               ),
@@ -1480,11 +1499,11 @@ class SendCubit extends Cubit<SendState> {
             psbt: state.unsignedPsbt!,
             walletId: state.selectedWallet!.id,
           );
+          final bitcoinAbsoluteFeesSat =
+              await _calculateBitcoinAbsoluteFeesUsecase.execute(
+                psbt: signedPsbtAndTxSize.signedPsbt,
+              );
           if (state.chainSwap != null) {
-            final bitcoinAbsoluteFeesSat =
-                await _calculateBitcoinAbsoluteFeesUsecase.execute(
-                  psbt: signedPsbtAndTxSize.signedPsbt,
-                );
             final updatedSwap = await _updateSendSwapLockupFeesUsecase.execute(
               swapId: state.chainSwap!.id,
               lockupFees: bitcoinAbsoluteFeesSat,
@@ -1492,6 +1511,7 @@ class SendCubit extends Cubit<SendState> {
             emit(
               state.copyWith(
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 chainSwap: updatedSwap as ChainSwap,
                 signingTransaction: false,
               ),
@@ -1500,6 +1520,7 @@ class SendCubit extends Cubit<SendState> {
             emit(
               state.copyWith(
                 signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+                bitcoinAbsoluteFeesSat: bitcoinAbsoluteFeesSat,
                 signingTransaction: false,
               ),
             );
@@ -1813,7 +1834,15 @@ class SendCubit extends Cubit<SendState> {
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
           psbt: dummyDrainTxInfo.unsignedPsbt,
         );
-        emit(state.copyWith(bitcoinTxSize: dummyDrainTxInfo.txSize));
+        // Surface the real drain fee, mirroring the Liquid branch above
+        // (line 1759). The user is asking "what's my max" — the drain
+        // dummy's fee is exactly what they'd pay.
+        emit(
+          state.copyWith(
+            bitcoinTxSize: dummyDrainTxInfo.txSize,
+            bitcoinAbsoluteFeesSat: absoluteFees,
+          ),
+        );
       }
       final balance = state.selectedWallet!.balanceSat.toInt();
       final maxAmount = balance - absoluteFees;
