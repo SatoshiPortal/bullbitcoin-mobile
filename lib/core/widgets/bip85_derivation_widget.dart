@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/bip85/domain/bip85_derivation_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -173,12 +174,7 @@ class _Bip85DerivationWidgetState extends State<Bip85DerivationWidget> {
                   icon: Icon(Icons.copy, color: context.appColors.onSurface),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: widget.entropy));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Copied to clipboard'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
+                    SnackBarUtils.showCopiedSnackBar(context);
                   },
                 ),
               ],

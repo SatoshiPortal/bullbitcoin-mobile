@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/default_wallets_state.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -35,49 +36,12 @@ class _ExchangeBitcoinWalletsScreenState
           (previous.saveError == null && current.saveError != null),
       listener: (context, state) {
         if (state.saveSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                context.loc.exchangeBitcoinWalletsSaveSuccess,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: context.appColors.surfaceFixed,
-                ),
-              ),
-              duration: const Duration(seconds: 2),
-              backgroundColor: context.appColors.onSurface.withAlpha(204),
-              behavior: SnackBarBehavior.floating,
-              elevation: 4,
-              margin: const EdgeInsets.only(bottom: 100, left: 40, right: 40),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
+          SnackBarUtils.showSnackBar(
+            context,
+            context.loc.exchangeBitcoinWalletsSaveSuccess,
           );
         } else if (state.saveError != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                state.saveError!,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: context.appColors.surfaceFixed,
-                ),
-              ),
-              duration: const Duration(seconds: 3),
-              backgroundColor: context.appColors.error,
-              behavior: SnackBarBehavior.floating,
-              elevation: 4,
-              margin: const EdgeInsets.only(bottom: 100, left: 40, right: 40),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          );
+          SnackBarUtils.showSnackBar(context, state.saveError!);
         }
       },
       child: Scaffold(
@@ -105,15 +69,15 @@ class _ExchangeBitcoinWalletsScreenState
             backgroundColor: context.appColors.surface,
             color: context.appColors.primary,
           ),
-        Expanded(
-          child: _buildContent(context, state),
-        ),
+        Expanded(child: _buildContent(context, state)),
       ],
     );
   }
 
   Widget _buildContent(BuildContext context, DefaultWalletsState state) {
-    if (state.isLoading && state.loadError == null && state.defaultWallets == null) {
+    if (state.isLoading &&
+        state.loadError == null &&
+        state.defaultWallets == null) {
       return const SizedBox.shrink();
     }
 

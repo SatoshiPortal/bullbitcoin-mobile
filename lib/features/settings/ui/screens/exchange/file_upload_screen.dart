@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_cubit.dart';
 import 'package:bb_mobile/features/exchange_settings/presentation/file_upload_state.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,26 +19,9 @@ class ExchangeFileUploadScreen extends StatelessWidget {
           (!previous.uploadComplete && current.uploadComplete),
       listener: (context, state) {
         if (state.uploadComplete) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                context.loc.exchangeFileUploadSuccess,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: context.appColors.surfaceFixed,
-                ),
-              ),
-              duration: const Duration(seconds: 3),
-              backgroundColor: context.appColors.onSurface.withAlpha(204),
-              behavior: SnackBarBehavior.floating,
-              elevation: 4,
-              margin: const EdgeInsets.only(bottom: 100, left: 40, right: 40),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
+          SnackBarUtils.showSnackBar(
+            context,
+            context.loc.exchangeFileUploadSuccess,
           );
         }
       },
@@ -75,9 +59,7 @@ class _ErrorMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final error = context.select(
-      (FileUploadCubit cubit) => cubit.state.error,
-    );
+    final error = context.select((FileUploadCubit cubit) => cubit.state.error);
 
     if (error == null) return const SizedBox.shrink();
 
@@ -92,11 +74,7 @@ class _ErrorMessage extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.error_outline,
-            color: context.appColors.error,
-            size: 20,
-          ),
+          Icon(Icons.error_outline, color: context.appColors.error, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: BBText(
@@ -107,11 +85,7 @@ class _ErrorMessage extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(
-              Icons.close,
-              color: context.appColors.error,
-              size: 18,
-            ),
+            icon: Icon(Icons.close, color: context.appColors.error, size: 18),
             onPressed: () {
               context.read<FileUploadCubit>().clearError();
             },
@@ -134,7 +108,8 @@ class _UploadOptionCard extends StatelessWidget {
     final status = state.secureUploadStatus;
 
     // Allow interaction for upload and rejected statuses
-    final canInteract = status == SecureUploadStatus.upload ||
+    final canInteract =
+        status == SecureUploadStatus.upload ||
         status == SecureUploadStatus.rejected;
 
     // Ignore interaction when uploading or when status doesn't allow uploads
@@ -243,10 +218,7 @@ class _UploadStatusButton extends StatelessWidget {
           onTap: isUploading ? null : onPressed,
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: context.appColors.surfaceContainerHighest,
@@ -284,10 +256,7 @@ class _UploadStatusButton extends StatelessWidget {
 
       case SecureUploadStatus.inReview:
         return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
@@ -306,10 +275,7 @@ class _UploadStatusButton extends StatelessWidget {
 
       case SecureUploadStatus.accepted:
         return Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: context.appColors.success.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
@@ -415,5 +381,3 @@ class _RejectedStatusWithReupload extends StatelessWidget {
     );
   }
 }
-
-

@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/mnemonic_widget.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
-import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/cubit.dart';
 import 'package:bb_mobile/features/import_mnemonic/presentation/state.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,15 +29,7 @@ class MnemonicPage extends StatelessWidget {
       body: BlocListener<ImportMnemonicCubit, ImportMnemonicState>(
         listener: (context, state) {
           if (state.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: BBText(
-                  state.error!.toString(),
-                  style: context.font.bodyMedium,
-                  color: context.appColors.error,
-                ),
-              ),
-            );
+            SnackBarUtils.showSnackBar(context, state.error!.toString());
           }
         },
         child: Padding(
