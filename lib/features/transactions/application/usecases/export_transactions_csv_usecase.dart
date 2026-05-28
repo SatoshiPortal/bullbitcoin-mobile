@@ -1,6 +1,3 @@
-// TODO(architecture): the other usecases in this feature still live under
-// `domain/usecases/` (GetTransactionsUsecase, GetTransactionsByTxIdUsecase).
-// They should be moved here to `application/usecases/` per ARCHITECTURE.md.
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
