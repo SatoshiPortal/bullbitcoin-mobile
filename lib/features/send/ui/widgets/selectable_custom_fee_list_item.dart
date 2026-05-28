@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
@@ -120,7 +121,7 @@ class _SelectableCustomFeeListItemState
 
     final subtitle2 = _customFee == null
         ? ''
-        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = $customAbsValue ${context.loc.sendSats} (~ $fiatEq $fiatCurrencyCode)';
+        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = ${FormatAmount.satsApprox(customAbsValue)} ${context.loc.sendSats} (~ $fiatEq $fiatCurrencyCode)';
 
     // Fee-rate guards. The 0.1 floor matches Bitcoin Core's lowest sensible
     // policy and Liquid's network minrelayfee. Below 1 sat/vByte we warn the
