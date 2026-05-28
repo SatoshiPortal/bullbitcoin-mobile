@@ -42,28 +42,28 @@ enum BitcoinUnit {
 }
 
 enum Language {
-  unitedStatesEnglish('en', label: 'English'),
+  unitedStatesEnglish('en', label: 'English', countryCode: 'US'),
   arabic('ar', label: 'العربية'),
   bulgarian('bg', label: 'Български'),
   bengali('bn', label: 'বাংলা'),
   czech('cs', label: 'Čeština'),
-  german('de', label: 'Deutsch'),
+  german('de', label: 'Deutsch', countryCode: 'DE'),
   greek('el', label: 'Ελληνικά'),
-  spanish('es', label: 'Español'),
+  spanish('es', label: 'Español', countryCode: 'ES'),
   persian('fa', label: 'فارسی'),
-  finnish('fi', label: 'Suomi'),
-  franceFrench('fr', label: 'Français'),
+  finnish('fi', label: 'Suomi', countryCode: 'FI'),
+  franceFrench('fr', label: 'Français', countryCode: 'FR'),
   hindi('hi', label: 'हिन्दी'),
   hinglish('hi', label: 'Hinglish', scriptCode: 'Latn'),
-  italian('it', label: 'Italiano'),
+  italian('it', label: 'Italiano', countryCode: 'IT'),
   korean('ko', label: '한국어'),
-  portuguese('pt', label: 'Português'),
+  portuguese('pt', label: 'Português', countryCode: 'PT'),
   brazilianPortuguese('pt', label: 'Português (Brasil)', countryCode: 'BR'),
-  russian('ru', label: 'Русский'),
+  russian('ru', label: 'Русский', countryCode: 'RU'),
   thai('th', label: 'ภาษาไทย'),
   turkish('tr', label: 'Türkçe'),
-  ukrainian('uk', label: 'Українська'),
-  simplifiedChinese('zh', label: '简体中文'),
+  ukrainian('uk', label: 'Українська', countryCode: 'UA'),
+  simplifiedChinese('zh', label: '简体中文', countryCode: 'CN'),
   assamese('as', label: 'অসমীয়া');
 
   final String languageCode;
