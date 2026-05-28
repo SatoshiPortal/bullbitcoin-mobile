@@ -116,17 +116,31 @@ class SwapConfirmPage extends StatelessWidget {
                                     child: const SwapFeeOptionsModal(),
                                   ),
                                 ).then((selected) {
-                                  if (selected != null && context.mounted) {
+                                  if (!context.mounted) return;
+                                  final bloc = context.read<TransferBloc>();
+                                  if (selected != null) {
+                                    // Preset picked — commit it. The
+                                    // event handler clears any in-flight
+                                    // arm from custom typing.
                                     try {
                                       final fee = FeeSelectionName.fromString(
                                         selected,
                                       );
-                                      context.read<TransferBloc>().add(
+                                      bloc.add(
                                         TransferEvent.feeOptionSelected(fee),
                                       );
                                     } catch (e) {
                                       // Ignore invalid fee selection
                                     }
+                                  } else {
+                                    // User dismissed the modal (tap
+                                    // outside, back, swipe). Finalize the
+                                    // typed custom rate if any. Replaces
+                                    // the old "Confirm Custom Fee" button.
+                                    bloc.add(
+                                      const TransferEvent
+                                          .customFeeFinalized(),
+                                    );
                                   }
                                 });
                               },

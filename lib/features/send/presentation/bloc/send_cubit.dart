@@ -1231,8 +1231,7 @@ class SendCubit extends Cubit<SendState> {
 
   /// Rolls back `selectedFeeOption` and `customFee` to the values snapshotted
   /// by [armCustomFee], if the arm is still active. No-op once cleared
-  /// (the user submitted or picked a preset). Called from the custom-fee
-  /// widget's `dispose` so closing the modal without `Confirm` reverts.
+  /// (the user picked a preset, which fires [feeOptionSelected]).
   void disarmCustomFee() {
     if (state.armPriorSelection == null) return;
     emit(
@@ -1243,6 +1242,37 @@ class SendCubit extends Cubit<SendState> {
         armPriorCustomFee: null,
       ),
     );
+  }
+
+  /// Called by the fee modal's parent when the user dismisses the modal
+  /// without picking a preset. Replaces the old explicit "Confirm Custom
+  /// Fee" button — typing IS the selection, dismissing IS the apply.
+  ///
+  /// If the cubit is armed AND the typed value is at or above the 0.1
+  /// sat/vB floor → commit via [customFeesChanged] (which also triggers
+  /// `createTransaction`). If below the floor → roll back via
+  /// [disarmCustomFee]. If not armed (user never typed) → no-op.
+  Future<void> finalizeArmedCustomFee() async {
+    if (state.armPriorSelection == null) return;
+    final fee = state.customFee;
+    final txSize = state.bitcoinTxSize ?? 140;
+    if (fee != null && _isCustomFeeAboveFloor(fee, txSize)) {
+      await customFeesChanged(fee);
+    } else {
+      disarmCustomFee();
+    }
+  }
+
+  /// 0.1 sat/vB is Bitcoin Core's lowest sensible mempool policy and
+  /// Liquid's network minrelayfee. Below it, even a relay-friendly node
+  /// won't propagate the tx — committing a below-floor value would
+  /// silently break the send.
+  static bool _isCustomFeeAboveFloor(NetworkFee fee, int txSize) {
+    if (fee is RelativeFee) return fee.satPerVbyte >= 0.1;
+    if (fee is AbsoluteFee && txSize > 0) {
+      return (fee.sats / txSize) >= 0.1;
+    }
+    return false;
   }
 
   // [CHAIN SWAP LIFECYCLE — Step 3: build the funding tx]

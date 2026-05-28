@@ -50,7 +50,6 @@ class BumpFeeSelectorWidget extends StatelessWidget {
               tileShadowColor: context.appColors.secondary,
               unselectedIconColor: context.appColors.surface,
               allowAbsoluteToggle: false,
-              showConfirmButton: false,
               commitOnChange: true,
               onCommit: (fee) async {
                 // Safe cast: allowAbsoluteToggle is false so the widget

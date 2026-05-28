@@ -960,8 +960,20 @@ class _OnchainTransactionReview extends StatelessWidget {
                     ),
                   );
                   if (selected != null) {
+                    // User tapped a preset tile inside the modal —
+                    // commit it. feeOptionSelected clears any arm
+                    // state the user may have left from typing.
                     final fee = FeeSelectionName.fromString(selected);
-                    await context.read<SendCubit>().feeOptionSelected(fee);
+                    await sendCubit.feeOptionSelected(fee);
+                  } else {
+                    // User dismissed the modal (tap outside, back,
+                    // swipe). If they had typed a custom rate, the
+                    // cubit is armed — finalize it: commit if valid,
+                    // roll back if below the 0.1 sat/vB floor. This
+                    // is the replacement for the old explicit
+                    // "Confirm Custom Fee" button — typing IS the
+                    // selection, dismissing IS the apply.
+                    await sendCubit.finalizeArmedCustomFee();
                   }
                 },
         ),

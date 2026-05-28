@@ -152,21 +152,24 @@ extension FeeOptionsDisplay on FeeOptions {
       exchangeRate,
     );
     final slowFiatEq = ConvertAmount.satsToFiat(slowAbsSats, exchangeRate);
+    // `~` not `=` between rate and sat-count: the sat-count is a
+    // prediction (rate × vsize, integer-rounded). BDK pays 1-3 sats more
+    // at sub-1 sat/vByte due to ceil + sub-dust change absorption.
     return [
       (
         'Fastest',
         'Estimated delivery ~ 10 minutes',
-        '${fastest.value} sats/byte = $fastestAbsSats sats (~ $fastestFiatEq) $currencySymbol',
+        '${fastest.value} sats/byte ~ $fastestAbsSats sats (~ $fastestFiatEq) $currencySymbol',
       ),
       (
         'Economic',
         'Estimated delivery ~ 30 minutes',
-        '${economic.value} sats/byte = $economicAbsSats sats (~ $economicFiatEq) $currencySymbol',
+        '${economic.value} sats/byte ~ $economicAbsSats sats (~ $economicFiatEq) $currencySymbol',
       ),
       (
         'Slow',
         'Estimated delivery ~ few hours',
-        '${slow.value} sats/byte = $slowAbsSats sats (~ $slowFiatEq) $currencySymbol',
+        '${slow.value} sats/byte ~ $slowAbsSats sats (~ $slowFiatEq) $currencySymbol',
       ),
     ];
   }

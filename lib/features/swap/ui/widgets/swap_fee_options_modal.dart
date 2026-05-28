@@ -120,13 +120,10 @@ class _SwapSelectableCustomFeeListItemState
           committedAbsoluteFeesSat: state.bitcoinAbsoluteFeesSat,
           onArm: (fee) =>
               widget.bloc.add(TransferEvent.customFeeArmed(fee)),
-          onCommit: (fee) async {
-            widget.bloc.add(TransferEvent.customFeeChanged(fee));
-          },
-          onDisarm: () =>
-              widget.bloc.add(const TransferEvent.customFeeDisarmed()),
-          onConfirmed: () =>
-              Navigator.pop(context, context.loc.sendCustomFee),
+          // Modal mode never invokes onCommit — the parent
+          // (swap_confirm_page) fires TransferEvent.customFeeFinalized
+          // on modal dismissal. No-op here.
+          onCommit: (_) async {},
         );
       },
     );

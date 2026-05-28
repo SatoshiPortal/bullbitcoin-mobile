@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
-import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/fees/custom_fee_list_item.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -59,10 +58,12 @@ class _SelectableCustomFeeListItemState
           // input matches the currently committed customFee.
           committedAbsoluteFeesSat: state.bitcoinAbsoluteFeesSat,
           onArm: _cubit.armCustomFee,
-          onCommit: _cubit.customFeesChanged,
-          onDisarm: _cubit.disarmCustomFee,
-          onConfirmed: () =>
-              Navigator.pop(context, context.loc.sendCustomFee),
+          // Modal mode never invokes onCommit from the widget — the
+          // parent (send_screen) calls finalizeArmedCustomFee on
+          // modal dismissal. Passing a no-op satisfies the required
+          // parameter without coupling the widget to commit logic
+          // that isn't its job.
+          onCommit: (_) async {},
         );
       },
     );

@@ -33,6 +33,14 @@ sealed class TransferEvent with _$TransferEvent {
   const factory TransferEvent.customFeeArmed(NetworkFee fee) =
       TransferCustomFeeArmed;
   /// Rolls back to the pre-arm `selectedFeeOption`/`customFee` if no
-  /// `customFeeChanged` ran (i.e. user closed the modal without submitting).
+  /// `customFeeChanged` ran. Used when the user picks a preset tile
+  /// (the preset commit clears the arm separately).
   const factory TransferEvent.customFeeDisarmed() = TransferCustomFeeDisarmed;
+
+  /// Called by the fee modal's parent when the user dismisses without
+  /// picking a preset. Commits the typed custom rate if armed and
+  /// above the 0.1 sat/vB floor; rolls back otherwise. The replacement
+  /// for the old explicit "Confirm Custom Fee" button.
+  const factory TransferEvent.customFeeFinalized() =
+      TransferCustomFeeFinalized;
 }

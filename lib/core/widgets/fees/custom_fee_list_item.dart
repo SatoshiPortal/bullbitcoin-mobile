@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
-import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
@@ -12,18 +11,20 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 /// Reusable "Custom Fee" tile used inside the fee-selection modal of both
-/// Send and Swap (and, in a follow-up, RBF). Owns the local edit state
-/// (controller, focus, in-progress parsed fee) and lifts state changes out
-/// via callbacks — the caller wires those to its cubit/bloc.
+/// Send and Swap, and as the inline custom-rate tile in RBF. Owns the
+/// local edit state (controller, focus, in-progress parsed fee) and lifts
+/// state changes out via callbacks — the caller wires those to its
+/// cubit/bloc.
+///
+/// **No explicit Confirm button.** Typing IS the selection: each keystroke
+/// fires [onArm] (modal mode) or [onCommit] (RBF mode). In modal mode,
+/// the final apply happens at the parent's level when the user dismisses
+/// the bottom sheet — see `SendCubit.finalizeArmedCustomFee` and the
+/// equivalent `TransferEvent.customFeeFinalized` event for swap.
 ///
 /// Visual selection rule: `isCommittedAsCustom || _focusNode.hasFocus`.
 /// Focus highlights the tile the instant the user taps anywhere on it
-/// (the InkWell already calls `requestFocus`). [onArm] commits
-/// `selectedFeeOption: custom` + the typed fee on the first valid keystroke
-/// so the preset tiles deselect cleanly, without triggering a PSBT rebuild.
-/// [onCommit] is called on the explicit Confirm button — that's where the
-/// rebuild happens. [onDisarm] runs in `dispose`, rolling back the
-/// in-flight arm if the user closed the modal without submitting.
+/// (the InkWell calls `requestFocus`).
 class CustomFeeListItem extends StatefulWidget {
   const CustomFeeListItem({
     super.key,
@@ -39,10 +40,7 @@ class CustomFeeListItem extends StatefulWidget {
     required this.unselectedIconColor,
     required this.onCommit,
     this.onArm,
-    this.onDisarm,
-    this.onConfirmed,
     this.allowAbsoluteToggle = true,
-    this.showConfirmButton = true,
     this.commitOnChange = false,
     this.committedAbsoluteFeesSat,
   });
@@ -77,38 +75,28 @@ class CustomFeeListItem extends StatefulWidget {
   final Color tileShadowColor;
   final Color unselectedIconColor;
 
-  /// Called when the user submits via the Confirm button, or on every
-  /// valid keystroke when [commitOnChange] is true (RBF mode). Caller
-  /// commits + (for send/swap) rebuilds the PSBT here.
+  /// Called on every valid keystroke when [commitOnChange] is true (RBF
+  /// mode — the parent takes whatever the latest commit is). In modal
+  /// mode (commitOnChange=false), commit happens at the parent level
+  /// when the user dismisses the sheet — this callback is unused at the
+  /// widget level. The contract: there is no explicit "Confirm" button
+  /// anywhere; typing is the selection signal, dismissal is the apply.
   final Future<void> Function(NetworkFee fee) onCommit;
 
   /// Modal mode only ([commitOnChange] = false). Called on every valid
   /// keystroke so the caller can light up the tile in its state container
   /// without triggering a heavy rebuild — see [SendCubit.armCustomFee].
-  /// Idempotent on the caller side.
+  /// Idempotent on the caller side. Ignored in RBF mode.
   final void Function(NetworkFee fee)? onArm;
-
-  /// Modal mode only. Called from `dispose`. If the user submitted via
-  /// Confirm, the caller will have already cleared the arm — no-op.
-  /// Otherwise rolls back to the pre-arm selection.
-  final VoidCallback? onDisarm;
-
-  /// Called after [onCommit] resolves — typically `Navigator.pop(modalResult)`.
-  /// Not used in RBF mode (no Confirm button).
-  final VoidCallback? onConfirmed;
 
   /// When false, hide the absolute/relative toggle. Input is treated as
   /// relative (sat/vByte) only. RBF passes false — its fee API is
   /// rate-only.
   final bool allowAbsoluteToggle;
 
-  /// When false, hide the "Confirm Custom Fee" button. RBF passes false —
-  /// confirmation lives on the parent screen.
-  final bool showConfirmButton;
-
   /// When true, call [onCommit] on every valid keystroke instead of
   /// [onArm]. RBF passes true — its parent screen takes whatever the
-  /// latest commit is. In this mode [onArm] / [onDisarm] are ignored.
+  /// latest commit is.
   final bool commitOnChange;
 
   /// Real absolute fee (from the built PSBT) that corresponds to
@@ -159,7 +147,6 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     _focusNode.removeListener(_onFocusChanged);
     _controller.dispose();
     _focusNode.dispose();
-    if (!widget.commitOnChange) widget.onDisarm?.call();
     super.dispose();
   }
 
@@ -253,9 +240,13 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
 
     final bool showFiatInPreview =
         widget.exchangeRate > 0 && widget.fiatCurrencyCode.isNotEmpty;
+    // `~` not `=` between rate and sat-count: when editing, the count is
+    // a prediction; when reopened-with-committed-value, BDK may have
+    // paid 1-3 sats more (ceil + dust absorption at sub-1 sat/vByte).
+    // Either way, "approximately" is the honest connector.
     final subtitle2 = _customFee == null
         ? ''
-        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} = ${FormatAmount.satsApprox(customDisplaySats)} ${context.loc.sendSats}'
+        : '${_customFee!.value} ${_isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB} ~ ${FormatAmount.satsApprox(customDisplaySats)} ${context.loc.sendSats}'
               '${showFiatInPreview ? ' (~ $fiatEq ${widget.fiatCurrencyCode})' : ''}';
 
     // Fee-rate guards. 0.1 floor = Bitcoin Core's lowest sensible policy and
@@ -265,12 +256,6 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
     final bool belowFloor = effectiveRate != null && effectiveRate < 0.1;
     final bool subOneSatPerVbyte =
         effectiveRate != null && effectiveRate < 1.0 && !belowFloor;
-
-    Future<void> submitCustomFee() async {
-      if (_customFee == null || belowFloor) return;
-      await widget.onCommit(_customFee!);
-      widget.onConfirmed?.call();
-    }
 
     return InkWell(
       radius: 2,
@@ -355,6 +340,7 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   else
                     AmountInputFormatter(BitcoinUnit.btc.code),
                 ],
+                onChanged: _onValueChanged,
                 style: TextStyle(color: context.appColors.onSurface),
                 decoration: InputDecoration(
                   fillColor: context.appColors.surfaceContainer,
@@ -387,8 +373,14 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                     color: context.appColors.onSurface,
                   ),
                 ),
-                onFieldSubmitted: (_) => submitCustomFee(),
-                onChanged: _onValueChanged,
+                // Modal mode: Enter / soft-keyboard "Done" dismisses the
+                // sheet — the parent then runs finalizeArmedCustomFee
+                // (same path as tap-outside / swipe / back / Escape).
+                // RBF mode owns its own commit path on every keystroke,
+                // so we don't want Enter to pop the parent screen.
+                onFieldSubmitted: widget.commitOnChange
+                    ? null
+                    : (_) => Navigator.maybePop(context),
               ),
               if (subOneSatPerVbyte) ...[
                 const Gap(8),
@@ -406,16 +398,6 @@ class _CustomFeeListItemState extends State<CustomFeeListItem> {
                   style: context.font.labelMedium?.copyWith(
                     color: context.appColors.error,
                   ),
-                ),
-              ],
-              if (widget.showConfirmButton) ...[
-                const Gap(12),
-                BBButton.big(
-                  disabled: _customFee == null || belowFloor,
-                  label: context.loc.sendConfirmCustomFee,
-                  onPressed: submitCustomFee,
-                  bgColor: context.appColors.secondary,
-                  textColor: context.appColors.onSecondary,
                 ),
               ],
             ],

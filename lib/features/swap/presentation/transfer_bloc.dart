@@ -109,6 +109,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     on<TransferCustomFeeChanged>(_onCustomFeeChanged);
     on<TransferCustomFeeArmed>(_onCustomFeeArmed);
     on<TransferCustomFeeDisarmed>(_onCustomFeeDisarmed);
+    on<TransferCustomFeeFinalized>(_onCustomFeeFinalized);
   }
 
   final GetSettingsUsecase _getSettingsUsecase;
@@ -943,6 +944,40 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         armPriorCustomFee: null,
       ),
     );
+  }
+
+  /// See [TransferEvent.customFeeFinalized]. If armed and the typed rate
+  /// is above the 0.1 sat/vB floor → commit via [_onCustomFeeChanged];
+  /// otherwise roll back. No-op if not armed (user never typed in the
+  /// custom field).
+  Future<void> _onCustomFeeFinalized(
+    TransferCustomFeeFinalized event,
+    Emitter<TransferState> emit,
+  ) async {
+    if (state.armPriorSelection == null) return;
+    final fee = state.customFee;
+    final txSize = state.bitcoinTxSize ?? 140;
+    if (fee != null && _isCustomFeeAboveFloor(fee, txSize)) {
+      await _onCustomFeeChanged(
+        TransferCustomFeeChanged(fee),
+        emit,
+      );
+    } else {
+      await _onCustomFeeDisarmed(
+        const TransferCustomFeeDisarmed(),
+        emit,
+      );
+    }
+  }
+
+  /// 0.1 sat/vB is Bitcoin Core's lowest sensible mempool policy and
+  /// Liquid's network minrelayfee. Below it the tx may not propagate.
+  static bool _isCustomFeeAboveFloor(NetworkFee fee, int txSize) {
+    if (fee is RelativeFee) return fee.satPerVbyte >= 0.1;
+    if (fee is AbsoluteFee && txSize > 0) {
+      return (fee.sats / txSize) >= 0.1;
+    }
+    return false;
   }
 
   Future<void> _rebuildTransactionWithState(

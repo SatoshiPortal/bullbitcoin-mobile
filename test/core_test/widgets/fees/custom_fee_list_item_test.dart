@@ -30,13 +30,10 @@ void main() {
     bool isCommittedAsCustom = false,
     bool commitOnChange = false,
     bool allowAbsoluteToggle = true,
-    bool showConfirmButton = true,
     int txSize = 140,
     int? committedAbsoluteFeesSat,
     void Function(NetworkFee fee)? onArm,
     Future<void> Function(NetworkFee fee)? onCommit,
-    VoidCallback? onDisarm,
-    VoidCallback? onConfirmed,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -57,10 +54,7 @@ void main() {
             unselectedIconColor: Colors.grey,
             onArm: onArm,
             onCommit: onCommit ?? (_) async {},
-            onDisarm: onDisarm,
-            onConfirmed: onConfirmed,
             allowAbsoluteToggle: allowAbsoluteToggle,
-            showConfirmButton: showConfirmButton,
             commitOnChange: commitOnChange,
             committedAbsoluteFeesSat: committedAbsoluteFeesSat,
           ),
@@ -201,7 +195,6 @@ void main() {
                 onArm: (_) {},
                 onCommit: (_) async {},
                 allowAbsoluteToggle: true,
-                showConfirmButton: true,
                 commitOnChange: false,
               ),
             ),
@@ -220,42 +213,26 @@ void main() {
     );
   });
 
-  group('CustomFeeListItem — dispose', () {
-    testWidgets(
-      'onDisarm fires when the widget is unmounted in modal mode',
-      (tester) async {
-        var disarmed = false;
-        await pumpTile(tester, onDisarm: () => disarmed = true);
-
-        // Replace the widget tree — triggers the tile's dispose.
-        await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
-        await tester.pumpAndSettle();
-
-        expect(
-          disarmed,
-          isTrue,
-          reason:
-              'modal mode relies on dispose to roll back the cubit arm '
-              'state when the modal closes without Confirm',
-        );
-      },
-    );
-
-    testWidgets('onDisarm does NOT fire in RBF mode', (tester) async {
-      // RBF eagerly commits on every keystroke, so there is no arm to roll
-      // back on dispose. The widget should not invoke a (likely-irrelevant)
-      // onDisarm callback in this mode.
-      var disarmed = false;
-      await pumpTile(
-        tester,
-        commitOnChange: true,
-        onDisarm: () => disarmed = true,
+  group('CustomFeeListItem — no Confirm button', () {
+    // The widget no longer renders a "Confirm Custom Fee" button. Typing
+    // IS the selection (onArm fires per keystroke); the commit happens
+    // at the parent level when the user dismisses the bottom sheet via
+    // tap-outside / swipe / back / Escape, or via the keyboard Done
+    // action wired to Navigator.maybePop.
+    testWidgets('Confirm Custom Fee button is gone in modal mode', (
+      tester,
+    ) async {
+      await pumpTile(tester);
+      expect(
+        find.textContaining('Confirm'),
+        findsNothing,
+        reason: 'The button was the old explicit commit path — removed.',
       );
+    });
 
-      await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
-      await tester.pumpAndSettle();
-
-      expect(disarmed, isFalse);
+    testWidgets('no Confirm button in RBF mode either', (tester) async {
+      await pumpTile(tester, commitOnChange: true);
+      expect(find.textContaining('Confirm'), findsNothing);
     });
   });
 
@@ -282,12 +259,12 @@ void main() {
         );
 
         expect(
-          find.textContaining('= 29 sats'),
+          find.textContaining('~ 29 sats'),
           findsOneWidget,
           reason: 'unedited tile must surface the real BDK fee',
         );
         // And NOT the naive prediction.
-          expect(find.textContaining('= 18 sats'), findsNothing);
+          expect(find.textContaining('~ 18 sats'), findsNothing);
       },
     );
 
@@ -308,8 +285,8 @@ void main() {
 
       // 0.5 sat/vB × 140 vB = 70 sats (integer, half-up rounded by
       // NetworkFee.toAbsolute).
-      expect(find.textContaining('= 70 sats'), findsOneWidget);
-      expect(find.textContaining('= 29 sats'), findsNothing);
+      expect(find.textContaining('~ 70 sats'), findsOneWidget);
+      expect(find.textContaining('~ 29 sats'), findsNothing);
     });
 
     testWidgets(
@@ -326,7 +303,7 @@ void main() {
         );
 
         // Prediction at 0.132 sat/vB × 140 vB ≈ 18 sats (integer math).
-        expect(find.textContaining('= 18 sats'), findsOneWidget);
+        expect(find.textContaining('~ 18 sats'), findsOneWidget);
       },
     );
   });
@@ -359,10 +336,149 @@ void main() {
           reason: 'below-floor error message should be visible',
         );
 
-        // Tapping confirm must not commit (button is disabled).
-        await tester.tap(find.byType(InkWell).last, warnIfMissed: false);
-        await tester.pumpAndSettle();
+        // No Confirm button to tap — verify the floor warning is the
+        // user-visible signal that the value is unusable.
         expect(committed, isNull);
+      },
+    );
+  });
+
+  group('CustomFeeListItem — keyboard Enter / Done dismisses the modal', () {
+    // The replacement for the old Confirm button: in modal mode, pressing
+    // Enter on a physical keyboard (desktop) or the soft-keyboard's "Done"
+    // (mobile) pops the bottom sheet. The parent's modal-result handler
+    // then runs finalizeArmedCustomFee, which commits the typed value
+    // (or rolls back if below the 0.1 sat/vB floor). Same path as
+    // tap-outside / swipe-down / back / Escape.
+    //
+    // RBF mode is inline (no modal route), so the submit handler is
+    // suppressed — otherwise Enter would pop the *parent screen*.
+
+    /// Pump the widget inside a real route so we can observe pops.
+    Future<({GlobalKey<NavigatorState> nav, NetworkFee? lastArm})>
+    pumpInsideRoute(
+      WidgetTester tester, {
+      bool commitOnChange = false,
+      void Function(NetworkFee fee)? onArm,
+    }) async {
+      final nav = GlobalKey<NavigatorState>();
+      NetworkFee? lastArm;
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: nav,
+          theme: AppTheme.themeData(AppThemeType.light),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => Scaffold(
+                      body: CustomFeeListItem(
+                        initialFee: null,
+                        isCommittedAsCustom: false,
+                        feePresets: null,
+                        txSize: 140,
+                        exchangeRate: 0,
+                        fiatCurrencyCode: '',
+                        defaultAbsolute: false,
+                        tileColor: Colors.white,
+                        tileShadowColor: Colors.grey,
+                        unselectedIconColor: Colors.grey,
+                        onArm: onArm ?? (f) => lastArm = f,
+                        onCommit: (_) async {},
+                        commitOnChange: commitOnChange,
+                      ),
+                    ),
+                  ),
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      return (nav: nav, lastArm: lastArm);
+    }
+
+    testWidgets(
+      'Enter / Done pops the modal in modal mode (Navigator.maybePop)',
+      (tester) async {
+        await pumpInsideRoute(tester);
+        // Confirm we're on the modal route.
+        expect(find.byType(TextFormField), findsOneWidget);
+
+        await tester.enterText(find.byType(TextFormField), '1.0');
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+
+        // Modal popped — back on the parent route with just the button.
+        expect(find.byType(TextFormField), findsNothing);
+        expect(find.text('Open'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Enter / Done does NOT pop the parent in RBF mode (handler suppressed)',
+      (tester) async {
+        await pumpInsideRoute(tester, commitOnChange: true);
+        expect(find.byType(TextFormField), findsOneWidget);
+
+        await tester.enterText(find.byType(TextFormField), '1.0');
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pumpAndSettle();
+
+        // Widget still mounted — RBF mode is inline, so the submit
+        // handler is null. Critical: otherwise pressing Enter would pop
+        // the parent screen, not just the input.
+        expect(find.byType(TextFormField), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'modal mode: typing fires onArm — commit happens at the parent',
+      (tester) async {
+        // Reinforces the contract: the widget itself never invokes the
+        // heavy commit callback in modal mode. Parent finalizes on
+        // dismissal (see SendCubit.finalizeArmedCustomFee).
+        NetworkFee? committed;
+        NetworkFee? armed;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.themeData(AppThemeType.light),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: CustomFeeListItem(
+                initialFee: null,
+                isCommittedAsCustom: false,
+                feePresets: null,
+                txSize: 140,
+                exchangeRate: 0,
+                fiatCurrencyCode: '',
+                defaultAbsolute: false,
+                tileColor: Colors.white,
+                tileShadowColor: Colors.grey,
+                unselectedIconColor: Colors.grey,
+                onArm: (f) => armed = f,
+                onCommit: (f) async => committed = f,
+              ),
+            ),
+          ),
+        );
+
+        await tester.enterText(find.byType(TextFormField), '1.0');
+        await tester.pumpAndSettle();
+
+        expect(armed, isA<NetworkFee>(), reason: 'arm tracks typed value');
+        expect(
+          committed,
+          isNull,
+          reason: 'onCommit is the parent\'s job in modal mode',
+        );
       },
     );
   });
