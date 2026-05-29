@@ -115,12 +115,6 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                       children: [
                         const Gap(20),
                         BBText(
-                          context.loc.transactionHistoryHeading,
-                          style: context.font.headlineLarge,
-                          textAlign: TextAlign.center,
-                        ),
-                        const Gap(16),
-                        BBText(
                           context.loc.exportTransactionsDescription,
                           style: context.font.bodyLarge,
                           textAlign: TextAlign.center,
