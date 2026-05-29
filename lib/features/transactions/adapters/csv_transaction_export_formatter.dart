@@ -5,6 +5,54 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
+class _ExportRow {
+  const _ExportRow({
+    required this.date,
+    required this.type,
+    required this.direction,
+    required this.amountSats,
+    required this.amountBtc,
+    required this.feeSats,
+    required this.status,
+    required this.txid,
+    required this.network,
+    required this.address,
+    required this.swapId,
+    required this.invoice,
+    required this.preimage,
+    required this.swapFeeSats,
+    required this.sendNetwork,
+    required this.receiveNetwork,
+    required this.sendTxid,
+    required this.receiveTxid,
+  });
+
+  final String date;
+  final String type;
+  final String direction;
+  final String amountSats;
+  final String amountBtc;
+  final String feeSats;
+  final String status;
+  final String txid;
+  final String network;
+  final String address;
+  final String swapId;
+  final String invoice;
+  final String preimage;
+  final String swapFeeSats;
+  final String sendNetwork;
+  final String receiveNetwork;
+  final String sendTxid;
+  final String receiveTxid;
+
+  List<String> toFields() => [
+    date, type, direction, amountSats, amountBtc, feeSats, status, txid,
+    network, address, swapId, invoice, preimage, swapFeeSats,
+    sendNetwork, receiveNetwork, sendTxid, receiveTxid,
+  ];
+}
+
 class CsvTransactionExportFormatter implements TransactionExportFormatter {
   static const _headers = [
     'date',
@@ -31,52 +79,60 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
   String format(List<Transaction> transactions) {
     final buffer = StringBuffer()..writeln(_headers.join(','));
     for (final tx in transactions) {
-      buffer.writeln(_row(tx).map(_escape).join(','));
+      buffer.writeln(_normalize(tx).toFields().map(_escape).join(','));
     }
     return buffer.toString();
   }
 
-  List<String> _row(Transaction tx) {
+  _ExportRow _normalize(Transaction tx) {
     final swap = tx.swap;
-    final isChainSwap = swap?.isChainSwap ?? false;
-    final isLightning =
-        (swap?.isLnSendSwap ?? false) || (swap?.isLnReceiveSwap ?? false);
+    final payjoin = tx.payjoin;
+    final wt = tx.walletTransaction;
+
+    final isLnSwap = swap?.isLnSendSwap == true || swap?.isLnReceiveSwap == true;
+    final isChainSwap = swap?.isChainSwap == true;
     final amountSat = tx.amountSat;
-    // fee is only paid by the sender; incoming txs show 0
-    final feeSat = tx.isIncoming ? 0 : (tx.walletTransaction?.feeSat ?? 0);
+    final feeSat = tx.isIncoming ? 0 : (wt?.feeSat ?? 0);
 
-    return [
-      _date(tx.timestamp),
-      _type(tx),
-      _direction(tx),
-      amountSat.toString(),
-      _btc(amountSat),
-      feeSat.toString(),
-      _status(tx),
-      tx.txId ?? '',
-      _network(tx, swap: swap, isLightning: isLightning, isChainSwap: isChainSwap),
-      _address(tx, swap: swap, isLightning: isLightning, isChainSwap: isChainSwap),
-      swap?.id ?? '',
-      _invoice(swap),
-      _preimage(swap),
-      swap?.fees?.totalFees(swap.amountSat).toString() ?? '',
-      isChainSwap ? _chainNetwork(swap!, send: true) : '',
-      isChainSwap ? _chainNetwork(swap!, send: false) : '',
-      swap?.sendTxId ?? '',
-      swap?.receiveTxId ?? '',
-    ];
+    final type = _resolveType(tx, swap, payjoin);
+    final direction = _resolveDirection(tx, wt);
+    final status = _resolveStatus(tx, swap, wt, payjoin);
+    final network = _resolveNetwork(tx, swap, isLnSwap, isChainSwap);
+    final address = _resolveAddress(tx, swap, isLnSwap, isChainSwap);
+
+    return _ExportRow(
+      date: _date(tx.timestamp),
+      type: type,
+      direction: direction,
+      amountSats: amountSat.toString(),
+      amountBtc: _btc(amountSat),
+      feeSats: feeSat.toString(),
+      status: status,
+      txid: tx.txId ?? '',
+      network: network,
+      address: address,
+      swapId: swap?.id ?? '',
+      invoice: switch (swap) {
+        LnReceiveSwap(:final invoice) => invoice,
+        LnSendSwap(:final invoice) => invoice,
+        _ => '',
+      },
+      preimage: switch (swap) {
+        LnSendSwap(:final preimage) => preimage ?? '',
+        _ => '',
+      },
+      swapFeeSats: swap?.fees?.totalFees(swap.amountSat).toString() ?? '',
+      sendNetwork: isChainSwap ? _chainNetwork(swap!, send: true) : '',
+      receiveNetwork: isChainSwap ? _chainNetwork(swap!, send: false) : '',
+      sendTxid: swap?.sendTxId ?? '',
+      receiveTxid: swap?.receiveTxId ?? '',
+    );
   }
 
-  String _date(DateTime? timestamp) {
-    if (timestamp == null) return '';
-    return '${timestamp.toUtc().toIso8601WithoutMilliseconds()}Z';
-  }
-
-  String _type(Transaction tx) {
-    if (tx.isPayjoin) {
-      return tx.payjoin is PayjoinSender ? 'payjoin_send' : 'payjoin_receive';
+  String _resolveType(Transaction tx, Swap? swap, Payjoin? payjoin) {
+    if (payjoin != null) {
+      return payjoin is PayjoinSender ? 'payjoin_send' : 'payjoin_receive';
     }
-    final swap = tx.swap;
     if (swap != null) {
       if (swap.isLnSendSwap) return 'lightning_send';
       if (swap.isLnReceiveSwap) return 'lightning_receive';
@@ -85,96 +141,83 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     return tx.isBitcoin ? 'onchain' : 'liquid';
   }
 
-  String _direction(Transaction tx) {
-    if (tx.walletTransaction?.isToSelf ?? false) return 'self';
+  String _resolveDirection(Transaction tx, WalletTransaction? wt) {
+    if (wt?.isToSelf ?? false) return 'self';
     if (tx.isIncoming) return 'incoming';
     if (tx.isOutgoing) return 'outgoing';
     return '';
   }
 
-  String _status(Transaction tx) {
-    final wt = tx.walletTransaction;
-    if (wt != null) {
-      switch (wt.status) {
-        case WalletTransactionStatus.pending:
-          return 'pending';
-        case WalletTransactionStatus.confirmed:
-          return 'confirmed';
-      }
-    }
-    final swap = tx.swap;
+  String _resolveStatus(
+    Transaction tx,
+    Swap? swap,
+    WalletTransaction? wt,
+    Payjoin? payjoin,
+  ) {
     if (swap != null) {
-      switch (swap.status) {
-        case SwapStatus.pending:
-        case SwapStatus.paid:
-        case SwapStatus.claimable:
-        case SwapStatus.refundable:
-        case SwapStatus.canCoop:
-          return 'pending';
-        case SwapStatus.completed:
-          return 'completed';
-        case SwapStatus.expired:
-          return 'expired';
-        case SwapStatus.failed:
-          return 'failed';
-      }
+      return switch (swap.status) {
+        SwapStatus.pending ||
+        SwapStatus.paid ||
+        SwapStatus.claimable ||
+        SwapStatus.refundable ||
+        SwapStatus.canCoop => 'pending',
+        SwapStatus.completed => 'completed',
+        SwapStatus.expired => 'expired',
+        SwapStatus.failed => 'failed',
+      };
     }
-    final payjoin = tx.payjoin;
+    if (wt != null) {
+      return switch (wt.status) {
+        WalletTransactionStatus.pending => 'pending',
+        WalletTransactionStatus.confirmed => 'confirmed',
+      };
+    }
     if (payjoin != null) {
-      switch (payjoin.status) {
-        case PayjoinStatus.started:
-        case PayjoinStatus.requested:
-        case PayjoinStatus.proposed:
-          return 'pending';
-        case PayjoinStatus.completed:
-          return 'completed';
-        case PayjoinStatus.expired:
-          return 'expired';
-      }
+      return switch (payjoin.status) {
+        PayjoinStatus.started ||
+        PayjoinStatus.requested ||
+        PayjoinStatus.proposed => 'pending',
+        PayjoinStatus.completed => 'completed',
+        PayjoinStatus.expired => 'expired',
+      };
     }
     return '';
   }
 
-  String _network(
-    Transaction tx, {
-    required Swap? swap,
-    required bool isLightning,
-    required bool isChainSwap,
-  }) {
-    if (isLightning) return '';
+  String _resolveNetwork(
+    Transaction tx,
+    Swap? swap,
+    bool isLnSwap,
+    bool isChainSwap,
+  ) {
+    if (isLnSwap) return '';
     if (isChainSwap) return _chainNetwork(swap!, send: true);
     return tx.isBitcoin ? 'bitcoin' : 'liquid';
   }
 
-  String _address(
-    Transaction tx, {
-    required Swap? swap,
-    required bool isLightning,
-    required bool isChainSwap,
-  }) {
-    if (isLightning) return '';
+  String _resolveAddress(
+    Transaction tx,
+    Swap? swap,
+    bool isLnSwap,
+    bool isChainSwap,
+  ) {
+    if (isLnSwap) return '';
     if (isChainSwap) return swap?.receiveAddress ?? '';
     return tx.toAddress ?? '';
   }
-
-  String _btc(int sats) => (sats / 100000000).toStringAsFixed(8);
-
-  String _invoice(Swap? swap) => switch (swap) {
-    LnReceiveSwap(:final invoice) => invoice,
-    LnSendSwap(:final invoice) => invoice,
-    _ => '',
-  };
-
-  String _preimage(Swap? swap) => switch (swap) {
-    LnSendSwap(:final preimage) => preimage ?? '',
-    _ => '',
-  };
 
   String _chainNetwork(Swap swap, {required bool send}) {
     final toLiquid = swap.type == SwapType.bitcoinToLiquid;
     if (send) return toLiquid ? 'bitcoin' : 'liquid';
     return toLiquid ? 'liquid' : 'bitcoin';
   }
+
+  String _date(DateTime? timestamp) {
+    if (timestamp == null) return '';
+    return '${timestamp.toUtc().toIso8601WithoutMilliseconds()}Z';
+  }
+
+  String _btc(int sats) => (sats / 100000000).toStringAsFixed(8);
 
   String _escape(String value) {
     if (value.contains(',') ||

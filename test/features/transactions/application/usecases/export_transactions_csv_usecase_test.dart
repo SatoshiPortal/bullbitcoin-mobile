@@ -219,6 +219,23 @@ void main() {
     expect(csv, isNot(contains('no_time')));
   });
 
+  test('swap status takes precedence over confirmed wallet tx status', () async {
+    final swap = _lnReceive(receiveTxid: 'recv_txid');
+    stub([
+      Transaction(
+        swap: swap.copyWith(status: SwapStatus.claimable),
+        walletTransaction: _walletTx(
+          txId: 'recv_txid',
+          amountSat: 80000,
+          confirmationTime: DateTime.utc(2026, 3, 1, 12),
+        ),
+      ),
+    ]);
+
+    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    expect(row[6], 'pending');
+  });
+
   test('throws NoTransactionsToExportError when list is empty', () async {
     stub([]);
     expect(
