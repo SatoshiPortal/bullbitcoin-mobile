@@ -8896,6 +8896,10 @@
   "exportTransactionsButton": "CSV export karein",
   "exportTransactionsSuccess": "Lenden safaltaapoorvak export ho gaye",
   "exportTransactionsEmpty": "Chayanit avadhi ke liye koi lenden nahi hai",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

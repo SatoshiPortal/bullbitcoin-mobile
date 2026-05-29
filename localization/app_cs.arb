@@ -7697,6 +7697,10 @@
   "exportTransactionsButton": "Exportovat CSV",
   "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
   "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 Štítky",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

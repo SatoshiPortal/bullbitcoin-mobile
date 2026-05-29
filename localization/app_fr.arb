@@ -3112,6 +3112,10 @@
   "exportTransactionsButton": "Exporter CSV",
   "exportTransactionsSuccess": "Transactions exportées avec succès",
   "exportTransactionsEmpty": "Aucune transaction à exporter pour la période sélectionnée",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "Étiquettes BIP329",
   "bip329LabelsHeading": "Import/Export d'étiquettes BIP329",
   "bip329LabelsDescription": "Importez ou exportez les étiquettes de portefeuille en utilisant le format standard BIP329.",

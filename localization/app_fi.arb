@@ -3062,6 +3062,10 @@
   "exportTransactionsButton": "Vie CSV",
   "exportTransactionsSuccess": "Tapahtumat viety onnistuneesti",
   "exportTransactionsEmpty": "Ei vietäviä tapahtumia valitulla ajanjaksolla",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329-tunnisteet",
   "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
   "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",

@@ -9822,6 +9822,10 @@
   "@exportTransactionsEmpty": {
     "description": "Message shown when there are no transactions to export"
   },
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

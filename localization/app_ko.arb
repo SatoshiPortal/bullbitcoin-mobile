@@ -7793,6 +7793,10 @@
   "exportTransactionsButton": "CSV 내보내기",
   "exportTransactionsSuccess": "거래가 성공적으로 내보내졌습니다",
   "exportTransactionsEmpty": "선택한 기간에 내보낼 거래가 없습니다",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 라벨",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

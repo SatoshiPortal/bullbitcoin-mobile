@@ -7789,6 +7789,10 @@
   "exportTransactionsButton": "ส่งออก CSV",
   "exportTransactionsSuccess": "ส่งออกธุรกรรมสำเร็จ",
   "exportTransactionsEmpty": "ไม่มีธุรกรรมให้ส่งออกในช่วงที่เลือก",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 ป้าย",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

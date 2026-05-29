@@ -2948,6 +2948,10 @@
   "exportTransactionsButton": "Експорт CSV",
   "exportTransactionsSuccess": "Транзакції успішно експортовано",
   "exportTransactionsEmpty": "Немає транзакцій для експорту за вибраний період",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 етикетки",
   "walletAutoTransferAllowButton": "Смоктати",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",

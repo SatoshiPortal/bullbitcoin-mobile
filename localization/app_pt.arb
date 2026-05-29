@@ -2523,6 +2523,10 @@
   "exportTransactionsButton": "Exportar CSV",
   "exportTransactionsSuccess": "Transações exportadas com sucesso",
   "exportTransactionsEmpty": "Sem transações para exportar no período selecionado",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "autoswapSelectWalletRequired": "Selecione uma carteira Bitcoin *",
   "exchangeFeatureSellBitcoin": "• Venda Bitcoin, ser pago com Bitcoin",

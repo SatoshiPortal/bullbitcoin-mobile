@@ -8,6 +8,5 @@ sealed class ExportTransactionsState with _$ExportTransactionsState {
   const factory ExportTransactionsState.loading() = _Loading;
   const factory ExportTransactionsState.success() = _Success;
   const factory ExportTransactionsState.noTransactions() = _NoTransactions;
-  const factory ExportTransactionsState.error({required String message}) =
-      _Error;
+  const factory ExportTransactionsState.error() = _Error;
 }

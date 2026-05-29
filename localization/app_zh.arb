@@ -2542,6 +2542,10 @@
   "exportTransactionsButton": "导出 CSV",
   "exportTransactionsSuccess": "交易导出成功",
   "exportTransactionsEmpty": "所选时间段内没有可导出的交易",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "walletAutoTransferAllowButton": "允许",
   "autoswapSelectWalletRequired": "选择一个比特币钱包 *",

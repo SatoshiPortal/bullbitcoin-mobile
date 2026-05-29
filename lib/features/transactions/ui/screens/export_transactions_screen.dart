@@ -71,9 +71,9 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                 context,
                 context.loc.exportTransactionsEmpty,
               ),
-              error: (s) => SnackBarUtils.showSnackBar(
+              error: (_) => SnackBarUtils.showSnackBar(
                 context,
-                context.loc.transactionError(s.message),
+                context.loc.exportTransactionsError,
               ),
             );
           },

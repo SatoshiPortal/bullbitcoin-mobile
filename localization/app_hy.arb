@@ -243,5 +243,9 @@
   "exportTransactionsAnyDate": "Ցանկացած",
   "exportTransactionsButton": "Արտահանել CSV",
   "exportTransactionsSuccess": "Գործարքները հաջողությամբ արտահանվեցին",
-  "exportTransactionsEmpty": "Ընտրված ժամանակահատվածում արտահանելու գործարք չկա"
+  "exportTransactionsEmpty": "Ընտրված ժամանակահատվածում արտահանելու գործարք չկա",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  }
 }

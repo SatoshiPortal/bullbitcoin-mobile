@@ -2504,6 +2504,10 @@
   "exportTransactionsButton": "CSV exportieren",
   "exportTransactionsSuccess": "Transaktionen erfolgreich exportiert",
   "exportTransactionsEmpty": "Keine Transaktionen zum Exportieren im ausgewählten Zeitraum",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "walletAutoTransferAllowButton": "Genehmigen",
   "autoswapSelectWalletRequired": "Wählen Sie eine Bitcoin-Wallet aus *",

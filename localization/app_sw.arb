@@ -263,5 +263,9 @@
   "exportTransactionsAnyDate": "Yoyote",
   "exportTransactionsButton": "Hamisha CSV",
   "exportTransactionsSuccess": "Miamala imehamishwa kwa mafanikio",
-  "exportTransactionsEmpty": "Hakuna miamala ya kuhamisha kwa kipindi kilichochaguliwa"
+  "exportTransactionsEmpty": "Hakuna miamala ya kuhamisha kwa kipindi kilichochaguliwa",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  }
 }

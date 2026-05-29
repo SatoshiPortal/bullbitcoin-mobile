@@ -7789,6 +7789,10 @@
   "exportTransactionsButton": "CSV निर्यात करें",
   "exportTransactionsSuccess": "लेनदेन सफलतापूर्वक निर्यात हो गए",
   "exportTransactionsEmpty": "चयनित अवधि के लिए कोई लेनदेन नहीं है",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 लेबल",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

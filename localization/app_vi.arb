@@ -243,5 +243,9 @@
   "exportTransactionsAnyDate": "Bất kỳ",
   "exportTransactionsButton": "Xuất CSV",
   "exportTransactionsSuccess": "Đã xuất giao dịch thành công",
-  "exportTransactionsEmpty": "Không có giao dịch nào để xuất trong khoảng thời gian đã chọn"
+  "exportTransactionsEmpty": "Không có giao dịch nào để xuất trong khoảng thời gian đã chọn",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  }
 }

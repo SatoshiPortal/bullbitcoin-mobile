@@ -7714,6 +7714,10 @@
   "exportTransactionsButton": "خروجی CSV",
   "exportTransactionsSuccess": "تراکنش‌ها با موفقیت صادر شدند",
   "exportTransactionsEmpty": "هیچ تراکنشی برای صادر کردن در بازه انتخاب‌شده وجود ندارد",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "برچسب های BIP30",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

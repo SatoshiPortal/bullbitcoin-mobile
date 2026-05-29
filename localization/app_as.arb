@@ -6701,6 +6701,10 @@
   "exportTransactionsButton": "CSV এক্সপৰ্ট কৰক",
   "exportTransactionsSuccess": "লেনদেন সফলতাৰে এক্সপৰ্ট কৰা হ'ল",
   "exportTransactionsEmpty": "নিৰ্বাচিত সময়ছোৱাৰ বাবে এক্সপৰ্ট কৰিবলৈ কোনো লেনদেন নাই",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
