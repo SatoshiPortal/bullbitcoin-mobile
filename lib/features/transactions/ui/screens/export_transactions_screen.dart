@@ -56,6 +56,24 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
           onBack: () => context.pop(),
           title: context.loc.transactionHistoryTitle,
         ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(3),
+          child:
+              BlocSelector<
+                ExportTransactionsCubit,
+                ExportTransactionsState,
+                bool
+              >(
+                selector: (state) =>
+                    state.maybeMap(loading: (_) => true, orElse: () => false),
+                builder: (context, isLoading) => FadingLinearProgress(
+                  height: 3,
+                  trigger: isLoading,
+                  backgroundColor: context.appColors.onPrimary,
+                  foregroundColor: context.appColors.primary,
+                ),
+              ),
+        ),
       ),
       body: SafeArea(
         child: BlocConsumer<ExportTransactionsCubit, ExportTransactionsState>(
@@ -96,7 +114,6 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const Gap(20),
-                        Center(child: FadingLinearProgress(trigger: isLoading)),
                         BBText(
                           context.loc.transactionHistoryHeading,
                           style: context.font.headlineLarge,
@@ -141,10 +158,7 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                     label: context.loc.exportTransactionsButton,
                     onPressed: () async {
                       if (isLoading) return;
-                      await cubit.exportCsv(
-                        start: _startDate,
-                        end: _endDate,
-                      );
+                      await cubit.exportCsv(start: _startDate, end: _endDate);
                     },
                     bgColor: context.appColors.onSurface,
                     textColor: context.appColors.surface,
@@ -185,10 +199,7 @@ class _DateField extends StatelessWidget {
           border: const OutlineInputBorder(),
           suffixIcon: onClear == null
               ? const Icon(Icons.calendar_today)
-              : IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: onClear,
-                ),
+              : IconButton(icon: const Icon(Icons.clear), onPressed: onClear),
         ),
         child: BBText(
           value ?? context.loc.exportTransactionsAnyDate,
