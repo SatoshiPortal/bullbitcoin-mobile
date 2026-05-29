@@ -1,10 +1,13 @@
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
+import 'package:bb_mobile/features/transactions/application/transactions_application_error.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -15,8 +18,7 @@ WalletTransaction _walletTx({
   required String txId,
   required int amountSat,
   Network network = Network.bitcoinMainnet,
-  WalletTransactionDirection direction =
-      WalletTransactionDirection.incoming,
+  WalletTransactionDirection direction = WalletTransactionDirection.incoming,
   int feeSat = 0,
   DateTime? confirmationTime,
 }) {
@@ -35,6 +37,62 @@ WalletTransaction _walletTx({
     confirmationTime: confirmationTime,
   );
 }
+
+Swap _lnReceive({
+  String id = 'swap_ln_recv',
+  String? receiveTxid,
+}) => Swap.lnReceive(
+  id: id,
+  keyIndex: 0,
+  type: SwapType.lightningToBitcoin,
+  status: SwapStatus.completed,
+  environment: Environment.mainnet,
+  creationTime: DateTime.utc(2026, 3, 1, 12),
+  receiveWalletId: 'w1',
+  invoice: 'lnbc_test_invoice_recv',
+  receiveTxid: receiveTxid,
+);
+
+Swap _lnSend({
+  String id = 'swap_ln_send',
+  String? sendTxid,
+  String? preimage,
+}) => Swap.lnSend(
+  id: id,
+  keyIndex: 0,
+  type: SwapType.bitcoinToLightning,
+  status: SwapStatus.completed,
+  environment: Environment.mainnet,
+  creationTime: DateTime.utc(2026, 3, 2, 14),
+  sendWalletId: 'w1',
+  invoice: 'lnbc_test_invoice_send',
+  paymentAddress: 'bc1qpayaddr',
+  paymentAmount: 50000,
+  sendTxid: sendTxid,
+  preimage: preimage,
+);
+
+Swap _chainSwap({
+  String id = 'swap_chain',
+  String? sendTxid,
+  String? receiveTxid,
+  String? receiveAddress,
+  SwapType type = SwapType.bitcoinToLiquid,
+}) => Swap.chain(
+  id: id,
+  keyIndex: 0,
+  type: type,
+  status: SwapStatus.completed,
+  environment: Environment.mainnet,
+  creationTime: DateTime.utc(2026, 3, 3, 10),
+  sendWalletId: 'w1',
+  paymentAddress: 'bc1qsendaddr',
+  paymentAmount: 100000,
+  sendTxid: sendTxid,
+  receiveWalletId: 'w2',
+  receiveAddress: receiveAddress,
+  receiveTxid: receiveTxid,
+);
 
 void main() {
   late _MockGetTransactionsUsecase getTransactions;
@@ -134,11 +192,225 @@ void main() {
     expect(csv, isNot(contains('after')));
   });
 
-  test('throws when there are no transactions to export', () async {
+  test('null-timestamp tx is excluded when a date range is set', () async {
+    stub([
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'has_time',
+          amountSat: 1000,
+          confirmationTime: DateTime.utc(2026, 1, 10),
+        ),
+      ),
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'no_time',
+          amountSat: 2000,
+          confirmationTime: null,
+        ),
+      ),
+    ]);
+
+    final csv = await usecase.execute(
+      start: DateTime.utc(2026, 1, 1),
+      end: DateTime.utc(2026, 1, 31),
+    );
+
+    expect(csv, contains('has_time'));
+    expect(csv, isNot(contains('no_time')));
+  });
+
+  test('throws NoTransactionsToExportError when list is empty', () async {
     stub([]);
     expect(
       () => usecase.execute(),
       throwsA(isA<NoTransactionsToExportError>()),
     );
+  });
+
+  test('throws InvalidDateRangeError when start is after end', () async {
+    stub([]);
+    expect(
+      () => usecase.execute(
+        start: DateTime.utc(2026, 2, 1),
+        end: DateTime.utc(2026, 1, 1),
+      ),
+      throwsA(isA<InvalidDateRangeError>()),
+    );
+  });
+
+  test('sorts newest-first', () async {
+    stub([
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'old',
+          amountSat: 1,
+          confirmationTime: DateTime.utc(2026, 1, 1),
+        ),
+      ),
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'new',
+          amountSat: 2,
+          confirmationTime: DateTime.utc(2026, 6, 1),
+        ),
+      ),
+    ]);
+
+    final lines = (await usecase.execute()).trim().split('\n');
+    expect(lines[1], contains('new'));
+    expect(lines[2], contains('old'));
+  });
+
+  test('LN receive swap row has empty network and address, correct type', () async {
+    final swap = _lnReceive(receiveTxid: 'recv_txid');
+    stub([
+      Transaction(
+        swap: swap,
+        walletTransaction: _walletTx(
+          txId: 'recv_txid',
+          amountSat: 80000,
+          confirmationTime: DateTime.utc(2026, 3, 1, 12),
+        ),
+      ),
+    ]);
+
+    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    expect(row[1], 'lightning_receive');
+    expect(row[2], 'incoming');
+    expect(row[8], '');       // network
+    expect(row[9], '');       // address
+    expect(row[10], 'swap_ln_recv'); // swap_id
+    expect(row[11], 'lnbc_test_invoice_recv'); // invoice
+    expect(row[12], '');      // preimage (none for receive)
+  });
+
+  test('LN send swap row has preimage, empty network and address', () async {
+    final swap = _lnSend(
+      sendTxid: 'send_txid',
+      preimage: 'abc123preimage',
+    );
+    stub([
+      Transaction(
+        swap: swap,
+        walletTransaction: _walletTx(
+          txId: 'send_txid',
+          amountSat: 50000,
+          direction: WalletTransactionDirection.outgoing,
+          feeSat: 120,
+          confirmationTime: DateTime.utc(2026, 3, 2, 14),
+        ),
+      ),
+    ]);
+
+    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    expect(row[1], 'lightning_send');
+    expect(row[2], 'outgoing');
+    expect(row[8], '');       // network
+    expect(row[9], '');       // address
+    expect(row[10], 'swap_ln_send'); // swap_id
+    expect(row[11], 'lnbc_test_invoice_send'); // invoice
+    expect(row[12], 'abc123preimage'); // preimage
+  });
+
+  test('chain swap: only receive leg exported, address and networks correct', () async {
+    final swap = _chainSwap(
+      sendTxid: 'chain_send_txid',
+      receiveTxid: 'chain_recv_txid',
+      receiveAddress: 'VJLCbLBTCksDqx1',
+      type: SwapType.bitcoinToLiquid,
+    );
+    stub([
+      Transaction(
+        swap: swap,
+        walletTransaction: _walletTx(
+          txId: 'chain_send_txid',
+          amountSat: 100000,
+          direction: WalletTransactionDirection.outgoing,
+          confirmationTime: DateTime.utc(2026, 3, 3, 10),
+        ),
+      ),
+      Transaction(
+        swap: swap,
+        walletTransaction: _walletTx(
+          txId: 'chain_recv_txid',
+          amountSat: 99000,
+          network: Network.liquidMainnet,
+          direction: WalletTransactionDirection.incoming,
+          confirmationTime: DateTime.utc(2026, 3, 3, 10),
+        ),
+      ),
+    ]);
+
+    final lines = (await usecase.execute()).trim().split('\n');
+    expect(lines.length, 2, reason: 'send leg must be deduplicated');
+
+    final row = lines[1].split(',');
+    expect(row[1], 'chain_swap');
+    expect(row[8], 'bitcoin');         // network = send network
+    expect(row[9], 'VJLCbLBTCksDqx1'); // address = receiveAddress
+    expect(row[10], 'swap_chain');
+    expect(row[14], 'bitcoin');        // send_network
+    expect(row[15], 'liquid');         // receive_network
+    expect(row[16], 'chain_send_txid');
+    expect(row[17], 'chain_recv_txid');
+  });
+
+  test('chain swap with only send leg (no receive yet) is kept', () async {
+    final swap = _chainSwap(
+      sendTxid: 'chain_send_only',
+      receiveTxid: null,
+    );
+    stub([
+      Transaction(
+        swap: swap,
+        walletTransaction: _walletTx(
+          txId: 'chain_send_only',
+          amountSat: 100000,
+          direction: WalletTransactionDirection.outgoing,
+          confirmationTime: DateTime.utc(2026, 3, 3, 10),
+        ),
+      ),
+    ]);
+
+    final lines = (await usecase.execute()).trim().split('\n');
+    expect(lines.length, 2);
+    expect(lines[1], contains('chain_send_only'));
+  });
+
+  test('payjoin send row has correct type and bitcoin network', () async {
+    final payjoin = Payjoin.sender(
+      uri: 'pj://test',
+      isTestnet: false,
+      walletId: 'w1',
+      originalPsbt: 'psbt_data',
+      originalTxId: 'pj_orig_txid',
+      amountSat: 75000,
+      createdAt: DateTime.utc(2026, 4, 1, 9),
+      expiresAt: DateTime.utc(2026, 4, 1, 10),
+    );
+    stub([Transaction(payjoin: payjoin)]);
+
+    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    expect(row[1], 'payjoin_send');
+    expect(row[2], 'outgoing');
+    expect(row[8], 'bitcoin');
+  });
+
+  test('payjoin receive row has correct type', () async {
+    final payjoin = Payjoin.receiver(
+      id: 'pj_recv_id',
+      isTestnet: false,
+      walletId: 'w1',
+      pjUri: 'pj://recv',
+      createdAt: DateTime.utc(2026, 4, 2, 11),
+      expiresAt: DateTime.utc(2026, 4, 2, 12),
+      amountSat: 60000,
+    );
+    stub([Transaction(payjoin: payjoin)]);
+
+    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+    expect(row[1], 'payjoin_receive');
+    expect(row[2], 'incoming');
+    expect(row[8], 'bitcoin');
   });
 }
