@@ -54,8 +54,8 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
       feeSat.toString(),
       _status(tx),
       tx.txId ?? '',
-      isChainSwap ? _chainNetwork(swap!, send: true) : (tx.isBitcoin ? 'bitcoin' : 'liquid'),
-      isLightning ? '' : isChainSwap ? (swap?.receiveAddress ?? '') : (tx.toAddress ?? ''),
+      _network(tx, swap: swap, isLightning: isLightning, isChainSwap: isChainSwap),
+      _address(tx, swap: swap, isLightning: isLightning, isChainSwap: isChainSwap),
       swap?.id ?? '',
       _invoice(swap),
       _preimage(swap),
@@ -133,6 +133,28 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
       }
     }
     return '';
+  }
+
+  String _network(
+    Transaction tx, {
+    required Swap? swap,
+    required bool isLightning,
+    required bool isChainSwap,
+  }) {
+    if (isLightning) return '';
+    if (isChainSwap) return _chainNetwork(swap!, send: true);
+    return tx.isBitcoin ? 'bitcoin' : 'liquid';
+  }
+
+  String _address(
+    Transaction tx, {
+    required Swap? swap,
+    required bool isLightning,
+    required bool isChainSwap,
+  }) {
+    if (isLightning) return '';
+    if (isChainSwap) return swap?.receiveAddress ?? '';
+    return tx.toAddress ?? '';
   }
 
   String _btc(int sats) => (sats / 100000000).toStringAsFixed(8);
