@@ -27,6 +27,7 @@ enum Signer {
 enum SignerDevice {
   bitbox02,
   coldcardQ,
+  coldcardMk4,
   jade,
   keystone,
   krux,
@@ -41,6 +42,7 @@ enum SignerDevice {
   static SignerDevice fromEntity(SignerDeviceEntity entity) => switch (entity) {
     SignerDeviceEntity.bitbox02 => SignerDevice.bitbox02,
     SignerDeviceEntity.coldcardQ => SignerDevice.coldcardQ,
+    SignerDeviceEntity.coldcardMk4 => SignerDevice.coldcardMk4,
     SignerDeviceEntity.jade => SignerDevice.jade,
     SignerDeviceEntity.keystone => SignerDevice.keystone,
     SignerDeviceEntity.krux => SignerDevice.krux,
@@ -56,6 +58,7 @@ enum SignerDevice {
   SignerDeviceEntity toEntity() => switch (this) {
     SignerDevice.bitbox02 => SignerDeviceEntity.bitbox02,
     SignerDevice.coldcardQ => SignerDeviceEntity.coldcardQ,
+    SignerDevice.coldcardMk4 => SignerDeviceEntity.coldcardMk4,
     SignerDevice.jade => SignerDeviceEntity.jade,
     SignerDevice.keystone => SignerDeviceEntity.keystone,
     SignerDevice.krux => SignerDeviceEntity.krux,

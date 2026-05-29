@@ -5,6 +5,7 @@ enum QrType { none, bbqr, urqr }
 enum SignerDeviceEntity {
   bitbox02,
   coldcardQ,
+  coldcardMk4,
   jade,
   keystone,
   krux,

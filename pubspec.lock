@@ -1414,7 +1414,7 @@ packages:
     source: hosted
     version: "1.0.4"
   ndef:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: ndef
       sha256: "198ba3798e80cea381648569d84059dbba64cd140079fb7b0d9c3f1e0f5973f3"

@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/widgets/tab_menu_vertical_button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
-import 'package:bb_mobile/features/import_coldcard_q/router.dart';
+import 'package:bb_mobile/features/import_coldcard/router.dart';
 import 'package:bb_mobile/features/import_mnemonic/router.dart';
 import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
@@ -58,8 +58,14 @@ class ImportWalletPage extends StatelessWidget {
               const Gap(12),
               TabMenuVerticalButton(
                 title: context.loc.importWalletColdcardQ,
+                onTap: () =>
+                    context.pushNamed(ImportColdcardRoute.importColdcardQ.name),
+              ),
+              const Gap(16),
+              TabMenuVerticalButton(
+                title: context.loc.importWalletColdcardMk4,
                 onTap: () => context.pushNamed(
-                  ImportColdcardQRoute.importColdcardQ.name,
+                  ImportColdcardRoute.importColdcardMk4.name,
                 ),
               ),
               const Gap(16),
