@@ -19,7 +19,7 @@ class _ExportRow {
     required this.address,
     required this.swapId,
     required this.preimage,
-    required this.swapFeeSats,
+    required this.totalSwapFeesSats,
     required this.sendNetwork,
     required this.receiveNetwork,
     required this.sendTxid,
@@ -38,7 +38,7 @@ class _ExportRow {
   final String address;
   final String swapId;
   final String preimage;
-  final String swapFeeSats;
+  final String totalSwapFeesSats;
   final String sendNetwork;
   final String receiveNetwork;
   final String sendTxid;
@@ -57,7 +57,7 @@ class _ExportRow {
     address,
     swapId,
     preimage,
-    swapFeeSats,
+    totalSwapFeesSats,
     sendNetwork,
     receiveNetwork,
     sendTxid,
@@ -79,7 +79,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     'address',
     'swap_id',
     'preimage',
-    'swap_fee_sats',
+    'total_swap_fees_sats',
     'send_network',
     'receive_network',
     'send_txid',
@@ -88,14 +88,30 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
 
   @override
   String format(List<Transaction> transactions) {
+    final chainSwapOutgoingTimeBySwapId = <String, DateTime?>{};
+    for (final tx in transactions) {
+      if (tx.isChainSwap && tx.walletTransaction?.isOutgoing == true) {
+        chainSwapOutgoingTimeBySwapId[tx.swap!.id] =
+            tx.walletTransaction?.confirmationTime;
+      }
+    }
+
     final buffer = StringBuffer()..writeln(_headers.join(','));
     for (final tx in transactions) {
-      buffer.writeln(_normalize(tx).toFields().map(_escape).join(','));
+      buffer.writeln(
+        _normalize(
+          tx,
+          chainSwapOutgoingTimeBySwapId,
+        ).toFields().map(_escape).join(','),
+      );
     }
     return buffer.toString();
   }
 
-  _ExportRow _normalize(Transaction tx) {
+  _ExportRow _normalize(
+    Transaction tx,
+    Map<String, DateTime?> chainSwapOutgoingTimeBySwapId,
+  ) {
     final swap = tx.swap;
     final payjoin = tx.payjoin;
     final wt = tx.walletTransaction;
@@ -104,7 +120,11 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         swap?.isLnSendSwap == true || swap?.isLnReceiveSwap == true;
     final isChainSwap = swap?.isChainSwap == true;
     final amountSat = tx.amountSat;
-    final feeSat = tx.isIncoming ? 0 : (wt?.feeSat ?? 0);
+    final feeSat = isChainSwap
+        ? (wt?.isOutgoing == true
+              ? (swap?.fees?.lockupFee ?? wt?.feeSat ?? 0)
+              : (swap?.fees?.claimFee ?? 0))
+        : (tx.isIncoming ? 0 : (wt?.feeSat ?? 0));
 
     final type = _resolveType(tx, swap, payjoin);
     final direction = _resolveDirection(tx, wt);
@@ -112,8 +132,20 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     final network = _resolveNetwork(tx, swap, isLnSwap, isChainSwap);
     final address = _resolveAddress(tx, swap, isLnSwap, isChainSwap);
 
+    final DateTime? date;
+    if (isChainSwap) {
+      final s = swap!;
+      date =
+          wt?.confirmationTime ??
+          s.completionTime ??
+          chainSwapOutgoingTimeBySwapId[s.id] ??
+          tx.timestamp;
+    } else {
+      date = tx.timestamp;
+    }
+
     return _ExportRow(
-      date: _date(tx.timestamp),
+      date: _date(date),
       type: type,
       direction: direction,
       amountSats: amountSat.toString(),
@@ -128,7 +160,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
         LnSendSwap(:final preimage) => preimage ?? '',
         _ => '',
       },
-      swapFeeSats: swap?.fees?.totalFees(swap.amountSat).toString() ?? '',
+      totalSwapFeesSats: swap?.fees?.totalFees(swap.amountSat).toString() ?? '',
       sendNetwork: isChainSwap ? _chainNetwork(swap!, send: true) : '',
       receiveNetwork: isChainSwap ? _chainNetwork(swap!, send: false) : '',
       sendTxid: swap?.sendTxId ?? '',

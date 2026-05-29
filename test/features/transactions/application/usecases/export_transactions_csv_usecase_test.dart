@@ -76,6 +76,8 @@ Swap _chainSwap({
   String? receiveTxid,
   String? receiveAddress,
   SwapType type = SwapType.bitcoinToLiquid,
+  DateTime? completionTime,
+  SwapFees? fees,
 }) => Swap.chain(
   id: id,
   keyIndex: 0,
@@ -90,6 +92,8 @@ Swap _chainSwap({
   receiveWalletId: 'w2',
   receiveAddress: receiveAddress,
   receiveTxid: receiveTxid,
+  completionTime: completionTime,
+  fees: fees,
 );
 
 void main() {
@@ -329,13 +333,15 @@ void main() {
   });
 
   test(
-    'chain swap: only receive leg exported, address and networks correct',
+    'chain swap: both legs exported with direction-specific network',
     () async {
       final swap = _chainSwap(
         sendTxid: 'chain_send_txid',
         receiveTxid: 'chain_recv_txid',
         receiveAddress: 'VJLCbLBTCksDqx1',
         type: SwapType.bitcoinToLiquid,
+        completionTime: DateTime.utc(2026, 3, 3, 12),
+        fees: const SwapFees(lockupFee: 500, claimFee: 200),
       );
       stub([
         Transaction(
@@ -354,23 +360,127 @@ void main() {
             amountSat: 99000,
             network: Network.liquidMainnet,
             direction: WalletTransactionDirection.incoming,
-            confirmationTime: DateTime.utc(2026, 3, 3, 10),
+            confirmationTime: DateTime.utc(2026, 3, 3, 11),
           ),
         ),
       ]);
 
       final lines = (await usecase.execute()).trim().split('\n');
-      expect(lines.length, 2, reason: 'send leg must be deduplicated');
+      expect(lines.length, 3, reason: 'both legs are exported');
 
-      final row = lines[1].split(',');
-      expect(row[1], 'chain_swap');
-      expect(row[8], 'liquid'); // network = receive network (the kept leg)
-      expect(row[9], 'VJLCbLBTCksDqx1'); // address = receiveAddress
-      expect(row[10], 'swap_chain');
-      expect(row[13], 'bitcoin'); // send_network
-      expect(row[14], 'liquid'); // receive_network
-      expect(row[15], 'chain_send_txid');
-      expect(row[16], 'chain_recv_txid');
+      final rowsByTxid = {
+        for (final line in lines.skip(1)) line.split(',')[7]: line.split(','),
+      };
+      final sendRow = rowsByTxid['chain_send_txid']!;
+      final receiveRow = rowsByTxid['chain_recv_txid']!;
+
+      expect(sendRow[1], 'chain_swap');
+      expect(sendRow[2], 'outgoing');
+      expect(sendRow[5], '500'); // fee_sats = lockup fee
+      expect(sendRow[8], 'bitcoin'); // network = send network for outgoing leg
+      expect(
+        sendRow[0],
+        '2026-03-03T10:00:00Z',
+      ); // date = outgoing leg's block time
+      expect(sendRow[13], 'bitcoin'); // send_network
+      expect(sendRow[14], 'liquid'); // receive_network
+
+      expect(receiveRow[1], 'chain_swap');
+      expect(receiveRow[2], 'incoming');
+      expect(receiveRow[5], '200'); // fee_sats = claim fee
+      expect(
+        receiveRow[8],
+        'liquid',
+      ); // network = receive network for incoming leg
+      expect(
+        receiveRow[0],
+        '2026-03-03T11:00:00Z',
+      ); // date = incoming leg's block time
+      expect(receiveRow[9], 'VJLCbLBTCksDqx1'); // address = receiveAddress
+      expect(receiveRow[13], 'bitcoin');
+      expect(receiveRow[14], 'liquid');
+    },
+  );
+
+  test(
+    'incoming leg without confirmationTime falls back to swap.completionTime',
+    () async {
+      final swap = _chainSwap(
+        sendTxid: 'chain_send_a',
+        receiveTxid: 'chain_recv_a',
+        type: SwapType.bitcoinToLiquid,
+        completionTime: DateTime.utc(2026, 4, 1, 9, 30),
+      );
+      stub([
+        Transaction(
+          swap: swap,
+          walletTransaction: _walletTx(
+            txId: 'chain_send_a',
+            amountSat: 100000,
+            direction: WalletTransactionDirection.outgoing,
+            confirmationTime: DateTime.utc(2026, 4, 1, 8),
+          ),
+        ),
+        Transaction(
+          swap: swap,
+          walletTransaction: _walletTx(
+            txId: 'chain_recv_a',
+            amountSat: 99000,
+            network: Network.liquidMainnet,
+            direction: WalletTransactionDirection.incoming,
+            confirmationTime: null, // claim tx not yet seen confirmed
+          ),
+        ),
+      ]);
+
+      final lines = (await usecase.execute()).trim().split('\n');
+      final rowsByTxid = {
+        for (final line in lines.skip(1)) line.split(',')[7]: line.split(','),
+      };
+      // outgoing leg: its own block time
+      expect(rowsByTxid['chain_send_a']![0], '2026-04-01T08:00:00Z');
+      // incoming leg: falls back to swap.completionTime
+      expect(rowsByTxid['chain_recv_a']![0], '2026-04-01T09:30:00Z');
+    },
+  );
+
+  test(
+    'incoming leg with neither confirmationTime nor completionTime falls back to outgoing leg time',
+    () async {
+      final swap = _chainSwap(
+        sendTxid: 'chain_send_b',
+        receiveTxid: 'chain_recv_b',
+        type: SwapType.bitcoinToLiquid,
+      );
+      stub([
+        Transaction(
+          swap: swap,
+          walletTransaction: _walletTx(
+            txId: 'chain_send_b',
+            amountSat: 100000,
+            direction: WalletTransactionDirection.outgoing,
+            confirmationTime: DateTime.utc(2026, 4, 2, 8),
+          ),
+        ),
+        Transaction(
+          swap: swap,
+          walletTransaction: _walletTx(
+            txId: 'chain_recv_b',
+            amountSat: 99000,
+            network: Network.liquidMainnet,
+            direction: WalletTransactionDirection.incoming,
+            confirmationTime: null,
+          ),
+        ),
+      ]);
+
+      final lines = (await usecase.execute()).trim().split('\n');
+      final rowsByTxid = {
+        for (final line in lines.skip(1)) line.split(',')[7]: line.split(','),
+      };
+      expect(rowsByTxid['chain_send_b']![0], '2026-04-02T08:00:00Z');
+      // incoming leg has no own confirmation and no completion → outgoing leg's time
+      expect(rowsByTxid['chain_recv_b']![0], '2026-04-02T08:00:00Z');
     },
   );
 

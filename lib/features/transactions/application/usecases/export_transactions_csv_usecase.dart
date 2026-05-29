@@ -38,24 +38,7 @@ class ExportTransactionsCsvUsecase {
       return true;
     }).toList();
 
-    final chainSwapIdsWithReceiveLeg = filtered
-        .where(
-          (tx) => tx.isChainSwap && tx.walletTransaction?.isIncoming == true,
-        )
-        .map((tx) => tx.swap!.id)
-        .toSet();
-
-    final rows =
-        filtered
-            .where(
-              (tx) =>
-                  !(tx.isChainSwap &&
-                      tx.walletTransaction != null &&
-                      tx.walletTransaction!.isOutgoing &&
-                      chainSwapIdsWithReceiveLeg.contains(tx.swap!.id)),
-            )
-            .toList()
-          ..sort(_byTimestamp);
+    final rows = filtered.toList()..sort(_byTimestamp);
 
     if (rows.isEmpty) {
       throw NoTransactionsToExportError();
