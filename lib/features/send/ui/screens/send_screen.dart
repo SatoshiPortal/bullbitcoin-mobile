@@ -382,6 +382,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                   final inputCurrency = context.select(
                     (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
                   );
+                  final hasFixedLnurlAmount = context.select(
+                    (SendCubit cubit) => cubit.state.hasFixedLnurlAmount,
+                  );
 
                   final availableInputCurrencies = context
                       .select<SendCubit, List<String>>(
@@ -447,12 +450,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 state.formattedAmountInputEquivalent,
                             availableCurrencies: availableInputCurrencies,
                             amountController: _amountController,
-                            onCurrencyChanged: (currencyCode) {
-                              _setIsMax(false);
-                              context.read<SendCubit>().onCurrencyChanged(
-                                currencyCode,
-                              );
-                            },
+                            onCurrencyChanged: hasFixedLnurlAmount
+                                ? null
+                                : (currencyCode) {
+                                    _setIsMax(false);
+                                    context.read<SendCubit>().onCurrencyChanged(
+                                      currencyCode,
+                                    );
+                                  },
                             error: balanceError != null
                                 ? context
                                       .loc
@@ -466,7 +471,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   )
                                 : swapCreationError?.message,
                             focusNode: _amountFocusNode,
-                            readOnly: _isMax,
+                            readOnly: _isMax || hasFixedLnurlAmount,
                             isMax: _isMax,
                           ),
                           if (swapLimitsError?.suggestInstantPayments == true)
@@ -486,18 +491,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                           BorderedTappableTile(
                             onTap: () async {
                               final cubit = context.read<SendCubit>();
-                              final saved =
-                                  await LabelEntryBottomSheet.label(
-                                    context,
-                                    title:
-                                        context.loc.transactionNoteAddTitle,
-                                    initialValue: state.label.isEmpty
-                                        ? null
-                                        : state.label,
-                                    hint: context.loc.transactionNoteHint,
-                                    suggestionsFuture:
-                                        cubit.fetchDistinctLabels(),
-                                  );
+                              final saved = await LabelEntryBottomSheet.label(
+                                context,
+                                title: context.loc.transactionNoteAddTitle,
+                                initialValue: state.label.isEmpty
+                                    ? null
+                                    : state.label,
+                                hint: context.loc.transactionNoteHint,
+                                suggestionsFuture: cubit.fetchDistinctLabels(),
+                              );
                               if (saved == null || !context.mounted) return;
                               cubit.noteChanged(saved);
                             },
@@ -544,7 +546,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                               balance: state.formattedWalletBalance(),
                               currencyCode: '',
                               isMax: _isMax,
-                              onMaxToggled: !isLightning && !isChainSwap
+                              onMaxToggled:
+                                  !isLightning &&
+                                      !isChainSwap &&
+                                      !hasFixedLnurlAmount
                                   ? (value) {
                                       _setIsMax(value);
                                       context.read<SendCubit>().amountChanged(

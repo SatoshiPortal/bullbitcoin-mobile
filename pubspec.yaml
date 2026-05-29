@@ -123,6 +123,7 @@ dependencies:
       url: https://github.com/bukata-sa/bc-ur-dart.git
       ref: 5738f70d0ec3d50977ac3dd01fed62939600238b
   bitcoin_base: ^7.0.0
+  bech32: ^0.2.2
   socks5_proxy: ^2.1.1
   tor:
     git:

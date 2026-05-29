@@ -20,7 +20,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_se
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utils/lightning.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -31,6 +30,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/send/application/resolve_lnurl_pay_limits_usecase.dart';
+import 'package:bb_mobile/features/send/domain/lnurl_pay_limits.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
@@ -82,6 +83,7 @@ class SendCubit extends Cubit<SendState> {
     calculateBitcoinAbsoluteFeesUsecase,
     required UpdateSendSwapLockupFeesUsecase updateSendSwapLockupFeesUsecase,
     required VerifyChainSwapAmountSendUsecase verifyChainSwapAmountSendUsecase,
+    required ResolveLnurlPayLimitsUsecase resolveLnurlPayLimitsUsecase,
   }) : _wallet = wallet,
        _labelsFacade = labelsFacade,
        _getSettingsUsecase = getSettingsUsecase,
@@ -114,6 +116,7 @@ class SendCubit extends Cubit<SendState> {
            calculateBitcoinAbsoluteFeesUsecase,
        _updateSendSwapLockupFeesUsecase = updateSendSwapLockupFeesUsecase,
        _verifyChainSwapAmountSendUsecase = verifyChainSwapAmountSendUsecase,
+       _resolveLnurlPayLimitsUsecase = resolveLnurlPayLimitsUsecase,
        super(const SendState());
 
   /// Distinct user-defined labels for the suggestion chips in the label
@@ -158,6 +161,7 @@ class SendCubit extends Cubit<SendState> {
   _calculateBitcoinAbsoluteFeesUsecase;
   final UpdateSendSwapLockupFeesUsecase _updateSendSwapLockupFeesUsecase;
   final VerifyChainSwapAmountSendUsecase _verifyChainSwapAmountSendUsecase;
+  final ResolveLnurlPayLimitsUsecase _resolveLnurlPayLimitsUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
@@ -227,6 +231,10 @@ class SendCubit extends Cubit<SendState> {
         scannedRawPaymentRequest: scannedRawPaymentRequest,
         copiedRawPaymentRequest: sanitizedText,
         paymentRequest: paymentRequest,
+        lnurlPayLimits: null,
+        amount: '',
+        confirmedAmountSat: null,
+        sendMax: false,
       ),
     );
     await continueOnAddressConfirmed();
@@ -247,6 +255,10 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           copiedRawPaymentRequest: sanitizedText,
           paymentRequest: paymentRequest,
+          lnurlPayLimits: null,
+          amount: '',
+          confirmedAmountSat: null,
+          sendMax: false,
         ),
       );
     } catch (e) {
@@ -254,6 +266,10 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           copiedRawPaymentRequest: text,
           paymentRequest: null,
+          lnurlPayLimits: null,
+          amount: '',
+          confirmedAmountSat: null,
+          sendMax: false,
           // Don't show exception if text field is clear
           invalidBitcoinStringException: text.isNotEmpty
               ? InvalidBitcoinStringException()
@@ -296,7 +312,9 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              swapCreationException: AmountlessInvoiceException('Invoice has no amount'),
+              swapCreationException: AmountlessInvoiceException(
+                'Invoice has no amount',
+              ),
             ),
           );
           return;
@@ -500,22 +518,81 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
       if (state.paymentRequest!.isLnAddress) {
+        final lnAddressPaymentRequest =
+            state.paymentRequest! as LnAddressPaymentRequest;
+        final expectedAddress = lnAddressPaymentRequest.address;
         try {
-          final lnAddressPaymentRequest =
-              state.paymentRequest! as LnAddressPaymentRequest;
-
-          // Validate the LNURL by trying to create an invoice with a dummy amount
-          // This uses the same function that will be used when creating the actual swap
-          const dummyAmount = 1000; // 1000 sats dummy amount
-          await invoiceFromLnAddress(
-            lnAddress: lnAddressPaymentRequest.address,
-            amountSat: dummyAmount,
+          final limits = await _resolveLnurlPayLimitsUsecase.execute(
+            expectedAddress,
           );
+          final currentRequest = state.paymentRequest;
+          if (isClosed ||
+              currentRequest is! LnAddressPaymentRequest ||
+              currentRequest.address != expectedAddress) {
+            return;
+          }
+          if (limits.isFixedAmount) {
+            final fixedAmount = limits.minSendableSat;
+            final wallet =
+                _wallet ??
+                _bestWalletUsecase.execute(
+                  wallets: state.wallets,
+                  request: state.paymentRequest!,
+                  amountSat: fixedAmount,
+                );
+            if (state.selectedWallet?.id != wallet.id) {
+              await _selectedWalletSyncingSubscription?.cancel();
+              _selectedWalletSyncingSubscription =
+                  _watchFinishedWalletSyncsUsecase
+                      .execute(walletId: wallet.id)
+                      .listen((wallet) async {
+                        emit(state.copyWith(selectedWallet: wallet));
+                        await loadUtxos();
+                      });
+            }
+            emit(
+              state.copyWith(
+                selectedWallet: wallet,
+                lnurlPayLimits: limits,
+                inputAmountCurrencyCode: BitcoinUnit.sats.code,
+                amount: fixedAmount.toString(),
+                confirmedAmountSat: fixedAmount,
+                selectedSwapLimits: null,
+                selectedSwapFees: null,
+                swapLimitsException: null,
+                step: SendStep.amount,
+                loadingBestWallet: false,
+              ),
+            );
+            return;
+          }
 
-          // If successful, proceed to amount step
-          emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
+          emit(
+            state.copyWith(
+              lnurlPayLimits: limits,
+              step: SendStep.amount,
+              loadingBestWallet: false,
+            ),
+          );
         } catch (e) {
-          // If LNURL validation fails, set error and stay on address step
+          final currentRequest = state.paymentRequest;
+          if (isClosed ||
+              currentRequest is! LnAddressPaymentRequest ||
+              currentRequest.address != expectedAddress) {
+            return;
+          }
+          if (e is NotEnoughFundsException) {
+            rethrow;
+          }
+          if (e is LnurlPayLimitsUnavailableException) {
+            emit(
+              state.copyWith(
+                loadingBestWallet: false,
+                swapCreationException: SwapCreationException(e.message),
+              ),
+            );
+            return;
+          }
           emit(
             state.copyWith(
               loadingBestWallet: false,
@@ -820,6 +897,19 @@ class SendCubit extends Cubit<SendState> {
   Future<void> amountChanged({String? amount, bool isMax = false}) async {
     try {
       clearAllExceptions();
+      if (state.hasFixedLnurlAmount) {
+        final fixedAmount = state.lnurlPayLimits!.minSendableSat;
+        emit(
+          state.copyWith(
+            amount: fixedAmount.toString(),
+            confirmedAmountSat: fixedAmount,
+            inputAmountCurrencyCode: BitcoinUnit.sats.code,
+            sendMax: false,
+          ),
+        );
+        return;
+      }
+
       String validatedAmount;
 
       if (amount == null) {
@@ -980,23 +1070,23 @@ class SendCubit extends Cubit<SendState> {
     if (state.sendType == SendType.lightning) {
       if (state.selectedSwapLimits == null) {
         await loadSwapLimits();
-        setSelectedSwapLimits();
       }
+      setSelectedSwapLimits();
       final swapType = state.selectedWallet!.isLiquid
           ? SwapType.liquidToLightning
           : SwapType.bitcoinToLightning;
 
       if (state.swapAmountBelowLimit) {
         final isLiquidToLightning = state.selectedWallet!.isLiquid;
-        final minLimit = isLiquidToLightning
-            ? 100
-            : state.selectedSwapLimits!.min;
+        final minLimit = state.swapMinimum;
         emit(
           state.copyWith(
             swapLimitsException: SwapLimitsException(
               'Amount below minimum swap limit: $minLimit sats',
               minLimit: minLimit,
-              suggestInstantPayments: !isLiquidToLightning,
+              suggestInstantPayments:
+                  !isLiquidToLightning &&
+                  minLimit == state.selectedSwapLimits!.min,
             ),
             amountConfirmedClicked: false,
           ),
@@ -1007,8 +1097,8 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             swapLimitsException: SwapLimitsException(
-              'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
-              maxLimit: state.selectedSwapLimits!.max,
+              'Amount above maximum swap limit: ${state.effectiveLightningMaximum} sats',
+              maxLimit: state.effectiveLightningMaximum,
             ),
             amountConfirmedClicked: false,
           ),
@@ -1824,6 +1914,13 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void updateSelectedWallet(Wallet newWallet) {
-    emit(state.copyWith(selectedWallet: newWallet));
+    emit(
+      state.copyWith(
+        selectedWallet: newWallet,
+        selectedSwapLimits: null,
+        selectedSwapFees: null,
+        swapLimitsException: null,
+      ),
+    );
   }
 }

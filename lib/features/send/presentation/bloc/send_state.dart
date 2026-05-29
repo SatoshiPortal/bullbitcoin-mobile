@@ -5,11 +5,13 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/features/send/domain/lnurl_pay_limits.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
@@ -112,6 +114,7 @@ abstract class SendState with _$SendState {
     SwapLimitsException? swapLimitsException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
+    LnurlPayLimits? lnurlPayLimits,
 
     // swapLimits
     SwapLimits? bitcoinLnSwapLimits,
@@ -327,11 +330,7 @@ abstract class SendState with _$SendState {
   bool get swapAmountBelowLimit {
     if (isLightning && inputAmountSat != 0) {
       if (selectedSwapLimits == null) return false;
-      // Allow 100 sats minimum for Liquid to Lightning swaps
-      final isLiquidToLightning =
-          selectedWallet != null && selectedWallet!.isLiquid;
-      final minLimit = isLiquidToLightning ? 100 : selectedSwapLimits!.min;
-      return inputAmountSat < minLimit;
+      return inputAmountSat < effectiveLightningMinimum;
     }
     if (requireChainSwap && inputAmountSat != 0) {
       return selectedSwapLimits != null &&
@@ -341,15 +340,14 @@ abstract class SendState with _$SendState {
   }
 
   int get swapMinimum {
-    final min = selectedSwapLimits?.min ?? 0;
-    if (min != 0) return min;
-    return selectedWallet?.isLiquid == true ? 100 : 25000;
+    if (isLightning) return effectiveLightningMinimum;
+
+    return selectedSwapLimits?.min ?? 0;
   }
 
   bool get swapAmountAboveLimit {
     if (isLightning) {
-      return selectedSwapLimits != null &&
-          inputAmountSat > selectedSwapLimits!.max;
+      return inputAmountSat > effectiveLightningMaximum;
     }
     if (requireChainSwap && inputAmountSat != 0) {
       return selectedSwapLimits != null &&
@@ -357,6 +355,24 @@ abstract class SendState with _$SendState {
     }
     return false;
   }
+
+  int get effectiveLightningMinimum {
+    final swapMin = selectedWallet?.isLiquid == true
+        ? 100
+        : selectedSwapLimits?.min ?? 25000;
+    final lnurlMin = lnurlPayLimits?.minSendableSat ?? 0;
+    return swapMin > lnurlMin ? swapMin : lnurlMin;
+  }
+
+  int get effectiveLightningMaximum {
+    final swapMax =
+        selectedSwapLimits?.max ?? ConversionConstants.maxSatsAmount.toInt();
+    final lnurlMax = lnurlPayLimits?.maxSendableSat;
+    if (lnurlMax == null) return swapMax;
+    return swapMax < lnurlMax ? swapMax : lnurlMax;
+  }
+
+  bool get hasFixedLnurlAmount => lnurlPayLimits?.isFixedAmount == true;
 
   bool get isSwapAmountValid =>
       isLightning ||

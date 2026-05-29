@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -15,6 +19,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/core/tor/domain/value_objects/tor_proxy_config.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
@@ -25,6 +31,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/send/application/resolve_lnurl_pay_limits_usecase.dart';
+import 'package:bb_mobile/features/send/domain/lnurl_pay_limits.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
@@ -39,6 +47,8 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 class SendLocator {
+  static const _lnurlFetchTimeout = Duration(seconds: 15);
+
   static void setup(GetIt locator) {
     registerUsecases(locator);
     registerBlocs(locator);
@@ -89,6 +99,11 @@ class SendLocator {
     );
     locator.registerFactory<SelectBestWalletUsecase>(
       () => SelectBestWalletUsecase(),
+    );
+    locator.registerFactory<ResolveLnurlPayLimitsUsecase>(
+      () => ResolveLnurlPayLimitsUsecase(
+        fetcher: (uri) => _fetchLnurlPayMetadata(locator, uri),
+      ),
     );
     locator.registerFactory<CalculateBitcoinAbsoluteFeesUsecase>(
       () => CalculateBitcoinAbsoluteFeesUsecase(
@@ -167,7 +182,39 @@ class SendLocator {
             locator<UpdateSendSwapLockupFeesUsecase>(),
         verifyChainSwapAmountSendUsecase:
             locator<VerifyChainSwapAmountSendUsecase>(),
+        resolveLnurlPayLimitsUsecase: locator<ResolveLnurlPayLimitsUsecase>(),
       ),
     );
+  }
+
+  static Future<String> _fetchLnurlPayMetadata(GetIt locator, Uri uri) async {
+    final settings = await locator<GetSettingsUsecase>().execute();
+    final client = settings.useTorProxy
+        ? locator<TorDatasource>().httpClient(
+            externalProxy: TorProxyConfig(port: settings.torProxyPort),
+          )
+        : HttpClient();
+
+    try {
+      final request = await client.getUrl(uri).timeout(_lnurlFetchTimeout);
+      final response = await request.close().timeout(_lnurlFetchTimeout);
+      final body = await utf8
+          .decodeStream(response)
+          .timeout(_lnurlFetchTimeout);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw LnurlPayLimitsUnavailableException(
+          'LNURL server returned ${response.statusCode}',
+        );
+      }
+      return body;
+    } on LnurlPayLimitsException {
+      rethrow;
+    } on TimeoutException {
+      throw const LnurlPayLimitsUnavailableException();
+    } on SocketException {
+      throw const LnurlPayLimitsUnavailableException();
+    } finally {
+      client.close(force: true);
+    }
   }
 }
