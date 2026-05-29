@@ -1,20 +1,21 @@
-import 'package:bb_mobile/core/electrum/domain/electrum_fallback_runner.dart';
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
-class TheDirtyUsecase {
-  TheDirtyUsecase(
+class CheckWalletStatusUsecase {
+  CheckWalletStatusUsecase(
     this._settingsRepository,
-    this._electrumServerPort,
+    this._serversPort,
     this._bitcoinWalletRepository,
   );
   final SettingsRepository _settingsRepository;
-  final ElectrumServerPort _electrumServerPort;
+  final ElectrumServersPort _serversPort;
   final BitcoinWalletRepository _bitcoinWalletRepository;
 
   Future<({BigInt satoshis, int transactions})> call({
@@ -25,30 +26,24 @@ class TheDirtyUsecase {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
 
-      final electrumServers = await _electrumServerPort.getElectrumServers(
-        isTestnet: isTestnet,
-        isLiquid: false,
-      );
-
-      if (electrumServers.isEmpty) {
-        throw Exception('No Electrum servers configured.');
-      }
-
-      return await runElectrumFallback<
-        ElectrumServer,
-        ({BigInt satoshis, int transactions})
-      >(
-        servers: electrumServers,
-        urlOf: (server) => server.url,
-        isCustomOf: (server) => server.isCustom,
-        operation: (server) => _bitcoinWalletRepository.dryScan(
-          entropy: mnemonic.entropy,
-          passphrase: mnemonic.passphrase,
-          scriptType: scriptType,
-          isTestnet: isTestnet,
-          electrumServer: server,
-        ),
-      );
+      return await _serversPort
+          .runWithFallback<({BigInt satoshis, int transactions})>(
+            network: ElectrumServerNetwork.fromEnvironment(
+              isTestnet: isTestnet,
+              isLiquid: false,
+            ),
+            operation: (connection) => _bitcoinWalletRepository.dryScan(
+              entropy: mnemonic.entropy,
+              passphrase: mnemonic.passphrase,
+              scriptType: scriptType,
+              isTestnet: isTestnet,
+              electrumServer: connection,
+            ),
+          );
+    } on ElectrumFallbackException {
+      // Preserve the typed exception so callers retain the per-server
+      // attempts (failure tier, urls, root-cause errors) for diagnostics.
+      rethrow;
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
       throw CheckWalletStatusException(e.toString());
