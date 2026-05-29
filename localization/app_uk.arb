@@ -4759,7 +4759,6 @@
   "exchangeSupportChatPickFilesFailed": "Не вдалося вибрати файли. Спробуйте ще раз.",
   "exchangeSupportChatAttachLogsFailed": "Не вдалося прикріпити журнали. Спробуйте ще раз.",
   "exchangeSupportChatFetchFileDataFailed": "Не вдалося отримати дані файлу.",
-  "importMnemonicDuplicateError": "Ця мнемонічна фраза вже існує",
   "recipientsFieldSinpePhoneNumberHint": "8 цифр без коду країни",
   "recipientsCopDocCcRecipientNumber": "Номер cédula отримувача",
   "recipientsCopDocCeRecipientNumber": "Номер cédula de extranjería отримувача",
@@ -4769,5 +4768,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Номер запису цивільного реєстру отримувача",
   "recipientsValidationSinpePhoneCountryCode": "Видаліть код країни (+506). Введіть лише 8-значний номер",
   "recipientsValidationSinpePhoneInvalidChars": "Використовуйте лише цифри (без літер чи символів)",
-  "recipientsValidationSinpePhoneTooShort": "Введіть усі 8 цифр номера телефону"
+  "recipientsValidationSinpePhoneTooShort": "Введіть усі 8 цифр номера телефону",
+  "transactionStatusPayjoinCompleted": "Payjoin завершено"
 }

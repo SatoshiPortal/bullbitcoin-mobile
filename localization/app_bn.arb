@@ -12889,6 +12889,10 @@
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
+  "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হয়েছে",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "যখন একটি Payjoin লেনদেন সফলভাবে সম্পন্ন হয় তখন এটি দেখানো হয়।"
+  },
   "coreScreensResolvingInputs": "লেনদেনের ইনপুট সমাধান করা হচ্ছে...",
   "coreScreensFeeRateLabel": "ফি রেট",
   "coreScreensFeeRateValue": "{rate} sat/vB",

@@ -4817,7 +4817,6 @@
   "exchangeSupportChatPickFilesFailed": "Falha ao escolher ficheiros. Tente novamente.",
   "exchangeSupportChatAttachLogsFailed": "Falha ao anexar registos. Tente novamente.",
   "exchangeSupportChatFetchFileDataFailed": "Falha ao obter os dados do ficheiro.",
-  "importMnemonicDuplicateError": "Esta mnemônica já existe",
   "recipientsFieldSinpePhoneNumberHint": "8 dígitos sem indicativo do país",
   "recipientsCopDocCcRecipientNumber": "Número de cédula do destinatário",
   "recipientsCopDocCeRecipientNumber": "Número de cédula de extranjería do destinatário",
@@ -4827,5 +4826,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Número de registo civil do destinatário",
   "recipientsValidationSinpePhoneCountryCode": "Remova o indicativo do país (+506). Insira apenas o número de 8 dígitos",
   "recipientsValidationSinpePhoneInvalidChars": "Use apenas dígitos (sem letras ou símbolos)",
-  "recipientsValidationSinpePhoneTooShort": "Insira os 8 dígitos do número de telefone"
+  "recipientsValidationSinpePhoneTooShort": "Insira os 8 dígitos do número de telefone",
+  "transactionStatusPayjoinCompleted": "Payjoin concluído"
 }

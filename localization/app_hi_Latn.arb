@@ -13073,5 +13073,9 @@
   "recipientsValidationSinpePhoneTooShort": "Phone number ke saare 8 digits daalein",
   "recipientsFieldDocumentType": "Recipient ka ID type",
   "recipientsFieldDocumentNumberHint": "Recipient ka ID number daalein",
-  "recipientsValidationSinpePhone": "Country code ke bina ek valid 8-digit Costa Rican phone number daalein"
+  "recipientsValidationSinpePhone": "Country code ke bina ek valid 8-digit Costa Rican phone number daalein",
+  "transactionStatusPayjoinCompleted": "Payjoin poora hua",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Jab Payjoin transaction successfully complete ho jati hai tab dikhaya jata hai."
+  }
 }

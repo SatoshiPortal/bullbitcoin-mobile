@@ -4660,5 +4660,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Standesamt-Registernummer des Empfängers",
   "recipientsValidationSinpePhoneCountryCode": "Entfernen Sie die Landesvorwahl (+506). Geben Sie nur die 8-stellige Nummer ein",
   "recipientsValidationSinpePhoneInvalidChars": "Nur Ziffern verwenden (keine Buchstaben oder Symbole)",
-  "recipientsValidationSinpePhoneTooShort": "Geben Sie alle 8 Ziffern der Telefonnummer ein"
+  "recipientsValidationSinpePhoneTooShort": "Geben Sie alle 8 Ziffern der Telefonnummer ein",
+  "transactionStatusPayjoinCompleted": "Payjoin abgeschlossen"
 }

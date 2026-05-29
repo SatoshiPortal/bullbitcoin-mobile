@@ -12608,6 +12608,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "برای تکمیل سواپ خود، ظرف ۲۴ ساعت برنامه را باز کنید",
   "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
+  "transactionStatusPayjoinCompleted": "Payjoin تکمیل شد",
   "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
   "coreScreensFeeRateLabel": "نرخ کارمزد",
   "coreScreensFeeRateValue": "{rate} sat/vB",

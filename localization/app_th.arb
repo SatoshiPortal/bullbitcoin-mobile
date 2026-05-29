@@ -12608,6 +12608,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำสว็อปของคุณให้เสร็จสมบูรณ์",
   "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
+  "transactionStatusPayjoinCompleted": "Payjoin เสร็จสิ้นแล้ว",
   "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
   "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
   "coreScreensFeeRateValue": "{rate} sat/vB",

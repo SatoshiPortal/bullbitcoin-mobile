@@ -9756,7 +9756,6 @@
   "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
   "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
   "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",
-  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува",
   "recipientsFieldSinpePhoneNumberHint": "8 цифри без код на държава",
   "recipientsCopDocCcRecipientNumber": "Cédula номер на получателя",
   "recipientsCopDocCeRecipientNumber": "Cédula de extranjería номер на получателя",
@@ -9766,5 +9765,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Номер от гражданския регистър на получателя",
   "recipientsValidationSinpePhoneCountryCode": "Премахнете кода на държавата (+506). Въведете само 8-цифрения номер",
   "recipientsValidationSinpePhoneInvalidChars": "Използвайте само цифри (без букви или символи)",
-  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер"
+  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер",
+  "transactionStatusPayjoinCompleted": "Payjoin завършен"
 }

@@ -4751,7 +4751,6 @@
   "exchangeSupportChatPickFilesFailed": "Échec de la sélection des fichiers. Veuillez réessayer.",
   "exchangeSupportChatAttachLogsFailed": "Échec de l'ajout des journaux. Veuillez réessayer.",
   "exchangeSupportChatFetchFileDataFailed": "Échec de la récupération des données du fichier.",
-  "importMnemonicDuplicateError": "Cette phrase mnémotechnique existe déjà",
   "recipientsFieldSinpePhoneNumberHint": "8 chiffres sans l'indicatif du pays",
   "recipientsCopDocCcRecipientNumber": "Numéro de cédula du bénéficiaire",
   "recipientsCopDocCeRecipientNumber": "Numéro de cédula de extranjería du bénéficiaire",
@@ -4761,5 +4760,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Numéro d'état civil du bénéficiaire",
   "recipientsValidationSinpePhoneCountryCode": "Retirez l'indicatif du pays (+506). Saisissez uniquement le numéro à 8 chiffres",
   "recipientsValidationSinpePhoneInvalidChars": "Utilisez uniquement des chiffres (pas de lettres ni de symboles)",
-  "recipientsValidationSinpePhoneTooShort": "Saisissez les 8 chiffres du numéro de téléphone"
+  "recipientsValidationSinpePhoneTooShort": "Saisissez les 8 chiffres du numéro de téléphone",
+  "transactionStatusPayjoinCompleted": "Payjoin terminé"
 }

@@ -12745,7 +12745,6 @@
   "exchangeSupportChatPickFilesFailed": "Η επιλογή αρχείων απέτυχε. Δοκιμάστε ξανά.",
   "exchangeSupportChatAttachLogsFailed": "Η επισύναψη αρχείων καταγραφής απέτυχε. Δοκιμάστε ξανά.",
   "exchangeSupportChatFetchFileDataFailed": "Η ανάκτηση δεδομένων αρχείου απέτυχε.",
-  "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη",
   "recipientsFieldSinpePhoneNumberHint": "8 ψηφία χωρίς κωδικό χώρας",
   "recipientsCopDocCcRecipientNumber": "Αριθμός cédula παραλήπτη",
   "recipientsCopDocCeRecipientNumber": "Αριθμός cédula de extranjería παραλήπτη",
@@ -12755,5 +12754,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Αριθμός ληξιαρχικής εγγραφής παραλήπτη",
   "recipientsValidationSinpePhoneCountryCode": "Αφαιρέστε τον κωδικό χώρας (+506). Εισαγάγετε μόνο τον 8ψήφιο αριθμό",
   "recipientsValidationSinpePhoneInvalidChars": "Χρησιμοποιήστε μόνο ψηφία (όχι γράμματα ή σύμβολα)",
-  "recipientsValidationSinpePhoneTooShort": "Εισαγάγετε και τα 8 ψηφία του αριθμού τηλεφώνου"
+  "recipientsValidationSinpePhoneTooShort": "Εισαγάγετε και τα 8 ψηφία του αριθμού τηλεφώνου",
+  "transactionStatusPayjoinCompleted": "Το Payjoin ολοκληρώθηκε"
 }

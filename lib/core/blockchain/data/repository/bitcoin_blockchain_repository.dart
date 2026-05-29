@@ -1,56 +1,50 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 
+/// Thin repository over [BdkBitcoinBlockchainDatasource]. Its only job is to
+/// route broadcast operations through [ElectrumServersPort.runWithFallback]
+/// so callers cannot fetch a server list themselves — the privacy / fallback
+/// rule lives in one place.
 class BitcoinBlockchainRepository {
   final BdkBitcoinBlockchainDatasource _blockchain;
+  final ElectrumServersPort _serversPort;
 
   const BitcoinBlockchainRepository({
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
-  }) : _blockchain = blockchainDatasource;
+    required ElectrumServersPort serversPort,
+  }) : _blockchain = blockchainDatasource,
+       _serversPort = serversPort;
 
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
-    required List<ElectrumServer> electrumServers,
-  }) async {
-    for (int i = 0; i < electrumServers.length; i++) {
-      final electrumServer = electrumServers[i];
-
-      try {
-        final txId = await _blockchain.broadcastPsbt(
-          finalizedPsbt,
-          electrumServer: electrumServer,
-        );
-        return txId;
-      } catch (e) {
-        // If broadcasting fails, try the next server
-        continue;
-      }
-    }
-
-    throw Exception('Failed to broadcast PSBT on all Electrum servers.');
+    required bool isTestnet,
+  }) {
+    return _serversPort.runWithFallback<String>(
+      network: ElectrumServerNetwork.fromEnvironment(
+        isTestnet: isTestnet,
+        isLiquid: false,
+      ),
+      operation: (connection) =>
+          _blockchain.broadcastPsbt(finalizedPsbt, connection: connection),
+    );
   }
 
   Future<String> broadcastTransaction(
     List<int> transaction, {
-    required List<ElectrumServer> electrumServers,
-  }) async {
-    for (int i = 0; i < electrumServers.length; i++) {
-      final electrumServer = electrumServers[i];
-
-      try {
-        final txId = await _blockchain.broadcastTransaction(
-          Uint8List.fromList(transaction),
-          electrumServer: electrumServer,
-        );
-        return txId;
-      } catch (e) {
-        // If broadcasting fails, try the next server
-        continue;
-      }
-    }
-
-    throw Exception('Failed to broadcast transaction on all Electrum servers.');
+    required bool isTestnet,
+  }) {
+    return _serversPort.runWithFallback<String>(
+      network: ElectrumServerNetwork.fromEnvironment(
+        isTestnet: isTestnet,
+        isLiquid: false,
+      ),
+      operation: (connection) => _blockchain.broadcastTransaction(
+        Uint8List.fromList(transaction),
+        connection: connection,
+      ),
+    );
   }
 }

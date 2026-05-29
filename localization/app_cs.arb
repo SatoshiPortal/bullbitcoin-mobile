@@ -12745,7 +12745,6 @@
   "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
   "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
   "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
-  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
   "recipientsFieldSinpePhoneNumberHint": "8 číslic bez kódu země",
   "recipientsCopDocCcRecipientNumber": "Číslo cédula příjemce",
   "recipientsCopDocCeRecipientNumber": "Číslo cédula de extranjería příjemce",
@@ -12755,5 +12754,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Číslo z matriky příjemce",
   "recipientsValidationSinpePhoneCountryCode": "Odstraňte kód země (+506). Zadejte pouze 8místné číslo",
   "recipientsValidationSinpePhoneInvalidChars": "Použijte pouze číslice (žádná písmena ani symboly)",
-  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla"
+  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla",
+  "transactionStatusPayjoinCompleted": "Payjoin dokončen"
 }

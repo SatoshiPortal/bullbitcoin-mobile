@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_server_network.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
@@ -8,7 +10,6 @@ import 'package:bb_mobile/core/wallet/data/mappers/wallet_transaction_mapper.dar
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
@@ -19,19 +20,19 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final LwkWalletDatasource _lwkWalletTransactionDatasource;
   // TODO: We should not pass a port into a repository, this is a dirty hack for now
   //  the syncing should be extracted from fetching the data
-  final ElectrumServerPort _electrumServerPort;
+  final ElectrumServersPort _serversPort;
 
   WalletTransactionRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
     required LabelsFacade labelsFacade,
     required BdkWalletDatasource bdkWalletTransactionDatasource,
     required LwkWalletDatasource lwkWalletTransactionDatasource,
-    required ElectrumServerPort electrumServerPort,
+    required ElectrumServersPort serversPort,
   }) : _labelsFacade = labelsFacade,
        _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
        _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
-       _electrumServerPort = electrumServerPort;
+       _serversPort = serversPort;
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({
@@ -185,41 +186,33 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         )
         .toList();
 
-    // TODO: We should extract syncing from fetching the data,
-    //  passing the getElectrumServers function here is a dirty hack for now
+    // TODO: We should extract syncing from fetching the data; routing the
+    //  port through a repository like this is a dirty hack for now.
     if (sync) {
       await Future.wait(
         walletModels.map((walletModel) async {
           final isLiquid = walletModel is PublicLwkWalletModel;
-
-          final electrumServers = await _electrumServerPort.getElectrumServers(
+          final network = ElectrumServerNetwork.fromEnvironment(
             isTestnet: walletModel.isTestnet,
             isLiquid: isLiquid,
           );
 
-          for (int i = 0; i < electrumServers.length; i++) {
-            try {
-              final electrumServer = electrumServers[i];
+          await _serversPort.runWithFallback<void>(
+            network: network,
+            operation: (connection) async {
               if (isLiquid) {
                 await _lwkWalletTransactionDatasource.sync(
                   wallet: walletModel,
-                  electrumServer: electrumServer,
+                  electrumServer: connection,
                 );
               } else {
                 await _bdkWalletTransactionDatasource.sync(
                   wallet: walletModel,
-                  electrumServer: electrumServer,
+                  electrumServer: connection,
                 );
               }
-              return;
-            } catch (e) {
-              // Log the error and try the next server
-              if (i == electrumServers.length - 1) {
-                throw Exception('All Electrum servers failed to sync.');
-              }
-              continue;
-            }
-          }
+            },
+          );
         }),
       );
     }

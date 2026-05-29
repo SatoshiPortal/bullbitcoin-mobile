@@ -13720,5 +13720,9 @@
   "importMnemonicDuplicateError": "This mnemonic already exists",
   "@importMnemonicDuplicateError": {
     "description": "Error message when user tries to import a mnemonic that already exists"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin completed",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Shown when a Payjoin transaction has been successfully completed"
   }
 }

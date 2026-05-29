@@ -44,10 +44,8 @@ class CoreLocator {
 
   static void registerPorts(GetIt locator) {
     ElectrumLocator.registerPorts(locator);
-    BlockchainLocator.registerPorts(locator);
     MempoolLocator.registerPorts(locator);
     SwapsLocator.registerPorts(locator);
-    WalletLocator.registerPorts(locator);
     LabelsLocator.registerPorts(locator);
   }
 
