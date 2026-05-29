@@ -84,46 +84,58 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
               orElse: () => false,
             );
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Gap(20),
-                  Center(child: FadingLinearProgress(trigger: isLoading)),
-                  BBText(
-                    context.loc.transactionHistoryHeading,
-                    style: context.font.headlineLarge,
-                    textAlign: TextAlign.center,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Gap(20),
+                        Center(child: FadingLinearProgress(trigger: isLoading)),
+                        BBText(
+                          context.loc.transactionHistoryHeading,
+                          style: context.font.headlineLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        const Gap(16),
+                        BBText(
+                          context.loc.exportTransactionsDescription,
+                          style: context.font.bodyLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        const Gap(32),
+                        _DateField(
+                          label: context.loc.exportTransactionsStartDate,
+                          value: _startDate == null
+                              ? null
+                              : _formatDate(_startDate!),
+                          onTap: () => _pickDate(isStart: true),
+                          onClear: _startDate == null
+                              ? null
+                              : () => setState(() => _startDate = null),
+                        ),
+                        const Gap(12),
+                        _DateField(
+                          label: context.loc.exportTransactionsEndDate,
+                          value: _endDate == null
+                              ? null
+                              : _formatDate(_endDate!),
+                          onTap: () => _pickDate(isStart: false),
+                          onClear: _endDate == null
+                              ? null
+                              : () => setState(() => _endDate = null),
+                        ),
+                        const Gap(32),
+                      ],
+                    ),
                   ),
-                  const Gap(16),
-                  BBText(
-                    context.loc.exportTransactionsDescription,
-                    style: context.font.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Gap(32),
-                  _DateField(
-                    label: context.loc.exportTransactionsStartDate,
-                    value: _startDate == null
-                        ? null
-                        : _formatDate(_startDate!),
-                    onTap: () => _pickDate(isStart: true),
-                    onClear: _startDate == null
-                        ? null
-                        : () => setState(() => _startDate = null),
-                  ),
-                  const Gap(12),
-                  _DateField(
-                    label: context.loc.exportTransactionsEndDate,
-                    value: _endDate == null ? null : _formatDate(_endDate!),
-                    onTap: () => _pickDate(isStart: false),
-                    onClear: _endDate == null
-                        ? null
-                        : () => setState(() => _endDate = null),
-                  ),
-                  const Spacer(),
-                  BBButton.big(
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(32, 0, 32, 20),
+                  child: BBButton.big(
                     label: context.loc.exportTransactionsButton,
                     onPressed: () async {
                       if (isLoading) return;
@@ -138,9 +150,8 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
                     iconFirst: true,
                     disabled: isLoading,
                   ),
-                  const Gap(20),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
