@@ -38,20 +38,18 @@ WalletTransaction _walletTx({
   );
 }
 
-Swap _lnReceive({
-  String id = 'swap_ln_recv',
-  String? receiveTxid,
-}) => Swap.lnReceive(
-  id: id,
-  keyIndex: 0,
-  type: SwapType.lightningToBitcoin,
-  status: SwapStatus.completed,
-  environment: Environment.mainnet,
-  creationTime: DateTime.utc(2026, 3, 1, 12),
-  receiveWalletId: 'w1',
-  invoice: 'lnbc_test_invoice_recv',
-  receiveTxid: receiveTxid,
-);
+Swap _lnReceive({String id = 'swap_ln_recv', String? receiveTxid}) =>
+    Swap.lnReceive(
+      id: id,
+      keyIndex: 0,
+      type: SwapType.lightningToBitcoin,
+      status: SwapStatus.completed,
+      environment: Environment.mainnet,
+      creationTime: DateTime.utc(2026, 3, 1, 12),
+      receiveWalletId: 'w1',
+      invoice: 'lnbc_test_invoice_recv',
+      receiveTxid: receiveTxid,
+    );
 
 Swap _lnSend({
   String id = 'swap_ln_send',
@@ -219,22 +217,25 @@ void main() {
     expect(csv, isNot(contains('no_time')));
   });
 
-  test('swap status takes precedence over confirmed wallet tx status', () async {
-    final swap = _lnReceive(receiveTxid: 'recv_txid');
-    stub([
-      Transaction(
-        swap: swap.copyWith(status: SwapStatus.claimable),
-        walletTransaction: _walletTx(
-          txId: 'recv_txid',
-          amountSat: 80000,
-          confirmationTime: DateTime.utc(2026, 3, 1, 12),
+  test(
+    'swap status takes precedence over confirmed wallet tx status',
+    () async {
+      final swap = _lnReceive(receiveTxid: 'recv_txid');
+      stub([
+        Transaction(
+          swap: swap.copyWith(status: SwapStatus.claimable),
+          walletTransaction: _walletTx(
+            txId: 'recv_txid',
+            amountSat: 80000,
+            confirmationTime: DateTime.utc(2026, 3, 1, 12),
+          ),
         ),
-      ),
-    ]);
+      ]);
 
-    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
-    expect(row[6], 'pending');
-  });
+      final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+      expect(row[6], 'pending');
+    },
+  );
 
   test('throws NoTransactionsToExportError when list is empty', () async {
     stub([]);
@@ -278,33 +279,33 @@ void main() {
     expect(lines[2], contains('old'));
   });
 
-  test('LN receive swap row has empty network and address, correct type', () async {
-    final swap = _lnReceive(receiveTxid: 'recv_txid');
-    stub([
-      Transaction(
-        swap: swap,
-        walletTransaction: _walletTx(
-          txId: 'recv_txid',
-          amountSat: 80000,
-          confirmationTime: DateTime.utc(2026, 3, 1, 12),
+  test(
+    'LN receive swap row has empty network and address, correct type',
+    () async {
+      final swap = _lnReceive(receiveTxid: 'recv_txid');
+      stub([
+        Transaction(
+          swap: swap,
+          walletTransaction: _walletTx(
+            txId: 'recv_txid',
+            amountSat: 80000,
+            confirmationTime: DateTime.utc(2026, 3, 1, 12),
+          ),
         ),
-      ),
-    ]);
+      ]);
 
-    final row = (await usecase.execute()).trim().split('\n')[1].split(',');
-    expect(row[1], 'lightning_receive');
-    expect(row[2], 'incoming');
-    expect(row[8], 'lightning'); // network
-    expect(row[9], '');          // address
-    expect(row[10], 'swap_ln_recv'); // swap_id
-    expect(row[11], '');      // preimage (none for receive)
-  });
+      final row = (await usecase.execute()).trim().split('\n')[1].split(',');
+      expect(row[1], 'lightning_receive');
+      expect(row[2], 'incoming');
+      expect(row[8], 'lightning'); // network
+      expect(row[9], ''); // address
+      expect(row[10], 'swap_ln_recv'); // swap_id
+      expect(row[11], ''); // preimage (none for receive)
+    },
+  );
 
   test('LN send swap row has preimage, empty network and address', () async {
-    final swap = _lnSend(
-      sendTxid: 'send_txid',
-      preimage: 'abc123preimage',
-    );
+    final swap = _lnSend(sendTxid: 'send_txid', preimage: 'abc123preimage');
     stub([
       Transaction(
         swap: swap,
@@ -322,59 +323,59 @@ void main() {
     expect(row[1], 'lightning_send');
     expect(row[2], 'outgoing');
     expect(row[8], 'lightning'); // network
-    expect(row[9], '');          // address
+    expect(row[9], ''); // address
     expect(row[10], 'swap_ln_send'); // swap_id
     expect(row[11], 'abc123preimage'); // preimage
   });
 
-  test('chain swap: only receive leg exported, address and networks correct', () async {
-    final swap = _chainSwap(
-      sendTxid: 'chain_send_txid',
-      receiveTxid: 'chain_recv_txid',
-      receiveAddress: 'VJLCbLBTCksDqx1',
-      type: SwapType.bitcoinToLiquid,
-    );
-    stub([
-      Transaction(
-        swap: swap,
-        walletTransaction: _walletTx(
-          txId: 'chain_send_txid',
-          amountSat: 100000,
-          direction: WalletTransactionDirection.outgoing,
-          confirmationTime: DateTime.utc(2026, 3, 3, 10),
+  test(
+    'chain swap: only receive leg exported, address and networks correct',
+    () async {
+      final swap = _chainSwap(
+        sendTxid: 'chain_send_txid',
+        receiveTxid: 'chain_recv_txid',
+        receiveAddress: 'VJLCbLBTCksDqx1',
+        type: SwapType.bitcoinToLiquid,
+      );
+      stub([
+        Transaction(
+          swap: swap,
+          walletTransaction: _walletTx(
+            txId: 'chain_send_txid',
+            amountSat: 100000,
+            direction: WalletTransactionDirection.outgoing,
+            confirmationTime: DateTime.utc(2026, 3, 3, 10),
+          ),
         ),
-      ),
-      Transaction(
-        swap: swap,
-        walletTransaction: _walletTx(
-          txId: 'chain_recv_txid',
-          amountSat: 99000,
-          network: Network.liquidMainnet,
-          direction: WalletTransactionDirection.incoming,
-          confirmationTime: DateTime.utc(2026, 3, 3, 10),
+        Transaction(
+          swap: swap,
+          walletTransaction: _walletTx(
+            txId: 'chain_recv_txid',
+            amountSat: 99000,
+            network: Network.liquidMainnet,
+            direction: WalletTransactionDirection.incoming,
+            confirmationTime: DateTime.utc(2026, 3, 3, 10),
+          ),
         ),
-      ),
-    ]);
+      ]);
 
-    final lines = (await usecase.execute()).trim().split('\n');
-    expect(lines.length, 2, reason: 'send leg must be deduplicated');
+      final lines = (await usecase.execute()).trim().split('\n');
+      expect(lines.length, 2, reason: 'send leg must be deduplicated');
 
-    final row = lines[1].split(',');
-    expect(row[1], 'chain_swap');
-    expect(row[8], 'liquid');           // network = receive network (the kept leg)
-    expect(row[9], 'VJLCbLBTCksDqx1'); // address = receiveAddress
-    expect(row[10], 'swap_chain');
-    expect(row[13], 'bitcoin');        // send_network
-    expect(row[14], 'liquid');         // receive_network
-    expect(row[15], 'chain_send_txid');
-    expect(row[16], 'chain_recv_txid');
-  });
+      final row = lines[1].split(',');
+      expect(row[1], 'chain_swap');
+      expect(row[8], 'liquid'); // network = receive network (the kept leg)
+      expect(row[9], 'VJLCbLBTCksDqx1'); // address = receiveAddress
+      expect(row[10], 'swap_chain');
+      expect(row[13], 'bitcoin'); // send_network
+      expect(row[14], 'liquid'); // receive_network
+      expect(row[15], 'chain_send_txid');
+      expect(row[16], 'chain_recv_txid');
+    },
+  );
 
   test('chain swap with only send leg (no receive yet) is kept', () async {
-    final swap = _chainSwap(
-      sendTxid: 'chain_send_only',
-      receiveTxid: null,
-    );
+    final swap = _chainSwap(sendTxid: 'chain_send_only', receiveTxid: null);
     stub([
       Transaction(
         swap: swap,
@@ -389,7 +390,38 @@ void main() {
 
     final lines = (await usecase.execute()).trim().split('\n');
     expect(lines.length, 2);
-    expect(lines[1], contains('chain_send_only'));
+    final row = lines[1].split(',');
+    expect(row, contains('chain_send_only'));
+    expect(row[8], 'bitcoin'); // network = send network (the kept leg)
+  });
+
+  test('expired swaps are excluded from the export', () async {
+    stub([
+      Transaction(
+        swap: _lnSend(
+          id: 'expired_swap',
+          sendTxid: 'expired_tx',
+        ).copyWith(status: SwapStatus.expired),
+        walletTransaction: _walletTx(
+          txId: 'expired_tx',
+          amountSat: 50000,
+          direction: WalletTransactionDirection.outgoing,
+          confirmationTime: DateTime.utc(2026, 3, 2, 14),
+        ),
+      ),
+      Transaction(
+        walletTransaction: _walletTx(
+          txId: 'non_swap_tx',
+          amountSat: 30000,
+          confirmationTime: DateTime.utc(2026, 3, 4, 10),
+        ),
+      ),
+    ]);
+
+    final csv = await usecase.execute();
+    expect(csv, isNot(contains('expired_swap')));
+    expect(csv, isNot(contains('expired_tx')));
+    expect(csv, contains('non_swap_tx'));
   });
 
   test('payjoin send row has correct type and bitcoin network', () async {

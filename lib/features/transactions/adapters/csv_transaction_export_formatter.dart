@@ -45,9 +45,23 @@ class _ExportRow {
   final String receiveTxid;
 
   List<String> toFields() => [
-    date, type, direction, amountSats, amountBtc, feeSats, status, txid,
-    network, address, swapId, preimage, swapFeeSats,
-    sendNetwork, receiveNetwork, sendTxid, receiveTxid,
+    date,
+    type,
+    direction,
+    amountSats,
+    amountBtc,
+    feeSats,
+    status,
+    txid,
+    network,
+    address,
+    swapId,
+    preimage,
+    swapFeeSats,
+    sendNetwork,
+    receiveNetwork,
+    sendTxid,
+    receiveTxid,
   ];
 }
 
@@ -86,7 +100,8 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     final payjoin = tx.payjoin;
     final wt = tx.walletTransaction;
 
-    final isLnSwap = swap?.isLnSendSwap == true || swap?.isLnReceiveSwap == true;
+    final isLnSwap =
+        swap?.isLnSendSwap == true || swap?.isLnReceiveSwap == true;
     final isChainSwap = swap?.isChainSwap == true;
     final amountSat = tx.amountSat;
     final feeSat = tx.isIncoming ? 0 : (wt?.feeSat ?? 0);
@@ -183,7 +198,10 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     bool isChainSwap,
   ) {
     if (isLnSwap) return 'lightning';
-    if (isChainSwap) return _chainNetwork(swap!, send: false);
+    if (isChainSwap) {
+      final isOutgoing = tx.walletTransaction?.isOutgoing ?? false;
+      return _chainNetwork(swap!, send: isOutgoing);
+    }
     return tx.isBitcoin ? 'bitcoin' : 'liquid';
   }
 

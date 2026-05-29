@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/application/application_errors.dart';
@@ -25,22 +26,21 @@ class ExportTransactionsCsvUsecase {
         ? null
         : DateTime(end.year, end.month, end.day + 1);
 
-    final filtered =
-        transactions.where((tx) {
-          if (tx.isOrder) return false;
-          final timestamp = tx.timestamp;
-          if (timestamp == null) return start == null && exclusiveEnd == null;
-          if (start != null && timestamp.isBefore(start)) return false;
-          if (exclusiveEnd != null && !timestamp.isBefore(exclusiveEnd)) {
-            return false;
-          }
-          return true;
-        }).toList();
+    final filtered = transactions.where((tx) {
+      if (tx.isOrder) return false;
+      if (tx.swap?.status == SwapStatus.expired) return false;
+      final timestamp = tx.timestamp;
+      if (timestamp == null) return start == null && exclusiveEnd == null;
+      if (start != null && timestamp.isBefore(start)) return false;
+      if (exclusiveEnd != null && !timestamp.isBefore(exclusiveEnd)) {
+        return false;
+      }
+      return true;
+    }).toList();
 
     final chainSwapIdsWithReceiveLeg = filtered
         .where(
-          (tx) =>
-              tx.isChainSwap && tx.walletTransaction?.isIncoming == true,
+          (tx) => tx.isChainSwap && tx.walletTransaction?.isIncoming == true,
         )
         .map((tx) => tx.swap!.id)
         .toSet();
@@ -48,10 +48,11 @@ class ExportTransactionsCsvUsecase {
     final rows =
         filtered
             .where(
-              (tx) => !(tx.isChainSwap &&
-                  tx.walletTransaction != null &&
-                  tx.walletTransaction!.isOutgoing &&
-                  chainSwapIdsWithReceiveLeg.contains(tx.swap!.id)),
+              (tx) =>
+                  !(tx.isChainSwap &&
+                      tx.walletTransaction != null &&
+                      tx.walletTransaction!.isOutgoing &&
+                      chainSwapIdsWithReceiveLeg.contains(tx.swap!.id)),
             )
             .toList()
           ..sort(_byTimestamp);
