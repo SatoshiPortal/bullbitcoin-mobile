@@ -55,7 +55,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
       _status(tx),
       tx.txId ?? '',
       isChainSwap ? _chainNetwork(swap!, send: true) : (tx.isBitcoin ? 'bitcoin' : 'liquid'),
-      isLightning ? '' : (tx.toAddress ?? swap?.receiveAddress ?? ''),
+      isLightning ? '' : isChainSwap ? (swap?.receiveAddress ?? '') : (tx.toAddress ?? ''),
       swap?.id ?? '',
       _invoice(swap),
       _preimage(swap),

@@ -21,17 +21,35 @@ class ExportTransactionsCsvUsecase {
         ? null
         : DateTime(end.year, end.month, end.day, 23, 59, 59);
 
-    final rows =
+    final filtered =
         transactions.where((tx) {
-            if (tx.isOrder) return false;
-            final timestamp = tx.timestamp;
-            if (timestamp == null) return start == null && inclusiveEnd == null;
-            if (start != null && timestamp.isBefore(start)) return false;
-            if (inclusiveEnd != null && timestamp.isAfter(inclusiveEnd)) {
-              return false;
-            }
-            return true;
-          }).toList()
+          if (tx.isOrder) return false;
+          final timestamp = tx.timestamp;
+          if (timestamp == null) return start == null && inclusiveEnd == null;
+          if (start != null && timestamp.isBefore(start)) return false;
+          if (inclusiveEnd != null && timestamp.isAfter(inclusiveEnd)) {
+            return false;
+          }
+          return true;
+        }).toList();
+
+    final chainSwapIdsWithReceiveLeg = filtered
+        .where(
+          (tx) =>
+              tx.isChainSwap && tx.walletTransaction?.isIncoming == true,
+        )
+        .map((tx) => tx.swap!.id)
+        .toSet();
+
+    final rows =
+        filtered
+            .where(
+              (tx) => !(tx.isChainSwap &&
+                  tx.walletTransaction != null &&
+                  tx.walletTransaction!.isOutgoing &&
+                  chainSwapIdsWithReceiveLeg.contains(tx.swap!.id)),
+            )
+            .toList()
           ..sort(_byTimestamp);
 
     if (rows.isEmpty) {
