@@ -1,11 +1,16 @@
 #!/bin/sh
 # Normalize host socket paths for devcontainer mounts.
-# Targets are fixed (/tmp/ssh-agent.sock, /tmp/wayland.sock) so devcontainer.json
-# doesn't depend on host env vars that may be unset (XDG_RUNTIME_DIR, WAYLAND_DISPLAY).
+# Targets are fixed so devcontainer.json doesn't depend on host env vars that
+# may be unset (XDG_RUNTIME_DIR, WAYLAND_DISPLAY).
+#
+# The SSH agent socket lives under $HOME (not /tmp) so it's visible inside the
+# podman-machine VM on macOS, which bind-mounts /Users from the host but not
+# /tmp. Wayland stays in /tmp since it's Linux-only (macOS has no Wayland).
+SSH_SOCKET="${HOME}/.ssh-agent-devcontainer.sock"
 case "$(uname)" in
   Linux)
     # SSH agent: symlink the real socket
-    ln -sf "$SSH_AUTH_SOCK" /tmp/ssh-agent.sock
+    ln -sf "$SSH_AUTH_SOCK" "$SSH_SOCKET"
 
     # Wayland: symlink the real socket if running under Wayland; otherwise dummy file
     if [ -n "$WAYLAND_DISPLAY" ] && [ -n "$XDG_RUNTIME_DIR" ] \
@@ -18,7 +23,7 @@ case "$(uname)" in
     ;;
   Darwin)
     # Dummies so the mounts don't fail (neither socket is supported on macOS Podman)
-    rm -f /tmp/ssh-agent.sock /tmp/wayland.sock
-    touch /tmp/ssh-agent.sock /tmp/wayland.sock
+    rm -f "$SSH_SOCKET" /tmp/wayland.sock
+    touch "$SSH_SOCKET" /tmp/wayland.sock
     ;;
 esac
