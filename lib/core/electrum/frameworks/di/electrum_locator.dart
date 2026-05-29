@@ -71,7 +71,9 @@ class ElectrumLocator {
     );
     locator.registerLazySingleton<ElectrumServersPort>(
       () => ElectrumServersAdapter(
-        repository: locator<ElectrumServerRepository>(),
+        serverRepository: locator<ElectrumServerRepository>(),
+        settingsRepository: locator<ElectrumSettingsRepository>(),
+        appSettingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerLazySingleton<TransactionPort>(

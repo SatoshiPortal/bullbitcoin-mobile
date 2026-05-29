@@ -91,5 +91,27 @@ void main() {
       );
       expect(tried, ['a']);
     });
+
+    test('default isTransient does NOT catch Error subclasses', () async {
+      // A programming bug surfacing as `Error` (TypeError, StateError, a
+      // failed assertion) must propagate immediately — retrying it against
+      // every server would mask the bug as "all servers failed".
+      final tried = <String>[];
+      await expectLater(
+        _run([const _Server('a'), const _Server('b')], (s) async {
+          tried.add(s.url);
+          throw StateError('programmer bug');
+        }),
+        throwsA(isA<StateError>()),
+      );
+      expect(tried, ['a']);
+    });
+
+    test('throws ArgumentError on empty server list', () async {
+      await expectLater(
+        _run<void>([], (_) async {}),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
   });
 }
