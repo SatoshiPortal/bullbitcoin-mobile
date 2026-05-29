@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,6 +28,7 @@ class TorPortInputBottomSheet extends StatefulWidget {
 
 class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
   final _formKey = GlobalKey<FormState>();
+  final _portNode = FocusNode();
   late TextEditingController _controller;
 
   @override
@@ -38,6 +40,7 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
   @override
   void dispose() {
     _controller.dispose();
+    _portNode.dispose();
     super.dispose();
   }
 
@@ -73,53 +76,58 @@ class _TorPortInputBottomSheetState extends State<TorPortInputBottomSheet> {
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: .min,
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Center(
-                  child: BBText(
-                    context.loc.torSettingsProxyPort,
-                    style: context.font.headlineMedium,
+      child: BBKeyboardActions(
+        isDialog: true,
+        focusNodes: [_portNode],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: .min,
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Center(
+                    child: BBText(
+                      context.loc.torSettingsProxyPort,
+                      style: context.font.headlineMedium,
+                    ),
                   ),
-                ),
-                Positioned(
-                  right: 0,
-                  child: IconButton(
-                    iconSize: 24,
-                    icon: const Icon(Icons.close),
-                    onPressed: context.pop,
+                  Positioned(
+                    right: 0,
+                    child: IconButton(
+                      iconSize: 24,
+                      icon: const Icon(Icons.close),
+                      onPressed: context.pop,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const Gap(24),
-            TextFormField(
-              controller: _controller,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: InputDecoration(
-                labelText: context.loc.torSettingsPortNumber,
-                hintText: context.loc.torSettingsPortHint,
-                border: const OutlineInputBorder(),
-                helperText: context.loc.torSettingsPortHelper,
+                ],
               ),
-              validator: (value) => _validatePort(value, context),
-              onFieldSubmitted: (_) => _submit(),
-              autofocus: true,
-            ),
-            const Gap(24),
-            BBButton.big(
-              label: context.loc.torSettingsSaveButton,
-              onPressed: _submit,
-              bgColor: context.appColors.primary,
-              textColor: context.appColors.onPrimary,
-            ),
-          ],
+              const Gap(24),
+              TextFormField(
+                controller: _controller,
+                focusNode: _portNode,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  labelText: context.loc.torSettingsPortNumber,
+                  hintText: context.loc.torSettingsPortHint,
+                  border: const OutlineInputBorder(),
+                  helperText: context.loc.torSettingsPortHelper,
+                ),
+                validator: (value) => _validatePort(value, context),
+                onFieldSubmitted: (_) => _submit(),
+                autofocus: true,
+              ),
+              const Gap(24),
+              BBButton.big(
+                label: context.loc.torSettingsSaveButton,
+                onPressed: _submit,
+                bgColor: context.appColors.primary,
+                textColor: context.appColors.onPrimary,
+              ),
+            ],
+          ),
         ),
       ),
     );
