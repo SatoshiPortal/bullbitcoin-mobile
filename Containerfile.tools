@@ -166,14 +166,17 @@ RUN mv /home/$USER/.cargo/bin/rustup /home/$USER/.cargo/bin/rustup.real && \
     printf '#!/bin/sh\nexec flock /tmp/rustup.lock /home/%s/.cargo/bin/rustup.real "$@"\n' "$USER" > /home/$USER/.cargo/bin/rustup && \
     chmod +x /home/$USER/.cargo/bin/rustup
 
-# Persistent bash history (backed by a named volume mounted at ~/.history)
-RUN cat >> /home/$USER/.bashrc <<'EOF'
-
-# Persist bash history across container restarts/rebuilds via mounted volume
-export HISTFILE="$HOME/.history/bash_history"
-export HISTSIZE=-1
-export HISTFILESIZE=-1
-export HISTCONTROL=ignoredups
-shopt -s histappend
-export PROMPT_COMMAND="history -a; ${PROMPT_COMMAND:-}"
-EOF
+# Persistent bash history (backed by a named volume mounted at ~/.history).
+# Written via printf rather than a RUN heredoc — heredocs require BuildKit,
+# and podman's classic imagebuilder parses each heredoc line as a separate
+# Containerfile instruction (fails on the first `export` line).
+RUN printf '%s\n' \
+    '' \
+    '# Persist bash history across container restarts/rebuilds via mounted volume' \
+    'export HISTFILE="$HOME/.history/bash_history"' \
+    'export HISTSIZE=-1' \
+    'export HISTFILESIZE=-1' \
+    'export HISTCONTROL=ignoredups' \
+    'shopt -s histappend' \
+    'export PROMPT_COMMAND="history -a; ${PROMPT_COMMAND:-}"' \
+    >> /home/$USER/.bashrc
