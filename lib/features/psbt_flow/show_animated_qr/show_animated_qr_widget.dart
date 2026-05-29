@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:bb_mobile/core/entities/signer_device_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/qr_display_widget.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_cubit.dart';
 import 'package:bb_mobile/features/psbt_flow/show_animated_qr/show_animated_qr_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class ShowAnimatedQrWidget extends StatelessWidget {
   final String psbt;
@@ -119,12 +119,10 @@ class _ShowAnimatedQrViewState extends State<_ShowAnimatedQrView> {
           child: Column(
             mainAxisAlignment: .start,
             children: [
-              QrImageView(
-                data: state.parts[state.currentIndex],
-                // This color must stay hardcoded and not adapt to the theme.
-                // ColdCard can read only QR with white background.
-                backgroundColor: context.appColors.onPrimaryFixed,
-              ),
+              // QR must keep a generous white quiet zone in dark mode so
+              // hardware scanners (Jade, ColdCard) can detect the code on
+              // large PSBT payloads. See #1917.
+              QrDisplayWidget(data: state.parts[state.currentIndex]),
               const Gap(16),
               if (widget.showSlider) ...[
                 Padding(

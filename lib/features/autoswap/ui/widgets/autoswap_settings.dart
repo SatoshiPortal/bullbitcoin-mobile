@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -595,13 +596,9 @@ class _SaveButton extends StatelessWidget {
               context.read<AutoSwapSettingsCubit>().updateSettings().catchError(
                 (e) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: BBText(
-                          context.loc.autoswapSaveErrorMessage(e.toString()),
-                          style: context.font.bodyMedium,
-                        ),
-                      ),
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      context.loc.autoswapSaveErrorMessage(e.toString()),
                     );
                   }
                 },

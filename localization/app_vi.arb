@@ -201,6 +201,7 @@
   "transactionSwapOpenWithin24Hours": "Mở ứng dụng trong vòng 24 giờ để hoàn tất hoán đổi của bạn.",
   "appStartupErrorMessage": "Không thể khởi động ứng dụng. Hãy thử đóng hoàn toàn ứng dụng và khởi động lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ hỗ trợ và gửi nhật ký của bạn.",
   "importMnemonicDuplicateError": "Cụm từ ghi nhớ này đã tồn tại",
+  "transactionStatusPayjoinCompleted": "Payjoin đã hoàn tất",
   "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
@@ -217,5 +218,39 @@
   "viewerViewInExplorer": "Xem trong trình duyệt",
   "viewerCopyLink": "Sao chép liên kết",
   "transactionViewerTitle": "Mã giao dịch",
-  "invoiceViewerTitle": "Hóa đơn"
+  "invoiceViewerTitle": "Hóa đơn",
+  "recipientsFieldSinpePhoneNumberHint": "8 chữ số không bao gồm mã quốc gia",
+  "recipientsCopDocCcRecipientNumber": "Số cédula của người nhận",
+  "recipientsCopDocCeRecipientNumber": "Số cédula de extranjería của người nhận",
+  "recipientsCopDocNitRecipientNumber": "Mã số thuế của người nhận",
+  "recipientsCopDocPassportRecipientNumber": "Số hộ chiếu của người nhận",
+  "recipientsCopDocTiRecipientNumber": "Số chứng minh thư của người nhận",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Số đăng ký hộ tịch của người nhận",
+  "recipientsValidationSinpePhoneCountryCode": "Bỏ mã quốc gia (+506). Chỉ nhập số 8 chữ số",
+  "recipientsValidationSinpePhoneInvalidChars": "Chỉ dùng chữ số (không chữ cái hay ký hiệu)",
+  "recipientsValidationSinpePhoneTooShort": "Nhập đầy đủ 8 chữ số của số điện thoại",
+  "recipientsFieldDocumentType": "Loại giấy tờ tùy thân của người nhận",
+  "recipientsFieldDocumentNumberHint": "Nhập số giấy tờ tùy thân của người nhận",
+  "recipientsValidationSinpePhone": "Nhập số điện thoại Costa Rica hợp lệ 8 chữ số không bao gồm mã quốc gia",
+  "payDescriptionLabel": "Mô tả thanh toán (tùy chọn)",
+  "payDescriptionHint": "Thêm ghi chú cho khoản thanh toán này",
+  "payPaymentDescription": "Mô tả thanh toán",
+  "transactionDetailLabelPaymentDescription": "Mô tả thanh toán",
+  "transactionHistoryTitle": "Lịch sử giao dịch",
+  "transactionHistoryHeading": "Lịch sử giao dịch",
+  "exportTransactionsDescription": "Xuất tất cả giao dịch ví của bạn (Bitcoin, Liquid, Lightning và swap) dưới dạng tệp CSV. Tùy chọn lọc theo khoảng thời gian.",
+  "exportTransactionsStartDate": "Ngày bắt đầu",
+  "exportTransactionsEndDate": "Ngày kết thúc",
+  "exportTransactionsAnyDate": "Bất kỳ",
+  "exportTransactionsButton": "Xuất CSV",
+  "exportTransactionsSuccess": "Đã xuất giao dịch thành công",
+  "exportTransactionsEmpty": "Không có giao dịch nào để xuất trong khoảng thời gian đã chọn",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Ngày bắt đầu phải trước ngày kết thúc",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  }
 }

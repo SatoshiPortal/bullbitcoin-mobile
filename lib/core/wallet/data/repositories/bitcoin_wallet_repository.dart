@@ -8,9 +8,9 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasourc
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/electrum/domain/value_objects/electrum_connection.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 
 class BitcoinWalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -197,7 +197,7 @@ class BitcoinWalletRepository {
     required String passphrase,
     required ScriptType scriptType,
     required bool isTestnet,
-    required ElectrumServer electrumServer,
+    required ElectrumConnection electrumServer,
   }) {
     return _bdkWallet.dryScan(
       entropy: entropy,

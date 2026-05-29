@@ -54,13 +54,25 @@ class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
 
+  /// Observes route push/pop on the root navigator. Subscribed to by
+  /// [_WalletHomeScreenState] (via [RouteAware]) so that landing on the
+  /// wallet home — either by initial push or by popping a sub-route on top
+  /// — dispatches a throttled `WalletRefreshed`. The shell route is
+  /// configured with `notifyRootObserver: true` so transitions inside the
+  /// shell still reach this observer.
+  static final RouteObserver<ModalRoute<void>> routeObserver =
+      RouteObserver<ModalRoute<void>>();
+
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
     // Breadcrumbs only — `enableAutoTransactions: false` skips the
     // performance/TTID instrumentation so we stay within the
     // error-reporting scope (consent-gated) rather than perf tracing.
-    observers: [SentryNavigatorObserver(enableAutoTransactions: false)],
+    observers: [
+      SentryNavigatorObserver(enableAutoTransactions: false),
+      routeObserver,
+    ],
     routes: [
       ShellRoute(
         notifyRootObserver: true,
@@ -146,6 +158,7 @@ class AppRouter {
       WalletRouter.walletDetailRoute,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
+      TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route,

@@ -9,7 +9,14 @@ class WalletStarted extends WalletEvent {
 }
 
 class WalletRefreshed extends WalletEvent {
-  const WalletRefreshed();
+  const WalletRefreshed({this.force = false});
+
+  /// When `true`, bypasses the [SyncCoordinator] per-kind throttle. Reserved
+  /// for explicit user gestures such as pull-to-refresh. Default callers
+  /// (route-aware navigation triggers, environment changes, post-startup)
+  /// leave this `false` so back-pop-to-home doesn't burn the network on
+  /// every navigation.
+  final bool force;
 }
 
 class WalletSyncStarted extends WalletEvent {

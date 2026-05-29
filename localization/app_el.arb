@@ -3972,6 +3972,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Τα hardware πορτοφόλια δεν μπορούν να χρησιμοποιηθούν για ανταλλαγές.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Δεν υπάρχουν διαθέσιμα δεδομένα ισορροπίας",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -4219,6 +4223,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "Pay",
+  "payDescriptionLabel": "Περιγραφή πληρωμής (προαιρετικό)",
+  "payDescriptionHint": "Προσθέστε μια σημείωση για αυτήν την πληρωμή",
+  "payPaymentDescription": "Περιγραφή πληρωμής",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -6481,6 +6488,23 @@
   "allSeedViewDeleteWarningMessage": "Η διαγραφή του σπόρου είναι μια μη αναστρέψιμη δράση. Μόνο αν έχετε εξασφαλίσει αντίγραφα ασφαλείας αυτού του σπόρου ή τα συνδεδεμένα πορτοφόλια έχουν αποστραγγιστεί πλήρως.",
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
+  },
+  "transactionHistoryTitle": "Ιστορικό συναλλαγών",
+  "transactionHistoryHeading": "Ιστορικό συναλλαγών",
+  "exportTransactionsDescription": "Εξαγωγή όλων των συναλλαγών του πορτοφολιού σας (Bitcoin, Liquid, Lightning και swaps) ως αρχείο CSV. Προαιρετικά φιλτράρετε ανά εύρος ημερομηνιών.",
+  "exportTransactionsStartDate": "Ημερομηνία έναρξης",
+  "exportTransactionsEndDate": "Ημερομηνία λήξης",
+  "exportTransactionsAnyDate": "Οποιαδήποτε",
+  "exportTransactionsButton": "Εξαγωγή CSV",
+  "exportTransactionsSuccess": "Οι συναλλαγές εξήχθησαν με επιτυχία",
+  "exportTransactionsEmpty": "Δεν υπάρχουν συναλλαγές προς εξαγωγή για την επιλεγμένη περίοδο",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Η ημερομηνία έναρξης πρέπει να είναι πριν από την ημερομηνία λήξης",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
   },
   "bip329LabelsTitle": "BIP329 ετικέτες",
   "@bip329LabelsTitle": {
@@ -12067,6 +12091,7 @@
     "description": "Instruction to select camera load option on device"
   },
   "transactionDetailLabelOrderNumber": "Αριθμός αριθμών",
+  "transactionDetailLabelPaymentDescription": "Περιγραφή πληρωμής",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -12649,8 +12674,8 @@
   "recipientsFieldRecipientNameLabel": "Όνομα του παραλήπτη",
   "recipientsFieldPhoneNumber": "Αριθμός τηλεφώνου",
   "recipientsFieldPhoneNumberHint": "Εισαγάγετε τον αριθμό τηλεφώνου",
-  "recipientsFieldDocumentType": "Τύπος εγγράφου ταυτότητας",
-  "recipientsFieldDocumentNumberHint": "Εισαγάγετε τον αριθμό του εγγράφου",
+  "recipientsFieldDocumentType": "Τύπος ταυτότητας παραλήπτη",
+  "recipientsFieldDocumentNumberHint": "Εισαγάγετε τον αριθμό ταυτότητας του παραλήπτη",
   "recipientsFieldOwnerName": "Όνομα κατόχου",
   "recipientsFieldOwnerNameHint": "Εισαγάγετε το όνομα του κατόχου",
   "recipientsAccountOwnerQuestion": "Σε ποιον ανήκει αυτός ο λογαριασμός;",
@@ -12679,7 +12704,7 @@
   "recipientsFieldDebitCard": "Αριθμός χρεωστικής κάρτας",
   "recipientsFieldDebitCardHint": "Εισαγάγετε τον αριθμό της χρεωστικής κάρτας",
   "recipientsFieldOwnerNameSinpeHint": "Το όνομα του κατόχου θα εμφανιστεί εδώ",
-  "recipientsValidationSinpePhone": "Εισαγάγετε έγκυρο 8ψήφιο αριθμό τηλεφώνου",
+  "recipientsValidationSinpePhone": "Εισαγάγετε έγκυρο 8ψήφιο αριθμό τηλεφώνου Κόστα Ρίκα χωρίς τον κωδικό χώρας",
   "recipientsValidationSinpeOwner": "Επικυρώστε τον αριθμό τηλεφώνου",
   "recipientsFieldEmailAddress": "Διεύθυνση email",
   "recipientsFieldEmailAddressHint": "Εισαγάγετε τη διεύθυνση email",
@@ -12720,5 +12745,15 @@
   "exchangeSupportChatPickFilesFailed": "Η επιλογή αρχείων απέτυχε. Δοκιμάστε ξανά.",
   "exchangeSupportChatAttachLogsFailed": "Η επισύναψη αρχείων καταγραφής απέτυχε. Δοκιμάστε ξανά.",
   "exchangeSupportChatFetchFileDataFailed": "Η ανάκτηση δεδομένων αρχείου απέτυχε.",
-  "importMnemonicDuplicateError": "Αυτή η μνημονική φράση υπάρχει ήδη"
+  "recipientsFieldSinpePhoneNumberHint": "8 ψηφία χωρίς κωδικό χώρας",
+  "recipientsCopDocCcRecipientNumber": "Αριθμός cédula παραλήπτη",
+  "recipientsCopDocCeRecipientNumber": "Αριθμός cédula de extranjería παραλήπτη",
+  "recipientsCopDocNitRecipientNumber": "ΑΦΜ παραλήπτη",
+  "recipientsCopDocPassportRecipientNumber": "Αριθμός διαβατηρίου παραλήπτη",
+  "recipientsCopDocTiRecipientNumber": "Αριθμός ταυτότητας παραλήπτη",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Αριθμός ληξιαρχικής εγγραφής παραλήπτη",
+  "recipientsValidationSinpePhoneCountryCode": "Αφαιρέστε τον κωδικό χώρας (+506). Εισαγάγετε μόνο τον 8ψήφιο αριθμό",
+  "recipientsValidationSinpePhoneInvalidChars": "Χρησιμοποιήστε μόνο ψηφία (όχι γράμματα ή σύμβολα)",
+  "recipientsValidationSinpePhoneTooShort": "Εισαγάγετε και τα 8 ψηφία του αριθμού τηλεφώνου",
+  "transactionStatusPayjoinCompleted": "Το Payjoin ολοκληρώθηκε"
 }

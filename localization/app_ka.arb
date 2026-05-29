@@ -413,6 +413,7 @@
   "transactionSwapOpenWithin24Hours": "გახსენით აპი 24 საათის განმავლობაში, რათა დაასრულოთ თქვენი სვოპი.",
   "appStartupErrorMessage": "აპის გაშვება ვერ მოხერხდა. სცადეთ მისი სრულად დახურვა და თავიდან გაშვება. თუ შეცდომა გაგრძელდა, დაუკავშირდით მხარდაჭერას და გააზიარეთ ლოგები.",
   "importMnemonicDuplicateError": "ეს მნემონიკი უკვე არსებობს",
+  "transactionStatusPayjoinCompleted": "Payjoin დასრულდა",
   "pinCodeBackupRequiredWarning": "გთხოვთ, PIN-ის დაყენებამდე შეასრულოთ საფულის სარეზერვო ასლი",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
@@ -429,5 +430,39 @@
   "viewerViewInExplorer": "Დათვალიერება ექსპლორერში",
   "transactionViewerTitle": "ტრანსაქციის ID ",
   "invoiceViewerTitle": "ინვოისი",
-  "viewerCopyLink": "ბმულის კოპირება"
+  "viewerCopyLink": "ბმულის კოპირება",
+  "recipientsFieldSinpePhoneNumberHint": "8 ციფრი ქვეყნის კოდის გარეშე",
+  "recipientsCopDocCcRecipientNumber": "მიმღების cédula ნომერი",
+  "recipientsCopDocCeRecipientNumber": "მიმღების cédula de extranjería ნომერი",
+  "recipientsCopDocNitRecipientNumber": "მიმღების საგადასახადო ID ნომერი",
+  "recipientsCopDocPassportRecipientNumber": "მიმღების პასპორტის ნომერი",
+  "recipientsCopDocTiRecipientNumber": "მიმღების პირადობის მოწმობის ნომერი",
+  "recipientsCopDocRegistroCivilRecipientNumber": "მიმღების სამოქალაქო რეესტრის ნომერი",
+  "recipientsValidationSinpePhoneCountryCode": "წაშალეთ ქვეყნის კოდი (+506). შეიყვანეთ მხოლოდ 8-ციფრიანი ნომერი",
+  "recipientsValidationSinpePhoneInvalidChars": "გამოიყენეთ მხოლოდ ციფრები (ასოები ან სიმბოლოები არ შეიძლება)",
+  "recipientsValidationSinpePhoneTooShort": "შეიყვანეთ ტელეფონის ნომრის ყველა 8 ციფრი",
+  "recipientsFieldDocumentType": "მიმღების პირადობის ტიპი",
+  "recipientsFieldDocumentNumberHint": "შეიყვანეთ მიმღების პირადობის ნომერი",
+  "recipientsValidationSinpePhone": "შეიყვანეთ მოქმედი 8-ციფრიანი კოსტა რიკის ტელეფონის ნომერი ქვეყნის კოდის გარეშე",
+  "payDescriptionLabel": "გადახდის აღწერა (არასავალდებულო)",
+  "payDescriptionHint": "დაამატეთ შენიშვნა ამ გადახდისთვის",
+  "payPaymentDescription": "გადახდის აღწერა",
+  "transactionDetailLabelPaymentDescription": "გადახდის აღწერა",
+  "transactionHistoryTitle": "ტრანზაქციების ისტორია",
+  "transactionHistoryHeading": "ტრანზაქციების ისტორია",
+  "exportTransactionsDescription": "გადმოწერეთ თქვენი საფულის ყველა ტრანზაქცია (Bitcoin, Liquid, Lightning და სვაპები) CSV ფაილის სახით. სურვილისამებრ გაფილტრეთ თარიღების მიხედვით.",
+  "exportTransactionsStartDate": "დაწყების თარიღი",
+  "exportTransactionsEndDate": "დასრულების თარიღი",
+  "exportTransactionsAnyDate": "ნებისმიერი",
+  "exportTransactionsButton": "CSV-ის ექსპორტი",
+  "exportTransactionsSuccess": "ტრანზაქციები წარმატებით ექსპორტირდა",
+  "exportTransactionsEmpty": "მითითებულ პერიოდში ექსპორტისთვის ტრანზაქცია არ არის",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "დაწყების თარიღი უნდა იყოს დასრულების თარიღამდე",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  }
 }

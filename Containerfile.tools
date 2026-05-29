@@ -51,6 +51,10 @@ RUN apt-get update && apt-get install -y \
 #   libcurl4-openssl-dev — required by sentry-native (sentry_flutter) HTTP transport
 #   dbus, gnome-keyring — Secret Service provider for libsecret at runtime
 #     (bootstrapped by .devcontainer/init-keyring.sh on container start)
+#   fonts-noto-* — Indic/etc. glyph coverage so non-Latin locales render
+#     (Flutter Linux falls back to system fonts via fontconfig; without these
+#     scripts like Devanagari/Bengali can't render. cjk is for Chinese/Japanese/Korean
+#     glyphs shipped separately from core)
 RUN apt-get update && apt-get install -y \
     clang \
     lld \
@@ -66,6 +70,8 @@ RUN apt-get update && apt-get install -y \
     dbus \
     gnome-keyring \
     libsqlite3-dev \
+    fonts-noto-core \
+    fonts-noto-cjk \
     && rm -rf /var/lib/apt/lists/*
 
 # Workaround for CVE-2024-32020 hardlink check failing on overlayfs:
@@ -160,14 +166,17 @@ RUN mv /home/$USER/.cargo/bin/rustup /home/$USER/.cargo/bin/rustup.real && \
     printf '#!/bin/sh\nexec flock /tmp/rustup.lock /home/%s/.cargo/bin/rustup.real "$@"\n' "$USER" > /home/$USER/.cargo/bin/rustup && \
     chmod +x /home/$USER/.cargo/bin/rustup
 
-# Persistent bash history (backed by a named volume mounted at ~/.history)
-RUN cat >> /home/$USER/.bashrc <<'EOF'
-
-# Persist bash history across container restarts/rebuilds via mounted volume
-export HISTFILE="$HOME/.history/bash_history"
-export HISTSIZE=-1
-export HISTFILESIZE=-1
-export HISTCONTROL=ignoredups
-shopt -s histappend
-export PROMPT_COMMAND="history -a; ${PROMPT_COMMAND:-}"
-EOF
+# Persistent bash history (backed by a named volume mounted at ~/.history).
+# Written via printf rather than a RUN heredoc — heredocs require BuildKit,
+# and podman's classic imagebuilder parses each heredoc line as a separate
+# Containerfile instruction (fails on the first `export` line).
+RUN printf '%s\n' \
+    '' \
+    '# Persist bash history across container restarts/rebuilds via mounted volume' \
+    'export HISTFILE="$HOME/.history/bash_history"' \
+    'export HISTSIZE=-1' \
+    'export HISTFILESIZE=-1' \
+    'export HISTCONTROL=ignoredups' \
+    'shopt -s histappend' \
+    'export PROMPT_COMMAND="history -a; ${PROMPT_COMMAND:-}"' \
+    >> /home/$USER/.bashrc

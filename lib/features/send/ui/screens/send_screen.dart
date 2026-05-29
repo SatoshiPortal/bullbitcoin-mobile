@@ -470,23 +470,47 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       context,
                                       swapLimitsError,
                                     )
-                                  : swapCreationError?.message,
-                              focusNode: _amountFocusNode,
-                              readOnly: _isMax,
-                              isMax: _isMax,
-                            ),
+                                  : swapCreationError != null
+                                  ? _swapCreationErrorMessage(
+                                      context,
+                                      swapCreationError,
+                                    )
+                                  : null,
                             if (swapLimitsError?.suggestInstantPayments == true)
                               Padding(
                                 padding: const EdgeInsets.only(top: 6),
                                 child: BBText(
                                   context
                                       .loc
-                                      .sendErrorAmountBelowSwapLimitsBitcoin,
-                                  style: context.font.bodySmall,
-                                  color: context.appColors.error,
-                                  maxLines: 3,
-                                  textAlign: TextAlign.center,
-                                ),
+                                      .sendErrorInsufficientBalanceForPayment
+                                : (!walletHasBalance && amountConfirmedClicked)
+                                ? context.loc.sendInsufficientBalance
+                                : swapLimitsError != null
+                                ? _getSwapLimitsErrorMessage(
+                                    context,
+                                    swapLimitsError,
+                                  )
+                                : swapCreationError != null
+                                ? _swapCreationErrorMessage(
+                                    context,
+                                    swapCreationError,
+                                  )
+                                : null,
+                            focusNode: _amountFocusNode,
+                            readOnly: _isMax,
+                            isMax: _isMax,
+                          ),
+                          if (swapLimitsError?.suggestInstantPayments == true)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 6),
+                              child: BBText(
+                                context
+                                    .loc
+                                    .sendErrorAmountBelowSwapLimitsBitcoin,
+                                style: context.font.bodySmall,
+                                color: context.appColors.error,
+                                maxLines: 3,
+                                textAlign: TextAlign.center,
                               ),
                             Gap(Device.screen.height * 0.02),
                             BorderedTappableTile(
@@ -1916,7 +1940,19 @@ class SignBitBoxButton extends StatelessWidget {
   }
 }
 
-/// Helper function to get localized error message for SwapLimitsException
+String _swapCreationErrorMessage(
+  BuildContext context,
+  SwapCreationException error,
+) {
+  if (error is HardwareWalletSwapException) {
+    return context.loc.sendErrorHardwareWalletCannotSwap;
+  }
+  if (error is AmountlessInvoiceException) {
+    return context.loc.sendErrorInvoiceMustContainAmount;
+  }
+  return error.message;
+}
+
 String _getSwapLimitsErrorMessage(
   BuildContext context,
   SwapLimitsException error,

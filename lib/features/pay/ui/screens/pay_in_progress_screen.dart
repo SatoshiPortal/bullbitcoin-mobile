@@ -163,7 +163,7 @@ class _PayInProgressScreenState extends State<PayInProgressScreen> {
                         );
                       },
                       bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onPrimary,
+                      textColor: context.appColors.onSecondary,
                     ),
                 ],
               ),

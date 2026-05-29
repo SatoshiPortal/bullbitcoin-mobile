@@ -240,6 +240,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
+    String? paymentDescription,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
@@ -255,6 +256,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderAmount: orderAmount,
         recipientId: recipientId,
         network: network,
+        paymentDescription: paymentDescription,
       );
 
       final order =

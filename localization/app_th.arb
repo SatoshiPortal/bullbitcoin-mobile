@@ -4733,6 +4733,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "ไม่สามารถใช้กระเป๋าเงินฮาร์ดแวร์สำหรับการแลกเปลี่ยนได้",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "ไม่มีข้อมูล",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5051,6 +5055,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "ชําระเงิน",
+  "payDescriptionLabel": "รายละเอียดการชำระเงิน (ไม่บังคับ)",
+  "payDescriptionHint": "เพิ่มหมายเหตุสำหรับการชำระเงินนี้",
+  "payPaymentDescription": "รายละเอียดการชำระเงิน",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7773,6 +7780,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "ประวัติธุรกรรม",
+  "transactionHistoryHeading": "ประวัติธุรกรรม",
+  "exportTransactionsDescription": "ส่งออกธุรกรรมทั้งหมดของกระเป๋าเงิน (Bitcoin, Liquid, Lightning และ swaps) เป็นไฟล์ CSV เลือกกรองตามช่วงวันที่ได้",
+  "exportTransactionsStartDate": "วันที่เริ่มต้น",
+  "exportTransactionsEndDate": "วันที่สิ้นสุด",
+  "exportTransactionsAnyDate": "ใดๆ",
+  "exportTransactionsButton": "ส่งออก CSV",
+  "exportTransactionsSuccess": "ส่งออกธุรกรรมสำเร็จ",
+  "exportTransactionsEmpty": "ไม่มีธุรกรรมให้ส่งออกในช่วงที่เลือก",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "วันที่เริ่มต้นต้องอยู่ก่อนวันที่สิ้นสุด",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 ป้าย",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -10364,6 +10388,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ราคา",
+  "transactionDetailLabelPaymentDescription": "รายละเอียดการชำระเงิน",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -12583,6 +12608,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำสว็อปของคุณให้เสร็จสมบูรณ์",
   "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
+  "transactionStatusPayjoinCompleted": "Payjoin เสร็จสิ้นแล้ว",
   "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
   "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12598,5 +12624,18 @@
   "viewerViewInExplorer": "ดูในเอ็กซ์พลอเรอร์",
   "transactionViewerTitle": "รหัสธุรกรรม",
   "invoiceViewerTitle": "ใบแจ้งหนี้",
-  "viewerCopyLink": "คัดลอกลิงก์"
+  "viewerCopyLink": "คัดลอกลิงก์",
+  "recipientsFieldSinpePhoneNumberHint": "8 หลักโดยไม่มีรหัสประเทศ",
+  "recipientsCopDocCcRecipientNumber": "หมายเลข cédula ของผู้รับ",
+  "recipientsCopDocCeRecipientNumber": "หมายเลข cédula de extranjería ของผู้รับ",
+  "recipientsCopDocNitRecipientNumber": "หมายเลขประจำตัวผู้เสียภาษีของผู้รับ",
+  "recipientsCopDocPassportRecipientNumber": "หมายเลขหนังสือเดินทางของผู้รับ",
+  "recipientsCopDocTiRecipientNumber": "หมายเลขบัตรประจำตัวของผู้รับ",
+  "recipientsCopDocRegistroCivilRecipientNumber": "หมายเลขทะเบียนราษฎรของผู้รับ",
+  "recipientsValidationSinpePhoneCountryCode": "ลบรหัสประเทศ (+506) ป้อนเฉพาะหมายเลข 8 หลัก",
+  "recipientsValidationSinpePhoneInvalidChars": "ใช้ตัวเลขเท่านั้น (ไม่ใช้ตัวอักษรหรือสัญลักษณ์)",
+  "recipientsValidationSinpePhoneTooShort": "ป้อนตัวเลขทั้ง 8 หลักของหมายเลขโทรศัพท์",
+  "recipientsFieldDocumentType": "ประเภทบัตรของผู้รับ",
+  "recipientsFieldDocumentNumberHint": "ป้อนหมายเลขบัตรของผู้รับ",
+  "recipientsValidationSinpePhone": "ป้อนหมายเลขโทรศัพท์คอสตาริกาที่ถูกต้อง 8 หลักโดยไม่มีรหัสประเทศ"
 }

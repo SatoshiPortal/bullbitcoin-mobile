@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/errors/electrum_fallback_exception.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction_repository.dart';
@@ -10,10 +11,10 @@ import 'package:bb_mobile/core/transactions/domain/transaction_port.dart';
 
 /// Adapter implementing [TransactionPort] for the Electrum module.
 ///
-/// Iterates the configured Electrum servers in priority order, falling back
-/// on failure, then maps the parsed [BitcoinTx] into a [Transaction] domain
-/// entity. Surfaces failures as [TransactionPortError] so consumers never
-/// see electrum's error types.
+/// Delegates server selection and fallback to [ElectrumServersPort.runWithFallback]
+/// so the custom-vs-default rule lives in one place, then maps the parsed
+/// [BitcoinTx] into a [Transaction] domain entity. Surfaces failures as
+/// [TransactionPortError] so consumers never see electrum's error types.
 class ElectrumTransactionPortAdapter implements TransactionPort {
   final ElectrumServersPort _serversPort;
   final ElectrumTransactionRepository _repository;
@@ -35,30 +36,26 @@ class ElectrumTransactionPortAdapter implements TransactionPort {
       isLiquid: false,
     );
 
-    final servers = await _serversPort.getServersToUse(network: network);
-    if (servers.isEmpty) {
+    try {
+      return await _serversPort.runWithFallback(
+        network: network,
+        operation: (server) async {
+          final bitcoinTx = await _repository.fetch(
+            serverUrl: server.url,
+            txid: txid,
+          );
+          return TransactionMapper.fromBitcoinTx(
+            bitcoinTx,
+            isTestnet: environment.isTestnet,
+          );
+        },
+      );
+    } on NoElectrumServersConfiguredException {
       throw TransactionPortError.noServersAvailable(
         network: network.toString(),
       );
+    } on AllElectrumServersFailedException catch (e) {
+      throw TransactionPortError.fetchFailed(txid: txid, message: e.message);
     }
-
-    Object? lastError;
-    for (final server in servers) {
-      try {
-        final bitcoinTx = await _repository.fetch(
-          serverUrl: server.url,
-          txid: txid,
-        );
-        return TransactionMapper.fromBitcoinTx(
-          bitcoinTx,
-          isTestnet: environment.isTestnet,
-        );
-      } catch (e) {
-        lastError = e;
-        continue;
-      }
-    }
-
-    throw TransactionPortError.fetchFailed(txid: txid, message: '$lastError');
   }
 }

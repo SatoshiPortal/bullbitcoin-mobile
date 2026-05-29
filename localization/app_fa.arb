@@ -5257,6 +5257,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "کیف پول‌های سخت‌افزاری را نمی‌توان برای مبادله استفاده کرد.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "هیچ اطلاعات تعادلی در دسترس نیست",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5498,6 +5502,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "پرداخت دستمزد",
+  "payDescriptionLabel": "توضیحات پرداخت (اختیاری)",
+  "payDescriptionHint": "یادداشتی برای این پرداخت اضافه کنید",
+  "payPaymentDescription": "توضیحات پرداخت",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7698,6 +7705,23 @@
   "@dcaConfirmNetwork": {
     "description": "Field label for network"
   },
+  "transactionHistoryTitle": "تاریخچه تراکنش‌ها",
+  "transactionHistoryHeading": "تاریخچه تراکنش‌ها",
+  "exportTransactionsDescription": "همه تراکنش‌های کیف پول خود (بیت‌کوین، لیکویید، لایتنینگ و سوآپ‌ها) را به‌صورت فایل CSV صادر کنید. به‌صورت اختیاری بر اساس بازه زمانی فیلتر کنید.",
+  "exportTransactionsStartDate": "تاریخ شروع",
+  "exportTransactionsEndDate": "تاریخ پایان",
+  "exportTransactionsAnyDate": "هر تاریخ",
+  "exportTransactionsButton": "خروجی CSV",
+  "exportTransactionsSuccess": "تراکنش‌ها با موفقیت صادر شدند",
+  "exportTransactionsEmpty": "هیچ تراکنشی برای صادر کردن در بازه انتخاب‌شده وجود ندارد",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "تاریخ شروع باید قبل از تاریخ پایان باشد",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "برچسب های BIP30",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -9808,6 +9832,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "سفارش شماره شماره",
+  "transactionDetailLabelPaymentDescription": "توضیحات پرداخت",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -12583,6 +12608,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "برای تکمیل سواپ خود، ظرف ۲۴ ساعت برنامه را باز کنید",
   "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
+  "transactionStatusPayjoinCompleted": "Payjoin تکمیل شد",
   "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
   "coreScreensFeeRateLabel": "نرخ کارمزد",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12598,5 +12624,18 @@
   "viewerViewInExplorer": "مشاهده در اکسپلورر",
   "transactionViewerTitle": "شناسه تراکنش",
   "invoiceViewerTitle": "صورتحساب",
-  "viewerCopyLink": "لینک را کپی کنید"
+  "viewerCopyLink": "لینک را کپی کنید",
+  "recipientsFieldSinpePhoneNumberHint": "۸ رقم بدون کد کشور",
+  "recipientsCopDocCcRecipientNumber": "شماره cédula گیرنده",
+  "recipientsCopDocCeRecipientNumber": "شماره cédula de extranjería گیرنده",
+  "recipientsCopDocNitRecipientNumber": "شماره شناسه مالیاتی گیرنده",
+  "recipientsCopDocPassportRecipientNumber": "شماره گذرنامه گیرنده",
+  "recipientsCopDocTiRecipientNumber": "شماره کارت هویت گیرنده",
+  "recipientsCopDocRegistroCivilRecipientNumber": "شماره ثبت احوال گیرنده",
+  "recipientsValidationSinpePhoneCountryCode": "کد کشور (۵۰۶+) را حذف کنید. فقط شماره ۸ رقمی را وارد کنید",
+  "recipientsValidationSinpePhoneInvalidChars": "فقط از ارقام استفاده کنید (بدون حروف یا نمادها)",
+  "recipientsValidationSinpePhoneTooShort": "تمام ۸ رقم شماره تلفن را وارد کنید",
+  "recipientsFieldDocumentType": "نوع شناسه گیرنده",
+  "recipientsFieldDocumentNumberHint": "شماره شناسه گیرنده را وارد کنید",
+  "recipientsValidationSinpePhone": "یک شماره تلفن ۸ رقمی معتبر کاستاریکا بدون کد کشور وارد کنید"
 }

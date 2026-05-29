@@ -409,6 +409,9 @@
   "sellOrderCompleted": "Tilaus valmis!",
   "sellBalanceWillBeCredited": "Tilisi saldoa päivittyy, kun transaktio vahvistetaan lohkoketjussa.",
   "payTitle": "Maksa",
+  "payDescriptionLabel": "Maksun kuvaus (valinnainen)",
+  "payDescriptionHint": "Lisää muistiinpano tähän maksuun",
+  "payPaymentDescription": "Maksun kuvaus",
   "paySelectRecipient": "Valitse vastaanottaja",
   "payWhoAreYouPaying": "Kenelle maksat?",
   "payNewRecipients": "Uudet vastaanottajat",
@@ -731,6 +734,7 @@
   "transactionDetailLabelConfirmationTime": "Vahvistusaika",
   "transactionDetailLabelOrderType": "Tilaustyyppi",
   "transactionDetailLabelOrderNumber": "Tilausnumero",
+  "transactionDetailLabelPaymentDescription": "Maksun kuvaus",
   "transactionDetailLabelPayinAmount": "Sisäänmaksun määrä",
   "transactionDetailLabelPayoutAmount": "Ulosmaksun määrä",
   "transactionDetailLabelExchangeRate": "Vaihtokurssi",
@@ -2087,6 +2091,7 @@
   "sendEnterRelativeFee": "Anna suhteellinen kulu sat/vB",
   "sendErrorArkExperimentalOnly": "ARK-maksupyyntöjä on saatavilla vain kokeellisesta Ark-ominaisuudesta.",
   "sendErrorSwapCreationFailed": "Vaihdon luominen epäonnistui.",
+  "sendErrorHardwareWalletCannotSwap": "Laitelompakoita ei voi käyttää vaihtoihin.",
   "sendErrorInvoiceMustContainAmount": "Lasku täytyy sisältää summan",
   "sendErrorInsufficientBalanceForPayment": "Saldo ei riitä tämän maksun kattamiseen",
   "sendErrorInvalidAddressOrInvoice": "Virheellinen Bitcoin-maksuosoite tai lasku",
@@ -3047,6 +3052,23 @@
         "type": "int"
       }
     }
+  },
+  "transactionHistoryTitle": "Tapahtumahistoria",
+  "transactionHistoryHeading": "Tapahtumahistoria",
+  "exportTransactionsDescription": "Vie kaikki lompakkosi tapahtumat (Bitcoin, Liquid, Lightning ja swapit) CSV-tiedostona. Halutessasi suodata päivämääräväliltä.",
+  "exportTransactionsStartDate": "Alkupäivä",
+  "exportTransactionsEndDate": "Loppupäivä",
+  "exportTransactionsAnyDate": "Mikä tahansa",
+  "exportTransactionsButton": "Vie CSV",
+  "exportTransactionsSuccess": "Tapahtumat viety onnistuneesti",
+  "exportTransactionsEmpty": "Ei vietäviä tapahtumia valitulla ajanjaksolla",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Alkamispäivän on oltava ennen päättymispäivää",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
   },
   "bip329LabelsTitle": "BIP329-tunnisteet",
   "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
@@ -4661,8 +4683,8 @@
   "recipientsFieldRecipientNameLabel": "Vastaanottajan nimi",
   "recipientsFieldPhoneNumber": "Puhelinnumero",
   "recipientsFieldPhoneNumberHint": "Syötä puhelinnumero",
-  "recipientsFieldDocumentType": "Henkilötodistuksen tyyppi",
-  "recipientsFieldDocumentNumberHint": "Syötä henkilötodistuksen numero",
+  "recipientsFieldDocumentType": "Vastaanottajan tunnistetyyppi",
+  "recipientsFieldDocumentNumberHint": "Anna vastaanottajan tunnistenumero",
   "recipientsFieldOwnerName": "Tilinhaltijan nimi",
   "recipientsFieldOwnerNameHint": "Syötä tilinhaltijan nimi",
   "recipientsAccountOwnerQuestion": "Kenelle tämä tili kuuluu?",
@@ -4691,7 +4713,7 @@
   "recipientsFieldDebitCard": "Debit-kortin numero",
   "recipientsFieldDebitCardHint": "Syötä debit-kortin numero",
   "recipientsFieldOwnerNameSinpeHint": "Tilinhaltijan nimi näkyy tässä",
-  "recipientsValidationSinpePhone": "Syötä kelvollinen 8-numeroinen puhelinnumero",
+  "recipientsValidationSinpePhone": "Anna voimassa oleva 8-numeroinen Costa Rican puhelinnumero ilman maakoodia",
   "recipientsValidationSinpeOwner": "Vahvista puhelinnumero",
   "recipientsFieldEmailAddress": "Sähköpostiosoite",
   "recipientsFieldEmailAddressHint": "Syötä sähköpostiosoite",
@@ -4732,5 +4754,15 @@
   "exchangeSupportChatPickFilesFailed": "Tiedostojen valinta epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatAttachLogsFailed": "Lokien liittäminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui.",
-  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa"
+  "recipientsFieldSinpePhoneNumberHint": "8 numeroa ilman maakoodia",
+  "recipientsCopDocCcRecipientNumber": "Vastaanottajan cédula-numero",
+  "recipientsCopDocCeRecipientNumber": "Vastaanottajan cédula de extranjería -numero",
+  "recipientsCopDocNitRecipientNumber": "Vastaanottajan vero-ID-numero",
+  "recipientsCopDocPassportRecipientNumber": "Vastaanottajan passinumero",
+  "recipientsCopDocTiRecipientNumber": "Vastaanottajan henkilökortin numero",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Vastaanottajan väestörekisterinumero",
+  "recipientsValidationSinpePhoneCountryCode": "Poista maakoodi (+506). Anna vain 8-numeroinen numero",
+  "recipientsValidationSinpePhoneInvalidChars": "Käytä vain numeroita (ei kirjaimia tai symboleita)",
+  "recipientsValidationSinpePhoneTooShort": "Anna kaikki 8 puhelinnumeron numeroa",
+  "transactionStatusPayjoinCompleted": "Payjoin suoritettu"
 }
