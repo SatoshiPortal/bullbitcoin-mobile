@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_amount.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -224,7 +224,7 @@ class ReceiveInfoDetails extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           BorderedTappableTile(
-            onTap: () => ReceiveEnterAmount.showBottomSheet(context),
+            onTap: () => ReceiveAmountBottomSheet.showBottomSheet(context),
             child: Row(
               children: [
                 Expanded(
@@ -297,7 +297,6 @@ class ReceiveInfoDetails extends StatelessWidget {
     );
   }
 }
-
 
 class ReceiveLnInfoDetails extends StatelessWidget {
   const ReceiveLnInfoDetails({super.key});
@@ -593,10 +592,7 @@ class _PayjoinSwitch extends StatelessWidget {
     void toggle() {
       final turnOn = !isOn;
       if (turnOn && !hasUtxos) {
-        SnackBarUtils.showSnackBar(
-          context,
-          context.loc.receivePayjoinNoUtxos,
-        );
+        SnackBarUtils.showSnackBar(context, context.loc.receivePayjoinNoUtxos);
         return;
       }
       context.read<ReceiveBloc>().add(
@@ -618,10 +614,7 @@ class _PayjoinSwitch extends StatelessWidget {
               border: Border.all(color: context.appColors.secondaryFixedDim),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
               child: Row(
                 children: [
                   Expanded(

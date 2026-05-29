@@ -3,16 +3,18 @@ import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ReceiveAmountEntry extends StatefulWidget {
-  const ReceiveAmountEntry({super.key});
+class ReceiveAmountInput extends StatefulWidget {
+  const ReceiveAmountInput({super.key, required this.focusNode});
+
+  final FocusNode focusNode;
 
   @override
-  State<ReceiveAmountEntry> createState() => _ReceiveAmountEntryState();
+  State<ReceiveAmountInput> createState() => _ReceiveAmountInputState();
 }
 
-class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
+class _ReceiveAmountInputState extends State<ReceiveAmountInput> {
   late final TextEditingController _amountController;
-  late final FocusNode _amountFocusNode;
+  late final VoidCallback _focusListener;
 
   @override
   void initState() {
@@ -25,9 +27,8 @@ class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
         bloc.add(ReceiveAmountInputChanged(text));
       }
     });
-    _amountFocusNode = FocusNode();
-    _amountFocusNode.addListener(() {
-      if (!_amountFocusNode.hasFocus) {
+    _focusListener = () {
+      if (!widget.focusNode.hasFocus) {
         // Reset selection to end without showing the cursor when the field
         // loses focus.
         final currentText = _amountController.text;
@@ -36,13 +37,14 @@ class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
           selection: TextSelection.collapsed(offset: currentText.length),
         );
       }
-    });
+    };
+    widget.focusNode.addListener(_focusListener);
   }
 
   @override
   void dispose() {
     _amountController.dispose();
-    _amountFocusNode.dispose();
+    widget.focusNode.removeListener(_focusListener);
     super.dispose();
   }
 
@@ -70,7 +72,7 @@ class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
         amountEquivalent: amountEquivalent,
         availableCurrencies: availableInputCurrencies,
         amountController: _amountController,
-        focusNode: _amountFocusNode,
+        focusNode: widget.focusNode,
         onCurrencyChanged: (currencyCode) {
           context.read<ReceiveBloc>().add(
             ReceiveAmountCurrencyChanged(currencyCode),
