@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
-import 'package:bb_mobile/features/transactions/application/transactions_application_error.dart';
+import 'package:bb_mobile/features/transactions/application/application_errors.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -361,7 +361,7 @@ void main() {
 
     final row = lines[1].split(',');
     expect(row[1], 'chain_swap');
-    expect(row[8], 'bitcoin');         // network = send network
+    expect(row[8], 'liquid');           // network = receive network (the kept leg)
     expect(row[9], 'VJLCbLBTCksDqx1'); // address = receiveAddress
     expect(row[10], 'swap_chain');
     expect(row[13], 'bitcoin');        // send_network

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/application/transactions_application_error.dart';
+import 'package:bb_mobile/features/transactions/application/application_errors.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
 
 // this covers self-custodial wallet activity only, not exchange orders

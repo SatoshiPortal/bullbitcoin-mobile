@@ -183,7 +183,7 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     bool isChainSwap,
   ) {
     if (isLnSwap) return 'lightning';
-    if (isChainSwap) return _chainNetwork(swap!, send: true);
+    if (isChainSwap) return _chainNetwork(swap!, send: false);
     return tx.isBitcoin ? 'bitcoin' : 'liquid';
   }
 

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/transactions/application/ports/transaction_export_saver.dart';
-import 'package:bb_mobile/features/transactions/application/transactions_application_error.dart';
+import 'package:bb_mobile/features/transactions/application/application_errors.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
