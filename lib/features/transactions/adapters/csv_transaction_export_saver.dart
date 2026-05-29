@@ -14,7 +14,7 @@ class CsvTransactionExportSaver implements TransactionExportSaver {
         '${now.hour.toString().padLeft(2, '0')}'
         '${now.minute.toString().padLeft(2, '0')}'
         '${now.second.toString().padLeft(2, '0')}Z';
-    final filename = 'bull_transactions_${timestamp}.csv';
+    final filename = 'bull_transactions_$timestamp.csv';
     final result = await FilePicker.platform.saveFile(
       bytes: utf8.encode(csv),
       fileName: filename,
