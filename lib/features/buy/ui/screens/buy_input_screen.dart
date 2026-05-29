@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -16,8 +17,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class BuyInputScreen extends StatelessWidget {
+class BuyInputScreen extends StatefulWidget {
   const BuyInputScreen({super.key});
+
+  @override
+  State<BuyInputScreen> createState() => _BuyInputScreenState();
+}
+
+class _BuyInputScreenState extends State<BuyInputScreen> {
+  final FocusNode _amountNode = FocusNode();
+
+  @override
+  void dispose() {
+    _amountNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,107 +72,115 @@ class BuyInputScreen extends StatelessWidget {
         title: Text(context.loc.buyInputTitle),
       ),
       body: SafeArea(
-        child: ScrollableColumn(
-          crossAxisAlignment: .start,
-          children: [
-            const Gap(24),
-            const BuyAmountInputFields(),
-            const Gap(16.0),
-            const BuyDestinationInputFields(),
-            const Spacer(),
-            Column(
-              mainAxisSize: .min,
-              children: [
-                if (isCreatingOrder)
-                  const Center(child: CircularProgressIndicator()),
-                if (belowMinAmountError != null || aboveMaxAmountError != null)
-                  Row(
-                    mainAxisAlignment: .center,
-                    children: [
-                      Text(
-                        belowMinAmountError != null
-                            ? context.loc.buyInputMinAmountError
-                            : context.loc.buyInputMaxAmountError,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.appColors.error,
+        child: BBKeyboardActions(
+          disableScroll: true,
+          focusNodes: [_amountNode],
+          child: ScrollableColumn(
+            crossAxisAlignment: .start,
+            children: [
+              const Gap(24),
+              BuyAmountInputFields(focusNode: _amountNode),
+              const Gap(16.0),
+              const BuyDestinationInputFields(),
+              const Spacer(),
+              Column(
+                mainAxisSize: .min,
+                children: [
+                  if (isCreatingOrder)
+                    const Center(child: CircularProgressIndicator()),
+                  if (belowMinAmountError != null ||
+                      aboveMaxAmountError != null)
+                    Row(
+                      mainAxisAlignment: .center,
+                      children: [
+                        Text(
+                          belowMinAmountError != null
+                              ? context.loc.buyInputMinAmountError
+                              : context.loc.buyInputMaxAmountError,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.error,
+                          ),
                         ),
-                      ),
-                      const Gap(4),
-                      CurrencyText(
-                        belowMinAmountError != null
-                            ? belowMinAmountError.minAmountSat
-                            : aboveMaxAmountError!.maxAmountSat,
-                        showFiat: false,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.appColors.error,
+                        const Gap(4),
+                        CurrencyText(
+                          belowMinAmountError != null
+                              ? belowMinAmountError.minAmountSat
+                              : aboveMaxAmountError!.maxAmountSat,
+                          showFiat: false,
+                          style: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.error,
+                          ),
+                          overrideHideAmounts: true,
                         ),
-                        overrideHideAmounts: true,
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
 
-                const Gap(16),
-                if (isStarted) ...[
-                  if (needsKycUpgrade) ...[
-                    InfoCard(
-                      title: context.loc.buyInputKycPending,
-                      description: context.loc.buyInputKycMessage,
-                      bgColor: context.appColors.tertiary.withValues(
-                        alpha: 0.1,
+                  const Gap(16),
+                  if (isStarted) ...[
+                    if (needsKycUpgrade) ...[
+                      InfoCard(
+                        title: context.loc.buyInputKycPending,
+                        description: context.loc.buyInputKycMessage,
+                        bgColor: context.appColors.tertiary.withValues(
+                          alpha: 0.1,
+                        ),
+                        tagColor: context.appColors.onTertiary,
                       ),
-                      tagColor: context.appColors.onTertiary,
-                    ),
-                    const Gap(16.0),
-                    BBButton.big(
-                      label: context.loc.buyInputCompleteKyc,
-                      onPressed: () {
-                        context.pushReplacementNamed(
-                          ExchangeRoute.exchangeKyc.name,
-                        );
-                      },
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                    ),
-                  ] else if (showInsufficientBalanceError) ...[
-                    InfoCard(
-                      title: context.loc.buyInputInsufficientBalance,
-                      description:
-                          context.loc.buyInputInsufficientBalanceMessage,
-                      bgColor: context.appColors.tertiary.withValues(
-                        alpha: 0.1,
+                      const Gap(16.0),
+                      BBButton.big(
+                        label: context.loc.buyInputCompleteKyc,
+                        onPressed: () {
+                          context.pushReplacementNamed(
+                            ExchangeRoute.exchangeKyc.name,
+                          );
+                        },
+                        bgColor: context.appColors.primary,
+                        textColor: context.appColors.onPrimary,
                       ),
-                      tagColor: context.appColors.onTertiary,
+                    ] else if (showInsufficientBalanceError) ...[
+                      InfoCard(
+                        title: context.loc.buyInputInsufficientBalance,
+                        description:
+                            context.loc.buyInputInsufficientBalanceMessage,
+                        bgColor: context.appColors.tertiary.withValues(
+                          alpha: 0.1,
+                        ),
+                        tagColor: context.appColors.onTertiary,
+                      ),
+                      const Gap(16.0),
+                      BBButton.big(
+                        label: context.loc.buyInputFundAccount,
+                        onPressed: () {
+                          context.pushReplacementNamed(
+                            FundExchangeRoute.fundExchange.name,
+                          );
+                        },
+                        bgColor: context.appColors.primary,
+                        textColor: context.appColors.onPrimary,
+                      ),
+                    ] else
+                      BBButton.big(
+                        label: context.loc.buyInputContinue,
+                        disabled: !canCreateOrder || isCreatingOrder,
+                        onPressed: () {
+                          context.read<BuyBloc>().add(
+                            const BuyEvent.createOrder(),
+                          );
+                        },
+                        bgColor: context.appColors.secondary,
+                        textColor: context.appColors.onSecondary,
+                      ),
+                  ] else ...[
+                    const LoadingLineContent(
+                      height: 56,
+                      width: double.infinity,
                     ),
-                    const Gap(16.0),
-                    BBButton.big(
-                      label: context.loc.buyInputFundAccount,
-                      onPressed: () {
-                        context.pushReplacementNamed(
-                          FundExchangeRoute.fundExchange.name,
-                        );
-                      },
-                      bgColor: context.appColors.primary,
-                      textColor: context.appColors.onPrimary,
-                    ),
-                  ] else
-                    BBButton.big(
-                      label: context.loc.buyInputContinue,
-                      disabled: !canCreateOrder || isCreatingOrder,
-                      onPressed: () {
-                        context.read<BuyBloc>().add(
-                          const BuyEvent.createOrder(),
-                        );
-                      },
-                      bgColor: context.appColors.secondary,
-                      textColor: context.appColors.onSecondary,
-                    ),
-                ] else ...[
-                  const LoadingLineContent(height: 56, width: double.infinity),
+                  ],
+                  const Gap(16.0),
                 ],
-                const Gap(16.0),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

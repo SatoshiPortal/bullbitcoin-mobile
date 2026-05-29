@@ -15,6 +15,7 @@ class ExchangeAmountInputField extends StatelessWidget {
     bool isLoading = false,
     BitcoinUnit? bitcoinUnit,
     required TextEditingController amountController,
+    FocusNode? focusNode,
     bool isFiatCurrencyInput = true,
     FiatCurrency? fiatCurrency,
     void Function(bool isFiat)? onIsFiatCurrencyInputChanged,
@@ -23,6 +24,7 @@ class ExchangeAmountInputField extends StatelessWidget {
   }) : _isLoading = isLoading,
        _bitcoinUnit = bitcoinUnit,
        _amountController = amountController,
+       _focusNode = focusNode,
        _isFiatCurrencyInput = isFiatCurrencyInput,
        _fiatCurrency = fiatCurrency,
        _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged,
@@ -32,6 +34,7 @@ class ExchangeAmountInputField extends StatelessWidget {
   final bool _isLoading;
   final BitcoinUnit? _bitcoinUnit;
   final TextEditingController _amountController;
+  final FocusNode? _focusNode;
   final bool _isFiatCurrencyInput;
   final FiatCurrency? _fiatCurrency;
   final void Function(bool isFiat)? _onIsFiatCurrencyInputChanged;
@@ -40,14 +43,12 @@ class ExchangeAmountInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amountInputDecimals =
-        _isFiatCurrencyInput
-            ? _fiatCurrency?.decimals ?? 2
-            : _bitcoinUnit!.decimals;
-    final inputCurrency =
-        _isFiatCurrencyInput
-            ? _fiatCurrency?.code ?? 'CAD'
-            : _bitcoinUnit?.code ?? 'BTC';
+    final amountInputDecimals = _isFiatCurrencyInput
+        ? _fiatCurrency?.decimals ?? 2
+        : _bitcoinUnit!.decimals;
+    final inputCurrency = _isFiatCurrencyInput
+        ? _fiatCurrency?.code ?? 'CAD'
+        : _bitcoinUnit?.code ?? 'BTC';
 
     return Column(
       crossAxisAlignment: .start,
@@ -83,6 +84,7 @@ class ExchangeAmountInputField extends StatelessWidget {
                       Expanded(
                         child: TextFormField(
                           controller: _amountController,
+                          focusNode: _focusNode,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),

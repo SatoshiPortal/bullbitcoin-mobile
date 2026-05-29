@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/interface_adapters/presenters/errors/advanced_options_exception.dart';
 import 'package:flutter/material.dart';
@@ -84,12 +85,12 @@ class _SetAdvancedOptionsBottomSheetState
     AdvancedOptionsException error,
   ) {
     return switch (error) {
-      InvalidStopGapException(value: final v) => context.loc
-          .electrumInvalidStopGapError(v),
-      InvalidTimeoutException(value: final v) => context.loc
-          .electrumInvalidTimeoutError(v),
-      InvalidRetryException(value: final v) => context.loc
-          .electrumInvalidRetryError(v),
+      InvalidStopGapException(value: final v) =>
+        context.loc.electrumInvalidStopGapError(v),
+      InvalidTimeoutException(value: final v) =>
+        context.loc.electrumInvalidTimeoutError(v),
+      InvalidRetryException(value: final v) =>
+        context.loc.electrumInvalidRetryError(v),
       SaveFailedException(reason: final r) =>
         r != null
             ? '${context.loc.electrumSaveFailedError}: $r'
@@ -122,395 +123,375 @@ class _SetAdvancedOptionsBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-
     return BlocListener<ElectrumSettingsBloc, ElectrumSettingsState>(
-      listenWhen:
-          (previous, current) =>
-              previous.isSavingAdvancedOptions == true &&
-              current.isSavingAdvancedOptions == false &&
-              current.advancedOptionsError == null,
+      listenWhen: (previous, current) =>
+          previous.isSavingAdvancedOptions == true &&
+          current.isSavingAdvancedOptions == false &&
+          current.advancedOptionsError == null,
       listener: (context, state) {
         // Saved successfully, close the bottom sheet
         Navigator.of(context).pop();
       },
-      child: GestureDetector(
-        behavior: .opaque,
-        onTap: () => FocusScope.of(context).unfocus(), // tap bg to hide kb
-        child: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: bottomInset),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                child: Column(
-                  mainAxisSize: .min,
-                  children: [
-                    // Header
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            context.loc.electrumAdvancedOptions,
-                            style: context.font.headlineMedium,
-                          ),
+      child: SafeArea(
+        child: BBKeyboardActions(
+          isDialog: true,
+          focusNodes: [_stopGapNode, _timeoutNode, _retryNode],
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              child: Column(
+                mainAxisSize: .min,
+                children: [
+                  // Header
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          context.loc.electrumAdvancedOptions,
+                          style: context.font.headlineMedium,
                         ),
-                        IconButton(
-                          tooltip: context.loc.electrumCloseTooltip,
-                          onPressed: () => Navigator.of(context).pop(),
-                          icon: const Icon(Icons.close),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Scrollable content (important when keyboard is open)
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          Text(
-                            context.loc.electrumStopGap,
-                            style: context.font.bodyMedium?.copyWith(
-                              fontWeight: .w600,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _stopGap,
-                            focusNode: _stopGapNode,
-                            textInputAction: .next,
-                            keyboardType: TextInputType.number,
-                            style: context.font.bodyLarge,
-                            decoration: InputDecoration(
-                              hintText: context.loc.electrumStopGap,
-                              hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.appColors.textMuted,
-                              ),
-                              fillColor: context.appColors.surface,
-                              filled: true,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border,
-                                ),
-                              ),
-                              disabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                              ),
-                            ),
-                            validator: (v) {
-                              if (v == null || v.trim().isEmpty) {
-                                return context.loc.electrumStopGapEmptyError;
-                              }
-                              final n = int.tryParse(v.trim());
-                              if (n == null) {
-                                return context.loc.electrumInvalidNumberError;
-                              }
-                              if (n < 0) {
-                                return context.loc.electrumStopGapNegativeError;
-                              }
-                              if (n > ElectrumSettings.maxStopGap) {
-                                return context.loc.electrumStopGapTooHighError(
-                                  ElectrumSettings.maxStopGap.toString(),
-                                );
-                              }
-                              return null;
-                            },
-                            onFieldSubmitted:
-                                (_) => _timeoutNode.requestFocus(),
-                          ),
-                          Builder(
-                            builder: (context) {
-                              final stopGapValue = int.tryParse(
-                                _stopGap.text.trim(),
-                              );
-                              if (stopGapValue != null && stopGapValue > 1000) {
-                                return Column(
-                                  children: [
-                                    const SizedBox(height: 8),
-                                    InfoCard(
-                                      description: context
-                                          .loc
-                                          .electrumStopGapHighWarning,
-                                      tagColor: context.appColors.tertiary,
-                                      bgColor:
-                                          context.appColors.tertiaryContainer,
-                                    ),
-                                  ],
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            context.loc.electrumTimeout,
-                            style: context.font.bodyMedium?.copyWith(
-                              fontWeight: .w600,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _timeout,
-                            focusNode: _timeoutNode,
-                            keyboardType: TextInputType.number,
-                            textInputAction: .next,
-                            style: context.font.bodyLarge,
-                            decoration: InputDecoration(
-                              hintText: context.loc.electrumTimeout,
-                              hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.appColors.textMuted,
-                              ),
-                              fillColor: context.appColors.surface,
-                              filled: true,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border,
-                                ),
-                              ),
-                              disabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                              ),
-                            ),
-                            validator: (v) {
-                              final value = v?.trim() ?? '';
-                              if (value.isEmpty) {
-                                return context.loc.electrumTimeoutEmptyError;
-                              }
-                              final n = int.tryParse(value);
-                              if (n == null) {
-                                return context.loc.electrumInvalidNumberError;
-                              }
-                              if (n <= 0) {
-                                return context.loc.electrumTimeoutPositiveError;
-                              }
-                              if (n > ElectrumSettings.maxTimeout) {
-                                return context.loc.electrumTimeoutTooHighError(
-                                  ElectrumSettings.maxTimeout.toString(),
-                                );
-                              }
-                              return null;
-                            },
-                            onFieldSubmitted: (_) => _retryNode.requestFocus(),
-                          ),
-                          Builder(
-                            builder: (context) {
-                              final stopGapValue = int.tryParse(
-                                _stopGap.text.trim(),
-                              );
-                              final timeoutValue = int.tryParse(
-                                _timeout.text.trim(),
-                              );
-
-                              if (stopGapValue != null &&
-                                  timeoutValue != null) {
-                                final recommended =
-                                    _getRecommendedTimeoutSeconds(
-                                      stopGap: stopGapValue,
-                                    );
-                                if (timeoutValue < recommended) {
-                                  return Column(
-                                    children: [
-                                      const SizedBox(height: 8),
-                                      InfoCard(
-                                        description: context.loc
-                                            .electrumTimeoutWarning(
-                                              timeoutValue.toString(),
-                                              recommended.toString(),
-                                            ),
-                                        tagColor: context.appColors.tertiary,
-                                        bgColor:
-                                            context.appColors.tertiaryContainer,
-                                      ),
-                                    ],
-                                  );
-                                }
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            context.loc.electrumRetryCount,
-                            style: context.font.bodyMedium?.copyWith(
-                              fontWeight: .w600,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            controller: _retry,
-                            focusNode: _retryNode,
-                            keyboardType: TextInputType.number,
-                            textInputAction: .done,
-                            style: context.font.bodyLarge,
-                            decoration: InputDecoration(
-                              hintText: context.loc.electrumRetryCount,
-                              hintStyle: context.font.bodyMedium?.copyWith(
-                                color: context.appColors.textMuted,
-                              ),
-                              fillColor: context.appColors.surface,
-                              filled: true,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border,
-                                ),
-                              ),
-                              disabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                                borderSide: BorderSide(
-                                  color: context.appColors.border.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0,
-                              ),
-                            ),
-                            validator: (v) {
-                              final value = v?.trim() ?? '';
-                              if (value.isEmpty) {
-                                return context.loc.electrumRetryCountEmptyError;
-                              }
-                              final n = int.tryParse(value);
-                              if (n == null) {
-                                return context.loc.electrumInvalidNumberError;
-                              }
-                              if (n < 0) {
-                                return context
-                                    .loc
-                                    .electrumRetryCountNegativeError;
-                              }
-                              return null;
-                            },
-                            onFieldSubmitted: (_) => _confirm(),
-                          ),
-                          const SizedBox(height: 12),
-                          SwitchListTile.adaptive(
-                            shape: const RoundedRectangleBorder(
-                              side: BorderSide.none,
-                            ),
-                            tileColor: context.appColors.transparent,
-                            title: Text(context.loc.electrumValidateDomain),
-                            contentPadding: EdgeInsets.zero,
-                            value: _validateDomain,
-                            onChanged:
-                                (v) => setState(() => _validateDomain = v),
-                          ),
-                        ],
                       ),
-                    ),
+                      IconButton(
+                        tooltip: context.loc.electrumCloseTooltip,
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
 
-                    const SizedBox(height: 8),
-                    BlocBuilder<ElectrumSettingsBloc, ElectrumSettingsState>(
-                      builder: (context, state) {
-                        return Column(
-                          children: [
-                            if (state.advancedOptionsError != null) ...[
-                              Text(
-                                _getErrorMessage(
-                                  context,
-                                  state.advancedOptionsError!,
-                                ),
-                                style: TextStyle(
-                                  color: context.appColors.error,
-                                  fontSize: 14,
-                                ),
+                  Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Text(
+                        context.loc.electrumStopGap,
+                        style: context.font.bodyMedium?.copyWith(
+                          fontWeight: .w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _stopGap,
+                        focusNode: _stopGapNode,
+                        textInputAction: .next,
+                        keyboardType: TextInputType.number,
+                        style: context.font.bodyLarge,
+                        decoration: InputDecoration(
+                          hintText: context.loc.electrumStopGap,
+                          hintStyle: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.textMuted,
+                          ),
+                          fillColor: context.appColors.surface,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border,
+                            ),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border.withValues(
+                                alpha: 0.5,
                               ),
-                              const SizedBox(height: 8),
-                            ],
-                            Row(
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                          ),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) {
+                            return context.loc.electrumStopGapEmptyError;
+                          }
+                          final n = int.tryParse(v.trim());
+                          if (n == null) {
+                            return context.loc.electrumInvalidNumberError;
+                          }
+                          if (n < 0) {
+                            return context.loc.electrumStopGapNegativeError;
+                          }
+                          if (n > ElectrumSettings.maxStopGap) {
+                            return context.loc.electrumStopGapTooHighError(
+                              ElectrumSettings.maxStopGap.toString(),
+                            );
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) => _timeoutNode.requestFocus(),
+                      ),
+                      Builder(
+                        builder: (context) {
+                          final stopGapValue = int.tryParse(
+                            _stopGap.text.trim(),
+                          );
+                          if (stopGapValue != null && stopGapValue > 1000) {
+                            return Column(
                               children: [
-                                Expanded(
-                                  child: BBButton.small(
-                                    label: context.loc.electrumReset,
-                                    disabled: state.isSavingAdvancedOptions,
-                                    onPressed: () {
-                                      _formKey.currentState!.reset();
-                                      final options =
-                                          context
-                                              .read<ElectrumSettingsBloc>()
-                                              .state
-                                              .advancedOptions;
-                                      // Reset with the current saved options
-                                      _stopGap.text =
-                                          options?.stopGap.toString() ?? '';
-                                      _timeout.text =
-                                          options?.timeout.toString() ?? '';
-                                      _retry.text =
-                                          options?.retry.toString() ?? '';
-                                      setState(
-                                        () =>
-                                            _validateDomain =
-                                                options?.validateDomain ?? true,
-                                      );
-                                      FocusScope.of(context).unfocus();
-                                    },
-                                    bgColor: context.appColors.transparent,
-                                    outlined: true,
-                                    textStyle: context.font.headlineLarge,
-                                    textColor: context.appColors.onSurface,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: BBButton.small(
-                                    label: context.loc.electrumConfirm,
-                                    disabled: state.isSavingAdvancedOptions,
-                                    onPressed: _confirm,
-                                    bgColor: context.appColors.onSurface,
-                                    textStyle: context.font.headlineLarge,
-                                    textColor: context.appColors.surface,
-                                  ),
+                                const SizedBox(height: 8),
+                                InfoCard(
+                                  description:
+                                      context.loc.electrumStopGapHighWarning,
+                                  tagColor: context.appColors.tertiary,
+                                  bgColor: context.appColors.tertiaryContainer,
                                 ),
                               ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        context.loc.electrumTimeout,
+                        style: context.font.bodyMedium?.copyWith(
+                          fontWeight: .w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _timeout,
+                        focusNode: _timeoutNode,
+                        keyboardType: TextInputType.number,
+                        textInputAction: .next,
+                        style: context.font.bodyLarge,
+                        decoration: InputDecoration(
+                          hintText: context.loc.electrumTimeout,
+                          hintStyle: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.textMuted,
+                          ),
+                          fillColor: context.appColors.surface,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border,
                             ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border,
+                            ),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                          ),
+                        ),
+                        validator: (v) {
+                          final value = v?.trim() ?? '';
+                          if (value.isEmpty) {
+                            return context.loc.electrumTimeoutEmptyError;
+                          }
+                          final n = int.tryParse(value);
+                          if (n == null) {
+                            return context.loc.electrumInvalidNumberError;
+                          }
+                          if (n <= 0) {
+                            return context.loc.electrumTimeoutPositiveError;
+                          }
+                          if (n > ElectrumSettings.maxTimeout) {
+                            return context.loc.electrumTimeoutTooHighError(
+                              ElectrumSettings.maxTimeout.toString(),
+                            );
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) => _retryNode.requestFocus(),
+                      ),
+                      Builder(
+                        builder: (context) {
+                          final stopGapValue = int.tryParse(
+                            _stopGap.text.trim(),
+                          );
+                          final timeoutValue = int.tryParse(
+                            _timeout.text.trim(),
+                          );
+
+                          if (stopGapValue != null && timeoutValue != null) {
+                            final recommended = _getRecommendedTimeoutSeconds(
+                              stopGap: stopGapValue,
+                            );
+                            if (timeoutValue < recommended) {
+                              return Column(
+                                children: [
+                                  const SizedBox(height: 8),
+                                  InfoCard(
+                                    description: context.loc
+                                        .electrumTimeoutWarning(
+                                          timeoutValue.toString(),
+                                          recommended.toString(),
+                                        ),
+                                    tagColor: context.appColors.tertiary,
+                                    bgColor:
+                                        context.appColors.tertiaryContainer,
+                                  ),
+                                ],
+                              );
+                            }
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        context.loc.electrumRetryCount,
+                        style: context.font.bodyMedium?.copyWith(
+                          fontWeight: .w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _retry,
+                        focusNode: _retryNode,
+                        keyboardType: TextInputType.number,
+                        textInputAction: .done,
+                        style: context.font.bodyLarge,
+                        decoration: InputDecoration(
+                          hintText: context.loc.electrumRetryCount,
+                          hintStyle: context.font.bodyMedium?.copyWith(
+                            color: context.appColors.textMuted,
+                          ),
+                          fillColor: context.appColors.surface,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border,
+                            ),
+                          ),
+                          disabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: BorderSide(
+                              color: context.appColors.border.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                          ),
+                        ),
+                        validator: (v) {
+                          final value = v?.trim() ?? '';
+                          if (value.isEmpty) {
+                            return context.loc.electrumRetryCountEmptyError;
+                          }
+                          final n = int.tryParse(value);
+                          if (n == null) {
+                            return context.loc.electrumInvalidNumberError;
+                          }
+                          if (n < 0) {
+                            return context.loc.electrumRetryCountNegativeError;
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) => _confirm(),
+                      ),
+                      const SizedBox(height: 12),
+                      SwitchListTile.adaptive(
+                        shape: const RoundedRectangleBorder(
+                          side: BorderSide.none,
+                        ),
+                        tileColor: context.appColors.transparent,
+                        title: Text(context.loc.electrumValidateDomain),
+                        contentPadding: EdgeInsets.zero,
+                        value: _validateDomain,
+                        onChanged: (v) => setState(() => _validateDomain = v),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+                  BlocBuilder<ElectrumSettingsBloc, ElectrumSettingsState>(
+                    builder: (context, state) {
+                      return Column(
+                        children: [
+                          if (state.advancedOptionsError != null) ...[
+                            Text(
+                              _getErrorMessage(
+                                context,
+                                state.advancedOptionsError!,
+                              ),
+                              style: TextStyle(
+                                color: context.appColors.error,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
                           ],
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: BBButton.small(
+                                  label: context.loc.electrumReset,
+                                  disabled: state.isSavingAdvancedOptions,
+                                  onPressed: () {
+                                    _formKey.currentState!.reset();
+                                    final options = context
+                                        .read<ElectrumSettingsBloc>()
+                                        .state
+                                        .advancedOptions;
+                                    // Reset with the current saved options
+                                    _stopGap.text =
+                                        options?.stopGap.toString() ?? '';
+                                    _timeout.text =
+                                        options?.timeout.toString() ?? '';
+                                    _retry.text =
+                                        options?.retry.toString() ?? '';
+                                    setState(
+                                      () => _validateDomain =
+                                          options?.validateDomain ?? true,
+                                    );
+                                    FocusScope.of(context).unfocus();
+                                  },
+                                  bgColor: context.appColors.transparent,
+                                  outlined: true,
+                                  textStyle: context.font.headlineLarge,
+                                  textColor: context.appColors.onSurface,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: BBButton.small(
+                                  label: context.loc.electrumConfirm,
+                                  disabled: state.isSavingAdvancedOptions,
+                                  onPressed: _confirm,
+                                  bgColor: context.appColors.onSurface,
+                                  textStyle: context.font.headlineLarge,
+                                  textColor: context.appColors.surface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),

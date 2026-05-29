@@ -136,6 +136,7 @@ dependencies:
   bloc_concurrency: ^0.3.0
   web_socket_channel: ^3.0.3
   sentry_flutter: ^9.19.0
+  keyboard_actions: ^4.2.1
 
 dependency_overrides:
   bdk_dart:

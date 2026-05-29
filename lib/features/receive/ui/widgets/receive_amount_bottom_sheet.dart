@@ -2,10 +2,11 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_entry.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -16,8 +17,8 @@ import 'package:go_router/go_router.dart';
 /// Mirrors [LabelEntryBottomSheet] so amount edits don't push a new route — that
 /// avoids the auto-redirect to transaction details that fires when the
 /// already-revealed receive address has historical txs.
-class ReceiveEnterAmount extends StatelessWidget {
-  const ReceiveEnterAmount({super.key});
+class ReceiveAmountBottomSheet extends StatefulWidget {
+  const ReceiveAmountBottomSheet({super.key});
 
   static Future<void> showBottomSheet(BuildContext context) async {
     final bloc = context.read<ReceiveBloc>();
@@ -25,9 +26,23 @@ class ReceiveEnterAmount extends StatelessWidget {
       context: context,
       child: BlocProvider.value(
         value: bloc,
-        child: const ReceiveEnterAmount(),
+        child: const ReceiveAmountBottomSheet(),
       ),
     );
+  }
+
+  @override
+  State<ReceiveAmountBottomSheet> createState() =>
+      _ReceiveAmountBottomSheetState();
+}
+
+class _ReceiveAmountBottomSheetState extends State<ReceiveAmountBottomSheet> {
+  final _amountNode = FocusNode();
+
+  @override
+  void dispose() {
+    _amountNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,37 +60,41 @@ class ReceiveEnterAmount extends StatelessWidget {
           16,
           MediaQuery.of(context).viewInsets.bottom,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(22),
-            Row(
-              children: [
-                const Gap(22),
-                const Spacer(),
-                BBText(
-                  context.loc.receiveAmount,
-                  style: context.font.headlineMedium,
-                  color: context.appColors.secondary,
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () => context.pop(),
-                  color: context.appColors.secondary,
-                  icon: const Icon(Icons.close_sharp),
-                ),
-              ],
-            ),
-            const Gap(24),
-            const BorderedTappableTile(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: ReceiveAmountEntry(),
-            ),
-            const Gap(24),
-            const _ConfirmButton(),
-            const Gap(24),
-          ],
+        child: BBKeyboardActions(
+          isDialog: true,
+          focusNodes: [_amountNode],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(22),
+              Row(
+                children: [
+                  const Gap(22),
+                  const Spacer(),
+                  BBText(
+                    context.loc.receiveAmount,
+                    style: context.font.headlineMedium,
+                    color: context.appColors.secondary,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => context.pop(),
+                    color: context.appColors.secondary,
+                    icon: const Icon(Icons.close_sharp),
+                  ),
+                ],
+              ),
+              const Gap(24),
+              BorderedTappableTile(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: ReceiveAmountInput(focusNode: _amountNode),
+              ),
+              const Gap(24),
+              const _ConfirmButton(),
+              const Gap(24),
+            ],
+          ),
         ),
       ),
     );
