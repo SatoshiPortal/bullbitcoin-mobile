@@ -294,8 +294,8 @@ void main() {
     final row = (await usecase.execute()).trim().split('\n')[1].split(',');
     expect(row[1], 'lightning_receive');
     expect(row[2], 'incoming');
-    expect(row[8], '');       // network
-    expect(row[9], '');       // address
+    expect(row[8], 'lightning'); // network
+    expect(row[9], '');          // address
     expect(row[10], 'swap_ln_recv'); // swap_id
     expect(row[11], '');      // preimage (none for receive)
   });
@@ -321,8 +321,8 @@ void main() {
     final row = (await usecase.execute()).trim().split('\n')[1].split(',');
     expect(row[1], 'lightning_send');
     expect(row[2], 'outgoing');
-    expect(row[8], '');       // network
-    expect(row[9], '');       // address
+    expect(row[8], 'lightning'); // network
+    expect(row[9], '');          // address
     expect(row[10], 'swap_ln_send'); // swap_id
     expect(row[11], 'abc123preimage'); // preimage
   });
@@ -364,10 +364,10 @@ void main() {
     expect(row[8], 'bitcoin');         // network = send network
     expect(row[9], 'VJLCbLBTCksDqx1'); // address = receiveAddress
     expect(row[10], 'swap_chain');
-    expect(row[14], 'bitcoin');        // send_network
-    expect(row[15], 'liquid');         // receive_network
-    expect(row[16], 'chain_send_txid');
-    expect(row[17], 'chain_recv_txid');
+    expect(row[13], 'bitcoin');        // send_network
+    expect(row[14], 'liquid');         // receive_network
+    expect(row[15], 'chain_send_txid');
+    expect(row[16], 'chain_recv_txid');
   });
 
   test('chain swap with only send leg (no receive yet) is kept', () async {
