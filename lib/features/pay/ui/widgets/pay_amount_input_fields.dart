@@ -8,11 +8,13 @@ class PayAmountInputFields extends StatelessWidget {
   const PayAmountInputFields({
     super.key,
     required this.amountController,
+    required this.focusNode,
     required this.fiatCurrency,
     this.onFiatCurrencyChanged,
   });
 
   final TextEditingController amountController;
+  final FocusNode focusNode;
   final FiatCurrency fiatCurrency;
   final void Function(FiatCurrency fiatCurrency)? onFiatCurrencyChanged;
 
@@ -22,6 +24,7 @@ class PayAmountInputFields extends StatelessWidget {
       children: [
         ExchangeAmountInputField(
           amountController: amountController,
+          focusNode: focusNode,
           fiatCurrency: fiatCurrency,
         ),
         if (onFiatCurrencyChanged != null) ...[

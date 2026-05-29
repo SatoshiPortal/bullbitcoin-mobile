@@ -10,11 +10,13 @@ class WithdrawAmountInputFields extends StatelessWidget {
   const WithdrawAmountInputFields({
     super.key,
     required this.amountController,
+    required this.focusNode,
     this.fiatCurrency,
     required this.onFiatCurrencyChanged,
   });
 
   final TextEditingController amountController;
+  final FocusNode focusNode;
   final FiatCurrency? fiatCurrency;
   final void Function(FiatCurrency fiatCurrency) onFiatCurrencyChanged;
 
@@ -39,6 +41,7 @@ class WithdrawAmountInputFields extends StatelessWidget {
         ExchangeAmountInputField(
           isLoading: isLoading,
           amountController: amountController,
+          focusNode: focusNode,
           fiatCurrency: fiatCurrency,
           fiatBalance: balances
               ?.where((b) => b.currencyCode == fiatCurrency?.code)
