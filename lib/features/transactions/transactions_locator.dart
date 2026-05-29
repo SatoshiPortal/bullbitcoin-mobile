@@ -50,14 +50,6 @@ class TransactionsLocator {
       ),
     );
 
-    locator.registerLazySingleton<TransactionExportFormatter>(
-      CsvTransactionExportFormatter.new,
-    );
-
-    locator.registerLazySingleton<TransactionExportSaver>(
-      CsvTransactionExportSaver.new,
-    );
-
     locator.registerFactory<ExportTransactionsCsvUsecase>(
       () => ExportTransactionsCsvUsecase(
         getTransactionsUsecase: locator<GetTransactionsUsecase>(),
@@ -81,6 +73,16 @@ class TransactionsLocator {
           instanceName: 'testnetExchangeOrderRepository',
         ),
       ),
+    );
+  }
+
+  static void registerAdapters(GetIt locator) {
+    locator.registerLazySingleton<TransactionExportFormatter>(
+      CsvTransactionExportFormatter.new,
+    );
+
+    locator.registerLazySingleton<TransactionExportSaver>(
+      CsvTransactionExportSaver.new,
     );
   }
 
