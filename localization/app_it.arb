@@ -4745,7 +4745,6 @@
   "exchangeSupportChatPickFilesFailed": "Selezione dei file non riuscita. Riprova.",
   "exchangeSupportChatAttachLogsFailed": "Allegato dei log non riuscito. Riprova.",
   "exchangeSupportChatFetchFileDataFailed": "Recupero dei dati del file non riuscito.",
-  "importMnemonicDuplicateError": "Questo mnemonic esiste già",
   "recipientsFieldSinpePhoneNumberHint": "8 cifre senza prefisso internazionale",
   "recipientsCopDocCcRecipientNumber": "Numero di cédula del destinatario",
   "recipientsCopDocCeRecipientNumber": "Numero di cédula de extranjería del destinatario",
@@ -4755,5 +4754,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Numero di registro civile del destinatario",
   "recipientsValidationSinpePhoneCountryCode": "Rimuovi il prefisso internazionale (+506). Inserisci solo il numero a 8 cifre",
   "recipientsValidationSinpePhoneInvalidChars": "Usa solo cifre (no lettere o simboli)",
-  "recipientsValidationSinpePhoneTooShort": "Inserisci tutte le 8 cifre del numero di telefono"
+  "recipientsValidationSinpePhoneTooShort": "Inserisci tutte le 8 cifre del numero di telefono",
+  "transactionStatusPayjoinCompleted": "Payjoin completato"
 }

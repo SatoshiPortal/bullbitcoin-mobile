@@ -9678,6 +9678,10 @@
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
+  "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হৈছে",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
+  },
   "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",

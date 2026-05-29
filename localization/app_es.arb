@@ -4761,5 +4761,5 @@
   "exchangeSupportChatPickFilesFailed": "No se pudieron seleccionar los archivos. Inténtalo de nuevo.",
   "exchangeSupportChatAttachLogsFailed": "No se pudieron adjuntar los registros. Inténtalo de nuevo.",
   "exchangeSupportChatFetchFileDataFailed": "No se pudieron obtener los datos del archivo.",
-  "importMnemonicDuplicateError": "Esta frase mnemónica ya existe"
+  "transactionStatusPayjoinCompleted": "Payjoin completado"
 }

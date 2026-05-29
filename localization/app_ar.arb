@@ -12594,6 +12594,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
   "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
+  "transactionStatusPayjoinCompleted": "اكتمل Payjoin",
   "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
   "coreScreensFeeRateLabel": "معدل الرسوم",
   "coreScreensFeeRateValue": "{rate} sat/vB",

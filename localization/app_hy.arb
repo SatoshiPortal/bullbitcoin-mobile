@@ -201,6 +201,7 @@
   "transactionSwapOpenWithin24Hours": "Բացեք հավելվածը 24 ժամվա ընթացքում՝ ձեր սվափը ավարտելու համար։",
   "appStartupErrorMessage": "Հավելվածը չհաջողվեց գործարկել։ Փորձեք ամբողջությամբ փակել և նորից բացել այն։ Եթե սխալը շարունակվում է, կապվեք աջակցության հետ և կիսվեք ձեր լոգերով։",
   "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի",
+  "transactionStatusPayjoinCompleted": "Payjoin ավարտված է",
   "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
