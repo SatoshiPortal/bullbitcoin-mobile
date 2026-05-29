@@ -16,7 +16,6 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     'status',
     'txid',
     'network',
-    'label',
     'address',
     'swap_id',
     'invoice',
@@ -56,7 +55,6 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
       _status(tx),
       tx.txId ?? '',
       isChainSwap ? _chainNetwork(swap!, send: true) : (tx.isBitcoin ? 'bitcoin' : 'liquid'),
-      _labels(tx),
       isLightning ? '' : (tx.toAddress ?? swap?.receiveAddress ?? ''),
       swap?.id ?? '',
       _invoice(swap),
@@ -67,12 +65,6 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
       swap?.sendTxId ?? '',
       swap?.receiveTxId ?? '',
     ];
-  }
-
-  String _labels(Transaction tx) {
-    final labels = tx.labels;
-    if (labels == null || labels.isEmpty) return '';
-    return labels.map((l) => l.label).join('; ');
   }
 
   String _date(DateTime? timestamp) {

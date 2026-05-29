@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/labels/label.dart';
 import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
 import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -20,7 +19,6 @@ WalletTransaction _walletTx({
       WalletTransactionDirection.incoming,
   int feeSat = 0,
   DateTime? confirmationTime,
-  List<Label> labels = const [],
 }) {
   return WalletTransaction(
     walletId: 'w1',
@@ -35,7 +33,6 @@ WalletTransaction _walletTx({
     outputs: const [],
     isRbf: false,
     confirmationTime: confirmationTime,
-    labels: labels,
   );
 }
 
@@ -135,22 +132,6 @@ void main() {
     expect(csv, contains('inside'));
     expect(csv, isNot(contains('before')));
     expect(csv, isNot(contains('after')));
-  });
-
-  test('escapes labels containing a comma', () async {
-    stub([
-      Transaction(
-        walletTransaction: _walletTx(
-          txId: 'abc',
-          amountSat: 100,
-          confirmationTime: DateTime.utc(2026, 1, 1),
-          labels: [Label.tx(id: 1, transactionId: 'abc', label: 'rent, may')],
-        ),
-      ),
-    ]);
-
-    final csv = await usecase.execute();
-    expect(csv, contains('"rent, may"'));
   });
 
   test('throws when there are no transactions to export', () async {
