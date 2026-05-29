@@ -7784,6 +7784,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "거래 내역",
+  "transactionHistoryHeading": "거래 내역",
+  "exportTransactionsDescription": "지갑의 모든 거래(Bitcoin, Liquid, Lightning, 스왑)를 CSV 파일로 내보냅니다. 선택적으로 날짜 범위로 필터링할 수 있습니다.",
+  "exportTransactionsStartDate": "시작일",
+  "exportTransactionsEndDate": "종료일",
+  "exportTransactionsAnyDate": "전체",
+  "exportTransactionsButton": "CSV 내보내기",
+  "exportTransactionsSuccess": "거래가 성공적으로 내보내졌습니다",
+  "exportTransactionsEmpty": "선택한 기간에 내보낼 거래가 없습니다",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "시작 날짜는 종료 날짜보다 이전이어야 합니다",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 라벨",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

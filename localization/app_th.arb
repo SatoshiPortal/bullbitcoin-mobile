@@ -7780,6 +7780,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "ประวัติธุรกรรม",
+  "transactionHistoryHeading": "ประวัติธุรกรรม",
+  "exportTransactionsDescription": "ส่งออกธุรกรรมทั้งหมดของกระเป๋าเงิน (Bitcoin, Liquid, Lightning และ swaps) เป็นไฟล์ CSV เลือกกรองตามช่วงวันที่ได้",
+  "exportTransactionsStartDate": "วันที่เริ่มต้น",
+  "exportTransactionsEndDate": "วันที่สิ้นสุด",
+  "exportTransactionsAnyDate": "ใดๆ",
+  "exportTransactionsButton": "ส่งออก CSV",
+  "exportTransactionsSuccess": "ส่งออกธุรกรรมสำเร็จ",
+  "exportTransactionsEmpty": "ไม่มีธุรกรรมให้ส่งออกในช่วงที่เลือก",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "วันที่เริ่มต้นต้องอยู่ก่อนวันที่สิ้นสุด",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 ป้าย",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

@@ -1,5 +1,7 @@
+import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/screens/export_transactions_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -8,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 enum TransactionsRoute {
   transactions('/transactions'),
+  exportTransactions('/transactions/export'),
   transactionDetails('/transaction/:txId'),
   swapTransactionDetails('/transaction/swap/:swapId'),
   payjoinTransactionDetails('/transaction/payjoin/:payjoinId'),
@@ -28,6 +31,17 @@ class TransactionsRouter {
       return BlocProvider(
         create: (context) => locator<TransactionsCubit>()..loadTxs(),
         child: const TransactionsScreen(),
+      );
+    },
+  );
+
+  static final exportTransactionsRoute = GoRoute(
+    name: TransactionsRoute.exportTransactions.name,
+    path: TransactionsRoute.exportTransactions.path,
+    builder: (context, state) {
+      return BlocProvider(
+        create: (context) => locator<ExportTransactionsCubit>(),
+        child: const ExportTransactionsScreen(),
       );
     },
   );

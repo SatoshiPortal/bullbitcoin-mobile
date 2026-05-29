@@ -11994,6 +11994,23 @@
   "@importWatchOnlyBuyDevice": {
     "description": "Button label to purchase a hardware wallet device"
   },
+  "transactionHistoryTitle": "Histórico de transações",
+  "transactionHistoryHeading": "Histórico de transações",
+  "exportTransactionsDescription": "Exporte todas as transações da sua carteira (Bitcoin, Liquid, Lightning e swaps) como arquivo CSV. Filtre opcionalmente por intervalo de datas.",
+  "exportTransactionsStartDate": "Data inicial",
+  "exportTransactionsEndDate": "Data final",
+  "exportTransactionsAnyDate": "Qualquer",
+  "exportTransactionsButton": "Exportar CSV",
+  "exportTransactionsSuccess": "Transações exportadas com sucesso",
+  "exportTransactionsEmpty": "Nenhuma transação para exportar no período selecionado",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "A data de início deve ser anterior à data de término",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

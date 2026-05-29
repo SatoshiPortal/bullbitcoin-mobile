@@ -5925,6 +5925,23 @@
   "@fundExchangeHelpPaymentDescription": {
     "description": "Help text for payment description field"
   },
+  "transactionHistoryTitle": "История на транзакциите",
+  "transactionHistoryHeading": "История на транзакциите",
+  "exportTransactionsDescription": "Експортирайте всички транзакции на вашия портфейл (Bitcoin, Liquid, Lightning и суапове) като CSV файл. По избор филтрирайте по период.",
+  "exportTransactionsStartDate": "Начална дата",
+  "exportTransactionsEndDate": "Крайна дата",
+  "exportTransactionsAnyDate": "Всяка",
+  "exportTransactionsButton": "Експортирай CSV",
+  "exportTransactionsSuccess": "Транзакциите са експортирани успешно",
+  "exportTransactionsEmpty": "Няма транзакции за експорт в избрания период",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Началната дата трябва да е преди крайната дата",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "Индекс: [X7X]",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

@@ -3103,6 +3103,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "Historique des transactions",
+  "transactionHistoryHeading": "Historique des transactions",
+  "exportTransactionsDescription": "Exportez toutes les transactions de votre portefeuille (Bitcoin, Liquid, Lightning et swaps) sous forme de fichier CSV. Filtrez éventuellement par plage de dates.",
+  "exportTransactionsStartDate": "Date de début",
+  "exportTransactionsEndDate": "Date de fin",
+  "exportTransactionsAnyDate": "Toutes",
+  "exportTransactionsButton": "Exporter CSV",
+  "exportTransactionsSuccess": "Transactions exportées avec succès",
+  "exportTransactionsEmpty": "Aucune transaction à exporter pour la période sélectionnée",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "La date de début doit être antérieure à la date de fin",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "Étiquettes BIP329",
   "bip329LabelsHeading": "Import/Export d'étiquettes BIP329",
   "bip329LabelsDescription": "Importez ou exportez les étiquettes de portefeuille en utilisant le format standard BIP329.",

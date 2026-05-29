@@ -7780,6 +7780,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "लेनदेन इतिहास",
+  "transactionHistoryHeading": "लेनदेन इतिहास",
+  "exportTransactionsDescription": "अपने वॉलेट के सभी लेनदेन (Bitcoin, Liquid, Lightning और स्वैप) को CSV फ़ाइल के रूप में निर्यात करें। वैकल्पिक रूप से तिथि सीमा द्वारा फ़िल्टर करें।",
+  "exportTransactionsStartDate": "प्रारंभ तिथि",
+  "exportTransactionsEndDate": "समाप्ति तिथि",
+  "exportTransactionsAnyDate": "कोई भी",
+  "exportTransactionsButton": "CSV निर्यात करें",
+  "exportTransactionsSuccess": "लेनदेन सफलतापूर्वक निर्यात हो गए",
+  "exportTransactionsEmpty": "चयनित अवधि के लिए कोई लेनदेन नहीं है",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "प्रारंभ तिथि समाप्ति तिथि से पहले होनी चाहिए",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 लेबल",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

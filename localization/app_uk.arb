@@ -2939,6 +2939,23 @@
   "dcaCancelMessage": "Зареєструвати тарифний план біткойн-продажу буде припинено, а регулярні покупки будуть завершені. Щоб перезапустити, потрібно налаштувати новий план.",
   "dcaConfirmNetwork": "Мережа",
   "allSeedViewDeleteWarningMessage": "Видалення насіння незворотної дії. Тільки робіть це, якщо у вас є безпечні резервні копії цього насіння або асоційованих гаманців повністю зливаються.",
+  "transactionHistoryTitle": "Історія транзакцій",
+  "transactionHistoryHeading": "Історія транзакцій",
+  "exportTransactionsDescription": "Експортуйте всі транзакції вашого гаманця (Bitcoin, Liquid, Lightning і свопи) як файл CSV. За бажанням відфільтруйте за діапазоном дат.",
+  "exportTransactionsStartDate": "Дата початку",
+  "exportTransactionsEndDate": "Дата завершення",
+  "exportTransactionsAnyDate": "Будь-яка",
+  "exportTransactionsButton": "Експорт CSV",
+  "exportTransactionsSuccess": "Транзакції успішно експортовано",
+  "exportTransactionsEmpty": "Немає транзакцій для експорту за вибраний період",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Дата початку має бути раніше дати закінчення",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 етикетки",
   "walletAutoTransferAllowButton": "Смоктати",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",
