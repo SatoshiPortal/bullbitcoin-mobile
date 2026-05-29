@@ -476,41 +476,22 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                       swapCreationError,
                                     )
                                   : null,
+                              focusNode: _amountFocusNode,
+                              readOnly: _isMax,
+                              isMax: _isMax,
+                            ),
                             if (swapLimitsError?.suggestInstantPayments == true)
                               Padding(
                                 padding: const EdgeInsets.only(top: 6),
                                 child: BBText(
                                   context
                                       .loc
-                                      .sendErrorInsufficientBalanceForPayment
-                                : (!walletHasBalance && amountConfirmedClicked)
-                                ? context.loc.sendInsufficientBalance
-                                : swapLimitsError != null
-                                ? _getSwapLimitsErrorMessage(
-                                    context,
-                                    swapLimitsError,
-                                  )
-                                : swapCreationError != null
-                                ? _swapCreationErrorMessage(
-                                    context,
-                                    swapCreationError,
-                                  )
-                                : null,
-                            focusNode: _amountFocusNode,
-                            readOnly: _isMax,
-                            isMax: _isMax,
-                          ),
-                          if (swapLimitsError?.suggestInstantPayments == true)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: BBText(
-                                context
-                                    .loc
-                                    .sendErrorAmountBelowSwapLimitsBitcoin,
-                                style: context.font.bodySmall,
-                                color: context.appColors.error,
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
+                                      .sendErrorAmountBelowSwapLimitsBitcoin,
+                                  style: context.font.bodySmall,
+                                  color: context.appColors.error,
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
                             Gap(Device.screen.height * 0.02),
                             BorderedTappableTile(
