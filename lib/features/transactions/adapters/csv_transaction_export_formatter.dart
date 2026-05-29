@@ -18,7 +18,6 @@ class _ExportRow {
     required this.network,
     required this.address,
     required this.swapId,
-    required this.invoice,
     required this.preimage,
     required this.swapFeeSats,
     required this.sendNetwork,
@@ -38,7 +37,6 @@ class _ExportRow {
   final String network;
   final String address;
   final String swapId;
-  final String invoice;
   final String preimage;
   final String swapFeeSats;
   final String sendNetwork;
@@ -48,7 +46,7 @@ class _ExportRow {
 
   List<String> toFields() => [
     date, type, direction, amountSats, amountBtc, feeSats, status, txid,
-    network, address, swapId, invoice, preimage, swapFeeSats,
+    network, address, swapId, preimage, swapFeeSats,
     sendNetwork, receiveNetwork, sendTxid, receiveTxid,
   ];
 }
@@ -66,7 +64,6 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
     'network',
     'address',
     'swap_id',
-    'invoice',
     'preimage',
     'swap_fee_sats',
     'send_network',
@@ -112,11 +109,6 @@ class CsvTransactionExportFormatter implements TransactionExportFormatter {
       network: network,
       address: address,
       swapId: swap?.id ?? '',
-      invoice: switch (swap) {
-        LnReceiveSwap(:final invoice) => invoice,
-        LnSendSwap(:final invoice) => invoice,
-        _ => '',
-      },
       preimage: switch (swap) {
         LnSendSwap(:final preimage) => preimage ?? '',
         _ => '',

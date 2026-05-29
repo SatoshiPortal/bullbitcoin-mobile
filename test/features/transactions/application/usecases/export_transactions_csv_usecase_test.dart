@@ -297,8 +297,7 @@ void main() {
     expect(row[8], '');       // network
     expect(row[9], '');       // address
     expect(row[10], 'swap_ln_recv'); // swap_id
-    expect(row[11], 'lnbc_test_invoice_recv'); // invoice
-    expect(row[12], '');      // preimage (none for receive)
+    expect(row[11], '');      // preimage (none for receive)
   });
 
   test('LN send swap row has preimage, empty network and address', () async {
@@ -325,8 +324,7 @@ void main() {
     expect(row[8], '');       // network
     expect(row[9], '');       // address
     expect(row[10], 'swap_ln_send'); // swap_id
-    expect(row[11], 'lnbc_test_invoice_send'); // invoice
-    expect(row[12], 'abc123preimage'); // preimage
+    expect(row[11], 'abc123preimage'); // preimage
   });
 
   test('chain swap: only receive leg exported, address and networks correct', () async {
