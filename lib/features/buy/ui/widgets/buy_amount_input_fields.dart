@@ -10,7 +10,9 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class BuyAmountInputFields extends StatefulWidget {
-  const BuyAmountInputFields({super.key});
+  const BuyAmountInputFields({super.key, required this.focusNode});
+
+  final FocusNode focusNode;
 
   @override
   State<BuyAmountInputFields> createState() => _BuyAmountInputFieldsState();
@@ -52,8 +54,9 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
     final isFiatCurrencyInput = context.select(
       (BuyBloc bloc) => bloc.state.isFiatCurrencyInput,
     );
-    final amountInputDecimals =
-        isFiatCurrencyInput ? currency?.decimals ?? 2 : bitcoinUnit.decimals;
+    final amountInputDecimals = isFiatCurrencyInput
+        ? currency?.decimals ?? 2
+        : bitcoinUnit.decimals;
 
     return Column(
       crossAxisAlignment: .start,
@@ -83,24 +86,24 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                     mainAxisSize: .min,
                     mainAxisAlignment: .spaceBetween,
                     children: [
-                        Expanded(
+                      Expanded(
                         child: TextFormField(
                           controller: _amountController,
+                          focusNode: widget.focusNode,
                           keyboardType: const TextInputType.numberWithOptions(
                             decimal: true,
                           ),
-                          inputFormatters:
-                              amountInputDecimals > 0
-                                  ? [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(
-                                        r'^\d+\.?\d{0,'
-                                        '$amountInputDecimals'
-                                        '}',
-                                      ),
+                          inputFormatters: amountInputDecimals > 0
+                              ? [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(
+                                      r'^\d+\.?\d{0,'
+                                      '$amountInputDecimals'
+                                      '}',
                                     ),
-                                  ]
-                                  : [FilteringTextInputFormatter.digitsOnly],
+                                  ),
+                                ]
+                              : [FilteringTextInputFormatter.digitsOnly],
                           style: context.font.displaySmall?.copyWith(
                             color: context.appColors.primary,
                           ),
@@ -222,20 +225,19 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                   Icons.keyboard_arrow_down,
                   color: context.appColors.onSurface,
                 ),
-                items:
-                    balances.keys
-                        .map(
-                          (currencyCode) => DropdownMenuItem<String>(
-                            value: currencyCode,
-                            child: Text(
-                              '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
-                              style: context.font.headlineSmall?.copyWith(
-                                color: context.appColors.secondary,
-                              ),
-                            ),
+                items: balances.keys
+                    .map(
+                      (currencyCode) => DropdownMenuItem<String>(
+                        value: currencyCode,
+                        child: Text(
+                          '$currencyCode Balance - ${FormatAmount.fiat(balances[currencyCode] ?? 0, currencyCode, simpleFormat: true)}',
+                          style: context.font.headlineSmall?.copyWith(
+                            color: context.appColors.secondary,
                           ),
-                        )
-                        .toList(),
+                        ),
+                      ),
+                    )
+                    .toList(),
                 onChanged: (value) {
                   if (value != null) {
                     context.read<BuyBloc>().add(
