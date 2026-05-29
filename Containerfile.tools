@@ -72,6 +72,7 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     fonts-noto-core \
     fonts-noto-cjk \
+    fonts-noto-color-emoji \
     && rm -rf /var/lib/apt/lists/*
 
 # Workaround for CVE-2024-32020 hardlink check failing on overlayfs:
