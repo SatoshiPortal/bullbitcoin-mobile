@@ -7793,6 +7793,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "วันที่เริ่มต้นต้องอยู่ก่อนวันที่สิ้นสุด",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 ป้าย",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

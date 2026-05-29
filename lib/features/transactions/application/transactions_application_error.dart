@@ -5,3 +5,7 @@ sealed class TransactionsApplicationError implements Exception {
 class NoTransactionsToExportError extends TransactionsApplicationError {
   const NoTransactionsToExportError();
 }
+
+class InvalidDateRangeError extends TransactionsApplicationError {
+  const InvalidDateRangeError();
+}

@@ -2952,6 +2952,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "Дата початку має бути раніше дати закінчення",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 етикетки",
   "walletAutoTransferAllowButton": "Смоктати",
   "autoswapSelectWalletRequired": "Виберіть гаманець Bitcoin *",

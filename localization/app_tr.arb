@@ -7743,6 +7743,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "Başlangıç tarihi bitiş tarihinden önce olmalıdır",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Etiketler",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

@@ -267,5 +267,9 @@
   "exportTransactionsError": "Failed to export transactions",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Tarehe ya kuanza lazima iwe kabla ya tarehe ya kumaliza",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
   }
 }

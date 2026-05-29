@@ -15,19 +15,23 @@ class ExportTransactionsCsvUsecase {
        _formatter = formatter;
 
   Future<String> execute({DateTime? start, DateTime? end}) async {
+    if (start != null && end != null && start.isAfter(end)) {
+      throw InvalidDateRangeError();
+    }
+
     final transactions = await _getTransactionsUsecase.execute();
 
-    final inclusiveEnd = end == null
+    final exclusiveEnd = end == null
         ? null
-        : DateTime(end.year, end.month, end.day, 23, 59, 59);
+        : DateTime(end.year, end.month, end.day + 1);
 
     final filtered =
         transactions.where((tx) {
           if (tx.isOrder) return false;
           final timestamp = tx.timestamp;
-          if (timestamp == null) return start == null && inclusiveEnd == null;
+          if (timestamp == null) return start == null && exclusiveEnd == null;
           if (start != null && timestamp.isBefore(start)) return false;
-          if (inclusiveEnd != null && timestamp.isAfter(inclusiveEnd)) {
+          if (exclusiveEnd != null && !timestamp.isBefore(exclusiveEnd)) {
             return false;
           }
           return true;
@@ -65,6 +69,6 @@ class ExportTransactionsCsvUsecase {
     if (at == null && bt == null) return 0;
     if (at == null) return -1;
     if (bt == null) return 1;
-    return at.compareTo(bt);
+    return bt.compareTo(at);
   }
 }

@@ -3066,6 +3066,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "Alkamispäivän on oltava ennen päättymispäivää",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329-tunnisteet",
   "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
   "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",

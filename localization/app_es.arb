@@ -3119,6 +3119,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "La fecha de inicio debe ser anterior a la fecha de fin",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "Etiquetas BIP329",
   "bip329LabelsHeading": "Importar/Exportar etiquetas BIP329",
   "bip329LabelsDescription": "Importa o exporta etiquetas de monedero usando el formato estándar BIP329.",

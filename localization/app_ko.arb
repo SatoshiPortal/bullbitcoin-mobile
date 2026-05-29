@@ -7797,6 +7797,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "시작 날짜는 종료 날짜보다 이전이어야 합니다",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 라벨",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

@@ -12599,6 +12599,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "শুরুর তারিখ অবশ্যই শেষ তারিখের আগে হতে হবে",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 লেবেল",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

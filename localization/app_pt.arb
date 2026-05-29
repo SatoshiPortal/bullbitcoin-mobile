@@ -2527,6 +2527,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "A data de início deve ser anterior à data de fim",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "autoswapSelectWalletRequired": "Selecione uma carteira Bitcoin *",
   "exchangeFeatureSellBitcoin": "• Venda Bitcoin, ser pago com Bitcoin",

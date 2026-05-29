@@ -2545,6 +2545,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "La data di inizio deve essere precedente alla data di fine",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Etichette",
   "walletAutoTransferAllowButton": "Consentire",
   "autoswapSelectWalletRequired": "Seleziona un portafoglio Bitcoin *",

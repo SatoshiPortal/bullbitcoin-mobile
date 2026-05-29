@@ -2546,6 +2546,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "开始日期必须早于结束日期",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "walletAutoTransferAllowButton": "允许",
   "autoswapSelectWalletRequired": "选择一个比特币钱包 *",

@@ -34,6 +34,8 @@ class ExportTransactionsCubit extends Cubit<ExportTransactionsState> {
       emit(const ExportTransactionsState.success());
     } on NoTransactionsToExportError {
       emit(const ExportTransactionsState.noTransactions());
+    } on InvalidDateRangeError {
+      emit(const ExportTransactionsState.invalidDateRange());
     } catch (e, s) {
       log.severe(
         message: 'Failed to export transactions CSV',

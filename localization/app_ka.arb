@@ -459,5 +459,9 @@
   "exportTransactionsError": "Failed to export transactions",
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "დაწყების თარიღი უნდა იყოს დასრულების თარიღამდე",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
   }
 }

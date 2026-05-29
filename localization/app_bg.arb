@@ -5938,6 +5938,10 @@
   "@exportTransactionsError": {
     "description": "Message shown when an unexpected error occurs during CSV export"
   },
+  "exportTransactionsInvalidDateRange": "Началната дата трябва да е преди крайната дата",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "Индекс: [X7X]",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"

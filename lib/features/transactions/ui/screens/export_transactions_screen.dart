@@ -44,9 +44,7 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
   }
 
   String _formatDate(DateTime date) =>
-      '${date.year.toString().padLeft(4, '0')}-'
-      '${date.month.toString().padLeft(2, '0')}-'
-      '${date.day.toString().padLeft(2, '0')}';
+      MaterialLocalizations.of(context).formatShortDate(date);
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +68,10 @@ class _ExportTransactionsScreenState extends State<ExportTransactionsScreen> {
               noTransactions: (_) => SnackBarUtils.showSnackBar(
                 context,
                 context.loc.exportTransactionsEmpty,
+              ),
+              invalidDateRange: (_) => SnackBarUtils.showSnackBar(
+                context,
+                context.loc.exportTransactionsInvalidDateRange,
               ),
               error: (_) => SnackBarUtils.showSnackBar(
                 context,
