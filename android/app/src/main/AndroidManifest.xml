@@ -78,6 +78,15 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="bitcoin" />
             </intent-filter>
+            <!-- Custom-scheme callback for Trezor Connect deeplinks; schemeless
+                 (no android:host) so any bullbitcoin://... URI is routed to
+                 Dart, then dispatched in TrezorDeeplinkListener -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="bullbitcoin" />
+            </intent-filter>
             <!-- USB device attached intent filter for BitBox02 -->
             <intent-filter>
                 <action

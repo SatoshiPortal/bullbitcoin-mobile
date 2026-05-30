@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/import_qr_device/router.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -123,12 +124,7 @@ class ImportWalletPage extends StatelessWidget {
                 const Gap(16),
                 TabMenuVerticalButton(
                   title: 'Trezor',
-                  onTap: () {
-                    SnackBarUtils.showSnackBar(
-                      context,
-                      'Trezor support is coming soon',
-                    );
-                  },
+                  onTap: () => context.pushNamed(TrezorRoute.importTrezor.name),
                 ),
               ],
             ],
