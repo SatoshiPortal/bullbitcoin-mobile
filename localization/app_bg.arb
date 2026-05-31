@@ -5925,6 +5925,23 @@
   "@fundExchangeHelpPaymentDescription": {
     "description": "Help text for payment description field"
   },
+  "transactionHistoryTitle": "История на транзакциите",
+  "transactionHistoryHeading": "История на транзакциите",
+  "exportTransactionsDescription": "Експортирайте всички транзакции на вашия портфейл (Bitcoin, Liquid, Lightning и суапове) като CSV файл. По избор филтрирайте по период.",
+  "exportTransactionsStartDate": "Начална дата",
+  "exportTransactionsEndDate": "Крайна дата",
+  "exportTransactionsAnyDate": "Всяка",
+  "exportTransactionsButton": "Експортирай CSV",
+  "exportTransactionsSuccess": "Транзакциите са експортирани успешно",
+  "exportTransactionsEmpty": "Няма транзакции за експорт в избрания период",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Началната дата трябва да е преди крайната дата",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "Индекс: [X7X]",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -9739,7 +9756,6 @@
   "exchangeSupportChatPickFilesFailed": "Изборът на файлове не успя. Моля, опитайте отново.",
   "exchangeSupportChatAttachLogsFailed": "Прикачването на регистри не успя. Моля, опитайте отново.",
   "exchangeSupportChatFetchFileDataFailed": "Извличането на данните от файла не успя.",
-  "importMnemonicDuplicateError": "Тази мнемонична фраза вече съществува",
   "recipientsFieldSinpePhoneNumberHint": "8 цифри без код на държава",
   "recipientsCopDocCcRecipientNumber": "Cédula номер на получателя",
   "recipientsCopDocCeRecipientNumber": "Cédula de extranjería номер на получателя",
@@ -9749,5 +9765,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Номер от гражданския регистър на получателя",
   "recipientsValidationSinpePhoneCountryCode": "Премахнете кода на държавата (+506). Въведете само 8-цифрения номер",
   "recipientsValidationSinpePhoneInvalidChars": "Използвайте само цифри (без букви или символи)",
-  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер"
+  "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер",
+  "transactionStatusPayjoinCompleted": "Payjoin завършен"
 }

@@ -13,7 +13,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class SelectableCustomFeeListItem extends StatefulWidget {
-  const SelectableCustomFeeListItem({super.key});
+  const SelectableCustomFeeListItem({super.key, required this.focusNode});
+
+  final FocusNode focusNode;
 
   @override
   State<SelectableCustomFeeListItem> createState() =>
@@ -25,7 +27,6 @@ class _SelectableCustomFeeListItemState
   late bool _isAbsolute;
   late TextEditingController _controller;
   late NetworkFee? _customFee;
-  late FocusNode _focusNode;
 
   @override
   void initState() {
@@ -34,13 +35,11 @@ class _SelectableCustomFeeListItemState
     _isAbsolute = _customFee?.isAbsolute ?? true;
     final value = _customFee?.value.toString() ?? '';
     _controller = TextEditingController(text: value);
-    _focusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -115,7 +114,7 @@ class _SelectableCustomFeeListItemState
       radius: 2,
       onTap: () {
         // Focus on the text field
-        _focusNode.requestFocus();
+        widget.focusNode.requestFocus();
       },
       child: Material(
         elevation: isCustomFeeSelected ? 4 : 1,
@@ -175,7 +174,7 @@ class _SelectableCustomFeeListItemState
               const Gap(8),
               TextFormField(
                 controller: _controller,
-                focusNode: _focusNode,
+                focusNode: widget.focusNode,
                 keyboardType: TextInputType.numberWithOptions(
                   decimal: !_isAbsolute,
                 ),
@@ -192,22 +191,16 @@ class _SelectableCustomFeeListItemState
                   filled: true,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: context.appColors.border,
-                    ),
+                    borderSide: BorderSide(color: context.appColors.border),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    borderSide: BorderSide(
-                      color: context.appColors.border,
-                    ),
+                    borderSide: BorderSide(color: context.appColors.border),
                   ),
                   disabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: BorderSide(
-                      color: context.appColors.border.withValues(
-                        alpha: 0.5,
-                      ),
+                      color: context.appColors.border.withValues(alpha: 0.5),
                     ),
                   ),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),

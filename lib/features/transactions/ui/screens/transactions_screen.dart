@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
@@ -28,6 +29,10 @@ class TransactionsScreen extends StatelessWidget {
           onBack: () {
             context.pop();
           },
+          actionIcon: Icons.file_download,
+          onAction: () => context.pushNamed(
+            TransactionsRoute.exportTransactions.name,
+          ),
         ),
         backgroundColor: context.appColors.onPrimary,
         elevation: 0,

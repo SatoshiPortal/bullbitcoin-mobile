@@ -2514,6 +2514,23 @@
   "sellSendPaymentFastest": "Mais rápido",
   "dcaConfirmNetwork": "Rede",
   "allSeedViewDeleteWarningMessage": "Excluir a semente é uma ação irreversível. Apenas faça isso se você tiver backups seguros desta semente ou as carteiras associadas foram totalmente drenadas.",
+  "transactionHistoryTitle": "Histórico de transações",
+  "transactionHistoryHeading": "Histórico de transações",
+  "exportTransactionsDescription": "Exporte todas as transações da sua carteira (Bitcoin, Liquid, Lightning e swaps) como ficheiro CSV. Filtre opcionalmente por intervalo de datas.",
+  "exportTransactionsStartDate": "Data de início",
+  "exportTransactionsEndDate": "Data de fim",
+  "exportTransactionsAnyDate": "Qualquer",
+  "exportTransactionsButton": "Exportar CSV",
+  "exportTransactionsSuccess": "Transações exportadas com sucesso",
+  "exportTransactionsEmpty": "Sem transações para exportar no período selecionado",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "A data de início deve ser anterior à data de fim",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "autoswapSelectWalletRequired": "Selecione uma carteira Bitcoin *",
   "exchangeFeatureSellBitcoin": "• Venda Bitcoin, ser pago com Bitcoin",
@@ -4800,7 +4817,6 @@
   "exchangeSupportChatPickFilesFailed": "Falha ao escolher ficheiros. Tente novamente.",
   "exchangeSupportChatAttachLogsFailed": "Falha ao anexar registos. Tente novamente.",
   "exchangeSupportChatFetchFileDataFailed": "Falha ao obter os dados do ficheiro.",
-  "importMnemonicDuplicateError": "Esta mnemônica já existe",
   "recipientsFieldSinpePhoneNumberHint": "8 dígitos sem indicativo do país",
   "recipientsCopDocCcRecipientNumber": "Número de cédula do destinatário",
   "recipientsCopDocCeRecipientNumber": "Número de cédula de extranjería do destinatário",
@@ -4810,5 +4826,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Número de registo civil do destinatário",
   "recipientsValidationSinpePhoneCountryCode": "Remova o indicativo do país (+506). Insira apenas o número de 8 dígitos",
   "recipientsValidationSinpePhoneInvalidChars": "Use apenas dígitos (sem letras ou símbolos)",
-  "recipientsValidationSinpePhoneTooShort": "Insira os 8 dígitos do número de telefone"
+  "recipientsValidationSinpePhoneTooShort": "Insira os 8 dígitos do número de telefone",
+  "transactionStatusPayjoinCompleted": "Payjoin concluído"
 }

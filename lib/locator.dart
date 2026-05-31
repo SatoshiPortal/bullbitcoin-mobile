@@ -80,6 +80,7 @@ class AppLocator {
     SettingsLocator.setup(locator);
     BitcoinPriceLocator.setup(locator);
     WalletLocator.setup(locator);
+    TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);
     TransactionsLocator.registerBlocs(locator);
     ReceiveLocator.setup(locator);

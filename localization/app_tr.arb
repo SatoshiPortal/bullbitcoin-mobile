@@ -7730,6 +7730,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "transactionHistoryHeading": "İşlem geçmişi",
+  "exportTransactionsDescription": "Cüzdanınızın tüm işlemlerini (Bitcoin, Liquid, Lightning ve takasları) CSV dosyası olarak dışa aktarın. İsteğe bağlı olarak tarih aralığına göre filtreleyin.",
+  "exportTransactionsStartDate": "Başlangıç tarihi",
+  "exportTransactionsEndDate": "Bitiş tarihi",
+  "exportTransactionsAnyDate": "Herhangi",
+  "exportTransactionsButton": "CSV olarak dışa aktar",
+  "exportTransactionsSuccess": "İşlemler başarıyla dışa aktarıldı",
+  "exportTransactionsEmpty": "Seçilen dönem için dışa aktarılacak işlem yok",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Başlangıç tarihi bitiş tarihinden önce olmalıdır",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Etiketler",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -12591,6 +12608,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın.",
   "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
+  "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
   "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
   "coreScreensFeeRateLabel": "Ücret oranı",
   "coreScreensFeeRateValue": "{rate} sat/vB",

@@ -201,6 +201,7 @@
   "transactionSwapOpenWithin24Hours": "Բացեք հավելվածը 24 ժամվա ընթացքում՝ ձեր սվափը ավարտելու համար։",
   "appStartupErrorMessage": "Հավելվածը չհաջողվեց գործարկել։ Փորձեք ամբողջությամբ փակել և նորից բացել այն։ Եթե սխալը շարունակվում է, կապվեք աջակցության հետ և կիսվեք ձեր լոգերով։",
   "importMnemonicDuplicateError": "Այս մնեմոնիկն արդեն գոյություն ունի",
+  "transactionStatusPayjoinCompleted": "Payjoin ավարտված է",
   "pinCodeBackupRequiredWarning": "Խնդրում ենք ավարտել դրամապանակի կրկնօրինակումը PIN-ը սահմանելուց առաջ",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
@@ -234,5 +235,22 @@
   "payDescriptionLabel": "Վճարման նկարագրություն (ըստ ցանկության)",
   "payDescriptionHint": "Ավելացրեք նշում այս վճարման համար",
   "payPaymentDescription": "Վճարման նկարագրություն",
-  "transactionDetailLabelPaymentDescription": "Վճարման նկարագրություն"
+  "transactionDetailLabelPaymentDescription": "Վճարման նկարագրություն",
+  "transactionHistoryTitle": "Գործարքների պատմություն",
+  "transactionHistoryHeading": "Գործարքների պատմություն",
+  "exportTransactionsDescription": "Արտահանեք ձեր դրամապանակի բոլոր գործարքները (Bitcoin, Liquid, Lightning և փոխանակումներ) որպես CSV ֆայլ։ Ընտրովի կարող եք զտել ըստ ամսաթվերի։",
+  "exportTransactionsStartDate": "Սկսման ամսաթիվ",
+  "exportTransactionsEndDate": "Ավարտի ամսաթիվ",
+  "exportTransactionsAnyDate": "Ցանկացած",
+  "exportTransactionsButton": "Արտահանել CSV",
+  "exportTransactionsSuccess": "Գործարքները հաջողությամբ արտահանվեցին",
+  "exportTransactionsEmpty": "Ընտրված ժամանակահատվածում արտահանելու գործարք չկա",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Մեկնարկի ամսաթիվը պետք է լինի ավարտի ամսաթվից առաջ",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  }
 }

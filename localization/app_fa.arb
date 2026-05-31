@@ -7705,6 +7705,23 @@
   "@dcaConfirmNetwork": {
     "description": "Field label for network"
   },
+  "transactionHistoryTitle": "تاریخچه تراکنش‌ها",
+  "transactionHistoryHeading": "تاریخچه تراکنش‌ها",
+  "exportTransactionsDescription": "همه تراکنش‌های کیف پول خود (بیت‌کوین، لیکویید، لایتنینگ و سوآپ‌ها) را به‌صورت فایل CSV صادر کنید. به‌صورت اختیاری بر اساس بازه زمانی فیلتر کنید.",
+  "exportTransactionsStartDate": "تاریخ شروع",
+  "exportTransactionsEndDate": "تاریخ پایان",
+  "exportTransactionsAnyDate": "هر تاریخ",
+  "exportTransactionsButton": "خروجی CSV",
+  "exportTransactionsSuccess": "تراکنش‌ها با موفقیت صادر شدند",
+  "exportTransactionsEmpty": "هیچ تراکنشی برای صادر کردن در بازه انتخاب‌شده وجود ندارد",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "تاریخ شروع باید قبل از تاریخ پایان باشد",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "برچسب های BIP30",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -12591,6 +12608,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "برای تکمیل سواپ خود، ظرف ۲۴ ساعت برنامه را باز کنید",
   "importMnemonicDuplicateError": "این عبارت یادگاری از قبل وجود دارد",
+  "transactionStatusPayjoinCompleted": "Payjoin تکمیل شد",
   "coreScreensResolvingInputs": "در حال تحلیل ورودی‌های تراکنش...",
   "coreScreensFeeRateLabel": "نرخ کارمزد",
   "coreScreensFeeRateValue": "{rate} sat/vB",

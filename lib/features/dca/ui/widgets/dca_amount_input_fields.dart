@@ -10,11 +10,13 @@ class DcaAmountInputFields extends StatelessWidget {
   const DcaAmountInputFields({
     super.key,
     required this.amountController,
+    required this.focusNode,
     this.fiatCurrency,
     required this.onFiatCurrencyChanged,
   });
 
   final TextEditingController amountController;
+  final FocusNode focusNode;
   final FiatCurrency? fiatCurrency;
   final void Function(FiatCurrency fiatCurrency) onFiatCurrencyChanged;
 
@@ -30,20 +32,19 @@ class DcaAmountInputFields extends StatelessWidget {
         ExchangeAmountInputField(
           isLoading: isLoading,
           amountController: amountController,
+          focusNode: focusNode,
           fiatCurrency: fiatCurrency,
-          fiatBalance:
-              balances
-                  .where((b) => b.currencyCode == fiatCurrency?.code)
-                  .firstOrNull,
+          fiatBalance: balances
+              .where((b) => b.currencyCode == fiatCurrency?.code)
+              .firstOrNull,
           canExceedBalance: false,
         ),
         const Gap(16.0),
         ExchangeAmountCurrencyDropdown(
           isLoading: isLoading,
-          currencies:
-              balances
-                  .map((b) => FiatCurrency.fromCode(b.currencyCode))
-                  .toList(),
+          currencies: balances
+              .map((b) => FiatCurrency.fromCode(b.currencyCode))
+              .toList(),
           initialCurrency: fiatCurrency,
           selectedCurrency: fiatCurrency?.code,
           onCurrencyChanged: (String currencyCode) {

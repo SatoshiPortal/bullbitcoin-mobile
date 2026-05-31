@@ -8887,6 +8887,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "Lenden Itihaas",
+  "transactionHistoryHeading": "Lenden Itihaas",
+  "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur swaps) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
+  "exportTransactionsStartDate": "Shuru ki taarikh",
+  "exportTransactionsEndDate": "Antim taarikh",
+  "exportTransactionsAnyDate": "Koi bhi",
+  "exportTransactionsButton": "CSV export karein",
+  "exportTransactionsSuccess": "Lenden safaltaapoorvak export ho gaye",
+  "exportTransactionsEmpty": "Chayanit avadhi ke liye koi lenden nahi hai",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Shuru ki taareekh khatam ki taareekh se pehle honi chahiye",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -13056,5 +13073,9 @@
   "recipientsValidationSinpePhoneTooShort": "Phone number ke saare 8 digits daalein",
   "recipientsFieldDocumentType": "Recipient ka ID type",
   "recipientsFieldDocumentNumberHint": "Recipient ka ID number daalein",
-  "recipientsValidationSinpePhone": "Country code ke bina ek valid 8-digit Costa Rican phone number daalein"
+  "recipientsValidationSinpePhone": "Country code ke bina ek valid 8-digit Costa Rican phone number daalein",
+  "transactionStatusPayjoinCompleted": "Payjoin poora hua",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Jab Payjoin transaction successfully complete ho jati hai tab dikhaya jata hai."
+  }
 }

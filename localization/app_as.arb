@@ -6692,6 +6692,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "লেনদেনৰ ইতিহাস",
+  "transactionHistoryHeading": "লেনদেনৰ ইতিহাস",
+  "exportTransactionsDescription": "আপোনাৰ সকলো ৱালেট লেনদেন (বিটকইন, লিকুইড, লাইটনিং আৰু চোৱাপ) CSV ফাইল হিচাপে এক্সপৰ্ট কৰক। ইচ্ছাকৃতভাৱে তাৰিখৰ পৰিসৰৰ দ্বাৰা ফিল্টাৰ কৰক।",
+  "exportTransactionsStartDate": "আৰম্ভৰ তাৰিখ",
+  "exportTransactionsEndDate": "শেষৰ তাৰিখ",
+  "exportTransactionsAnyDate": "যিকোনো",
+  "exportTransactionsButton": "CSV এক্সপৰ্ট কৰক",
+  "exportTransactionsSuccess": "লেনদেন সফলতাৰে এক্সপৰ্ট কৰা হ'ল",
+  "exportTransactionsEmpty": "নিৰ্বাচিত সময়ছোৱাৰ বাবে এক্সপৰ্ট কৰিবলৈ কোনো লেনদেন নাই",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "আৰম্ভণিৰ তাৰিখ শেষৰ তাৰিখৰ আগত হ'ব লাগিব",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -9677,6 +9694,10 @@
   "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হৈছে",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "যেতিয়া Payjoin লেনদেন সফলভাৱে সম্পন্ন হয় তেতিয়া দেখুৱা হয়।"
   },
   "pinCodeBackupRequiredWarning": "PIN ছেট কৰাৰ আগতে অনুগ্ৰহ কৰি এটা ৱালেট বেকআপ সম্পূৰ্ণ কৰক",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",

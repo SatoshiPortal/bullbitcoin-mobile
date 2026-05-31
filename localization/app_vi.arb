@@ -201,6 +201,7 @@
   "transactionSwapOpenWithin24Hours": "Mở ứng dụng trong vòng 24 giờ để hoàn tất hoán đổi của bạn.",
   "appStartupErrorMessage": "Không thể khởi động ứng dụng. Hãy thử đóng hoàn toàn ứng dụng và khởi động lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ hỗ trợ và gửi nhật ký của bạn.",
   "importMnemonicDuplicateError": "Cụm từ ghi nhớ này đã tồn tại",
+  "transactionStatusPayjoinCompleted": "Payjoin đã hoàn tất",
   "pinCodeBackupRequiredWarning": "Vui lòng hoàn tất sao lưu ví trước khi đặt PIN",
   "coreScreensResolvingInputs": "Resolving transaction inputs...",
   "coreScreensFeeRateLabel": "Fee rate",
@@ -234,5 +235,22 @@
   "payDescriptionLabel": "Mô tả thanh toán (tùy chọn)",
   "payDescriptionHint": "Thêm ghi chú cho khoản thanh toán này",
   "payPaymentDescription": "Mô tả thanh toán",
-  "transactionDetailLabelPaymentDescription": "Mô tả thanh toán"
+  "transactionDetailLabelPaymentDescription": "Mô tả thanh toán",
+  "transactionHistoryTitle": "Lịch sử giao dịch",
+  "transactionHistoryHeading": "Lịch sử giao dịch",
+  "exportTransactionsDescription": "Xuất tất cả giao dịch ví của bạn (Bitcoin, Liquid, Lightning và swap) dưới dạng tệp CSV. Tùy chọn lọc theo khoảng thời gian.",
+  "exportTransactionsStartDate": "Ngày bắt đầu",
+  "exportTransactionsEndDate": "Ngày kết thúc",
+  "exportTransactionsAnyDate": "Bất kỳ",
+  "exportTransactionsButton": "Xuất CSV",
+  "exportTransactionsSuccess": "Đã xuất giao dịch thành công",
+  "exportTransactionsEmpty": "Không có giao dịch nào để xuất trong khoảng thời gian đã chọn",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Ngày bắt đầu phải trước ngày kết thúc",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  }
 }

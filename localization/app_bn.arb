@@ -12586,6 +12586,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "লেনদেনের ইতিহাস",
+  "transactionHistoryHeading": "লেনদেনের ইতিহাস",
+  "exportTransactionsDescription": "আপনার সমস্ত ওয়ালেট লেনদেন (Bitcoin, Liquid, Lightning এবং সোয়াপ) CSV ফাইল হিসাবে এক্সপোর্ট করুন। ঐচ্ছিকভাবে তারিখের পরিসর দ্বারা ফিল্টার করুন।",
+  "exportTransactionsStartDate": "শুরুর তারিখ",
+  "exportTransactionsEndDate": "শেষ তারিখ",
+  "exportTransactionsAnyDate": "যেকোনো",
+  "exportTransactionsButton": "CSV এক্সপোর্ট করুন",
+  "exportTransactionsSuccess": "লেনদেন সফলভাবে এক্সপোর্ট হয়েছে",
+  "exportTransactionsEmpty": "নির্বাচিত সময়ের জন্য কোনো লেনদেন নেই",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "শুরুর তারিখ অবশ্যই শেষ তারিখের আগে হতে হবে",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 লেবেল",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -12871,6 +12888,10 @@
   "fundExchangeCopFailedToOpenLink": "Could not open payment link. Please try again or contact support.",
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin সম্পন্ন হয়েছে",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "যখন একটি Payjoin লেনদেন সফলভাবে সম্পন্ন হয় তখন এটি দেখানো হয়।"
   },
   "coreScreensResolvingInputs": "লেনদেনের ইনপুট সমাধান করা হচ্ছে...",
   "coreScreensFeeRateLabel": "ফি রেট",

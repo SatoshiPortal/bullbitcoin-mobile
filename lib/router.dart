@@ -171,6 +171,7 @@ class AppRouter {
       WalletRouter.walletDetailRoute,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
+      TransactionsRouter.exportTransactionsRoute,
       ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route,

@@ -13,10 +13,12 @@ class SwapAmountInput extends StatelessWidget {
     super.key,
     required this.amountController,
     required this.amountSat,
+    required this.focusNode,
   });
 
   final TextEditingController amountController;
   final int amountSat;
+  final FocusNode focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +66,7 @@ class SwapAmountInput extends StatelessWidget {
                       Expanded(
                         child: TextFormField(
                           controller: amountController,
+                          focusNode: focusNode,
                           keyboardType: TextInputType.numberWithOptions(
                             decimal: bitcoinUnit == BitcoinUnit.btc,
                           ),

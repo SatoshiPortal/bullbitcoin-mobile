@@ -9,15 +9,18 @@ class SellAmountInputField extends StatelessWidget {
   const SellAmountInputField({
     super.key,
     required TextEditingController amountController,
+    required FocusNode focusNode,
     required bool isFiatCurrencyInput,
     FiatCurrency? fiatCurrency,
     required void Function(bool isFiat) onIsFiatCurrencyInputChanged,
   }) : _amountController = amountController,
+       _focusNode = focusNode,
        _isFiatCurrencyInput = isFiatCurrencyInput,
        _fiatCurrency = fiatCurrency,
        _onIsFiatCurrencyInputChanged = onIsFiatCurrencyInputChanged;
 
   final TextEditingController _amountController;
+  final FocusNode _focusNode;
   final bool _isFiatCurrencyInput;
   final FiatCurrency? _fiatCurrency;
   final void Function(bool isFiat) _onIsFiatCurrencyInputChanged;
@@ -42,6 +45,7 @@ class SellAmountInputField extends StatelessWidget {
       isLoading: isLoading,
       bitcoinUnit: bitcoinUnit,
       amountController: _amountController,
+      focusNode: _focusNode,
       isFiatCurrencyInput: _isFiatCurrencyInput,
       fiatCurrency: fiatCurrency,
       onIsFiatCurrencyInputChanged: _onIsFiatCurrencyInputChanged,

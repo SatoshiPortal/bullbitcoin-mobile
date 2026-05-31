@@ -3053,6 +3053,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "Tapahtumahistoria",
+  "transactionHistoryHeading": "Tapahtumahistoria",
+  "exportTransactionsDescription": "Vie kaikki lompakkosi tapahtumat (Bitcoin, Liquid, Lightning ja swapit) CSV-tiedostona. Halutessasi suodata päivämääräväliltä.",
+  "exportTransactionsStartDate": "Alkupäivä",
+  "exportTransactionsEndDate": "Loppupäivä",
+  "exportTransactionsAnyDate": "Mikä tahansa",
+  "exportTransactionsButton": "Vie CSV",
+  "exportTransactionsSuccess": "Tapahtumat viety onnistuneesti",
+  "exportTransactionsEmpty": "Ei vietäviä tapahtumia valitulla ajanjaksolla",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Alkamispäivän on oltava ennen päättymispäivää",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329-tunnisteet",
   "bip329LabelsHeading": "BIP329-tunnisteiden tuonti/vienti",
   "bip329LabelsDescription": "Tuo tai vie lompakon tunnisteet BIP329-standardin mukaisesti.",
@@ -4737,7 +4754,6 @@
   "exchangeSupportChatPickFilesFailed": "Tiedostojen valinta epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatAttachLogsFailed": "Lokien liittäminen epäonnistui. Yritä uudelleen.",
   "exchangeSupportChatFetchFileDataFailed": "Tiedostotietojen haku epäonnistui.",
-  "importMnemonicDuplicateError": "Tämä muistilause on jo olemassa",
   "recipientsFieldSinpePhoneNumberHint": "8 numeroa ilman maakoodia",
   "recipientsCopDocCcRecipientNumber": "Vastaanottajan cédula-numero",
   "recipientsCopDocCeRecipientNumber": "Vastaanottajan cédula de extranjería -numero",
@@ -4747,5 +4763,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Vastaanottajan väestörekisterinumero",
   "recipientsValidationSinpePhoneCountryCode": "Poista maakoodi (+506). Anna vain 8-numeroinen numero",
   "recipientsValidationSinpePhoneInvalidChars": "Käytä vain numeroita (ei kirjaimia tai symboleita)",
-  "recipientsValidationSinpePhoneTooShort": "Anna kaikki 8 puhelinnumeron numeroa"
+  "recipientsValidationSinpePhoneTooShort": "Anna kaikki 8 puhelinnumeron numeroa",
+  "transactionStatusPayjoinCompleted": "Payjoin suoritettu"
 }

@@ -7688,6 +7688,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "Historie transakcí",
+  "transactionHistoryHeading": "Historie transakcí",
+  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
+  "exportTransactionsStartDate": "Datum od",
+  "exportTransactionsEndDate": "Datum do",
+  "exportTransactionsAnyDate": "Jakékoli",
+  "exportTransactionsButton": "Exportovat CSV",
+  "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
+  "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Datum zahájení musí být před datem ukončení",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Štítky",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -12728,7 +12745,6 @@
   "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
   "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
   "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
-  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
   "recipientsFieldSinpePhoneNumberHint": "8 číslic bez kódu země",
   "recipientsCopDocCcRecipientNumber": "Číslo cédula příjemce",
   "recipientsCopDocCeRecipientNumber": "Číslo cédula de extranjería příjemce",
@@ -12738,5 +12754,6 @@
   "recipientsCopDocRegistroCivilRecipientNumber": "Číslo z matriky příjemce",
   "recipientsValidationSinpePhoneCountryCode": "Odstraňte kód země (+506). Zadejte pouze 8místné číslo",
   "recipientsValidationSinpePhoneInvalidChars": "Použijte pouze číslice (žádná písmena ani symboly)",
-  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla"
+  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla",
+  "transactionStatusPayjoinCompleted": "Payjoin dokončen"
 }

@@ -16,7 +16,7 @@ import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
 import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_amount.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_bottom_sheet.dart';
 import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -230,7 +230,7 @@ class ReceiveInfoDetails extends StatelessWidget {
         crossAxisAlignment: .stretch,
         children: [
           BorderedTappableTile(
-            onTap: () => ReceiveEnterAmount.showBottomSheet(context),
+            onTap: () => ReceiveAmountBottomSheet.showBottomSheet(context),
             child: Row(
               children: [
                 Expanded(
