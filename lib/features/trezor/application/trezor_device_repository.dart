@@ -14,4 +14,13 @@ abstract class TrezorDeviceRepository {
   /// (`[fp/84'/0'/0']zpub…`). The implementation caches the value after the
   /// first fetch since master fingerprint never changes for a given device.
   Future<String> getMasterFingerprint();
+
+  /// Asks Trezor Suite to display the expected address on the device so the
+  /// user can compare it against the in-app QR. Returns `true` when the
+  /// user confirms on device.
+  Future<bool> verifyAddress({
+    required String address,
+    required String derivationPath,
+    required ScriptType scriptType,
+  });
 }

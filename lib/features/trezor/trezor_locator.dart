@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/trezor/adapters/trezor_device_repository_impl
 import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
 import 'package:bb_mobile/features/trezor/application/usecases/get_trezor_accounts_usecase.dart';
 import 'package:bb_mobile/features/trezor/application/usecases/prepare_trezor_import_usecase.dart';
+import 'package:bb_mobile/features/trezor/application/usecases/verify_address_trezor_usecase.dart';
 import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_cubit.dart';
 import 'package:bb_mobile/features/trezor/public/trezor_facade.dart';
@@ -48,12 +49,18 @@ class TrezorLocator {
         trezorRepository: locator<TrezorDeviceRepository>(),
       ),
     );
+    locator.registerFactory<VerifyAddressTrezorUsecase>(
+      () => VerifyAddressTrezorUsecase(
+        repository: locator<TrezorDeviceRepository>(),
+      ),
+    );
   }
 
   static void _registerFacade(GetIt locator) {
     locator.registerLazySingleton<TrezorFacade>(
       () => TrezorFacade(
         prepareTrezorImportUsecase: locator<PrepareTrezorImportUsecase>(),
+        verifyAddressTrezorUsecase: locator<VerifyAddressTrezorUsecase>(),
       ),
     );
   }

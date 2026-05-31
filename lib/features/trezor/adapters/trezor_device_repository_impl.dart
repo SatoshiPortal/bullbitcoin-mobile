@@ -84,6 +84,23 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     );
   }
 
+  @override
+  Future<bool> verifyAddress({
+    required String address,
+    required String derivationPath,
+    required ScriptType scriptType,
+  }) async {
+    try {
+      return await _datasource.verifyAddress(
+        address: address,
+        derivationPath: derivationPath,
+        scriptType: scriptType,
+      );
+    } on Exception catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   TrezorAccount _toAccount(TrezorAddressPublicKey raw) {
     // path[2] is the account index (hardened); unharden by subtracting
     // 0x80000000 to get the human-readable index (0, 1, 2, …).

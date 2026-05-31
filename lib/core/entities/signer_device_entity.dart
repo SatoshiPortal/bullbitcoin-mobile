@@ -24,6 +24,8 @@ enum SignerDeviceEntity {
 
   bool get isBitBox => name.startsWith('bitbox');
 
+  bool get isTrezor => this == SignerDeviceEntity.trezor;
+
   bool get supportsBluetooth =>
       isLedger && this != SignerDeviceEntity.ledgerNanoSPlus;
 
