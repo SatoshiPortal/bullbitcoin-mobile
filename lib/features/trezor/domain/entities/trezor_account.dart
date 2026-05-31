@@ -8,6 +8,5 @@ abstract class TrezorAccount with _$TrezorAccount {
     required int accountIndex,
     required String derivationPath,
     required String xpub,
-    required String previewAddress,
   }) = _TrezorAccount;
 }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
+import 'package:bb_mobile/features/trezor/domain/entities/trezor_signed_psbt.dart';
 
 abstract class TrezorDeviceRepository {
   Future<List<TrezorAccount>> getAccounts({
@@ -14,6 +15,12 @@ abstract class TrezorDeviceRepository {
   /// (`[fp/84'/0'/0']zpub…`). The implementation caches the value after the
   /// first fetch since master fingerprint never changes for a given device.
   Future<String> getMasterFingerprint();
+
+  Future<TrezorSignedPsbt> signPsbt({
+    required String psbtBase64,
+    required bool isTestnet,
+    required ScriptType scriptType,
+  });
 
   /// Asks Trezor Suite to display the expected address on the device so the
   /// user can compare it against the in-app QR. Returns `true` when the

@@ -1,6 +1,21 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:trezor_connect/trezor_connect.dart';
 
+/// Thin wrapper around the upstream `trezor_connect` package.
+///
+/// Responsibilities:
+///   * Hold the shared `TrezorConnect` singleton.
+///   * Translate Bull Bitcoin's parameter shapes into the package's request
+///     types (the PSBT -> TrezorTxInput/TrezorTxOutput adapter lives in
+///     `signPsbt` below).
+///   * Expose the underlying `TrezorConnect` reference to the deeplink
+///     listener (see lib/features/trezor/ui/trezor_deeplink_listener.dart),
+///     which calls `connect.handleCallback(uri)` on every inbound URI that
+///     matches the callback scheme.
+///
+/// Errors thrown here are raw package errors; the repository implementation
+/// maps them to `TrezorApplicationError` at the layer boundary
 class TrezorConnectDatasource {
   final TrezorConnect _connect;
 
@@ -52,15 +67,199 @@ class TrezorConnectDatasource {
       normalizedPath,
       showOnTrezor: true,
       coin: 'btc',
-      scriptType: _addressScriptTypeFor(scriptType),
+      scriptType: _inputScriptTypeFor(scriptType),
     );
 
     return result != null;
   }
 
-  String _addressScriptTypeFor(ScriptType scriptType) => switch (scriptType) {
+  /// Maps Bull Bitcoin's ScriptType (the wallet-wide derivation family) to
+  /// Trezor's `InputScriptType` enum label (the `SPEND*` family).
+  ///
+  /// Output script types are NOT derived from this — they're detected
+  /// per-output from the raw scriptPubkey in `_detectOutputScriptType`
+  /// (outputs can mix types regardless of the wallet's derivation).
+  String _inputScriptTypeFor(ScriptType scriptType) => switch (scriptType) {
     ScriptType.bip84 => 'SPENDWITNESS',
     ScriptType.bip49 => 'SPENDP2SHWITNESS',
     ScriptType.bip44 => 'SPENDADDRESS',
   };
+
+  /// Signs a base64-encoded PSBT via Trezor Connect.
+  ///
+  /// Pipeline:
+  ///   1. Decode the PSBT with bdk_dart.
+  ///   2. For each input: pull amount from witnessUtxo (always present for
+  ///      segwit inputs per BIP-174); pull derivation path from
+  ///      bip32Derivation; build a TrezorTxInput.
+  ///   3. For each output: detect change vs external from bip32Derivation
+  ///      presence; for change, use addressPath; for external, derive
+  ///      address from scriptPubkey via bdk_dart.
+  ///   4. Hand inputs/outputs to `connect.signTransaction(coin: 'btc', ...)`.
+  ///   5. Return Trezor's signed transaction (broadcast-ready hex in
+  ///      `serializedTx`).
+  ///
+  /// Assumes BIP84 (P2WPKH segwit) inputs and outputs throughout — that's
+  /// the only script type Bull Bitcoin wallets use today. The output script
+  /// detector falls through gracefully for P2SH / P2PKH / P2TR via the
+  /// detected `scriptType`. Inputs are hardcoded `SPENDWITNESS`; non-segwit
+  /// support would extend `_detectInputScriptType` below.
+  Future<TrezorSignedTransaction> signPsbt({
+    required String psbtBase64,
+    required bool isTestnet,
+    required ScriptType scriptType,
+  }) async {
+    final psbt = bdk.Psbt(psbtBase64: psbtBase64);
+    final psbtInputs = psbt.input();
+    final psbtOutputs = psbt.output();
+
+    final tx = psbt.extractTx();
+    final txInputs = tx.input();
+    final txOutputs = tx.output();
+
+    if (psbtInputs.length != txInputs.length ||
+        psbtOutputs.length != txOutputs.length) {
+      throw Exception(
+        'PSBT input/output count mismatch with extracted tx '
+        '(psbt: ${psbtInputs.length} in / ${psbtOutputs.length} out; '
+        'tx: ${txInputs.length} in / ${txOutputs.length} out)',
+      );
+    }
+
+    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+    final inputScriptType = _inputScriptTypeFor(scriptType);
+
+    final inputs = <TrezorTxInput>[];
+    for (var i = 0; i < psbtInputs.length; i++) {
+      final psbtIn = psbtInputs[i];
+      final txIn = txInputs[i];
+
+      // Amount: prefer witnessUtxo (always present for segwit per BIP-174).
+      // Fall back to nonWitnessUtxo's vout for legacy inputs (out of scope
+      // for current BIP84-only wallets but kept defensive).
+      int? amount;
+      final wu = psbtIn.witnessUtxo;
+      if (wu != null) {
+        amount = wu.value.toSat();
+      } else {
+        final nwu = psbtIn.nonWitnessUtxo;
+        if (nwu != null) {
+          final prevOut = nwu.output()[txIn.previousOutput.vout];
+          amount = prevOut.value.toSat();
+        }
+      }
+      if (amount == null) {
+        throw Exception(
+          'PSBT input $i has neither witnessUtxo nor nonWitnessUtxo; '
+          'cannot determine amount',
+        );
+      }
+
+      // bip32Derivation is a Map<pubkey-hex, KeySource>. There can be one
+      // entry per signer; for single-sig wallets there is exactly one.
+      if (psbtIn.bip32Derivation.isEmpty) {
+        throw Exception(
+          'PSBT input $i has no bip32Derivation; Trezor cannot determine '
+          'the signing key.',
+        );
+      }
+      final keySource = psbtIn.bip32Derivation.values.first;
+      final addressPath = keySource.path.toU32Vec();
+
+      inputs.add(
+        TrezorTxInput(
+          // bdk's Txid.toString() returns the standard (big-endian display)
+          // form, which is exactly the format Trezor's "previous transaction
+          // hash (reversed)" expects on the wire.
+          prevHash: txIn.previousOutput.txid.toString(),
+          prevIndex: txIn.previousOutput.vout,
+          amount: amount,
+          addressPath: addressPath,
+          sequence: txIn.sequence,
+          scriptType: inputScriptType,
+        ),
+      );
+    }
+
+    final outputs = <TrezorTxOutput>[];
+    for (var i = 0; i < psbtOutputs.length; i++) {
+      final psbtOut = psbtOutputs[i];
+      final txOut = txOutputs[i];
+
+      final amount = txOut.value.toSat();
+      final scriptType = _detectOutputScriptType(txOut.scriptPubkey);
+
+      if (psbtOut.bip32Derivation.isNotEmpty) {
+        // Change output: pass the derivation path so Trezor can re-derive
+        // the address on-device and confirm it matches.
+        final keySource = psbtOut.bip32Derivation.values.first;
+        outputs.add(
+          TrezorTxOutput(
+            amount: amount,
+            addressPath: keySource.path.toU32Vec(),
+            scriptType: scriptType,
+          ),
+        );
+      } else {
+        // External destination: derive the address from the scriptPubkey
+        // and let the user verify it on-device.
+        final address = bdk.Address.fromScript(
+          script: txOut.scriptPubkey,
+          network: network,
+        );
+        outputs.add(
+          TrezorTxOutput(
+            amount: amount,
+            address: address.toString(),
+            scriptType: scriptType,
+          ),
+        );
+      }
+    }
+
+    final signed = await _connect.signTransaction(
+      coin: 'btc',
+      inputs: inputs,
+      outputs: outputs,
+    );
+    if (signed == null) {
+      throw Exception('Empty signTransaction response from Trezor Suite');
+    }
+    return signed;
+  }
+
+  /// Detects Trezor's output script-type label from a raw scriptPubkey.
+  ///
+  /// Trezor's labels (from the package's enum docs):
+  /// `PAYTOADDRESS | PAYTOSCRIPTHASH | PAYTOWITNESS | PAYTOP2SHWITNESS |
+  ///  PAYTOTAPROOT`. We currently emit only the three common forms; P2SH-
+  /// P2WPKH wrap (PAYTOP2SHWITNESS) is indistinguishable from P2SH at the
+  /// output-script level — the wrap only matters for INPUTS.
+  String _detectOutputScriptType(bdk.Script script) {
+    final bytes = script.toBytes();
+
+    if (bytes.length == 22 && bytes[0] == 0x00 && bytes[1] == 0x14) {
+      return 'PAYTOWITNESS'; // P2WPKH (BIP84)
+    }
+    if (bytes.length == 34 && bytes[0] == 0x00 && bytes[1] == 0x20) {
+      return 'PAYTOWITNESS'; // P2WSH
+    }
+    if (bytes.length == 25 &&
+        bytes[0] == 0x76 &&
+        bytes[1] == 0xa9 &&
+        bytes[2] == 0x14) {
+      return 'PAYTOADDRESS'; // P2PKH
+    }
+    if (bytes.length == 23 &&
+        bytes[0] == 0xa9 &&
+        bytes[1] == 0x14 &&
+        bytes[22] == 0x87) {
+      return 'PAYTOSCRIPTHASH'; // P2SH
+    }
+    if (bytes.length == 34 && bytes[0] == 0x51 && bytes[1] == 0x20) {
+      return 'PAYTOTAPROOT'; // P2TR
+    }
+    // Default to witness for first-pass BIP84 wallets.
+    return 'PAYTOWITNESS';
+  }
 }

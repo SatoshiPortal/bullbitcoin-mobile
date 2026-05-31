@@ -28,6 +28,7 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/ledger/ui/ledger_router.dart';
 import 'package:bb_mobile/features/ledger/ui/screens/ledger_action_screen.dart';
 import 'package:bb_mobile/features/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
@@ -464,12 +465,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     context,
                                     swapLimitsError,
                                   )
-                                : swapCreationError != null
-                                ? _swapCreationErrorMessage(
-                                    context,
-                                    swapCreationError,
-                                  )
-                                : null,
+                                : swapCreationError?.message,
                             focusNode: _amountFocusNode,
                             readOnly: _isMax,
                             isMax: _isMax,
@@ -491,18 +487,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                           BorderedTappableTile(
                             onTap: () async {
                               final cubit = context.read<SendCubit>();
-                              final saved =
-                                  await LabelEntryBottomSheet.label(
-                                    context,
-                                    title:
-                                        context.loc.transactionNoteAddTitle,
-                                    initialValue: state.label.isEmpty
-                                        ? null
-                                        : state.label,
-                                    hint: context.loc.transactionNoteHint,
-                                    suggestionsFuture:
-                                        cubit.fetchDistinctLabels(),
-                                  );
+                              final saved = await LabelEntryBottomSheet.label(
+                                context,
+                                title: context.loc.transactionNoteAddTitle,
+                                initialValue: state.label.isEmpty
+                                    ? null
+                                    : state.label,
+                                hint: context.loc.transactionNoteHint,
+                                suggestionsFuture: cubit.fetchDistinctLabels(),
+                              );
                               if (saved == null || !context.mounted) return;
                               cubit.noteChanged(saved);
                             },
@@ -853,6 +846,8 @@ class _BottomButtons extends StatelessWidget {
                 ? const SignLedgerButton()
                 : (wallet.signerDevice != null && wallet.signerDevice!.isBitBox)
                 ? const SignBitBoxButton()
+                : (wallet.signerDevice != null && wallet.signerDevice!.isTrezor)
+                ? const SignTrezorButton()
                 : const ShowPsbtButton()
           else
             const ConfirmSendButton(),
@@ -1916,19 +1911,56 @@ class SignBitBoxButton extends StatelessWidget {
   }
 }
 
-String _swapCreationErrorMessage(
-  BuildContext context,
-  SwapCreationException error,
-) {
-  if (error is HardwareWalletSwapException) {
-    return context.loc.sendErrorHardwareWalletCannotSwap;
+class SignTrezorButton extends StatelessWidget {
+  const SignTrezorButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final unsignedPsbt = context.select(
+      (SendCubit cubit) => cubit.state.unsignedPsbt,
+    );
+    final derivationPath = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
+    );
+    final scriptType = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
+    );
+    final isTestnet = context.select(
+      (SendCubit cubit) =>
+          cubit.state.selectedWallet?.network.isTestnet ?? false,
+    );
+
+    return BBButton.big(
+      label: 'Sign with Trezor',
+      onPressed: () async {
+        if (unsignedPsbt == null ||
+            derivationPath == null ||
+            scriptType == null) {
+          return;
+        }
+
+        final result = await context.pushNamed<String>(
+          TrezorRoute.trezorSignTransaction.name,
+          extra: TrezorSignTransactionRouteParams(
+            psbt: unsignedPsbt,
+            derivationPath: derivationPath,
+            isTestnet: isTestnet,
+            scriptType: scriptType,
+          ),
+        );
+
+        if (result != null && context.mounted) {
+          SnackBarUtils.showSnackBar(context, 'Transaction signed by Trezor');
+          await context.read<SendCubit>().updateSignedBitcoinTx(result);
+        }
+      },
+      bgColor: context.appColors.secondary,
+      textColor: context.appColors.onSecondary,
+    );
   }
-  if (error is AmountlessInvoiceException) {
-    return context.loc.sendErrorInvoiceMustContainAmount;
-  }
-  return error.message;
 }
 
+/// Helper function to get localized error message for SwapLimitsException
 String _getSwapLimitsErrorMessage(
   BuildContext context,
   SwapLimitsException error,

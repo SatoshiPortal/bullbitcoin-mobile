@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/trezor/application/application_errors.dart';
 import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
+import 'package:bb_mobile/features/trezor/domain/entities/trezor_signed_psbt.dart';
 import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
 import 'package:trezor_connect/models.dart';
 
@@ -44,14 +45,13 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
           _cachedMasterFingerprint = fp;
         } else {
           log.warning(
-            'could not parse master fingerprint from '
-            'descriptor: ${raw.first.descriptor}',
+            'could not parse master fingerprint from Trezor descriptor: '
+            '${raw.first.descriptor}',
           );
         }
       }
 
-      final accounts = raw.map(_toAccount).toList();
-      return accounts;
+      return raw.map(_toAccount).toList();
     } on Exception catch (e) {
       throw _mapError(e);
     }
@@ -71,9 +71,7 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
   @override
   Future<String> getMasterFingerprint() async {
     final cached = _cachedMasterFingerprint;
-    if (cached != null) {
-      return cached;
-    }
+    if (cached != null) return cached;
     // No deeplink fallback: Trezor refuses path "m" with "Invalid
     // parameters from calling app". The master fingerprint is parsed from
     // any account's descriptor in getAccounts above. If we get here, the
@@ -101,25 +99,37 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     }
   }
 
+  @override
+  Future<TrezorSignedPsbt> signPsbt({
+    required String psbtBase64,
+    required bool isTestnet,
+    required ScriptType scriptType,
+  }) async {
+    try {
+      final signed = await _datasource.signPsbt(
+        psbtBase64: psbtBase64,
+        isTestnet: isTestnet,
+        scriptType: scriptType,
+      );
+      return TrezorSignedPsbt(
+        serializedTxHex: signed.serializedTx,
+        txid: signed.txid,
+      );
+    } on Exception catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   TrezorAccount _toAccount(TrezorAddressPublicKey raw) {
     // path[2] is the account index (hardened); unharden by subtracting
     // 0x80000000 to get the human-readable index (0, 1, 2, …).
     final hardened = raw.path[2];
     final accountIndex = hardened - 0x80000000;
 
-    // Compact, stable label for the account picker: "0 - zpub6q…ab12cd".
-    // A real first-receive address would need a heavyweight bdk_dart Wallet
-    // construction (Persister + DB); deferred until needed for confirm-on-
-    // device receive flows. The xpub prefix uniquely identifies the account.
-    final xpubPreview = raw.xpub.length > 12
-        ? '${raw.xpub.substring(0, 6)}…${raw.xpub.substring(raw.xpub.length - 6)}'
-        : raw.xpub;
-
     return TrezorAccount(
       accountIndex: accountIndex,
       derivationPath: raw.serializedPath,
       xpub: raw.xpub,
-      previewAddress: xpubPreview,
     );
   }
 
