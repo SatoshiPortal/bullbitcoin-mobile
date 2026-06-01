@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_top_section.dar
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletHomeScreen extends StatefulWidget {
@@ -151,9 +150,20 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> with RouteAware {
                   ),
                 ),
               ],
-              bottomChild: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 13.0),
-                child: Column(children: [WalletBottomButtons(), Gap(16)]),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13.0,
+                    vertical: 16.0,
+                  ),
+                  child: WalletBottomButtons(),
+                ),
               ),
             ),
           ],
