@@ -137,7 +137,7 @@ class AppStartupFailureScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                'Contact support at app.bullbitcoin.com/support',
+                context.loc.appStartupContactSupportMessage,
                 style: context.font.bodySmall?.copyWith(
                   color: context.appColors.secondary.withValues(alpha: 0.7),
                 ),

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,14 +17,14 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
     return AlertDialog(
       backgroundColor: context.appColors.surface,
       title: Text(
-        'Delete Wallet',
+        context.loc.walletDeletionConfirmationTitle,
         style: context.font.headlineSmall?.copyWith(
           color: context.appColors.error,
           fontWeight: FontWeight.bold,
         ),
       ),
       content: Text(
-        'Are you sure you want to delete this wallet?',
+        context.loc.walletDeletionConfirmationMessage,
         style: context.font.bodyMedium?.copyWith(
           color: context.appColors.onSurface,
         ),
@@ -32,7 +33,7 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            'Cancel',
+            context.loc.walletDeletionConfirmationCancelButton,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.onSurface,
             ),
@@ -44,7 +45,7 @@ class WalletDeletionConfirmationAlertDialog extends StatelessWidget {
             context.read<WalletBloc>().add(WalletDeleted(walletId));
           },
           child: Text(
-            'Delete',
+            context.loc.walletDeletionConfirmationDeleteButton,
             style: context.font.bodyMedium?.copyWith(
               color: context.appColors.error,
               fontWeight: FontWeight.bold,
