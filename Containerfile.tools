@@ -51,6 +51,11 @@ RUN apt-get update && apt-get install -y \
 #   libcurl4-openssl-dev — required by sentry-native (sentry_flutter) HTTP transport
 #   dbus, gnome-keyring — Secret Service provider for libsecret at runtime
 #     (bootstrapped by .devcontainer/init-keyring.sh on container start)
+#   xdg-desktop-portal, xdg-desktop-portal-gtk — D-Bus FileChooser portal used
+#     by the file_picker plugin's saveFile on Linux (CSV transaction / BIP329
+#     label export). Without the portal frontend + a backend (gtk), saveFile
+#     finds no org.freedesktop.portal.FileChooser service and silently returns
+#     null, so nothing is written.
 #   fonts-noto-* — Indic/etc. glyph coverage so non-Latin locales render
 #     (Flutter Linux falls back to system fonts via fontconfig; without these
 #     scripts like Devanagari/Bengali can't render. cjk is for Chinese/Japanese/Korean
@@ -69,6 +74,8 @@ RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     dbus \
     gnome-keyring \
+    xdg-desktop-portal \
+    xdg-desktop-portal-gtk \
     libsqlite3-dev \
     fonts-noto-core \
     fonts-noto-cjk \
