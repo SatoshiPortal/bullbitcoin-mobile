@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:bb_mobile/core/sync/sync_coordinator_state.dart';
 import 'package:bb_mobile/core/sync/sync_kind.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -20,13 +19,12 @@ import 'package:flutter/widgets.dart'
 ///    to the shared drift database (e.g. a wallet sync committing
 ///    wallet_metadata while the swap watcher restart writes swaps_table)
 ///    which were observed to cause "database is locked" errors;
-///  - sync requests issued while the app is paused or hidden are dropped —
-///    there is no point burning bandwidth/CPU for a UI no-one is looking at;
-///  - returning to the foreground after being backgrounded triggers a fresh
-///    sync. Flutter routes the lifecycle state machine through intermediate
-///    states (`paused → hidden → inactive → resumed`), so we track whether
-///    the app entered `paused`/`hidden` since the last `resumed` rather than
-///    relying on a direct paused→resumed transition that never fires;
+///  - sync requests issued while the app is not foreground-`resumed` (i.e.
+///    `inactive`/`hidden`/`paused`/`detached`) are dropped — there is no point
+///    burning bandwidth/CPU for a UI no-one is interacting with;
+///  - returning to `resumed` triggers a fresh catch-up sync, replaying any
+///    sync that was gated off while away (tracked via a single "was away since
+///    last resumed" flag, independent of the exact intermediate state path);
 ///  - per-kind successes are throttled: a kind that completed within
 ///    [_minSyncInterval] is skipped on the next enqueue unless the caller
 ///    passes `force: true` (pull-to-refresh and other explicit gestures).
@@ -44,9 +42,12 @@ class SyncCoordinator {
        _syncWallet = syncWalletUsecase,
        _restartSwaps = restartSwapWatcherUsecase {
     final lifecycleState = WidgetsBinding.instance.lifecycleState;
+    // Gate syncs to the foreground-resumed state only. Default to allowed for
+    // the brief startup window before the first lifecycle event arrives
+    // (lifecycleState is null then) so the cold-start sync isn't gated off.
     _isAppResumed =
-        lifecycleState != AppLifecycleState.paused &&
-        lifecycleState != AppLifecycleState.hidden;
+        lifecycleState == null ||
+        lifecycleState == AppLifecycleState.resumed;
     _lifecycleListener = AppLifecycleListener(onStateChange: _onLifecycleChange);
   }
 
@@ -62,12 +63,11 @@ class SyncCoordinator {
   late final AppLifecycleListener _lifecycleListener;
   bool _isAppResumed = true;
 
-  /// Tracks whether the app entered `paused` or `hidden` since the last
-  /// `resumed` transition. Flutter inserts `hidden → inactive` between
-  /// `paused` and `resumed`, so a direct `paused→resumed` transition never
-  /// fires — we use this flag to detect a foregrounding regardless of the
-  /// exact intermediate path.
-  bool _wasBackgrounded = false;
+  /// Tracks whether the app left the foreground-resumed state — to any of
+  /// `inactive`/`hidden`/`paused`/`detached` — since the last `resumed`. Used
+  /// to replay a catch-up sync on return, so a sync requested while the gate
+  /// was closed is never lost.
+  bool _wasAway = false;
 
   final Queue<SyncKind> _queue = Queue<SyncKind>();
   final Set<SyncKind> _enqueued = <SyncKind>{};
@@ -76,17 +76,6 @@ class SyncCoordinator {
   Future<Map<SyncKind, Object>>? _activeDrain;
   final Map<SyncKind, Object> _lastErrors = <SyncKind, Object>{};
   final Map<SyncKind, DateTime> _lastSuccessAt = <SyncKind, DateTime>{};
-
-  final StreamController<SyncCoordinatorState> _stateController =
-      StreamController<SyncCoordinatorState>.broadcast();
-
-  Stream<SyncCoordinatorState> get stream => _stateController.stream;
-
-  SyncCoordinatorState get state => SyncCoordinatorState(
-    running: _running,
-    queued: Set.unmodifiable(_enqueued),
-    errors: Map.unmodifiable(_lastErrors),
-  );
 
   /// Schedule `kinds` (or all kinds when `only` is null) and resolve once the
   /// queue has drained. Iteration order follows the [SyncKind] enum
@@ -147,7 +136,6 @@ class SyncCoordinator {
     _enqueued.add(kind);
     _queue.add(kind);
     log.fine('[SyncCoordinator] enqueued $kind queue=${_queue.toList()}');
-    _emit();
   }
 
   Future<Map<SyncKind, Object>> _drain() {
@@ -180,7 +168,6 @@ class SyncCoordinator {
         _enqueued.remove(kind);
         _running = kind;
         log.fine('[SyncCoordinator] run $kind remainingQueue=${_queue.toList()}');
-        _emit();
         try {
           await _runTask(kind);
           _lastSuccessAt[kind] = DateTime.now();
@@ -205,7 +192,6 @@ class SyncCoordinator {
       return errors;
     } finally {
       _draining = false;
-      _emit();
     }
   }
 
@@ -227,15 +213,14 @@ class SyncCoordinator {
   }
 
   void _onLifecycleChange(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.hidden) {
-      _wasBackgrounded = true;
-    }
-    _isAppResumed =
-        state != AppLifecycleState.paused &&
-        state != AppLifecycleState.hidden;
-    if (state == AppLifecycleState.resumed && _wasBackgrounded) {
-      _wasBackgrounded = false;
+    final isResumed = state == AppLifecycleState.resumed;
+    // Leaving resumed for any reason (inactive/hidden/paused/detached) closes
+    // the gate; remember it so the return-to-resumed below replays any sync
+    // that was gated off while away.
+    if (!isResumed) _wasAway = true;
+    _isAppResumed = isResumed;
+    if (isResumed && _wasAway) {
+      _wasAway = false;
       // sync() may throw SyncCoordinatorException; ignore here — the drain
       // path already logged a sanitized SEVERE for any failed kind, and the
       // lifecycle-triggered refresh is best-effort with no awaiting caller.
@@ -243,10 +228,19 @@ class SyncCoordinator {
     }
   }
 
-  void _emit() => _stateController.add(state);
-
   void dispose() {
     _lifecycleListener.dispose();
-    _stateController.close();
   }
+}
+
+/// Thrown by [SyncCoordinator.sync] when any of the requested kinds failed
+/// during the drain pass that satisfied the call.
+class SyncCoordinatorException implements Exception {
+  const SyncCoordinatorException(this.failures);
+
+  final Map<SyncKind, Object> failures;
+
+  @override
+  String toString() =>
+      'SyncCoordinatorException(${failures.entries.map((e) => '${e.key}: ${e.value.runtimeType}').join(', ')})';
 }

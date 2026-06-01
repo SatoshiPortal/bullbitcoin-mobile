@@ -33,11 +33,18 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> with RouteAware {
   @override
   void initState() {
     super.initState();
-    // If a refresh is already in flight when WalletHome mounts (cold boot,
-    // post-import, post-PIN unlock, etc.), show the spinner over it so the
-    // user sees the activity instead of landing on apparently-static data.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      // #2222: returning to home must trigger a sync regardless of where you
+      // came from. A fresh mount covers cold boot and switching back to the
+      // wallet tab (the tab subtree is rebuilt on switch, so this screen
+      // remounts). Popping a pushed full-screen route back onto home keeps
+      // this screen mounted beneath it, so that path is covered by
+      // didPopNext. The coordinator throttles, so a redundant trigger is cheap.
+      _refreshOnVisible();
+      // If a refresh was already in flight before this mount (e.g. the
+      // post-startup WalletStarted refresh), show the spinner over it so the
+      // user sees activity instead of landing on apparently-static data.
       if (context.read<WalletBloc>().state.isRefreshing) {
         _indicatorKey.currentState?.show();
       }
@@ -47,10 +54,10 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Subscribe to route push/pop events so any navigation that lands on
-    // this screen — initial push, or pop returning here from a pushed
-    // sub-route — fires a throttled `WalletRefreshed`. The coordinator
-    // skips redundant work; the threshold lives there, not here.
+    // Subscribe to the root route observer so that popping a pushed
+    // full-screen route back onto home — where this screen stayed mounted
+    // beneath it — fires a throttled `WalletRefreshed` via didPopNext. The
+    // mount path (cold boot, tab switch) is handled in initState instead.
     final route = ModalRoute.of(context);
     if (route != _subscribedRoute) {
       if (_subscribedRoute != null) {
@@ -73,9 +80,6 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> with RouteAware {
     if (!mounted) return;
     context.read<WalletBloc>().add(const WalletRefreshed());
   }
-
-  @override
-  void didPush() => _refreshOnVisible();
 
   @override
   void didPopNext() => _refreshOnVisible();
