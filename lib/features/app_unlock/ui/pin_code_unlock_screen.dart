@@ -26,9 +26,8 @@ class PinCodeUnlockScreen extends StatelessWidget {
         listener: (context, state) async {
           if (state.status == AppUnlockStatus.success) {
             // If onSuccess is provided, call it, otherwise go to home as default.
-            // WalletHomeScreen subscribes to the root RouteObserver and
-            // dispatches a throttled WalletRefreshed on `didPush`, so no
-            // explicit refresh dispatch is needed here.
+            // WalletHomeScreen syncs itself when it mounts / the router lands
+            // on the home location, so no explicit refresh dispatch is needed here.
             if (onSuccess != null) {
               onSuccess!();
             } else {
