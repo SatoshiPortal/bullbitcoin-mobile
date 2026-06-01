@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps deps-update build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app apk verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -17,11 +17,19 @@ setup: fvm-check clean deps build-runner translations hooks
 	@echo "🚀 Setup complete!"
 
 clean:
-	@echo "🧹 Clean and remove pubspec.lock and ios/Podfile.lock"
-	@fvm flutter clean && rm -f pubspec.lock && rm -f ios/Podfile.lock
+	@echo "🧹 Clean build artifacts (keeps lockfiles)"
+	@fvm flutter clean
 
 deps:
-	@echo "🏃 Fetch dependencies"
+	@echo "🏃 Fetch dependencies (enforce pubspec.lock)"
+	@fvm flutter pub get --enforce-lockfile
+
+# Intentionally re-resolve from scratch: deletes the lockfiles and lets pub pick
+# fresh versions (and, for branch refs, fresh commits). Use only when you mean to
+# update dependencies, then commit the regenerated pubspec.lock.
+deps-update:
+	@echo "🔓 Re-resolving dependencies (deletes pubspec.lock + ios/Podfile.lock)"
+	@rm -f pubspec.lock ios/Podfile.lock
 	@fvm flutter pub get
 
 build-runner:
