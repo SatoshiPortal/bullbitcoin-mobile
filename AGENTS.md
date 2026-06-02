@@ -188,6 +188,7 @@ This applies equally to architectural suggestions, tooling, CI tricks, command f
 - Don't put business logic in BLoCs or `/lib/core`.
 - Don't reinvent a widget that already exists in `lib/core/widgets/`.
 - Don't hardcode user-facing strings — use `AppLocalizations`.
+- Don't hard-wrap prose mid-sentence in markdown, comments, PR descriptions, or commit bodies — write each sentence on one continuous line and let the editor soft-wrap. Manual line breaks belong only between paragraphs or list items.
 - Don't add `path:` deps to pubspec.
 - Don't amend or force-push without explicit ask.
 - Don't add `Co-Authored-By`.
