@@ -11895,6 +11895,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
+  "broadcastSignedTxBroadcastError": "İşlem yayınlanamadı",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

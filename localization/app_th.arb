@@ -11996,6 +11996,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ออกอากาศ ...",
+  "broadcastSignedTxBroadcastError": "ไม่สามารถบรอดแคสต์ธุรกรรมได้",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

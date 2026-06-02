@@ -11697,6 +11697,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Vysílání...",
+  "broadcastSignedTxBroadcastError": "Nepodařilo se odvysílat transakci",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

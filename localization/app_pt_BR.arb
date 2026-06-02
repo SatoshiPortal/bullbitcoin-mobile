@@ -10176,6 +10176,7 @@
     "description": "Bold label for Google/Apple cloud recommendation"
   },
   "broadcastSignedTxBroadcasting": "Transmissão...",
+  "broadcastSignedTxBroadcastError": "Falha ao transmitir a transação",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

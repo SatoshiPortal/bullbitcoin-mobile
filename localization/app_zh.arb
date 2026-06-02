@@ -3997,6 +3997,7 @@
   "swapProgressPendingMessage": "移交工作正在进行之中。 交易可在确认时进行。 你可以回家,等待.",
   "walletDetailsNetworkLabel": "网络",
   "broadcastSignedTxBroadcasting": "广播.",
+  "broadcastSignedTxBroadcastError": "广播交易失败",
   "recoverbullSelectRecoverWallet": "恢复钱包",
   "receivePayjoinActivated": "Payjoin",
   "importMnemonicContinue": "继续",

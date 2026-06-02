@@ -9927,6 +9927,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Broadcasting...",
+  "broadcastSignedTxBroadcastError": "Αποτυχία μετάδοσης της συναλλαγής",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

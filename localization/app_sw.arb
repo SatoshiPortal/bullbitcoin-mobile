@@ -1,4 +1,5 @@
 {
+  "broadcastSignedTxBroadcastError": "Imeshindwa kutangaza muamala",
   "languageSettingsLabel": "| Lugha |",
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"

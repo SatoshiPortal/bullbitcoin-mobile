@@ -12004,6 +12004,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "방송...",
+  "broadcastSignedTxBroadcastError": "거래 전송에 실패했습니다",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

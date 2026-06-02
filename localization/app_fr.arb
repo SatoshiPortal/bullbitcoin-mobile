@@ -3143,6 +3143,7 @@
   "broadcastSignedTxTo": "À",
   "broadcastSignedTxBroadcast": "Diffuser",
   "broadcastSignedTxBroadcasting": "Diffusion en cours...",
+  "broadcastSignedTxBroadcastError": "Échec de la diffusion de la transaction",
   "broadcastSignedTxPageTitle": "Diffuser une transaction signée",
   "broadcastSignedTxPasteHint": "Coller un PSBT ou un HEX de transaction",
   "broadcastSignedTxCameraButton": "Caméra",

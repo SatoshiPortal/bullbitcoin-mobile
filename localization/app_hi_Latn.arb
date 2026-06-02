@@ -8970,6 +8970,7 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "Broadcast ho raha hai...",
+  "broadcastSignedTxBroadcastError": "Len-den prasarit karne mein viphal raha",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
