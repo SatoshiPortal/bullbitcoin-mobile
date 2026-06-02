@@ -4733,6 +4733,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "하드웨어 지갑은 스왑에 사용할 수 없습니다.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "유효한 균형 자료 없음",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5051,6 +5055,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "결제하기",
+  "payDescriptionLabel": "결제 설명 (선택 사항)",
+  "payDescriptionHint": "이 결제에 대한 메모를 추가하세요",
+  "payPaymentDescription": "결제 설명",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7777,6 +7784,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "거래 내역",
+  "transactionHistoryHeading": "거래 내역",
+  "exportTransactionsDescription": "지갑의 모든 거래(Bitcoin, Liquid, Lightning, 스왑)를 CSV 파일로 내보냅니다. 선택적으로 날짜 범위로 필터링할 수 있습니다.",
+  "exportTransactionsStartDate": "시작일",
+  "exportTransactionsEndDate": "종료일",
+  "exportTransactionsAnyDate": "전체",
+  "exportTransactionsButton": "CSV 내보내기",
+  "exportTransactionsSuccess": "거래가 성공적으로 내보내졌습니다",
+  "exportTransactionsEmpty": "선택한 기간에 내보낼 거래가 없습니다",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "시작 날짜는 종료 날짜보다 이전이어야 합니다",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 라벨",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -10372,6 +10396,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "주문 번호",
+  "transactionDetailLabelPaymentDescription": "결제 설명",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -11979,6 +12004,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "방송...",
+  "broadcastSignedTxBroadcastError": "거래 전송에 실패했습니다",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12583,6 +12609,7 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "transactionSwapOpenWithin24Hours": "스왑을 완료하려면 24시간 이내에 앱을 여세요.",
   "importMnemonicDuplicateError": "이 니모닉은 이미 존재합니다",
+  "transactionStatusPayjoinCompleted": "Payjoin 완료됨",
   "coreScreensResolvingInputs": "거래 입력을 확인하는 중...",
   "coreScreensFeeRateLabel": "수수료율",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12598,5 +12625,18 @@
   "viewerViewInExplorer": "탐색기에서 보기",
   "transactionViewerTitle": "거래 ID",
   "invoiceViewerTitle": "인보이스",
-  "viewerCopyLink": "링크 복사"
+  "viewerCopyLink": "링크 복사",
+  "recipientsFieldSinpePhoneNumberHint": "국가 코드 없이 8자리",
+  "recipientsCopDocCcRecipientNumber": "수신자 cédula 번호",
+  "recipientsCopDocCeRecipientNumber": "수신자 cédula de extranjería 번호",
+  "recipientsCopDocNitRecipientNumber": "수신자 세금 ID 번호",
+  "recipientsCopDocPassportRecipientNumber": "수신자 여권 번호",
+  "recipientsCopDocTiRecipientNumber": "수신자 신분증 번호",
+  "recipientsCopDocRegistroCivilRecipientNumber": "수신자 민법등록 번호",
+  "recipientsValidationSinpePhoneCountryCode": "국가 코드(+506)를 제거하세요. 8자리 번호만 입력하세요",
+  "recipientsValidationSinpePhoneInvalidChars": "숫자만 사용하세요 (글자나 기호 금지)",
+  "recipientsValidationSinpePhoneTooShort": "전화번호 8자리를 모두 입력하세요",
+  "recipientsFieldDocumentType": "수신자 신분증 유형",
+  "recipientsFieldDocumentNumberHint": "수신자 신분증 번호 입력",
+  "recipientsValidationSinpePhone": "국가 코드 없이 8자리 코스타리카 전화번호를 입력하세요"
 }

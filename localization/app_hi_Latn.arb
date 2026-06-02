@@ -1979,6 +1979,9 @@
     "description": "Information about balance crediting"
   },
   "payTitle": "Pay Karo",
+  "payDescriptionLabel": "Bhugtan vivaran (vaikalpik)",
+  "payDescriptionHint": "Is bhugtan ke liye ek note jodein",
+  "payPaymentDescription": "Bhugtan vivaran",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -2750,6 +2753,7 @@
     "description": "Label for order type"
   },
   "transactionDetailLabelOrderNumber": "Order number",
+  "transactionDetailLabelPaymentDescription": "Bhugtan vivaran",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -8883,6 +8887,23 @@
       }
     }
   },
+  "transactionHistoryTitle": "Lenden Itihaas",
+  "transactionHistoryHeading": "Lenden Itihaas",
+  "exportTransactionsDescription": "Apne wallet ke sabhi lenden (Bitcoin, Liquid, Lightning aur swaps) ko CSV file ke roop mein export karein. Vaikalpik roop se date range se filter karein.",
+  "exportTransactionsStartDate": "Shuru ki taarikh",
+  "exportTransactionsEndDate": "Antim taarikh",
+  "exportTransactionsAnyDate": "Koi bhi",
+  "exportTransactionsButton": "CSV export karein",
+  "exportTransactionsSuccess": "Lenden safaltaapoorvak export ho gaye",
+  "exportTransactionsEmpty": "Chayanit avadhi ke liye koi lenden nahi hai",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Shuru ki taareekh khatam ki taareekh se pehle honi chahiye",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -8949,6 +8970,7 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "Broadcast ho raha hai...",
+  "broadcastSignedTxBroadcastError": "Len-den prasarit karne mein viphal raha",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -13039,5 +13061,22 @@
   "walletSetupErrorTryAgain": "Aapka wallet setup karte samay kuch galat ho gaya. Kripya phir se try karein.",
   "@walletSetupErrorTryAgain": {
     "description": "Generic error shown when default-wallet creation or recovery fails."
+  },
+  "recipientsFieldSinpePhoneNumberHint": "Country code ke bina 8 digits",
+  "recipientsCopDocCcRecipientNumber": "Recipient ka cédula number",
+  "recipientsCopDocCeRecipientNumber": "Recipient ka cédula de extranjería number",
+  "recipientsCopDocNitRecipientNumber": "Recipient ka tax ID number",
+  "recipientsCopDocPassportRecipientNumber": "Recipient ka passport number",
+  "recipientsCopDocTiRecipientNumber": "Recipient ka identity card number",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Recipient ka civil registry number",
+  "recipientsValidationSinpePhoneCountryCode": "Country code (+506) hatayein. Sirf 8-digit number daalein",
+  "recipientsValidationSinpePhoneInvalidChars": "Sirf digits ka istemaal karein (koi letters ya symbols nahin)",
+  "recipientsValidationSinpePhoneTooShort": "Phone number ke saare 8 digits daalein",
+  "recipientsFieldDocumentType": "Recipient ka ID type",
+  "recipientsFieldDocumentNumberHint": "Recipient ka ID number daalein",
+  "recipientsValidationSinpePhone": "Country code ke bina ek valid 8-digit Costa Rican phone number daalein",
+  "transactionStatusPayjoinCompleted": "Payjoin poora hua",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Jab Payjoin transaction successfully complete ho jati hai tab dikhaya jata hai."
   }
 }

@@ -5,7 +5,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [release, debug]
+        options: [release, debug, beta]
         default: release
 
 jobs:
@@ -26,12 +26,41 @@ jobs:
           large-packages: true
           swap-storage: false
 
+      # Dedicated beta signing key, written before the build so the container
+      # image (Containerfile.app copies the repo) picks it up. A beta that ships
+      # to testers must be signed with the real beta key; build.gradle leaves it
+      # unsigned (never the public debug keystore) when the key is absent, so we
+      # require all four secrets here and fail loud rather than produce an
+      # uninstallable/unsigned artifact. The secret presence check lives in the
+      # run body on purpose: the `secrets` context is not available in a step
+      # `if:` (only `inputs`/`env` etc. are), so gating on it there would not work.
+      - name: Configure beta signing key
+        if: ${{ inputs.mode == 'beta' }}
+        env:
+          BETA_KEYSTORE_BASE64: ${{ secrets.BETA_KEYSTORE_BASE64 }}
+          BETA_KEY_ALIAS: ${{ secrets.BETA_KEY_ALIAS }}
+          BETA_KEY_PASSWORD: ${{ secrets.BETA_KEY_PASSWORD }}
+          BETA_STORE_PASSWORD: ${{ secrets.BETA_STORE_PASSWORD }}
+        run: |
+          if [ -z "$BETA_KEYSTORE_BASE64" ] || [ -z "$BETA_KEY_ALIAS" ] \
+            || [ -z "$BETA_KEY_PASSWORD" ] || [ -z "$BETA_STORE_PASSWORD" ]; then
+            echo "::error::Beta signing secrets (BETA_KEYSTORE_BASE64/BETA_KEY_ALIAS/BETA_KEY_PASSWORD/BETA_STORE_PASSWORD) are not all set; refusing to build an unsigned beta."
+            exit 1
+          fi
+          echo "$BETA_KEYSTORE_BASE64" | base64 -d > android/app/beta-upload.keystore
+          cat > android/key-beta.properties <<EOF
+          storeFile=beta-upload.keystore
+          storePassword=$BETA_STORE_PASSWORD
+          keyAlias=$BETA_KEY_ALIAS
+          keyPassword=$BETA_KEY_PASSWORD
+          EOF
+
       - name: Build APK
         # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
-        run: make apk ${{ inputs.mode }}
+        run: make android ${{ inputs.mode }}
 
       - uses: actions/upload-artifact@v7
         with:
-          name: app-${{ inputs.mode }}
-          path: app-${{ inputs.mode }}.apk
+          name: BULL-${{ inputs.mode }}
+          path: BULL-${{ inputs.mode }}.apk
           retention-days: 30

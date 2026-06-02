@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -36,6 +35,7 @@ import 'package:bull_sdk/bull_sdk.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
@@ -198,47 +198,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
-  // Listen to the app lifecycle state changes
+  // Wallet/swap sync on resume is handled by SyncCoordinator's own
+  // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.detached:
-        _onDetached();
-      case AppLifecycleState.resumed:
-        _onResumed();
-      case AppLifecycleState.inactive:
-        _onInactive();
-      case AppLifecycleState.hidden:
-        _onHidden();
-      case AppLifecycleState.paused:
-        _onPaused();
+    log.info(state.name);
+    if (state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused) {
+      log.flush();
     }
-  }
-
-  void _onDetached() => log.info('detached');
-
-  Future<void> _onResumed() async {
-    log.info('resumed');
-    try {
-      await locator<RestartSwapWatcherUsecase>().execute();
-    } catch (e) {
-      log.severe(
-        message: 'Error during app resume',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
-
-  void _onInactive() => log.info('inactive');
-
-  Future<void> _onHidden() async {
-    log.info('hidden');
-    await log.flush();
-  }
-
-  Future<void> _onPaused() async {
-    log.info('paused');
-    await log.flush();
   }
 
   @override
@@ -329,8 +296,18 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     localizationsDelegates:
                         AppLocalizations.localizationsDelegates,
                     supportedLocales: AppLocalizations.supportedLocales,
-                    builder: (_, child) {
-                      return AppStartupWidget(app: child!);
+                    builder: (context, child) {
+                      final app = AppStartupWidget(app: child!);
+                      // Mark beta-channel builds (`make android beta`) with a
+                      // corner banner. Release mode drops the Flutter debug
+                      // banner, so this is how testers tell beta from production.
+                      if (appFlavor != 'beta') return app;
+                      return Banner(
+                        message: 'BETA',
+                        location: BannerLocation.topEnd,
+                        color: Theme.of(context).colorScheme.error,
+                        child: app,
+                      );
                     },
                   );
                 },

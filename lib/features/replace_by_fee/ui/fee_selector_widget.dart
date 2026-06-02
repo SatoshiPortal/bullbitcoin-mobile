@@ -13,12 +13,14 @@ class BumpFeeSelectorWidget extends StatefulWidget {
     required this.selected,
     required this.txSize,
     required this.onChanged,
+    required this.focusNode,
   });
 
   final FeeEntity fastestFeeRate;
   final FeeEntity selected;
   final int txSize;
   final void Function(FeeEntity fee) onChanged;
+  final FocusNode focusNode;
 
   @override
   State<BumpFeeSelectorWidget> createState() => _FeeSelectorWidgetState();
@@ -115,10 +117,9 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
               ),
               Icon(
                 Icons.radio_button_checked_outlined,
-                color:
-                    isSelected
-                        ? context.appColors.primary
-                        : context.appColors.surface,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.surface,
               ),
             ],
           ),
@@ -130,10 +131,9 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
   Widget _buildCustomFeeSection(bool isSelected) {
     return InkWell(
       radius: 2,
-      onTap:
-          () => widget.onChanged(
-            FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
-          ),
+      onTap: () => widget.onChanged(
+        FeeEntity(type: FeeType.custom, feeRate: _customFeeRate),
+      ),
       child: Material(
         elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
@@ -155,16 +155,16 @@ class _FeeSelectorWidgetState extends State<BumpFeeSelectorWidget> {
                   ),
                   Icon(
                     Icons.radio_button_checked_outlined,
-                    color:
-                        isSelected
-                            ? context.appColors.primary
-                            : context.appColors.surface,
+                    color: isSelected
+                        ? context.appColors.primary
+                        : context.appColors.surface,
                   ),
                 ],
               ),
               const Gap(8),
               BBInputText(
                 controller: _controller,
+                focusNode: widget.focusNode,
                 value: _controller.text,
                 onChanged: _onCustomChanged,
                 onlyNumbers: true,

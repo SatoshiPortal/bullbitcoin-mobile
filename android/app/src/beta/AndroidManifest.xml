@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Beta flavor source set. Overrides only the launcher label so the beta
+         build is distinct from the production app it installs next to; the icon
+         falls back to production. src/main is left untouched so the production
+         variant stays byte-reproducible. -->
+    <application
+        android:label="Bull Beta"
+        tools:replace="android:label"
+    />
+</manifest>

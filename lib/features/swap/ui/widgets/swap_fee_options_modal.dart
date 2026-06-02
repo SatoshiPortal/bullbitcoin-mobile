@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dropdown/selectable_list.dart';
 import 'package:bb_mobile/core/widgets/inputs/amount_input_formatter.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/swap/presentation/transfer_bloc.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class SwapFeeOptionsModal extends StatelessWidget {
+class SwapFeeOptionsModal extends StatefulWidget {
   const SwapFeeOptionsModal({super.key});
+
+  @override
+  State<SwapFeeOptionsModal> createState() => _SwapFeeOptionsModalState();
+}
+
+class _SwapFeeOptionsModalState extends State<SwapFeeOptionsModal> {
+  final _customFeeNode = FocusNode();
+
+  @override
+  void dispose() {
+    _customFeeNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +60,9 @@ class SwapFeeOptionsModal extends StatelessWidget {
         bottom: MediaQuery.of(context).viewInsets.bottom + 16,
       ),
       child: SafeArea(
-        child: SingleChildScrollView(
+        child: BBKeyboardActions(
+          isDialog: true,
+          focusNodes: [_customFeeNode],
           child: Column(
             crossAxisAlignment: .stretch,
             children: [
@@ -64,6 +80,7 @@ class SwapFeeOptionsModal extends StatelessWidget {
               ),
               SwapSelectableCustomFeeListItem(
                 bloc: bloc,
+                focusNode: _customFeeNode,
               ),
               const Gap(24),
             ],
@@ -78,9 +95,11 @@ class SwapSelectableCustomFeeListItem extends StatefulWidget {
   const SwapSelectableCustomFeeListItem({
     super.key,
     required this.bloc,
+    required this.focusNode,
   });
 
   final TransferBloc bloc;
+  final FocusNode focusNode;
 
   @override
   State<SwapSelectableCustomFeeListItem> createState() =>
@@ -92,7 +111,6 @@ class _SwapSelectableCustomFeeListItemState
   late bool _isAbsolute;
   late TextEditingController _controller;
   late NetworkFee? _customFee;
-  late FocusNode _focusNode;
 
   @override
   void initState() {
@@ -102,13 +120,11 @@ class _SwapSelectableCustomFeeListItemState
     _isAbsolute = _customFee?.isAbsolute ?? true;
     final value = _customFee?.value.toString() ?? '';
     _controller = TextEditingController(text: value);
-    _focusNode = FocusNode();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _focusNode.dispose();
     super.dispose();
   }
 
@@ -150,8 +166,8 @@ class _SwapSelectableCustomFeeListItemState
     final customAbsValue = _customFee == null
         ? 0
         : _customFee is AbsoluteFee
-            ? _customFee!.value
-            : (_customFee?.value ?? 0) * txSize;
+        ? _customFee!.value
+        : (_customFee?.value ?? 0) * txSize;
     final fiatEq = ConvertAmount.satsToFiat(
       customAbsValue.toInt(),
       exchangeRate,
@@ -160,12 +176,12 @@ class _SwapSelectableCustomFeeListItemState
     final subtitle1 = _customFee == null || feeOptions == null
         ? ''
         : 'Estimated delivery ~ ${customAbsValue >= fastestAbsValue
-            ? context.loc.sendEstimatedDelivery10Minutes
-            : customAbsValue >= economicAbsValue
-                ? context.loc.sendEstimatedDelivery10to30Minutes
-                : customAbsValue >= slowAbsValue
-                    ? context.loc.sendEstimatedDeliveryFewHours
-                    : context.loc.sendEstimatedDeliveryHoursToDays}';
+              ? context.loc.sendEstimatedDelivery10Minutes
+              : customAbsValue >= economicAbsValue
+              ? context.loc.sendEstimatedDelivery10to30Minutes
+              : customAbsValue >= slowAbsValue
+              ? context.loc.sendEstimatedDeliveryFewHours
+              : context.loc.sendEstimatedDeliveryHoursToDays}';
 
     final subtitle2 = _customFee == null
         ? ''
@@ -183,7 +199,7 @@ class _SwapSelectableCustomFeeListItemState
     return InkWell(
       radius: 2,
       onTap: () {
-        _focusNode.requestFocus();
+        widget.focusNode.requestFocus();
       },
       child: Material(
         elevation: isCustomFeeSelected ? 4 : 1,
@@ -243,7 +259,7 @@ class _SwapSelectableCustomFeeListItemState
               const Gap(8),
               TextFormField(
                 controller: _controller,
-                focusNode: _focusNode,
+                focusNode: widget.focusNode,
                 keyboardType: TextInputType.numberWithOptions(
                   decimal: !_isAbsolute,
                 ),
@@ -285,8 +301,9 @@ class _SwapSelectableCustomFeeListItemState
                   hintStyle: context.font.bodyMedium?.copyWith(
                     color: context.appColors.outline,
                   ),
-                  suffixText:
-                      _isAbsolute ? context.loc.sendSats : context.loc.sendSatsPerVB,
+                  suffixText: _isAbsolute
+                      ? context.loc.sendSats
+                      : context.loc.sendSatsPerVB,
                 ),
                 onFieldSubmitted: (_) => submitCustomFee(),
                 onChanged: _onValueChanged,
@@ -306,4 +323,3 @@ class _SwapSelectableCustomFeeListItemState
     );
   }
 }
-

@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/withdraw/presentation/withdraw_bloc.dart';
 import 'package:bb_mobile/features/withdraw/ui/widgets/withdraw_amount_input_fields.dart';
@@ -22,6 +23,7 @@ class WithdrawAmountScreen extends StatefulWidget {
 class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
+  final FocusNode _amountNode = FocusNode();
   FiatCurrency? _fiatCurrency;
   late final StreamSubscription<WithdrawState> stateSubscription;
 
@@ -55,40 +57,45 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
         title: Text(context.loc.withdrawAmountTitle),
       ),
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ScrollableColumn(
-            crossAxisAlignment: .start,
-            children: [
-              const Gap(40.0),
-              WithdrawAmountInputFields(
-                amountController: _amountController,
-                fiatCurrency: _fiatCurrency,
-                onFiatCurrencyChanged: (FiatCurrency fiatCurrency) {
-                  setState(() {
-                    _fiatCurrency = fiatCurrency;
-                  });
-                },
-              ),
-              const Spacer(),
-              BBButton.big(
-                label: context.loc.withdrawAmountContinue,
-                disabled: _fiatCurrency == null,
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    context.read<WithdrawBloc>().add(
-                      WithdrawEvent.amountInputContinuePressed(
-                        amountInput: _amountController.text,
-                        fiatCurrency: _fiatCurrency!,
-                      ),
-                    );
-                  }
-                },
-                bgColor: context.appColors.onSurface,
-                textColor: context.appColors.surface,
-              ),
-              const Gap(16.0),
-            ],
+        child: BBKeyboardActions(
+          disableScroll: true,
+          focusNodes: [_amountNode],
+          child: Form(
+            key: _formKey,
+            child: ScrollableColumn(
+              crossAxisAlignment: .start,
+              children: [
+                const Gap(40.0),
+                WithdrawAmountInputFields(
+                  amountController: _amountController,
+                  focusNode: _amountNode,
+                  fiatCurrency: _fiatCurrency,
+                  onFiatCurrencyChanged: (FiatCurrency fiatCurrency) {
+                    setState(() {
+                      _fiatCurrency = fiatCurrency;
+                    });
+                  },
+                ),
+                const Spacer(),
+                BBButton.big(
+                  label: context.loc.withdrawAmountContinue,
+                  disabled: _fiatCurrency == null,
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      context.read<WithdrawBloc>().add(
+                        WithdrawEvent.amountInputContinuePressed(
+                          amountInput: _amountController.text,
+                          fiatCurrency: _fiatCurrency!,
+                        ),
+                      );
+                    }
+                  },
+                  bgColor: context.appColors.onSurface,
+                  textColor: context.appColors.surface,
+                ),
+                const Gap(16.0),
+              ],
+            ),
           ),
         ),
       ),
@@ -98,6 +105,7 @@ class _WithdrawAmountScreenState extends State<WithdrawAmountScreen> {
   @override
   void dispose() {
     _amountController.dispose();
+    _amountNode.dispose();
     stateSubscription.cancel();
     super.dispose();
   }

@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,14 +27,22 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               color: context.appColors.primary,
             ),
           Expanded(
-            child: _buildContent(context, state.isFetchingUserSummary, userSummary),
+            child: _buildContent(
+              context,
+              state.isFetchingUserSummary,
+              userSummary,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, bool isLoading, UserSummary? userSummary) {
+  Widget _buildContent(
+    BuildContext context,
+    bool isLoading,
+    UserSummary? userSummary,
+  ) {
     if (isLoading && userSummary == null) {
       return const SizedBox.shrink();
     }
@@ -59,7 +68,8 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
               context.loc.exchangeAccountInfoUserNumberLabel,
               userSummary.userNumber.toString(),
               isCopyable: true,
-              copiedMessage: context.loc.exchangeAccountInfoUserNumberCopiedMessage,
+              copiedMessage:
+                  context.loc.exchangeAccountInfoUserNumberCopiedMessage,
             ),
             const SizedBox(height: 32),
             _buildInfoField(
@@ -138,34 +148,7 @@ class ExchangeAccountInfoScreen extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Clipboard.setData(ClipboardData(text: value));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: BBText(
-                            copiedMessage ?? '',
-                            textAlign: .center,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: context.appColors.surfaceFixed,
-                            ),
-                          ),
-                          duration: const Duration(seconds: 2),
-                          backgroundColor: context.appColors.onSurface
-                              .withAlpha(204),
-                          behavior: .floating,
-                          elevation: 4,
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 80,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      );
+                      SnackBarUtils.showSnackBar(context, copiedMessage ?? '');
                     },
                     child: Icon(
                       Icons.copy,

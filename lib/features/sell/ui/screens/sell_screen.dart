@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/scrollable_column.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_currency_dropdown.dart';
 import 'package:bb_mobile/features/sell/ui/widgets/sell_amount_input_bottom_buttons.dart';
@@ -18,6 +19,7 @@ class SellScreen extends StatefulWidget {
 class _SellScreenState extends State<SellScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _amountController = TextEditingController();
+  final FocusNode _amountNode = FocusNode();
   bool _isFiatCurrencyInput = true;
   FiatCurrency? _fiatCurrency;
 
@@ -27,51 +29,55 @@ class _SellScreenState extends State<SellScreen> {
       appBar: AppBar(
         // Adding the leading icon button here manually since we are in the first
         // route of a shellroute and so no back button is provided by default.
-        leading:
-            context.canPop()
-                ? BackButton(
-                  onPressed: () {
-                    context.pop();
-                  },
-                )
-                : null,
+        leading: context.canPop()
+            ? BackButton(
+                onPressed: () {
+                  context.pop();
+                },
+              )
+            : null,
         title: Text(context.loc.sellTitle),
       ),
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ScrollableColumn(
-            crossAxisAlignment: .start,
-            children: [
-              const Gap(24.0),
-              SellAmountInputField(
-                amountController: _amountController,
-                fiatCurrency: _fiatCurrency,
-                isFiatCurrencyInput: _isFiatCurrencyInput,
-                onIsFiatCurrencyInputChanged: (bool isFiat) {
-                  setState(() {
-                    _isFiatCurrencyInput = isFiat;
-                  });
-                },
-              ),
-              const Gap(16.0),
-              SellAmountCurrencyDropdown(
-                selectedCurrency: _fiatCurrency?.code,
-                onCurrencyChanged: (String currencyCode) {
-                  setState(() {
-                    _fiatCurrency = FiatCurrency.fromCode(currencyCode);
-                  });
-                },
-              ),
-              const Spacer(),
-              SellAmountInputBottomButtons(
-                formKey: _formKey,
-                amountController: _amountController,
-                isFiatCurrencyInput: _isFiatCurrencyInput,
-                fiatCurrency: _fiatCurrency,
-              ),
-              const Gap(16.0),
-            ],
+        child: BBKeyboardActions(
+          disableScroll: true,
+          focusNodes: [_amountNode],
+          child: Form(
+            key: _formKey,
+            child: ScrollableColumn(
+              crossAxisAlignment: .start,
+              children: [
+                const Gap(24.0),
+                SellAmountInputField(
+                  amountController: _amountController,
+                  focusNode: _amountNode,
+                  fiatCurrency: _fiatCurrency,
+                  isFiatCurrencyInput: _isFiatCurrencyInput,
+                  onIsFiatCurrencyInputChanged: (bool isFiat) {
+                    setState(() {
+                      _isFiatCurrencyInput = isFiat;
+                    });
+                  },
+                ),
+                const Gap(16.0),
+                SellAmountCurrencyDropdown(
+                  selectedCurrency: _fiatCurrency?.code,
+                  onCurrencyChanged: (String currencyCode) {
+                    setState(() {
+                      _fiatCurrency = FiatCurrency.fromCode(currencyCode);
+                    });
+                  },
+                ),
+                const Spacer(),
+                SellAmountInputBottomButtons(
+                  formKey: _formKey,
+                  amountController: _amountController,
+                  isFiatCurrencyInput: _isFiatCurrencyInput,
+                  fiatCurrency: _fiatCurrency,
+                ),
+                const Gap(16.0),
+              ],
+            ),
           ),
         ),
       ),
@@ -81,6 +87,7 @@ class _SellScreenState extends State<SellScreen> {
   @override
   void dispose() {
     _amountController.dispose();
+    _amountNode.dispose();
     super.dispose();
   }
 }

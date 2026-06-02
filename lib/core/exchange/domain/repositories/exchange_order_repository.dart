@@ -18,6 +18,7 @@ abstract class ExchangeOrderRepository {
     required OrderAmount orderAmount,
     required String recipientId,
     required OrderBitcoinNetwork network,
+    String? paymentDescription,
   });
   Future<WithdrawOrder> placeWithdrawalOrder({
     required double fiatAmount,

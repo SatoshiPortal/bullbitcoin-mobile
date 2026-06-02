@@ -34,6 +34,17 @@ class BroadcastSignedTxPage extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
+      // Actions are pinned to the bottom of the screen (not inline in the
+      // scroll content) so they don't jump when the error appears/disappears.
+      bottomNavigationBar:
+          BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
+            builder: (context, state) {
+              final showActions =
+                  state.transaction != null && !state.isBroadcasted;
+              if (!showActions) return const SizedBox.shrink();
+              return const SafeArea(child: _BroadcastActions());
+            },
+          ),
       body: BlocBuilder<BroadcastSignedTxCubit, BroadcastSignedTxState>(
         builder: (context, state) {
           final cubit = context.read<BroadcastSignedTxCubit>();
@@ -98,6 +109,12 @@ class BroadcastSignedTxPage extends StatelessWidget {
                       bitcoinTx: state.transaction!.tx,
                     ),
                   ),
+                  // Broadcast failure is shown here in the scroll content so
+                  // the pinned action buttons stay put when it toggles.
+                  if (state.error != null) ...[
+                    const Gap(16),
+                    const _BroadcastError(),
+                  ],
                 ],
 
                 if (state.isBroadcasted == true) ...[
@@ -139,6 +156,7 @@ class _BroadcastActions extends StatelessWidget {
     final isBroadcasting = context.select(
       (BroadcastSignedTxCubit c) => c.state.isBroadcasting,
     );
+
     return Row(
       children: [
         if (pushTxUri != null)
@@ -171,6 +189,35 @@ class _BroadcastActions extends StatelessWidget {
   }
 }
 
+/// Error block shown in the review screen when a broadcast attempt fails.
+/// Shows a generic localized message only — the underlying server/node reason
+/// is logged via `log.warning` (file + console, no Sentry), not leaked to the
+/// UI.
+class _BroadcastError extends StatelessWidget {
+  const _BroadcastError();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.error_outline, color: context.appColors.error, size: 20),
+          const Gap(8),
+          Expanded(
+            child: BBText(
+              context.loc.broadcastSignedTxBroadcastError,
+              style: context.font.bodyMedium,
+              color: context.appColors.error,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _TransactionReviewSection extends StatefulWidget {
   const _TransactionReviewSection({required this.bitcoinTx});
 
@@ -195,6 +242,8 @@ class _TransactionReviewSectionState extends State<_TransactionReviewSection> {
 
   @override
   Widget build(BuildContext context) {
-    return const TransactionReviewView(bottomActions: _BroadcastActions());
+    // Actions are rendered in the page's bottomNavigationBar (pinned), not
+    // here, so they don't shift with the scroll content.
+    return const TransactionReviewView();
   }
 }

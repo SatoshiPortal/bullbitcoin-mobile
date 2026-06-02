@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/cubit.dart';
 import 'package:bb_mobile/features/replace_by_fee/presentation/state.dart';
@@ -11,10 +12,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReplaceByFeeHomePage extends StatelessWidget {
+class ReplaceByFeeHomePage extends StatefulWidget {
   final WalletTransaction tx;
 
   const ReplaceByFeeHomePage({super.key, required this.tx});
+
+  @override
+  State<ReplaceByFeeHomePage> createState() => _ReplaceByFeeHomePageState();
+}
+
+class _ReplaceByFeeHomePageState extends State<ReplaceByFeeHomePage> {
+  final FocusNode _feeNode = FocusNode();
+
+  @override
+  void dispose() {
+    _feeNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,50 +40,55 @@ class ReplaceByFeeHomePage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back),
         ),
       ),
-      body: BlocBuilder<ReplaceByFeeCubit, ReplaceByFeeState>(
-        builder: (context, state) {
-          final cubit = context.read<ReplaceByFeeCubit>();
+      body: BBKeyboardActions(
+        disableScroll: true,
+        focusNodes: [_feeNode],
+        child: BlocBuilder<ReplaceByFeeCubit, ReplaceByFeeState>(
+          builder: (context, state) {
+            final cubit = context.read<ReplaceByFeeCubit>();
 
-          if (state.newFeeRate == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            if (state.newFeeRate == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          final originalFeeRate = tx.feeSat / tx.vsize;
+            final originalFeeRate = widget.tx.feeSat / widget.tx.vsize;
 
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _buildOriginalTransaction(context, originalFeeRate),
-                  const Gap(16),
-                  BumpFeeSelectorWidget(
-                    fastestFeeRate: state.fastestFeeRate!,
-                    selected: state.newFeeRate!,
-                    txSize: tx.vsize,
-                    onChanged: cubit.onChangeFee,
-                  ),
-                  if (state.error != null) ...[
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    _buildOriginalTransaction(context, originalFeeRate),
                     const Gap(16),
-                    BBText(
-                      state.error!.toTranslated(context),
-                      style: context.font.bodyMedium,
-                      color: context.appColors.error,
+                    BumpFeeSelectorWidget(
+                      fastestFeeRate: state.fastestFeeRate!,
+                      selected: state.newFeeRate!,
+                      txSize: widget.tx.vsize,
+                      onChanged: cubit.onChangeFee,
+                      focusNode: _feeNode,
                     ),
-                    const Gap(16),
-                  ],
+                    if (state.error != null) ...[
+                      const Gap(16),
+                      BBText(
+                        state.error!.toTranslated(context),
+                        style: context.font.bodyMedium,
+                        color: context.appColors.error,
+                      ),
+                      const Gap(16),
+                    ],
 
-                  BBButton.big(
-                    label: context.loc.replaceByFeeBroadcastButton,
-                    onPressed: () => cubit.broadcast(),
-                    bgColor: context.appColors.secondary,
-                    textColor: context.appColors.onSecondary,
-                  ),
-                ],
+                    BBButton.big(
+                      label: context.loc.replaceByFeeBroadcastButton,
+                      onPressed: () => cubit.broadcast(),
+                      bgColor: context.appColors.secondary,
+                      textColor: context.appColors.onSecondary,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

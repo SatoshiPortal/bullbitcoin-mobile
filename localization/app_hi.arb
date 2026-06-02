@@ -4729,6 +4729,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "हार्डवेयर वॉलेट का उपयोग स्वैप के लिए नहीं किया जा सकता।",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "उपलब्ध बैलेंस डेटा",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -5047,6 +5051,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "भुगतान करें",
+  "payDescriptionLabel": "भुगतान विवरण (वैकल्पिक)",
+  "payDescriptionHint": "इस भुगतान के लिए एक नोट जोड़ें",
+  "payPaymentDescription": "भुगतान विवरण",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7773,6 +7780,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "लेनदेन इतिहास",
+  "transactionHistoryHeading": "लेनदेन इतिहास",
+  "exportTransactionsDescription": "अपने वॉलेट के सभी लेनदेन (Bitcoin, Liquid, Lightning और स्वैप) को CSV फ़ाइल के रूप में निर्यात करें। वैकल्पिक रूप से तिथि सीमा द्वारा फ़िल्टर करें।",
+  "exportTransactionsStartDate": "प्रारंभ तिथि",
+  "exportTransactionsEndDate": "समाप्ति तिथि",
+  "exportTransactionsAnyDate": "कोई भी",
+  "exportTransactionsButton": "CSV निर्यात करें",
+  "exportTransactionsSuccess": "लेनदेन सफलतापूर्वक निर्यात हो गए",
+  "exportTransactionsEmpty": "चयनित अवधि के लिए कोई लेनदेन नहीं है",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "प्रारंभ तिथि समाप्ति तिथि से पहले होनी चाहिए",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 लेबल",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -10364,6 +10388,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ऑर्डर संख्या",
+  "transactionDetailLabelPaymentDescription": "भुगतान विवरण",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -11971,6 +11996,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "प्रसारण..।",
+  "broadcastSignedTxBroadcastError": "लेन-देन प्रसारित करने में विफल",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12862,6 +12888,10 @@
   "@fundExchangeCopFailedToOpenLink": {
     "description": "Error shown when the COP payment link fails to open"
   },
+  "transactionStatusPayjoinCompleted": "Payjoin पूरा हुआ",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "जब Payjoin लेनदेन सफलतापूर्वक पूरा हो जाता है तब यह दिखाया जाता है।"
+  },
   "coreScreensResolvingInputs": "लेन-देन इनपुट हल किए जा रहे हैं...",
   "coreScreensFeeRateLabel": "शुल्क दर",
   "coreScreensFeeRateValue": "{rate} sat/vB",
@@ -12877,5 +12907,18 @@
   "viewerViewInExplorer": "एक्सप्लोरर में देखें",
   "transactionViewerTitle": "लेन-देन आईडी",
   "invoiceViewerTitle": "चालान",
-  "viewerCopyLink": "प्रतिरूप जोड़ना"
+  "viewerCopyLink": "प्रतिरूप जोड़ना",
+  "recipientsFieldSinpePhoneNumberHint": "देश कोड के बिना 8 अंक",
+  "recipientsCopDocCcRecipientNumber": "प्राप्तकर्ता का cédula नंबर",
+  "recipientsCopDocCeRecipientNumber": "प्राप्तकर्ता का cédula de extranjería नंबर",
+  "recipientsCopDocNitRecipientNumber": "प्राप्तकर्ता का कर आईडी नंबर",
+  "recipientsCopDocPassportRecipientNumber": "प्राप्तकर्ता का पासपोर्ट नंबर",
+  "recipientsCopDocTiRecipientNumber": "प्राप्तकर्ता का पहचान पत्र नंबर",
+  "recipientsCopDocRegistroCivilRecipientNumber": "प्राप्तकर्ता का नागरिक पंजीकरण नंबर",
+  "recipientsValidationSinpePhoneCountryCode": "देश कोड (+506) हटाएँ। केवल 8-अंकों का नंबर दर्ज करें",
+  "recipientsValidationSinpePhoneInvalidChars": "केवल अंकों का उपयोग करें (कोई अक्षर या प्रतीक नहीं)",
+  "recipientsValidationSinpePhoneTooShort": "फ़ोन नंबर के सभी 8 अंक दर्ज करें",
+  "recipientsFieldDocumentType": "प्राप्तकर्ता का आईडी प्रकार",
+  "recipientsFieldDocumentNumberHint": "प्राप्तकर्ता का आईडी नंबर दर्ज करें",
+  "recipientsValidationSinpePhone": "देश कोड के बिना एक वैध 8-अंकों का कोस्टा रिकन फ़ोन नंबर दर्ज करें"
 }
