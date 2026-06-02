@@ -18,9 +18,12 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
-// Beta-channel signing. Optional dedicated key (android/key-beta.properties);
-// falls back to the committed debug keystore so CI and local beta builds are
-// always signed and installable without ever exposing the production release key.
+// Beta-channel signing. Dedicated beta key only (android/key-beta.properties,
+// provided by CI from a secret). No fallback: a beta built without its key is
+// left unsigned rather than signed with the public debug keystore, so a
+// distributed beta can never be debug-signed and forged. CI requires the key and
+// fails loud if it is missing (see build-android.yml). Never touches the
+// production release key.
 def betaKeystoreProperties = new Properties()
 def betaKeystorePropertiesFile = rootProject.file('key-beta.properties')
 if (betaKeystorePropertiesFile.exists()) {
@@ -66,10 +69,10 @@ android {
             storePassword keystoreProperties['storePassword']
         }
         beta {
-            keyAlias betaKeystoreProperties.getProperty('keyAlias', 'androiddebugkey')
-            keyPassword betaKeystoreProperties.getProperty('keyPassword', 'android')
-            storeFile betaKeystoreProperties['storeFile'] ? file(betaKeystoreProperties['storeFile']) : file('debug.keystore')
-            storePassword betaKeystoreProperties.getProperty('storePassword', 'android')
+            keyAlias betaKeystoreProperties['keyAlias']
+            keyPassword betaKeystoreProperties['keyPassword']
+            storeFile betaKeystoreProperties['storeFile'] ? file(betaKeystoreProperties['storeFile']) : null
+            storePassword betaKeystoreProperties['storePassword']
         }
     }
 
@@ -109,13 +112,18 @@ android {
         }
         // Beta channel for direct (store-less) distribution to testers. The .beta
         // applicationId suffix lets it install alongside the production app in its
-        // own sandbox/storage. Signed with its own key (CI provides it; debug
-        // keystore fallback locally) — never the production release key.
+        // own sandbox/storage. Signed only with its own dedicated key (CI provides
+        // it from a secret) — never the production release key, and never the
+        // public debug keystore. As with production, the signingConfig is set only
+        // when the key is present; without it the beta build is left unsigned
+        // rather than debug-signed, so a distributed beta can't be forged.
         beta {
             dimension 'channel'
             applicationIdSuffix '.beta'
             versionNameSuffix '-beta'
-            signingConfig signingConfigs.beta
+            if (betaKeystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.beta
+            }
         }
     }
 
