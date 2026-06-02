@@ -1,7 +1,8 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/send/application/application_errors.dart';
+import 'package:bb_mobile/features/send/application/lnurl_pay_metadata_repository.dart';
 import 'package:bb_mobile/features/send/application/resolve_lnurl_pay_limits_usecase.dart';
-import 'package:bb_mobile/features/send/domain/lnurl_pay_limits.dart';
 import 'package:bech32/bech32.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,10 +14,10 @@ void main() {
     test('resolves bech32 LNURL pay metadata', () async {
       Uri? requestedUri;
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (uri) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((uri) async {
           requestedUri = uri;
           return '{"callback":"https://example.com/callback","tag":"payRequest","minSendable":5000000,"maxSendable":612000000000}';
-        },
+        }),
       );
 
       final limits = await usecase.execute(issueLnurl);
@@ -32,10 +33,10 @@ void main() {
     test('resolves lightning address metadata URL', () async {
       Uri? requestedUri;
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (uri) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((uri) async {
           requestedUri = uri;
           return '{"callback":"https://example.com/callback","tag":"payRequest","minSendable":1000,"maxSendable":5000000}';
-        },
+        }),
       );
 
       final limits = await usecase.execute('alice@example.com');
@@ -51,10 +52,10 @@ void main() {
     test('resolves lightning address usernames that start with lnurl', () async {
       Uri? requestedUri;
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (uri) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((uri) async {
           requestedUri = uri;
           return '{"callback":"https://example.com/callback","tag":"payRequest","minSendable":1000,"maxSendable":5000000}';
-        },
+        }),
       );
 
       await usecase.execute('lnurlpay@example.com');
@@ -68,10 +69,10 @@ void main() {
     test('uses HTTP for onion lightning address metadata URLs', () async {
       Uri? requestedUri;
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (uri) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((uri) async {
           requestedUri = uri;
           return '{"callback":"http://exampleonionaddress.onion/callback","tag":"payRequest","minSendable":1000,"maxSendable":5000000}';
-        },
+        }),
       );
 
       await usecase.execute('alice@exampleonionaddress.onion');
@@ -84,24 +85,24 @@ void main() {
 
     test('rejects clearnet HTTP LNURLs', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           fail('fetcher should not be called for invalid LNURL');
-        },
+        }),
       );
 
       expect(
         usecase.execute(_lnurlFor('http://example.com/lnurlp/alice')),
-        throwsA(isA<LnurlPayLimitsInvalidException>()),
+        throwsA(isA<LnurlPayLimitsInvalidApplicationException>()),
       );
     });
 
     test('allows HTTP onion LNURLs', () async {
       Uri? requestedUri;
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (uri) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((uri) async {
           requestedUri = uri;
           return '{"callback":"http://exampleonionaddress.onion/callback","tag":"payRequest","minSendable":1000,"maxSendable":5000000}';
-        },
+        }),
       );
 
       await usecase.execute(
@@ -116,9 +117,9 @@ void main() {
 
     test('rounds min msats up and max msats down', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           return '{"callback":"https://example.com/callback","tag":"payRequest","minSendable":1001,"maxSendable":5999}';
-        },
+        }),
       );
 
       final limits = await usecase.execute('alice@example.com');
@@ -129,93 +130,104 @@ void main() {
 
     test('rejects unsupported metadata', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           return '{"tag":"withdrawRequest","minWithdrawable":1000,"maxWithdrawable":1000}';
-        },
+        }),
       );
 
       expect(
         usecase.execute('alice@example.com'),
-        throwsA(isA<LnurlPayLimitsInvalidException>()),
+        throwsA(isA<LnurlPayLimitsInvalidApplicationException>()),
       );
     });
 
     test('rejects metadata without a callback', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           return '{"tag":"payRequest","minSendable":1000,"maxSendable":5000000}';
-        },
+        }),
       );
 
       expect(
         usecase.execute('alice@example.com'),
-        throwsA(isA<LnurlPayLimitsInvalidException>()),
+        throwsA(isA<LnurlPayLimitsInvalidApplicationException>()),
       );
     });
 
     test('rejects metadata with a clearnet HTTP callback', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           return '{"callback":"http://example.com/callback","tag":"payRequest","minSendable":1000,"maxSendable":5000000}';
-        },
+        }),
       );
 
       expect(
         usecase.execute('alice@example.com'),
-        throwsA(isA<LnurlPayLimitsInvalidException>()),
+        throwsA(isA<LnurlPayLimitsInvalidApplicationException>()),
       );
     });
 
     test('rejects zero minSendable', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           return '{"callback":"https://example.com/callback","tag":"payRequest","minSendable":0,"maxSendable":5000000}';
-        },
+        }),
       );
 
       expect(
         usecase.execute('alice@example.com'),
-        throwsA(isA<LnurlPayLimitsInvalidException>()),
+        throwsA(isA<LnurlPayLimitsInvalidApplicationException>()),
       );
     });
 
     test('rejects maxSendable lower than minSendable', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           return '{"callback":"https://example.com/callback","tag":"payRequest","minSendable":5000000,"maxSendable":1000}';
-        },
+        }),
       );
 
       expect(
         usecase.execute('alice@example.com'),
-        throwsA(isA<LnurlPayLimitsInvalidException>()),
+        throwsA(isA<LnurlPayLimitsInvalidApplicationException>()),
       );
     });
 
     test('rejects ranges that cannot be represented in sats', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async {
+        metadataRepository: _FakeLnurlPayMetadataRepository((_) async {
           return '{"callback":"https://example.com/callback","tag":"payRequest","minSendable":1001,"maxSendable":1999}';
-        },
+        }),
       );
 
       expect(
         usecase.execute('alice@example.com'),
-        throwsA(isA<LnurlPayLimitsInvalidException>()),
+        throwsA(isA<LnurlPayLimitsInvalidApplicationException>()),
       );
     });
 
     test('maps transport failures to unavailable', () async {
       final usecase = ResolveLnurlPayLimitsUsecase(
-        fetcher: (_) async => throw Exception('offline'),
+        metadataRepository: _FakeLnurlPayMetadataRepository(
+          (_) async => throw Exception('offline'),
+        ),
       );
 
       expect(
         usecase.execute('alice@example.com'),
-        throwsA(isA<LnurlPayLimitsUnavailableException>()),
+        throwsA(isA<LnurlPayLimitsUnavailableApplicationException>()),
       );
     });
   });
+}
+
+class _FakeLnurlPayMetadataRepository implements LnurlPayMetadataRepository {
+  _FakeLnurlPayMetadataRepository(this._fetch);
+
+  final Future<String> Function(Uri uri) _fetch;
+
+  @override
+  Future<String> fetch(Uri uri) => _fetch(uri);
 }
 
 String _lnurlFor(String url) {

@@ -82,7 +82,9 @@ sealed class PaymentRequest with _$PaymentRequest {
           trimmed.toLowerCase().startsWith('lntb') ||
           trimmed.toLowerCase().startsWith('lightning:')) {
         if (trimmed.toLowerCase().startsWith('lightning:')) {
-          final withoutPrefix = trimmed.substring('lightning:'.length);
+          final withoutPrefix = trimmed
+              .replaceAll("lightning:", "")
+              .replaceAll("LIGHTNING:", "");
           if (withoutPrefix.toLowerCase().startsWith('lnurl') ||
               withoutPrefix.contains('@')) {
             final result = await _tryParseLnAddress(withoutPrefix);

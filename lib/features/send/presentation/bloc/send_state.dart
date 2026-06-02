@@ -113,6 +113,7 @@ abstract class SendState with _$SendState {
     InsufficientBalanceException? insufficientBalanceException,
     InvalidBitcoinStringException? invalidBitcoinStringException,
     SwapLimitsException? swapLimitsException,
+    LnurlPayMetadataException? lnurlPayMetadataException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
     LnurlPayLimits? lnurlPayLimits,
@@ -490,6 +491,13 @@ class AmountlessInvoiceException extends SwapCreationException {
 class HardwareWalletSwapException extends SwapCreationException {
   HardwareWalletSwapException()
     : super('Hardware wallets cannot be used for swaps');
+}
+
+class LnurlPayMetadataException extends BullException {
+  LnurlPayMetadataException()
+    : super(
+        'Could not load LNURL payment details. Check your connection and try again.',
+      );
 }
 
 class ExpiredInvoiceException extends SwapCreationException {

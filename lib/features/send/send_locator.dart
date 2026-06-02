@@ -1,7 +1,3 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -19,8 +15,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/update_send_swap_lockup_fees_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/verify_chain_swap_amount_send_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
-import 'package:bb_mobile/core/tor/domain/value_objects/tor_proxy_config.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
@@ -31,8 +25,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/send/application/lnurl_pay_metadata_repository.dart';
 import 'package:bb_mobile/features/send/application/resolve_lnurl_pay_limits_usecase.dart';
-import 'package:bb_mobile/features/send/domain/lnurl_pay_limits.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
@@ -43,13 +37,11 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/frameworks/lnurl_pay_metadata_datasource.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:get_it/get_it.dart';
 
 class SendLocator {
-  static const _lnurlFetchTimeout = Duration(seconds: 15);
-  static const _lnurlMaxResponseBytes = 256 * 1024;
-
   static void setup(GetIt locator) {
     registerUsecases(locator);
     registerBlocs(locator);
@@ -101,9 +93,15 @@ class SendLocator {
     locator.registerFactory<SelectBestWalletUsecase>(
       () => SelectBestWalletUsecase(),
     );
+    locator.registerFactory<LnurlPayMetadataRepository>(
+      () => LnurlPayMetadataDatasource(
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        torDatasource: locator(),
+      ),
+    );
     locator.registerFactory<ResolveLnurlPayLimitsUsecase>(
       () => ResolveLnurlPayLimitsUsecase(
-        fetcher: (uri) => _fetchLnurlPayMetadata(locator, uri),
+        metadataRepository: locator<LnurlPayMetadataRepository>(),
       ),
     );
     locator.registerFactory<CalculateBitcoinAbsoluteFeesUsecase>(
@@ -186,47 +184,5 @@ class SendLocator {
         resolveLnurlPayLimitsUsecase: locator<ResolveLnurlPayLimitsUsecase>(),
       ),
     );
-  }
-
-  static Future<String> _fetchLnurlPayMetadata(GetIt locator, Uri uri) async {
-    final settings = await locator<GetSettingsUsecase>().execute();
-    final client = settings.useTorProxy
-        ? locator<TorDatasource>().httpClient(
-            externalProxy: TorProxyConfig(port: settings.torProxyPort),
-          )
-        : HttpClient();
-
-    try {
-      final request = await client.getUrl(uri).timeout(_lnurlFetchTimeout);
-      final response = await request.close().timeout(_lnurlFetchTimeout);
-      final body = await _readLimitedUtf8(response).timeout(_lnurlFetchTimeout);
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw LnurlPayLimitsUnavailableException(
-          'LNURL server returned ${response.statusCode}',
-        );
-      }
-      return body;
-    } on LnurlPayLimitsException {
-      rethrow;
-    } on TimeoutException {
-      throw const LnurlPayLimitsUnavailableException();
-    } on SocketException {
-      throw const LnurlPayLimitsUnavailableException();
-    } finally {
-      client.close(force: true);
-    }
-  }
-
-  static Future<String> _readLimitedUtf8(Stream<List<int>> response) async {
-    final bytes = <int>[];
-    await for (final chunk in response) {
-      if (bytes.length + chunk.length > _lnurlMaxResponseBytes) {
-        throw const LnurlPayLimitsUnavailableException(
-          'LNURL response is too large',
-        );
-      }
-      bytes.addAll(chunk);
-    }
-    return utf8.decode(bytes);
   }
 }

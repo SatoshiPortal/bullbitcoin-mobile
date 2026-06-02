@@ -39,10 +39,3 @@ class LnurlPayLimitsException implements Exception {
 class LnurlPayLimitsInvalidException extends LnurlPayLimitsException {
   const LnurlPayLimitsInvalidException(super.message);
 }
-
-class LnurlPayLimitsUnavailableException extends LnurlPayLimitsException {
-  const LnurlPayLimitsUnavailableException([
-    super.message =
-        'Could not load LNURL payment details. Check your connection and try again.',
-  ]);
-}

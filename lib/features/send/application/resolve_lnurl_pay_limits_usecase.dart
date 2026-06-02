@@ -1,15 +1,16 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/features/send/application/application_errors.dart';
+import 'package:bb_mobile/features/send/application/lnurl_pay_metadata_repository.dart';
 import 'package:bb_mobile/features/send/domain/lnurl_pay_limits.dart';
 import 'package:bech32/bech32.dart';
 
-typedef LnurlPayMetadataFetcher = Future<String> Function(Uri uri);
-
 class ResolveLnurlPayLimitsUsecase {
-  ResolveLnurlPayLimitsUsecase({required LnurlPayMetadataFetcher fetcher})
-    : _fetcher = fetcher;
+  ResolveLnurlPayLimitsUsecase({
+    required LnurlPayMetadataRepository metadataRepository,
+  }) : _metadataRepository = metadataRepository;
 
-  final LnurlPayMetadataFetcher _fetcher;
+  final LnurlPayMetadataRepository _metadataRepository;
 
   Future<LnurlPayLimits> execute(String lnurlOrAddress) async {
     final trimmed = lnurlOrAddress.trim();
@@ -19,10 +20,10 @@ class ResolveLnurlPayLimitsUsecase {
     try {
       json = jsonDecode(body);
     } on FormatException catch (_) {
-      throw const LnurlPayLimitsInvalidException('Invalid LNURL metadata');
+      throw const LnurlPayLimitsInvalidApplicationException();
     }
     if (json is! Map<String, dynamic>) {
-      throw const LnurlPayLimitsInvalidException('Invalid LNURL metadata');
+      throw const LnurlPayLimitsInvalidApplicationException();
     }
 
     final tag = json['tag'];
@@ -37,24 +38,26 @@ class ResolveLnurlPayLimitsUsecase {
         maxSendable is! int ||
         minSendable < 1 ||
         maxSendable < minSendable) {
-      throw const LnurlPayLimitsInvalidException(
-        'Unsupported LNURL payment request',
-      );
+      throw const LnurlPayLimitsInvalidApplicationException();
     }
 
-    return LnurlPayLimits.fromMsats(
-      minSendableMsat: minSendable,
-      maxSendableMsat: maxSendable,
-    );
+    try {
+      return LnurlPayLimits.fromMsats(
+        minSendableMsat: minSendable,
+        maxSendableMsat: maxSendable,
+      );
+    } on LnurlPayLimitsException {
+      throw const LnurlPayLimitsInvalidApplicationException();
+    }
   }
 
   Future<String> _fetch(Uri uri) async {
     try {
-      return await _fetcher(uri);
-    } on LnurlPayLimitsException {
+      return await _metadataRepository.fetch(uri);
+    } on LnurlPayLimitsApplicationException {
       rethrow;
     } catch (_) {
-      throw const LnurlPayLimitsUnavailableException();
+      throw const LnurlPayLimitsUnavailableApplicationException();
     }
   }
 
@@ -75,12 +78,12 @@ class ResolveLnurlPayLimitsUsecase {
       final decoded = _decodeLnurl(value);
       final uri = Uri.tryParse(decoded);
       if (uri == null || !_isAllowedLnurlUri(uri)) {
-        throw const LnurlPayLimitsInvalidException('Invalid LNURL');
+        throw const LnurlPayLimitsInvalidApplicationException();
       }
       return uri;
     }
 
-    throw const LnurlPayLimitsInvalidException('Invalid LNURL');
+    throw const LnurlPayLimitsInvalidApplicationException();
   }
 
   bool _isAllowedCallback(String value) {
@@ -100,11 +103,11 @@ class ResolveLnurlPayLimitsUsecase {
     try {
       final decoded = bech32.decode(value, value.length);
       if (decoded.hrp != 'lnurl') {
-        throw const LnurlPayLimitsInvalidException('Invalid LNURL');
+        throw const LnurlPayLimitsInvalidApplicationException();
       }
       return utf8.decode(_convertBits(decoded.data, from: 5, to: 8));
     } catch (_) {
-      throw const LnurlPayLimitsInvalidException('Invalid LNURL');
+      throw const LnurlPayLimitsInvalidApplicationException();
     }
   }
 
@@ -116,7 +119,7 @@ class ResolveLnurlPayLimitsUsecase {
 
     for (final value in data) {
       if (value < 0 || (value >> from) != 0) {
-        throw const LnurlPayLimitsInvalidException('Invalid LNURL');
+        throw const LnurlPayLimitsInvalidApplicationException();
       }
       acc = (acc << from) | value;
       bits += from;
@@ -127,7 +130,7 @@ class ResolveLnurlPayLimitsUsecase {
     }
 
     if (bits >= from || ((acc << (to - bits)) & maxValue) != 0) {
-      throw const LnurlPayLimitsInvalidException('Invalid LNURL');
+      throw const LnurlPayLimitsInvalidApplicationException();
     }
 
     return result;

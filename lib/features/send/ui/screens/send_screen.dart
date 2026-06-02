@@ -231,6 +231,9 @@ class AddressErrorSection extends StatelessWidget {
     final swapError = context.select(
       (SendCubit cubit) => cubit.state.swapCreationException,
     );
+    final lnurlPayMetadataError = context.select(
+      (SendCubit cubit) => cubit.state.lnurlPayMetadataException,
+    );
     final invalidAddress = context.select(
       (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
     );
@@ -253,6 +256,15 @@ class AddressErrorSection extends StatelessWidget {
             : swapError is ExpiredInvoiceException
             ? context.loc.sendErrorInvoiceExpired
             : swapError.message,
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: .center,
+        maxLines: 2,
+      );
+    }
+    if (lnurlPayMetadataError != null) {
+      return BBText(
+        context.loc.sendErrorLnurlPaymentDetailsUnavailable,
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,
