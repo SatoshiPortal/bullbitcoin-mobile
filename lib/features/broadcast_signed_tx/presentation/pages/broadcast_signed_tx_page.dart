@@ -191,7 +191,8 @@ class _BroadcastActions extends StatelessWidget {
 
 /// Error block shown in the review screen when a broadcast attempt fails.
 /// Shows a generic localized message only — the underlying server/node reason
-/// is logged via `log.severe` (and Sentry), not leaked to the UI.
+/// is logged via `log.warning` (file + console, no Sentry), not leaked to the
+/// UI.
 class _BroadcastError extends StatelessWidget {
   const _BroadcastError();
 

@@ -160,7 +160,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         state.transaction == null) {
       return;
     }
-    emit(state.copyWith(isBroadcasting: true));
+    // Clear any error from a previous failed attempt so the stale message
+    // doesn't linger under the spinner while the retry is in flight.
+    emit(state.copyWith(isBroadcasting: true, error: null));
     try {
       await _broadcastBitcoinTransactionUsecase.execute(
         state.transaction!.data,
