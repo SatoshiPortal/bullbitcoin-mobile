@@ -3946,6 +3946,7 @@
   "swapProgressPendingMessage": "Die Übertragung läuft. Bitcoin-Transaktionen können eine Weile zur Bestätigung benötigen. Sie können zum Startbildschirm zurückkehren und warten.",
   "walletDetailsNetworkLabel": "Netzwerk",
   "broadcastSignedTxBroadcasting": "Wird übertragen…",
+  "broadcastSignedTxBroadcastError": "Übertragung der Transaktion fehlgeschlagen",
   "recoverbullSelectRecoverWallet": "Wallet wiederherstellen",
   "receivePayjoinActivated": "Payjoin aktiviert",
   "importMnemonicContinue": "Fortfahren",

@@ -1,4 +1,5 @@
 {
+  "broadcastSignedTxBroadcastError": "ტრანზაქციის გავრცელება ვერ მოხერხდა",
   "transactionNoteAddTitle": "შენიშვნის დამატება",
   "@transactionNoteAddTitle": {
     "description": "Title for add note dialog"

@@ -1,4 +1,5 @@
 {
+  "broadcastSignedTxBroadcastError": "Неуспешно излъчване на транзакцията",
   "translationWarningTitle": "Преводи, генерирани от ИИ",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"

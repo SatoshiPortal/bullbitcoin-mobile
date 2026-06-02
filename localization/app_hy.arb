@@ -1,4 +1,5 @@
 {
+  "broadcastSignedTxBroadcastError": "Չհաջողվեց հեռարձակել գործարքը",
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",
   "@appInitErrorTitle": {

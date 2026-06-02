@@ -9899,6 +9899,10 @@
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
+  "broadcastSignedTxBroadcastError": "Failed to broadcast the transaction",
+  "@broadcastSignedTxBroadcastError": {
+    "description": "Headline shown when broadcasting a signed transaction fails"
+  },
   "broadcastSignedTxPageTitle": "Broadcast signed transaction",
   "@broadcastSignedTxPageTitle": {
     "description": "Page title for broadcast signed transaction screen"

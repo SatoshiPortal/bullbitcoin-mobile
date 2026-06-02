@@ -3146,6 +3146,7 @@
   "broadcastSignedTxTo": "A",
   "broadcastSignedTxBroadcast": "Transmitir",
   "broadcastSignedTxBroadcasting": "Transmitiendo...",
+  "broadcastSignedTxBroadcastError": "Error al difundir la transacción",
   "broadcastSignedTxPageTitle": "Transmitir transacción firmada",
   "broadcastSignedTxPasteHint": "Pegar un PSBT o HEX de transacción",
   "broadcastSignedTxCameraButton": "Cámara",

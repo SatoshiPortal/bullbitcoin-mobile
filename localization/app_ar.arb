@@ -11251,6 +11251,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "البث...",
+  "broadcastSignedTxBroadcastError": "فشل بث المعاملة",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

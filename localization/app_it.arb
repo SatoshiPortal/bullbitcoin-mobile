@@ -3999,6 +3999,7 @@
   "swapProgressPendingMessage": "Il trasferimento è in corso. Le transazioni Bitcoin possono richiedere un po' di tempo per confermare. Puoi tornare a casa e aspettare.",
   "walletDetailsNetworkLabel": "Rete di rete",
   "broadcastSignedTxBroadcasting": "Trasmissione...",
+  "broadcastSignedTxBroadcastError": "Trasmissione della transazione non riuscita",
   "recoverbullSelectRecoverWallet": "Recuperare Wallet",
   "receivePayjoinActivated": "Payjoin attivato",
   "importMnemonicContinue": "Continua",

@@ -3093,6 +3093,7 @@
   "broadcastSignedTxTo": "Vastaanottaja",
   "broadcastSignedTxBroadcast": "Lähetä",
   "broadcastSignedTxBroadcasting": "Lähetetään...",
+  "broadcastSignedTxBroadcastError": "Tapahtuman lähetys epäonnistui",
   "broadcastSignedTxPageTitle": "Lähetä allekirjoitettu transaktio",
   "broadcastSignedTxPasteHint": "Liitä PSBT tai transaktion HEX",
   "broadcastSignedTxCameraButton": "Kamera",

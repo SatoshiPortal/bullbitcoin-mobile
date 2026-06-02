@@ -1,4 +1,5 @@
 {
+  "broadcastSignedTxBroadcastError": "Không thể phát đi giao dịch",
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Ứng dụng không thể khởi động",
   "@appInitErrorTitle": {

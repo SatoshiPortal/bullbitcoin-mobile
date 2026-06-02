@@ -6775,6 +6775,7 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "প্ৰচাৰ হৈ আছে...",
+  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্ৰচাৰ কৰিবলৈ విఫల হ’ল",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

@@ -11688,6 +11688,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ব্রডকাস্টিং..।",
+  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্রচার করতে ব্যর্থ হয়েছে",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

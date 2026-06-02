@@ -3972,6 +3972,7 @@
   "swapProgressPendingMessage": "A transferência está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
   "walletDetailsNetworkLabel": "Rede",
   "broadcastSignedTxBroadcasting": "Transmissão...",
+  "broadcastSignedTxBroadcastError": "Falha ao transmitir a transação",
   "recoverbullSelectRecoverWallet": "Recuperar Carteira",
   "receivePayjoinActivated": "Payjoin ativado",
   "importMnemonicContinue": "Continue",

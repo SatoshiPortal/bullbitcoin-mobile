@@ -3997,6 +3997,7 @@
   "swapProgressPendingMessage": "Перенос продолжается. Биткойн-транзакции могут занять некоторое время, чтобы подтвердить. Вы можете вернуться домой и подождать.",
   "walletDetailsNetworkLabel": "Сеть",
   "broadcastSignedTxBroadcasting": "Вещание...",
+  "broadcastSignedTxBroadcastError": "Не удалось транслировать транзакцию",
   "recoverbullSelectRecoverWallet": "Recover Wallet",
   "receivePayjoinActivated": "Payjoin активирован",
   "importMnemonicContinue": "Продолжить",

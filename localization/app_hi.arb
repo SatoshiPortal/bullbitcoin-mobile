@@ -11996,6 +11996,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "प्रसारण..।",
+  "broadcastSignedTxBroadcastError": "लेन-देन प्रसारित करने में विफल",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },

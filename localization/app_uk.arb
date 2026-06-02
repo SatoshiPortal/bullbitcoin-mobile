@@ -4026,6 +4026,7 @@
   "dcaPaymentMethodLabel": "Спосіб оплати",
   "swapProgressPendingMessage": "Передача здійснюється в процесі. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "broadcastSignedTxBroadcasting": "Трансляція...",
+  "broadcastSignedTxBroadcastError": "Не вдалося транслювати транзакцію",
   "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "importMnemonicContinue": "Продовжити",
   "psbtFlowMoveLaser": "Перемістити червоному лазеру вгору і вниз по QR-коду",
