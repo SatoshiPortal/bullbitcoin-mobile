@@ -47,8 +47,8 @@ $CTR build -q -t "$VERIFY_TOOLS_IMAGE" "$SCRIPT_DIR" > /dev/null
 echo ""
 echo -e "${YELLOW}=== Build 1 ===${NC}"
 cd "$REPO_ROOT"
-CONTAINER="$CTR" make apk "$MODE"
-cp "$REPO_ROOT/app-${MODE}.apk" "$WORK_DIR/build1.apk"
+CONTAINER="$CTR" make android "$MODE"
+cp "$REPO_ROOT/BULL-${MODE}.apk" "$WORK_DIR/build1.apk"
 
 echo "Saved: $WORK_DIR/build1.apk"
 sha256sum "$WORK_DIR/build1.apk"
@@ -59,8 +59,8 @@ echo -e "${YELLOW}=== Build 2 (no cache) ===${NC}"
 # Drop the image so the second build re-runs every step from a clean slate
 $CTR rmi bull-app > /dev/null 2>&1 || true
 
-CONTAINER="$CTR" make apk "$MODE"
-cp "$REPO_ROOT/app-${MODE}.apk" "$WORK_DIR/build2.apk"
+CONTAINER="$CTR" make android "$MODE"
+cp "$REPO_ROOT/BULL-${MODE}.apk" "$WORK_DIR/build2.apk"
 
 echo "Saved: $WORK_DIR/build2.apk"
 sha256sum "$WORK_DIR/build2.apk"

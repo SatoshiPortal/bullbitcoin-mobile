@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app apk verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps deps-update build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -91,30 +91,61 @@ container-app: container-tools
 
 MODE ?= debug
 FORMAT ?= apk
+FLAVOR ?= production
 
-# Allow "make apk release" or "make apk debug" syntax
+# Allow "make android release", "make android debug" or "make android beta".
+# release/debug build the production flavor; beta is the tester channel — the
+# beta flavor (.beta applicationId, its own signing) in release mode, for direct
+# store-less distribution.
 ifneq (,$(filter release,$(MAKECMDGOALS)))
   MODE := release
 endif
 ifneq (,$(filter debug,$(MAKECMDGOALS)))
   MODE := debug
 endif
-release debug:
+ifneq (,$(filter beta,$(MAKECMDGOALS)))
+  MODE := release
+  FLAVOR := beta
+endif
+release debug beta:
 	@:
 
-# Flutter writes APK and AAB to different paths
-ifeq ($(FORMAT),aab)
-  CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(MODE)/app-$(MODE).aab
-  HOST_OUTPUT := ./app-$(MODE).aab
-  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE)
+# Gradle appbundle output dir is camelCase <flavor><BuildType> (e.g. productionRelease).
+MODE_CAP := $(if $(filter release,$(MODE)),Release,Debug)
+
+# Host artifact name reflects the build target: BULL-release / BULL-debug for the
+# production flavor, and BULL-<flavor> (e.g. BULL-beta) for channel flavors. The
+# in-container Flutter output keeps its app-<flavor>-<mode> names below; only the
+# extracted host file is branded.
+#
+# Channel flavors (beta) are signed only when their key is present, mirroring the
+# gradle signingConfig guard (android/key-beta.properties). With no key the build
+# is unsigned — Flutter still names it app-<flavor>-<mode>.apk, so flag it -unsigned
+# on the host so an uninstallable build is obvious. CI requires the key, so this
+# only triggers for keyless local beta builds. Production names are left unbranded:
+# release is intentionally unsigned in the reproducibility/verify flow and both CI
+# upload and verify_build.sh depend on the exact BULL-release name.
+ifeq ($(FLAVOR),production)
+  HOST_NAME := $(MODE)
+else ifeq (,$(wildcard android/key-beta.properties))
+  HOST_NAME := $(FLAVOR)-unsigned
 else
-  CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(MODE).apk
-  HOST_OUTPUT := ./app-$(MODE).apk
-  FLUTTER_BUILD := fvm flutter build apk --$(MODE)
+  HOST_NAME := $(FLAVOR)
 endif
 
-apk: container-app
-	@echo "🔨 Building $(FORMAT) ($(MODE)) via $(CONTAINER)"
+# Flutter writes APK and AAB to different, flavor-namespaced paths
+ifeq ($(FORMAT),aab)
+  CONTAINER_OUTPUT := /app/build/app/outputs/bundle/$(FLAVOR)$(MODE_CAP)/app-$(FLAVOR)-$(MODE).aab
+  HOST_OUTPUT := ./BULL-$(HOST_NAME).aab
+  FLUTTER_BUILD := fvm flutter build appbundle --$(MODE) --flavor $(FLAVOR)
+else
+  CONTAINER_OUTPUT := /app/build/app/outputs/flutter-apk/app-$(FLAVOR)-$(MODE).apk
+  HOST_OUTPUT := ./BULL-$(HOST_NAME).apk
+  FLUTTER_BUILD := fvm flutter build apk --$(MODE) --flavor $(FLAVOR)
+endif
+
+android: container-app
+	@echo "🔨 Building $(FORMAT) ($(FLAVOR) $(MODE)) via $(CONTAINER)"
 	@$(CONTAINER) rm -f bull-build > /dev/null 2>&1 || true
 	@$(CONTAINER) run --name bull-build \
 		--ulimit nofile=65536:65536 \

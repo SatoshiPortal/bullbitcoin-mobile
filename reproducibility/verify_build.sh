@@ -304,13 +304,13 @@ buildFormat="apk"
 [[ "$verificationMode" == "device" ]] && buildFormat="aab"
 
 cd "$REPO_ROOT"
-GRADLE_HEAP="$gradle_heap" FORMAT="$buildFormat" CONTAINER="$CONTAINER_CMD" make apk release
+GRADLE_HEAP="$gradle_heap" FORMAT="$buildFormat" CONTAINER="$CONTAINER_CMD" make android release
 cd - > /dev/null
 
 if [[ "$verificationMode" == "github" ]]; then
-    cp "$REPO_ROOT/app-release.apk" "$workDir/built.apk"
+    cp "$REPO_ROOT/BULL-release.apk" "$workDir/built.apk"
 else
-    cp "$REPO_ROOT/app-release.aab" "$workDir/built.aab"
+    cp "$REPO_ROOT/BULL-release.aab" "$workDir/built.aab"
 fi
 
 echo "Build complete"
