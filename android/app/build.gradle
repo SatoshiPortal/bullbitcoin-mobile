@@ -18,6 +18,15 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+// Beta-channel signing. Optional dedicated key (android/key-beta.properties);
+// falls back to the committed debug keystore so CI and local beta builds are
+// always signed and installable without ever exposing the production release key.
+def betaKeystoreProperties = new Properties()
+def betaKeystorePropertiesFile = rootProject.file('key-beta.properties')
+if (betaKeystorePropertiesFile.exists()) {
+    betaKeystoreProperties.load(new FileInputStream(betaKeystorePropertiesFile))
+}
+
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
 def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
@@ -56,6 +65,12 @@ android {
             storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
             storePassword keystoreProperties['storePassword']
         }
+        beta {
+            keyAlias betaKeystoreProperties.getProperty('keyAlias', 'androiddebugkey')
+            keyPassword betaKeystoreProperties.getProperty('keyPassword', 'android')
+            storeFile betaKeystoreProperties['storeFile'] ? file(betaKeystoreProperties['storeFile']) : file('debug.keystore')
+            storePassword betaKeystoreProperties.getProperty('storePassword', 'android')
+        }
     }
 
     buildTypes {
@@ -68,7 +83,39 @@ android {
         release {
             minifyEnabled false
             shrinkResources false
-            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : null
+            // No signingConfig here on purpose: signing is set per-flavor below.
+            // AGP resolves a build-type signingConfig ahead of a flavor's, so
+            // setting it here would stop the beta flavor from using its own key.
+        }
+    }
+
+    flavorDimensions = ['channel']
+    productFlavors {
+        // Official channel. Zero overrides: same applicationId, version and
+        // (release) signing key, so already-distributed releases keep updating
+        // in place (Android matches on applicationId + signing cert).
+        // Reproducibility: selecting a flavor makes Flutter bake
+        // FLUTTER_APP_FLAVOR into libapp.so, so the production binary changes
+        // once when flavors land. The build stays deterministic, so verifying a
+        // tag (rebuilt with the same flavor) still works.
+        production {
+            dimension 'channel'
+            // Set only when the release key is present (e.g. on the signing
+            // machine / release pipeline). Passing a literal null to a flavor's
+            // signingConfig is an ambiguous Groovy overload, so guard with if.
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+        // Beta channel for direct (store-less) distribution to testers. The .beta
+        // applicationId suffix lets it install alongside the production app in its
+        // own sandbox/storage. Signed with its own key (CI provides it; debug
+        // keystore fallback locally) — never the production release key.
+        beta {
+            dimension 'channel'
+            applicationIdSuffix '.beta'
+            versionNameSuffix '-beta'
+            signingConfig signingConfigs.beta
         }
     }
 

@@ -16,7 +16,8 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
   - `make setup` — full first-time setup (clean + deps + build-runner + translations + hooks + ios pods on macOS)
   - `make unit-test` / `make integration-test` / `make test`
   - `make drift-migrations` — after changing Drift schema
-  - `make apk` / `make apk release` — reproducible build
+  - `make android` / `make android release` — reproducible build
+  - `make android beta` — beta tester channel APK (`.beta` applicationId, installs alongside production)
   - `make verify` — verify a built APK matches a published release
   - `make build-runner-watch` — codegen in watch mode during dev
 - **Analyze the whole project, never specific files.** `fvm flutter analyze` (no path arg). CI runs `--fatal-warnings --fatal-infos` ([analyze_and_test.yml](.github/workflows/analyze_and_test.yml)) — match it locally.

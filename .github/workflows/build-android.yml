@@ -5,7 +5,7 @@ on:
     inputs:
       mode:
         type: choice
-        options: [release, debug]
+        options: [release, debug, beta]
         default: release
 
 jobs:
@@ -26,12 +26,31 @@ jobs:
           large-packages: true
           swap-storage: false
 
+      # Dedicated beta signing key, written before the build so the container
+      # image (Containerfile.app copies the repo) picks it up. If the secret is
+      # unset, the build falls back to the committed debug keystore.
+      - name: Configure beta signing key
+        if: ${{ inputs.mode == 'beta' && secrets.BETA_KEYSTORE_BASE64 != '' }}
+        env:
+          BETA_KEYSTORE_BASE64: ${{ secrets.BETA_KEYSTORE_BASE64 }}
+          BETA_KEY_ALIAS: ${{ secrets.BETA_KEY_ALIAS }}
+          BETA_KEY_PASSWORD: ${{ secrets.BETA_KEY_PASSWORD }}
+          BETA_STORE_PASSWORD: ${{ secrets.BETA_STORE_PASSWORD }}
+        run: |
+          echo "$BETA_KEYSTORE_BASE64" | base64 -d > android/app/beta-upload.keystore
+          cat > android/key-beta.properties <<EOF
+          storeFile=beta-upload.keystore
+          storePassword=$BETA_STORE_PASSWORD
+          keyAlias=$BETA_KEY_ALIAS
+          keyPassword=$BETA_KEY_PASSWORD
+          EOF
+
       - name: Build APK
         # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
-        run: make apk ${{ inputs.mode }}
+        run: make android ${{ inputs.mode }}
 
       - uses: actions/upload-artifact@v7
         with:
-          name: app-${{ inputs.mode }}
-          path: app-${{ inputs.mode }}.apk
+          name: BULL-${{ inputs.mode }}
+          path: BULL-${{ inputs.mode }}.apk
           retention-days: 30

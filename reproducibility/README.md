@@ -8,7 +8,7 @@ Three components work together:
 
 ### `../Containerfile.tools` and `../Containerfile.app` (root)
 
-Two-file build setup driven by `make apk release`:
+Two-file build setup driven by `make android release`:
 
 - `Containerfile.tools` installs all toolchains (Rust pinned via `RUST_VERSION`, Flutter via FVM, Android SDK, Gradle).
 - `Containerfile.app` copies the repo, runs `pub get` / `build_runner` / `gen-l10n`, and configures Gradle. It does NOT run `flutter build` — that happens via `podman run` against the resulting image so the multi-GB build output is never committed to a layer.
@@ -28,8 +28,8 @@ Orchestrates the full verification:
 
 1. Builds the verification tools image from `Dockerfile`
 2. Optionally downloads the official APK from the GitHub release, or uses a locally provided APK or split APK directory
-3. Builds the app from the current repo checkout via `make apk release` (which uses the root `Containerfile.tools` + `Containerfile.app`)
-4. Picks up the extracted APK from the repo root (`./app-release.apk`)
+3. Builds the app from the current repo checkout via `make android release` (which uses the root `Containerfile.tools` + `Containerfile.app`)
+4. Picks up the extracted APK from the repo root (`./BULL-release.apk`)
 5. Decodes both APKs with apktool (inside the tools container)
 6. Diffs the decoded output excluding `META-INF` (signatures are not part of reproducibility)
 7. Writes a `RESULTS.md` verdict to the workspace directory

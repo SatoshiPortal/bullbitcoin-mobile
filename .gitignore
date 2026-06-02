@@ -93,6 +93,15 @@ app.*.map.json
 /android/app/release
 **/.cxx
 
+# Beta signing secrets written by CI — never commit. (The debug keystore at
+# android/app/debug.keystore is intentionally tracked and not ignored.)
+/android/key-beta.properties
+/android/app/beta-upload.keystore
+
+# APKs/AABs extracted to the repo root by `make android`
+/BULL-*.apk
+/BULL-*.aab
+
 # FVM Version Cache
 .fvm/
 
