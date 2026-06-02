@@ -48,6 +48,7 @@ import 'package:get_it/get_it.dart';
 
 class SendLocator {
   static const _lnurlFetchTimeout = Duration(seconds: 15);
+  static const _lnurlMaxResponseBytes = 256 * 1024;
 
   static void setup(GetIt locator) {
     registerUsecases(locator);
@@ -198,9 +199,7 @@ class SendLocator {
     try {
       final request = await client.getUrl(uri).timeout(_lnurlFetchTimeout);
       final response = await request.close().timeout(_lnurlFetchTimeout);
-      final body = await utf8
-          .decodeStream(response)
-          .timeout(_lnurlFetchTimeout);
+      final body = await _readLimitedUtf8(response).timeout(_lnurlFetchTimeout);
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw LnurlPayLimitsUnavailableException(
           'LNURL server returned ${response.statusCode}',
@@ -216,5 +215,18 @@ class SendLocator {
     } finally {
       client.close(force: true);
     }
+  }
+
+  static Future<String> _readLimitedUtf8(Stream<List<int>> response) async {
+    final bytes = <int>[];
+    await for (final chunk in response) {
+      if (bytes.length + chunk.length > _lnurlMaxResponseBytes) {
+        throw const LnurlPayLimitsUnavailableException(
+          'LNURL response is too large',
+        );
+      }
+      bytes.addAll(chunk);
+    }
+    return utf8.decode(bytes);
   }
 }

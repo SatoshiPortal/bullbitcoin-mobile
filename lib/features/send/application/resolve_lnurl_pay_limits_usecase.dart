@@ -26,14 +26,17 @@ class ResolveLnurlPayLimitsUsecase {
     }
 
     final tag = json['tag'];
+    final callback = json['callback'];
     final minSendable = json['minSendable'];
     final maxSendable = json['maxSendable'];
 
     if (tag != 'payRequest' ||
+        callback is! String ||
+        !_isAllowedCallback(callback) ||
         minSendable is! int ||
         maxSendable is! int ||
-        minSendable < 0 ||
-        maxSendable < 0) {
+        minSendable < 1 ||
+        maxSendable < minSendable) {
       throw const LnurlPayLimitsInvalidException(
         'Unsupported LNURL payment request',
       );
@@ -56,31 +59,42 @@ class ResolveLnurlPayLimitsUsecase {
   }
 
   Uri _metadataUri(String value) {
-    final lower = value.toLowerCase();
-    if (lower.startsWith('lnurl')) {
-      final decoded = _decodeLnurl(value);
-      final uri = Uri.tryParse(decoded);
-      if (uri == null || !_isHttpUri(uri)) {
-        throw const LnurlPayLimitsInvalidException('Invalid LNURL');
-      }
-      return uri;
-    }
-
     final at = value.indexOf('@');
     if (at > 0 && at < value.length - 1) {
       final username = value.substring(0, at);
       final domain = value.substring(at + 1);
       return Uri(
-        scheme: 'https',
+        scheme: _isOnionHost(domain) ? 'http' : 'https',
         host: domain,
         pathSegments: ['.well-known', 'lnurlp', username],
       );
     }
 
+    final lower = value.toLowerCase();
+    if (lower.startsWith('lnurl')) {
+      final decoded = _decodeLnurl(value);
+      final uri = Uri.tryParse(decoded);
+      if (uri == null || !_isAllowedLnurlUri(uri)) {
+        throw const LnurlPayLimitsInvalidException('Invalid LNURL');
+      }
+      return uri;
+    }
+
     throw const LnurlPayLimitsInvalidException('Invalid LNURL');
   }
 
-  bool _isHttpUri(Uri uri) => uri.scheme == 'https' || uri.scheme == 'http';
+  bool _isAllowedCallback(String value) {
+    final uri = Uri.tryParse(value);
+    return uri != null && _isAllowedLnurlUri(uri);
+  }
+
+  bool _isAllowedLnurlUri(Uri uri) {
+    if (uri.host.isEmpty) return false;
+    if (uri.scheme == 'https') return true;
+    return uri.scheme == 'http' && _isOnionHost(uri.host);
+  }
+
+  bool _isOnionHost(String host) => host.toLowerCase().endsWith('.onion');
 
   String _decodeLnurl(String value) {
     try {
