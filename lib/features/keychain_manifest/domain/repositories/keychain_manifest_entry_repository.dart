@@ -4,6 +4,11 @@ abstract interface class KeychainManifestEntryRepository {
   Future<KeychainManifestWalletMaterializationRecord?>
   fetchWalletMaterializationRecordByWalletId(String walletId);
 
+  Future<List<KeychainManifestWalletMaterializationRecord>>
+  fetchWalletMaterializationRecordsByParentFingerprint(
+    String parentFingerprint,
+  );
+
   Future<void> insertWalletMaterializationRecord(
     KeychainManifestWalletMaterializationRecord record,
   );

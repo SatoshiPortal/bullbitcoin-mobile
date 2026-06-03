@@ -76,6 +76,34 @@ void main() {
     expect(entries, hasLength(1));
     expect(bindings, hasLength(2));
   });
+
+  test('fetches wallet materializations by parent fingerprint', () async {
+    await store.insertWalletMaterializationRecord(
+      _record(walletId: 'z-wallet', bip85DerivationPath: "39'/0'/12'/101'"),
+    );
+    await store.insertWalletMaterializationRecord(
+      _record(walletId: 'btc-wallet', network: 'bitcoinMainnet'),
+    );
+    await store.insertWalletMaterializationRecord(
+      _record(walletId: 'lbtc-wallet', network: 'liquidMainnet'),
+    );
+    await store.insertWalletMaterializationRecord(
+      _record(walletId: 'other-parent', parentFingerprint: '00112233'),
+    );
+
+    final records = await store
+        .fetchWalletMaterializationRecordsByParentFingerprint(' FEDCBA98 ');
+
+    expect(records.map((record) => record.walletId), [
+      'btc-wallet',
+      'lbtc-wallet',
+      'z-wallet',
+    ]);
+    expect(
+      records.every((record) => record.entry.parentFingerprint == 'fedcba98'),
+      isTrue,
+    );
+  });
 }
 
 KeychainManifestWalletMaterializationRecord _record({

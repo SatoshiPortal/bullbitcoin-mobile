@@ -1,8 +1,9 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
-import 'package:bb_mobile/features/keychain_manifest/domain/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/build_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,6 +18,7 @@ void main() {
         repository: store,
         bip85Registry: const Bip85RegistryFacade(),
       ),
+      buildManifestFile: BuildKeychainManifestFileUsecase(repository: store),
     );
   });
 
@@ -103,6 +105,34 @@ void main() {
       'lbtc-wallet',
     ]);
   });
+
+  test('builds manifest file payloads from recorded local inventory', () async {
+    await facade.recordReservedDerivation(
+      KeychainManifestReservedDerivationRequest(
+        reservationId: 'btcpay_wallet_seed',
+        derivationPath: "39'/0'/12'/100'",
+        parentFingerprint: ' FEDCBA98 ',
+        materializations: [
+          _walletMaterialization(),
+          _walletMaterialization(
+            walletId: 'lbtc-wallet',
+            network: Network.liquidMainnet,
+          ),
+        ],
+      ),
+      now: DateTime.fromMillisecondsSinceEpoch(10000, isUtc: true),
+    );
+
+    final payload = await facade.buildManifestFilePayload(
+      const KeychainManifestFileRequest(parentFingerprint: 'fedcba98'),
+      now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
+    );
+
+    expect(payload.payload, contains('"version":1'));
+    expect(payload.payload, contains('"parentFingerprint":"fedcba98"'));
+    expect(payload.payload, contains('"walletId":"btc-wallet"'));
+    expect(payload.payload, contains('"walletId":"lbtc-wallet"'));
+  });
 }
 
 KeychainManifestWalletMaterializationRequest _walletMaterialization({
@@ -133,6 +163,16 @@ class _InMemoryKeychainManifestStore
           (record) => record!.walletId == walletId,
           orElse: () => null,
         );
+  }
+
+  @override
+  Future<List<KeychainManifestWalletMaterializationRecord>>
+  fetchWalletMaterializationRecordsByParentFingerprint(
+    String parentFingerprint,
+  ) async {
+    return records
+        .where((record) => record.entry.parentFingerprint == parentFingerprint)
+        .toList(growable: false);
   }
 
   @override

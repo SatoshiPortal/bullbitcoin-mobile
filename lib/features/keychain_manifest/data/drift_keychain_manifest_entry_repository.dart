@@ -22,6 +22,37 @@ class DriftKeychainManifestEntryRepository
   }
 
   @override
+  Future<List<KeychainManifestWalletMaterializationRecord>>
+  fetchWalletMaterializationRecordsByParentFingerprint(
+    String parentFingerprint,
+  ) async {
+    final normalized = KeychainManifestFingerprint.normalize(parentFingerprint);
+    return _database.transaction(() async {
+      final entryQuery = _database.select(_database.keychainManifestEntries)
+        ..where((table) => table.parentFingerprint.equals(normalized));
+      final entries = await entryQuery.get();
+      if (entries.isEmpty) return const [];
+
+      final records = <KeychainManifestWalletMaterializationRecord>[];
+      for (final entry in entries) {
+        final bindingQuery = _database.select(
+          _database.keychainManifestWalletBindings,
+        )..where((table) => table.entryId.equals(entry.entryId));
+        final bindings = await bindingQuery.get();
+        for (final binding in bindings) {
+          records.add(
+            KeychainManifestWalletMaterializationRecord(
+              entry: _rowToEntry(entry),
+              walletMaterialization: _rowToWalletBinding(binding),
+            ),
+          );
+        }
+      }
+      return records;
+    });
+  }
+
+  @override
   Future<void> insertWalletMaterializationRecord(
     KeychainManifestWalletMaterializationRecord record,
   ) async {

@@ -19,9 +19,10 @@ If a multi-wallet record call partially succeeds and later materializations
 fail, the successfully recorded rows remain durable. A later retry must record
 missing proven materializations idempotently instead of rolling back valid rows.
 
-It does not create, export, import, publish, fetch, or restore a manifest file.
-It records local derivation metadata that may serve as input to a future
-snapshot design. This PR does not define a snapshot/export contract, and
+It can build an on-demand manifest file payload from local records for a
+requested parent fingerprint. The local Drift records remain the source of
+truth; the file payload is a read-only projection and is not cached as product
+state. This PR does not import, publish, fetch, or restore a manifest file, and
 non-wallet materialization types are out of scope.
 
 ## Boundaries
@@ -37,6 +38,8 @@ non-wallet materialization types are out of scope.
 - The public boundary records wallet materializations only. Product features do
   not receive inserted-row rollback tokens or a public delete API for
   current-attempt rollback.
+- The public boundary may build a manifest file payload, but file operations
+  must not mutate local manifest inventory.
 - `keychain_manifest` must not import BTCPay, Get Paid, external receive
   wallets, Nostr, or UI features.
 
@@ -60,5 +63,70 @@ dummy seed fingerprint.
 Wallet materializations store no wallet-purpose value. The network family is
 derivable from the stored `network`, and feature ownership already lives on the
 entry's `ownerFeature`, so a purpose column would duplicate both and freeze a
-redundant string into the persisted schema and the future manifest file
-contract.
+redundant string into the persisted schema and the manifest file contract.
+
+## Manifest File
+
+The manifest file is a serialized projection generated from local
+`keychain_manifest` records. It is not the current-device source of truth, is
+not maintained as a separate local file, and does not become a recovery artifact
+until a later restore flow defines those semantics.
+
+Current-device source of truth:
+
+- `bip85_registry` defines reserved paths and purposes.
+- `keychain_manifest` database records define which app-created BIP85 material
+  currently exists locally.
+- The manifest file payload is the latest projection of those records at the
+  moment a caller builds it.
+
+The v1 file is deterministic JSON with this shape:
+
+```json
+{
+  "version": 1,
+  "parentFingerprint": "fedcba98",
+  "generatedAt": 20,
+  "updatedAt": 12,
+  "entries": [
+    {
+      "entryId": "fedcba98:39'/0'/12'/100'",
+      "bip85DerivationPath": "39'/0'/12'/100'",
+      "reservationId": "btcpay_wallet_seed",
+      "entryType": "walletSeed",
+      "ownerFeature": "btcpay",
+      "bip85Application": 39,
+      "bip85Index": 100,
+      "createdAt": 10,
+      "updatedAt": 12,
+      "materializations": [
+        {
+          "type": "wallet",
+          "walletId": "btc-wallet",
+          "childSeedFingerprint": "0123abcd",
+          "network": "bitcoinMainnet",
+          "scriptType": "bip84",
+          "createdAt": 10,
+          "updatedAt": 10
+        }
+      ]
+    }
+  ]
+}
+```
+
+Rules:
+
+- `version` must be `1`.
+- Fingerprints must be normalized 8-character lowercase hex values.
+- `bip85DerivationPath` is the registry-relative hardened path.
+- `entryId` is derived from parent fingerprint and BIP85 path.
+- `updatedAt` is the latest timestamp among included entries and
+  materializations. Empty manifests use the build timestamp.
+- V1 supports only wallet materializations with `"type": "wallet"`.
+- This PR only encodes the v1 payload. Decoding, import validation, and restore
+  semantics belong to a later consumer PR.
+
+The payload is generated on demand by callers that need a serialized projection.
+Transport, import, restore, and UI flows are out of scope and are not specified
+by this PR.
