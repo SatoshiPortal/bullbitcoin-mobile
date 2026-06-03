@@ -15,6 +15,9 @@ enum BtcpayWalletNetwork {
   bitcoin,
   liquid;
 
+  bool get isBitcoin => this == BtcpayWalletNetwork.bitcoin;
+  bool get isLiquid => this == BtcpayWalletNetwork.liquid;
+
   Network networkForEnvironment(Environment environment) {
     return switch ((this, environment)) {
       (BtcpayWalletNetwork.bitcoin, Environment.mainnet) =>

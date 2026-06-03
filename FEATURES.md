@@ -43,6 +43,7 @@ graph TB
     TX_HISTORY[Transaction History]
     BG_TASKS[Background Tasks]
     AUTOSWAPS[AutoSwaps]
+    AUTOSWEEP[AutoSweep]
     DCA[DCA]
     SELL[Sell]
     PAY[Pay]
@@ -56,6 +57,9 @@ graph TB
     ADDRESS_MGMT --> LABELS
     APP_STARTUP --> WALLETS
     AUTOSWAPS --> TRANSFER
+    AUTOSWEEP --> FEES
+    AUTOSWEEP --> LABELS
+    AUTOSWEEP --> WALLETS
     BIP85 --> SECRETS
     BIP85 --> SETTINGS
     BIP85 --> BIP85_REGISTRY

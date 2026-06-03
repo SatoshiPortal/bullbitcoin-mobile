@@ -139,6 +139,7 @@ class _WalletHomeScreenState extends State<WalletHomeScreen> {
                 const SliverToBoxAdapter(child: AutoSwapFeeWarning()),
                 SliverToBoxAdapter(
                   child: WalletCards(
+                    hideOnHome: true,
                     onTap: (w) {
                       context.pushNamed(
                         WalletRoute.walletDetail.name,

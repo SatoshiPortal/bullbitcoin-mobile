@@ -68,7 +68,11 @@ class _BtcpaySettingsScreenState extends State<BtcpaySettingsScreen> {
                   : state.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : state.shouldShowConnection
-                  ? _BtcpayConnectionView(connection: state.connection!)
+                  ? _BtcpayConnectionView(
+                      connection: state.connection!,
+                      walletBehaviors: state.walletBehaviors,
+                      walletSettingsSaving: state.walletSettingsSaving,
+                    )
                   : _BtcpayPairingForm(
                       formKey: _formKey,
                       urlController: _urlController,
@@ -234,8 +238,14 @@ class _BtcpayPairingForm extends StatelessWidget {
 
 class _BtcpayConnectionView extends StatelessWidget {
   final BtcpayConnectionViewModel connection;
+  final List<BtcpayWalletBehaviorViewModel> walletBehaviors;
+  final bool walletSettingsSaving;
 
-  const _BtcpayConnectionView({required this.connection});
+  const _BtcpayConnectionView({
+    required this.connection,
+    required this.walletBehaviors,
+    required this.walletSettingsSaving,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -284,6 +294,19 @@ class _BtcpayConnectionView extends StatelessWidget {
               : context.loc.btcpayConnectionUpdatedAt,
           value: connection.displayDate.toLocal().toString().substring(0, 16),
         ),
+        if (walletBehaviors.isNotEmpty) ...[
+          const Gap(24),
+          Text(
+            context.loc.btcpayWalletSettingsTitle,
+            style: context.font.titleMedium,
+          ),
+          const Gap(8),
+          for (final behavior in walletBehaviors)
+            _BtcpayWalletBehaviorTile(
+              behavior: behavior,
+              saving: walletSettingsSaving,
+            ),
+        ],
         const Gap(24),
         BBButton.big(
           label: context.loc.btcpayPairNew,
@@ -319,6 +342,56 @@ class _BtcpayConnectionView extends StatelessWidget {
     }
     if (createsBitcoin) return context.loc.btcpayPairingWalletsBitcoin;
     return context.loc.btcpayPairingWalletsLiquid;
+  }
+}
+
+class _BtcpayWalletBehaviorTile extends StatelessWidget {
+  final BtcpayWalletBehaviorViewModel behavior;
+  final bool saving;
+
+  const _BtcpayWalletBehaviorTile({
+    required this.behavior,
+    required this.saving,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final title = switch (behavior.wallet) {
+      BtcpayPairingWallet.bitcoin => context.loc.btcpayPairingWalletsBitcoin,
+      BtcpayPairingWallet.liquid => context.loc.btcpayPairingWalletsLiquid,
+    };
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        children: [
+          ListTile(title: Text(title)),
+          SwitchListTile(
+            value: behavior.hideOnHome,
+            onChanged: saving
+                ? null
+                : (value) {
+                    context.read<BtcpayPairingCubit>().updateWalletBehavior(
+                      walletId: behavior.walletId,
+                      hideOnHome: value,
+                    );
+                  },
+            title: Text(context.loc.btcpayHideWalletOnHome),
+          ),
+          SwitchListTile(
+            value: behavior.autoSweepEnabled,
+            onChanged: saving
+                ? null
+                : (value) {
+                    context.read<BtcpayPairingCubit>().updateWalletBehavior(
+                      walletId: behavior.walletId,
+                      autoSweepEnabled: value,
+                    );
+                  },
+            title: Text(context.loc.btcpayAutoSweepWallet),
+          ),
+        ],
+      ),
+    );
   }
 }
 

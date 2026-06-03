@@ -13498,6 +13498,18 @@
   "@btcpayConnectionUncertainBody": {
     "description": "Body shown when BTCPay pairing may have completed but the app could not confirm it"
   },
+  "btcpayWalletSettingsTitle": "Wallet Settings",
+  "@btcpayWalletSettingsTitle": {
+    "description": "Title for BTCPay wallet behavior settings"
+  },
+  "btcpayHideWalletOnHome": "Hide wallet on Home",
+  "@btcpayHideWalletOnHome": {
+    "description": "Toggle label for hiding a BTCPay wallet on the Home screen"
+  },
+  "btcpayAutoSweepWallet": "Auto-sweep received funds",
+  "@btcpayAutoSweepWallet": {
+    "description": "Toggle label for sweeping received funds from a BTCPay wallet to the default wallet"
+  },
   "btcpayPairNew": "Pair new BTCPay",
   "@btcpayPairNew": {
     "description": "Button text to pair another BTCPay Server"

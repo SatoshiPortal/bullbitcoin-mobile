@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/address_view/address_view_locator.dart';
 import 'package:bb_mobile/features/all_seed_view/all_seed_view_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
+import 'package:bb_mobile/features/autosweep/autosweep_locator.dart';
 import 'package:bb_mobile/features/autoswap/autoswap_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/bip85_entropy/locator.dart';
@@ -82,6 +83,7 @@ class AppLocator {
     AllSeedViewLocator.setup(locator);
     SettingsLocator.setup(locator);
     BitcoinPriceLocator.setup(locator);
+    AutosweepLocator.setup(locator);
     WalletLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
     TransactionsLocator.registerUsecases(locator);

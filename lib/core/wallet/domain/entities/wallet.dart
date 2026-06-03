@@ -110,6 +110,8 @@ abstract class Wallet with _$Wallet {
     required SignerEntity signer,
     required SignerDeviceEntity? signerDevice,
     required BigInt balanceSat,
+    @Default(false) bool hideOnHome,
+    @Default(false) bool autoSweepEnabled,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
     DateTime? latestEncryptedBackup,

@@ -15,11 +15,13 @@ class WalletCards extends StatelessWidget {
     this.padding,
     this.onTap,
     this.localSignersOnly = false,
+    this.hideOnHome = false,
     this.fiatCurrency,
   });
 
   final EdgeInsetsGeometry? padding;
   final bool localSignersOnly;
+  final bool hideOnHome;
   final Function(Wallet wallet)? onTap;
   final String? fiatCurrency;
 
@@ -43,8 +45,10 @@ class WalletCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final wallets = context.select(
       (WalletBloc bloc) => localSignersOnly
-          ? bloc.state.wallets.where((w) => w.signsLocally)
-          : bloc.state.wallets,
+          ? bloc.state.wallets
+                .where((w) => w.signsLocally)
+                .where((w) => !hideOnHome || !w.hideOnHome)
+          : bloc.state.wallets.where((w) => !hideOnHome || !w.hideOnHome),
     );
     final syncStatus = context.select(
       (WalletBloc bloc) => bloc.state.syncStatus,

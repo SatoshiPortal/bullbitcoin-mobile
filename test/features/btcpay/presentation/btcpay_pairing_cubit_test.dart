@@ -5,7 +5,9 @@ import 'package:bb_mobile/features/btcpay/domain/btcpay_failure.dart';
 import 'package:bb_mobile/features/btcpay/domain/btcpay_wallet.dart';
 import 'package:bb_mobile/features/btcpay/domain/samrock_pairing_request.dart';
 import 'package:bb_mobile/features/btcpay/domain/usecases/complete_btcpay_samrock_pairing_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/update_wallet_behavior_usecase.dart';
 import 'package:bb_mobile/features/btcpay/domain/usecases/get_btcpay_connection_usecase.dart';
+import 'package:bb_mobile/features/btcpay/domain/usecases/get_btcpay_wallet_behaviors_usecase.dart';
 import 'package:bb_mobile/features/btcpay/domain/usecases/preview_btcpay_samrock_pairing_usecase.dart';
 import 'package:bb_mobile/features/btcpay/presentation/btcpay_pairing_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,23 +22,53 @@ class _MockGetBtcpayConnectionUsecase extends Mock
 class _MockPreviewBtcpaySamRockPairingUsecase extends Mock
     implements PreviewBtcpaySamRockPairingUsecase {}
 
+class _MockGetBtcpayWalletBehaviorsUsecase extends Mock
+    implements GetBtcpayWalletBehaviorsUsecase {}
+
+class _MockUpdateWalletBehaviorUsecase extends Mock
+    implements UpdateWalletBehaviorUsecase {}
+
 void main() {
   const pairingUrl =
       'https://btcpay.example.com/plugins/store123/samrock/protocol?otp=123&setup=btc';
 
   late _MockCompleteBtcpaySamRockPairingUsecase completePairing;
   late _MockGetBtcpayConnectionUsecase getConnection;
+  late _MockGetBtcpayWalletBehaviorsUsecase getWalletBehaviors;
   late _MockPreviewBtcpaySamRockPairingUsecase previewPairing;
+  late _MockUpdateWalletBehaviorUsecase updateWalletBehavior;
   late BtcpayPairingCubit cubit;
+
+  setUpAll(() {
+    registerFallbackValue(
+      BtcpayConnection(
+        environment: Environment.mainnet,
+        serverUrl: 'https://btcpay.example.com',
+        storeId: 'store123',
+        capabilities: const [],
+        walletNetworks: const [BtcpayWalletNetwork.bitcoin],
+        status: BtcpayConnectionStatus.uncertain,
+        pairedAt: null,
+        updatedAt: DateTime.fromMillisecondsSinceEpoch(0),
+      ),
+    );
+  });
 
   setUp(() {
     completePairing = _MockCompleteBtcpaySamRockPairingUsecase();
     getConnection = _MockGetBtcpayConnectionUsecase();
+    getWalletBehaviors = _MockGetBtcpayWalletBehaviorsUsecase();
     previewPairing = _MockPreviewBtcpaySamRockPairingUsecase();
+    updateWalletBehavior = _MockUpdateWalletBehaviorUsecase();
+    when(
+      () => getWalletBehaviors.execute(connection: any(named: 'connection')),
+    ).thenAnswer((_) async => const []);
     cubit = BtcpayPairingCubit(
       completePairing: completePairing,
       getConnection: getConnection,
+      getWalletBehaviors: getWalletBehaviors,
       previewPairing: previewPairing,
+      updateWalletBehavior: updateWalletBehavior,
     );
   });
 
