@@ -2,23 +2,16 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/autosweep/application/autosweep_fee_policy.dart';
+import 'package:bb_mobile/features/autosweep/application/ports/autosweep_wallet_port.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 
 class RunAutoSweepUsecase {
   static const int _dustThresholdSat = 100;
 
-  final WalletRepository _walletRepository;
-  final WalletAddressRepository _walletAddressRepository;
-  final LiquidWalletRepository _liquidWalletRepository;
-  final BitcoinWalletRepository _bitcoinWalletRepository;
+  final AutosweepWalletPort _wallets;
   final BroadcastLiquidTransactionUsecase _broadcastLiquid;
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoin;
   final GetNetworkFeesUsecase _getNetworkFees;
@@ -28,10 +21,7 @@ class RunAutoSweepUsecase {
   final Set<String> _inFlightWalletIds = {};
 
   RunAutoSweepUsecase({
-    required this._walletRepository,
-    required this._walletAddressRepository,
-    required this._liquidWalletRepository,
-    required this._bitcoinWalletRepository,
+    required this._wallets,
     required this._broadcastLiquid,
     required this._broadcastBitcoin,
     required this._getNetworkFees,
@@ -69,17 +59,17 @@ class RunAutoSweepUsecase {
     if (defaultLiquid == null) return null;
     if (defaultLiquid.id == sourceWallet.id) return null;
 
-    final destinationAddress = await _walletAddressRepository
-        .getLastRevealedReceiveAddress(walletId: defaultLiquid.id);
-
-    final pset = await _liquidWalletRepository.buildPset(
-      walletId: sourceWallet.id,
-      address: destinationAddress.address,
-      networkFee: const NetworkFee.relative(0.1),
-      drain: true,
+    final destinationAddress = await _wallets.getCurrentReceiveAddress(
+      walletId: defaultLiquid.id,
     );
 
-    final signedPset = await _liquidWalletRepository.signPset(
+    final pset = await _wallets.buildLiquidDrainPset(
+      walletId: sourceWallet.id,
+      address: destinationAddress,
+      networkFee: const NetworkFee.relative(0.1),
+    );
+
+    final signedPset = await _wallets.signLiquidPset(
       pset: pset,
       walletId: sourceWallet.id,
     );
@@ -98,18 +88,18 @@ class RunAutoSweepUsecase {
     if (defaultBitcoin == null) return null;
     if (defaultBitcoin.id == sourceWallet.id) return null;
 
-    final destinationAddress = await _walletAddressRepository
-        .getLastRevealedReceiveAddress(walletId: defaultBitcoin.id);
-
-    final fees = await _getNetworkFees.execute(isLiquid: false);
-    final psbt = await _bitcoinWalletRepository.buildPsbt(
-      walletId: sourceWallet.id,
-      address: destinationAddress.address,
-      networkFee: fees.economic,
-      drain: true,
+    final destinationAddress = await _wallets.getCurrentReceiveAddress(
+      walletId: defaultBitcoin.id,
     );
 
-    final feeSat = await _bitcoinWalletRepository.getTxFeeAmount(psbt: psbt);
+    final fees = await _getNetworkFees.execute(isLiquid: false);
+    final psbt = await _wallets.buildBitcoinDrainPsbt(
+      walletId: sourceWallet.id,
+      address: destinationAddress,
+      networkFee: fees.economic,
+    );
+
+    final feeSat = await _wallets.getBitcoinFeeSat(psbt: psbt);
     if (!_feePolicy.allowsBitcoinSweep(
       feeSat: feeSat,
       walletBalanceSat: sourceWallet.balanceSat,
@@ -118,8 +108,8 @@ class RunAutoSweepUsecase {
       return null;
     }
 
-    final signedPsbt = await _bitcoinWalletRepository.signPsbt(
-      psbt,
+    final signedPsbt = await _wallets.signBitcoinPsbt(
+      psbt: psbt,
       walletId: sourceWallet.id,
     );
     return _broadcastBitcoin.execute(signedPsbt, isPsbt: true);
@@ -130,15 +120,11 @@ class RunAutoSweepUsecase {
     bool onlyBitcoin = false,
     bool onlyLiquid = false,
   }) async {
-    final defaultWallets = await _walletRepository.getWallets(
-      environment: sourceWallet.isTestnet
-          ? Environment.testnet
-          : Environment.mainnet,
-      onlyDefaults: true,
+    return _wallets.getDefaultWallet(
+      sourceWallet: sourceWallet,
       onlyBitcoin: onlyBitcoin,
       onlyLiquid: onlyLiquid,
     );
-    return defaultWallets.firstOrNull;
   }
 
   Future<void> _storeSweepLabel({

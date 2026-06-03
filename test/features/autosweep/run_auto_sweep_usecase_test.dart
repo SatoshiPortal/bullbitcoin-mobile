@@ -3,29 +3,15 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_trans
 import 'package:bb_mobile/core/entities/signer_entity.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/features/autosweep/application/autosweep_fee_policy.dart';
+import 'package:bb_mobile/features/autosweep/application/ports/autosweep_wallet_port.dart';
 import 'package:bb_mobile/features/autosweep/application/run_auto_sweep_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockWalletRepository extends Mock implements WalletRepository {}
-
-class _MockWalletAddressRepository extends Mock
-    implements WalletAddressRepository {}
-
-class _MockLiquidWalletRepository extends Mock
-    implements LiquidWalletRepository {}
-
-class _MockBitcoinWalletRepository extends Mock
-    implements BitcoinWalletRepository {}
+class _MockAutosweepWalletPort extends Mock implements AutosweepWalletPort {}
 
 class _MockBroadcastLiquidTransactionUsecase extends Mock
     implements BroadcastLiquidTransactionUsecase {}
@@ -40,15 +26,14 @@ class _MockLabelsFacade extends Mock implements LabelsFacade {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(Environment.mainnet);
     registerFallbackValue(const NetworkFee.relative(0.1));
     registerFallbackValue(NewLabel.tx(transactionId: 'txid', label: 'label'));
+    registerFallbackValue(
+      _wallet(id: 'fallback', network: Network.liquidMainnet),
+    );
   });
 
-  late _MockWalletRepository walletRepository;
-  late _MockWalletAddressRepository walletAddressRepository;
-  late _MockLiquidWalletRepository liquidWalletRepository;
-  late _MockBitcoinWalletRepository bitcoinWalletRepository;
+  late _MockAutosweepWalletPort wallets;
   late _MockBroadcastLiquidTransactionUsecase broadcastLiquid;
   late _MockBroadcastBitcoinTransactionUsecase broadcastBitcoin;
   late _MockGetNetworkFeesUsecase getNetworkFees;
@@ -56,19 +41,13 @@ void main() {
   late RunAutoSweepUsecase usecase;
 
   setUp(() {
-    walletRepository = _MockWalletRepository();
-    walletAddressRepository = _MockWalletAddressRepository();
-    liquidWalletRepository = _MockLiquidWalletRepository();
-    bitcoinWalletRepository = _MockBitcoinWalletRepository();
+    wallets = _MockAutosweepWalletPort();
     broadcastLiquid = _MockBroadcastLiquidTransactionUsecase();
     broadcastBitcoin = _MockBroadcastBitcoinTransactionUsecase();
     getNetworkFees = _MockGetNetworkFeesUsecase();
     labelsFacade = _MockLabelsFacade();
     usecase = RunAutoSweepUsecase(
-      walletRepository: walletRepository,
-      walletAddressRepository: walletAddressRepository,
-      liquidWalletRepository: liquidWalletRepository,
-      bitcoinWalletRepository: bitcoinWalletRepository,
+      wallets: wallets,
       broadcastLiquid: broadcastLiquid,
       broadcastBitcoin: broadcastBitcoin,
       getNetworkFees: getNetworkFees,
@@ -89,39 +68,30 @@ void main() {
       balanceSat: BigInt.from(1000),
     );
     when(
-      () => walletRepository.getWallets(
-        environment: Environment.mainnet,
-        onlyDefaults: true,
+      () => wallets.getDefaultWallet(
+        sourceWallet: source,
         onlyBitcoin: false,
         onlyLiquid: true,
       ),
     ).thenAnswer(
-      (_) async => [
-        _wallet(
-          id: 'default-liquid',
-          network: Network.liquidMainnet,
-          isDefault: true,
-        ),
-      ],
+      (_) async => _wallet(
+        id: 'default-liquid',
+        network: Network.liquidMainnet,
+        isDefault: true,
+      ),
     );
     when(
-      () => walletAddressRepository.getLastRevealedReceiveAddress(
-        walletId: 'default-liquid',
-      ),
-    ).thenAnswer((_) async => _address('default-liquid', 'lq1destination'));
+      () => wallets.getCurrentReceiveAddress(walletId: 'default-liquid'),
+    ).thenAnswer((_) async => 'lq1destination');
     when(
-      () => liquidWalletRepository.buildPset(
+      () => wallets.buildLiquidDrainPset(
         walletId: 'btcpay-liquid',
         address: 'lq1destination',
         networkFee: const NetworkFee.relative(0.1),
-        drain: true,
       ),
     ).thenAnswer((_) async => 'pset');
     when(
-      () => liquidWalletRepository.signPset(
-        pset: 'pset',
-        walletId: 'btcpay-liquid',
-      ),
+      () => wallets.signLiquidPset(pset: 'pset', walletId: 'btcpay-liquid'),
     ).thenAnswer((_) async => 'signed-pset');
     when(
       () => broadcastLiquid.execute('signed-pset', isTestnet: false),
@@ -131,11 +101,10 @@ void main() {
 
     expect(txid, 'txid');
     verify(
-      () => liquidWalletRepository.buildPset(
+      () => wallets.buildLiquidDrainPset(
         walletId: 'btcpay-liquid',
         address: 'lq1destination',
         networkFee: const NetworkFee.relative(0.1),
-        drain: true,
       ),
     ).called(1);
     verify(() => labelsFacade.store(any())).called(1);
@@ -149,26 +118,21 @@ void main() {
       balanceSat: BigInt.from(1000),
     );
     when(
-      () => walletRepository.getWallets(
-        environment: Environment.mainnet,
-        onlyDefaults: true,
+      () => wallets.getDefaultWallet(
+        sourceWallet: source,
         onlyBitcoin: true,
         onlyLiquid: false,
       ),
     ).thenAnswer(
-      (_) async => [
-        _wallet(
-          id: 'default-bitcoin',
-          network: Network.bitcoinMainnet,
-          isDefault: true,
-        ),
-      ],
+      (_) async => _wallet(
+        id: 'default-bitcoin',
+        network: Network.bitcoinMainnet,
+        isDefault: true,
+      ),
     );
     when(
-      () => walletAddressRepository.getLastRevealedReceiveAddress(
-        walletId: 'default-bitcoin',
-      ),
-    ).thenAnswer((_) async => _address('default-bitcoin', 'bc1destination'));
+      () => wallets.getCurrentReceiveAddress(walletId: 'default-bitcoin'),
+    ).thenAnswer((_) async => 'bc1destination');
     when(() => getNetworkFees.execute(isLiquid: false)).thenAnswer(
       (_) async => const FeeOptions(
         fastest: NetworkFee.relative(10),
@@ -177,23 +141,22 @@ void main() {
       ),
     );
     when(
-      () => bitcoinWalletRepository.buildPsbt(
+      () => wallets.buildBitcoinDrainPsbt(
         walletId: 'btcpay-bitcoin',
         address: 'bc1destination',
         networkFee: const NetworkFee.relative(2),
-        drain: true,
       ),
     ).thenAnswer((_) async => 'psbt');
     when(
-      () => bitcoinWalletRepository.getTxFeeAmount(psbt: 'psbt'),
+      () => wallets.getBitcoinFeeSat(psbt: 'psbt'),
     ).thenAnswer((_) async => 100);
 
     final txid = await usecase.execute(source);
 
     expect(txid, isNull);
     verifyNever(
-      () => bitcoinWalletRepository.signPsbt(
-        any(),
+      () => wallets.signBitcoinPsbt(
+        psbt: any(named: 'psbt'),
         walletId: any(named: 'walletId'),
       ),
     );
@@ -210,9 +173,8 @@ void main() {
 
     expect(txid, isNull);
     verifyNever(
-      () => walletRepository.getWallets(
-        environment: any(named: 'environment'),
-        onlyDefaults: any(named: 'onlyDefaults'),
+      () => wallets.getDefaultWallet(
+        sourceWallet: any(named: 'sourceWallet'),
         onlyBitcoin: any(named: 'onlyBitcoin'),
         onlyLiquid: any(named: 'onlyLiquid'),
       ),
@@ -242,15 +204,5 @@ Wallet _wallet({
     signerDevice: null,
     balanceSat: balanceSat ?? BigInt.from(1000),
     autoSweepEnabled: autoSweepEnabled,
-  );
-}
-
-WalletAddress _address(String walletId, String address) {
-  return WalletAddress(
-    walletId: walletId,
-    index: 1,
-    address: address,
-    createdAt: DateTime.utc(2026),
-    updatedAt: DateTime.utc(2026),
   );
 }

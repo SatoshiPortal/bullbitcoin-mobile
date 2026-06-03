@@ -19,9 +19,10 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/autosweep/public/autosweep_facade.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecase/run_wallet_auto_sweep_usecase.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/features/autosweep/application/run_auto_sweep_usecase.dart';
 import 'package:get_it/get_it.dart';
 
 class WalletLocator {
@@ -34,6 +35,9 @@ class WalletLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
       ),
+    );
+    locator.registerFactory<RunWalletAutoSweepUsecase>(
+      () => RunWalletAutoSweepUsecase(autosweep: locator<AutosweepFacade>()),
     );
 
     // Bloc
@@ -60,7 +64,7 @@ class WalletLocator {
         disableAutoswapWarningUsecase: locator<DisableAutoswapWarningUsecase>(),
         disableAutoswapUsecase: locator<DisableAutoswapUsecase>(),
         autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
-        runAutoSweepUsecase: locator<RunAutoSweepUsecase>(),
+        runWalletAutoSweepUsecase: locator<RunWalletAutoSweepUsecase>(),
         deleteWalletUsecase: locator<DeleteWalletUsecase>(),
         seedStoreTypeDatasource: locator<SeedStoreTypeDatasource>(),
         checkBackupNeededUsecase: locator<CheckBackupNeededUsecase>(),

@@ -6,9 +6,17 @@ same environment and network family.
 ## Boundaries
 
 - `application/` owns sweep orchestration and fee policy.
-- `autosweep_locator.dart` wires the use case and policy into the app locator.
-- Wallet selection, address lookup, transaction construction, broadcasting, and
-  labels are delegated to existing core services and the labels facade.
+- `public/autosweep_facade.dart` is the only AutoSweep entry point for other
+  features.
+- `application/ports/autosweep_wallet_port.dart` is the application boundary for
+  default wallet lookup, current receive address selection, and drain
+  transaction construction/signing.
+- `frameworks/autosweep_wallet_adapter.dart` is the only AutoSweep class that
+  imports concrete wallet repositories.
+- `autosweep_locator.dart` wires the facade, use case, port adapter, and policy
+  into the app locator.
+- Broadcasting is delegated to core blockchain use cases. Labels are delegated
+  through the labels facade.
 
 ## Address Policy
 

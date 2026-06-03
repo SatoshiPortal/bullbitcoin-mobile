@@ -28,9 +28,9 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/wallet_error.dart';
 import 'package:bb_mobile/features/electrum_settings/frameworks/ui/routing/electrum_settings_router.dart';
-import 'package:bb_mobile/features/autosweep/application/run_auto_sweep_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecase/run_wallet_auto_sweep_usecase.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,7 +56,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this._disableAutoswapWarningUsecase,
     required this._disableAutoswapUsecase,
     required this._autoSwapExecutionUsecase,
-    required this._runAutoSweepUsecase,
+    required this._runWalletAutoSweepUsecase,
     required this._deleteWalletUsecase,
     required this._getArkWalletUsecase,
     required this._checkArkWalletSetupUsecase,
@@ -97,7 +97,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final DisableAutoswapWarningUsecase _disableAutoswapWarningUsecase;
   final DisableAutoswapUsecase _disableAutoswapUsecase;
   final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
-  final RunAutoSweepUsecase _runAutoSweepUsecase;
+  final RunWalletAutoSweepUsecase _runWalletAutoSweepUsecase;
   final DeleteWalletUsecase _deleteWalletUsecase;
   final GetArkWalletUsecase _getArkWalletUsecase;
   final CheckArkWalletSetupUsecase _checkArkWalletSetupUsecase;
@@ -408,7 +408,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
   Future<void> _runAutoSweep(Wallet wallet) async {
     try {
-      await _runAutoSweepUsecase.execute(wallet);
+      await _runWalletAutoSweepUsecase.execute(wallet);
     } catch (e, stack) {
       log.warning('[WalletBloc] Autosweep failed', error: e, trace: stack);
     }

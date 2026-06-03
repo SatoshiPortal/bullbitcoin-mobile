@@ -5,8 +5,11 @@ import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/autosweep/application/ports/autosweep_wallet_port.dart';
 import 'package:bb_mobile/features/autosweep/application/autosweep_fee_policy.dart';
 import 'package:bb_mobile/features/autosweep/application/run_auto_sweep_usecase.dart';
+import 'package:bb_mobile/features/autosweep/frameworks/autosweep_wallet_adapter.dart';
+import 'package:bb_mobile/features/autosweep/public/autosweep_facade.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
@@ -15,18 +18,26 @@ class AutosweepLocator {
     locator.registerLazySingleton<AutosweepFeePolicy>(
       () => const AutosweepFeePolicy(),
     );
-    locator.registerLazySingleton<RunAutoSweepUsecase>(
-      () => RunAutoSweepUsecase(
+    locator.registerLazySingleton<AutosweepWalletPort>(
+      () => AutosweepWalletAdapter(
         walletRepository: locator<WalletRepository>(),
         walletAddressRepository: locator<WalletAddressRepository>(),
         liquidWalletRepository: locator<LiquidWalletRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<RunAutoSweepUsecase>(
+      () => RunAutoSweepUsecase(
+        wallets: locator<AutosweepWalletPort>(),
         broadcastLiquid: locator<BroadcastLiquidTransactionUsecase>(),
         broadcastBitcoin: locator<BroadcastBitcoinTransactionUsecase>(),
         getNetworkFees: locator<GetNetworkFeesUsecase>(),
         labelsFacade: locator<LabelsFacade>(),
         feePolicy: locator<AutosweepFeePolicy>(),
       ),
+    );
+    locator.registerLazySingleton<AutosweepFacade>(
+      () => AutosweepFacade(runAutoSweep: locator<RunAutoSweepUsecase>()),
     );
   }
 }
