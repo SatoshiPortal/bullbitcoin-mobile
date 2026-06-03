@@ -1295,7 +1295,7 @@
   "appUnlockButton": "Розблокувати",
   "payServiceFee": "Плата за обслуговування",
   "swapAmountPlaceholder": "0 р",
-  "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €30,000",
   "dcaConfirmError": "Хтось пішов неправильно: {error}",
   "@dcaConfirmError": {
     "placeholders": {
@@ -2231,7 +2231,7 @@
     }
   },
   "dcaFrequencyWeekly": "тиждень",
-  "fundExchangeMethodRegularSepaSubtitle": "Тільки для збільшення операцій над €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Тільки для збільшення операцій над €30,000",
   "exchangeLandingDisclaimerLegal": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "backupWalletEncryptedVaultTitle": "Зашифрована сорочка",
   "mempoolNetworkLiquidMainnet": "Головна",

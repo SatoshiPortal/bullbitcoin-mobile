@@ -12428,7 +12428,7 @@
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Sabse tez - Sirf €20,000 se kam transactions ke liye",
+  "fundExchangeMethodInstantSepaSubtitle": "Sabse tez - Sirf €30,000 se kam transactions ke liye",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -12436,7 +12436,7 @@
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Sirf €20,000 se zyada badi transactions ke liye use karein",
+  "fundExchangeMethodRegularSepaSubtitle": "Sirf €30,000 se zyada badi transactions ke liye use karein",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

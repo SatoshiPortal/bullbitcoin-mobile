@@ -624,7 +624,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "সবচেয়ে দ্রুততম - কেবল €20,000-এর নিচে লেনদেনের জন্য",
+  "fundExchangeMethodInstantSepaSubtitle": "সবচেয়ে দ্রুততম - কেবল €30,000-এর নিচে লেনদেনের জন্য",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4742,7 +4742,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "শুধু €20,000-এর বেশি লেনদেনের জন্য ব্যবহার করুন",
+  "fundExchangeMethodRegularSepaSubtitle": "শুধু €30,000-এর বেশি লেনদেনের জন্য ব্যবহার করুন",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

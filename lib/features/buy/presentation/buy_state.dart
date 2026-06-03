@@ -39,10 +39,7 @@ sealed class BuyState with _$BuyState {
 
   bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
 
-  bool isKycOk({FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;
-    return userSummary?.isKycOk(effectiveCurrency) ?? false;
-  }
+  bool get isKycOk => userSummary?.isKycOk ?? false;
 
   bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? this.currency ?? FiatCurrency.cad;

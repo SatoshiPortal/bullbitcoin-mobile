@@ -3546,7 +3546,7 @@
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -3554,7 +3554,7 @@
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

@@ -220,7 +220,7 @@
   "payServiceFee": "Service Fee",
   "transactionStatusSwapExpired": "页: 1",
   "swapAmountPlaceholder": "页: 1",
-  "fundExchangeMethodInstantSepaSubtitle": "最长――只有不到20 000欧元的交易",
+  "fundExchangeMethodInstantSepaSubtitle": "最长――只有不到30 000欧元的交易",
   "dcaConfirmError": "有些错误:{error}",
   "@dcaConfirmError": {
     "placeholders": {
@@ -1590,7 +1590,7 @@
     }
   },
   "dcaFrequencyWeekly": "每周",
-  "fundExchangeMethodRegularSepaSubtitle": "只使用20 000欧元以上的大宗交易",
+  "fundExchangeMethodRegularSepaSubtitle": "只使用30 000欧元以上的大宗交易",
   "settingsTelegramLabel": "电报",
   "walletDetailsSignerDeviceNotSupported": "未获得支持",
   "exchangeLandingDisclaimerLegal": "进入交换服务将仅限于“鹿特丹”能够合法运作并且可能需要“科索沃”的国家.",

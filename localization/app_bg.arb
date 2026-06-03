@@ -747,7 +747,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Най-бързият - само за транзакции до €20 000",
+  "fundExchangeMethodInstantSepaSubtitle": "Най-бързият - само за транзакции до €30 000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -3867,7 +3867,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €20 000",
+  "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €30 000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

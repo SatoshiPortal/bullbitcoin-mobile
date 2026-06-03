@@ -616,7 +616,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "ที่เร็วที่สุด - เพียงสําหรับการทําธุรกรรมด้านล่าง€ 20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "ที่เร็วที่สุด - เพียงสําหรับการทําธุรกรรมด้านล่าง€ 30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4867,7 +4867,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "การใช้การทําธุรกรรมขนาดใหญ่ด้านบน€ 20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "การใช้การทําธุรกรรมขนาดใหญ่ด้านบน€ 30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

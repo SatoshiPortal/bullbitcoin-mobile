@@ -682,7 +682,7 @@
   "@fundExchangeLabelTransitNumber": {
     "description": "Label for transit number field"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Mais rápido - Apenas para transações abaixo de €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Mais rápido - Apenas para transações abaixo de €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4425,7 +4425,7 @@
   "@sendContinue": {
     "description": "Button label for continuing in the send flow"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Somente uso para transações maiores acima de €20.000",
+  "fundExchangeMethodRegularSepaSubtitle": "Somente uso para transações maiores acima de €30.000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

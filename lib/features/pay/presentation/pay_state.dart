@@ -55,10 +55,7 @@ sealed class PayState with _$PayState {
 
   bool get isLightKycLevel => userSummary?.isLightKycLevel == true;
 
-  bool isKycOk({FiatCurrency? currency}) {
-    final effectiveCurrency = currency ?? this.currency;
-    return userSummary?.isKycOk(effectiveCurrency) ?? false;
-  }
+  bool get isKycOk => userSummary?.isKycOk ?? false;
 
   bool isAmountExceeded(double amount, {FiatCurrency? currency}) {
     final effectiveCurrency = currency ?? this.currency;

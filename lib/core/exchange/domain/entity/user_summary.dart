@@ -156,11 +156,7 @@ sealed class UserSummary with _$UserSummary {
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
   bool get hasConsentedScamWarning => groups.contains('CONSENT_SCAM_WARNING');
 
-  /// Whether the user's KYC level permits transactions in [currency].
-  bool isKycOk(FiatCurrency currency) {
-    return isFullyVerifiedKycLevel ||
-        currency == FiatCurrency.cad && (isLimitedKycLevel || isLightKycLevel);
-  }
+  bool get isKycOk => isFullyVerifiedKycLevel || isLimitedKycLevel || isLightKycLevel;
 
   /// Whether [amount] exceeds the per-transaction limit for the user's
   /// KYC level in [currency]. Currently only CAD limits are enforced.
@@ -175,6 +171,6 @@ sealed class UserSummary with _$UserSummary {
 
   /// Returns true when the user needs to upgrade KYC to proceed.
   bool needsKycUpgrade(double amount, FiatCurrency currency) {
-    return !isKycOk(currency) || isAmountExceeded(amount, currency);
+    return !isKycOk || isAmountExceeded(amount, currency);
   }
 }
