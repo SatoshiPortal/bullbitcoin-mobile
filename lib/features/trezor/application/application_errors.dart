@@ -5,6 +5,10 @@ sealed class TrezorApplicationError implements Exception {
   const factory TrezorApplicationError.suiteNotInstalled() =
       TrezorSuiteNotInstalled;
   const factory TrezorApplicationError.timeout() = TrezorTimeout;
+  const factory TrezorApplicationError.addressMismatch({
+    required String expected,
+    required String returned,
+  }) = TrezorAddressMismatch;
   const factory TrezorApplicationError.unknown(String message) = TrezorUnknown;
 }
 
@@ -18,6 +22,16 @@ final class TrezorSuiteNotInstalled extends TrezorApplicationError {
 
 final class TrezorTimeout extends TrezorApplicationError {
   const TrezorTimeout();
+}
+
+final class TrezorAddressMismatch extends TrezorApplicationError {
+  final String expected;
+  final String returned;
+  const TrezorAddressMismatch({required this.expected, required this.returned});
+
+  @override
+  String toString() =>
+      'TrezorAddressMismatch(expected: $expected, returned: $returned)';
 }
 
 final class TrezorUnknown extends TrezorApplicationError {

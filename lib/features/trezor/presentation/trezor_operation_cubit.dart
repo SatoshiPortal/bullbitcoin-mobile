@@ -59,6 +59,8 @@ class TrezorOperationCubit extends Cubit<TrezorOperationState> {
     TrezorSuiteNotInstalled() =>
       'Trezor Suite is not installed. Install it from the App Store or Play Store to continue.',
     TrezorTimeout() => 'Timed out waiting for Trezor Suite. Try again.',
+    TrezorAddressMismatch() =>
+      'Address mismatch — Trezor displayed a different address. Do not use this address.',
     TrezorUnknown(:final message) => message,
   };
 }

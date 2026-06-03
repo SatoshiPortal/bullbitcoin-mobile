@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/trezor/application/application_errors.dart';
 import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_signed_psbt.dart';
+import 'package:bb_mobile/features/trezor/frameworks/framework_errors.dart';
 import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
 import 'package:trezor_connect/models.dart';
 
@@ -134,6 +135,12 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
   }
 
   TrezorApplicationError _mapError(Exception e) {
+    if (e is TrezorAddressMismatchException) {
+      return TrezorApplicationError.addressMismatch(
+        expected: e.expected,
+        returned: e.returned,
+      );
+    }
     final s = e.toString().toLowerCase();
     if (s.contains('user rejected') ||
         s.contains('cancelled') ||

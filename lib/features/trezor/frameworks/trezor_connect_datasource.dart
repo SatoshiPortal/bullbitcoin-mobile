@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/trezor/frameworks/framework_errors.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
 import 'package:trezor_connect/trezor_connect.dart';
 
@@ -46,10 +47,14 @@ class TrezorConnectDatasource {
   /// device. Trezor derives the address locally from its own master seed
   /// and renders it for the user to compare against the in-app QR.
   ///
-  /// The actual security check is the user comparing the
-  /// on-device display against the in-app QR/address;
+  /// Two-layer verification:
+  ///   1. We pass `address:` so Trezor's firmware refuses the request if the
+  ///      address it derives doesn't match our expected one.
+  ///   2. We compare the returned `result.address` against `address` before
+  ///      returning success
   ///
-  /// Returns `true` when the user confirms on device.
+  /// Returns `true` only when both Trezor confirms on device AND the returned
+  /// address equals the expected one.
   Future<bool> verifyAddress({
     required String address,
     required String derivationPath,
@@ -65,12 +70,22 @@ class TrezorConnectDatasource {
 
     final result = await _connect.getAddress(
       normalizedPath,
+      address: address,
       showOnTrezor: true,
       coin: 'btc',
       scriptType: _inputScriptTypeFor(scriptType),
     );
 
-    return result != null;
+    if (result == null) {
+      throw Exception('No address returned from Trezor Suite');
+    }
+    if (result.address != address) {
+      throw TrezorAddressMismatchException(
+        expected: address,
+        returned: result.address,
+      );
+    }
+    return true;
   }
 
   /// Maps Bull Bitcoin's ScriptType (the wallet-wide derivation family) to
