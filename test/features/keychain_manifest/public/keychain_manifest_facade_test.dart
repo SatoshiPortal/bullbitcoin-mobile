@@ -1,0 +1,226 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
+import 'package:bb_mobile/features/keychain_manifest/application/ports/keychain_manifest_entry_store.dart';
+import 'package:bb_mobile/features/keychain_manifest/application/usecases/delete_keychain_manifest_wallet_entries_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/application/usecases/record_keychain_manifest_entry_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  late _InMemoryKeychainManifestStore store;
+  late KeychainManifestFacade facade;
+
+  setUp(() {
+    store = _InMemoryKeychainManifestStore();
+    facade = KeychainManifestFacade(
+      recordEntry: RecordKeychainManifestEntryUsecase(store: store),
+      deleteWalletEntries: DeleteKeychainManifestWalletEntriesUsecase(
+        store: store,
+      ),
+    );
+  });
+
+  test('rejects unknown reservation ids at the public boundary', () async {
+    await expectLater(
+      facade.recordReservedDerivation(
+        KeychainManifestReservedDerivationRequest(
+          reservationId: 'unknown_feature',
+          parentFingerprint: 'fedcba98',
+          materializations: [_walletMaterialization()],
+        ),
+      ),
+      throwsA(isA<KeychainManifestException>()),
+    );
+  });
+
+  test('rejects empty materialization lists at the public boundary', () async {
+    await expectLater(
+      facade.recordReservedDerivation(
+        const KeychainManifestReservedDerivationRequest(
+          reservationId: 'btcpay_wallet_seed',
+          parentFingerprint: 'fedcba98',
+          materializations: [],
+        ),
+      ),
+      throwsA(
+        isA<KeychainManifestException>().having(
+          (error) => error.cause,
+          'cause',
+          isA<KeychainManifestEntryConflictException>(),
+        ),
+      ),
+    );
+  });
+
+  test(
+    'rejects unsupported materialization types at the public boundary',
+    () async {
+      await expectLater(
+        facade.recordReservedDerivation(
+          const KeychainManifestReservedDerivationRequest(
+            reservationId: 'btcpay_wallet_seed',
+            parentFingerprint: 'fedcba98',
+            materializations: [_UnsupportedMaterializationRequest()],
+          ),
+        ),
+        throwsA(
+          isA<KeychainManifestException>().having(
+            (error) => error.cause,
+            'cause',
+            isA<KeychainManifestUnsupportedMaterializationException>(),
+          ),
+        ),
+      );
+    },
+  );
+
+  test('derives reserved path and owner metadata from the registry', () async {
+    final result = await facade.recordReservedDerivation(
+      KeychainManifestReservedDerivationRequest(
+        reservationId: 'btcpay_wallet_seed',
+        parentFingerprint: 'fedcba98',
+        materializations: [_walletMaterialization()],
+      ),
+      now: DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true),
+    );
+
+    expect(result.insertedMaterializations, hasLength(1));
+    expect(
+      result.insertedMaterializations.single.materializationType,
+      'wallet',
+    );
+    expect(
+      result.insertedMaterializations.single.materializationId,
+      'btc-wallet',
+    );
+    expect(store.entries.single.reservationId, 'btcpay_wallet_seed');
+    expect(store.entries.single.ownerFeature, 'btcpay');
+    expect(store.entries.single.entryType, 'walletSeed');
+    expect(store.entries.single.bip85DerivationPath, "39'/0'/12'/100'");
+    expect(store.entries.single.bip85Application, 39);
+    expect(store.entries.single.bip85Index, 100);
+  });
+
+  test('returns only inserted materializations for caller rollback', () async {
+    await facade.recordReservedDerivation(
+      KeychainManifestReservedDerivationRequest(
+        reservationId: 'btcpay_wallet_seed',
+        parentFingerprint: 'fedcba98',
+        materializations: [_walletMaterialization()],
+      ),
+    );
+
+    final result = await facade.recordReservedDerivation(
+      KeychainManifestReservedDerivationRequest(
+        reservationId: 'btcpay_wallet_seed',
+        parentFingerprint: 'fedcba98',
+        materializations: [
+          _walletMaterialization(),
+          _walletMaterialization(
+            walletId: 'lbtc-wallet',
+            network: Network.liquidMainnet,
+            walletPurpose: 'liquid',
+          ),
+        ],
+      ),
+    );
+
+    expect(result.insertedMaterializations, hasLength(1));
+    expect(
+      result.insertedMaterializations.single.materializationId,
+      'lbtc-wallet',
+    );
+  });
+}
+
+KeychainManifestWalletMaterializationRequest _walletMaterialization({
+  String walletId = 'btc-wallet',
+  String childSeedFingerprint = '0123abcd',
+  Network network = Network.bitcoinMainnet,
+  String walletPurpose = 'bitcoin',
+  ScriptType scriptType = ScriptType.bip84,
+}) {
+  return KeychainManifestWalletMaterializationRequest(
+    walletId: walletId,
+    childSeedFingerprint: childSeedFingerprint,
+    network: network,
+    walletPurpose: walletPurpose,
+    scriptType: scriptType,
+  );
+}
+
+class _UnsupportedMaterializationRequest
+    extends KeychainManifestMaterializationRequest {
+  const _UnsupportedMaterializationRequest();
+}
+
+class _InMemoryKeychainManifestStore implements KeychainManifestEntryStore {
+  final entries = <KeychainManifestEntry>[];
+  final records = <KeychainManifestWalletMaterializationRecord>[];
+
+  @override
+  Future<void> deleteWalletMaterializationRecordsByIdentities(
+    List<KeychainManifestWalletMaterializationIdentity> identities,
+  ) async {
+    records.removeWhere((record) {
+      return identities.any((identity) {
+        return record.walletMaterializationIdentity.walletId ==
+            identity.walletId;
+      });
+    });
+    entries.removeWhere((entry) {
+      return !records.any((record) => record.entry.entryId == entry.entryId);
+    });
+  }
+
+  @override
+  Future<KeychainManifestWalletMaterializationRecord?>
+  fetchWalletMaterializationRecordByIdentity(
+    KeychainManifestWalletMaterializationIdentity identity,
+  ) async {
+    return records
+        .cast<KeychainManifestWalletMaterializationRecord?>()
+        .firstWhere(
+          (record) =>
+              record!.walletMaterializationIdentity.walletId ==
+              identity.walletId,
+          orElse: () => null,
+        );
+  }
+
+  @override
+  Future<KeychainManifestWalletMaterializationRecord?>
+  fetchWalletMaterializationRecordByWalletId(String walletId) async {
+    return records
+        .cast<KeychainManifestWalletMaterializationRecord?>()
+        .firstWhere(
+          (record) => record!.walletId == walletId,
+          orElse: () => null,
+        );
+  }
+
+  @override
+  Future<void> insertWalletMaterializationRecord(
+    KeychainManifestWalletMaterializationRecord record,
+  ) async {
+    if (await fetchWalletMaterializationRecordByWalletId(record.walletId) !=
+            null ||
+        await fetchWalletMaterializationRecordByIdentity(
+              record.walletMaterializationIdentity,
+            ) !=
+            null) {
+      throw const KeychainManifestDuplicateException('duplicate');
+    }
+    final existingEntry = entries.cast<KeychainManifestEntry?>().firstWhere(
+      (entry) => entry!.entryId == record.entry.entryId,
+      orElse: () => null,
+    );
+    if (existingEntry == null) {
+      entries.add(record.entry);
+    } else if (!existingEntry.sameRecordAs(record.entry)) {
+      throw const KeychainManifestDuplicateException('entry duplicate');
+    }
+    records.add(record);
+  }
+}

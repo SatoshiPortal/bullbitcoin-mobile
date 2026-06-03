@@ -179,6 +179,52 @@ class CompleteBtcpaySamRockPairingUsecase {
     };
   }
 
+  Future<KeychainManifestRecordReservedDerivationResult>
+  _recordBtcpayKeychainManifestEntries(
+    PreparedDeterministicWallets preparedWallets,
+  ) async {
+    return _keychainManifest.recordReservedDerivation(
+      _btcpayKeychainManifestRequest(preparedWallets),
+    );
+  }
+
+  Future<void> _deleteBtcpayKeychainManifestEntriesBestEffort(
+    KeychainManifestRecordReservedDerivationResult recordedEntries,
+  ) async {
+    if (recordedEntries.insertedMaterializations.isEmpty) return;
+    try {
+      await _keychainManifest.deleteInsertedMaterializations(recordedEntries);
+    } catch (e, stack) {
+      log.warning(
+        'BTCPay rejected setup and keychain manifest cleanup failed',
+        error: e,
+        trace: stack,
+      );
+    }
+  }
+
+  KeychainManifestReservedDerivationRequest _btcpayKeychainManifestRequest(
+    PreparedDeterministicWallets preparedWallets,
+  ) {
+    final reservation = _bip85Registry.btcpayWalletSeed;
+    return KeychainManifestReservedDerivationRequest(
+      reservationId: reservation.id,
+      parentFingerprint: preparedWallets.parentFingerprint,
+      materializations: preparedWallets.wallets
+          .map((prepared) {
+            final network = BtcpayWalletNetwork.fromSpecId(prepared.specId);
+            return KeychainManifestWalletMaterializationRequest(
+              walletId: prepared.walletId,
+              childSeedFingerprint: preparedWallets.childSeedFingerprint,
+              network: prepared.network,
+              walletPurpose: network.name,
+              scriptType: prepared.scriptType,
+            );
+          })
+          .toList(growable: false),
+    );
+  }
+
   DeterministicWalletsRequest _btcpayWalletsRequest(Environment environment) {
     final reservation = _bip85Registry.btcpayWalletSeed;
     return DeterministicWalletsRequest(

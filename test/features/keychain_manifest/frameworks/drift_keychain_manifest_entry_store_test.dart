@@ -1,0 +1,157 @@
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/features/keychain_manifest/application/application_errors.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/frameworks/drift_keychain_manifest_entry_store.dart';
+import 'package:drift/native.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  late SqliteDatabase database;
+  late DriftKeychainManifestEntryStore store;
+
+  setUp(() {
+    database = SqliteDatabase(NativeDatabase.memory());
+    store = DriftKeychainManifestEntryStore(database: database);
+  });
+
+  tearDown(() async {
+    await database.close();
+  });
+
+  test(
+    'roundtrips wallet materializations for a generic manifest entry',
+    () async {
+      final record = _record();
+
+      await store.insertWalletMaterializationRecord(record);
+
+      final byWallet = await store.fetchWalletMaterializationRecordByWalletId(
+        record.walletId,
+      );
+      final byIdentity = await store.fetchWalletMaterializationRecordByIdentity(
+        record.walletMaterializationIdentity,
+      );
+
+      expect(byWallet!.walletId, record.walletId);
+      expect(byWallet.entry.parentFingerprint, record.entry.parentFingerprint);
+      expect(
+        byWallet.walletMaterialization.childSeedFingerprint,
+        record.walletMaterialization.childSeedFingerprint,
+      );
+      expect(byIdentity!.walletId, record.walletId);
+    },
+  );
+
+  test('enforces wallet id uniqueness', () async {
+    await store.insertWalletMaterializationRecord(_record());
+
+    expect(
+      () => store.insertWalletMaterializationRecord(
+        _record(network: 'liquidMainnet'),
+      ),
+      throwsA(isA<KeychainManifestDuplicateException>()),
+    );
+  });
+
+  test('allows same entry and network on another wallet id', () async {
+    await store.insertWalletMaterializationRecord(_record());
+    await store.insertWalletMaterializationRecord(
+      _record(walletId: 'other-wallet'),
+    );
+
+    final bindings = await database
+        .select(database.keychainManifestWalletBindings)
+        .get();
+    expect(bindings, hasLength(2));
+  });
+
+  test('allows same entry on another wallet network', () async {
+    await store.insertWalletMaterializationRecord(_record());
+    await store.insertWalletMaterializationRecord(
+      _record(walletId: 'lbtc-wallet', network: 'liquidMainnet'),
+    );
+
+    final entries = await database
+        .select(database.keychainManifestEntries)
+        .get();
+    final bindings = await database
+        .select(database.keychainManifestWalletBindings)
+        .get();
+    expect(entries, hasLength(1));
+    expect(bindings, hasLength(2));
+  });
+
+  test(
+    'deletes requested wallet materializations and orphaned entries',
+    () async {
+      final bitcoin = _record();
+      final liquid = _record(walletId: 'lbtc-wallet', network: 'liquidMainnet');
+      await store.insertWalletMaterializationRecord(bitcoin);
+      await store.insertWalletMaterializationRecord(liquid);
+
+      await store.deleteWalletMaterializationRecordsByIdentities([
+        bitcoin.walletMaterializationIdentity,
+      ]);
+
+      var entries = await database
+          .select(database.keychainManifestEntries)
+          .get();
+      var bindings = await database
+          .select(database.keychainManifestWalletBindings)
+          .get();
+      expect(entries, hasLength(1));
+      expect(bindings.map((binding) => binding.walletId), [liquid.walletId]);
+
+      await store.deleteWalletMaterializationRecordsByIdentities([
+        liquid.walletMaterializationIdentity,
+      ]);
+
+      entries = await database.select(database.keychainManifestEntries).get();
+      bindings = await database
+          .select(database.keychainManifestWalletBindings)
+          .get();
+      expect(entries, isEmpty);
+      expect(bindings, isEmpty);
+    },
+  );
+}
+
+KeychainManifestWalletMaterializationRecord _record({
+  String walletId = 'btc-wallet',
+  String parentFingerprint = 'fedcba98',
+  String childSeedFingerprint = '0123abcd',
+  String bip85DerivationPath = "39'/0'/12'/100'",
+  String network = 'bitcoinMainnet',
+  String reservationId = 'btcpay_wallet_seed',
+  String entryType = 'walletSeed',
+  String ownerFeature = 'btcpay',
+  int bip85Application = 39,
+  int bip85Index = 100,
+  String walletPurpose = 'bitcoin',
+  String scriptType = 'bip84',
+}) {
+  final entry = KeychainManifestEntry(
+    parentFingerprint: parentFingerprint,
+    bip85DerivationPath: bip85DerivationPath,
+    reservationId: reservationId,
+    entryType: entryType,
+    ownerFeature: ownerFeature,
+    bip85Application: bip85Application,
+    bip85Index: bip85Index,
+    createdAt: 1,
+    updatedAt: 1,
+  );
+  return KeychainManifestWalletMaterializationRecord(
+    entry: entry,
+    walletMaterialization: KeychainManifestWalletMaterialization(
+      walletId: walletId,
+      entryId: entry.entryId,
+      childSeedFingerprint: childSeedFingerprint,
+      network: network,
+      walletPurpose: walletPurpose,
+      scriptType: scriptType,
+      createdAt: 1,
+      updatedAt: 1,
+    ),
+  );
+}

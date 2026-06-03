@@ -6667,6 +6667,548 @@ i1.GeneratedColumn<int> _column_243(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL CHECK (auto_sweep_enabled IN (0, 1))',
     );
+
+final class Schema15 extends i0.VersionedSchema {
+  Schema15({required super.database}) : super(version: 15);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    transactions,
+    walletMetadatas,
+    labels,
+    settings,
+    payjoinSenders,
+    payjoinReceivers,
+    electrumServers,
+    electrumSettings,
+    mempoolServers,
+    mempoolSettings,
+    swaps,
+    autoSwap,
+    bip85Derivations,
+    keychainManifestEntries,
+    keychainManifestWalletBindings,
+    recoverbull,
+    prices,
+  ];
+  late final Shape0 transactions = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'transactions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(txid)'],
+      columns: [
+        _column_114,
+        _column_115,
+        _column_116,
+        _column_117,
+        _column_118,
+        _column_119,
+        _column_120,
+        _column_121,
+        _column_122,
+        _column_123,
+        _column_124,
+        _column_125,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape38 walletMetadatas = Shape38(
+    source: i0.VersionedTable(
+      entityName: 'wallet_metadatas',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_126,
+        _column_127,
+        _column_128,
+        _column_129,
+        _column_130,
+        _column_131,
+        _column_132,
+        _column_133,
+        _column_134,
+        _column_135,
+        _column_136,
+        _column_137,
+        _column_138,
+        _column_237,
+        _column_238,
+        _column_139,
+        _column_140,
+        _column_141,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape34 labels = Shape34(
+    source: i0.VersionedTable(
+      entityName: 'labels',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['UNIQUE(label, reference)'],
+      columns: [
+        _column_147,
+        _column_142,
+        _column_232,
+        _column_144,
+        _column_145,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape35 settings = Shape35(
+    source: i0.VersionedTable(
+      entityName: 'settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_147,
+        _column_148,
+        _column_149,
+        _column_150,
+        _column_151,
+        _column_152,
+        _column_153,
+        _column_154,
+        _column_155,
+        _column_156,
+        _column_157,
+        _column_233,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape24 payjoinSenders = Shape24(
+    source: i0.VersionedTable(
+      entityName: 'payjoin_senders',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(uri)'],
+      columns: [
+        _column_158,
+        _column_159,
+        _column_160,
+        _column_161,
+        _column_162,
+        _column_163,
+        _column_164,
+        _column_165,
+        _column_166,
+        _column_167,
+        _column_168,
+        _column_169,
+        _column_170,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape25 payjoinReceivers = Shape25(
+    source: i0.VersionedTable(
+      entityName: 'payjoin_receivers',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_126,
+        _column_171,
+        _column_159,
+        _column_172,
+        _column_161,
+        _column_173,
+        _column_174,
+        _column_165,
+        _column_166,
+        _column_175,
+        _column_176,
+        _column_177,
+        _column_167,
+        _column_168,
+        _column_169,
+        _column_170,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape26 electrumServers = Shape26(
+    source: i0.VersionedTable(
+      entityName: 'electrum_servers',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(url)'],
+      columns: [
+        _column_178,
+        _column_159,
+        _column_179,
+        _column_180,
+        _column_181,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape27 electrumSettings = Shape27(
+    source: i0.VersionedTable(
+      entityName: 'electrum_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(network)'],
+      columns: [
+        _column_182,
+        _column_183,
+        _column_184,
+        _column_185,
+        _column_186,
+        _column_187,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape36 mempoolServers = Shape36(
+    source: i0.VersionedTable(
+      entityName: 'mempool_servers',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(url, is_testnet, is_liquid)'],
+      columns: [
+        _column_178,
+        _column_159,
+        _column_179,
+        _column_181,
+        _column_234,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape29 mempoolSettings = Shape29(
+    source: i0.VersionedTable(
+      entityName: 'mempool_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(network)'],
+      columns: [_column_182, _column_188],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape37 swaps = Shape37(
+    source: i0.VersionedTable(
+      entityName: 'swaps',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_126,
+        _column_144,
+        _column_189,
+        _column_190,
+        _column_159,
+        _column_191,
+        _column_192,
+        _column_193,
+        _column_194,
+        _column_195,
+        _column_196,
+        _column_197,
+        _column_198,
+        _column_199,
+        _column_200,
+        _column_201,
+        _column_202,
+        _column_203,
+        _column_204,
+        _column_205,
+        _column_206,
+        _column_207,
+        _column_235,
+        _column_208,
+        _column_236,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape31 autoSwap = Shape31(
+    source: i0.VersionedTable(
+      entityName: 'auto_swap',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_147,
+        _column_209,
+        _column_210,
+        _column_211,
+        _column_212,
+        _column_213,
+        _column_214,
+        _column_215,
+        _column_216,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 bip85Derivations = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'bip85_derivations',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(path)'],
+      columns: [
+        _column_217,
+        _column_218,
+        _column_219,
+        _column_190,
+        _column_220,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape39 keychainManifestEntries = Shape39(
+    source: i0.VersionedTable(
+      entityName: 'keychain_manifest_entries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'PRIMARY KEY(entry_id)',
+        'UNIQUE(parent_fingerprint, bip85_derivation_path)',
+      ],
+      columns: [
+        _column_239,
+        _column_240,
+        _column_241,
+        _column_242,
+        _column_243,
+        _column_244,
+        _column_245,
+        _column_246,
+        _column_165,
+        _column_247,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape40 keychainManifestWalletBindings = Shape40(
+    source: i0.VersionedTable(
+      entityName: 'keychain_manifest_wallet_bindings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(wallet_id)'],
+      columns: [
+        _column_161,
+        _column_248,
+        _column_249,
+        _column_182,
+        _column_250,
+        _column_251,
+        _column_165,
+        _column_247,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape32 recoverbull = Shape32(
+    source: i0.VersionedTable(
+      entityName: 'recoverbull',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_147, _column_178, _column_221],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape33 prices = Shape33(
+    source: i0.VersionedTable(
+      entityName: 'prices',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [
+        'UNIQUE(from_currency, to_currency, interval, created_at)',
+      ],
+      columns: [
+        _column_147,
+        _column_222,
+        _column_223,
+        _column_224,
+        _column_225,
+        _column_226,
+        _column_227,
+        _column_228,
+        _column_229,
+        _column_230,
+        _column_231,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+}
+
+class Shape39 extends i0.VersionedTable {
+  Shape39({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get entryId =>
+      columnsByName['entry_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get parentFingerprint =>
+      columnsByName['parent_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get bip85DerivationPath =>
+      columnsByName['bip85_derivation_path']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get reservationId =>
+      columnsByName['reservation_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get entryType =>
+      columnsByName['entry_type']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get ownerFeature =>
+      columnsByName['owner_feature']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get bip85Application =>
+      columnsByName['bip85_application']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get bip85Index =>
+      columnsByName['bip85_index']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_239(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'entry_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_240(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'parent_fingerprint',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_241(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'bip85_derivation_path',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_242(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'reservation_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_243(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'entry_type',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_244(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'owner_feature',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_245(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'bip85_application',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_246(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'bip85_index',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_247(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'updated_at',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape40 extends i0.VersionedTable {
+  Shape40({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get walletId =>
+      columnsByName['wallet_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get entryId =>
+      columnsByName['entry_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get childSeedFingerprint =>
+      columnsByName['child_seed_fingerprint']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get network =>
+      columnsByName['network']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get walletPurpose =>
+      columnsByName['wallet_purpose']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get scriptType =>
+      columnsByName['script_type']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_248(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'entry_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints:
+          'NOT NULL REFERENCES keychain_manifest_entries(entry_id)',
+    );
+i1.GeneratedColumn<String> _column_249(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'child_seed_fingerprint',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_250(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'wallet_purpose',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_251(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'script_type',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
@@ -6681,6 +7223,7 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
   required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
+  required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -6749,6 +7292,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from13To14(migrator, schema);
         return 14;
+      case 14:
+        final schema = Schema15(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from14To15(migrator, schema);
+        return 15;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -6769,6 +7317,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
   required Future<void> Function(i1.Migrator m, Schema13 schema) from12To13,
   required Future<void> Function(i1.Migrator m, Schema14 schema) from13To14,
+  required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -6784,5 +7333,6 @@ i1.OnUpgrade stepByStep({
     from11To12: from11To12,
     from12To13: from12To13,
     from13To14: from13To14,
+    from14To15: from14To15,
   ),
 );

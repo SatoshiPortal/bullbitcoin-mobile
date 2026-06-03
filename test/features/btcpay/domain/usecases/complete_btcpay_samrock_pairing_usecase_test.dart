@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/btcpay/domain/samrock_pairing_service_port.da
 import 'package:bb_mobile/features/btcpay/domain/samrock_setup_payload_builder.dart';
 import 'package:bb_mobile/features/btcpay/domain/usecases/complete_btcpay_samrock_pairing_usecase.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
+import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 

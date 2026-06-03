@@ -37,11 +37,13 @@ class DeterministicWalletSpec {
 
 class PreparedDeterministicWallets {
   final List<PreparedDeterministicWallet> wallets;
+  final String parentFingerprint;
   final String childSeedFingerprint;
   final bool childSeedStoredDuringAttempt;
 
   const PreparedDeterministicWallets({
     required this.wallets,
+    required this.parentFingerprint,
     required this.childSeedFingerprint,
     required this.childSeedStoredDuringAttempt,
   });
