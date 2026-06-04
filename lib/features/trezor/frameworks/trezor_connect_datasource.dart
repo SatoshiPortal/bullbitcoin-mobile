@@ -100,6 +100,24 @@ class TrezorConnectDatasource {
     ScriptType.bip44 => 'SPENDADDRESS',
   };
 
+  /// Maps wallet ScriptType to Trezor's output-script-type label for
+  /// CHANGE outputs (where the wallet's derivation family is known).
+  ///
+  /// External outputs use `_detectOutputScriptType` (byte detection)
+  /// instead — we don't know what kind of wallet the recipient uses.
+  ///
+  /// Why this exists: P2SH-P2WPKH change in a BIP49 wallet has the
+  /// same scriptPubkey shape as plain P2SH at the byte level (length
+  /// 23, OP_HASH160 pattern). Without the wallet's ScriptType, byte
+  /// detection always returns PAYTOSCRIPTHASH — but Trezor needs
+  /// PAYTOP2SHWITNESS to validate the wrapped-SegWit change correctly.
+  String _changeOutputScriptTypeFor(ScriptType scriptType) =>
+      switch (scriptType) {
+        ScriptType.bip84 => 'PAYTOWITNESS',
+        ScriptType.bip49 => 'PAYTOP2SHWITNESS',
+        ScriptType.bip44 => 'PAYTOADDRESS',
+      };
+
   /// Signs a base64-encoded PSBT via Trezor Connect.
   ///
   /// Pipeline:
@@ -202,22 +220,24 @@ class TrezorConnectDatasource {
       final txOut = txOutputs[i];
 
       final amount = txOut.value.toSat();
-      final scriptType = _detectOutputScriptType(txOut.scriptPubkey);
 
       if (psbtOut.bip32Derivation.isNotEmpty) {
-        // Change output: pass the derivation path so Trezor can re-derive
-        // the address on-device and confirm it matches.
+        // Change output: pass derivation path so Trezor can re-derive
+        // on-device. Use the wallet's ScriptType — P2SH-P2WPKH change
+        // looks like plain P2SH at the script-pubkey level but Trezor
+        // needs PAYTOP2SHWITNESS to validate the wrap correctly.
         final keySource = psbtOut.bip32Derivation.values.first;
         outputs.add(
           TrezorTxOutput(
             amount: amount,
             addressPath: keySource.path.toU32Vec(),
-            scriptType: scriptType,
+            scriptType: _changeOutputScriptTypeFor(scriptType),
           ),
         );
       } else {
-        // External destination: derive the address from the scriptPubkey
-        // and let the user verify it on-device.
+        // External destination: derive the address from scriptPubkey
+        // and byte-detect the script type — we don't know what kind of
+        // wallet the recipient uses, so we infer from the on-chain shape.
         final address = bdk.Address.fromScript(
           script: txOut.scriptPubkey,
           network: network,
@@ -226,7 +246,7 @@ class TrezorConnectDatasource {
           TrezorTxOutput(
             amount: amount,
             address: address.toString(),
-            scriptType: scriptType,
+            scriptType: _detectOutputScriptType(txOut.scriptPubkey),
           ),
         );
       }
@@ -244,12 +264,14 @@ class TrezorConnectDatasource {
   }
 
   /// Detects Trezor's output script-type label from a raw scriptPubkey.
+  /// Used for EXTERNAL outputs only — for wallet-owned change outputs,
+  /// `_changeOutputScriptTypeFor` uses the wallet's ScriptType instead.
   ///
   /// Trezor's labels (from the package's enum docs):
   /// `PAYTOADDRESS | PAYTOSCRIPTHASH | PAYTOWITNESS | PAYTOP2SHWITNESS |
-  ///  PAYTOTAPROOT`. We currently emit only the three common forms; P2SH-
-  /// P2WPKH wrap (PAYTOP2SHWITNESS) is indistinguishable from P2SH at the
-  /// output-script level — the wrap only matters for INPUTS.
+  ///  PAYTOTAPROOT`. P2SH-P2WPKH wrap (PAYTOP2SHWITNESS) is
+  /// indistinguishable from plain P2SH at the script-pubkey level, so
+  /// external P2SH outputs always get PAYTOSCRIPTHASH here.
   String _detectOutputScriptType(bdk.Script script) {
     final bytes = script.toBytes();
 
