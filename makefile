@@ -156,7 +156,8 @@ android: container-app
 				"--remap-path-prefix=$$HOME/.rustup=/rustup" \
 				"--remap-path-prefix=/app=/build") && \
 			CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 && \
-			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS && \
+			CARGO_NET_GIT_FETCH_WITH_CLI=true && \
+			export SOURCE_DATE_EPOCH CARGO_ENCODED_RUSTFLAGS CARGO_PROFILE_RELEASE_CODEGEN_UNITS CARGO_NET_GIT_FETCH_WITH_CLI && \
 			cd /app && \
 			$(FLUTTER_BUILD)'
 	@$(CONTAINER) cp bull-build:$(CONTAINER_OUTPUT) $(HOST_OUTPUT)
@@ -178,6 +179,15 @@ unit-test:
 	@echo "🏃‍ running unit tests"
 	@fvm flutter test test/ --reporter=compact
 
+# integration_test/all_test.dart is a single aggregator entrypoint: it runs
+# Bull.init() once, then every test file's main(isInitialized: true). On the
+# Linux desktop device the app can only be launched once per `flutter test`
+# invocation, so running this one file builds + launches once for the whole
+# suite (instead of failing every file but the first, as `flutter test
+# integration_test/` does). all_test.dart is a generated, gitignored artifact —
+# tool/gen_all_test.dart regenerates it from disk below, so adding a test file
+# needs no manual wiring.
 integration-test:
 	@echo "🧪 integration tests"
-	@fvm flutter test integration_test/ --reporter=compact
+	@fvm dart run tool/gen_all_test.dart
+	@fvm flutter test integration_test/all_test.dart --reporter=expanded

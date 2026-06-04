@@ -39,6 +39,12 @@ Future<void> main({bool isInitialized = false}) async {
         syncedAt: DateTime.now(),
       );
 
+      // Clear any leftover row with the same id from a crashed prior run so the
+      // insert below never trips the unique constraint.
+      await sqlite.managers.walletMetadatas
+          .filter((e) => e.id(metadata.id))
+          .delete();
+
       // Store a metadata
       await sqlite.into(sqlite.walletMetadatas).insert(metadata.toSqlite());
 
@@ -50,14 +56,18 @@ Future<void> main({bool isInitialized = false}) async {
       expect(fetchedMetadata, isNotNull);
       expect(fetchedMetadata!.id, metadata.id);
 
-      // Delete the only one
+      // Delete the one we inserted
       await sqlite.managers.walletMetadatas
           .filter((f) => f.id(metadata.id))
           .delete();
 
-      // Fetch all
-      final fetchedMetadatas = await sqlite.managers.walletMetadatas.get();
-      expect(fetchedMetadatas, isEmpty);
+      // Ensure the row we inserted is gone. Scoped to our own id so the test is
+      // isolated from any other wallet metadata already present in the database
+      // (asserting the whole table is empty made this test order-dependent).
+      final afterDelete = await sqlite.managers.walletMetadatas
+          .filter((e) => e.id(metadata.id))
+          .getSingleOrNull();
+      expect(afterDelete, isNull);
     });
   });
 }
