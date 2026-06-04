@@ -46,9 +46,7 @@ class TrezorLocator {
       ),
     );
     locator.registerFactory<PrepareTrezorImportUsecase>(
-      () => PrepareTrezorImportUsecase(
-        trezorRepository: locator<TrezorDeviceRepository>(),
-      ),
+      () => const PrepareTrezorImportUsecase(),
     );
     locator.registerFactory<VerifyAddressTrezorUsecase>(
       () => VerifyAddressTrezorUsecase(

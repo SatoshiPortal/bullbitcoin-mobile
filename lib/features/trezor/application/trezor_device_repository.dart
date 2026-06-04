@@ -9,13 +9,6 @@ abstract class TrezorDeviceRepository {
     required ScriptType scriptType,
   });
 
-  /// Hex (8 chars, 4 bytes) fingerprint of the master public key (path "m").
-  ///
-  /// Required to construct descriptors with a valid BIP32 origin
-  /// (`[fp/84'/0'/0']zpub…`). The implementation caches the value after the
-  /// first fetch since master fingerprint never changes for a given device.
-  Future<String> getMasterFingerprint();
-
   Future<TrezorSignedPsbt> signPsbt({
     required String psbtBase64,
     required bool isTestnet,

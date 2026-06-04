@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/trezor/application/application_errors.dart';
 import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
@@ -10,8 +9,6 @@ import 'package:trezor_connect/models.dart';
 
 class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
   final TrezorConnectDatasource _datasource;
-
-  String? _cachedMasterFingerprint;
 
   TrezorDeviceRepositoryImpl({required TrezorConnectDatasource datasource})
     : _datasource = datasource;
@@ -33,25 +30,6 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
 
     try {
       final raw = await _datasource.getPublicKeyBundle(paths);
-
-      // Trezor includes the master fingerprint in the descriptor field of
-      // every returned account: `wpkh([<masterFp>/84h/0h/<idx>h]xpub.../<0;1>/*)`.
-      // Parse it once and cache for the session. This avoids a second
-      // deeplink round-trip for `m` — which Trezor refuses with "Invalid
-      // parameters from calling app".
-
-      if (_cachedMasterFingerprint == null && raw.isNotEmpty) {
-        final fp = _extractMasterFingerprint(raw.first.descriptor);
-        if (fp != null) {
-          _cachedMasterFingerprint = fp;
-        } else {
-          log.warning(
-            'could not parse master fingerprint from Trezor descriptor: '
-            '${raw.first.descriptor}',
-          );
-        }
-      }
-
       return raw.map(_toAccount).toList();
     } on Exception catch (e) {
       throw _mapError(e);
@@ -67,20 +45,6 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     if (descriptor == null) return null;
     final match = RegExp(r'\[([0-9a-fA-F]{8})/').firstMatch(descriptor);
     return match?.group(1);
-  }
-
-  @override
-  Future<String> getMasterFingerprint() async {
-    final cached = _cachedMasterFingerprint;
-    if (cached != null) return cached;
-    // No deeplink fallback: Trezor refuses path "m" with "Invalid
-    // parameters from calling app". The master fingerprint is parsed from
-    // any account's descriptor in getAccounts above. If we get here, the
-    // caller forgot to call getAccounts first.
-    throw Exception(
-      'master fingerprint not yet cached — call getAccounts first so '
-      'descriptor parsing can extract it',
-    );
   }
 
   @override
@@ -127,10 +91,19 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     final hardened = raw.path[2];
     final accountIndex = hardened - 0x80000000;
 
+    final fp = _extractMasterFingerprint(raw.descriptor);
+    if (fp == null) {
+      throw Exception(
+        'Could not parse master fingerprint from Trezor descriptor: '
+        '${raw.descriptor}',
+      );
+    }
+
     return TrezorAccount(
       accountIndex: accountIndex,
       derivationPath: raw.serializedPath,
       xpub: raw.xpub,
+      masterFingerprint: fp,
     );
   }
 
