@@ -13,6 +13,35 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v6
 
+            # Caches below are restored before any toolchain step that uses
+            # them, so the SDK download / pub resolve / crate fetch on a cold
+            # runner only pays out on a cache miss. The pub cache also holds the
+            # bull_sdk git clone; the Cargo cache holds its transitive crates.io
+            # deps. All three keys derive from lockfiles, so they self-invalidate
+            # when deps change. pubspec.lock pins the bull_sdk commit, so it is
+            # the right key for the Cargo cache (there is no repo-root Cargo.lock).
+            - name: Cache Flutter SDK (FVM)
+              uses: actions/cache@v5
+              with:
+                  path: ~/fvm/versions
+                  key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
+
+            - name: Cache pub (hosted + git deps)
+              uses: actions/cache@v5
+              with:
+                  path: ~/.pub-cache
+                  key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+                  restore-keys: pub-${{ runner.os }}-
+
+            - name: Cache Cargo (FRB native crates)
+              uses: actions/cache@v5
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                  key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+                  restore-keys: cargo-${{ runner.os }}-
+
             - name: Install FVM
               run: |
                   curl -fsSL https://fvm.app/install.sh | bash -s -- 4.0.5
