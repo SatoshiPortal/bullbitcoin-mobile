@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
@@ -48,7 +49,7 @@ class _ActionRow extends StatelessWidget {
             children: [
               _ActionButton(
                 icon: Assets.icons.btc.path,
-                label: 'Buy',
+                label: context.loc.homeActionBuy,
                 onPressed: () {
                   if (Platform.isIOS) {
                     final isSuperuser =
@@ -69,7 +70,7 @@ class _ActionRow extends StatelessWidget {
               const Gap(1),
               _ActionButton(
                 icon: Assets.icons.dollar.path,
-                label: 'Sell',
+                label: context.loc.homeActionSell,
                 onPressed: () {
                   if (Platform.isIOS) {
                     final isSuperuser =
@@ -90,7 +91,7 @@ class _ActionRow extends StatelessWidget {
               const Gap(1),
               _ActionButton(
                 icon: Assets.icons.rightArrow.path,
-                label: 'Pay',
+                label: context.loc.homeActionPay,
                 onPressed: () {
                   final notLoggedIn = context
                       .read<ExchangeCubit>()
@@ -120,7 +121,7 @@ class _ActionRow extends StatelessWidget {
               const Gap(1),
               _ActionButton(
                 icon: Assets.icons.swap.path,
-                label: 'Transfer',
+                label: context.loc.homeActionTransfer,
                 onPressed: () {
                   context.pushNamed(SwapRoute.swap.name);
                 },

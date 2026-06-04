@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/store_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -80,13 +81,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
   String? _validateUrl(String? value) {
     if (value == null || value.isEmpty) {
-      return 'URL is required';
+      return context.loc.recoverbullSettingsUrlRequired;
     }
     final uri = Uri.tryParse(value);
-    if (uri == null) return 'URL is not valid';
-    if (uri.scheme != 'http') return 'URL must be HTTP';
+    if (uri == null) return context.loc.recoverbullSettingsUrlInvalid;
+    if (uri.scheme != 'http') return context.loc.recoverbullSettingsUrlMustBeHttp;
     if (!uri.toString().endsWith('.onion')) {
-      return 'URL must end with .onion';
+      return context.loc.recoverbullSettingsUrlMustBeOnion;
     }
     return null;
   }
@@ -100,7 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
           icon: const Icon(Icons.arrow_back),
         ),
         title: BBText(
-          'Recoverbull Settings',
+          context.loc.recoverbullSettingsTitle,
           style: context.font.headlineMedium,
           color: context.appColors.onSurface,
         ),
@@ -120,7 +121,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         mainAxisAlignment: .spaceBetween,
                         children: [
                           BBText(
-                            'Key Server URL',
+                            context.loc.recoverbullSettingsKeyServerUrl,
                             style: context.font.titleMedium,
                             color: context.appColors.onSurface,
                           ),
@@ -131,7 +132,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 setState(() => _isEditing = true);
                               },
                               icon: const Icon(Icons.edit, size: 18),
-                              label: const Text('Edit'),
+                              label: Text(context.loc.recoverbullSettingsEdit),
                             ),
                         ],
                       ),
@@ -144,7 +145,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           autofocus: true,
                           style: context.font.bodyMedium,
                           decoration: InputDecoration(
-                            hintText: 'http://example.onion',
+                            hintText: context.loc.recoverbullSettingsUrlHint,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -172,7 +173,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           children: [
                             Expanded(
                               child: BBButton.big(
-                                label: 'Cancel',
+                                label: context.loc.recoverbullSettingsCancel,
                                 onPressed: _cancelEdit,
                                 bgColor: context.appColors.cardBackground,
                                 textColor: context.appColors.onSurface,
@@ -181,7 +182,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             const Gap(8),
                             Expanded(
                               child: BBButton.big(
-                                label: 'Save',
+                                label: context.loc.recoverbullSettingsSave,
                                 onPressed: _saveUrl,
                                 bgColor: context.appColors.onSurface,
                                 textColor: context.appColors.surface,
@@ -204,7 +205,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             ),
                             const Gap(8),
                             BBText(
-                              'Learn more about Recoverbull',
+                              context.loc.recoverbullLearnMore,
                               style: context.font.bodyMedium,
                               color: context.appColors.primary,
                             ),

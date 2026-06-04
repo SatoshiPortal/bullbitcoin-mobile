@@ -65,7 +65,7 @@ class _PayAmountScreenState extends State<PayAmountScreen> {
     // );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pay')),
+      appBar: AppBar(title: Text(context.loc.payTitle)),
               body: SafeArea(
           child: BBKeyboardActions(
             disableScroll: true,

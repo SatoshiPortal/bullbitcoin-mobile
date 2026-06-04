@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/theme_option.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class ThemeSettingsScreen extends StatelessWidget {
               previous.storedSettings?.themeMode,
       listener: (context, state) => context.pop(),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Theme')),
+        appBar: AppBar(title: Text(context.loc.settingsThemeTitle)),
         body: SafeArea(
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
