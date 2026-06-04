@@ -616,7 +616,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 20.000 € Aşağıdaki işlemler için",
+  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 30.000 € Aşağıdaki işlemler için",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4847,7 +4847,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Sadece 20.000 € üzerinde daha büyük işlemler için kullanın",
+  "fundExchangeMethodRegularSepaSubtitle": "Sadece 30.000 € üzerinde daha büyük işlemler için kullanın",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

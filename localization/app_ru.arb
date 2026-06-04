@@ -219,7 +219,7 @@
   "payServiceFee": "Сервисная плата",
   "transactionStatusSwapExpired": "Замыкается",
   "swapAmountPlaceholder": "0",
-  "fundExchangeMethodInstantSepaSubtitle": "Самый быстрый - только для транзакций ниже €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Самый быстрый - только для транзакций ниже €30,000",
   "dcaConfirmError": "Что-то пошло не так:",
   "@dcaConfirmError": {
     "placeholders": {
@@ -1587,7 +1587,7 @@
     }
   },
   "dcaFrequencyWeekly": "неделя",
-  "fundExchangeMethodRegularSepaSubtitle": "Только для более крупных транзакций выше €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Только для более крупных транзакций выше €30,000",
   "settingsTelegramLabel": "Telegram",
   "walletDetailsSignerDeviceNotSupported": "Не поддерживается",
   "exchangeLandingDisclaimerLegal": "Доступ к услугам обмена будет ограничен странами, где Bull Bitcoin может легально работать и может потребовать KYC.",

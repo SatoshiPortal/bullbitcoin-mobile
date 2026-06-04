@@ -616,7 +616,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Fastest - € 20,000 미만의 거래 만",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - € 30,000 미만의 거래 만",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4867,7 +4867,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "만 € 20,000 이상의 거래에 사용",
+  "fundExchangeMethodRegularSepaSubtitle": "만 € 30,000 이상의 거래에 사용",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

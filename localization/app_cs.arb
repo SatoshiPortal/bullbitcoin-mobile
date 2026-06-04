@@ -895,7 +895,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4916,7 +4916,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },

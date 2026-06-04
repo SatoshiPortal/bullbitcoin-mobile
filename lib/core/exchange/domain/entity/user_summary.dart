@@ -156,10 +156,17 @@ sealed class UserSummary with _$UserSummary {
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
   bool get hasConsentedScamWarning => groups.contains('CONSENT_SCAM_WARNING');
 
+ static const _lightKycCurrencies = {
+    FiatCurrency.cad,
+    FiatCurrency.crc,
+    FiatCurrency.ars,
+  };
+
   /// Whether the user's KYC level permits transactions in [currency].
   bool isKycOk(FiatCurrency currency) {
-    return isFullyVerifiedKycLevel ||
-        currency == FiatCurrency.cad && (isLimitedKycLevel || isLightKycLevel);
+    if (isFullyVerifiedKycLevel) return true;
+    return (isLimitedKycLevel || isLightKycLevel) &&
+        _lightKycCurrencies.contains(currency);
   }
 
   /// Whether [amount] exceeds the per-transaction limit for the user's

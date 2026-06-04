@@ -220,7 +220,7 @@
   "payServiceFee": "Costo del servizio",
   "transactionStatusSwapExpired": "Scambio scaduto",
   "swapAmountPlaceholder": "0",
-  "fundExchangeMethodInstantSepaSubtitle": "Più veloce - Solo per operazioni inferiori a €20.000",
+  "fundExchangeMethodInstantSepaSubtitle": "Più veloce - Solo per operazioni inferiori a €30.000",
   "dcaConfirmError": "Qualcosa non andava: {error}",
   "@dcaConfirmError": {
     "placeholders": {
@@ -1590,7 +1590,7 @@
     }
   },
   "dcaFrequencyWeekly": "settimana",
-  "fundExchangeMethodRegularSepaSubtitle": "Utilizzare solo per operazioni più grandi superiori a €20.000",
+  "fundExchangeMethodRegularSepaSubtitle": "Utilizzare solo per operazioni più grandi superiori a €30.000",
   "settingsTelegramLabel": "Telegramma",
   "walletDetailsSignerDeviceNotSupported": "Non supportato",
   "exchangeLandingDisclaimerLegal": "L'accesso ai servizi di scambio sarà limitato ai paesi in cui Bull Bitcoin può operare legalmente e può richiedere KYC.",
