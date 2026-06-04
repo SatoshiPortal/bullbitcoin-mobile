@@ -1,3 +1,5 @@
+useless diff
+
 [![Analyze and Test](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze_and_test.yml/badge.svg?branch=develop)](https://github.com/SatoshiPortal/bullbitcoin-mobile/actions/workflows/analyze_and_test.yml)
 
 # About BULL Wallet
