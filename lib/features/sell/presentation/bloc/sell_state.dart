@@ -135,7 +135,12 @@ sealed class SellState with _$SellState {
     _ => null,
   };
 
-  bool get isKycOk => _userSummary?.isKycOk ?? false;
+  /// Whether the user's KYC level permits transactions in [currency].
+  /// Falls back to [fiatCurrency] when [currency] is null.
+  bool isKycOk({FiatCurrency? currency}) {
+    final effectiveCurrency = currency ?? fiatCurrency;
+    return _userSummary?.isKycOk(effectiveCurrency) ?? false;
+  }
 
   /// Whether [amount] exceeds the per-transaction limit for the user's
   /// KYC level in [currency]. Falls back to [fiatCurrency] when null.
