@@ -184,7 +184,10 @@ unit-test:
 # Linux desktop device the app can only be launched once per `flutter test`
 # invocation, so running this one file builds + launches once for the whole
 # suite (instead of failing every file but the first, as `flutter test
-# integration_test/` does). Keep all_test.dart in sync when adding test files.
+# integration_test/` does). all_test.dart is a generated, gitignored artifact —
+# tool/gen_all_test.dart regenerates it from disk below, so adding a test file
+# needs no manual wiring.
 integration-test:
 	@echo "🧪 integration tests"
+	@fvm dart run tool/gen_all_test.dart
 	@fvm flutter test integration_test/all_test.dart --reporter=expanded
