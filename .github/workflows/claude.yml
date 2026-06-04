@@ -10,10 +10,10 @@ on:
     branches: [develop]
 
 permissions:
+  id-token: write # required: the action mints its GitHub token via OIDC
   contents: write # so it can write the repo
   issues: write # so it can comment on issues
   pull-requests: write # so it can comment on PRs
-  # id-token dropped: only needed for OIDC (Bedrock/Vertex), not api_key auth.
 
 # One run per issue/PR; don't pile up on rapid comments.
 concurrency:
@@ -42,29 +42,9 @@ jobs:
           fetch-depth: 0 # Fetch full history for branch operations
           persist-credentials: true # Keep credentials for subsequent git commands
 
-      # RTK (Rust Token Killer) installs a PreToolUse hook that rewrites Claude's
-      # shelled-out commands (git/test/build) to filtered `rtk` equivalents,
-      # cutting API token use. Pinned to a release tag (not master). --auto-patch
-      # is the non-interactive CI mode; it patches ~/.claude/settings.json, which
-      # we then load explicitly via the action's `settings` input below (the
-      # action isn't documented to read global settings on its own).
-      - name: Install RTK token optimizer
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/v0.42.1/install.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-          "$HOME/.local/bin/rtk" init -g --auto-patch
-          echo "CLAUDE_SETTINGS=$HOME/.claude/settings.json" >> "$GITHUB_ENV"
-
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Load the RTK-patched settings so the PreToolUse hook is applied.
-          settings: ${{ env.CLAUDE_SETTINGS }}
           # Empty on comment events (interactive @claude mode); a review
           # instruction when a PR is opened against develop.
           prompt: ${{ github.event_name == 'pull_request' && 'Review this pull request for correctness bugs, security issues, and regressions. Post findings as inline review comments plus a short summary.' || '' }}
-
-      # Surfaces the token savings so we can confirm RTK actually engaged.
-      - name: RTK token savings
-        if: always()
-        run: rtk gain
