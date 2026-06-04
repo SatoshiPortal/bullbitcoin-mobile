@@ -45,6 +45,11 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # On PR-open the action auto-picks "agent" mode, which runs the prompt
+          # but posts nothing. Forcing tag mode gives Claude the GitHub
+          # review/comment tools + a tracking comment so the review is posted.
+          # Comment events (@claude) are already tag mode, so leave them as-is.
+          track_progress: ${{ github.event_name == 'pull_request' }}
           # Empty on comment events (interactive @claude mode); a review
           # instruction when a PR is opened against develop.
           prompt: ${{ github.event_name == 'pull_request' && 'Review this pull request for correctness bugs, security issues, and regressions. Post findings as inline review comments plus a short summary.' || '' }}
