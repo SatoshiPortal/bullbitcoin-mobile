@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
+  "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
+  "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
+  "backupWarningLoseReasonCriticalIssue": "حدوث مشكلة خطيرة في التطبيق أو الجهاز",
+  "backupWarningLoseReasonKeystore": "يقوم جهازك بإبطال مخزن المفاتيح (keystore) عند تغيير طريقة قفل الشاشة أو مصادقة الجهاز",
+  "backupWarningLoseReasonCloudRestore": "استعادة جهازك من نسخة احتياطية على السحابة",
+  "backupWarningNoRecovery": "لا توجد طريقة لاستعادة محفظتك بدون نسخة احتياطية.",
   "ledgerHelpTitle": "Ledger Troubleshooting",
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
@@ -500,6 +507,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "المبلغ المستلم",
+  "swapInsufficientFunds": "أموال غير كافية",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

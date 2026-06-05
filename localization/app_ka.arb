@@ -1,4 +1,12 @@
 {
+  "backupWarningDescription": "სარეზერვო ასლის გარეშე თქვენ დაკარგავთ წვდომას თქვენს bitcoin-ზე, თუ:",
+  "backupWarningLoseReasonLostPhone": "დაკარგავთ თქვენს ტელეფონს",
+  "backupWarningLoseReasonDeletedApp": "წაშლით აპლიკაციას",
+  "backupWarningLoseReasonCriticalIssue": "მოხდება აპლიკაციის ან მოწყობილობის კრიტიკული ხარვეზი",
+  "backupWarningLoseReasonKeystore": "თქვენი მოწყობილობა გააუქმებს გასაღებების საცავს (keystore) ეკრანის დაბლოკვის/მოწყობილობის ავთენტიფიკაციის შეცვლისას",
+  "backupWarningLoseReasonCloudRestore": "აღადგენთ თქვენს მოწყობილობას ღრუბლოვანი სარეზერვო ასლიდან",
+  "backupWarningNoRecovery": "სარეზერვო ასლის გარეშე საფულის აღდგენა შეუძლებელია.",
+  "swapInsufficientFunds": "არასაკმარისი სახსრები",
   "broadcastSignedTxBroadcastError": "ტრანზაქციის გავრცელება ვერ მოხერხდა",
   "transactionNoteAddTitle": "შენიშვნის დამატება",
   "@transactionNoteAddTitle": {

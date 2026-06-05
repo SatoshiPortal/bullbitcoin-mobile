@@ -218,8 +218,12 @@ class SwapPageState extends State<SwapPage> {
                         if (swapCreationError == null) {
                           return const SizedBox.shrink();
                         }
+                        final message =
+                            swapCreationError is InsufficientFundsSwapException
+                            ? context.loc.swapInsufficientFunds
+                            : swapCreationError.message;
                         return Text(
-                          swapCreationError.message,
+                          message,
                           style: context.font.labelLarge?.copyWith(
                             color: context.appColors.error,
                           ),
@@ -228,9 +232,7 @@ class SwapPageState extends State<SwapPage> {
                       },
                     ),
                     BlocSelector<TransferBloc, TransferState, bool>(
-                      selector: (state) =>
-                          state.shouldShowAdvancedOptions &&
-                          !state.isSameChainTransfer,
+                      selector: (state) => state.shouldShowReceiveExactAmount,
                       builder: (context, showReceiveExactAmount) {
                         if (!showReceiveExactAmount) {
                           return const SizedBox.shrink();
@@ -311,13 +313,14 @@ class SwapPageState extends State<SwapPage> {
                       selector: (state) =>
                           state.isStarting ||
                           state.isCreatingSwap ||
-                          state.continueClicked,
-                      builder: (context, isLoading) {
+                          state.continueClicked ||
+                          state.hasAmountError,
+                      builder: (context, disabled) {
                         return BBButton.big(
                           label: context.loc.swapContinueButton,
                           bgColor: context.appColors.secondary,
                           textColor: context.appColors.onSecondary,
-                          disabled: isLoading,
+                          disabled: disabled,
                           onPressed: () {
                             if (!_formKey.currentState!.validate()) {
                               return;

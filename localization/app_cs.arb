@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
+  "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
+  "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",
+  "backupWarningLoseReasonCriticalIssue": "Dojde ke kritickému problému s aplikací nebo zařízením",
+  "backupWarningLoseReasonKeystore": "Zařízení zneplatní keystore při změně zámku obrazovky nebo ověřování zařízení",
+  "backupWarningLoseReasonCloudRestore": "Obnovení zařízení ze zálohy v cloudu",
+  "backupWarningNoRecovery": "Bez zálohy nelze peněženku obnovit.",
   "durationSeconds": "{seconds} vteřin(y)",
   "@durationSeconds": {
     "description": "Duration format for seconds",
@@ -811,6 +818,7 @@
     "description": "Message shown while broadcasting transaction to network"
   },
   "swapReceiveExactAmountLabel": "Získejte přesné množství",
+  "swapInsufficientFunds": "Nedostatek prostředků",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

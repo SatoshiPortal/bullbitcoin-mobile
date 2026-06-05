@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
+  "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
+  "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",
+  "backupWarningLoseReasonCriticalIssue": "কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যা হলে",
+  "backupWarningLoseReasonKeystore": "আপনি লকস্ক্রিন বা ডিভাইস অথেন্টিকেশন পরিবর্তন করলে আপনার ডিভাইস কীস্টোর (keystore) বাতিল করে দেয়",
+  "backupWarningLoseReasonCloudRestore": "ক্লাউড ব্যাকআপ থেকে আপনার ডিভাইস রিস্টোর করা",
+  "backupWarningNoRecovery": "ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
   "@@locale": "bn",
   "settingsTelegramLabel": "Telegram",
   "@settingsTelegramLabel": {
@@ -532,6 +539,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "নির্দিষ্ট পরিমাণ গ্রহণ করুন",
+  "swapInsufficientFunds": "অপর্যাপ্ত তহবিল",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -12797,10 +12805,6 @@
   "backupWarningTitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "ব্যাকআপ ছাড়া, আপনার ফোন হারালে, অ্যাপ মুছলে বা কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যায় আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন। ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "হ্যাঁ",
   "@backupWarningBackupNow": {

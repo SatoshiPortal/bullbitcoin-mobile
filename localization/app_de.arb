@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Ohne Backup verlierst du den Zugriff auf deine bitcoin, wenn:",
+  "backupWarningLoseReasonLostPhone": "du dein Handy verlierst",
+  "backupWarningLoseReasonDeletedApp": "du die App löschst",
+  "backupWarningLoseReasonCriticalIssue": "ein kritisches App- oder Geräteproblem auftritt",
+  "backupWarningLoseReasonKeystore": "dein Gerät den Keystore ungültig macht, wenn du die Sperrbildschirm- oder Geräteauthentifizierung änderst",
+  "backupWarningLoseReasonCloudRestore": "du dein Gerät aus einem Cloud-Backup wiederherstellst",
+  "backupWarningNoRecovery": "Ohne Backup gibt es keine Möglichkeit, dein Wallet wiederherzustellen.",
   "translationWarningTitle": "KI-generierte Übersetzungen",
   "translationWarningDescription": "Die meisten Übersetzungen in dieser App wurden mit KI erstellt und können Ungenauigkeiten enthalten. Wenn Sie Fehler bemerken oder bei der Verbesserung der Übersetzungen helfen möchten, können Sie eine Korrektur in unserem GitHub-Repository einreichen.",
   "translationWarningContributeButton": "Übersetzungen verbessern",
@@ -191,6 +198,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Genauen Betrag erhalten",
+  "swapInsufficientFunds": "Unzureichendes Guthaben",
   "arkContinueButton": "Weiter",
   "ledgerImportButton": "Import starten",
   "dcaActivate": "Wiederkehrenden Kauf aktivieren",

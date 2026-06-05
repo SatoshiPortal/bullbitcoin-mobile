@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если:",
+  "backupWarningLoseReasonLostPhone": "Потеряете телефон",
+  "backupWarningLoseReasonDeletedApp": "Удалите приложение",
+  "backupWarningLoseReasonCriticalIssue": "Столкнётесь с критической проблемой приложения или устройства",
+  "backupWarningLoseReasonKeystore": "Устройство аннулирует keystore при смене блокировки экрана или способа аутентификации устройства",
+  "backupWarningLoseReasonCloudRestore": "Восстановление устройства из облачной резервной копии",
+  "backupWarningNoRecovery": "Без резервной копии восстановить кошелёк невозможно.",
   "translationWarningTitle": "Переводы, созданные ИИ",
   "translationWarningDescription": "Большинство переводов в этом приложении были созданы с помощью ИИ и могут содержать неточности. Если вы заметили ошибки или хотите помочь улучшить переводы, вы можете отправить исправление в наш репозиторий на GitHub.",
   "translationWarningContributeButton": "Помочь улучшить переводы",
@@ -191,6 +198,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Получить точную сумму",
+  "swapInsufficientFunds": "Недостаточно средств",
   "arkContinueButton": "Продолжить",
   "ledgerImportButton": "Начало",
   "dcaActivate": "Активировать покупку",
@@ -4441,10 +4449,6 @@
   "backupWarningTitle": "СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ КОШЕЛЬКА СЕЙЧАС",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Без резервной копии вы потеряете доступ к своим биткоинам, если потеряете телефон, удалите приложение или столкнётесь с критической проблемой приложения или устройства. Без резервной копии восстановить кошелёк невозможно.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "ДА",
   "@backupWarningBackupNow": {

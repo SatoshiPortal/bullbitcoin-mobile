@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "백업이 없으면 다음과 같은 경우 비트코인에 접근할 수 없습니다:",
+  "backupWarningLoseReasonLostPhone": "휴대폰을 분실한 경우",
+  "backupWarningLoseReasonDeletedApp": "앱을 삭제한 경우",
+  "backupWarningLoseReasonCriticalIssue": "앱이나 기기에 심각한 문제가 발생한 경우",
+  "backupWarningLoseReasonKeystore": "잠금화면/기기 인증 방식을 변경하면 기기가 키스토어를 무효화합니다",
+  "backupWarningLoseReasonCloudRestore": "클라우드 백업으로 기기를 복원하는 경우",
+  "backupWarningNoRecovery": "백업이 없으면 지갑을 복구할 방법이 없습니다.",
   "bitboxErrorMultipleDevicesFound": "발견되는 다수 BitBox 장치. 한 기기만 연결됩니다.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "정확한 금액",
+  "swapInsufficientFunds": "잔액 부족",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

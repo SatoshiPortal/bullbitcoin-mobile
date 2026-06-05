@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Backup ke bina, aap apne bitcoin access kho denge agar:",
+  "backupWarningLoseReasonLostPhone": "Aap apna phone kho dete hain",
+  "backupWarningLoseReasonDeletedApp": "Aap app delete karte hain",
+  "backupWarningLoseReasonCriticalIssue": "Koi critical app ya device issue aata hai",
+  "backupWarningLoseReasonKeystore": "Jab aap lockscreen ya device authentication change karte hain, tab aapka device keystore ko invalid kar deta hai",
+  "backupWarningLoseReasonCloudRestore": "Apne device ko cloud backup se restore karna",
+  "backupWarningNoRecovery": "Backup ke bina wallet recover karne ka koi tarika nahi hai.",
   "@@locale": "hi_Latn",
   "translationWarningTitle": "AI-Generated Anuvad",
   "@translationWarningTitle": {
@@ -11815,10 +11822,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Backup ke bina, agar aap apna phone kho dete hain, app delete karte hain, ya koi critical application ya device issue aata hai toh aap apne bitcoin access kho denge. Backup ke bina wallet recover karne ka koi tarika nahi hai.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "HAAN",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -12703,6 +12706,7 @@
     "description": "Label for amount input section"
   },
   "swapReceiveExactAmountLabel": "Exact amount receive karein",
+  "swapInsufficientFunds": "Funds kaafi nahi hain",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

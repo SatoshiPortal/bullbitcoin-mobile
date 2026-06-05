@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо:",
+  "backupWarningLoseReasonLostPhone": "Втратите телефон",
+  "backupWarningLoseReasonDeletedApp": "Видалите застосунок",
+  "backupWarningLoseReasonCriticalIssue": "Зіткнетеся з критичною проблемою застосунку чи пристрою",
+  "backupWarningLoseReasonKeystore": "Пристрій анулює keystore під час зміни блокування екрана або способу автентифікації пристрою",
+  "backupWarningLoseReasonCloudRestore": "Відновлення пристрою з резервної копії у хмарі",
+  "backupWarningNoRecovery": "Відновити гаманець без резервної копії неможливо.",
   "translationWarningTitle": "Переклади, створені ШІ",
   "translationWarningDescription": "Більшість перекладів у цьому додатку були створені за допомогою ШІ і можуть містити неточності. Якщо ви помітили помилки або хочете допомогти покращити переклади, ви можете надіслати виправлення в наш репозиторій на GitHub.",
   "translationWarningContributeButton": "Допомогти покращити переклади",
@@ -1274,6 +1281,7 @@
   "importQrDeviceJadeStep7": "Щоб змінити тип адреси",
   "sendBroadcastingTransaction": "Трансляція угоди.",
   "swapReceiveExactAmountLabel": "Отримати точний розмір",
+  "swapInsufficientFunds": "Недостатньо коштів",
   "arkContinueButton": "Продовжити",
   "ledgerImportButton": "Імпорт",
   "dcaActivate": "Активувати продаж",
@@ -4429,10 +4437,6 @@
   "backupWarningTitle": "СТВОРІТЬ РЕЗЕРВНУ КОПІЮ ГАМАНЦЯ ЗАРАЗ",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо втратите телефон, видалите застосунок або зіткнетеся з критичною проблемою застосунку чи пристрою. Відновити гаманець без резервної копії неможливо.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "ТАК",
   "@backupWarningBackupNow": {

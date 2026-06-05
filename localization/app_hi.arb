@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "बैकअप के बिना, आप अपने Bitcoin तक पहुंच खो देंगे यदि:",
+  "backupWarningLoseReasonLostPhone": "आप अपना फ़ोन खो देते हैं",
+  "backupWarningLoseReasonDeletedApp": "आप ऐप हटा देते हैं",
+  "backupWarningLoseReasonCriticalIssue": "कोई गंभीर ऐप अथवा डिवाइस संबंधित समस्या आती है",
+  "backupWarningLoseReasonKeystore": "जब आप लॉकस्क्रीन या डिवाइस ऑथेंटिकेशन बदलते हैं, तो आपका डिवाइस कीस्टोर (keystore) को अमान्य कर देता है",
+  "backupWarningLoseReasonCloudRestore": "अपने डिवाइस को क्लाउड बैकअप से रिस्टोर करना",
+  "backupWarningNoRecovery": "बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
   "@@locale": "hi",
   "bitboxErrorMultipleDevicesFound": "एकाधिक बिटबॉक्स उपकरण पाए गए। कृपया सुनिश्चित करें कि केवल एक डिवाइस जुड़ा हुआ है।।",
   "@bitboxErrorMultipleDevicesFound": {
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "सटीक राशि प्राप्त करें",
+  "swapInsufficientFunds": "अपर्याप्त धनराशि",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -12795,10 +12803,6 @@
   "backupWarningTitle": "अभी अपना वॉलेट बैकअप करें",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "बैकअप के बिना, यदि आप अपना फ़ोन खो देते हैं, ऐप हटा देते हैं, या किसी गंभीर ऐप अथवा डिवाइस संबंधित समस्या का सामना करते हैं, तो आप अपने Bitcoin तक पहुंच खो देंगे। बैकअप के बिना आपके वॉलेट को पुनर्प्राप्त करने का कोई तरीका नहीं है।",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "हाँ",
   "@backupWarningBackupNow": {
