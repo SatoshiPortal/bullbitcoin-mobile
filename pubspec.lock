@@ -2059,9 +2059,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: d1242cea90f84b00200e7bcab914a5af750e23fb
-      resolved-ref: d1242cea90f84b00200e7bcab914a5af750e23fb
-      url: "https://github.com/cake-tech/trezor_connect"
+      ref: "2e536ca1bb5e10e2ea6edb1ccacbaff2beca516f"
+      resolved-ref: "2e536ca1bb5e10e2ea6edb1ccacbaff2beca516f"
+      url: "https://github.com/anipy1/trezor_connect"
     source: git
     version: "0.0.1"
   type_plus:

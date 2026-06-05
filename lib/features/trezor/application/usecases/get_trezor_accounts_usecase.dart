@@ -15,6 +15,13 @@ class GetTrezorAccountsUsecase {
     required ScriptType scriptType,
   }) async {
     try {
+      // 5min safety net for user-attention scenarios — granting
+      // permissions and exporting accounts in Trezor Suite can take a
+      // while during first-time setup. For callbacks that DO arrive with
+      // success=false (user rejected, validation error), the package now
+      // surfaces errors immediately via TrezorCallbackException; this
+      // guard only catches cases where no callback arrives at all (user
+      // walked away, Suite force-quit, etc.).
       return await _repository
           .getAccounts(
             startIndex: startIndex,

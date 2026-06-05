@@ -21,10 +21,11 @@ class VerifyAddressTrezorUsecase {
     required ScriptType scriptType,
   }) async {
     try {
-      // verify-address is a single yes/no confirmation,
-      // and Trezor Suite doesn't always send a callback URI on Failure_DataError,
-      // it just shows its own error panel. Without this guard the cubit would hang in
-      // `waitingForSuite` for 5 minutes after a rejected request.
+      // 60s safety net for the case Trezor Suite handles an error in its
+      // own UI without emitting a callback URI back to the app (e.g. some
+      // Failure_DataError paths). For callbacks that DO arrive with
+      // success=false, the package now surfaces errors immediately via
+      // TrezorCallbackException — no hang.
       return await _repository
           .verifyAddress(
             address: address,

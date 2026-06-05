@@ -40,11 +40,13 @@ dependencies:
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
-  app_links: ^7.0.0
+  app_links:
+    ^7.0.0
+    # TODO(trezor-port): revert to cake-tech ref once merged:
   trezor_connect:
     git:
-      url: https://github.com/cake-tech/trezor_connect
-      ref: d1242cea90f84b00200e7bcab914a5af750e23fb
+      url: https://github.com/anipy1/trezor_connect
+      ref: 2e536ca1bb5e10e2ea6edb1ccacbaff2beca516f
   image_picker: ^1.1.2
   file_picker: 10.3.6
   bull_sdk:
