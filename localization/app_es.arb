@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Sin una copia de seguridad, perderás el acceso a tus bitcoin si:",
+  "backupWarningLoseReasonLostPhone": "Pierdes tu teléfono",
+  "backupWarningLoseReasonDeletedApp": "Eliminas la aplicación",
+  "backupWarningLoseReasonCriticalIssue": "Ocurre un problema crítico relacionado con la aplicación o el dispositivo",
+  "backupWarningLoseReasonKeystore": "Tu dispositivo invalida el keystore al cambiar la autenticación del dispositivo o de la pantalla de bloqueo",
+  "backupWarningLoseReasonCloudRestore": "Restaurar tu dispositivo desde una copia de seguridad en la nube",
+  "backupWarningNoRecovery": "No hay forma de recuperar tu billetera sin una copia de seguridad.",
   "@@locale": "es",
   "translationWarningTitle": "Traducciones generadas por IA",
   "translationWarningDescription": "La mayoría de las traducciones en esta aplicación fueron generadas usando IA y pueden contener inexactitudes. Si notas algún error o deseas ayudar a mejorar las traducciones, puedes enviar una corrección en nuestro repositorio de GitHub.",
@@ -1369,6 +1376,7 @@
   "swapToLabel": "A",
   "swapAmountLabel": "Cantidad",
   "swapReceiveExactAmountLabel": "Recibir cantidad exacta",
+  "swapInsufficientFunds": "Fondos insuficientes",
   "swapSubtractFeesLabel": "Restar comisiones de la cantidad",
   "swapExternalAddressHint": "Ingrese la dirección de la billetera externa",
   "swapValidationEnterAmount": "Por favor ingrese una cantidad",
@@ -4438,10 +4446,6 @@
   "backupWarningTitle": "RESPALDA TU BILLETERA AHORA",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Sin una copia de seguridad, perderás el acceso a tus bitcoin si pierdes tu teléfono, eliminas la aplicación o encuentras un problema crítico relacionado con la aplicación o el dispositivo. No hay forma de recuperar tu billetera sin una copia de seguridad.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "SÍ",
   "@backupWarningBackupNow": {

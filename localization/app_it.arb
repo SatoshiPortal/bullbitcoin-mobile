@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se:",
+  "backupWarningLoseReasonLostPhone": "Perdi il telefono",
+  "backupWarningLoseReasonDeletedApp": "Elimini l'app",
+  "backupWarningLoseReasonCriticalIssue": "Si verifica un problema critico legato all'applicazione o al dispositivo",
+  "backupWarningLoseReasonKeystore": "Il dispositivo invalida il keystore quando modifichi l'autenticazione della schermata di blocco o del dispositivo",
+  "backupWarningLoseReasonCloudRestore": "Ripristinare il dispositivo da un backup sul cloud",
+  "backupWarningNoRecovery": "Non c'è modo di recuperare il portafoglio senza un backup.",
   "translationWarningTitle": "Traduzioni generate dall'IA",
   "translationWarningDescription": "La maggior parte delle traduzioni in questa app sono state generate utilizzando l'IA e potrebbero contenere imprecisioni. Se noti errori o desideri aiutare a migliorare le traduzioni, puoi inviare una correzione sul nostro repository GitHub.",
   "translationWarningContributeButton": "Aiuta a migliorare le traduzioni",
@@ -192,6 +199,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Ricevi la quantità esatta",
+  "swapInsufficientFunds": "Fondi insufficienti",
   "arkContinueButton": "Continua",
   "ledgerImportButton": "Inizio Importazione",
   "dcaActivate": "Attivare l'acquisto ricorrente",
@@ -4432,10 +4440,6 @@
   "backupWarningTitle": "ESEGUI IL BACKUP DEL TUO PORTAFOGLIO ORA",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se perdi il telefono, elimini l'app o incontri un problema critico legato all'applicazione o al dispositivo. Non c'è modo di recuperare il portafoglio senza un backup.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "SÌ",
   "@backupWarningBackupNow": {

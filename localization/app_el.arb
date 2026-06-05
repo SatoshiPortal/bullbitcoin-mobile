@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Χωρίς αντίγραφο ασφαλείας, θα χάσετε την πρόσβαση στα bitcoin σας εάν:",
+  "backupWarningLoseReasonLostPhone": "Χάσετε το τηλέφωνό σας",
+  "backupWarningLoseReasonDeletedApp": "Διαγράψετε την εφαρμογή",
+  "backupWarningLoseReasonCriticalIssue": "Προκύψει κρίσιμο πρόβλημα στην εφαρμογή ή τη συσκευή",
+  "backupWarningLoseReasonKeystore": "Η συσκευή σας ακυρώνει το keystore όταν αλλάζετε την οθόνη κλειδώματος ή τον έλεγχο ταυτότητας της συσκευής",
+  "backupWarningLoseReasonCloudRestore": "Επαναφορά της συσκευής σας από αντίγραφο ασφαλείας στο cloud",
+  "backupWarningNoRecovery": "Δεν υπάρχει τρόπος να ανακτήσετε το πορτοφόλι σας χωρίς αντίγραφο ασφαλείας.",
   "bitboxErrorMultipleDevicesFound": "Πολλαπλές συσκευές BitBox βρέθηκαν. Παρακαλούμε βεβαιωθείτε ότι μόνο μία συσκευή είναι συνδεδεμένη.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -442,6 +449,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Λήψη ακριβούς ποσότητας",
+  "swapInsufficientFunds": "Ανεπαρκή κεφάλαια",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

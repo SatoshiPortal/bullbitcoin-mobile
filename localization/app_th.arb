@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
+  "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
+  "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
+  "backupWarningLoseReasonCriticalIssue": "เกิดปัญหาร้ายแรงกับแอปหรืออุปกรณ์",
+  "backupWarningLoseReasonKeystore": "อุปกรณ์ของคุณจะยกเลิกคีย์สโตร์เมื่อเปลี่ยนรหัสล็อกหน้าจอ/วิธียืนยันตัวตนของอุปกรณ์",
+  "backupWarningLoseReasonCloudRestore": "การกู้คืนอุปกรณ์ของคุณจากการสำรองข้อมูลบนคลาวด์",
+  "backupWarningNoRecovery": "หากไม่มีข้อมูลสำรอง จะไม่มีทางกู้คืนกระเป๋าเงินของคุณได้",
   "bitboxErrorMultipleDevicesFound": "อุปกรณ์หลายหน้าจอ กรุณาตรวจสอบอุปกรณ์เดียว.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "รับจํานวนเงิน",
+  "swapInsufficientFunds": "เงินทุนไม่เพียงพอ",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

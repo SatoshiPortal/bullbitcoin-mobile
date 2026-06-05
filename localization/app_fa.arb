@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
+  "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
+  "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
+  "backupWarningLoseReasonCriticalIssue": "مشکل جدی در برنامه یا دستگاه رخ دهد",
+  "backupWarningLoseReasonKeystore": "دستگاه شما هنگام تغییر قفل صفحه یا روش احراز هویت دستگاه، کی‌استور (keystore) را باطل می‌کند",
+  "backupWarningLoseReasonCloudRestore": "بازیابی دستگاه شما از یک نسخه پشتیبان ابری",
+  "backupWarningNoRecovery": "بدون نسخه پشتیبان هیچ راهی برای بازیابی کیف پول شما وجود ندارد.",
   "settingsTelegramLabel": "تلگرام",
   "@settingsTelegramLabel": {
     "description": "Label for the Telegram link in settings"
@@ -1727,6 +1734,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "دریافت مقدار دقیق",
+  "swapInsufficientFunds": "وجوه ناکافی",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

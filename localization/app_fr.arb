@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si :",
+  "backupWarningLoseReasonLostPhone": "Vous perdez votre téléphone",
+  "backupWarningLoseReasonDeletedApp": "Vous supprimez l'application",
+  "backupWarningLoseReasonCriticalIssue": "Un problème critique lié à l'application ou à l'appareil survient",
+  "backupWarningLoseReasonKeystore": "Votre appareil invalide le keystore lorsque vous modifiez l'authentification de l'écran de verrouillage ou de l'appareil",
+  "backupWarningLoseReasonCloudRestore": "Restaurer votre appareil à partir d'une sauvegarde dans le cloud",
+  "backupWarningNoRecovery": "Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
   "@@locale": "fr",
   "translationWarningTitle": "Traductions générées par IA",
   "translationWarningDescription": "La plupart des traductions de cette application ont été générées par IA et peuvent contenir des inexactitudes. Si vous remarquez des erreurs ou souhaitez aider à améliorer les traductions, vous pouvez soumettre une correction sur notre dépôt GitHub.",
@@ -1366,6 +1373,7 @@
   "swapToLabel": "Vers",
   "swapAmountLabel": "Montant",
   "swapReceiveExactAmountLabel": "Recevoir le montant exact",
+  "swapInsufficientFunds": "Fonds insuffisants",
   "swapSubtractFeesLabel": "Soustraire les frais du montant",
   "swapExternalAddressHint": "Entrez l'adresse du portefeuille externe",
   "swapValidationEnterAmount": "Veuillez entrer un montant",
@@ -4421,10 +4429,6 @@
   "backupWarningTitle": "SAUVEGARDEZ VOTRE PORTEFEUILLE MAINTENANT",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Sans sauvegarde, vous perdrez l'accès à vos bitcoins si vous perdez votre téléphone, supprimez l'application, ou si vous rencontrez un problème critique lié à l'application ou à l'appareil. Il n'existe aucun moyen de récupérer votre portefeuille sans sauvegarde.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "OUI",
   "@backupWarningBackupNow": {

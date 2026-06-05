@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
+  "backupWarningLoseReasonLostPhone": "Perder o telefone",
+  "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
+  "backupWarningLoseReasonCriticalIssue": "Ocorrer um problema crítico relacionado ao aplicativo ou ao dispositivo",
+  "backupWarningLoseReasonKeystore": "O seu dispositivo invalida o keystore ao alterar a autenticação do ecrã de bloqueio ou do dispositivo",
+  "backupWarningLoseReasonCloudRestore": "Restaurar o seu dispositivo a partir de uma cópia de segurança na nuvem",
+  "backupWarningNoRecovery": "Não há como recuperar sua carteira sem um backup.",
   "translationWarningTitle": "Traduções geradas por IA",
   "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se notar erros ou quiser ajudar a melhorar as traduções, pode submeter uma correção no nosso repositório GitHub.",
   "translationWarningContributeButton": "Ajudar a melhorar traduções",
@@ -190,6 +197,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Receber quantidade exata",
+  "swapInsufficientFunds": "Fundos insuficientes",
   "arkContinueButton": "Continue",
   "ledgerImportButton": "Importação de início",
   "dcaActivate": "Ativar a recuperação",
@@ -4487,10 +4495,6 @@
   "backupWarningTitle": "FAÇA BACKUP DA SUA CARTEIRA AGORA",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se perder o telefone, excluir o aplicativo ou encontrar um problema crítico relacionado ao aplicativo ou ao dispositivo. Não há como recuperar sua carteira sem um backup.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "SIM",
   "@backupWarningBackupNow": {

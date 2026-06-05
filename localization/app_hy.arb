@@ -1,4 +1,12 @@
 {
+  "backupWarningDescription": "Առանց պահուստային պատճենի՝ դուք կկորցնեք ձեր bitcoin-ի հասանելիությունը, եթե՝",
+  "backupWarningLoseReasonLostPhone": "Կորցնեք ձեր հեռախոսը",
+  "backupWarningLoseReasonDeletedApp": "Ջնջեք հավելվածը",
+  "backupWarningLoseReasonCriticalIssue": "Տեղի ունենա հավելվածի կամ սարքի կրիտիկական խնդիր",
+  "backupWarningLoseReasonKeystore": "Ձեր սարքը չեղարկի բանալիների պահոցը (keystore)՝ էկրանի կողպման/սարքի նույնականացման փոփոխման ժամանակ",
+  "backupWarningLoseReasonCloudRestore": "Ձեր սարքը վերականգնեք ամպային պահուստից",
+  "backupWarningNoRecovery": "Առանց պահուստային պատճենի ձեր դրամապանակը վերականգնելու որևէ միջոց չկա։",
+  "swapInsufficientFunds": "Անբավարար միջոցներ",
   "broadcastSignedTxBroadcastError": "Չհաջողվեց հեռարձակել գործարքը",
   "exchangeFileUploadUploadCount": "Upload {count} {count, plural, =1{File} other{Files}}",
   "appInitErrorTitle": "Հավելվածը չհաջողվեց գործարկել",

@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
+  "backupWarningLoseReasonLostPhone": "Загубите телефона си",
+  "backupWarningLoseReasonDeletedApp": "Изтриете приложението",
+  "backupWarningLoseReasonCriticalIssue": "Възникне критичен проблем с приложението или устройството",
+  "backupWarningLoseReasonKeystore": "Устройството анулира keystore при смяна на заключения екран или удостоверяването на устройството",
+  "backupWarningLoseReasonCloudRestore": "Възстановяване на устройството от резервно копие в облака",
+  "backupWarningNoRecovery": "Без резервно копие няма начин да възстановите портфейла си.",
   "broadcastSignedTxBroadcastError": "Неуспешно излъчване на транзакцията",
   "translationWarningTitle": "Преводи, генерирани от ИИ",
   "@translationWarningTitle": {
@@ -683,6 +690,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Получете точната сума",
+  "swapInsufficientFunds": "Недостатъчни средства",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos:",
+  "backupWarningLoseReasonLostPhone": "kadotat puhelimesi",
+  "backupWarningLoseReasonDeletedApp": "poistat sovelluksen",
+  "backupWarningLoseReasonCriticalIssue": "kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman",
+  "backupWarningLoseReasonKeystore": "laitteesi mitätöi keystoren, kun vaihdat lukitusnäytön tai laitteen tunnistautumistavan",
+  "backupWarningLoseReasonCloudRestore": "palautat laitteen pilvivarmuuskopiosta",
+  "backupWarningNoRecovery": "Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
   "@@locale": "fi",
   "translationWarningTitle": "Tekoälyn luomat käännökset",
   "translationWarningDescription": "Suurin osa tämän sovelluksen käännöksistä on luotu tekoälyllä ja ne voivat sisältää epätarkkuuksia. Jos huomaat virheitä tai haluat auttaa parantamaan käännöksiä, voit lähettää korjauksen GitHub-tietovarastoomme.",
@@ -1328,6 +1335,7 @@
   "swapToLabel": "Kohteeseen",
   "swapAmountLabel": "Määrä",
   "swapReceiveExactAmountLabel": "Vastaanota tarkka määrä",
+  "swapInsufficientFunds": "Riittämättömät varat",
   "swapSubtractFeesLabel": "Vähennä kulut määrästä",
   "swapExternalAddressHint": "Syötä ulkoinen lompakon osoite",
   "swapValidationEnterAmount": "Syötä määrä",
@@ -4424,10 +4432,6 @@
   "backupWarningTitle": "VARMUUSKOPIOI LOMPAKKOSI NYT",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "Ilman varmuuskopiota menetät pääsyn bitcoineihisi, jos kadotat puhelimesi, poistat sovelluksen tai kohtaat kriittisen sovellus- tai laitteistoon liittyvän ongelman. Lompakkoasi ei voi palauttaa ilman varmuuskopiota.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "KYLLÄ",
   "@backupWarningBackupNow": {

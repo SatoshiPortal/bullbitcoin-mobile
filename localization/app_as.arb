@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
+  "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
+  "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
+  "backupWarningLoseReasonCriticalIssue": "কোনো গুৰুতৰ এপ্প বা ডিভাইচ সম্পৰ্কীয় সমস্যা হ'লে",
+  "backupWarningLoseReasonKeystore": "আপুনি লকস্ক্ৰীন বা ডিভাইচ অথেণ্টিকেশ্বন সলালে আপোনাৰ ডিভাইচে কীষ্টোৰ (keystore) অবৈধ কৰি দিয়ে",
+  "backupWarningLoseReasonCloudRestore": "ক্লাউড বেকআপৰ পৰা আপোনাৰ ডিভাইচ ৰিষ্টোৰ কৰা",
+  "backupWarningNoRecovery": "বেকআপ অবিহনে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰাৰ কোনো উপায় নাই।",
   "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -1929,6 +1936,7 @@
     "description": "Label for amount input section"
   },
   "swapReceiveExactAmountLabel": "নিৰ্দিষ্ট পৰিমাণ গ্ৰহণ কৰক",
+  "swapInsufficientFunds": "অপৰ্যাপ্ত পুঁজি",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -9603,10 +9611,6 @@
   "backupWarningTitle": "এতিয়াই আপোনাৰ WALLET বেকআপ কৰক",
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
-  },
-  "backupWarningDescription": "বেকআপ অবিহনে, আপোনাৰ ফোন হেৰুৱালে, এপটো মচিলে, বা গুৰুতৰ এপ্প বা ডিভাইচ সম্পৰ্কীয় সমস্যাত পৰিলে আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব। বেকআপ অবিহনে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰাৰ কোনো উপায় নাই।",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
   },
   "backupWarningBackupNow": "হয়",
   "@backupWarningBackupNow": {

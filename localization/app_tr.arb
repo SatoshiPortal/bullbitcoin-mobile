@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
+  "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
+  "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
+  "backupWarningLoseReasonCriticalIssue": "Kritik bir uygulama veya cihaz sorunu oluşursa",
+  "backupWarningLoseReasonKeystore": "Kilit ekranını veya cihaz kimlik doğrulamasını değiştirdiğinizde cihazınız keystore'u geçersiz kılar",
+  "backupWarningLoseReasonCloudRestore": "Cihazınızı bir bulut yedeğinden geri yüklerseniz",
+  "backupWarningNoRecovery": "Yedek olmadan cüzdanınızı kurtarmanın hiçbir yolu yoktur.",
   "bitboxErrorMultipleDevicesFound": "Birçok BitBox cihazı bulundu. Lütfen sadece bir cihazın bağlantılı olmasını sağlayın.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Tam miktar alın",
+  "swapInsufficientFunds": "Yetersiz bakiye",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },

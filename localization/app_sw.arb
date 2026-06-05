@@ -1,4 +1,12 @@
 {
+  "backupWarningDescription": "Bila nakala rudufu, utapoteza ufikiaji wa bitcoin yako iwapo:",
+  "backupWarningLoseReasonLostPhone": "Utapoteza simu yako",
+  "backupWarningLoseReasonDeletedApp": "Utafuta programu",
+  "backupWarningLoseReasonCriticalIssue": "Tatizo kubwa la programu au kifaa litatokea",
+  "backupWarningLoseReasonKeystore": "Kifaa chako kitabatilisha hifadhi ya funguo (keystore) unapobadilisha njia ya kufungua skrini/uthibitishaji wa kifaa",
+  "backupWarningLoseReasonCloudRestore": "Utarejesha kifaa chako kutoka kwenye nakala rudufu ya wingu",
+  "backupWarningNoRecovery": "Hakuna njia ya kurejesha pochi yako bila nakala rudufu.",
+  "swapInsufficientFunds": "Fedha hazitoshi",
   "broadcastSignedTxBroadcastError": "Imeshindwa kutangaza muamala",
   "languageSettingsLabel": "| Lugha |",
   "@languageSettingsLabel": {

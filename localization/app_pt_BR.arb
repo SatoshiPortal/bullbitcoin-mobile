@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
+  "backupWarningLoseReasonLostPhone": "Perder o celular",
+  "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
+  "backupWarningLoseReasonCriticalIssue": "Ocorrer um problema crítico no aplicativo ou no dispositivo",
+  "backupWarningLoseReasonKeystore": "Seu dispositivo invalida o keystore ao alterar a autenticação da tela de bloqueio ou do dispositivo",
+  "backupWarningLoseReasonCloudRestore": "Restaurar seu dispositivo a partir de um backup na nuvem",
+  "backupWarningNoRecovery": "Não há como recuperar sua carteira sem um backup.",
   "torSettingsPortHint": "9050",
   "@torSettingsPortHint": {
     "description": "Hint text for port input showing default value"
@@ -548,6 +555,7 @@
     "description": "Continue button text used in ark send flow"
   },
   "swapReceiveExactAmountLabel": "Receber quantidade exata",
+  "swapInsufficientFunds": "Fundos insuficientes",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
