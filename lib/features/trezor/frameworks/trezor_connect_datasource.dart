@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/trezor/frameworks/framework_errors.dart';
 import 'package:bdk_dart/bdk.dart' as bdk;
+import 'package:flutter/foundation.dart';
 import 'package:trezor_connect/trezor_connect.dart';
 
 /// Thin wrapper around the upstream `trezor_connect` package.
@@ -73,7 +74,7 @@ class TrezorConnectDatasource {
       address: address,
       showOnTrezor: true,
       coin: 'btc',
-      scriptType: _inputScriptTypeFor(scriptType),
+      scriptType: inputScriptTypeFor(scriptType),
     );
 
     if (result == null) {
@@ -87,36 +88,6 @@ class TrezorConnectDatasource {
     }
     return true;
   }
-
-  /// Maps Bull Bitcoin's ScriptType (the wallet-wide derivation family) to
-  /// Trezor's `InputScriptType` enum label (the `SPEND*` family).
-  ///
-  /// Output script types are NOT derived from this — they're detected
-  /// per-output from the raw scriptPubkey in `_detectOutputScriptType`
-  /// (outputs can mix types regardless of the wallet's derivation).
-  String _inputScriptTypeFor(ScriptType scriptType) => switch (scriptType) {
-    ScriptType.bip84 => 'SPENDWITNESS',
-    ScriptType.bip49 => 'SPENDP2SHWITNESS',
-    ScriptType.bip44 => 'SPENDADDRESS',
-  };
-
-  /// Maps wallet ScriptType to Trezor's output-script-type label for
-  /// CHANGE outputs (where the wallet's derivation family is known).
-  ///
-  /// External outputs use `_detectOutputScriptType` (byte detection)
-  /// instead — we don't know what kind of wallet the recipient uses.
-  ///
-  /// Why this exists: P2SH-P2WPKH change in a BIP49 wallet has the
-  /// same scriptPubkey shape as plain P2SH at the byte level (length
-  /// 23, OP_HASH160 pattern). Without the wallet's ScriptType, byte
-  /// detection always returns PAYTOSCRIPTHASH — but Trezor needs
-  /// PAYTOP2SHWITNESS to validate the wrapped-SegWit change correctly.
-  String _changeOutputScriptTypeFor(ScriptType scriptType) =>
-      switch (scriptType) {
-        ScriptType.bip84 => 'PAYTOWITNESS',
-        ScriptType.bip49 => 'PAYTOP2SHWITNESS',
-        ScriptType.bip44 => 'PAYTOADDRESS',
-      };
 
   /// Signs a base64-encoded PSBT via Trezor Connect.
   ///
@@ -160,7 +131,7 @@ class TrezorConnectDatasource {
     }
 
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-    final inputScriptType = _inputScriptTypeFor(scriptType);
+    final inputScriptType = inputScriptTypeFor(scriptType);
 
     final inputs = <TrezorTxInput>[];
     for (var i = 0; i < psbtInputs.length; i++) {
@@ -231,7 +202,7 @@ class TrezorConnectDatasource {
           TrezorTxOutput(
             amount: amount,
             addressPath: keySource.path.toU32Vec(),
-            scriptType: _changeOutputScriptTypeFor(scriptType),
+            scriptType: changeOutputScriptTypeFor(scriptType),
           ),
         );
       } else {
@@ -246,7 +217,7 @@ class TrezorConnectDatasource {
           TrezorTxOutput(
             amount: amount,
             address: address.toString(),
-            scriptType: _detectOutputScriptType(txOut.scriptPubkey),
+            scriptType: detectOutputScriptType(txOut.scriptPubkey.toBytes()),
           ),
         );
       }
@@ -262,41 +233,57 @@ class TrezorConnectDatasource {
     }
     return signed;
   }
+}
 
-  /// Detects Trezor's output script-type label from a raw scriptPubkey.
-  /// Used for EXTERNAL outputs only — for wallet-owned change outputs,
-  /// `_changeOutputScriptTypeFor` uses the wallet's ScriptType instead.
-  ///
-  /// Trezor's labels (from the package's enum docs):
-  /// `PAYTOADDRESS | PAYTOSCRIPTHASH | PAYTOWITNESS | PAYTOP2SHWITNESS |
-  ///  PAYTOTAPROOT`. P2SH-P2WPKH wrap (PAYTOP2SHWITNESS) is
-  /// indistinguishable from plain P2SH at the script-pubkey level, so
-  /// external P2SH outputs always get PAYTOSCRIPTHASH here.
-  String _detectOutputScriptType(bdk.Script script) {
-    final bytes = script.toBytes();
+/// Maps Bull Bitcoin's ScriptType to Trezor's `InputScriptType` label
+/// for SIGNING (the `SPEND*` family). Reused by `signPsbt` for each
+/// TrezorTxInput and by `verifyAddress` for the `getAddress` request.
+@visibleForTesting
+String inputScriptTypeFor(ScriptType scriptType) => switch (scriptType) {
+  ScriptType.bip84 => 'SPENDWITNESS',
+  ScriptType.bip49 => 'SPENDP2SHWITNESS',
+  ScriptType.bip44 => 'SPENDADDRESS',
+};
 
-    if (bytes.length == 22 && bytes[0] == 0x00 && bytes[1] == 0x14) {
-      return 'PAYTOWITNESS'; // P2WPKH (BIP84)
-    }
-    if (bytes.length == 34 && bytes[0] == 0x00 && bytes[1] == 0x20) {
-      return 'PAYTOWITNESS'; // P2WSH
-    }
-    if (bytes.length == 25 &&
-        bytes[0] == 0x76 &&
-        bytes[1] == 0xa9 &&
-        bytes[2] == 0x14) {
-      return 'PAYTOADDRESS'; // P2PKH
-    }
-    if (bytes.length == 23 &&
-        bytes[0] == 0xa9 &&
-        bytes[1] == 0x14 &&
-        bytes[22] == 0x87) {
-      return 'PAYTOSCRIPTHASH'; // P2SH
-    }
-    if (bytes.length == 34 && bytes[0] == 0x51 && bytes[1] == 0x20) {
-      return 'PAYTOTAPROOT'; // P2TR
-    }
-    // Default to witness for first-pass BIP84 wallets.
-    return 'PAYTOWITNESS';
+/// Maps wallet ScriptType to Trezor's output-script-type label for
+/// CHANGE outputs (where the wallet's derivation family is known).
+/// External outputs use [detectOutputScriptType] (byte detection) — we
+/// can't know the recipient's wallet type from on-chain script alone.
+@visibleForTesting
+String changeOutputScriptTypeFor(ScriptType scriptType) => switch (scriptType) {
+  ScriptType.bip84 => 'PAYTOWITNESS',
+  ScriptType.bip49 => 'PAYTOP2SHWITNESS',
+  ScriptType.bip44 => 'PAYTOADDRESS',
+};
+
+/// Detects Trezor's output script-type label from raw scriptPubkey bytes.
+/// Used for EXTERNAL outputs only — wallet-owned change outputs use
+/// [changeOutputScriptTypeFor] which knows the wallet's ScriptType.
+///
+/// P2SH-P2WPKH is indistinguishable from plain P2SH at the byte level,
+/// so external P2SH outputs always get PAYTOSCRIPTHASH here.
+@visibleForTesting
+String detectOutputScriptType(List<int> bytes) {
+  if (bytes.length == 22 && bytes[0] == 0x00 && bytes[1] == 0x14) {
+    return 'PAYTOWITNESS'; // P2WPKH (BIP84)
   }
+  if (bytes.length == 34 && bytes[0] == 0x00 && bytes[1] == 0x20) {
+    return 'PAYTOWITNESS'; // P2WSH
+  }
+  if (bytes.length == 25 &&
+      bytes[0] == 0x76 &&
+      bytes[1] == 0xa9 &&
+      bytes[2] == 0x14) {
+    return 'PAYTOADDRESS'; // P2PKH
+  }
+  if (bytes.length == 23 &&
+      bytes[0] == 0xa9 &&
+      bytes[1] == 0x14 &&
+      bytes[22] == 0x87) {
+    return 'PAYTOSCRIPTHASH'; // P2SH
+  }
+  if (bytes.length == 34 && bytes[0] == 0x51 && bytes[1] == 0x20) {
+    return 'PAYTOTAPROOT'; // P2TR
+  }
+  return 'PAYTOWITNESS'; // default for first-pass BIP84 wallets
 }
