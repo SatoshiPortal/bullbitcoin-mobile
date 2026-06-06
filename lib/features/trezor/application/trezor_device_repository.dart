@@ -7,6 +7,7 @@ abstract class TrezorDeviceRepository {
     required int startIndex,
     required int count,
     required ScriptType scriptType,
+    required bool isTestnet,
   });
 
   Future<TrezorSignedPsbt> signPsbt({
@@ -22,5 +23,6 @@ abstract class TrezorDeviceRepository {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
+    required bool isTestnet,
   });
 }

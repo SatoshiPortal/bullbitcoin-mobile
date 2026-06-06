@@ -18,6 +18,7 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     required int startIndex,
     required int count,
     required ScriptType scriptType,
+    required bool isTestnet,
   }) async {
     final indices = List.generate(count, (i) => startIndex + i);
     // BIP-44/49/84 share the same shape `m/<purpose>'/0'/<account>'`.
@@ -26,10 +27,14 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     // for 44) and what determines the SLIP-0132 magic bytes on the returned
     // zpub/ypub/xpub.
     final purpose = scriptType.purpose;
-    final paths = indices.map((i) => "m/$purpose'/0'/$i'").toList();
+    final coinType = isTestnet ? 1 : 0;
+    final paths = indices.map((i) => "m/$purpose'/$coinType'/$i'").toList();
 
     try {
-      final raw = await _datasource.getPublicKeyBundle(paths);
+      final raw = await _datasource.getPublicKeyBundle(
+        paths,
+        isTestnet: isTestnet,
+      );
       return raw.map(_toAccount).toList();
     } on Exception catch (e) {
       throw _mapError(e);
@@ -52,12 +57,14 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
+    required bool isTestnet,
   }) async {
     try {
       return await _datasource.verifyAddress(
         address: address,
         derivationPath: derivationPath,
         scriptType: scriptType,
+        isTestnet: isTestnet,
       );
     } on Exception catch (e) {
       throw _mapError(e);

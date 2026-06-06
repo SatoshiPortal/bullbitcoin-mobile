@@ -58,4 +58,13 @@ void main() {
       expect(detectOutputScriptType(bytes), 'PAYTOWITNESS');
     });
   });
+
+  group('trezorCoinLabelFor', () {
+    test('mainnet → btc', () {
+      expect(trezorCoinLabelFor(isTestnet: false), 'btc');
+    });
+    test('testnet → test', () {
+      expect(trezorCoinLabelFor(isTestnet: true), 'test');
+    });
+  });
 }

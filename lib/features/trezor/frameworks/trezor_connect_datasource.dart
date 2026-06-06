@@ -29,10 +29,12 @@ class TrezorConnectDatasource {
   TrezorConnect get connect => _connect;
 
   Future<List<TrezorAddressPublicKey>> getPublicKeyBundle(
-    List<String> paths,
-  ) async {
+    List<String> paths, {
+    required bool isTestnet,
+  }) async {
+    final coin = trezorCoinLabelFor(isTestnet: isTestnet);
     final params = paths
-        .map((path) => TrezorGetPublicKeyParams(path: path, coin: 'btc'))
+        .map((path) => TrezorGetPublicKeyParams(path: path, coin: coin))
         .toList();
 
     final result = await _connect.getPublicKeyBundle(params);
@@ -60,6 +62,7 @@ class TrezorConnectDatasource {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
+    required bool isTestnet,
   }) async {
     // Trezor Suite's deeplinking path parser rejects the `h` notation that
     // BDK / satoshifier emit in `wallet.derivationPath` (e.g.
@@ -73,7 +76,7 @@ class TrezorConnectDatasource {
       normalizedPath,
       address: address,
       showOnTrezor: true,
-      coin: 'btc',
+      coin: trezorCoinLabelFor(isTestnet: isTestnet),
       scriptType: inputScriptTypeFor(scriptType),
     );
 
@@ -99,7 +102,8 @@ class TrezorConnectDatasource {
   ///   3. For each output: detect change vs external from bip32Derivation
   ///      presence; for change, use addressPath; for external, derive
   ///      address from scriptPubkey via bdk_dart.
-  ///   4. Hand inputs/outputs to `connect.signTransaction(coin: 'btc', ...)`.
+  ///   4. Hand inputs/outputs to `connect.signTransaction(coin: ..., ...)`
+  ///      where the coin label is selected via `trezorCoinLabelFor`.
   ///   5. Return Trezor's signed transaction (broadcast-ready hex in
   ///      `serializedTx`).
   ///
@@ -224,7 +228,7 @@ class TrezorConnectDatasource {
     }
 
     final signed = await _connect.signTransaction(
-      coin: 'btc',
+      coin: trezorCoinLabelFor(isTestnet: isTestnet),
       inputs: inputs,
       outputs: outputs,
     );
@@ -287,3 +291,7 @@ String detectOutputScriptType(List<int> bytes) {
   }
   return 'PAYTOWITNESS'; // default for first-pass BIP84 wallets
 }
+
+@visibleForTesting
+String trezorCoinLabelFor({required bool isTestnet}) =>
+    isTestnet ? 'test' : 'btc';

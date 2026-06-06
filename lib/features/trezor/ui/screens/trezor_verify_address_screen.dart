@@ -236,6 +236,7 @@ class _VerifyAddressView extends StatelessWidget {
         address: p.address,
         derivationPath: p.derivationPath,
         scriptType: p.scriptType,
+        isTestnet: p.isTestnet,
       );
     } catch (_) {
       // Cubit already emitted an error state; BlocConsumer listener

@@ -17,11 +17,13 @@ class TrezorVerifyAddressRouteParams {
   final String address;
   final String derivationPath;
   final ScriptType scriptType;
+  final bool isTestnet;
 
   const TrezorVerifyAddressRouteParams({
     required this.address,
     required this.derivationPath,
     required this.scriptType,
+    required this.isTestnet,
   });
 }
 

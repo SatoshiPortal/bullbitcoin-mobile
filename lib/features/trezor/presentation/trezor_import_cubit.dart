@@ -15,7 +15,10 @@ class TrezorImportCubit
   }) : _getAccounts = getAccounts,
        _prepareImport = prepareImport;
 
-  Future<void> startImport({required ScriptType scriptType}) {
+  Future<void> startImport({
+    required ScriptType scriptType,
+    required bool isTestnet,
+  }) async {
     return runOperation(() async {
       // Fetch account 0 for the selected derivation family. Master
       // fingerprint travels on the TrezorAccount itself (see review #2).
@@ -23,6 +26,7 @@ class TrezorImportCubit
         startIndex: 0,
         count: 1,
         scriptType: scriptType,
+        isTestnet: isTestnet,
       );
       if (accounts.isEmpty) {
         throw Exception('Trezor returned no accounts');

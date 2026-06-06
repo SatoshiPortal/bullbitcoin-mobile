@@ -344,6 +344,8 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
     try {
       await context.read<TrezorImportCubit>().startImport(
         scriptType: _selectedScriptType,
+        // For now, Trezor import is mainnet-only.
+        isTestnet: false,
       );
     } catch (_) {
       // Cubit already emitted an error state; the BlocConsumer listener

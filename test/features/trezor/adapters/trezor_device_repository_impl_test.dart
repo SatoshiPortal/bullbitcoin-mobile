@@ -50,6 +50,7 @@ void main() {
           address: any(named: 'address'),
           derivationPath: any(named: 'derivationPath'),
           scriptType: any(named: 'scriptType'),
+          isTestnet: any(named: 'isTestnet'),
         ),
       ).thenAnswer((_) async => true);
 
@@ -57,45 +58,53 @@ void main() {
         address: 'bc1qaaaaa',
         derivationPath: "m/84'/0'/0'/0/0",
         scriptType: ScriptType.bip84,
+        isTestnet: false,
       );
       expect(ok, isTrue);
     });
+
+    test(
+      'maps TrezorAddressMismatchException to TrezorAddressMismatch',
+      () async {
+        when(
+          () => datasource.verifyAddress(
+            address: any(named: 'address'),
+            derivationPath: any(named: 'derivationPath'),
+            scriptType: any(named: 'scriptType'),
+            isTestnet: any(named: 'isTestnet'),
+          ),
+        ).thenThrow(
+          const TrezorAddressMismatchException(
+            expected: 'bc1qexpected',
+            returned: 'bc1qreturned',
+          ),
+        );
+
+        expect(
+          () => repo.verifyAddress(
+            address: 'bc1qexpected',
+            derivationPath: "m/84'/0'/0'/0/0",
+            scriptType: ScriptType.bip84,
+            isTestnet: false,
+          ),
+          throwsA(
+            isA<TrezorAddressMismatch>()
+                .having((e) => e.expected, 'expected', 'bc1qexpected')
+                .having((e) => e.returned, 'returned', 'bc1qreturned'),
+          ),
+        );
+      },
+    );
   });
-
-  test(
-    'maps TrezorAddressMismatchException to TrezorAddressMismatch',
-    () async {
-      when(
-        () => datasource.verifyAddress(
-          address: any(named: 'address'),
-          derivationPath: any(named: 'derivationPath'),
-          scriptType: any(named: 'scriptType'),
-        ),
-      ).thenThrow(
-        const TrezorAddressMismatchException(
-          expected: 'bc1qexpected',
-          returned: 'bc1qreturned',
-        ),
-      );
-
-      expect(
-        () => repo.verifyAddress(
-          address: 'bc1qexpected',
-          derivationPath: "m/84'/0'/0'/0/0",
-          scriptType: ScriptType.bip84,
-        ),
-        throwsA(
-          isA<TrezorAddressMismatch>()
-              .having((e) => e.expected, 'expected', 'bc1qexpected')
-              .having((e) => e.returned, 'returned', 'bc1qreturned'),
-        ),
-      );
-    },
-  );
 
   group('getAccounts — master fingerprint', () {
     test('extracts master fingerprint per-account from descriptor', () async {
-      when(() => datasource.getPublicKeyBundle(any())).thenAnswer(
+      when(
+        () => datasource.getPublicKeyBundle(
+          any(),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer(
         (_) async => [
           _fakeAccount(
             descriptor:
@@ -108,6 +117,7 @@ void main() {
         startIndex: 0,
         count: 1,
         scriptType: ScriptType.bip84,
+        isTestnet: false,
       );
 
       expect(accounts, hasLength(1));
@@ -117,7 +127,12 @@ void main() {
     test('does not share fingerprint across separate device sessions '
         '(regression: review #2 cross-device pollution)', () async {
       // First device returns fingerprint AAAAAAAA
-      when(() => datasource.getPublicKeyBundle(any())).thenAnswer(
+      when(
+        () => datasource.getPublicKeyBundle(
+          any(),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer(
         (_) async => [
           _fakeAccount(
             descriptor: 'wpkh([aaaaaaaa/84h/0h/0h]xpubA.../<0;1>/*)#csum',
@@ -128,12 +143,18 @@ void main() {
         startIndex: 0,
         count: 1,
         scriptType: ScriptType.bip84,
+        isTestnet: false,
       );
       expect(first.first.masterFingerprint, 'aaaaaaaa');
 
       // Second device returns fingerprint BBBBBBBB — must NOT leak
       // the first fingerprint into the second account.
-      when(() => datasource.getPublicKeyBundle(any())).thenAnswer(
+      when(
+        () => datasource.getPublicKeyBundle(
+          any(),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer(
         (_) async => [
           _fakeAccount(
             descriptor: 'wpkh([bbbbbbbb/84h/0h/0h]xpubB.../<0;1>/*)#csum',
@@ -144,6 +165,7 @@ void main() {
         startIndex: 0,
         count: 1,
         scriptType: ScriptType.bip84,
+        isTestnet: false,
       );
       expect(second.first.masterFingerprint, 'bbbbbbbb');
       expect(second.first.masterFingerprint, isNot('aaaaaaaa'));
@@ -152,7 +174,10 @@ void main() {
     test('throws TrezorMissingDescriptor when descriptor is null '
         '(regression: review #5 Model One)', () async {
       when(
-        () => datasource.getPublicKeyBundle(any()),
+        () => datasource.getPublicKeyBundle(
+          any(),
+          isTestnet: any(named: 'isTestnet'),
+        ),
       ).thenAnswer((_) async => [_fakeAccount(descriptor: null)]);
 
       expect(
@@ -160,6 +185,7 @@ void main() {
           startIndex: 0,
           count: 1,
           scriptType: ScriptType.bip84,
+          isTestnet: false,
         ),
         throwsA(isA<TrezorMissingDescriptor>()),
       );
@@ -168,7 +194,12 @@ void main() {
     test(
       'throws TrezorMissingDescriptor when descriptor is malformed',
       () async {
-        when(() => datasource.getPublicKeyBundle(any())).thenAnswer(
+        when(
+          () => datasource.getPublicKeyBundle(
+            any(),
+            isTestnet: any(named: 'isTestnet'),
+          ),
+        ).thenAnswer(
           (_) async => [
             _fakeAccount(descriptor: 'this-is-not-a-bip380-descriptor'),
           ],
@@ -179,11 +210,92 @@ void main() {
             startIndex: 0,
             count: 1,
             scriptType: ScriptType.bip84,
+            isTestnet: false,
           ),
           throwsA(isA<TrezorMissingDescriptor>()),
         );
       },
     );
+  });
+
+  group('getAccounts — network threading (review #9)', () {
+    test('builds mainnet path with coin-type 0 when not isTestnet', () async {
+      final capturedPaths = <List<String>>[];
+      when(
+        () => datasource.getPublicKeyBundle(
+          any(),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer((invocation) async {
+        capturedPaths.add(invocation.positionalArguments[0] as List<String>);
+        return [
+          _fakeAccount(
+            descriptor: 'wpkh([aaaaaaaa/84h/0h/0h]xpub.../<0;1>/*)#csum',
+          ),
+        ];
+      });
+
+      await repo.getAccounts(
+        startIndex: 0,
+        count: 1,
+        scriptType: ScriptType.bip84,
+        isTestnet: false,
+      );
+
+      expect(capturedPaths.single, equals(["m/84'/0'/0'"]));
+    });
+
+    test('builds testnet path with coin-type 1 when isTestnet', () async {
+      final capturedPaths = <List<String>>[];
+      when(
+        () => datasource.getPublicKeyBundle(
+          any(),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer((invocation) async {
+        capturedPaths.add(invocation.positionalArguments[0] as List<String>);
+        return [
+          _fakeAccount(
+            descriptor: 'wpkh([aaaaaaaa/84h/1h/0h]vpub.../<0;1>/*)#csum',
+          ),
+        ];
+      });
+
+      await repo.getAccounts(
+        startIndex: 0,
+        count: 1,
+        scriptType: ScriptType.bip84,
+        isTestnet: true,
+      );
+
+      expect(capturedPaths.single, equals(["m/84'/1'/0'"]));
+    });
+
+    test('passes isTestnet through to the datasource', () async {
+      final capturedFlags = <bool>[];
+      when(
+        () => datasource.getPublicKeyBundle(
+          any(),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenAnswer((invocation) async {
+        capturedFlags.add(invocation.namedArguments[#isTestnet] as bool);
+        return [
+          _fakeAccount(
+            descriptor: 'wpkh([aaaaaaaa/84h/1h/0h]vpub.../<0;1>/*)#csum',
+          ),
+        ];
+      });
+
+      await repo.getAccounts(
+        startIndex: 0,
+        count: 1,
+        scriptType: ScriptType.bip84,
+        isTestnet: true,
+      );
+
+      expect(capturedFlags.single, isTrue);
+    });
   });
 
   group('_mapError classification', () {
@@ -193,6 +305,7 @@ void main() {
           address: any(named: 'address'),
           derivationPath: any(named: 'derivationPath'),
           scriptType: any(named: 'scriptType'),
+          isTestnet: any(named: 'isTestnet'),
         ),
       ).thenThrow(Exception('User rejected request'));
 
@@ -201,6 +314,7 @@ void main() {
           address: 'bc1q',
           derivationPath: 'm',
           scriptType: ScriptType.bip84,
+          isTestnet: false,
         ),
         throwsA(isA<TrezorUserRejected>()),
       );
@@ -212,6 +326,7 @@ void main() {
           address: any(named: 'address'),
           derivationPath: any(named: 'derivationPath'),
           scriptType: any(named: 'scriptType'),
+          isTestnet: any(named: 'isTestnet'),
         ),
       ).thenThrow(Exception('Trezor Suite is not installed'));
 
@@ -220,6 +335,7 @@ void main() {
           address: 'bc1q',
           derivationPath: 'm',
           scriptType: ScriptType.bip84,
+          isTestnet: false,
         ),
         throwsA(isA<TrezorSuiteNotInstalled>()),
       );
@@ -233,6 +349,7 @@ void main() {
             address: any(named: 'address'),
             derivationPath: any(named: 'derivationPath'),
             scriptType: any(named: 'scriptType'),
+            isTestnet: any(named: 'isTestnet'),
           ),
         ).thenThrow(Exception('something unexpected happened'));
 
@@ -241,6 +358,7 @@ void main() {
             address: 'bc1q',
             derivationPath: 'm',
             scriptType: ScriptType.bip84,
+            isTestnet: false,
           ),
           throwsA(
             isA<TrezorUnknown>().having(

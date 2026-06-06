@@ -19,6 +19,7 @@ class VerifyAddressTrezorUsecase {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
+    required bool isTestnet,
   }) async {
     try {
       // 60s safety net for the case Trezor Suite handles an error in its
@@ -31,6 +32,7 @@ class VerifyAddressTrezorUsecase {
             address: address,
             derivationPath: derivationPath,
             scriptType: scriptType,
+            isTestnet: isTestnet,
           )
           .timeout(
             const Duration(seconds: 60),

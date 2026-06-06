@@ -12,12 +12,14 @@ class TrezorVerifyAddressCubit extends TrezorOperationBaseCubit<bool> {
     required String address,
     required String derivationPath,
     required ScriptType scriptType,
+    required bool isTestnet,
   }) {
     return runOperation(
       () => _verifyAddress.execute(
         address: address,
         derivationPath: derivationPath,
         scriptType: scriptType,
+        isTestnet: isTestnet,
       ),
     );
   }

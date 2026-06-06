@@ -13,6 +13,7 @@ class GetTrezorAccountsUsecase {
     required int startIndex,
     required int count,
     required ScriptType scriptType,
+    required bool isTestnet,
   }) async {
     try {
       // 5min safety net for user-attention scenarios — granting
@@ -27,6 +28,7 @@ class GetTrezorAccountsUsecase {
             startIndex: startIndex,
             count: count,
             scriptType: scriptType,
+            isTestnet: isTestnet,
           )
           .timeout(
             const Duration(minutes: 5),
