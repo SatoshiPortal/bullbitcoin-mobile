@@ -782,6 +782,7 @@ class VerifyAddressOnTrezorButton extends StatelessWidget {
               address: state.address,
               derivationPath: derivationPath,
               scriptType: state.wallet!.scriptType,
+              isTestnet: state.wallet!.network.isTestnet,
             ),
           );
         },

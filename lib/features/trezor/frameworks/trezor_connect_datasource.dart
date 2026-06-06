@@ -24,9 +24,7 @@ class TrezorConnectDatasource {
   TrezorConnectDatasource({required TrezorConnect connect})
     : _connect = connect;
 
-  /// Exposed so `TrezorDeeplinkListener` can call `handleCallback` on the
-  /// same instance the package uses internally for `_callbacks` map lookup.
-  TrezorConnect get connect => _connect;
+  void handleCallback(Uri uri) => _connect.handleCallback(uri);
 
   Future<List<TrezorAddressPublicKey>> getPublicKeyBundle(
     List<String> paths, {
