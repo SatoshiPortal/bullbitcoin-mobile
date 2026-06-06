@@ -10,7 +10,7 @@ class OldWalletRepository {
   OldWalletRepository(this.hiveDatasource);
 
   Future<List<OldWallet>> fetch() async {
-    final oldWalletPayload = hiveDatasource.getValue(
+    final oldWalletPayload = await hiveDatasource.getValue(
       OldStorageKeys.wallets.name,
     );
     if (oldWalletPayload == null) return [];
@@ -22,7 +22,7 @@ class OldWalletRepository {
     for (final walletId in walletsIds) {
       if (walletId is! String) continue;
 
-      final walletMetadata = hiveDatasource.getValue(walletId);
+      final walletMetadata = await hiveDatasource.getValue(walletId);
       if (walletMetadata == null) continue;
       final walletMetadataJson =
           json.decode(walletMetadata) as Map<String, dynamic>;

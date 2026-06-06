@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/keychain_locked_exception.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/foundation.dart';
@@ -54,9 +55,38 @@ class SeedDatasource {
           'Seed not found for fingerprint: $fingerprint',
         );
       } catch (e) {
-        if (e is SeedNotFoundException) {
-          rethrow;
-        }
+        if (e is SeedNotFoundException) rethrow;
+
+        // CRITICAL: rethrow KeychainLockedException without retrying or
+        // converting it.
+        //
+        // The iOS Keychain returns `errSecInteractionNotAllowed` (-25308)
+        // when the device has not been unlocked since boot AND the
+        // item's accessibility class requires post-unlock access (BULL
+        // uses `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly` —
+        // see `lib/core/storage/storage_locator.dart`). The secure
+        // storage layer maps this to `KeychainLockedException` (see
+        // `keychain_locked_exception.dart`).
+        //
+        // Why this matters here specifically:
+        //  - The retry loop below cannot help. The lock state clears
+        //    only on user unlock action, not on backoff; retrying 5×
+        //    with exponential delay just burns ~9.6s of wall clock
+        //    while every attempt hits the same locked keychain.
+        //  - The fallback at the end of this catch throws
+        //    `SeedNotFoundException`. If we let `KeychainLockedException`
+        //    flow through that path, downstream code (e.g.
+        //    `CheckForExistingDefaultWalletsUsecase`,
+        //    `RequiresMigrationUsecase`) interprets the result as
+        //    "wallet seed is missing" and may trigger destructive
+        //    recovery flows for what is actually a transient, self-
+        //    healing state (resolves when the user unlocks).
+        //
+        // Letting the typed exception bubble up to the UI is the
+        // correct behavior — the UI can surface a "device just
+        // unlocked, please retry" prompt or simply re-call the
+        // operation on next state change.
+        if (e is KeychainLockedException) rethrow;
 
         if (attempt < maxRetries - 1) {
           final delay = Duration(
