@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/trezor/domain/entities/trezor_signed_psbt.dar
 import 'package:bb_mobile/features/trezor/frameworks/framework_errors.dart';
 import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
 import 'package:trezor_connect/models.dart';
+import 'package:trezor_connect/trezor_connect.dart' show TrezorLaunchException;
 
 class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
   final TrezorConnectDatasource _datasource;
@@ -120,6 +121,9 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     }
     if (e is TrezorMissingDescriptorException) {
       return const TrezorApplicationError.missingDescriptor();
+    }
+    if (e is TrezorLaunchException) {
+      return const TrezorApplicationError.suiteNotInstalled();
     }
     final s = e.toString().toLowerCase();
     if (s.contains('user rejected') ||

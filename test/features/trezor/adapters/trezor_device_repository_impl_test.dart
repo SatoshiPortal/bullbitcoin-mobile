@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:trezor_connect/models.dart';
+import 'package:trezor_connect/trezor_connect.dart' show TrezorLaunchException;
 
 class _MockDatasource extends Mock implements TrezorConnectDatasource {}
 
@@ -319,6 +320,31 @@ void main() {
         throwsA(isA<TrezorUserRejected>()),
       );
     });
+
+    test(
+      'TrezorLaunchException → TrezorSuiteNotInstalled '
+      '(regression: review #12 fast-fail on launch failure)',
+      () async {
+        when(
+          () => datasource.verifyAddress(
+            address: any(named: 'address'),
+            derivationPath: any(named: 'derivationPath'),
+            scriptType: any(named: 'scriptType'),
+            isTestnet: any(named: 'isTestnet'),
+          ),
+        ).thenThrow(const TrezorLaunchException());
+
+        expect(
+          () => repo.verifyAddress(
+            address: 'bc1q',
+            derivationPath: 'm',
+            scriptType: ScriptType.bip84,
+            isTestnet: false,
+          ),
+          throwsA(isA<TrezorSuiteNotInstalled>()),
+        );
+      },
+    );
 
     test('"not installed" string → TrezorSuiteNotInstalled', () async {
       when(
