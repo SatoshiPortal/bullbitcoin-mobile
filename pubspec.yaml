@@ -40,9 +40,11 @@ dependencies:
   timeago: ^3.7.1
   flutter_native_splash: ^2.4.7
   url_launcher: ^6.3.2
-  app_links:
-    ^7.0.0
-    # TODO(trezor-port): revert to cake-tech ref once merged:
+  app_links: ^7.0.0
+  # TODO(trezor-port): revert to cake-tech ref once
+  # https://github.com/cake-tech/trezor_connect/pull/1 is merged.
+  # The fork adds TrezorCallbackException so callback failures
+  # surface immediately instead of hanging until our app-side timeout.
   trezor_connect:
     git:
       url: https://github.com/anipy1/trezor_connect
