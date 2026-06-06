@@ -93,10 +93,7 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
 
     final fp = _extractMasterFingerprint(raw.descriptor);
     if (fp == null) {
-      throw Exception(
-        'Could not parse master fingerprint from Trezor descriptor: '
-        '${raw.descriptor}',
-      );
+      throw TrezorMissingDescriptorException(rawDescriptor: raw.descriptor);
     }
 
     return TrezorAccount(
@@ -113,6 +110,9 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
         expected: e.expected,
         returned: e.returned,
       );
+    }
+    if (e is TrezorMissingDescriptorException) {
+      return const TrezorApplicationError.missingDescriptor();
     }
     final s = e.toString().toLowerCase();
     if (s.contains('user rejected') ||

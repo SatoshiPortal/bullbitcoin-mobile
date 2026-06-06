@@ -260,7 +260,7 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
       return 'Preparing your wallet…';
     }
     if (state.isError) {
-      return 'Tap Try Again to start over.';
+      return state.errorMessage ?? 'Tap Try Again to start over.';
     }
     return 'Make sure Trezor Suite is installed on this device. '
         "You'll be redirected to authorize exporting your public key.";

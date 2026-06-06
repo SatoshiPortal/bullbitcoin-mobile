@@ -9,6 +9,8 @@ sealed class TrezorApplicationError implements Exception {
     required String expected,
     required String returned,
   }) = TrezorAddressMismatch;
+  const factory TrezorApplicationError.missingDescriptor() =
+      TrezorMissingDescriptor;
   const factory TrezorApplicationError.unknown(String message) = TrezorUnknown;
 }
 
@@ -32,6 +34,10 @@ final class TrezorAddressMismatch extends TrezorApplicationError {
   @override
   String toString() =>
       'TrezorAddressMismatch(expected: $expected, returned: $returned)';
+}
+
+final class TrezorMissingDescriptor extends TrezorApplicationError {
+  const TrezorMissingDescriptor();
 }
 
 final class TrezorUnknown extends TrezorApplicationError {

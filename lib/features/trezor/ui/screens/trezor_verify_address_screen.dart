@@ -219,7 +219,7 @@ class _VerifyAddressView extends StatelessWidget {
       return 'Returning to your wallet…';
     }
     if (state.isError) {
-      return 'Tap Try Again to retry verification.';
+      return state.errorMessage ?? 'Tap Try Again to retry verification.';
     }
     return 'Tap "Verify Address" to display this address in Trezor '
         'Suite and confirm it matches.';

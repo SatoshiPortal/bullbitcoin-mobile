@@ -61,6 +61,10 @@ class TrezorOperationCubit extends Cubit<TrezorOperationState> {
     TrezorTimeout() => 'Timed out waiting for Trezor Suite. Try again.',
     TrezorAddressMismatch() =>
       'Address mismatch — Trezor displayed a different address. Do not use this address.',
+    TrezorMissingDescriptor() =>
+      'Your Trezor didn\'t return the data needed to import this wallet. '
+          'This can happen with older firmware. Update Trezor Suite and your '
+          'device firmware to the latest versions, then try again.',
     TrezorUnknown(:final message) => message,
   };
 }

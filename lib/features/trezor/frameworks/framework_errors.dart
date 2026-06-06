@@ -10,3 +10,18 @@ class TrezorAddressMismatchException implements Exception {
     required this.returned,
   });
 }
+
+/// Thrown by `TrezorDeviceRepositoryImpl._toAccount` when Trezor's response
+/// doesn't contain a usable descriptor field — the master fingerprint can
+/// only be extracted from BIP-380 descriptor's origin section. The
+/// `trezor_connect` package documents `descriptor` as not available for
+/// Model One (and possibly other devices with older firmware), so the
+/// adapter translates this to `TrezorApplicationError.missingDescriptor`
+/// at the layer boundary.
+class TrezorMissingDescriptorException implements Exception {
+  /// The raw descriptor returned by Trezor — `null` if no descriptor field
+  /// was present, otherwise the string that failed BIP-380 parsing.
+  final String? rawDescriptor;
+
+  const TrezorMissingDescriptorException({this.rawDescriptor});
+}

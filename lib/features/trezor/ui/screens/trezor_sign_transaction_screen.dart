@@ -178,7 +178,9 @@ class _SignTransactionView extends StatelessWidget {
     if (state.isProcessing) {
       return "You'll be redirected back to your wallet…";
     }
-    if (state.isError) return 'Tap Try Again to start over.';
+    if (state.isError) {
+      return state.errorMessage ?? 'Tap Try Again to start over.';
+    }
     return 'Tap "Start Signing" to review and confirm the transaction '
         'in Trezor Suite.';
   }
