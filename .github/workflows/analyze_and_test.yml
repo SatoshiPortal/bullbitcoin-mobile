@@ -1,84 +1,94 @@
 name: Analyze and Test
 
 on:
-  pull_request:
-    branches:
-      - main
-      - develop
+    pull_request:
+        branches:
+            - main
+            - develop
 
 jobs:
-  analyze_and_test:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v5
+    analyze_and_test:
+        runs-on: ubuntu-24.04
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v6
 
-      - name: Install FVM
-        run: |
-          curl -fsSL https://fvm.app/install.sh | bash -s -- 4.0.5
-          echo "$HOME/fvm/bin" >> $GITHUB_PATH
+            # Caches below are restored before any toolchain step that uses
+            # them, so the SDK download / pub resolve / crate fetch on a cold
+            # runner only pays out on a cache miss. The pub cache also holds the
+            # bull_sdk git clone; the Cargo cache holds its transitive crates.io
+            # deps. All three keys derive from lockfiles, so they self-invalidate
+            # when deps change. pubspec.lock pins the bull_sdk commit, so it is
+            # the right key for the Cargo cache (there is no repo-root Cargo.lock).
+            - name: Cache Flutter SDK (FVM)
+              uses: actions/cache@v5
+              with:
+                  path: ~/fvm/versions
+                  key: fvm-${{ runner.os }}-${{ hashFiles('.fvmrc') }}
 
-      - run: make fvm-check
-      - run: make deps
-      - run: make build-runner
-      - run: make translations
+            - name: Cache pub (hosted + git deps)
+              uses: actions/cache@v5
+              with:
+                  path: ~/.pub-cache
+                  key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+                  restore-keys: pub-${{ runner.os }}-
 
-      - name: Create .env file
-        run: |
-          echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
-          echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
+            - name: Cache Cargo (FRB native crates)
+              uses: actions/cache@v5
+              with:
+                  path: |
+                      ~/.cargo/registry
+                      ~/.cargo/git
+                  key: cargo-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+                  restore-keys: cargo-${{ runner.os }}-
 
-      - name: Linter shouldn't raise errors, warnings or infos
-        run: fvm flutter analyze --fatal-warnings --fatal-infos
+            - name: Install FVM
+              run: |
+                  curl -fsSL https://fvm.app/install.sh | bash -s -- 4.0.5
+                  echo "$HOME/fvm/bin" >> $GITHUB_PATH
 
-      - name: Unit tests must pass
-        run: make unit-test
+            - run: make fvm-check
+            - run: make deps
+            - run: make build-runner
+            - run: make translations
 
-  # android-integration-test:
-  #   runs-on: macos-latest
+            - name: Create .env file
+              run: |
+                  echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
+                  echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
 
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: flutter-actions/setup-flutter@v4
-  #     - uses: bluefireteam/melos-action@v2
-  #     - uses: dtolnay/rust-toolchain@stable
-  #       with:
-  #         toolchain: stable
-  #     - uses: nttld/setup-ndk@v1
-  #       with:
-  #         ndk-version: r25b
-  #     - uses: actions/setup-java@v3
-  #       with:
-  #         distribution: zulu
-  #         java-version: "21"
+            - name: Linter shouldn't raise errors, warnings or infos
+              run: fvm flutter analyze --fatal-warnings --fatal-infos
 
-  #     - run: make clean
-  #     - run: make deps
-  #     - run: make build-runner
-  #     - run: make l10n
+            - name: dart fix should have nothing to suggest
+              run: |
+                  output=$(fvm dart fix --dry-run)
+                  echo "$output"
+                  echo "$output" | grep -q "Nothing to fix!"
 
-  #     - name: Create .env file
-  #       run: |
-  #         echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
-  #         echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env    
+            - name: Unit tests must pass
+              run: make unit-test
 
-  #     # - name: Build the binaries
-  #     #   run: melos run build:android
-  #     # - name: Copy the binaries to the needed location
-  #     #   run: |
-  #     #     CURR_VERSION=library_name-v`awk '/^version: /{print $2}' packages/library_name/pubspec.yaml`
-  #     #     cp platform-build/android.tar.gz packages/flutter_library_name/android/$CURR_VERSION.tar.gz
-  #     #     echo Copied file!
+            - name: Install Linux desktop for integration tests
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y \
+                    clang lld cmake ninja-build pkg-config \
+                    libgtk-3-dev liblzma-dev libstdc++-12-dev \
+                    libsecret-1-dev libsecret-tools libcurl4-openssl-dev \
+                    dbus gnome-keyring \
+                    xdg-desktop-portal xdg-desktop-portal-gtk \
+                    libsqlite3-dev xvfb xauth
 
-  #     - name: Run Flutter integration tests
-  #       uses: Wandalen/wretry.action@master # sometimes android tests are flaky
-  #       with:
-  #         attempt_limit: 5
-  #         action: reactivecircus/android-emulator-runner@v2
-  #         with: |
-  #           api-level: 33
-  #           target: google_apis
-  #           arch: x86_64
-  #           ram-size: 1024M
-  #           disk-size: 2048M
-  #           script: cd packages/flutter_library_name/example && flutter test -d `flutter devices | grep android | tr ' ' '\n' | grep emulator-` integration_test
+            # The tests build and launch the real Linux GTK app, which needs a
+            # display to init even though the tests themselves render nothing —
+            # on a headless runner the app aborts at startup ("log reader
+            # stopped unexpectedly / Unable to start the app on the device").
+            # xvfb-run gives it a virtual X server. dbus-run-session + an
+            # unlocked gnome-keyring provide the Secret Service flutter_secure_storage needs.
+            - name: Integration tests (Linux desktop)
+              run: |
+                  xvfb-run -a dbus-run-session -- bash -c '
+                    echo "" | gnome-keyring-daemon --unlock --daemonize --components=secrets
+                    make integration-test
+                  '

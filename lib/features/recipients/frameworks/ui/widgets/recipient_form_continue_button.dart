@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +10,12 @@ class RecipientFormContinueButton extends StatelessWidget {
     super.key,
     required this.onPressed,
     this.hookError,
+    this.formDisabled = false,
   });
 
   final VoidCallback onPressed;
   final String? hookError;
+  final bool formDisabled;
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +49,8 @@ class RecipientFormContinueButton extends StatelessWidget {
             ),
           ),
         BBButton.big(
-          label: 'Continue',
-          disabled: isLoading,
+          label: context.loc.recipientsContinue,
+          disabled: isLoading || formDisabled,
           onPressed: onPressed,
           bgColor: context.appColors.secondary,
           textColor: context.appColors.onSecondary,

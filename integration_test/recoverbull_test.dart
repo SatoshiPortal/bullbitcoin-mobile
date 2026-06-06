@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/recoverbull/domain/entity/decrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/decrypt_vault_usecase.dart';
@@ -16,6 +14,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/main.dart';
 import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> main({bool isInitialized = false}) async {
@@ -67,7 +66,23 @@ Future<void> main({bool isInitialized = false}) async {
   setUpAll(() async => await initializeTorUsecase.execute());
 
   group('Recoverbull', () {
-    test('Restore encrypted vault', () async {
+    // Fetches the vault key over Tor from the RecoverBull key server. Tor can
+    // take ~20s to bootstrap before the first request even goes out, so the
+    // default 30s test timeout is too tight — give it a full minute.
+    test('Restore encrypted vault', timeout: const Timeout(Duration(minutes: 2)),
+        () async {
+      debugPrint('''
+
+╔══════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║   ⏳  HEADS UP — THIS TEST IS SLOW (up to ~2 MINUTES). NOT FROZEN.         ║
+║                                                                            ║
+║   It fetches the vault key over Tor from the RecoverBull key server.       ║
+║   Tor needs ~20s just to bootstrap, then the key-server round-trip can     ║
+║   take a while. Sit tight — go grab a coffee. ☕                           ║
+║                                                                            ║
+╚══════════════════════════════════════════════════════════════════════════╝
+''');
       final vaultKey = await fetchVaultKeyFromServerUsecase.execute(
         vault: EncryptedVault(file: oldPathZooMnemonicWithSevenZerosPassword),
         password: password,

@@ -37,8 +37,8 @@ class ReplaceByFeeRouter {
         child: BlocListener<ReplaceByFeeCubit, ReplaceByFeeState>(
           listenWhen:
               (previous, state) => previous.txid == null && state.txid != null,
-          listener:
-              (context, state) => context.goNamed(WalletRoute.walletHome.name),
+          listener: (context, state) =>
+              context.goNamed(WalletRoute.walletHome.name),
           child: ReplaceByFeeHomePage(tx: tx),
         ),
       );

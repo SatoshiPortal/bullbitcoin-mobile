@@ -5,24 +5,51 @@ on:
     types: [created]
   pull_request_review_comment:
     types: [created]
+  pull_request:
+    types: [opened]
+    branches: [develop]
 
 permissions:
-  id-token: write      # needed for OIDC
-  contents: write       # so it can write the repo
-  issues: write        # so it can comment on issues
+  id-token: write # required: the action mints its GitHub token via OIDC
+  contents: write # so it can write the repo
+  issues: write # so it can comment on issues
   pull-requests: write # so it can comment on PRs
+
+# One run per issue/PR; don't pile up on rapid comments.
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
 
 jobs:
   claude:
+    # Auto-review fires only for same-repo (collaborator) PRs against develop —
+    # fork PRs get no secrets (empty API key), and we never want to auto-run
+    # untrusted fork code with our token. External PRs are still reviewable on
+    # demand: a write-access user comments "@claude". The action itself limits
+    # comment triggers to write-access users, so attackers can't drain tokens;
+    # the @claude check just avoids spinning a runner on unrelated comments.
+    if: >
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name != 'pull_request' &&
+       contains(github.event.comment.body, '@claude'))
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0       # Fetch full history for branch operations
-          persist-credentials: true  # Keep credentials for subsequent git commands
+          fetch-depth: 0 # Fetch full history for branch operations
+          persist-credentials: true # Keep credentials for subsequent git commands
 
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-opus-4-5-20251101"
+          # On PR-open the action auto-picks "agent" mode, which runs the prompt
+          # but posts nothing. Forcing tag mode gives Claude the GitHub
+          # review/comment tools + a tracking comment so the review is posted.
+          # Comment events (@claude) are already tag mode, so leave them as-is.
+          track_progress: ${{ github.event_name == 'pull_request' }}
+          # Empty on comment events (interactive @claude mode); a review
+          # instruction when a PR is opened against develop.
+          prompt: ${{ github.event_name == 'pull_request' && 'Review this pull request for correctness bugs, security issues, and regressions. Post findings as inline review comments plus a short summary.' || '' }}

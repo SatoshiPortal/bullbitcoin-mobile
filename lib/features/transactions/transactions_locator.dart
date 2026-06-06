@@ -17,8 +17,14 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_formatter.dart';
+import 'package:bb_mobile/features/transactions/adapters/csv_transaction_export_saver.dart';
+import 'package:bb_mobile/features/transactions/application/ports/transaction_export_formatter.dart';
+import 'package:bb_mobile/features/transactions/application/ports/transaction_export_saver.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/export_transactions_csv_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/application/usecases/get_transactions_usecase.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/export/export_transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:get_it/get_it.dart';
@@ -44,6 +50,13 @@ class TransactionsLocator {
       ),
     );
 
+    locator.registerFactory<ExportTransactionsCsvUsecase>(
+      () => ExportTransactionsCsvUsecase(
+        getTransactionsUsecase: locator<GetTransactionsUsecase>(),
+        formatter: locator<TransactionExportFormatter>(),
+      ),
+    );
+
     locator.registerFactory<GetTransactionsByTxIdUsecase>(
       () => GetTransactionsByTxIdUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -63,6 +76,16 @@ class TransactionsLocator {
     );
   }
 
+  static void registerAdapters(GetIt locator) {
+    locator.registerLazySingleton<TransactionExportFormatter>(
+      CsvTransactionExportFormatter.new,
+    );
+
+    locator.registerLazySingleton<TransactionExportSaver>(
+      CsvTransactionExportSaver.new,
+    );
+  }
+
   static void registerBlocs(GetIt locator) {
     // Bloc
     locator.registerFactoryParam<TransactionsCubit, String?, bool?>(
@@ -74,6 +97,12 @@ class TransactionsLocator {
             locator<WatchStartedWalletSyncsUsecase>(),
         watchFinishedWalletSyncsUsecase:
             locator<WatchFinishedWalletSyncsUsecase>(),
+      ),
+    );
+    locator.registerFactory<ExportTransactionsCubit>(
+      () => ExportTransactionsCubit(
+        exportTransactionsCsvUsecase: locator<ExportTransactionsCsvUsecase>(),
+        saver: locator<TransactionExportSaver>(),
       ),
     );
     locator.registerFactory<TransactionDetailsCubit>(

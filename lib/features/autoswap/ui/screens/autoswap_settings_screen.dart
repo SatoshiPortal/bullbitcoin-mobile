@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -12,8 +13,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class AutoSwapSettingsScreen extends StatelessWidget {
+class AutoSwapSettingsScreen extends StatefulWidget {
   const AutoSwapSettingsScreen({super.key});
+
+  @override
+  State<AutoSwapSettingsScreen> createState() => _AutoSwapSettingsScreenState();
+}
+
+class _AutoSwapSettingsScreenState extends State<AutoSwapSettingsScreen> {
+  final FocusNode _amountNode = FocusNode();
+  final FocusNode _triggerNode = FocusNode();
+  final FocusNode _feeNode = FocusNode();
+
+  @override
+  void dispose() {
+    _amountNode.dispose();
+    _triggerNode.dispose();
+    _feeNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,44 +40,48 @@ class AutoSwapSettingsScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: Text(context.loc.autoswapSettingsTitle)),
         body: SafeArea(
-          child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-            builder: (context, state) {
-              final enabled = state.enabledToggle;
+          child: BBKeyboardActions(
+            disableScroll: true,
+            focusNodes: [_amountNode, _triggerNode, _feeNode],
+            child: BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
+              builder: (context, state) {
+                final enabled = state.enabledToggle;
 
-              return SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: state.loading
-                      ? const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(32.0),
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Gap(16),
-                            _EnabledToggle(),
-                            if (enabled) ...[
+                return SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: state.loading
+                        ? const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               const Gap(16),
-                              _AmountThresholdField(),
-                              const Gap(16),
-                              _TriggerBalanceField(),
-                              const Gap(16),
-                              _FeeThresholdField(),
-                              const Gap(16),
-                              _WalletSelectionDropdown(),
-                              const Gap(16),
-                              _AlwaysBlockToggle(),
+                              _EnabledToggle(),
+                              if (enabled) ...[
+                                const Gap(16),
+                                _AmountThresholdField(focusNode: _amountNode),
+                                const Gap(16),
+                                _TriggerBalanceField(focusNode: _triggerNode),
+                                const Gap(16),
+                                _FeeThresholdField(focusNode: _feeNode),
+                                const Gap(16),
+                                _WalletSelectionDropdown(),
+                                const Gap(16),
+                                _AlwaysBlockToggle(),
+                              ],
                             ],
-                          ],
-                        ),
-                ),
-              );
-            },
+                          ),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -106,6 +128,10 @@ class _EnabledToggle extends StatelessWidget {
 }
 
 class _AmountThresholdField extends StatelessWidget {
+  const _AmountThresholdField({required this.focusNode});
+
+  final FocusNode focusNode;
+
   @override
   Widget build(BuildContext context) {
     final amountThresholdInput = context.select(
@@ -125,7 +151,7 @@ class _AmountThresholdField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Target Instant Wallet Balance',
+          context.loc.autoswapTargetBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
           ),
@@ -136,6 +162,7 @@ class _AmountThresholdField extends StatelessWidget {
             Expanded(
               child: BBInputText(
                 value: amountThresholdInput ?? '',
+                focusNode: focusNode,
                 onlyNumbers: true,
                 rightIcon: GestureDetector(
                   onTap: () {
@@ -215,6 +242,10 @@ class _AmountThresholdField extends StatelessWidget {
 }
 
 class _TriggerBalanceField extends StatelessWidget {
+  const _TriggerBalanceField({required this.focusNode});
+
+  final FocusNode focusNode;
+
   @override
   Widget build(BuildContext context) {
     final triggerBalanceSatsInput = context.select(
@@ -234,7 +265,7 @@ class _TriggerBalanceField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBText(
-          'Maximum Instant Wallet Balance',
+          context.loc.autoswapMaximumBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
           ),
@@ -245,6 +276,7 @@ class _TriggerBalanceField extends StatelessWidget {
             Expanded(
               child: BBInputText(
                 value: triggerBalanceSatsInput ?? '',
+                focusNode: focusNode,
                 onlyNumbers: true,
                 rightIcon: GestureDetector(
                   onTap: () {
@@ -316,6 +348,10 @@ class _TriggerBalanceField extends StatelessWidget {
 }
 
 class _FeeThresholdField extends StatelessWidget {
+  const _FeeThresholdField({required this.focusNode});
+
+  final FocusNode focusNode;
+
   @override
   Widget build(BuildContext context) {
     final feeThresholdInput = context.select(
@@ -343,6 +379,7 @@ class _FeeThresholdField extends StatelessWidget {
             Expanded(
               child: BBInputText(
                 value: feeThresholdInput ?? '',
+                focusNode: focusNode,
                 onlyNumbers: true,
                 rightIcon: Container(
                   padding: const EdgeInsets.symmetric(

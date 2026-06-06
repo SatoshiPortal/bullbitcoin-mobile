@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/data/services/mnemonic_generator.dart';
@@ -16,7 +16,6 @@ import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repositor
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_backup_needed_usecase.dart';
@@ -30,14 +29,12 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_us
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/import_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_electrum_sync_results_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/core/wallet/interface_adapters/electrum_server_adapter.dart';
 import 'package:bb_mobile/features/labels/labels_facade.dart';
 import 'package:get_it/get_it.dart';
 
@@ -56,15 +53,6 @@ class WalletLocator {
 
     locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
       () => FrozenWalletUtxoDatasource(),
-    );
-  }
-
-  static void registerPorts(GetIt locator) {
-    locator.registerLazySingleton<ElectrumServerPort>(
-      () => ElectrumServerAdapter(
-        getElectrumServersToUseUsecase:
-            locator<GetElectrumServersToUseUsecase>(),
-      ),
     );
   }
 
@@ -90,7 +78,7 @@ class WalletLocator {
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        electrumServerPort: locator<ElectrumServerPort>(),
+        serversPort: locator<ElectrumServersPort>(),
       ),
     );
 
@@ -119,7 +107,7 @@ class WalletLocator {
         labelsFacade: locator<LabelsFacade>(),
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
-        electrumServerPort: locator<ElectrumServerPort>(),
+        serversPort: locator<ElectrumServersPort>(),
       ),
     );
   }
@@ -211,17 +199,10 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
-    locator.registerFactory<ImportWalletUsecase>(
-      () => ImportWalletUsecase(
-        walletRepository: locator<WalletRepository>(),
-        seedRepository: locator<SeedRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-    );
-    locator.registerFactory<TheDirtyUsecase>(
-      () => TheDirtyUsecase(
+    locator.registerFactory<CheckWalletStatusUsecase>(
+      () => CheckWalletStatusUsecase(
         locator<SettingsRepository>(),
-        locator<ElectrumServerPort>(),
+        locator<ElectrumServersPort>(),
         locator<BitcoinWalletRepository>(),
       ),
     );

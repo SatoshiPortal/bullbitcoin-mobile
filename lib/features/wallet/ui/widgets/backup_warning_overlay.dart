@@ -53,53 +53,106 @@ class _BackupWarningBlockerState extends State<_BackupWarningBlocker> {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: SafeArea(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: context.appColors.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.85,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  BBText(
-                    context.loc.backupWarningTitle,
-                    style: context.font.headlineMedium,
-                    color: context.appColors.onSurface,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: context.appColors.surface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(16),
                   ),
-                  const Gap(16),
-                  BBText(
-                    context.loc.backupWarningDescription,
-                    style: context.font.bodyMedium,
-                    color: context.appColors.onSurface,
-                  ),
-                  const Gap(24),
-                  BBButton.big(
-                    label: context.loc.backupWarningBackupNow,
-                    onPressed: () {
-                      context.pushNamed(
-                        BackupSettingsSubroute.backupOptions.name,
-                      );
-                    },
-                    bgColor: context.appColors.onSurface,
-                    textColor: context.appColors.surface,
-                  ),
-                  const Gap(12),
-                  BBButton.big(
-                    label: context.loc.backupWarningBackupLater,
-                    onPressed: () {
-                      context
-                          .read<WalletBloc>()
-                          .add(const DismissBackupWarning());
-                    },
-                    bgColor: context.appColors.surface,
-                    textColor: context.appColors.onSurface,
-                    outlined: true,
-                  ),
-                ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            BBText(
+                              context.loc.backupWarningTitle,
+                              style: context.font.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              color: context.appColors.onSurface,
+                            ),
+                            const Gap(16),
+                            BBText(
+                              context.loc.backupWarningDescription,
+                              style: context.font.bodyMedium,
+                              color: context.appColors.onSurface,
+                            ),
+                            const Gap(8),
+                            for (final reason in [
+                              context.loc.backupWarningLoseReasonLostPhone,
+                              context.loc.backupWarningLoseReasonDeletedApp,
+                              context.loc.backupWarningLoseReasonCriticalIssue,
+                              context.loc.backupWarningLoseReasonKeystore,
+                              context.loc.backupWarningLoseReasonCloudRestore,
+                            ])
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    BBText(
+                                      '•  ',
+                                      style: context.font.bodyMedium,
+                                      color: context.appColors.onSurface,
+                                    ),
+                                    Expanded(
+                                      child: BBText(
+                                        reason,
+                                        style: context.font.bodyMedium,
+                                        color: context.appColors.onSurface,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            const Gap(8),
+                            BBText(
+                              context.loc.backupWarningNoRecovery,
+                              style: context.font.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              color: context.appColors.onSurface,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Gap(24),
+                    BBButton.big(
+                      label: context.loc.backupWarningBackupNow,
+                      onPressed: () {
+                        context.pushNamed(
+                          BackupSettingsSubroute.backupOptions.name,
+                        );
+                      },
+                      bgColor: context.appColors.onSurface,
+                      textColor: context.appColors.surface,
+                    ),
+                    const Gap(12),
+                    BBButton.big(
+                      label: context.loc.backupWarningBackupLater,
+                      onPressed: () {
+                        context
+                            .read<WalletBloc>()
+                            .add(const DismissBackupWarning());
+                      },
+                      bgColor: context.appColors.surface,
+                      textColor: context.appColors.onSurface,
+                      outlined: true,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

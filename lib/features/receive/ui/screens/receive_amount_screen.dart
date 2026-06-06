@@ -1,16 +1,35 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
+import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_entry.dart';
+import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceiveAmountScreen extends StatelessWidget {
+class ReceiveAmountScreen extends StatefulWidget {
   const ReceiveAmountScreen({super.key, this.onContinueNavigation});
 
   final Function? onContinueNavigation;
+
+  @override
+  State<ReceiveAmountScreen> createState() => _ReceiveAmountScreenState();
+}
+
+class _ReceiveAmountScreenState extends State<ReceiveAmountScreen> {
+  final _amountNode = FocusNode();
+
+  @override
+  void dispose() {
+    _amountNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,87 +42,76 @@ class ReceiveAmountScreen extends StatelessWidget {
           // Prevent using the amount from a previous receive type
           previous.type == current.type,
       listener: (context, state) {
-        onContinueNavigation?.call() ?? context.pop();
+        widget.onContinueNavigation?.call() ?? context.pop();
       },
-      child: AmountPage(onContinueNavigation: onContinueNavigation),
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: .translucent,
+        child: BBKeyboardActions(
+          disableScroll: true,
+          focusNodes: [_amountNode],
+          child: Column(
+            mainAxisAlignment: .spaceEvenly,
+            crossAxisAlignment: .stretch,
+            children: [
+              ReceiveAmountInput(focusNode: _amountNode),
+              const _NoteTile(),
+              ReceiveAmountContinueButton(
+                onContinueNavigation: widget.onContinueNavigation,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class AmountPage extends StatefulWidget {
-  const AmountPage({super.key, this.onContinueNavigation});
-
-  final Function? onContinueNavigation;
-
-  @override
-  State<AmountPage> createState() => _AmountPageState();
-}
-
-class _AmountPageState extends State<AmountPage> {
-  late TextEditingController _amountController;
-  late FocusNode _amountFocusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    final bloc = context.read<ReceiveBloc>();
-    final initialAmount = bloc.state.inputAmount;
-    _amountController = TextEditingController.fromValue(
-      TextEditingValue(text: initialAmount),
-    );
-    _amountController.addListener(() {
-      final text = _amountController.text;
-      if (text != bloc.state.inputAmount) {
-        bloc.add(ReceiveEvent.receiveAmountInputChanged(text));
-      }
-    });
-    _amountFocusNode = FocusNode();
-
-    // When focus changes, reset selection if unfocused
-    _amountFocusNode.addListener(() {
-      if (!_amountFocusNode.hasFocus) {
-        // Field lost focus, reset selection to end without showing cursor
-        final currentText = _amountController.text;
-        _amountController.value = TextEditingValue(
-          text: currentText,
-          selection: TextSelection.collapsed(offset: currentText.length),
-        );
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _amountController.dispose();
-    _amountFocusNode.dispose();
-    super.dispose();
-  }
+class _NoteTile extends StatelessWidget {
+  const _NoteTile();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ReceiveBloc, ReceiveState>(
-      listenWhen: (previous, current) =>
-          previous.inputAmountCurrencyCode != current.inputAmountCurrencyCode,
-      listener: (context, state) {
-        // Clear the controller when currency changes
-        _amountController.clear();
-      },
-      child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
+    final note = context.select((ReceiveBloc bloc) => bloc.state.note);
+    final hPad = Device.screen.width * 0.04;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: hPad),
+      child: BorderedTappableTile(
+        onTap: () async {
+          final bloc = context.read<ReceiveBloc>();
+          final saved = await LabelEntryBottomSheet.note(
+            context,
+            title: context.loc.transactionNoteAddTitle,
+            initialValue: note.isEmpty ? null : note,
+            hint: context.loc.transactionNoteHint,
+            suggestionsFuture: bloc.fetchDistinctLabels(),
+          );
+          if (saved == null) return;
+          bloc.add(ReceiveNoteChanged(saved));
         },
-        behavior: .translucent,
-        child: Column(
-          mainAxisAlignment: .spaceEvenly,
-          crossAxisAlignment: .stretch,
+        child: Row(
           children: [
-            ReceiveAmountEntry(
-              amountController: _amountController,
-              focusNode: _amountFocusNode,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BBText(
+                    '${context.loc.receiveNote} (optional)',
+                    style: context.font.bodyLarge,
+                    color: context.appColors.secondary,
+                  ),
+                  const Gap(4),
+                  BBText(
+                    note.isEmpty ? context.loc.receiveEnterHere : note,
+                    style: context.font.bodyMedium,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
-            ReceiveAmountContinueButton(
-              onContinueNavigation: widget.onContinueNavigation,
-            ),
+            Icon(Icons.edit, size: 20, color: context.appColors.secondary),
           ],
         ),
       ),

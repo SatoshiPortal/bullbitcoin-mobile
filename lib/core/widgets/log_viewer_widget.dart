@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -250,10 +251,13 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
         child: Column(
           children: [
             const Gap(16),
-            BBText('Delete logs', style: context.font.headlineMedium),
+            BBText(
+              context.loc.logsViewerDeleteTitle,
+              style: context.font.headlineMedium,
+            ),
             const Gap(16),
             BBText(
-              'Are you sure you want to delete all logs? This action cannot be undone.',
+              context.loc.logsViewerDeleteConfirmation,
               style: context.font.bodyMedium,
             ),
             const Gap(16),
@@ -265,13 +269,13 @@ Future<void> _showConfirmDeleteLogsBottomSheet(BuildContext context) async {
                     context.goNamed(WalletRoute.walletHome.name);
                     await log.deleteLogs();
                   },
-                  label: 'Delete',
+                  label: context.loc.logsViewerDeleteButton,
                   bgColor: context.appColors.primary,
                   textColor: context.appColors.onPrimary,
                 ),
                 BBButton.small(
                   onPressed: () => context.pop(),
-                  label: 'Cancel',
+                  label: context.loc.logsViewerCancelButton,
                   bgColor: context.appColors.secondary,
                   textColor: context.appColors.onSecondary,
                 ),

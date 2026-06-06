@@ -4,13 +4,13 @@
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
   },
-  "translationWarningDescription": "Most translations in this app were generated using AI and may contain inaccuracies. If you notice any errors or would like to help improve the translations, you can contribute through our community translation platform.",
+  "translationWarningDescription": "Most translations in this app were generated using AI and may contain inaccuracies. If you notice any errors or would like to help improve the translations, you can submit a fix on our GitHub repository.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "translationWarningContributeButton": "Help Improve Translations",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "translationWarningDismissButton": "Got It",
   "@translationWarningDismissButton": {
@@ -1448,6 +1448,10 @@
   "@receiveSave": {
     "description": "Button label for saving receive details"
   },
+  "receivePayjoinNoUtxos": "Receive funds first to enable it.\nUTXOs are required to use payjoin.",
+  "@receivePayjoinNoUtxos": {
+    "description": "Snackbar shown when user tries to enable payjoin on a wallet without any UTXOs"
+  },
   "receivePayjoinActivated": "Payjoin activated",
   "@receivePayjoinActivated": {
     "description": "Message indicating that payjoin is activated for the receive transaction"
@@ -1985,6 +1989,18 @@
   "payTitle": "Pay",
   "@payTitle": {
     "description": "Screen title for pay feature"
+  },
+  "payDescriptionLabel": "Payment description (optional)",
+  "@payDescriptionLabel": {
+    "description": "Label for the optional payment description input in the pay flow"
+  },
+  "payDescriptionHint": "Add a note for this payment",
+  "@payDescriptionHint": {
+    "description": "Hint text for the optional payment description input in the pay flow"
+  },
+  "payPaymentDescription": "Payment description",
+  "@payPaymentDescription": {
+    "description": "Label for the payment description on the pay confirmation screen"
   },
   "paySelectRecipient": "Select recipient",
   "@paySelectRecipient": {
@@ -3218,6 +3234,10 @@
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
+  "transactionDetailLabelPaymentDescription": "Payment description",
+  "@transactionDetailLabelPaymentDescription": {
+    "description": "Label for the payment description on the order details screen"
+  },
   "transactionDetailLabelPayinAmount": "Payin amount",
   "@transactionDetailLabelPayinAmount": {
     "description": "Label for payin amount"
@@ -3526,7 +3546,7 @@
   "@fundExchangeMethodInstantSepa": {
     "description": "Payment method: Instant SEPA (Europe)"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - Only for transactions below €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -3534,7 +3554,7 @@
   "@fundExchangeMethodRegularSepa": {
     "description": "Payment method: Regular SEPA (Europe)"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Only use for larger transactions above €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -4993,6 +5013,10 @@
   "swapReceiveExactAmountLabel": "Receive exact amount",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
+  },
+  "swapInsufficientFunds": "Insufficient Funds",
+  "@swapInsufficientFunds": {
+    "description": "Error shown when the amount exceeds the wallet balance during a swap"
   },
   "swapSubtractFeesLabel": "Subtract fees from amount",
   "@swapSubtractFeesLabel": {
@@ -7197,9 +7221,17 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Hardware wallets cannot be used for swaps.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "sendErrorInvoiceMustContainAmount": "Invoice must contain an amount",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
+  },
+  "sendErrorInvoiceExpired": "This invoice is expired. Ask the recipient for a new invoice.",
+  "@sendErrorInvoiceExpired": {
+    "description": "Error when an expired Lightning invoice is used"
   },
   "sendErrorInsufficientBalanceForPayment": "Not enough balance to cover this payment",
   "@sendErrorInsufficientBalanceForPayment": {
@@ -9758,6 +9790,50 @@
       }
     }
   },
+  "transactionHistoryTitle": "Transaction History",
+  "@transactionHistoryTitle": {
+    "description": "Title for the transaction history page and settings entry"
+  },
+  "transactionHistoryHeading": "Transaction History",
+  "@transactionHistoryHeading": {
+    "description": "Main heading on the transaction history page"
+  },
+  "exportTransactionsDescription": "Export all your wallet transactions (Bitcoin, Liquid, Lightning and swaps) as a CSV file. Optionally filter by date range.",
+  "@exportTransactionsDescription": {
+    "description": "Description of the CSV export functionality"
+  },
+  "exportTransactionsStartDate": "Start date",
+  "@exportTransactionsStartDate": {
+    "description": "Label for the export start date field"
+  },
+  "exportTransactionsEndDate": "End date",
+  "@exportTransactionsEndDate": {
+    "description": "Label for the export end date field"
+  },
+  "exportTransactionsAnyDate": "Any",
+  "@exportTransactionsAnyDate": {
+    "description": "Placeholder shown when no date filter is selected"
+  },
+  "exportTransactionsButton": "Export CSV",
+  "@exportTransactionsButton": {
+    "description": "Button text to export transactions as CSV"
+  },
+  "exportTransactionsSuccess": "Transactions exported successfully",
+  "@exportTransactionsSuccess": {
+    "description": "Success message after exporting transactions"
+  },
+  "exportTransactionsEmpty": "No transactions to export for the selected period",
+  "@exportTransactionsEmpty": {
+    "description": "Message shown when there are no transactions to export"
+  },
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Start date must be before end date",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -9826,6 +9902,10 @@
   "broadcastSignedTxBroadcasting": "Broadcasting...",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
+  },
+  "broadcastSignedTxBroadcastError": "Failed to broadcast the transaction",
+  "@broadcastSignedTxBroadcastError": {
+    "description": "Headline shown when broadcasting a signed transaction fails"
   },
   "broadcastSignedTxPageTitle": "Broadcast signed transaction",
   "@broadcastSignedTxPageTitle": {
@@ -11613,7 +11693,7 @@
   "@appStartupErrorTitle": {
     "description": "Title shown when the app fails to start up properly"
   },
-  "appStartupErrorMessage": "App failed to startup. Try completely stop the app and restart. If the error persists, report the issue to support and share your logs.",
+  "appStartupErrorMessage": "App failed to start up. Try completely stopping the app and restarting it. If the error persists, contact support and share your logs.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -12588,6 +12668,110 @@
   "@coreScreensConfirmButton": {
     "description": "Text for confirm button"
   },
+  "coreScreensResolvingInputs": "Resolving transaction inputs...",
+  "@coreScreensResolvingInputs": {
+    "description": "Loading message while resolving transaction input values"
+  },
+  "coreScreensFeeRateLabel": "Fee rate",
+  "@coreScreensFeeRateLabel": {
+    "description": "Label for fee rate row in transaction review"
+  },
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "@coreScreensFeeRateValue": {
+    "description": "Fee rate value with unit",
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensChangeOutputUnknown": "Change output unknown — all outputs shown equally",
+  "@coreScreensChangeOutputUnknown": {
+    "description": "Info text when change output cannot be identified"
+  },
+  "coreScreensUnknown": "Unknown",
+  "@coreScreensUnknown": {
+    "description": "Fallback text for unknown values"
+  },
+  "coreScreensFetchFailed": "Could not fetch transaction {txid} from Electrum.",
+  "@coreScreensFetchFailed": {
+    "description": "Error when transaction fetch fails",
+    "placeholders": {
+      "txid": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensInputResolutionFailed": "Input not found: output {vout} of {parentTxId} does not exist.",
+  "@coreScreensInputResolutionFailed": {
+    "description": "Error when input resolution fails",
+    "placeholders": {
+      "vout": {
+        "type": "int"
+      },
+      "parentTxId": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensParseFailed": "Failed to parse transaction: {message}.",
+  "@coreScreensParseFailed": {
+    "description": "Error when transaction parsing fails",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensUnexpectedError": "Unexpected error: {message}.",
+  "@coreScreensUnexpectedError": {
+    "description": "Generic unexpected error",
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "coreScreensNoServersAvailable": "No Electrum servers available.",
+  "@coreScreensNoServersAvailable": {
+    "description": "Error when no Electrum servers are available"
+  },
+  "addressViewerTitle": "Address",
+  "@addressViewerTitle": {
+    "description": "Title shown in the address detail dialog"
+  },
+  "viewerTapToCopy": "Tap to copy",
+  "@viewerTapToCopy": {
+    "description": "Hint text in viewer detail dialogs"
+  },
+  "viewerViewInExplorer": "View in explorer",
+  "@viewerViewInExplorer": {
+    "description": "Button to open address or transaction in block explorer"
+  },
+  "viewerCopyLink": "Copy link",
+  "@viewerCopyLink": {
+    "description": "Button to copy the block explorer URL to clipboard"
+  },
+  "transactionViewerTitle": "Transaction ID",
+  "@transactionViewerTitle": {
+    "description": "Title shown in the transaction viewer detail dialog"
+  },
+  "invoiceViewerTitle": "Invoice",
+  "@invoiceViewerTitle": {
+    "description": "Title shown in the invoice viewer detail dialog"
+  },
+  "noteVisibleToSenderNotice": "This note will be visible to the recipient of your QR or invoice.",
+  "@noteVisibleToSenderNotice": {
+    "description": "Privacy disclosure shown in the note entry bottom sheet for counterparty-visible notes (BIP21 message, lightning swap description)."
+  },
+  "viewerAddressTab": "Address",
+  "@viewerAddressTab": {
+    "description": "Segment label to show/copy the bare address in the address viewer dialog"
+  },
+  "viewerPaymentUriTab": "Payment URI",
+  "@viewerPaymentUriTab": {
+    "description": "Segment label to show/copy the BIP21 payment URI in the address viewer dialog"
+  },
   "recoverbullErrorRejected": "Rejected by the Key Server",
   "@recoverbullErrorRejected": {
     "description": "Error message when request is rejected by the key server"
@@ -12736,9 +12920,33 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if you lose your phone, delete the app, or encounter a critical application or device related issue. There is no way to recover your wallet without a backup.",
+  "backupWarningDescription": "Without a backup, you will lose access to your bitcoin if:",
   "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
+    "description": "Lead-in line above the list of ways the wallet can be lost"
+  },
+  "backupWarningLoseReasonLostPhone": "You lose your phone",
+  "@backupWarningLoseReasonLostPhone": {
+    "description": "Backup warning bullet: lost phone"
+  },
+  "backupWarningLoseReasonDeletedApp": "You delete the app",
+  "@backupWarningLoseReasonDeletedApp": {
+    "description": "Backup warning bullet: deleted app"
+  },
+  "backupWarningLoseReasonCriticalIssue": "A critical app or device issue occurs",
+  "@backupWarningLoseReasonCriticalIssue": {
+    "description": "Backup warning bullet: critical app or device issue"
+  },
+  "backupWarningLoseReasonKeystore": "Your device invalidates the keystore when changing the lockscreen/device authentication",
+  "@backupWarningLoseReasonKeystore": {
+    "description": "Backup warning bullet: keystore invalidation on lockscreen/auth change"
+  },
+  "backupWarningLoseReasonCloudRestore": "Restoring your device from a cloud backup",
+  "@backupWarningLoseReasonCloudRestore": {
+    "description": "Backup warning bullet: restoring device from a cloud backup"
+  },
+  "backupWarningNoRecovery": "There is no way to recover your wallet without a backup.",
+  "@backupWarningNoRecovery": {
+    "description": "Bold closing line of the backup warning"
   },
   "backupWarningBackupNow": "YES",
   "@backupWarningBackupNow": {
@@ -13039,5 +13247,678 @@
   "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
   "@walletSetupErrorTryAgain": {
     "description": "Generic error shown when default-wallet creation or recovery fails."
+  },
+  "transactionSwapOpenWithin24h": "Open the app within 24 hours to complete your swap.",
+  "@transactionSwapOpenWithin24h": {
+    "description": "Warning shown during an active chain swap to inform the user about the 24-hour window before refund is triggered."
+  },
+  "recipientsScreenTitle": "Select Recipient",
+  "@recipientsScreenTitle": {
+    "description": "App bar title for the recipients selection screen."
+  },
+  "recipientsScreenSubtitle": "Who are you paying?",
+  "@recipientsScreenSubtitle": {
+    "description": "Subtitle shown on the recipients screen prompting the user to choose a recipient."
+  },
+  "recipientsTabNew": "New Recipient",
+  "@recipientsTabNew": {
+    "description": "Label for the tab to add a new recipient."
+  },
+  "recipientsTabList": "My Fiat Recipients",
+  "@recipientsTabList": {
+    "description": "Label for the tab listing the user's saved fiat recipients."
+  },
+  "recipientsPayoutMethod": "Payout method",
+  "@recipientsPayoutMethod": {
+    "description": "Label for the payout method selector in the new recipient form."
+  },
+  "recipientsFilterByJurisdiction": "Filter by Jurisdiction:",
+  "@recipientsFilterByJurisdiction": {
+    "description": "Label above the jurisdiction filter on the recipients list."
+  },
+  "recipientsListEmpty": "No recipients found.",
+  "@recipientsListEmpty": {
+    "description": "Empty state message when no recipients match the current filters."
+  },
+  "recipientsContinue": "Continue",
+  "@recipientsContinue": {
+    "description": "Continue button label used on recipient forms and the recipients list."
+  },
+  "recipientsJurisdictionAll": "All Jurisdictions",
+  "@recipientsJurisdictionAll": {
+    "description": "Dropdown option to show recipients from all jurisdictions."
+  },
+  "recipientsJurisdictionCanada": "🇨🇦 Canada",
+  "@recipientsJurisdictionCanada": {
+    "description": "Canada jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionEurope": "🇪🇺 Europe (SEPA)",
+  "@recipientsJurisdictionEurope": {
+    "description": "Europe (SEPA) jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionMexico": "🇲🇽 Mexico",
+  "@recipientsJurisdictionMexico": {
+    "description": "Mexico jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionCostaRica": "🇨🇷 Costa Rica",
+  "@recipientsJurisdictionCostaRica": {
+    "description": "Costa Rica jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "@recipientsJurisdictionArgentina": {
+    "description": "Argentina jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsJurisdictionColombia": "🇨🇴 Colombia",
+  "@recipientsJurisdictionColombia": {
+    "description": "Colombia jurisdiction option in the jurisdictions dropdown."
+  },
+  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "@recipientsTypeInteracEmail": {
+    "description": "Display name for the Canadian Interac e-Transfer recipient type."
+  },
+  "recipientsTypeBillPayment": "Bill Payment",
+  "@recipientsTypeBillPayment": {
+    "description": "Display name for the Canadian Bill Payment recipient type."
+  },
+  "recipientsTypeBankTransfer": "Bank Transfer",
+  "@recipientsTypeBankTransfer": {
+    "description": "Display name for the Canadian Bank Transfer recipient type."
+  },
+  "recipientsTypeSepa": "SEPA Transfer",
+  "@recipientsTypeSepa": {
+    "description": "Display name for the European SEPA Transfer recipient type."
+  },
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "@recipientsTypeSpeiClabe": {
+    "description": "Display name for the Mexican SPEI CLABE recipient type."
+  },
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "@recipientsTypeSpeiSms": {
+    "description": "Display name for the Mexican SPEI SMS recipient type."
+  },
+  "recipientsTypeSpeiCard": "SPEI Card",
+  "@recipientsTypeSpeiCard": {
+    "description": "Display name for the Mexican SPEI debit card recipient type."
+  },
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "@recipientsTypeSinpeIbanUsd": {
+    "description": "Display name for the Costa Rican SINPE IBAN USD recipient type."
+  },
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "@recipientsTypeSinpeIbanCrc": {
+    "description": "Display name for the Costa Rican SINPE IBAN CRC recipient type."
+  },
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "@recipientsTypeSinpeMovil": {
+    "description": "Display name for the Costa Rican SINPE Móvil recipient type."
+  },
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "@recipientsTypeBankAccountAr": {
+    "description": "Display name for the Argentinian CBU/CVU bank account recipient type."
+  },
+  "recipientsTypeBankAccountCo": "Bank Account COP",
+  "@recipientsTypeBankAccountCo": {
+    "description": "Display name for the Colombian bank account (COP) recipient type."
+  },
+  "recipientsTypeNequi": "Nequi",
+  "@recipientsTypeNequi": {
+    "description": "Display name for the Colombian Nequi recipient type."
+  },
+  "recipientsInfoEmail": "Email",
+  "@recipientsInfoEmail": {
+    "description": "Info-row label for an email value on a recipient list tile."
+  },
+  "recipientsInfoPayee": "Payee",
+  "@recipientsInfoPayee": {
+    "description": "Info-row label for a payee value on a recipient list tile."
+  },
+  "recipientsInfoAccount": "Account",
+  "@recipientsInfoAccount": {
+    "description": "Info-row label for a bank account value on a recipient list tile."
+  },
+  "recipientsInfoPhone": "Phone",
+  "@recipientsInfoPhone": {
+    "description": "Info-row label for a phone number value on a recipient list tile."
+  },
+  "recipientsInfoCard": "Card",
+  "@recipientsInfoCard": {
+    "description": "Info-row label for a card value on a recipient list tile."
+  },
+  "recipientsInfoLabel": "Label",
+  "@recipientsInfoLabel": {
+    "description": "Info-row label for the user-set label of a recipient on a list tile."
+  },
+  "recipientsValidationFieldRequired": "This field can't be empty",
+  "@recipientsValidationFieldRequired": {
+    "description": "Validation error shown when a required recipient form field is empty."
+  },
+  "recipientsLabelOptional": "Label (optional)",
+  "@recipientsLabelOptional": {
+    "description": "Label for the optional recipient label/nickname field in recipient forms."
+  },
+  "recipientsLabelHint": "Enter a label for this recipient",
+  "@recipientsLabelHint": {
+    "description": "Hint text for the optional recipient label/nickname field."
+  },
+  "recipientsFieldName": "Name",
+  "@recipientsFieldName": {
+    "description": "Label for the recipient name field used in several recipient forms."
+  },
+  "recipientsFieldNameHint": "Enter recipient name",
+  "@recipientsFieldNameHint": {
+    "description": "Hint text for the recipient name field."
+  },
+  "recipientsFieldRecipientNameLabel": "Name of the recipient",
+  "@recipientsFieldRecipientNameLabel": {
+    "description": "Longer label for the recipient name field used in the Colombia forms."
+  },
+  "recipientsFieldPhoneNumber": "Phone Number",
+  "@recipientsFieldPhoneNumber": {
+    "description": "Label for the recipient phone number field."
+  },
+  "recipientsFieldPhoneNumberHint": "Enter phone number",
+  "@recipientsFieldPhoneNumberHint": {
+    "description": "Hint text for the recipient phone number field."
+  },
+  "recipientsFieldSinpePhoneNumberHint": "8 digits without country code",
+  "@recipientsFieldSinpePhoneNumberHint": {
+    "description": "Hint text for the SINPE Móvil phone number field."
+  },
+  "recipientsFieldDocumentType": "Recipient ID type",
+  "@recipientsFieldDocumentType": {
+    "description": "Label for the ID document type selector in Colombia recipient forms."
+  },
+  "recipientsFieldDocumentNumberHint": "Enter recipient ID number",
+  "@recipientsFieldDocumentNumberHint": {
+    "description": "Hint text for the ID document number field."
+  },
+  "recipientsFieldOwnerName": "Owner Name",
+  "@recipientsFieldOwnerName": {
+    "description": "Label for the account owner name field in SINPE recipient forms."
+  },
+  "recipientsFieldOwnerNameHint": "Enter owner name",
+  "@recipientsFieldOwnerNameHint": {
+    "description": "Hint text for the account owner name field."
+  },
+  "recipientsAccountOwnerQuestion": "Who does this account belong to?",
+  "@recipientsAccountOwnerQuestion": {
+    "description": "Section header asking whose account is being added in recipient forms."
+  },
+  "recipientsAccountOwnerMine": "This is my account",
+  "@recipientsAccountOwnerMine": {
+    "description": "Radio option indicating the recipient account belongs to the current user."
+  },
+  "recipientsAccountOwnerSomeoneElse": "This is someone else's account",
+  "@recipientsAccountOwnerSomeoneElse": {
+    "description": "Radio option indicating the recipient account belongs to a third party."
+  },
+  "recipientsFieldIban": "IBAN",
+  "@recipientsFieldIban": {
+    "description": "Label for the IBAN field used in SEPA and SINPE forms."
+  },
+  "recipientsFieldIbanHint": "Enter IBAN",
+  "@recipientsFieldIbanHint": {
+    "description": "Hint text for the IBAN field."
+  },
+  "recipientsFieldClabe": "CLABE",
+  "@recipientsFieldClabe": {
+    "description": "Label for the Mexican CLABE field."
+  },
+  "recipientsFieldClabeHint": "Enter CLABE number",
+  "@recipientsFieldClabeHint": {
+    "description": "Hint text for the Mexican CLABE field."
+  },
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "@recipientsFieldCvuCbu": {
+    "description": "Label for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldCvuCbuHint": "Enter CVU/CBU number",
+  "@recipientsFieldCvuCbuHint": {
+    "description": "Hint text for the Argentinian CBU/CVU field."
+  },
+  "recipientsFieldBankInstitution": "Bank Institution",
+  "@recipientsFieldBankInstitution": {
+    "description": "Label for the bank institution selector in the Colombia bank account form."
+  },
+  "recipientsFieldBankInstitutionPlaceholder": "Select Bank Institution",
+  "@recipientsFieldBankInstitutionPlaceholder": {
+    "description": "Placeholder option in the bank institution selector."
+  },
+  "recipientsValidationBankInstitution": "Please select a bank institution",
+  "@recipientsValidationBankInstitution": {
+    "description": "Validation error when no bank institution is selected."
+  },
+  "recipientsFieldAccountType": "Account Type",
+  "@recipientsFieldAccountType": {
+    "description": "Label for the bank account type selector in the Colombia bank account form."
+  },
+  "recipientsAccountTypeSavings": "Savings",
+  "@recipientsAccountTypeSavings": {
+    "description": "Bank account type option for savings."
+  },
+  "recipientsAccountTypeChecking": "Checking",
+  "@recipientsAccountTypeChecking": {
+    "description": "Bank account type option for checking."
+  },
+  "recipientsFieldBankAccountNumber": "Bank Account Number",
+  "@recipientsFieldBankAccountNumber": {
+    "description": "Label for the bank account number field in the Colombia bank account form."
+  },
+  "recipientsFieldBankAccountNumberHint": "Enter bank account number",
+  "@recipientsFieldBankAccountNumberHint": {
+    "description": "Hint text for the bank account number field."
+  },
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "@recipientsCopDocCc": {
+    "description": "Colombia ID document type: citizenship card."
+  },
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "@recipientsCopDocCe": {
+    "description": "Colombia ID document type: foreign resident ID."
+  },
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "@recipientsCopDocNit": {
+    "description": "Colombia ID document type: tax identification number."
+  },
+  "recipientsCopDocPassport": "Passport",
+  "@recipientsCopDocPassport": {
+    "description": "Colombia ID document type: passport."
+  },
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "@recipientsCopDocTi": {
+    "description": "Colombia ID document type: minor identity card."
+  },
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "@recipientsCopDocRegistroCivil": {
+    "description": "Colombia ID document type: civil registry."
+  },
+  "recipientsCopDocCcRecipientNumber": "Recipient cédula number",
+  "@recipientsCopDocCcRecipientNumber": {
+    "description": "Label for the recipient cédula de ciudadanía number field."
+  },
+  "recipientsCopDocCeRecipientNumber": "Recipient cédula de extranjería number",
+  "@recipientsCopDocCeRecipientNumber": {
+    "description": "Label for the recipient cédula de extranjería number field."
+  },
+  "recipientsCopDocNitRecipientNumber": "Recipient tax ID number",
+  "@recipientsCopDocNitRecipientNumber": {
+    "description": "Label for the recipient NIT number field."
+  },
+  "recipientsCopDocPassportRecipientNumber": "Recipient passport number",
+  "@recipientsCopDocPassportRecipientNumber": {
+    "description": "Label for the recipient passport number field."
+  },
+  "recipientsCopDocTiRecipientNumber": "Recipient identity card number",
+  "@recipientsCopDocTiRecipientNumber": {
+    "description": "Label for the recipient tarjeta de identidad number field."
+  },
+  "recipientsCopDocRegistroCivilRecipientNumber": "Recipient civil registry number",
+  "@recipientsCopDocRegistroCivilRecipientNumber": {
+    "description": "Label for the recipient registro civil number field."
+  },
+  "recipientsFieldDebitCard": "Debit Card Number",
+  "@recipientsFieldDebitCard": {
+    "description": "Label for the debit card number field in the SPEI Card form."
+  },
+  "recipientsFieldDebitCardHint": "Enter debit card number",
+  "@recipientsFieldDebitCardHint": {
+    "description": "Hint text for the debit card number field."
+  },
+  "recipientsFieldOwnerNameSinpeHint": "Owner name will appear here",
+  "@recipientsFieldOwnerNameSinpeHint": {
+    "description": "Hint text for the owner name field while SINPE Móvil validation runs."
+  },
+  "recipientsValidationSinpePhone": "Enter a valid 8-digit Costa Rican phone number without the country code",
+  "@recipientsValidationSinpePhone": {
+    "description": "Validation error for an invalid SINPE Móvil phone number."
+  },
+  "recipientsValidationSinpePhoneCountryCode": "Remove the country code (+506). Enter only the 8-digit number",
+  "@recipientsValidationSinpePhoneCountryCode": {
+    "description": "Validation error when a SINPE Móvil phone number includes the Costa Rica country code."
+  },
+  "recipientsValidationSinpePhoneInvalidChars": "Use digits only (no letters or symbols)",
+  "@recipientsValidationSinpePhoneInvalidChars": {
+    "description": "Validation error when a SINPE Móvil phone number contains non-digit characters."
+  },
+  "recipientsValidationSinpePhoneTooShort": "Enter all 8 digits of the phone number",
+  "@recipientsValidationSinpePhoneTooShort": {
+    "description": "Validation error when a SINPE Móvil phone number has fewer than 8 digits."
+  },
+  "recipientsValidationSinpeOwner": "Please validate the phone number",
+  "@recipientsValidationSinpeOwner": {
+    "description": "Validation error when SINPE Móvil owner name is not validated yet."
+  },
+  "recipientsFieldEmailAddress": "Email Address",
+  "@recipientsFieldEmailAddress": {
+    "description": "Label for the email address field in the Interac e-Transfer form."
+  },
+  "recipientsFieldEmailAddressHint": "Enter email address",
+  "@recipientsFieldEmailAddressHint": {
+    "description": "Hint text for the email address field."
+  },
+  "recipientsFieldSecurityQuestion": "Security Question",
+  "@recipientsFieldSecurityQuestion": {
+    "description": "Label for the security question field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityQuestionHint": "Enter security question (10-40 characters)",
+  "@recipientsFieldSecurityQuestionHint": {
+    "description": "Hint text for the security question field."
+  },
+  "recipientsFieldSecurityAnswer": "Security Answer",
+  "@recipientsFieldSecurityAnswer": {
+    "description": "Label for the security answer field in the Interac e-Transfer form."
+  },
+  "recipientsFieldSecurityAnswerHint": "Enter security answer",
+  "@recipientsFieldSecurityAnswerHint": {
+    "description": "Hint text for the security answer field."
+  },
+  "recipientsValidationSecurityQuestionMin": "Security question must be at least 10 characters",
+  "@recipientsValidationSecurityQuestionMin": {
+    "description": "Validation error shown when the security question is shorter than 10 characters."
+  },
+  "recipientsCharCounter": "{count}/40 characters",
+  "@recipientsCharCounter": {
+    "description": "Character counter displayed below the security question field.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "recipientsFieldInstitutionCode": "Institution Code",
+  "@recipientsFieldInstitutionCode": {
+    "description": "Label for the institution code field in SPEI SMS/Card forms."
+  },
+  "recipientsFieldInstitutionCodeHint": "Enter institution code",
+  "@recipientsFieldInstitutionCodeHint": {
+    "description": "Hint text for the institution code field."
+  },
+  "recipientsFieldInstitutionNumber": "Institution Number",
+  "@recipientsFieldInstitutionNumber": {
+    "description": "Label for the institution number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldInstitutionNumberHint": "Enter institution number",
+  "@recipientsFieldInstitutionNumberHint": {
+    "description": "Hint text for the institution number field."
+  },
+  "recipientsFieldTransitNumber": "Transit Number",
+  "@recipientsFieldTransitNumber": {
+    "description": "Label for the transit number field in the Canadian bank transfer form."
+  },
+  "recipientsFieldTransitNumberHint": "Enter transit number",
+  "@recipientsFieldTransitNumberHint": {
+    "description": "Hint text for the transit number field."
+  },
+  "recipientsFieldAccountNumber": "Account Number",
+  "@recipientsFieldAccountNumber": {
+    "description": "Label for the account number field used in multiple recipient forms."
+  },
+  "recipientsFieldAccountNumberHint": "Enter account number",
+  "@recipientsFieldAccountNumberHint": {
+    "description": "Hint text for the account number field."
+  },
+  "recipientsFieldDefaultComment": "Default Comment (optional)",
+  "@recipientsFieldDefaultComment": {
+    "description": "Label for the optional default comment field in the Canadian bank transfer form."
+  },
+  "recipientsFieldDefaultCommentHint": "Enter default comment",
+  "@recipientsFieldDefaultCommentHint": {
+    "description": "Hint text for the optional default comment field."
+  },
+  "recipientsFieldCorporateAccount": "Corporate account",
+  "@recipientsFieldCorporateAccount": {
+    "description": "Checkbox label indicating the SEPA recipient is a corporate account."
+  },
+  "recipientsFieldFirstName": "First Name",
+  "@recipientsFieldFirstName": {
+    "description": "Label for the first name field in the SEPA recipient form."
+  },
+  "recipientsFieldFirstNameHint": "Enter first name",
+  "@recipientsFieldFirstNameHint": {
+    "description": "Hint text for the first name field."
+  },
+  "recipientsFieldLastName": "Last Name",
+  "@recipientsFieldLastName": {
+    "description": "Label for the last name field in the SEPA recipient form."
+  },
+  "recipientsFieldLastNameHint": "Enter last name",
+  "@recipientsFieldLastNameHint": {
+    "description": "Hint text for the last name field."
+  },
+  "recipientsFieldCorporateName": "Corporate Name",
+  "@recipientsFieldCorporateName": {
+    "description": "Label for the corporate name field in the SEPA recipient form."
+  },
+  "recipientsFieldCorporateNameHint": "Enter corporate name",
+  "@recipientsFieldCorporateNameHint": {
+    "description": "Hint text for the corporate name field."
+  },
+  "recipientsFieldBillerName": "Biller Name",
+  "@recipientsFieldBillerName": {
+    "description": "Label for the biller search field in the Canadian bill payment form."
+  },
+  "recipientsFieldBillerNameHint": "Search and select a biller",
+  "@recipientsFieldBillerNameHint": {
+    "description": "Hint text for the biller search field."
+  },
+  "recipientsValidationBillerSearchMin": "Enter 3 or more characters to search",
+  "@recipientsValidationBillerSearchMin": {
+    "description": "Validation error shown when biller search input is too short."
+  },
+  "recipientsValidationBillerSelect": "Please select a biller from the list",
+  "@recipientsValidationBillerSelect": {
+    "description": "Validation error shown when no biller is selected from the list."
+  },
+  "recipientsFieldPayeeAccountNumber": "Payee Account Number",
+  "@recipientsFieldPayeeAccountNumber": {
+    "description": "Label for the payee account number field in the bill payment form."
+  },
+  "exchangeFileUploadStatusRejectedBadge": "Rejected",
+  "@exchangeFileUploadStatusRejectedBadge": {
+    "description": "Short rejected-status badge shown next to a re-upload action in the secure file upload screen."
+  },
+  "exchangeFileUploadTapToReupload": "Tap to re-upload",
+  "@exchangeFileUploadTapToReupload": {
+    "description": "Call-to-action shown when a rejected upload can be retried by tapping."
+  },
+  "exchangeSupportChatAttachmentImage": "Image",
+  "@exchangeSupportChatAttachmentImage": {
+    "description": "Fallback display name for an image attachment in the support chat when no file name is available."
+  },
+  "exchangeSupportChatAttachmentUnknownFile": "Unknown file",
+  "@exchangeSupportChatAttachmentUnknownFile": {
+    "description": "Fallback display name for a non-image attachment in the support chat when no file name is available."
+  },
+  "exchangeSupportChatPermissionDenied": "Permission denied.",
+  "@exchangeSupportChatPermissionDenied": {
+    "description": "Snackbar shown when a runtime permission needed to attach photos is denied."
+  },
+  "exchangeSupportChatPermissionDeniedSettings": "Permission denied. Please grant photo library access in Settings.",
+  "@exchangeSupportChatPermissionDeniedSettings": {
+    "description": "Snackbar shown when photo library permission is permanently denied and the user must enable it from Settings."
+  },
+  "exchangeSupportChatPickFilesFailed": "Failed to pick files. Please try again.",
+  "@exchangeSupportChatPickFilesFailed": {
+    "description": "Snackbar shown when picking files for a support chat attachment fails."
+  },
+  "exchangeSupportChatAttachLogsFailed": "Failed to attach logs. Please try again.",
+  "@exchangeSupportChatAttachLogsFailed": {
+    "description": "Snackbar shown when attaching log files to a support chat message fails."
+  },
+  "exchangeSupportChatFetchFileDataFailed": "Failed to fetch file data",
+  "@exchangeSupportChatFetchFileDataFailed": {
+    "description": "Snackbar shown when downloading a support chat attachment fails because no file data was returned."
+  },
+  "importMnemonicDuplicateError": "This mnemonic already exists",
+  "@importMnemonicDuplicateError": {
+    "description": "Error message when user tries to import a mnemonic that already exists"
+  },
+  "transactionStatusPayjoinCompleted": "Payjoin completed",
+  "@transactionStatusPayjoinCompleted": {
+    "description": "Shown when a Payjoin transaction has been successfully completed"
+  },
+  "homeActionBuy": "Buy",
+  "@homeActionBuy": {
+    "description": "Label for the Buy action button on the wallet home screen"
+  },
+  "homeActionSell": "Sell",
+  "@homeActionSell": {
+    "description": "Label for the Sell action button on the wallet home screen"
+  },
+  "homeActionPay": "Pay",
+  "@homeActionPay": {
+    "description": "Label for the Pay action button on the wallet home screen"
+  },
+  "homeActionTransfer": "Transfer",
+  "@homeActionTransfer": {
+    "description": "Label for the Transfer action button on the wallet home screen"
+  },
+  "backupCardTitle": "Protect your bitcoin.",
+  "@backupCardTitle": {
+    "description": "Title of the backup reminder card on the home screen"
+  },
+  "backupCardSubtitle": "Back up your wallet now.",
+  "@backupCardSubtitle": {
+    "description": "Subtitle of the backup reminder card on the home screen"
+  },
+  "logsViewerDeleteTitle": "Delete logs",
+  "@logsViewerDeleteTitle": {
+    "description": "Title of the delete logs confirmation bottom sheet"
+  },
+  "logsViewerDeleteConfirmation": "Are you sure you want to delete all logs? This action cannot be undone.",
+  "@logsViewerDeleteConfirmation": {
+    "description": "Confirmation message shown before deleting all logs"
+  },
+  "logsViewerDeleteButton": "Delete",
+  "@logsViewerDeleteButton": {
+    "description": "Button to confirm deleting all logs"
+  },
+  "logsViewerCancelButton": "Cancel",
+  "@logsViewerCancelButton": {
+    "description": "Button to cancel deleting logs"
+  },
+  "mempoolCustomServerSsl": "SSL",
+  "@mempoolCustomServerSsl": {
+    "description": "Badge shown when a custom mempool server uses SSL"
+  },
+  "mempoolCustomServerNoSsl": "No SSL",
+  "@mempoolCustomServerNoSsl": {
+    "description": "Badge shown when a custom mempool server does not use SSL"
+  },
+  "autoswapTargetBalanceLabel": "Target Instant Wallet Balance",
+  "@autoswapTargetBalanceLabel": {
+    "description": "Label for the target instant wallet balance setting in autoswap"
+  },
+  "autoswapMaximumBalanceLabel": "Maximum Instant Wallet Balance",
+  "@autoswapMaximumBalanceLabel": {
+    "description": "Label for the maximum instant wallet balance setting in autoswap"
+  },
+  "recoverbullServerConfirmTitle": "Vault Recovery Server",
+  "@recoverbullServerConfirmTitle": {
+    "description": "AppBar title on the Recoverbull server confirmation page"
+  },
+  "recoverbullServerUsingDefault": "Using Default Server",
+  "@recoverbullServerUsingDefault": {
+    "description": "Shown when the default Recoverbull server is in use"
+  },
+  "recoverbullServerUsingCustom": "Using Custom Server",
+  "@recoverbullServerUsingCustom": {
+    "description": "Shown when a custom Recoverbull server is in use"
+  },
+  "recoverbullServerUrlLabel": "Server URL:",
+  "@recoverbullServerUrlLabel": {
+    "description": "Label for the Recoverbull server URL value"
+  },
+  "recoverbullServerCustomWarning": "You are using a custom Recoverbull server. Make sure you trust this server.",
+  "@recoverbullServerCustomWarning": {
+    "description": "Warning shown when using a custom Recoverbull server"
+  },
+  "recoverbullServerTorNotice": "We will connect to this server through Tor",
+  "@recoverbullServerTorNotice": {
+    "description": "Notice that the Recoverbull server connection goes through Tor"
+  },
+  "recoverbullLearnMore": "Learn more about Recoverbull",
+  "@recoverbullLearnMore": {
+    "description": "Link text to learn more about Recoverbull"
+  },
+  "recoverbullSettingsTitle": "Recoverbull Settings",
+  "@recoverbullSettingsTitle": {
+    "description": "AppBar title on the Recoverbull settings page"
+  },
+  "recoverbullSettingsKeyServerUrl": "Key Server URL",
+  "@recoverbullSettingsKeyServerUrl": {
+    "description": "Label for the Recoverbull key server URL field"
+  },
+  "recoverbullSettingsEdit": "Edit",
+  "@recoverbullSettingsEdit": {
+    "description": "Button to edit the Recoverbull key server URL"
+  },
+  "recoverbullSettingsUrlHint": "http://example.onion",
+  "@recoverbullSettingsUrlHint": {
+    "description": "Hint text for the Recoverbull key server URL input"
+  },
+  "recoverbullSettingsCancel": "Cancel",
+  "@recoverbullSettingsCancel": {
+    "description": "Button to cancel editing the Recoverbull key server URL"
+  },
+  "recoverbullSettingsSave": "Save",
+  "@recoverbullSettingsSave": {
+    "description": "Button to save the Recoverbull key server URL"
+  },
+  "recoverbullSettingsUrlRequired": "URL is required",
+  "@recoverbullSettingsUrlRequired": {
+    "description": "Validation error when the Recoverbull URL is empty"
+  },
+  "recoverbullSettingsUrlInvalid": "URL is not valid",
+  "@recoverbullSettingsUrlInvalid": {
+    "description": "Validation error when the Recoverbull URL is malformed"
+  },
+  "recoverbullSettingsUrlMustBeHttp": "URL must be HTTP",
+  "@recoverbullSettingsUrlMustBeHttp": {
+    "description": "Validation error when the Recoverbull URL is not HTTP"
+  },
+  "recoverbullSettingsUrlMustBeOnion": "URL must end with .onion",
+  "@recoverbullSettingsUrlMustBeOnion": {
+    "description": "Validation error when the Recoverbull URL does not end with .onion"
+  },
+  "onboardingAdvancedOptionsTitle": "Advanced Options",
+  "@onboardingAdvancedOptionsTitle": {
+    "description": "Title of the advanced options screen shown during onboarding"
+  },
+  "onboardingAdvancedOptionsDescription": "Configure advanced settings before creating or recovering your wallet",
+  "@onboardingAdvancedOptionsDescription": {
+    "description": "Description on the onboarding advanced options screen"
+  },
+  "onboardingAdvancedOptionsCustomElectrum": "Custom Electrum Server",
+  "@onboardingAdvancedOptionsCustomElectrum": {
+    "description": "Entry to configure a custom Electrum server in advanced options"
+  },
+  "onboardingAdvancedOptionsCustomMempool": "Custom Mempool Server",
+  "@onboardingAdvancedOptionsCustomMempool": {
+    "description": "Entry to configure a custom mempool server in advanced options"
+  },
+  "onboardingAdvancedOptionsCustomRecoverbull": "Custom Recoverbull Server",
+  "@onboardingAdvancedOptionsCustomRecoverbull": {
+    "description": "Entry to configure a custom Recoverbull server in advanced options"
+  },
+  "onboardingAdvancedOptionsFooter": "You can change these settings later in App Settings",
+  "@onboardingAdvancedOptionsFooter": {
+    "description": "Footer note on the onboarding advanced options screen"
+  },
+  "onboardingAdvancedOptionsDone": "Done",
+  "@onboardingAdvancedOptionsDone": {
+    "description": "Button to dismiss the onboarding advanced options screen"
+  },
+  "appStartupContactSupportMessage": "Contact support at app.bullbitcoin.com/support",
+  "@appStartupContactSupportMessage": {
+    "description": "Message shown on the app startup error screen pointing to support"
+  },
+  "importWalletBitboxAndroidOnly": "BitBox is only supported on Android",
+  "@importWalletBitboxAndroidOnly": {
+    "description": "Snackbar shown when tapping BitBox import on a non-Android device"
+  },
+  "importWatchOnlyXpubLabel": "XPUB",
+  "@importWatchOnlyXpubLabel": {
+    "description": "Label for the derived XPUB value in watch-only wallet details"
   }
 }

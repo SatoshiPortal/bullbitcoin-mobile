@@ -144,7 +144,10 @@ class _XpubDetailsWidget extends StatelessWidget {
         BBText(entity.pubkey, style: context.font.bodyMedium),
         const Gap(24),
         if (!isXpub) ...[
-          BBText('XPUB', style: context.font.titleMedium),
+          BBText(
+            context.loc.importWatchOnlyXpubLabel,
+            style: context.font.titleMedium,
+          ),
           const Gap(8),
           BBText(
             entity.watchOnlyXpub.extendedPubkey.xpub,
@@ -152,7 +155,7 @@ class _XpubDetailsWidget extends StatelessWidget {
           ),
           const Gap(24),
         ],
-        BBText('Type', style: context.font.titleMedium),
+        BBText(context.loc.importWatchOnlyType, style: context.font.titleMedium),
         const Gap(8),
         if (!isXpub) ...[
           BBText(
@@ -196,7 +199,10 @@ class _XpubDetailsWidget extends StatelessWidget {
           ),
           const Gap(24),
         ],
-        BBText('Label', style: context.font.titleMedium),
+        BBText(
+          context.loc.importWatchOnlyLabel,
+          style: context.font.titleMedium,
+        ),
         const Gap(8),
         BBInputText(
           onChanged: cubit.updateLabel,

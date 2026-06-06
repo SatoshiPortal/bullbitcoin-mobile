@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
-import 'package:ark_wallet/ark_wallet.dart';
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/background_tasks/handler.dart';
 import 'package:bb_mobile/core/background_tasks/tasks.dart';
@@ -9,7 +8,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/screens/app_init_error_screen.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -32,14 +30,13 @@ import 'package:bb_mobile/features/wizard/ui/wizard_app.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bitbox_flutter/bitbox_flutter.dart';
-import 'package:boltz/boltz.dart';
-import 'package:dart_bbqr/bbqr.dart';
+import 'package:bitbox_transport/bitbox_transport.dart';
+import 'package:bull_sdk/bull_sdk.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lwk/lwk.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
 
@@ -77,7 +74,9 @@ class Bull {
     await locator<ApplyPendingWizardChoicesUsecase>().execute();
     final settings = locator<SettingsRepository>();
     Report.consent = (await settings.fetch()).isErrorReportingEnabled;
-    await initWorkmanager();
+    if (Platform.isAndroid || Platform.isIOS) {
+      await initWorkmanager();
+    }
     // Emits the install/upgrade transition event (no-op on a normal
     // launch) and advances the persisted version marker. The shout is
     // awaited so a crash between scheduling and capture cannot lose
@@ -92,12 +91,9 @@ class Bull {
 
   static Future<void> initFlutterRustBridgeDependencies() async {
     final initTasks = [
-      LibLwk.init(),
-      BoltzCore.init(),
+      BullSdk.init(),
       PConfig.initializeApp(),
-      LibBbqr.init(),
-      LibArk.init(),
-      if (Platform.isAndroid) BitBoxFlutterApi.initialize(),
+      if (Platform.isAndroid) BitBoxApi.initialize(),
     ];
 
     await Future.wait(initTasks);
@@ -238,59 +234,18 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.dispose();
   }
 
-  // Listen to the app lifecycle state changes. The handlers below
-  // return `Future<void>` (they each await `log.flush()`) but
-  // `AppLifecycleListener.onStateChange` is a sync void callback —
-  // Flutter does not await our return. `unawaited` documents that the
-  // flush is fire-and-forget at this layer; whether the OS lets the
-  // microtask queue drain before tearing the process down is the same
-  // race the flushes themselves are best-effort defense against.
+  // Wallet/swap sync on resume is handled by SyncCoordinator's own
+  // AppLifecycleListener — see lib/core/sync/sync_coordinator.dart.
   void _onStateChanged(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.detached:
-        _onDetached();
-      case AppLifecycleState.resumed:
-        unawaited(_onResumed());
-      case AppLifecycleState.inactive:
-        unawaited(_onInactive());
-      case AppLifecycleState.hidden:
-        unawaited(_onHidden());
-      case AppLifecycleState.paused:
-        unawaited(_onPaused());
+    log.info(state.name);
+    // iOS lifecycle is `active → inactive → hidden → paused`. The user can
+    // force-quit from the app switcher during `inactive` and skip both the
+    // `hidden` and `paused` flushes, so flush there too.
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.paused) {
+      log.flush();
     }
-  }
-
-  void _onDetached() => log.info('detached');
-
-  Future<void> _onResumed() async {
-    log.info('resumed');
-    try {
-      await locator<RestartSwapWatcherUsecase>().execute();
-    } catch (e) {
-      log.severe(
-        message: 'Error during app resume',
-        error: e,
-        trace: StackTrace.current,
-      );
-    }
-  }
-
-  Future<void> _onInactive() async {
-    log.info('inactive');
-    // iOS lifecycle is `active → inactive → hidden → paused`. The
-    // user can force-quit from the app switcher during `inactive`
-    // and skip both `hidden` and `paused` flushes, so flush here too.
-    await log.flush();
-  }
-
-  Future<void> _onHidden() async {
-    log.info('hidden');
-    await log.flush();
-  }
-
-  Future<void> _onPaused() async {
-    log.info('paused');
-    await log.flush();
   }
 
   @override
@@ -388,8 +343,18 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                     localizationsDelegates:
                         AppLocalizations.localizationsDelegates,
                     supportedLocales: AppLocalizations.supportedLocales,
-                    builder: (_, child) {
-                      return AppStartupWidget(app: child!);
+                    builder: (context, child) {
+                      final app = AppStartupWidget(app: child!);
+                      // Mark beta-channel builds (`make android beta`) with a
+                      // corner banner. Release mode drops the Flutter debug
+                      // banner, so this is how testers tell beta from production.
+                      if (appFlavor != 'beta') return app;
+                      return Banner(
+                        message: 'BETA',
+                        location: BannerLocation.topEnd,
+                        color: Theme.of(context).colorScheme.error,
+                        child: app,
+                      );
                     },
                   );
                 },

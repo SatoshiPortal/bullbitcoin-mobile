@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Bez zálohy ztratíte přístup ke svým bitcoinům, pokud:",
+  "backupWarningLoseReasonLostPhone": "Ztratíte telefon",
+  "backupWarningLoseReasonDeletedApp": "Smažete aplikaci",
+  "backupWarningLoseReasonCriticalIssue": "Dojde ke kritickému problému s aplikací nebo zařízením",
+  "backupWarningLoseReasonKeystore": "Zařízení zneplatní keystore při změně zámku obrazovky nebo ověřování zařízení",
+  "backupWarningLoseReasonCloudRestore": "Obnovení zařízení ze zálohy v cloudu",
+  "backupWarningNoRecovery": "Bez zálohy nelze peněženku obnovit.",
   "durationSeconds": "{seconds} vteřin(y)",
   "@durationSeconds": {
     "description": "Duration format for seconds",
@@ -134,13 +141,13 @@
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
   },
-  "translationWarningDescription": "Český překlad nebyl vytvořen pomocí AI. Pokud si všimneš chyby, máš návrh na vhodnější použití slov nebo na zlepšení čitelnosti, můžeš přispět prostřednictvím naší platformy pro komunitní překlady.",
+  "translationWarningDescription": "Většina překladů v této aplikaci byla vytvořena pomocí AI a může obsahovat nepřesnosti. Pokud si všimnete chyb nebo chcete pomoci zlepšit překlady, můžete odeslat opravu do našeho GitHub repozitáře.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
   "translationWarningContributeButton": "Chci pomoci vylepšit překlad",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "translationWarningDismissButton": "Rozumím",
   "@translationWarningDismissButton": {
@@ -811,6 +818,7 @@
     "description": "Message shown while broadcasting transaction to network"
   },
   "swapReceiveExactAmountLabel": "Získejte přesné množství",
+  "swapInsufficientFunds": "Nedostatek prostředků",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -895,7 +903,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Nejrychlejší - Pouze pro transakce pod €30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -2723,7 +2731,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "Aplikace se nepodařilo spustit. Zkuste zcela zastavit aplikaci a restartovat. Pokud se chyba přetrvává, nahlásit problém pro podporu a sdílení protokolů.",
+  "appStartupErrorMessage": "Aplikaci se nepodařilo spustit. Zkuste ji úplně zavřít a znovu spustit. Pokud problém přetrvává, kontaktujte podporu a sdílejte své logy.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -4790,6 +4798,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Hardwarové peněženky nelze použít pro swapy.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Nejsou k dispozici žádné údaje o rovnováze",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -4912,7 +4924,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Používejte pouze pro větší transakce nad €30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -5084,6 +5096,9 @@
     }
   },
   "payTitle": "Čeština",
+  "payDescriptionLabel": "Popis platby (volitelné)",
+  "payDescriptionHint": "Přidejte poznámku k této platbě",
+  "payPaymentDescription": "Popis platby",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7681,6 +7696,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "Historie transakcí",
+  "transactionHistoryHeading": "Historie transakcí",
+  "exportTransactionsDescription": "Exportujte všechny transakce své peněženky (Bitcoin, Liquid, Lightning a swapy) jako soubor CSV. Volitelně filtrujte podle časového rozsahu.",
+  "exportTransactionsStartDate": "Datum od",
+  "exportTransactionsEndDate": "Datum do",
+  "exportTransactionsAnyDate": "Jakékoli",
+  "exportTransactionsButton": "Exportovat CSV",
+  "exportTransactionsSuccess": "Transakce byly úspěšně exportovány",
+  "exportTransactionsEmpty": "Žádné transakce k exportu pro vybrané období",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Datum zahájení musí být před datem ukončení",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Štítky",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -10135,6 +10167,7 @@
     "description": "Payment method: Email E-Transfer (Canada)"
   },
   "transactionDetailLabelOrderNumber": "Číslo objednávky",
+  "transactionDetailLabelPaymentDescription": "Popis platby",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -11672,6 +11705,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Vysílání...",
+  "broadcastSignedTxBroadcastError": "Nepodařilo se odvysílat transakci",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12580,5 +12614,189 @@
   "legacyStorageAcceptRisksCheckbox": "Přijímám rizika spojená s tím, že nemám zálohu",
   "legacyStorageHasBackupImportantBody": "Tento proces nepřeskakujte, pokud nezbytně nepotřebujete peněženku použít naléhavě nebo nečekáte na dokončení swapu.",
   "legacyStorageRiskAckButtonHasBackup": "Rozumím riziku",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "Otevřete aplikaci do 24 hodin, abyste dokončili svůj swap.",
+  "importMnemonicDuplicateError": "Tato mnemotechnická fráze již existuje",
+  "coreScreensResolvingInputs": "Načítání vstupů transakce...",
+  "coreScreensFeeRateLabel": "Sazba poplatku",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Výstup drobných neznámý — všechny výstupy zobrazeny stejně",
+  "coreScreensUnknown": "Neznámé",
+  "coreScreensFetchFailed": "Nepodařilo se načíst transakci {txid} z Electrum.",
+  "coreScreensInputResolutionFailed": "Vstup nenalezen: výstup {vout} z {parentTxId} neexistuje.",
+  "coreScreensParseFailed": "Analýza transakce selhala: {message}.",
+  "coreScreensUnexpectedError": "Neočekávaná chyba: {message}.",
+  "coreScreensNoServersAvailable": "Žádné Electrum servery nejsou dostupné.",
+  "addressViewerTitle": "Adresa",
+  "viewerTapToCopy": "Klepněte pro kopírování",
+  "viewerViewInExplorer": "Zobrazit v prohlížeči",
+  "transactionViewerTitle": "ID transakce",
+  "invoiceViewerTitle": "Faktura",
+  "viewerCopyLink": "Kopírovat odkaz",
+  "exchangeStatisticsBuyAvgPriceDesc": "Průměrná cena zaplacená za bitcoin při nákupu",
+  "exchangeStatisticsBuySellRatioDesc": "Procento celkového objemu mezi nákupy a prodeji",
+  "exchangeStatisticsBuyTradeCountDesc": "Počet nákupních transakcí bitcoinu",
+  "exchangeStatisticsBuyVolumeDesc": "Celková částka vynaložená na nákup bitcoinu",
+  "exchangeStatisticsSellAvgPriceDesc": "Průměrná cena obdržená za bitcoin při prodeji",
+  "exchangeStatisticsSellTradeCountDesc": "Počet prodejních transakcí bitcoinu",
+  "exchangeStatisticsSellVolumeDesc": "Celková částka přijatá z prodeje bitcoinu",
+  "exchangeStatisticsTotalVolumeDesc": "Kombinované objemy nákupu a prodeje ve fiat měnách",
+  "recipientsScreenTitle": "Vybrat příjemce",
+  "recipientsScreenSubtitle": "Komu platíš?",
+  "recipientsTabNew": "Nový příjemce",
+  "recipientsTabList": "Moji fiat příjemci",
+  "recipientsPayoutMethod": "Způsob platby",
+  "recipientsFilterByJurisdiction": "Filtrovat podle jurisdikce:",
+  "recipientsListEmpty": "Nenalezeni žádní příjemci.",
+  "recipientsContinue": "Pokračovat",
+  "recipientsJurisdictionAll": "Všechny jurisdikce",
+  "recipientsJurisdictionCanada": "🇨🇦 Kanada",
+  "recipientsJurisdictionEurope": "🇪🇺 Evropa (SEPA)",
+  "recipientsJurisdictionMexico": "🇲🇽 Mexiko",
+  "recipientsJurisdictionCostaRica": "🇨🇷 Kostarika",
+  "recipientsJurisdictionArgentina": "🇦🇷 Argentina",
+  "recipientsJurisdictionColombia": "🇨🇴 Kolumbie",
+  "recipientsTypeInteracEmail": "Interac e-Transfer",
+  "recipientsTypeBillPayment": "Platba účtu",
+  "recipientsTypeBankTransfer": "Bankovní převod",
+  "recipientsTypeSepa": "SEPA převod",
+  "recipientsTypeSpeiClabe": "SPEI CLABE",
+  "recipientsTypeSpeiSms": "SPEI SMS",
+  "recipientsTypeSpeiCard": "SPEI Karta",
+  "recipientsTypeSinpeIbanUsd": "SINPE IBAN (USD)",
+  "recipientsTypeSinpeIbanCrc": "SINPE IBAN (CRC)",
+  "recipientsTypeSinpeMovil": "SINPE Móvil",
+  "recipientsTypeBankAccountAr": "CBU/CVU Argentina",
+  "recipientsTypeBankAccountCo": "Bankovní účet COP",
+  "recipientsTypeNequi": "Nequi",
+  "recipientsInfoEmail": "E-mail",
+  "recipientsInfoPayee": "Příjemce",
+  "recipientsInfoAccount": "Účet",
+  "recipientsInfoPhone": "Telefon",
+  "recipientsInfoCard": "Karta",
+  "recipientsInfoLabel": "Štítek",
+  "recipientsValidationFieldRequired": "Toto pole nemůže být prázdné",
+  "recipientsLabelOptional": "Štítek (volitelné)",
+  "recipientsLabelHint": "Zadejte štítek pro tohoto příjemce",
+  "recipientsFieldName": "Jméno",
+  "recipientsFieldNameHint": "Zadejte jméno příjemce",
+  "recipientsFieldRecipientNameLabel": "Jméno příjemce",
+  "recipientsFieldPhoneNumber": "Telefonní číslo",
+  "recipientsFieldPhoneNumberHint": "Zadejte telefonní číslo",
+  "recipientsFieldDocumentType": "Typ dokladu příjemce",
+  "recipientsFieldDocumentNumberHint": "Zadejte číslo dokladu příjemce",
+  "recipientsFieldOwnerName": "Jméno majitele",
+  "recipientsFieldOwnerNameHint": "Zadejte jméno majitele",
+  "recipientsAccountOwnerQuestion": "Komu patří tento účet?",
+  "recipientsAccountOwnerMine": "Je to můj účet",
+  "recipientsAccountOwnerSomeoneElse": "Je to účet někoho jiného",
+  "recipientsFieldIban": "IBAN",
+  "recipientsFieldIbanHint": "Zadejte IBAN",
+  "recipientsFieldClabe": "CLABE",
+  "recipientsFieldClabeHint": "Zadejte číslo CLABE",
+  "recipientsFieldCvuCbu": "CBU/CVU",
+  "recipientsFieldCvuCbuHint": "Zadejte číslo CVU/CBU",
+  "recipientsFieldBankInstitution": "Bankovní instituce",
+  "recipientsFieldBankInstitutionPlaceholder": "Vyberte bankovní instituci",
+  "recipientsValidationBankInstitution": "Vyberte prosím bankovní instituci",
+  "recipientsFieldAccountType": "Typ účtu",
+  "recipientsAccountTypeSavings": "Spořicí",
+  "recipientsAccountTypeChecking": "Běžný",
+  "recipientsFieldBankAccountNumber": "Číslo bankovního účtu",
+  "recipientsFieldBankAccountNumberHint": "Zadejte číslo bankovního účtu",
+  "recipientsCopDocCc": "Cédula de Ciudadanía",
+  "recipientsCopDocCe": "Cédula de Extranjería",
+  "recipientsCopDocNit": "Número de Identificación Tributaria",
+  "recipientsCopDocPassport": "Pas",
+  "recipientsCopDocTi": "Tarjeta de Identidad",
+  "recipientsCopDocRegistroCivil": "Registro Civil",
+  "recipientsFieldDebitCard": "Číslo debetní karty",
+  "recipientsFieldDebitCardHint": "Zadejte číslo debetní karty",
+  "recipientsFieldOwnerNameSinpeHint": "Jméno majitele se zobrazí zde",
+  "recipientsValidationSinpePhone": "Zadejte platné 8místné kostarické telefonní číslo bez kódu země",
+  "recipientsValidationSinpeOwner": "Ověřte telefonní číslo",
+  "recipientsFieldEmailAddress": "E-mailová adresa",
+  "recipientsFieldEmailAddressHint": "Zadejte e-mailovou adresu",
+  "recipientsFieldSecurityQuestion": "Bezpečnostní otázka",
+  "recipientsFieldSecurityQuestionHint": "Zadejte bezpečnostní otázku (10-40 znaků)",
+  "recipientsFieldSecurityAnswer": "Bezpečnostní odpověď",
+  "recipientsFieldSecurityAnswerHint": "Zadejte bezpečnostní odpověď",
+  "recipientsValidationSecurityQuestionMin": "Bezpečnostní otázka musí mít alespoň 10 znaků",
+  "recipientsCharCounter": "{count}/40 znaků",
+  "recipientsFieldInstitutionCode": "Kód instituce",
+  "recipientsFieldInstitutionCodeHint": "Zadejte kód instituce",
+  "recipientsFieldInstitutionNumber": "Číslo instituce",
+  "recipientsFieldInstitutionNumberHint": "Zadejte číslo instituce",
+  "recipientsFieldTransitNumber": "Tranzitní číslo",
+  "recipientsFieldTransitNumberHint": "Zadejte tranzitní číslo",
+  "recipientsFieldAccountNumber": "Číslo účtu",
+  "recipientsFieldAccountNumberHint": "Zadejte číslo účtu",
+  "recipientsFieldDefaultComment": "Výchozí komentář (volitelné)",
+  "recipientsFieldDefaultCommentHint": "Zadejte výchozí komentář",
+  "recipientsFieldCorporateAccount": "Firemní účet",
+  "recipientsFieldFirstName": "Jméno",
+  "recipientsFieldFirstNameHint": "Zadejte jméno",
+  "recipientsFieldLastName": "Příjmení",
+  "recipientsFieldLastNameHint": "Zadejte příjmení",
+  "recipientsFieldCorporateName": "Název firmy",
+  "recipientsFieldCorporateNameHint": "Zadejte název firmy",
+  "recipientsFieldBillerName": "Název poskytovatele",
+  "recipientsFieldBillerNameHint": "Vyhledejte a vyberte poskytovatele",
+  "recipientsValidationBillerSearchMin": "Pro vyhledávání zadejte 3 nebo více znaků",
+  "recipientsValidationBillerSelect": "Vyberte poskytovatele ze seznamu",
+  "recipientsFieldPayeeAccountNumber": "Číslo účtu příjemce",
+  "exchangeFileUploadStatusRejectedBadge": "Zamítnuto",
+  "exchangeFileUploadTapToReupload": "Klepněte pro opětovné nahrání",
+  "exchangeSupportChatAttachmentImage": "Obrázek",
+  "exchangeSupportChatAttachmentUnknownFile": "Neznámý soubor",
+  "exchangeSupportChatPermissionDenied": "Oprávnění zamítnuto.",
+  "exchangeSupportChatPermissionDeniedSettings": "Oprávnění zamítnuto. Povolte přístup k fotogalerii v Nastavení.",
+  "exchangeSupportChatPickFilesFailed": "Výběr souborů se nezdařil. Zkuste to znovu.",
+  "exchangeSupportChatAttachLogsFailed": "Připojení záznamů se nezdařilo. Zkuste to znovu.",
+  "exchangeSupportChatFetchFileDataFailed": "Načtení dat souboru se nezdařilo.",
+  "recipientsFieldSinpePhoneNumberHint": "8 číslic bez kódu země",
+  "recipientsCopDocCcRecipientNumber": "Číslo cédula příjemce",
+  "recipientsCopDocCeRecipientNumber": "Číslo cédula de extranjería příjemce",
+  "recipientsCopDocNitRecipientNumber": "Daňové ID číslo příjemce",
+  "recipientsCopDocPassportRecipientNumber": "Číslo pasu příjemce",
+  "recipientsCopDocTiRecipientNumber": "Číslo občanského průkazu příjemce",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Číslo z matriky příjemce",
+  "recipientsValidationSinpePhoneCountryCode": "Odstraňte kód země (+506). Zadejte pouze 8místné číslo",
+  "recipientsValidationSinpePhoneInvalidChars": "Použijte pouze číslice (žádná písmena ani symboly)",
+  "recipientsValidationSinpePhoneTooShort": "Zadejte všech 8 číslic telefonního čísla",
+  "transactionStatusPayjoinCompleted": "Payjoin dokončen",
+  "homeActionBuy": "Koupit",
+  "homeActionSell": "Prodat",
+  "homeActionPay": "Zaplatit",
+  "homeActionTransfer": "Převést",
+  "backupCardTitle": "Chraňte své bitcoiny.",
+  "backupCardSubtitle": "Zazálohujte si peněženku hned teď.",
+  "mempoolCustomServerNoSsl": "Bez SSL",
+  "autoswapTargetBalanceLabel": "Cílový zůstatek okamžité peněženky",
+  "autoswapMaximumBalanceLabel": "Maximální zůstatek okamžité peněženky",
+  "recoverbullServerConfirmTitle": "Server pro obnovu trezoru",
+  "recoverbullServerUsingDefault": "Používá se výchozí server",
+  "recoverbullServerUsingCustom": "Používá se vlastní server",
+  "recoverbullServerUrlLabel": "URL serveru:",
+  "recoverbullServerCustomWarning": "Používáte vlastní server Recoverbull. Ujistěte se, že tomuto serveru důvěřujete.",
+  "recoverbullServerTorNotice": "K tomuto serveru se připojíme přes Tor",
+  "recoverbullLearnMore": "Více informací o Recoverbull",
+  "recoverbullSettingsTitle": "Nastavení Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL serveru klíčů",
+  "recoverbullSettingsEdit": "Upravit",
+  "recoverbullSettingsCancel": "Zrušit",
+  "recoverbullSettingsSave": "Uložit",
+  "recoverbullSettingsUrlRequired": "URL je povinná",
+  "recoverbullSettingsUrlInvalid": "URL není platná",
+  "recoverbullSettingsUrlMustBeHttp": "URL musí být HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL musí končit na .onion",
+  "onboardingAdvancedOptionsTitle": "Pokročilé možnosti",
+  "onboardingAdvancedOptionsDescription": "Před vytvořením nebo obnovením peněženky nakonfigurujte pokročilá nastavení",
+  "onboardingAdvancedOptionsCustomElectrum": "Vlastní server Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Vlastní server Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Vlastní server Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Tato nastavení můžete později změnit v nastavení aplikace",
+  "onboardingAdvancedOptionsDone": "Hotovo",
+  "appStartupContactSupportMessage": "Kontaktujte podporu na app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox je podporován pouze na Androidu"
 }

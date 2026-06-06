@@ -7,10 +7,7 @@ class MempoolUrlBuilder {
     required GetActiveMempoolServerUsecase getActiveMempoolServerUsecase,
   }) : _getActiveMempoolServerUsecase = getActiveMempoolServerUsecase;
 
-  Future<String> bitcoinTxidUrl(
-    String txid, {
-    required bool isTestnet,
-  }) async {
+  Future<String> bitcoinTxid(String txid, {required bool isTestnet}) async {
     final server = await _getActiveMempoolServerUsecase.execute(
       isTestnet: isTestnet,
       isLiquid: false,
@@ -18,14 +15,38 @@ class MempoolUrlBuilder {
     return '${server.fullUrl}/tx/$txid';
   }
 
-  Future<String> liquidTxidUrl(
-    String unblindedUrl, {
+  Future<String> liquidTxid(
+    String txid, {
+    required bool isTestnet,
+    String? unblindedUrl,
+  }) async {
+    final server = await _getActiveMempoolServerUsecase.execute(
+      isTestnet: isTestnet,
+      isLiquid: true,
+    );
+    final path = unblindedUrl ?? 'tx/$txid';
+    return '${server.fullUrl}/$path';
+  }
+
+  Future<String> bitcoinAddress(
+    String address, {
+    required bool isTestnet,
+  }) async {
+    final server = await _getActiveMempoolServerUsecase.execute(
+      isTestnet: isTestnet,
+      isLiquid: false,
+    );
+    return '${server.fullUrl}/address/$address';
+  }
+
+  Future<String> liquidAddress(
+    String address, {
     required bool isTestnet,
   }) async {
     final server = await _getActiveMempoolServerUsecase.execute(
       isTestnet: isTestnet,
       isLiquid: true,
     );
-    return '${server.fullUrl}/$unblindedUrl';
+    return '${server.fullUrl}/address/$address';
   }
 }

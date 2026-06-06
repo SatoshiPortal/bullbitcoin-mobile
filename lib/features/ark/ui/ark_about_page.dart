@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/ark/presentation/cubit.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -168,13 +169,9 @@ class _CopyFieldState extends State<_CopyField> {
             InkWell(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: widget.value));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.loc.arkAboutCopiedMessage(widget.label),
-                    ),
-                    duration: const Duration(seconds: 2),
-                  ),
+                SnackBarUtils.showSnackBar(
+                  context,
+                  context.loc.arkAboutCopiedMessage(widget.label),
                 );
               },
               child: Row(
@@ -264,13 +261,9 @@ class _SecretKeyFieldState extends State<_SecretKeyField> {
             InkWell(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: widget.value));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      context.loc.arkAboutCopiedMessage(widget.label),
-                    ),
-                    duration: const Duration(seconds: 2),
-                  ),
+                SnackBarUtils.showSnackBar(
+                  context,
+                  context.loc.arkAboutCopiedMessage(widget.label),
                 );
               },
               child: Row(

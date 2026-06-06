@@ -2,12 +2,10 @@ import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchai
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
-import 'package:bb_mobile/core/blockchain/domain/ports/electrum_server_port.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
-import 'package:bb_mobile/core/blockchain/interface_adapters/adapters/electrum_server_adapter.dart';
-import 'package:bb_mobile/core/electrum/application/usecases/get_electrum_servers_to_use_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:get_it/get_it.dart';
 
@@ -26,21 +24,14 @@ class BlockchainLocator {
     locator.registerLazySingleton<BitcoinBlockchainRepository>(
       () => BitcoinBlockchainRepository(
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
+        serversPort: locator<ElectrumServersPort>(),
       ),
     );
 
     locator.registerLazySingleton<LiquidBlockchainRepository>(
       () => LiquidBlockchainRepositoryImpl(
         blockchainDatasource: locator<LwkLiquidBlockchainDatasource>(),
-      ),
-    );
-  }
-
-  static void registerPorts(GetIt locator) {
-    locator.registerLazySingleton<ElectrumServerPort>(
-      () => ElectrumServerAdapter(
-        getElectrumServersToUseUsecase:
-            locator<GetElectrumServersToUseUsecase>(),
+        serversPort: locator<ElectrumServersPort>(),
       ),
     );
   }
@@ -50,7 +41,6 @@ class BlockchainLocator {
       () => BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        electrumServerPort: locator<ElectrumServerPort>(),
       ),
     );
 
@@ -58,7 +48,6 @@ class BlockchainLocator {
       () => BroadcastLiquidTransactionUsecase(
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
         settingsRepository: locator<SettingsRepository>(),
-        electrumServerPort: locator<ElectrumServerPort>(),
       ),
     );
   }

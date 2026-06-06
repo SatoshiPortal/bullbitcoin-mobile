@@ -12,6 +12,7 @@ sealed class WalletState with _$WalletState {
     @Default({}) Map<String, bool> syncStatus,
     @Default(null) Object? error,
     @Default(0) int unconfirmedIncomingBalance,
+    @Default(false) bool isRefreshing,
     @Default(false) bool autoSwapFeeLimitExceeded,
     @Default(null) double? currentSwapFeePercent,
     @Default(null) AutoSwap? autoSwapSettings,
@@ -80,8 +81,6 @@ sealed class WalletState with _$WalletState {
   }
 
   bool showAutoSwapActiveStatus() {
-    return autoSwapSettings != null &&
-        autoSwapSettings!.enabled &&
-        !autoSwapSettings!.showWarning;
+    return autoSwapSettings != null && autoSwapSettings!.enabled;
   }
 }

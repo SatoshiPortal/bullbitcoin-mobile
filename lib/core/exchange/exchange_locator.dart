@@ -61,10 +61,23 @@ class ExchangeLocator {
       ),
     );
 
+    // Bound order-endpoint waits when the API is reached over Tor — without
+    // an explicit timeout, a hung connect lingered for tens of seconds and
+    // sell-order polling spammed SEVERE on every tick. Scoped to the order
+    // datasource only; the authenticated chain (recipients, fund_exchange)
+    // and the price/support-chat clients are intentionally left alone for
+    // this release.
+    const orderApiTimeout = Duration(seconds: 30);
+
     locator.registerLazySingleton<BullbitcoinApiDatasource>(
       () => BullbitcoinApiDatasource(
         bullbitcoinApiHttpClient: Dio(
-          BaseOptions(baseUrl: ApiServiceConstants.bbApiUrl),
+          BaseOptions(
+            baseUrl: ApiServiceConstants.bbApiUrl,
+            connectTimeout: orderApiTimeout,
+            receiveTimeout: orderApiTimeout,
+            sendTimeout: orderApiTimeout,
+          ),
         ),
       ),
       instanceName: 'mainnetExchangeApiDatasource',
@@ -73,7 +86,12 @@ class ExchangeLocator {
     locator.registerLazySingleton<BullbitcoinApiDatasource>(
       () => BullbitcoinApiDatasource(
         bullbitcoinApiHttpClient: Dio(
-          BaseOptions(baseUrl: ApiServiceConstants.bbApiTestUrl),
+          BaseOptions(
+            baseUrl: ApiServiceConstants.bbApiTestUrl,
+            connectTimeout: orderApiTimeout,
+            receiveTimeout: orderApiTimeout,
+            sendTimeout: orderApiTimeout,
+          ),
         ),
       ),
       instanceName: 'testnetExchangeApiDatasource',

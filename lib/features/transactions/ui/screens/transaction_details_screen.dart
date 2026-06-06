@@ -21,7 +21,8 @@ import 'package:bb_mobile/features/transactions/ui/widgets/swap_status_descripti
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_amount.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_status_label.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
+import 'package:bb_mobile/features/labels/labels_facade.dart';
+import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,7 +37,8 @@ class TransactionDetailsScreen extends StatelessWidget {
     final returnHome =
         GoRouterState.of(context).uri.queryParameters['returnHome'] == 'true';
     final returnToExchange =
-        GoRouterState.of(context).uri.queryParameters['returnToExchange'] == 'true';
+        GoRouterState.of(context).uri.queryParameters['returnToExchange'] ==
+        'true';
     final isLoading = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.isLoading,
     );
@@ -61,11 +63,8 @@ class TransactionDetailsScreen extends StatelessWidget {
     final isOrderType = tx?.isOrder == true;
     final walletTransaction = tx?.walletTransaction;
     final swap = tx?.swap;
-    final swapAction = swap?.swapAction(context) ?? '';
     final isChainSwap = swap?.isChainSwap ?? false;
-    final retryingSwap = context.select(
-      (TransactionDetailsCubit bloc) => bloc.state.retryingSwap,
-    );
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -171,22 +170,6 @@ class TransactionDetailsScreen extends StatelessWidget {
                     textColor: context.appColors.onSecondary,
                   ),
                 ],
-                if (swap != null && swap.requiresAction) ...[
-                  const Gap(16),
-                  BBButton.big(
-                    disabled: retryingSwap,
-                    label: isChainSwap
-                        ? context.loc.transactionDetailRetryTransfer(swapAction)
-                        : context.loc.transactionDetailRetrySwap(swapAction),
-                    onPressed: () async {
-                      await context.read<TransactionDetailsCubit>().processSwap(
-                        swap,
-                      );
-                    },
-                    bgColor: context.appColors.primary,
-                    textColor: context.appColors.onPrimary,
-                  ),
-                ],
                 const Gap(16),
                 if (tx?.isOngoingPayjoinSender == true &&
                     !isPayjoinCompleted) ...[
@@ -202,14 +185,27 @@ class TransactionDetailsScreen extends StatelessWidget {
                         !(walletTransaction != null &&
                             walletTransaction.labels.length < 10),
                     onPressed: () async {
-                      if (walletTransaction != null &&
-                          walletTransaction.labels.length < 10) {
-                        await showTransactionLabelBottomSheet(context);
-                      } else {
+                      if (walletTransaction == null ||
+                          walletTransaction.labels.length >= 10) {
                         log.warning(
                           'A transaction can have up to 10 labels, current length: ${walletTransaction?.labels.length}',
                         );
+                        return;
                       }
+                      final cubit = context.read<TransactionDetailsCubit>();
+                      final saved = await LabelEntryBottomSheet.label(
+                        context,
+                        title: context.loc.transactionNoteAddTitle,
+                        suggestionsFuture: cubit.fetchDistinctLabels(),
+                        hint: context.loc.transactionNoteHint,
+                      );
+                      if (saved == null || !context.mounted) return;
+                      cubit.saveTransactionLabel(
+                        NewLabel.tx(
+                          transactionId: walletTransaction.txId,
+                          label: saved,
+                        ),
+                      );
                     },
                     bgColor: context.appColors.transparent,
                     textColor: context.appColors.onSurface,

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/bb_text_form_field.dart';
 import 'package:bb_mobile/features/recipients/frameworks/ui/widgets/recipient_form_continue_button.dart';
 import 'package:bb_mobile/features/recipients/interface_adapters/presenters/bloc/recipients_bloc.dart';
@@ -80,8 +81,8 @@ class SepaEurFormState extends State<SepaEurForm> {
         mainAxisSize: .min,
         children: [
           BBTextFormField(
-            labelText: 'IBAN',
-            hintText: 'Enter IBAN',
+            labelText: context.loc.recipientsFieldIban,
+            hintText: context.loc.recipientsFieldIbanHint,
             focusNode: _ibanFocusNode,
             autofocus: true,
             textInputAction: .next,
@@ -93,7 +94,7 @@ class SepaEurFormState extends State<SepaEurForm> {
               }
             },
             validator: (v) => (v == null || v.trim().isEmpty)
-                ? "This field can't be empty"
+                ? context.loc.recipientsValidationFieldRequired
                 : null,
             onChanged: (value) {
               setState(() {
@@ -103,7 +104,7 @@ class SepaEurFormState extends State<SepaEurForm> {
           ),
           const Gap(16.0),
           CheckboxListTile(
-            title: const Text('Corporate account'),
+            title: Text(context.loc.recipientsFieldCorporateAccount),
             value: _isCorporate,
             onChanged: (value) {
               setState(() {
@@ -123,13 +124,13 @@ class SepaEurFormState extends State<SepaEurForm> {
           const Gap(12.0),
           if (!_isCorporate) ...[
             BBTextFormField(
-              labelText: 'First Name',
-              hintText: 'Enter first name',
+              labelText: context.loc.recipientsFieldFirstName,
+              hintText: context.loc.recipientsFieldFirstNameHint,
               focusNode: _firstnameFocusNode,
               textInputAction: .next,
               onFieldSubmitted: (_) => _lastnameFocusNode.requestFocus(),
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? "This field can't be empty"
+                  ? context.loc.recipientsValidationFieldRequired
                   : null,
               onChanged: (value) {
                 setState(() {
@@ -139,13 +140,13 @@ class SepaEurFormState extends State<SepaEurForm> {
             ),
             const Gap(12.0),
             BBTextFormField(
-              labelText: 'Last Name',
-              hintText: 'Enter last name',
+              labelText: context.loc.recipientsFieldLastName,
+              hintText: context.loc.recipientsFieldLastNameHint,
               focusNode: _lastnameFocusNode,
               textInputAction: .next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? "This field can't be empty"
+                  ? context.loc.recipientsValidationFieldRequired
                   : null,
               onChanged: (value) {
                 setState(() {
@@ -157,13 +158,13 @@ class SepaEurFormState extends State<SepaEurForm> {
           ],
           if (_isCorporate) ...[
             BBTextFormField(
-              labelText: 'Corporate Name',
-              hintText: 'Enter corporate name',
+              labelText: context.loc.recipientsFieldCorporateName,
+              hintText: context.loc.recipientsFieldCorporateNameHint,
               focusNode: _corporateNameFocusNode,
               textInputAction: .next,
               onFieldSubmitted: (_) => _labelFocusNode.requestFocus(),
               validator: (v) => (v == null || v.trim().isEmpty)
-                  ? "This field can't be empty"
+                  ? context.loc.recipientsValidationFieldRequired
                   : null,
               onChanged: (value) {
                 setState(() {
@@ -174,8 +175,8 @@ class SepaEurFormState extends State<SepaEurForm> {
             const Gap(12.0),
           ],
           BBTextFormField(
-            labelText: 'Label (optional)',
-            hintText: 'Enter a label for this recipient',
+            labelText: context.loc.recipientsLabelOptional,
+            hintText: context.loc.recipientsLabelHint,
             focusNode: _labelFocusNode,
             textInputAction: .done,
             onFieldSubmitted: (_) => _submitForm(),
@@ -188,7 +189,7 @@ class SepaEurFormState extends State<SepaEurForm> {
           ),
           const Gap(16.0),
           Text(
-            'Who does this account belong to?',
+            context.loc.recipientsAccountOwnerQuestion,
             style: TextStyle(
               fontSize: 14,
               fontWeight: .w500,
@@ -205,17 +206,17 @@ class SepaEurFormState extends State<SepaEurForm> {
                 });
               }
             },
-            child: const Column(
+            child: Column(
               children: [
                 RadioListTile<bool>(
-                  title: Text('This is my account'),
+                  title: Text(context.loc.recipientsAccountOwnerMine),
                   value: true,
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                 ),
-                Gap(8.0),
+                const Gap(8.0),
                 RadioListTile<bool>(
-                  title: Text("This is someone else's account"),
+                  title: Text(context.loc.recipientsAccountOwnerSomeoneElse),
                   value: false,
                   contentPadding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,

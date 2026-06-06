@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
+  "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
+  "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
+  "backupWarningLoseReasonCriticalIssue": "Kritik bir uygulama veya cihaz sorunu oluşursa",
+  "backupWarningLoseReasonKeystore": "Kilit ekranını veya cihaz kimlik doğrulamasını değiştirdiğinizde cihazınız keystore'u geçersiz kılar",
+  "backupWarningLoseReasonCloudRestore": "Cihazınızı bir bulut yedeğinden geri yüklerseniz",
+  "backupWarningNoRecovery": "Yedek olmadan cüzdanınızı kurtarmanın hiçbir yolu yoktur.",
   "bitboxErrorMultipleDevicesFound": "Birçok BitBox cihazı bulundu. Lütfen sadece bir cihazın bağlantılı olmasını sağlayın.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -37,7 +44,7 @@
   },
   "translationWarningContributeButton": "Çevirileri Geliştirmeye Yardım",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "Swap ID",
   "@transactionLabelSwapId": {
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Tam miktar alın",
+  "swapInsufficientFunds": "Yetersiz bakiye",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -616,7 +624,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 20.000 € Aşağıdaki işlemler için",
+  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 30.000 € Aşağıdaki işlemler için",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -941,7 +949,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "Bu uygulamadaki çevirilerin çoğu AI kullanıyor ve yanlışlıklar içerebilir. Herhangi bir hata fark ederseniz veya çevirileri geliştirmeye yardımcı olmak istiyorsanız, topluluğumuzun çeviri platformu aracılığıyla katkıda bulunabilirsiniz.",
+  "translationWarningDescription": "Bu uygulamadaki çevirilerin çoğu yapay zeka kullanılarak oluşturulmuştur ve hatalar içerebilir. Herhangi bir hata fark ederseniz veya çevirileri iyileştirmeye yardımcı olmak isterseniz, GitHub depomuzda bir düzeltme gönderebilirsiniz.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
@@ -2523,7 +2531,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "App başlangıçta başarısız oldu. Uygulamayı tamamen durdur ve yeniden başlayın. Hata devam ederse, konuyu destekle ve günlüklerinizi paylaş.",
+  "appStartupErrorMessage": "Uygulama başlatılamadı. Uygulamayı tamamen kapatıp yeniden başlatmayı deneyin. Hata devam ederse destek ekibiyle iletişime geçin ve loglarınızı paylaşın.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -4713,6 +4721,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "Donanım cüzdanları takaslar için kullanılamaz.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "Mevcut herhangi bir denge veri mevcut",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -4843,7 +4855,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Sadece 20.000 € üzerinde daha büyük işlemler için kullanın",
+  "fundExchangeMethodRegularSepaSubtitle": "Sadece 30.000 € üzerinde daha büyük işlemler için kullanın",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -5031,6 +5043,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "Pay",
+  "payDescriptionLabel": "Ödeme açıklaması (isteğe bağlı)",
+  "payDescriptionHint": "Bu ödeme için bir not ekleyin",
+  "payPaymentDescription": "Ödeme açıklaması",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7723,6 +7738,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "İşlem geçmişi",
+  "transactionHistoryHeading": "İşlem geçmişi",
+  "exportTransactionsDescription": "Cüzdanınızın tüm işlemlerini (Bitcoin, Liquid, Lightning ve takasları) CSV dosyası olarak dışa aktarın. İsteğe bağlı olarak tarih aralığına göre filtreleyin.",
+  "exportTransactionsStartDate": "Başlangıç tarihi",
+  "exportTransactionsEndDate": "Bitiş tarihi",
+  "exportTransactionsAnyDate": "Herhangi",
+  "exportTransactionsButton": "CSV olarak dışa aktar",
+  "exportTransactionsSuccess": "İşlemler başarıyla dışa aktarıldı",
+  "exportTransactionsEmpty": "Seçilen dönem için dışa aktarılacak işlem yok",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "Başlangıç tarihi bitiş tarihinden önce olmalıdır",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Etiketler",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -10293,6 +10325,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "Sipariş Numarası",
+  "transactionDetailLabelPaymentDescription": "Ödeme açıklaması",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -11870,6 +11903,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
+  "broadcastSignedTxBroadcastError": "İşlem yayınlanamadı",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12580,5 +12614,71 @@
   "legacyStorageAcceptRisksCheckbox": "Yedek almamanın risklerini kabul ediyorum",
   "legacyStorageHasBackupImportantBody": "Cüzdanı acilen kullanmanız mutlak gerekmedikçe veya bir takasın tamamlanmasını beklemiyorsanız, lütfen bu işlemi atlamayın.",
   "legacyStorageRiskAckButtonHasBackup": "Riski anlıyorum",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "Swap işlemini tamamlamak için 24 saat içinde uygulamayı açın.",
+  "importMnemonicDuplicateError": "Bu anımsatıcı cümle zaten mevcut",
+  "transactionStatusPayjoinCompleted": "Payjoin tamamlandı",
+  "coreScreensResolvingInputs": "İşlem girdileri çözümleniyor...",
+  "coreScreensFeeRateLabel": "Ücret oranı",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "Para üstü çıktısı bilinmiyor — tüm çıktılar eşit gösteriliyor",
+  "coreScreensUnknown": "Bilinmiyor",
+  "coreScreensFetchFailed": "İşlem {txid} Electrum'dan alınamadı.",
+  "coreScreensInputResolutionFailed": "Girdi bulunamadı: {parentTxId} çıktısı {vout} mevcut değil.",
+  "coreScreensParseFailed": "İşlem ayrıştırılamadı: {message}.",
+  "coreScreensUnexpectedError": "Beklenmeyen hata: {message}.",
+  "coreScreensNoServersAvailable": "Kullanılabilir Electrum sunucusu yok.",
+  "addressViewerTitle": "Adres",
+  "viewerTapToCopy": "Kopyalamak için dokunun",
+  "viewerViewInExplorer": "Gezginde görüntüle",
+  "transactionViewerTitle": "İşlem kimliği",
+  "invoiceViewerTitle": "Fatura",
+  "viewerCopyLink": "Bağlantıyı kopyala",
+  "recipientsFieldSinpePhoneNumberHint": "Ülke kodu olmadan 8 hane",
+  "recipientsCopDocCcRecipientNumber": "Alıcının cédula numarası",
+  "recipientsCopDocCeRecipientNumber": "Alıcının cédula de extranjería numarası",
+  "recipientsCopDocNitRecipientNumber": "Alıcının vergi kimlik numarası",
+  "recipientsCopDocPassportRecipientNumber": "Alıcının pasaport numarası",
+  "recipientsCopDocTiRecipientNumber": "Alıcının kimlik kartı numarası",
+  "recipientsCopDocRegistroCivilRecipientNumber": "Alıcının nüfus kayıt numarası",
+  "recipientsValidationSinpePhoneCountryCode": "Ülke kodunu (+506) kaldırın. Yalnızca 8 haneli numarayı girin",
+  "recipientsValidationSinpePhoneInvalidChars": "Yalnızca rakam kullanın (harf veya sembol yok)",
+  "recipientsValidationSinpePhoneTooShort": "Telefon numarasının 8 hanesini de girin",
+  "recipientsFieldDocumentType": "Alıcı kimlik türü",
+  "recipientsFieldDocumentNumberHint": "Alıcının kimlik numarasını girin",
+  "recipientsValidationSinpePhone": "Ülke kodu olmadan geçerli 8 haneli bir Kosta Rika telefon numarası girin",
+  "homeActionBuy": "Satın Al",
+  "homeActionSell": "Sat",
+  "homeActionPay": "Öde",
+  "homeActionTransfer": "Aktar",
+  "backupCardTitle": "Bitcoin'inizi koruyun.",
+  "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin.",
+  "mempoolCustomServerNoSsl": "SSL Yok",
+  "autoswapTargetBalanceLabel": "Hedef Anlık Cüzdan Bakiyesi",
+  "autoswapMaximumBalanceLabel": "Maksimum Anlık Cüzdan Bakiyesi",
+  "recoverbullServerConfirmTitle": "Kasa Kurtarma Sunucusu",
+  "recoverbullServerUsingDefault": "Varsayılan Sunucu Kullanılıyor",
+  "recoverbullServerUsingCustom": "Özel Sunucu Kullanılıyor",
+  "recoverbullServerUrlLabel": "Sunucu URL'si:",
+  "recoverbullServerCustomWarning": "Özel bir Recoverbull sunucusu kullanıyorsunuz. Bu sunucuya güvendiğinizden emin olun.",
+  "recoverbullServerTorNotice": "Bu sunucuya Tor üzerinden bağlanacağız",
+  "recoverbullLearnMore": "Recoverbull hakkında daha fazla bilgi edinin",
+  "recoverbullSettingsTitle": "Recoverbull Ayarları",
+  "recoverbullSettingsKeyServerUrl": "Anahtar Sunucu URL'si",
+  "recoverbullSettingsEdit": "Düzenle",
+  "recoverbullSettingsCancel": "İptal",
+  "recoverbullSettingsSave": "Kaydet",
+  "recoverbullSettingsUrlRequired": "URL gereklidir",
+  "recoverbullSettingsUrlInvalid": "URL geçerli değil",
+  "recoverbullSettingsUrlMustBeHttp": "URL, HTTP olmalıdır",
+  "recoverbullSettingsUrlMustBeOnion": "URL, .onion ile bitmelidir",
+  "onboardingAdvancedOptionsTitle": "Gelişmiş Seçenekler",
+  "onboardingAdvancedOptionsDescription": "Cüzdanınızı oluşturmadan veya kurtarmadan önce gelişmiş ayarları yapılandırın",
+  "onboardingAdvancedOptionsCustomElectrum": "Özel Electrum Sunucusu",
+  "onboardingAdvancedOptionsCustomMempool": "Özel Mempool Sunucusu",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
+  "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
+  "onboardingAdvancedOptionsDone": "Tamam",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
+  "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir"
 }

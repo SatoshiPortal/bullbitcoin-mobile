@@ -67,6 +67,7 @@ abstract class SendState with _$SendState {
     PaymentRequest? paymentRequest,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
+    @Default(false) bool isWalletManuallySelected,
     bool? isToSelf,
     @Default('') String amount,
     int? confirmedAmountSat,
@@ -351,6 +352,10 @@ abstract class SendState with _$SendState {
       return selectedSwapLimits != null &&
           inputAmountSat > selectedSwapLimits!.max;
     }
+    if (requireChainSwap && inputAmountSat != 0) {
+      return selectedSwapLimits != null &&
+          inputAmountSat > selectedSwapLimits!.max;
+    }
     return false;
   }
 
@@ -373,6 +378,16 @@ abstract class SendState with _$SendState {
 
   bool get disableConfirmSend =>
       buildingTransaction || signingTransaction || broadcastingTransaction;
+
+  bool get blocksSwapDueToBitcoinHardwareWallet {
+    final wallet = selectedWallet;
+    if (wallet == null) return false;
+    final isSwap =
+        sendType == SendType.lightning ||
+        (sendType == SendType.liquid && !wallet.isLiquid) ||
+        (sendType == SendType.bitcoin && wallet.isLiquid);
+    return isSwap && wallet.isBitcoinHardwareWallet;
+  }
 
   bool get requireChainSwap {
     if (selectedWallet == null) return false;
@@ -454,6 +469,14 @@ class SwapCreationException extends BullException {
 
 class AmountlessInvoiceException extends SwapCreationException {
   AmountlessInvoiceException(super.message);
+}
+
+class HardwareWalletSwapException extends SwapCreationException {
+  HardwareWalletSwapException() : super('Hardware wallets cannot be used for swaps');
+}
+
+class ExpiredInvoiceException extends SwapCreationException {
+  ExpiredInvoiceException() : super('Expired invoice');
 }
 
 class InsufficientBalanceException extends BullException {

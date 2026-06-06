@@ -5,11 +5,13 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/dropdown/bb_dropdown.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/switch/bb_switch.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -42,6 +44,18 @@ class AutoSwapSettingsContent extends StatefulWidget {
 }
 
 class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
+  final FocusNode _amountNode = FocusNode();
+  final FocusNode _triggerNode = FocusNode();
+  final FocusNode _feeNode = FocusNode();
+
+  @override
+  void dispose() {
+    _amountNode.dispose();
+    _triggerNode.dispose();
+    _feeNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final loading = context.select(
@@ -69,64 +83,75 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
                 top: Radius.circular(32),
               ),
             ),
-            child: Column(
-              mainAxisSize: .min,
-              crossAxisAlignment: .stretch,
-              children: [
-                _Header(),
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: SingleChildScrollView(
-                      keyboardDismissBehavior: .onDrag,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: loading
-                            ? const SizedBox.shrink()
-                            : Column(
-                                crossAxisAlignment: .start,
-                                children: [
-                                  const Gap(16),
-                                  _EnabledToggle(),
-                                  const Gap(16),
-                                  Stack(
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment: .start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          _AmountThresholdField(),
-                                          const Gap(16),
-                                          _TriggerBalanceField(),
-                                          const Gap(16),
-                                          _FeeThresholdField(),
-                                          const Gap(16),
-                                          _WalletSelectionDropdown(),
-                                          const Gap(16),
-                                          _AlwaysBlockToggle(),
-                                          const Gap(32),
-                                          _SaveButton(),
-                                        ],
-                                      ),
-                                      if (!enabled)
-                                        Positioned.fill(
-                                          child: IgnorePointer(
-                                            child: Container(
-                                              color: context.appColors.overlay,
+            child: BBKeyboardActions(
+              isDialog: true,
+              focusNodes: [_amountNode, _triggerNode, _feeNode],
+              child: Column(
+                mainAxisSize: .min,
+                crossAxisAlignment: .stretch,
+                children: [
+                  _Header(),
+                  Flexible(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom,
+                      ),
+                      child: SingleChildScrollView(
+                        keyboardDismissBehavior: .onDrag,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: loading
+                              ? const SizedBox.shrink()
+                              : Column(
+                                  crossAxisAlignment: .start,
+                                  children: [
+                                    const Gap(16),
+                                    _EnabledToggle(),
+                                    const Gap(16),
+                                    Stack(
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: .start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            _AmountThresholdField(
+                                              focusNode: _amountNode,
+                                            ),
+                                            const Gap(16),
+                                            _TriggerBalanceField(
+                                              focusNode: _triggerNode,
+                                            ),
+                                            const Gap(16),
+                                            _FeeThresholdField(
+                                              focusNode: _feeNode,
+                                            ),
+                                            const Gap(16),
+                                            _WalletSelectionDropdown(),
+                                            const Gap(16),
+                                            _AlwaysBlockToggle(),
+                                            const Gap(32),
+                                            _SaveButton(),
+                                          ],
+                                        ),
+                                        if (!enabled)
+                                          Positioned.fill(
+                                            child: IgnorePointer(
+                                              child: Container(
+                                                color:
+                                                    context.appColors.overlay,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },
@@ -200,6 +225,10 @@ class _EnabledToggle extends StatelessWidget {
 }
 
 class _AmountThresholdField extends StatelessWidget {
+  const _AmountThresholdField({required this.focusNode});
+
+  final FocusNode focusNode;
+
   @override
   Widget build(BuildContext context) {
     final amountThresholdInput = context.select(
@@ -226,6 +255,7 @@ class _AmountThresholdField extends StatelessWidget {
             Expanded(
               child: BBInputText(
                 value: amountThresholdInput ?? '',
+                focusNode: focusNode,
                 onlyNumbers: true,
                 rightIcon: GestureDetector(
                   onTap: () {
@@ -278,6 +308,10 @@ class _AmountThresholdField extends StatelessWidget {
 }
 
 class _TriggerBalanceField extends StatelessWidget {
+  const _TriggerBalanceField({required this.focusNode});
+
+  final FocusNode focusNode;
+
   @override
   Widget build(BuildContext context) {
     final triggerBalanceSatsInput = context.select(
@@ -294,7 +328,7 @@ class _TriggerBalanceField extends StatelessWidget {
       crossAxisAlignment: .start,
       children: [
         BBText(
-          'Maximum Instant Wallet Balance',
+          context.loc.autoswapMaximumBalanceLabel,
           style: context.font.bodyLarge?.copyWith(
             color: context.appColors.text,
           ),
@@ -305,6 +339,7 @@ class _TriggerBalanceField extends StatelessWidget {
             Expanded(
               child: BBInputText(
                 value: triggerBalanceSatsInput ?? '',
+                focusNode: focusNode,
                 onlyNumbers: true,
                 rightIcon: GestureDetector(
                   onTap: () {
@@ -357,6 +392,10 @@ class _TriggerBalanceField extends StatelessWidget {
 }
 
 class _FeeThresholdField extends StatelessWidget {
+  const _FeeThresholdField({required this.focusNode});
+
+  final FocusNode focusNode;
+
   @override
   Widget build(BuildContext context) {
     final feeThresholdInput = context.select(
@@ -381,6 +420,7 @@ class _FeeThresholdField extends StatelessWidget {
             Expanded(
               child: BBInputText(
                 value: feeThresholdInput ?? '',
+                focusNode: focusNode,
                 onlyNumbers: true,
                 rightIcon: Container(
                   padding: const EdgeInsets.symmetric(
@@ -595,13 +635,9 @@ class _SaveButton extends StatelessWidget {
               context.read<AutoSwapSettingsCubit>().updateSettings().catchError(
                 (e) {
                   if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: BBText(
-                          context.loc.autoswapSaveErrorMessage(e.toString()),
-                          style: context.font.bodyMedium,
-                        ),
-                      ),
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      context.loc.autoswapSaveErrorMessage(e.toString()),
                     );
                   }
                 },

@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
+  "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
+  "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
+  "backupWarningLoseReasonCriticalIssue": "حدوث مشكلة خطيرة في التطبيق أو الجهاز",
+  "backupWarningLoseReasonKeystore": "يقوم جهازك بإبطال مخزن المفاتيح (keystore) عند تغيير طريقة قفل الشاشة أو مصادقة الجهاز",
+  "backupWarningLoseReasonCloudRestore": "استعادة جهازك من نسخة احتياطية على السحابة",
+  "backupWarningNoRecovery": "لا توجد طريقة لاستعادة محفظتك بدون نسخة احتياطية.",
   "ledgerHelpTitle": "Ledger Troubleshooting",
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
@@ -49,7 +56,7 @@
   },
   "translationWarningContributeButton": "تحسين الترجمة التحريرية",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "بطاقة الهوية",
   "@transactionLabelSwapId": {
@@ -500,6 +507,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "المبلغ المستلم",
+  "swapInsufficientFunds": "أموال غير كافية",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -592,7 +600,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Fastest - only for transactions below 20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - only for transactions below 30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -907,7 +915,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "وقد تولدت معظم الترجمات في هذا التطبيق باستخدام نظام المعلومات الإدارية، وقد تحتوي على أوجه عدم الدقة. إذا لاحظت أي أخطاء أو تريد أن تساعد في تحسين الترجمة يمكنك أن تساهم من خلال منصة الترجمة.",
+  "translationWarningDescription": "تم إنشاء معظم الترجمات في هذا التطبيق باستخدام الذكاء الاصطناعي وقد تحتوي على أخطاء. إذا لاحظت أي أخطاء أو ترغب في المساعدة في تحسين الترجمات، يمكنك تقديم إصلاح على مستودعنا في GitHub.",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
@@ -2377,7 +2385,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "(آب) فشل في البدء حاول إيقاف التطبيق تماماً و إعادة التشغيل إذا استمر الخطأ، الإبلاغ عن المسألة لدعم وتشاطر سجلاتك.",
+  "appStartupErrorMessage": "فشل تشغيل التطبيق. حاول إيقاف التطبيق بالكامل وإعادة تشغيله. إذا استمر الخطأ، تواصل مع الدعم وشارك السجلات.",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -4470,6 +4478,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "لا يمكن استخدام المحافظ الأجهزة للمبادلات.",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "sendErrorInvoiceMustContainAmount": "يجب أن تحتوي الفاتورة على مبلغ",
   "@sendErrorInvoiceMustContainAmount": {
     "description": "Error when a Lightning invoice without an amount is used"
@@ -4596,7 +4608,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 20 يورو",
+  "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 30 يورو",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -4772,6 +4784,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "الأجر",
+  "payDescriptionLabel": "وصف الدفعة (اختياري)",
+  "payDescriptionHint": "أضف ملاحظة لهذه الدفعة",
+  "payPaymentDescription": "وصف الدفعة",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7288,6 +7303,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "سجل المعاملات",
+  "transactionHistoryHeading": "سجل المعاملات",
+  "exportTransactionsDescription": "صدّر جميع معاملات محفظتك (بيتكوين، ليكويد، لايتنينغ، والمبادلات) كملف CSV. يمكنك تصفية النطاق الزمني اختيارياً.",
+  "exportTransactionsStartDate": "تاريخ البدء",
+  "exportTransactionsEndDate": "تاريخ الانتهاء",
+  "exportTransactionsAnyDate": "أي",
+  "exportTransactionsButton": "تصدير CSV",
+  "exportTransactionsSuccess": "تم تصدير المعاملات بنجاح",
+  "exportTransactionsEmpty": "لا توجد معاملات للتصدير في الفترة المحددة",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "يجب أن يكون تاريخ البدء قبل تاريخ الانتهاء",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 Labels",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -9701,6 +9733,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "العدد",
+  "transactionDetailLabelPaymentDescription": "وصف الدفعة",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -11226,6 +11259,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "البث...",
+  "broadcastSignedTxBroadcastError": "فشل بث المعاملة",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12583,5 +12617,71 @@
   "legacyStorageAcceptRisksCheckbox": "أوافق على مخاطر عدم عمل نسخة احتياطية",
   "legacyStorageHasBackupImportantBody": "يرجى عدم تخطي هذه العملية إلا إذا كنت بحاجة ماسة إلى استخدام المحفظة بشكل عاجل أو في انتظار اكتمال عملية مبادلة.",
   "legacyStorageRiskAckButtonHasBackup": "أفهم المخاطر",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24h": "افتح التطبيق خلال 24 ساعة لإكمال عملية المبادلة الخاصة بك",
+  "importMnemonicDuplicateError": "هذه العبارة التذكيرية موجودة بالفعل",
+  "transactionStatusPayjoinCompleted": "اكتمل Payjoin",
+  "coreScreensResolvingInputs": "جارٍ تحليل مدخلات المعاملة...",
+  "coreScreensFeeRateLabel": "معدل الرسوم",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "مخرج الباقي غير معروف — يتم عرض جميع المخرجات بالتساوي",
+  "coreScreensUnknown": "غير معروف",
+  "coreScreensFetchFailed": "تعذر جلب المعاملة {txid} من Electrum.",
+  "coreScreensInputResolutionFailed": "المدخل غير موجود: المخرج {vout} من {parentTxId} غير موجود.",
+  "coreScreensParseFailed": "فشل تحليل المعاملة: {message}.",
+  "coreScreensUnexpectedError": "خطأ غير متوقع: {message}.",
+  "coreScreensNoServersAvailable": "لا توجد خوادم Electrum متاحة.",
+  "addressViewerTitle": "العنوان",
+  "viewerTapToCopy": "انقر للنسخ",
+  "viewerViewInExplorer": "عرض في المستكشف",
+  "transactionViewerTitle": "معرف المعاملة",
+  "invoiceViewerTitle": "فاتورة",
+  "viewerCopyLink": "انسخ الرابط",
+  "recipientsFieldSinpePhoneNumberHint": "8 أرقام بدون رمز الدولة",
+  "recipientsCopDocCcRecipientNumber": "رقم cédula المستلم",
+  "recipientsCopDocCeRecipientNumber": "رقم cédula de extranjería للمستلم",
+  "recipientsCopDocNitRecipientNumber": "الرقم الضريبي للمستلم",
+  "recipientsCopDocPassportRecipientNumber": "رقم جواز سفر المستلم",
+  "recipientsCopDocTiRecipientNumber": "رقم بطاقة هوية المستلم",
+  "recipientsCopDocRegistroCivilRecipientNumber": "رقم السجل المدني للمستلم",
+  "recipientsValidationSinpePhoneCountryCode": "احذف رمز الدولة (506+). أدخل الأرقام الثمانية فقط",
+  "recipientsValidationSinpePhoneInvalidChars": "استخدم الأرقام فقط (بدون حروف أو رموز)",
+  "recipientsValidationSinpePhoneTooShort": "أدخل جميع الأرقام الثمانية لرقم الهاتف",
+  "recipientsFieldDocumentType": "نوع هوية المستلم",
+  "recipientsFieldDocumentNumberHint": "أدخل رقم هوية المستلم",
+  "recipientsValidationSinpePhone": "أدخل رقم هاتف كوستاريكي صالح من 8 أرقام بدون رمز الدولة",
+  "homeActionBuy": "شراء",
+  "homeActionSell": "بيع",
+  "homeActionPay": "دفع",
+  "homeActionTransfer": "تحويل",
+  "backupCardTitle": "احمِ بيتكوين الخاص بك.",
+  "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن.",
+  "mempoolCustomServerNoSsl": "بدون SSL",
+  "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
+  "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
+  "recoverbullServerConfirmTitle": "خادم استرداد الخزنة",
+  "recoverbullServerUsingDefault": "استخدام الخادم الافتراضي",
+  "recoverbullServerUsingCustom": "استخدام خادم مخصص",
+  "recoverbullServerUrlLabel": "رابط الخادم:",
+  "recoverbullServerCustomWarning": "أنت تستخدم خادم Recoverbull مخصصًا. تأكد من أنك تثق بهذا الخادم.",
+  "recoverbullServerTorNotice": "سنتصل بهذا الخادم عبر Tor",
+  "recoverbullLearnMore": "اعرف المزيد عن Recoverbull",
+  "recoverbullSettingsTitle": "إعدادات Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL خادم المفاتيح",
+  "recoverbullSettingsEdit": "تعديل",
+  "recoverbullSettingsCancel": "إلغاء",
+  "recoverbullSettingsSave": "حفظ",
+  "recoverbullSettingsUrlRequired": "الرابط مطلوب",
+  "recoverbullSettingsUrlInvalid": "الرابط غير صالح",
+  "recoverbullSettingsUrlMustBeHttp": "يجب أن يكون الرابط من نوع HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "يجب أن ينتهي الرابط بـ .onion",
+  "onboardingAdvancedOptionsTitle": "خيارات متقدمة",
+  "onboardingAdvancedOptionsDescription": "اضبط الإعدادات المتقدمة قبل إنشاء محفظتك أو استردادها",
+  "onboardingAdvancedOptionsCustomElectrum": "خادم Electrum مخصص",
+  "onboardingAdvancedOptionsCustomMempool": "خادم Mempool مخصص",
+  "onboardingAdvancedOptionsCustomRecoverbull": "خادم Recoverbull مخصص",
+  "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
+  "onboardingAdvancedOptionsDone": "تم",
+  "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط"
 }

@@ -1,7 +1,7 @@
 {
     "name": "${localWorkspaceFolderBasename}",
     "build": {
-        "dockerfile": "../Containerfile.app",
+        "dockerfile": "../Containerfile.tools",
         "args": {
             "USERNAME": "${localEnv:USER}"
         }
@@ -9,23 +9,39 @@
     "remoteUser": "${localEnv:USER}",
     "updateRemoteUserUID": true,
     "shutdownAction": "stopContainer",
-    "initializeCommand": ".devcontainer/init-ssh-agent.sh",
+    "initializeCommand": "sh -c '.devcontainer/init-ssh-agent.sh && .devcontainer/init-adb.sh'",
     "runArgs": [
         "--name",
         "${localWorkspaceFolderBasename}",
         "--hostname",
         "bull",
         "--memory=8g",
+        "--device=/dev/dri",
+        "--dns",
+        "1.1.1.1",
+        "--dns",
+        "9.9.9.9",
         "--security-opt",
         "label=disable"
     ],
     "mounts": [
-        "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached",
-        "source=/tmp/ssh-agent.sock,target=/ssh-agent,type=bind,consistency=cached",
-        "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind,consistency=cached"
+        "source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind,consistency=cached,readonly",
+        "source=${localEnv:HOME}/.ssh-agent-devcontainer.sock,target=/ssh-agent,type=bind,consistency=cached",
+        "source=${localEnv:HOME}/.gitconfig,target=/home/${localEnv:USER}/.gitconfig,type=bind,consistency=cached",
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+        "source=/tmp/wayland.sock,target=/tmp/wayland.sock,type=bind,consistency=cached",
+        "source=${localWorkspaceFolderBasename}-bash-history,target=/home/${localEnv:USER}/.history,type=volume",
+        "source=${localWorkspaceFolderBasename}-keyrings,target=/home/${localEnv:USER}/.local/share/keyrings,type=volume"
     ],
     "containerEnv": {
-        "SSH_AUTH_SOCK": "/ssh-agent"
+        "SSH_AUTH_SOCK": "/ssh-agent",
+        "ADB_SERVER_SOCKET": "tcp:host.containers.internal:5037",
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "XDG_RUNTIME_DIR": "/tmp",
+        "WAYLAND_DISPLAY": "wayland.sock",
+        "GDK_BACKEND": "wayland,x11",
+        "DBUS_SESSION_BUS_ADDRESS": "unix:path=/tmp/dbus-session.sock"
     },
-    "postStartCommand": "sudo chown -R --no-dereference ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.ssh || true; chmod 700 /home/${localEnv:USER}/.ssh; find /home/${localEnv:USER}/.ssh -maxdepth 1 -type f -exec chmod 600 {} + 2>/dev/null || true"
+    "postCreateCommand": "sudo chown -R ${localEnv:USER}:${localEnv:USER} /home/${localEnv:USER}/.local /home/${localEnv:USER}/.history && touch /home/${localEnv:USER}/.history/bash_history",
+    "postStartCommand": ".devcontainer/init-keyring.sh"
 }

@@ -1,15 +1,18 @@
 import 'dart:math' as math;
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/widgets/address_viewer.dart';
+import 'package:bb_mobile/core/screens/send_confirm_screen.dart' hide SendType;
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/utils/string_formatting.dart';
+
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/cards/info_card.dart';
+import 'package:bb_mobile/core/widgets/inputs/bb_keyboard_actions.dart';
 import 'package:bb_mobile/core/widgets/inputs/text_input.dart';
 import 'package:bb_mobile/core/widgets/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
@@ -18,6 +21,8 @@ import 'package:bb_mobile/core/widgets/price_input/price_input.dart';
 import 'package:bb_mobile/core/widgets/segment/segmented_full.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
+import 'package:bb_mobile/core/widgets/tiles/bordered_tappable_tile.dart';
+import 'package:bb_mobile/features/labels/ui/label_entry_bottom_sheet.dart';
 import 'package:bb_mobile/features/bitbox/ui/bitbox_router.dart';
 import 'package:bb_mobile/features/bitbox/ui/screens/bitbox_action_screen.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
@@ -245,6 +250,8 @@ class AddressErrorSection extends StatelessWidget {
       return BBText(
         swapError is AmountlessInvoiceException
             ? context.loc.sendErrorInvoiceMustContainAmount
+            : swapError is ExpiredInvoiceException
+            ? context.loc.sendErrorInvoiceExpired
             : swapError.message,
         style: context.font.bodyMedium,
         color: context.appColors.error,
@@ -333,194 +340,253 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
             foregroundColor: context.appColors.primary,
           ),
           Expanded(
-            child: BlocListener<SendCubit, SendState>(
-              listenWhen: (previous, current) =>
-                  previous.amount != current.amount &&
-                  _amountController.text != current.amount,
-              listener: (context, state) {
-                final amount = state.amount;
-                final currentCursor = _amountController.selection.baseOffset;
-                final safePosition = _isMax
-                    ? amount.length
-                    : math.min(currentCursor, amount.length);
+            child: BBKeyboardActions(
+              disableScroll: true,
+              focusNodes: [_amountFocusNode],
+              child: BlocListener<SendCubit, SendState>(
+                listenWhen: (previous, current) =>
+                    previous.amount != current.amount &&
+                    _amountController.text != current.amount,
+                listener: (context, state) {
+                  final amount = state.amount;
+                  final currentCursor = _amountController.selection.baseOffset;
+                  final safePosition = _isMax
+                      ? amount.length
+                      : math.min(currentCursor, amount.length);
 
-                _amountController.value = TextEditingValue(
-                  text: amount,
-                  selection: TextSelection.collapsed(offset: safePosition),
-                );
-              },
-              child: BlocBuilder<SendCubit, SendState>(
-                builder: (context, state) {
-                  final cubit = context.read<SendCubit>();
-                  final balanceError = context.select(
-                    (SendCubit cubit) =>
-                        cubit.state.insufficientBalanceException,
-                  );
-                  final swapLimitsError = context.select(
-                    (SendCubit cubit) => cubit.state.swapLimitsException,
-                  );
-                  final swapCreationError = context.select(
-                    (SendCubit cubit) => cubit.state.swapCreationException,
-                  );
-                  final walletHasBalance = context.select(
-                    (SendCubit cubit) => cubit.state.walletHasBalance,
-                  );
-                  final amountConfirmedClicked = context.select(
-                    (SendCubit cubit) => cubit.state.amountConfirmedClicked,
-                  );
-                  final isLightning = context.select(
-                    (SendCubit cubit) => cubit.state.isLightning,
-                  );
-                  final isChainSwap = context.select(
-                    (SendCubit cubit) => cubit.state.chainSwap != null,
-                  );
-                  final inputCurrency = context.select(
-                    (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
-                  );
-
-                  final availableInputCurrencies = context
-                      .select<SendCubit, List<String>>(
-                        (bloc) => bloc.state.inputAmountCurrencyCodes,
-                      );
-                  final buildError = context.select(
-                    (SendCubit cubit) => cubit.state.buildTransactionException,
-                  );
-                  final selectedWallet = context.select(
-                    (SendCubit cubit) => cubit.state.selectedWallet!,
-                  );
-                  final wallets = context.select(
-                    (SendCubit cubit) => cubit.state.wallets,
-                  );
-                  return IgnorePointer(
-                    ignoring: state.amountConfirmedClicked,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: .stretch,
-                        children: [
-                          ColoredBox(
-                            color: context.appColors.onSecondary,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12.0,
-                              ),
-                              child: DropdownButtonFormField<Wallet>(
-                                alignment: Alignment.centerLeft,
-                                decoration: const InputDecoration(
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                                icon: Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: context.appColors.secondary,
-                                ),
-                                iconSize: 24,
-                                initialValue: selectedWallet,
-                                items: wallets.map((w) {
-                                  return DropdownMenuItem(
-                                    value: w,
-                                    child: Text(
-                                      w.displayLabel(context),
-                                      style: context.font.headlineSmall,
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  if (value != null) {
-                                    context
-                                        .read<SendCubit>()
-                                        .updateSelectedWallet(value);
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                          const Gap(10),
-                          PriceInput(
-                            currency: inputCurrency,
-                            amountEquivalent:
-                                state.formattedAmountInputEquivalent,
-                            availableCurrencies: availableInputCurrencies,
-                            amountController: _amountController,
-                            onNoteChanged: cubit.noteChanged,
-                            onCurrencyChanged: (currencyCode) {
-                              _setIsMax(false);
-                              context.read<SendCubit>().onCurrencyChanged(
-                                currencyCode,
-                              );
-                            },
-                            error:
-                                balanceError != null
-                                ? context
-                                      .loc
-                                      .sendErrorInsufficientBalanceForPayment
-                                : (!walletHasBalance && amountConfirmedClicked)
-                                ? context.loc.sendInsufficientBalance
-                                : swapLimitsError != null
-                                ? _getSwapLimitsErrorMessage(
-                                    context,
-                                    swapLimitsError,
-                                  )
-                                : swapCreationError?.message,
-                            focusNode: _amountFocusNode,
-                            readOnly: _isMax,
-                            isMax: _isMax,
-                          ),
-                          if (swapLimitsError?.suggestInstantPayments == true)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 6),
-                              child: BBText(
-                                context.loc.sendErrorAmountBelowSwapLimitsBitcoin,
-                                style: context.font.bodySmall,
-                                color: context.appColors.error,
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          const Gap(48),
-                          Divider(
-                            height: 1,
-                            color: context.appColors.secondaryFixedDim,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            child: BalanceRow(
-                              balance: state.formattedWalletBalance(),
-                              currencyCode: '',
-                              isMax: _isMax,
-                              onMaxToggled: !isLightning && !isChainSwap
-                                  ? (value) {
-                                      _setIsMax(value);
-                                      context.read<SendCubit>().amountChanged(
-                                        isMax: value,
-                                      );
-                                      if (!value) {
-                                        _amountFocusNode.requestFocus();
-                                      }
-                                    }
-                                  : null,
-                              walletLabel: selectedWallet.label,
-                            ),
-                          ),
-                          if (buildError != null) ...[
-                            const Gap(16),
-                            const _SendError(),
-                          ],
-
-                          const Spacer(),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              bottom: Device.screen.height * 0.04,
-                            ),
-                            child: SendAmountConfirmButton(
-                              amountController: _amountController,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  _amountController.value = TextEditingValue(
+                    text: amount,
+                    selection: TextSelection.collapsed(offset: safePosition),
                   );
                 },
+                child: BlocBuilder<SendCubit, SendState>(
+                  builder: (context, state) {
+                    final balanceError = context.select(
+                      (SendCubit cubit) =>
+                          cubit.state.insufficientBalanceException,
+                    );
+                    final swapLimitsError = context.select(
+                      (SendCubit cubit) => cubit.state.swapLimitsException,
+                    );
+                    final swapCreationError = context.select(
+                      (SendCubit cubit) => cubit.state.swapCreationException,
+                    );
+                    final walletHasBalance = context.select(
+                      (SendCubit cubit) => cubit.state.walletHasBalance,
+                    );
+                    final amountConfirmedClicked = context.select(
+                      (SendCubit cubit) => cubit.state.amountConfirmedClicked,
+                    );
+                    final isLightning = context.select(
+                      (SendCubit cubit) => cubit.state.isLightning,
+                    );
+                    final isChainSwap = context.select(
+                      (SendCubit cubit) => cubit.state.chainSwap != null,
+                    );
+                    final inputCurrency = context.select(
+                      (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
+                    );
+
+                    final availableInputCurrencies = context
+                        .select<SendCubit, List<String>>(
+                          (bloc) => bloc.state.inputAmountCurrencyCodes,
+                        );
+                    final buildError = context.select(
+                      (SendCubit cubit) =>
+                          cubit.state.buildTransactionException,
+                    );
+                    final selectedWallet = context.select(
+                      (SendCubit cubit) => cubit.state.selectedWallet!,
+                    );
+                    final wallets = context.select(
+                      (SendCubit cubit) => cubit.state.wallets,
+                    );
+                    return IgnorePointer(
+                      ignoring: state.amountConfirmedClicked,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: .stretch,
+                          children: [
+                            ColoredBox(
+                              color: context.appColors.onSecondary,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0,
+                                ),
+                                child: DropdownButtonFormField<Wallet>(
+                                  alignment: Alignment.centerLeft,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  icon: Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: context.appColors.secondary,
+                                  ),
+                                  iconSize: 24,
+                                  initialValue: selectedWallet,
+                                  items: wallets.map((w) {
+                                    return DropdownMenuItem(
+                                      value: w,
+                                      child: Text(
+                                        w.displayLabel(context),
+                                        style: context.font.headlineSmall,
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    if (value != null) {
+                                      context
+                                          .read<SendCubit>()
+                                          .updateSelectedWallet(value);
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                            const Gap(10),
+                            PriceInput(
+                              currency: inputCurrency,
+                              amountEquivalent:
+                                  state.formattedAmountInputEquivalent,
+                              availableCurrencies: availableInputCurrencies,
+                              amountController: _amountController,
+                              onCurrencyChanged: (currencyCode) {
+                                _setIsMax(false);
+                                context.read<SendCubit>().onCurrencyChanged(
+                                  currencyCode,
+                                );
+                              },
+                              error: balanceError != null
+                                  ? context
+                                        .loc
+                                        .sendErrorInsufficientBalanceForPayment
+                                  : (!walletHasBalance &&
+                                        amountConfirmedClicked)
+                                  ? context.loc.sendInsufficientBalance
+                                  : swapLimitsError != null
+                                  ? _getSwapLimitsErrorMessage(
+                                      context,
+                                      swapLimitsError,
+                                    )
+                                  : swapCreationError != null
+                                  ? _swapCreationErrorMessage(
+                                      context,
+                                      swapCreationError,
+                                    )
+                                  : null,
+                              focusNode: _amountFocusNode,
+                              readOnly: _isMax,
+                              isMax: _isMax,
+                            ),
+                            if (swapLimitsError?.suggestInstantPayments == true)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 6),
+                                child: BBText(
+                                  context
+                                      .loc
+                                      .sendErrorAmountBelowSwapLimitsBitcoin,
+                                  style: context.font.bodySmall,
+                                  color: context.appColors.error,
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            Gap(Device.screen.height * 0.02),
+                            BorderedTappableTile(
+                              onTap: () async {
+                                final cubit = context.read<SendCubit>();
+                                final saved = await LabelEntryBottomSheet.label(
+                                  context,
+                                  title: context.loc.transactionNoteAddTitle,
+                                  initialValue: state.label.isEmpty
+                                      ? null
+                                      : state.label,
+                                  hint: context.loc.transactionNoteHint,
+                                  suggestionsFuture: cubit
+                                      .fetchDistinctLabels(),
+                                );
+                                if (saved == null || !context.mounted) return;
+                                cubit.noteChanged(saved);
+                              },
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        BBText(
+                                          '${context.loc.receiveNote} (optional)',
+                                          style: context.font.bodyLarge,
+                                          color: context.appColors.secondary,
+                                        ),
+                                        const Gap(4),
+                                        BBText(
+                                          state.label.isEmpty
+                                              ? context.loc.receiveEnterHere
+                                              : state.label,
+                                          style: context.font.bodyMedium,
+                                          maxLines: 4,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.edit,
+                                    size: 20,
+                                    color: context.appColors.secondary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Gap(48),
+                            Divider(
+                              height: 1,
+                              color: context.appColors.secondaryFixedDim,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: BalanceRow(
+                                balance: state.formattedWalletBalance(),
+                                currencyCode: '',
+                                isMax: _isMax,
+                                onMaxToggled: !isLightning && !isChainSwap
+                                    ? (value) {
+                                        _setIsMax(value);
+                                        context.read<SendCubit>().amountChanged(
+                                          isMax: value,
+                                        );
+                                        if (!value) {
+                                          _amountFocusNode.requestFocus();
+                                        }
+                                      }
+                                    : null,
+                                walletLabel: selectedWallet.label,
+                              ),
+                            ),
+                            if (buildError != null) ...[
+                              const Gap(16),
+                              const _SendError(),
+                            ],
+
+                            const Spacer(),
+                            Padding(
+                              padding: EdgeInsets.only(
+                                bottom: Device.screen.height * 0.04,
+                              ),
+                              child: SendAmountConfirmButton(
+                                amountController: _amountController,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -604,6 +670,9 @@ class SendConfirmScreen extends StatelessWidget {
     final isChainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap != null,
     );
+    final isLiquid = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet?.isLiquid ?? false,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -639,8 +708,10 @@ class SendConfirmScreen extends StatelessWidget {
                       const _LnSwapSendInfoSection()
                     else if (isChainSwap)
                       const _ChainSwapSendInfoSection()
+                    else if (isLiquid)
+                      const _LiquidOnchainSendInfoSection()
                     else
-                      const _OnchainSendInfoSection(),
+                      const _OnchainTransactionReview(),
                     const Gap(40),
                     const _SendError(),
                     const _BottomButtons(),
@@ -821,11 +892,13 @@ class ConfirmSendButton extends StatelessWidget {
   }
 }
 
-class _OnchainSendInfoSection extends StatelessWidget {
-  const _OnchainSendInfoSection();
-  Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.appColors.secondaryFixedDim);
-  }
+/// Bitcoin onchain send info section.
+///
+/// Reads directly from [SendState] — all data (amount, address, fees) is
+/// already available after [createTransaction] + [signTransaction].
+/// Uses [CommonOnchainSendInfoSection] for the layout, same as Liquid.
+class _OnchainTransactionReview extends StatelessWidget {
+  const _OnchainTransactionReview();
 
   @override
   Widget build(BuildContext context) {
@@ -841,13 +914,12 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
+    );
     final hasFinalizedTx = context.select(
       (SendCubit cubit) => cubit.state.signedBitcoinTx != null,
     );
-    // final selectedFees = context.select(
-    //   (SendCubit cubit) => cubit.state.selectedFee,
-    // );
-
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
@@ -857,167 +929,85 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
     );
-    final formattedAbsoluteFees = context.select(
-      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
-    );
     final isToSelf = context.select(
       (SendCubit cubit) => cubit.state.isToSelf == true,
     );
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: .stretch,
-        children: [
-          InfoRow(
-            title: context.loc.sendFrom,
-            details: BBText(
-              selectedWallet!.displayLabel(context),
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
-            ),
-          ),
-          _divider(context),
-          InfoRow(
-            title: context.loc.sendTo,
-            details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
-              children: [
-                Expanded(
-                  child: BBText(
-                    paymentRequestAddress,
-                    maxLines: 5,
-                    style: context.font.bodyLarge,
-                    color: context.appColors.secondary,
-                    textAlign: .end,
-                  ),
-                ),
-                const Gap(8),
-                InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
-                  onTap: () {
-                    Clipboard.setData(
-                      ClipboardData(text: paymentRequestAddress),
-                    );
-                  },
-                ),
-              ],
-            ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
-          ),
-          if (isToSelf) ...[
-            _divider(context),
-            InfoRow(
-              title: context.loc.sendSelfTransfer,
-              details: Align(
-                alignment: Alignment.centerRight,
-                child: Icon(
-                  Icons.check,
-                  color: context.appColors.secondary,
-                  size: 20,
-                ),
-              ),
-            ),
-          ],
-          _divider(context),
-          InfoRow(
-            title: context.loc.sendAmount,
-            details: Column(
-              crossAxisAlignment: .end,
-              children: [
-                BBText(
-                  formattedBitcoinAmount,
-                  style: context.font.bodyLarge,
-                  color: context.appColors.secondary,
-                ),
-                BBText(
-                  '~$formattedFiatEquivalent',
-                  style: context.font.labelSmall,
-                  color: context.appColors.onSurfaceVariant,
-                ),
-              ],
-            ),
-          ),
 
-          _divider(context),
-          InfoRow(
-            title: context.loc.sendNetworkFees,
-            details: BBText(
-              formattedAbsoluteFees,
-              style: context.font.bodyLarge,
-              color: context.appColors.secondary,
-              textAlign: .end,
-            ),
-          ),
-          if (!selectedWallet.isLiquid) ...[
-            _divider(context),
-            InfoRow(
-              title: context.loc.sendFeePriority,
-              details: InkWell(
-                onTap: hasFinalizedTx
-                    ? null
-                    : () async {
-                        final selected = await _showFeeOptions(context);
-
-                        if (selected != null) {
-                          final fee = FeeSelectionName.fromString(selected);
-                          // ignore: use_build_context_synchronously
-                          await context.read<SendCubit>().feeOptionSelected(
-                            fee,
-                          );
-                        }
-                      },
-                child: Row(
-                  mainAxisAlignment: .end,
-                  children: [
-                    BBText(
-                      selectedFeeOption.title(),
-                      style: context.font.bodyLarge,
-                      color: context.appColors.primary,
-                      textAlign: .end,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CommonOnchainSendInfoSection(
+          sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
+          receiveWalletLabel: paymentRequestAddress,
+          formattedBitcoinAmount: formattedBitcoinAmount,
+          formattedFiatEquivalent: '~$formattedFiatEquivalent',
+          absoluteFees: formattedAbsoluteFees,
+          selectedFeeOptionTitle: selectedFeeOption.title(),
+          isToSelf: isToSelf,
+          onFeePriorityTap: hasFinalizedTx
+              ? null
+              : () async {
+                  final sendCubit = context.read<SendCubit>();
+                  final selected = await BlurredBottomSheet.show<String>(
+                    context: context,
+                    child: BlocProvider.value(
+                      value: sendCubit,
+                      child: const FeeOptionsModal(),
                     ),
-                    const Gap(4),
-                    Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      color: context.appColors.primary,
-                      weight: 100,
-                      size: 12,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-          if (showFeeWarning == true) ...[
-            const Gap(16),
-            _HighFeeWarning(feePercent),
-          ],
+                  );
+                  if (selected != null) {
+                    final fee = FeeSelectionName.fromString(selected);
+                    await context.read<SendCubit>().feeOptionSelected(fee);
+                  }
+                },
+        ),
+        if (showFeeWarning == true) ...[
+          const Gap(16),
+          _HighFeeWarning(feePercent),
         ],
-      ),
+      ],
     );
   }
+}
 
-  Future<String?> _showFeeOptions(BuildContext context) async {
-    final sendCubit = context.read<SendCubit>();
+/// Liquid onchain send info section.
+///
+/// For Liquid wallets, `walletTransaction` is not populated during the confirm
+/// step (only `unsignedPsbt` and `liquidAbsoluteFees` are set). Instead of
+/// using [TransactionReviewView] (which requires a [ReviewableTransaction]), this
+/// widget reads directly from [SendState] and delegates to
+/// [CommonOnchainSendInfoSection].
+class _LiquidOnchainSendInfoSection extends StatelessWidget {
+  const _LiquidOnchainSendInfoSection();
 
-    final selected = await BlurredBottomSheet.show<String>(
-      context: context,
-      child: BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
+  @override
+  Widget build(BuildContext context) {
+    final selectedWallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
+    );
+    final paymentRequestAddress = context.select(
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
+    );
+    final formattedBitcoinAmount = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+    final formattedFiatEquivalent = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
     );
 
-    return selected;
+    return CommonOnchainSendInfoSection(
+      sendWalletLabel: selectedWallet?.displayLabel(context) ?? '',
+      receiveWalletLabel: paymentRequestAddress,
+      formattedBitcoinAmount: formattedBitcoinAmount,
+      formattedFiatEquivalent: '~$formattedFiatEquivalent',
+      absoluteFees: formattedAbsoluteFees,
+      selectedFeeOptionTitle: '',
+      // Liquid has fixed fees — no fee priority selector
+      onFeePriorityTap: null,
+    );
   }
 }
 
@@ -1036,9 +1026,6 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
-    final paymentRequest = context.select(
-      (SendCubit cubit) => cubit.state.paymentRequest,
-    );
     final feePercent = context.select(
       (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
     );
@@ -1076,34 +1063,28 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendTo,
             details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: BBText(
-                    paymentRequest!.isLnAddress
-                        ? paymentRequestAddress
-                        : StringFormatting.truncateMiddle(
-                            paymentRequestAddress,
-                          ),
+                  child: AddressViewer(
+                    paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
-                    textAlign: .end,
-                    maxLines: 10,
                   ),
                 ),
                 const Gap(4),
                 InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
                   onTap: () {
                     Clipboard.setData(
                       ClipboardData(text: paymentRequestAddress),
                     );
                   },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
                 ),
               ],
             ),
@@ -1337,41 +1318,31 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: context.loc.sendTo,
             details: Row(
-              mainAxisAlignment: .end,
-              mainAxisSize: .min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
-                  child: BBText(
+                  child: AddressViewer(
                     paymentRequestAddress,
                     style: context.font.bodyLarge,
                     color: context.appColors.secondary,
-                    textAlign: .end,
-                    maxLines: 10,
                   ),
                 ),
                 const Gap(4),
                 InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.appColors.primary,
-                    size: 16,
-                  ),
                   onTap: () {
                     Clipboard.setData(
                       ClipboardData(text: paymentRequestAddress),
                     );
                   },
+                  child: Icon(
+                    Icons.copy,
+                    color: context.appColors.primary,
+                    size: 16,
+                  ),
                 ),
               ],
             ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
           ),
           _divider(context),
           InfoRow(
@@ -1950,7 +1921,19 @@ class SignBitBoxButton extends StatelessWidget {
   }
 }
 
-/// Helper function to get localized error message for SwapLimitsException
+String _swapCreationErrorMessage(
+  BuildContext context,
+  SwapCreationException error,
+) {
+  if (error is HardwareWalletSwapException) {
+    return context.loc.sendErrorHardwareWalletCannotSwap;
+  }
+  if (error is AmountlessInvoiceException) {
+    return context.loc.sendErrorInvoiceMustContainAmount;
+  }
+  return error.message;
+}
+
 String _getSwapLimitsErrorMessage(
   BuildContext context,
   SwapLimitsException error,

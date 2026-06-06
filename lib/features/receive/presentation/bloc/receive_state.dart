@@ -76,6 +76,14 @@ abstract class ReceiveState with _$ReceiveState {
   String get clipboardData =>
       paymentRequest.isEmpty ? addressOrInvoiceOnly : paymentRequest;
 
+  String get lightningInvoiceNormalized {
+    final invoice = lightningSwap?.invoice;
+
+    if (invoice == null) return '';
+
+    return invoice.trim().toUpperCase();
+  }
+
   // The payment request can be an address, invoice or bip21 URI depending on
   // the type of receive and some set parameters. It waits for all data to
   // be available before returning anything.
@@ -87,8 +95,7 @@ abstract class ReceiveState with _$ReceiveState {
           // address should be shown.
           return '';
         }
-        if (isAddressOnly ||
-            (confirmedAmountSat == null && note.isEmpty && payjoin == null)) {
+        if (confirmedAmountSat == null && note.isEmpty && !canPayjoin) {
           return bitcoinAddress!.address;
         }
 
@@ -102,7 +109,7 @@ abstract class ReceiveState with _$ReceiveState {
         );
 
         // Add payjoin parameters if available
-        if (payjoin != null) {
+        if (canPayjoin) {
           final pjUri = Uri.parse(payjoin!.pjUri);
           final queryParameters = {
             if (bip21Uri.queryParameters.isNotEmpty)
@@ -115,7 +122,7 @@ abstract class ReceiveState with _$ReceiveState {
         }
         return bip21Uri.toString();
       case ReceiveType.lightning:
-        return lightningSwap?.invoice ?? '';
+        return lightningInvoiceNormalized;
       case ReceiveType.liquid:
         if (liquidAddress == null) return '';
 
@@ -145,7 +152,7 @@ abstract class ReceiveState with _$ReceiveState {
       case ReceiveType.bitcoin:
         return bitcoinAddress?.address ?? '';
       case ReceiveType.lightning:
-        return lightningSwap?.invoice ?? '';
+        return lightningInvoiceNormalized;
       case ReceiveType.liquid:
         return liquidAddress?.address ?? '';
       case _:
@@ -244,6 +251,14 @@ abstract class ReceiveState with _$ReceiveState {
     }
     return false;
   }
+
+  bool get hasUtxos => (wallet?.balanceSat ?? BigInt.zero) > BigInt.zero;
+
+  // Payjoin is only useful if the wallet has UTXOs to contribute as inputs in
+  // the receiver's BIP78 PSBT — without UTXOs the proposal cannot be built.
+  // Also gated on [isAddressOnly] so toggling payjoin OFF removes only the
+  // pj= param from the URI, leaving amount/message intact.
+  bool get canPayjoin => payjoin != null && hasUtxos && !isAddressOnly;
 
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;

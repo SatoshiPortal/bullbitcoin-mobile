@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/mempool/application/dtos/mempool_server_dto.dart';
-import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
+import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/mempool_settings/presentation/bloc/mempool_settings_cubit.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/mempool_server_status_indicator.dart';
 import 'package:bb_mobile/features/mempool_settings/ui/widgets/set_custom_server_bottom_sheet.dart';
+import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -55,17 +57,27 @@ class CustomServerCard extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: customServer!.enableSsl
-                                  ? context.appColors.success.withValues(alpha: 0.15)
-                                  : context.appColors.warning.withValues(alpha: 0.15),
+                                  ? context.appColors.success.withValues(
+                                      alpha: 0.15,
+                                    )
+                                  : context.appColors.warning.withValues(
+                                      alpha: 0.15,
+                                    ),
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
                                 color: customServer!.enableSsl
-                                    ? context.appColors.success.withValues(alpha: 0.3)
-                                    : context.appColors.warning.withValues(alpha: 0.3),
+                                    ? context.appColors.success.withValues(
+                                        alpha: 0.3,
+                                      )
+                                    : context.appColors.warning.withValues(
+                                        alpha: 0.3,
+                                      ),
                               ),
                             ),
                             child: Text(
-                              customServer!.enableSsl ? 'SSL' : 'No SSL',
+                              customServer!.enableSsl
+                                  ? context.loc.mempoolCustomServerSsl
+                                  : context.loc.mempoolCustomServerNoSsl,
                               style: context.font.bodySmall?.copyWith(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
@@ -87,13 +99,17 @@ class CustomServerCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          MempoolServerStatusIndicator(status: customServer!.status),
+                          MempoolServerStatusIndicator(
+                            status: customServer!.status,
+                          ),
                           const SizedBox(width: 4),
                           if (!customServer!.status.isChecking)
                             GestureDetector(
                               onTap: isProcessing
                                   ? null
-                                  : () => context.read<MempoolSettingsCubit>().checkServerStatus(customServer!),
+                                  : () => context
+                                        .read<MempoolSettingsCubit>()
+                                        .checkServerStatus(customServer!),
                               child: Icon(
                                 Icons.refresh,
                                 size: 16,
@@ -109,11 +125,9 @@ class CustomServerCard extends StatelessWidget {
                   icon: const Icon(Icons.copy),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: customServer!.url));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('URL copied to clipboard'),
-                        duration: Duration(seconds: 2),
-                      ),
+                    SnackBarUtils.showSnackBar(
+                      context,
+                      'URL copied to clipboard',
                     );
                   },
                 ),
@@ -135,10 +149,7 @@ class CustomServerCard extends StatelessWidget {
                   onPressed: isProcessing
                       ? null
                       : () => _showDeleteConfirmation(context),
-                  icon: Icon(
-                    Icons.delete,
-                    color: context.appColors.error,
-                  ),
+                  icon: Icon(Icons.delete, color: context.appColors.error),
                   label: Text(
                     context.loc.mempoolCustomServerDelete,
                     style: TextStyle(color: context.appColors.error),
@@ -166,7 +177,7 @@ class CustomServerCard extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
-    showDialog(
+    BlurredDialog.show(
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: context.appColors.surface,
@@ -238,10 +249,7 @@ class _AddCustomServerButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.add_circle_outline,
-                color: context.appColors.primary,
-              ),
+              Icon(Icons.add_circle_outline, color: context.appColors.primary),
               const SizedBox(width: 8),
               Text(
                 context.loc.mempoolCustomServerAdd,

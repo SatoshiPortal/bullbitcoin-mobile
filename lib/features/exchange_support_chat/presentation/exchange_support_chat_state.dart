@@ -4,6 +4,14 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'exchange_support_chat_state.freezed.dart';
 
+enum SupportChatErrorCode {
+  permissionDenied,
+  permissionDeniedNeedsSettings,
+  pickFilesFailed,
+  attachLogsFailed,
+  fetchFileDataFailed,
+}
+
 @freezed
 abstract class ExchangeSupportChatState with _$ExchangeSupportChatState {
   const factory ExchangeSupportChatState({
@@ -18,7 +26,7 @@ abstract class ExchangeSupportChatState with _$ExchangeSupportChatState {
     @Default(false) bool loadingOlderMessages,
     String? loadingAttachmentId,
     @Default('') String errorLoadingAttachment,
-    @Default('') String errorPermissionDenied,
+    SupportChatErrorCode? errorCode,
     String? userId,
   }) = _ExchangeSupportChatState;
 }

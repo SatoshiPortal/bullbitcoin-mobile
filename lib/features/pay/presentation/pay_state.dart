@@ -16,6 +16,7 @@ sealed class PayState with _$PayState {
     required RecipientViewModel selectedRecipient,
     required UserSummary userSummary,
     required FiatAmount amount,
+    String? paymentDescription,
     @Default(false) bool isCreatingPayOrder,
     PayError? error,
   }) = PayWalletSelectionState;
@@ -23,6 +24,7 @@ sealed class PayState with _$PayState {
     required RecipientViewModel selectedRecipient,
     required UserSummary userSummary,
     required FiatAmount amount,
+    String? paymentDescription,
     Wallet? selectedWallet,
     required FiatPaymentOrder payOrder,
     @Default(false) bool isConfirmingPayment,
@@ -128,11 +130,13 @@ sealed class PayState with _$PayState {
       :final selectedRecipient,
       :final userSummary,
       :final amount,
+      :final paymentDescription,
     ) =>
       PayWalletSelectionState(
         selectedRecipient: selectedRecipient,
         userSummary: userSummary,
         amount: amount,
+        paymentDescription: paymentDescription,
       ),
     _ => null,
   };
@@ -166,11 +170,15 @@ extension PayRecipientSelectionStateX on PayRecipientSelectionState {
 }
 
 extension PayAmountInputStateX on PayAmountInputState {
-  PayWalletSelectionState toWalletSelectionState({required FiatAmount amount}) {
+  PayWalletSelectionState toWalletSelectionState({
+    required FiatAmount amount,
+    String? paymentDescription,
+  }) {
     return PayWalletSelectionState(
       userSummary: userSummary,
       amount: amount,
       selectedRecipient: selectedRecipient,
+      paymentDescription: paymentDescription,
       isCreatingPayOrder: false,
     );
   }
@@ -188,6 +196,7 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
       userSummary: userSummary,
       amount: amount,
       selectedRecipient: selectedRecipient,
+      paymentDescription: paymentDescription,
       selectedWallet: selectedWallet,
       payOrder: payOrder,
       absoluteFees: absoluteFees,
@@ -204,6 +213,7 @@ extension PayWalletSelectionStateX on PayWalletSelectionState {
       userSummary: userSummary,
       amount: amount,
       selectedRecipient: selectedRecipient,
+      paymentDescription: paymentDescription,
       selectedWallet: null,
       payOrder: payOrder,
       exchangeRateEstimate: exchangeRateEstimate,

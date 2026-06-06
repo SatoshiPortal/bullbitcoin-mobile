@@ -317,7 +317,12 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     TransferAmountChanged event,
     Emitter<TransferState> emit,
   ) async {
-    emit(state.copyWith(amount: event.amount));
+    emit(
+      state.copyWith(
+        amount: event.amount,
+        swapCreationException: null,
+      ),
+    );
   }
 
   Future<void> _onSwapCreated(
@@ -339,6 +344,13 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final inputAmountSat = state.bitcoinUnit == BitcoinUnit.sats
           ? int.parse(event.amount)
           : ConvertAmount.btcToSats(double.parse(event.amount));
+
+      // Insufficient balance is surfaced as an inline form error on the
+      // amount field (see SwapAmountInput); stop here so no swap is created.
+      final balanceSat = state.fromWallet?.balanceSat.toInt() ?? 0;
+      if (inputAmountSat > balanceSat) {
+        return;
+      }
 
       int paymentAmountSat = inputAmountSat;
       if (state.receiveExactAmount && !state.isSameChainTransfer) {
@@ -643,13 +655,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
         ),
       );
     } catch (e) {
-      final errorMessage = _isInsufficientFundsException(e)
-          ? 'Insufficient Balance To Cover Fees And Amount'
-          : e.toString();
+      final swapCreationException = _isInsufficientFundsException(e)
+          ? InsufficientFundsSwapException()
+          : SwapCreationException(e.toString());
       emit(
-        state.copyWith(
-          swapCreationException: SwapCreationException(errorMessage),
-        ),
+        state.copyWith(swapCreationException: swapCreationException),
       );
     } finally {
       emit(state.copyWith(isCreatingSwap: false, continueClicked: false));

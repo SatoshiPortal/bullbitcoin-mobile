@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "หากไม่มีข้อมูลสำรอง คุณจะไม่สามารถเข้าถึงบิตคอยน์ของคุณได้ในกรณีต่อไปนี้:",
+  "backupWarningLoseReasonLostPhone": "คุณทำโทรศัพท์หาย",
+  "backupWarningLoseReasonDeletedApp": "คุณลบแอป",
+  "backupWarningLoseReasonCriticalIssue": "เกิดปัญหาร้ายแรงกับแอปหรืออุปกรณ์",
+  "backupWarningLoseReasonKeystore": "อุปกรณ์ของคุณจะยกเลิกคีย์สโตร์เมื่อเปลี่ยนรหัสล็อกหน้าจอ/วิธียืนยันตัวตนของอุปกรณ์",
+  "backupWarningLoseReasonCloudRestore": "การกู้คืนอุปกรณ์ของคุณจากการสำรองข้อมูลบนคลาวด์",
+  "backupWarningNoRecovery": "หากไม่มีข้อมูลสำรอง จะไม่มีทางกู้คืนกระเป๋าเงินของคุณได้",
   "bitboxErrorMultipleDevicesFound": "อุปกรณ์หลายหน้าจอ กรุณาตรวจสอบอุปกรณ์เดียว.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -37,7 +44,7 @@
   },
   "translationWarningContributeButton": "ความช่วยเหลือ",
   "@translationWarningContributeButton": {
-    "description": "Button to open Weblate translation platform"
+    "description": "Button to open GitHub repository for translations"
   },
   "transactionLabelSwapId": "รหัส",
   "@transactionLabelSwapId": {
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "รับจํานวนเงิน",
+  "swapInsufficientFunds": "เงินทุนไม่เพียงพอ",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -616,7 +624,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "ที่เร็วที่สุด - เพียงสําหรับการทําธุรกรรมด้านล่าง€ 20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "ที่เร็วที่สุด - เพียงสําหรับการทําธุรกรรมด้านล่าง€ 30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -945,7 +953,7 @@
   "@payBroadcastFailed": {
     "description": "Error when transaction broadcast fails"
   },
-  "translationWarningDescription": "การแปลส่วนใหญ่ในแอปนี้ถูกสร้างขึ้นโดยใช้ AI และอาจมีการเปลี่ยนแปลง หากคุณสังเกตเห็นข้อผิดพลาดใด ๆ หรือต้องช่วยปรับปรุงการแปลคุณสามารถมีส่วนร่วมผ่านแพลตฟอร์มพันธมิตรของเรา.",
+  "translationWarningDescription": "การแปลส่วนใหญ่ในแอปนี้สร้างขึ้นโดยใช้ AI และอาจมีข้อผิดพลาด หากคุณพบข้อผิดพลาดหรือต้องการช่วยปรับปรุงการแปล คุณสามารถส่งการแก้ไขได้ที่คลัง GitHub ของเรา",
   "@translationWarningDescription": {
     "description": "Description explaining that translations are AI-generated and may be inaccurate"
   },
@@ -2531,7 +2539,7 @@
   "@payName": {
     "description": "Label for name field"
   },
-  "appStartupErrorMessage": "ผู้ใช้สามารถเริ่มต้น ลองหยุดแอปและเริ่มต้น หากข้อผิดพลาดยังคงมีรายงานเพื่อสนับสนุนและแชร์บันทึกของคุณ.",
+  "appStartupErrorMessage": "แอปไม่สามารถเริ่มต้นได้ ลองปิดแอปทั้งหมดแล้วเปิดใหม่อีกครั้ง หากยังมีปัญหา กรุณาติดต่อฝ่ายสนับสนุนและส่งบันทึกของคุณ",
   "@appStartupErrorMessage": {
     "description": "Error message shown when app startup fails"
   },
@@ -4733,6 +4741,10 @@
   "@sendErrorSwapCreationFailed": {
     "description": "Error when swap creation fails"
   },
+  "sendErrorHardwareWalletCannotSwap": "ไม่สามารถใช้กระเป๋าเงินฮาร์ดแวร์สำหรับการแลกเปลี่ยนได้",
+  "@sendErrorHardwareWalletCannotSwap": {
+    "description": "Error when user tries to continue a swap send with a Bitcoin hardware wallet"
+  },
   "arkNoBalanceData": "ไม่มีข้อมูล",
   "@arkNoBalanceData": {
     "description": "Message shown when Ark balance data is not available"
@@ -4863,7 +4875,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "การใช้การทําธุรกรรมขนาดใหญ่ด้านบน€ 20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "การใช้การทําธุรกรรมขนาดใหญ่ด้านบน€ 30,000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -5051,6 +5063,9 @@
     "description": "Status screen title during initialization"
   },
   "payTitle": "ชําระเงิน",
+  "payDescriptionLabel": "รายละเอียดการชำระเงิน (ไม่บังคับ)",
+  "payDescriptionHint": "เพิ่มหมายเหตุสำหรับการชำระเงินนี้",
+  "payPaymentDescription": "รายละเอียดการชำระเงิน",
   "@payTitle": {
     "description": "Screen title for pay feature"
   },
@@ -7773,6 +7788,23 @@
   "@allSeedViewDeleteWarningMessage": {
     "description": "Warning message about deleting a seed"
   },
+  "transactionHistoryTitle": "ประวัติธุรกรรม",
+  "transactionHistoryHeading": "ประวัติธุรกรรม",
+  "exportTransactionsDescription": "ส่งออกธุรกรรมทั้งหมดของกระเป๋าเงิน (Bitcoin, Liquid, Lightning และ swaps) เป็นไฟล์ CSV เลือกกรองตามช่วงวันที่ได้",
+  "exportTransactionsStartDate": "วันที่เริ่มต้น",
+  "exportTransactionsEndDate": "วันที่สิ้นสุด",
+  "exportTransactionsAnyDate": "ใดๆ",
+  "exportTransactionsButton": "ส่งออก CSV",
+  "exportTransactionsSuccess": "ส่งออกธุรกรรมสำเร็จ",
+  "exportTransactionsEmpty": "ไม่มีธุรกรรมให้ส่งออกในช่วงที่เลือก",
+  "exportTransactionsError": "Failed to export transactions",
+  "@exportTransactionsError": {
+    "description": "Message shown when an unexpected error occurs during CSV export"
+  },
+  "exportTransactionsInvalidDateRange": "วันที่เริ่มต้นต้องอยู่ก่อนวันที่สิ้นสุด",
+  "@exportTransactionsInvalidDateRange": {
+    "description": "Message shown when start date is after end date"
+  },
   "bip329LabelsTitle": "BIP329 ป้าย",
   "@bip329LabelsTitle": {
     "description": "Title for BIP329 labels page"
@@ -10364,6 +10396,7 @@
     "description": "Confirm button label in advanced options"
   },
   "transactionDetailLabelOrderNumber": "ราคา",
+  "transactionDetailLabelPaymentDescription": "รายละเอียดการชำระเงิน",
   "@transactionDetailLabelOrderNumber": {
     "description": "Label for order number"
   },
@@ -11971,6 +12004,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ออกอากาศ ...",
+  "broadcastSignedTxBroadcastError": "ไม่สามารถบรอดแคสต์ธุรกรรมได้",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12580,5 +12614,71 @@
   "legacyStorageAcceptRisksCheckbox": "ฉันยอมรับความเสี่ยงของการไม่สำรองข้อมูล",
   "legacyStorageHasBackupImportantBody": "โปรดอย่าข้ามขั้นตอนนี้ เว้นแต่คุณจำเป็นต้องใช้กระเป๋าเงินอย่างเร่งด่วน หรือกำลังรอให้สวอปเสร็จสมบูรณ์",
   "legacyStorageRiskAckButtonHasBackup": "ฉันเข้าใจความเสี่ยง",
-  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again."
+  "walletSetupErrorTryAgain": "Something went wrong setting up your wallet. Please try again.",
+  "transactionSwapOpenWithin24Hours": "เปิดแอปภายใน 24 ชั่วโมงเพื่อทำสว็อปของคุณให้เสร็จสมบูรณ์",
+  "importMnemonicDuplicateError": "วลีช่วยจำนี้มีอยู่แล้ว",
+  "transactionStatusPayjoinCompleted": "Payjoin เสร็จสิ้นแล้ว",
+  "coreScreensResolvingInputs": "กำลังตรวจสอบอินพุตธุรกรรม...",
+  "coreScreensFeeRateLabel": "อัตราค่าธรรมเนียม",
+  "coreScreensFeeRateValue": "{rate} sat/vB",
+  "coreScreensChangeOutputUnknown": "ไม่ทราบเอาต์พุตทอน — แสดงเอาต์พุตทั้งหมดเท่าเทียมกัน",
+  "coreScreensUnknown": "ไม่ทราบ",
+  "coreScreensFetchFailed": "ไม่สามารถดึงธุรกรรม {txid} จาก Electrum",
+  "coreScreensInputResolutionFailed": "ไม่พบอินพุต: เอาต์พุต {vout} ของ {parentTxId} ไม่มีอยู่",
+  "coreScreensParseFailed": "วิเคราะห์ธุรกรรมล้มเหลว: {message}",
+  "coreScreensUnexpectedError": "ข้อผิดพลาดที่ไม่คาดคิด: {message}",
+  "coreScreensNoServersAvailable": "ไม่มีเซิร์ฟเวอร์ Electrum ที่ใช้ได้",
+  "addressViewerTitle": "ที่อยู่",
+  "viewerTapToCopy": "แตะเพื่อคัดลอก",
+  "viewerViewInExplorer": "ดูในเอ็กซ์พลอเรอร์",
+  "transactionViewerTitle": "รหัสธุรกรรม",
+  "invoiceViewerTitle": "ใบแจ้งหนี้",
+  "viewerCopyLink": "คัดลอกลิงก์",
+  "recipientsFieldSinpePhoneNumberHint": "8 หลักโดยไม่มีรหัสประเทศ",
+  "recipientsCopDocCcRecipientNumber": "หมายเลข cédula ของผู้รับ",
+  "recipientsCopDocCeRecipientNumber": "หมายเลข cédula de extranjería ของผู้รับ",
+  "recipientsCopDocNitRecipientNumber": "หมายเลขประจำตัวผู้เสียภาษีของผู้รับ",
+  "recipientsCopDocPassportRecipientNumber": "หมายเลขหนังสือเดินทางของผู้รับ",
+  "recipientsCopDocTiRecipientNumber": "หมายเลขบัตรประจำตัวของผู้รับ",
+  "recipientsCopDocRegistroCivilRecipientNumber": "หมายเลขทะเบียนราษฎรของผู้รับ",
+  "recipientsValidationSinpePhoneCountryCode": "ลบรหัสประเทศ (+506) ป้อนเฉพาะหมายเลข 8 หลัก",
+  "recipientsValidationSinpePhoneInvalidChars": "ใช้ตัวเลขเท่านั้น (ไม่ใช้ตัวอักษรหรือสัญลักษณ์)",
+  "recipientsValidationSinpePhoneTooShort": "ป้อนตัวเลขทั้ง 8 หลักของหมายเลขโทรศัพท์",
+  "recipientsFieldDocumentType": "ประเภทบัตรของผู้รับ",
+  "recipientsFieldDocumentNumberHint": "ป้อนหมายเลขบัตรของผู้รับ",
+  "recipientsValidationSinpePhone": "ป้อนหมายเลขโทรศัพท์คอสตาริกาที่ถูกต้อง 8 หลักโดยไม่มีรหัสประเทศ",
+  "homeActionBuy": "ซื้อ",
+  "homeActionSell": "ขาย",
+  "homeActionPay": "จ่าย",
+  "homeActionTransfer": "โอน",
+  "backupCardTitle": "ปกป้องบิตคอยน์ของคุณ",
+  "backupCardSubtitle": "สำรองข้อมูลกระเป๋าเงินของคุณตอนนี้",
+  "mempoolCustomServerNoSsl": "ไม่มี SSL",
+  "autoswapTargetBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีเป้าหมาย",
+  "autoswapMaximumBalanceLabel": "ยอดคงเหลือกระเป๋าเงินทันทีสูงสุด",
+  "recoverbullServerConfirmTitle": "เซิร์ฟเวอร์กู้คืนวอลต์",
+  "recoverbullServerUsingDefault": "กำลังใช้เซิร์ฟเวอร์เริ่มต้น",
+  "recoverbullServerUsingCustom": "กำลังใช้เซิร์ฟเวอร์ที่กำหนดเอง",
+  "recoverbullServerUrlLabel": "URL เซิร์ฟเวอร์:",
+  "recoverbullServerCustomWarning": "คุณกำลังใช้เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง โปรดตรวจสอบให้แน่ใจว่าคุณเชื่อถือเซิร์ฟเวอร์นี้",
+  "recoverbullServerTorNotice": "เราจะเชื่อมต่อกับเซิร์ฟเวอร์นี้ผ่าน Tor",
+  "recoverbullLearnMore": "เรียนรู้เพิ่มเติมเกี่ยวกับ Recoverbull",
+  "recoverbullSettingsTitle": "การตั้งค่า Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL เซิร์ฟเวอร์คีย์",
+  "recoverbullSettingsEdit": "แก้ไข",
+  "recoverbullSettingsCancel": "ยกเลิก",
+  "recoverbullSettingsSave": "บันทึก",
+  "recoverbullSettingsUrlRequired": "ต้องระบุ URL",
+  "recoverbullSettingsUrlInvalid": "URL ไม่ถูกต้อง",
+  "recoverbullSettingsUrlMustBeHttp": "URL ต้องเป็น HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL ต้องลงท้ายด้วย .onion",
+  "onboardingAdvancedOptionsTitle": "ตัวเลือกขั้นสูง",
+  "onboardingAdvancedOptionsDescription": "กำหนดการตั้งค่าขั้นสูงก่อนสร้างหรือกู้คืนกระเป๋าเงินของคุณ",
+  "onboardingAdvancedOptionsCustomElectrum": "เซิร์ฟเวอร์ Electrum ที่กำหนดเอง",
+  "onboardingAdvancedOptionsCustomMempool": "เซิร์ฟเวอร์ Mempool ที่กำหนดเอง",
+  "onboardingAdvancedOptionsCustomRecoverbull": "เซิร์ฟเวอร์ Recoverbull ที่กำหนดเอง",
+  "onboardingAdvancedOptionsFooter": "คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ภายหลังในการตั้งค่าแอป",
+  "onboardingAdvancedOptionsDone": "เสร็จสิ้น",
+  "appStartupContactSupportMessage": "ติดต่อฝ่ายสนับสนุนที่ app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox รองรับเฉพาะบน Android เท่านั้น"
 }

@@ -1,4 +1,18 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+
+class _PullToRefreshScrollBehavior extends MaterialScrollBehavior {
+  const _PullToRefreshScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => const {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.stylus,
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.unknown,
+  };
+}
 
 /// Pull-to-refresh wrapper that centers the spinner on the screen so it
 /// never overlaps the AppBar. Behavior parity is the goal — every screen
@@ -39,11 +53,14 @@ class BBRefreshIndicator extends StatelessWidget {
     // The displacement is left at its native value to preserve drag feel.
     final screenHeight = MediaQuery.sizeOf(context).height;
     final offset = (screenHeight * 0.40 - 60).clamp(0.0, screenHeight);
-    return RefreshIndicator(
-      key: indicatorKey,
-      edgeOffset: offset,
-      onRefresh: onRefresh,
-      child: child,
+    return ScrollConfiguration(
+      behavior: const _PullToRefreshScrollBehavior(),
+      child: RefreshIndicator(
+        key: indicatorKey,
+        edgeOffset: offset,
+        onRefresh: onRefresh,
+        child: child,
+      ),
     );
   }
 }

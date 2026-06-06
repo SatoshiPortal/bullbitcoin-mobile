@@ -182,6 +182,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
 
     final walletSelectionState = amountInputState.toWalletSelectionState(
       amount: fiatAmount,
+      paymentDescription: event.paymentDescription,
     );
     emit(walletSelectionState);
   }
@@ -270,6 +271,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         network: event.wallet.isLiquid
             ? OrderBitcoinNetwork.liquid
             : OrderBitcoinNetwork.bitcoin,
+        paymentDescription: walletSelectionState.paymentDescription,
       );
 
       if (!event.wallet.isLiquid) {
@@ -345,6 +347,7 @@ class PayBloc extends Bloc<PayEvent, PayState> {
         orderAmount: walletSelectionState.amount,
         recipientId: walletSelectionState.selectedRecipient.id,
         network: event.network,
+        paymentDescription: walletSelectionState.paymentDescription,
       );
 
       // Proceed to payment state

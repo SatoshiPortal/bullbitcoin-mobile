@@ -181,7 +181,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
 
   Future<void> addAttachment() async {
     try {
-      emit(state.copyWith(errorPermissionDenied: ''));
+      emit(state.copyWith(errorCode: null));
 
       if (Platform.isAndroid) {
         final hasPermission = await _requestPhotoLibraryPermission();
@@ -192,13 +192,15 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
               storageStatus.isPermanentlyDenied) {
             emit(
               state.copyWith(
-                errorPermissionDenied:
-                    'Permission denied. Please grant photo library access in Settings.',
+                errorCode:
+                    SupportChatErrorCode.permissionDeniedNeedsSettings,
               ),
             );
             return;
           }
-          emit(state.copyWith(errorPermissionDenied: 'Permission denied.'));
+          emit(
+            state.copyWith(errorCode: SupportChatErrorCode.permissionDenied),
+          );
           return;
         }
       }
@@ -262,23 +264,16 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
           errorMessage.contains('denied')) {
         emit(
           state.copyWith(
-            errorPermissionDenied:
-                'Permission denied. Please grant photo library access in Settings.',
+            errorCode: SupportChatErrorCode.permissionDeniedNeedsSettings,
           ),
         );
       } else {
         emit(
-          state.copyWith(
-            errorPermissionDenied: 'Failed to pick files. Please try again.',
-          ),
+          state.copyWith(errorCode: SupportChatErrorCode.pickFilesFailed),
         );
       }
     } catch (e) {
-      emit(
-        state.copyWith(
-          errorPermissionDenied: 'Failed to pick files. Please try again.',
-        ),
-      );
+      emit(state.copyWith(errorCode: SupportChatErrorCode.pickFilesFailed));
     }
   }
 
@@ -294,7 +289,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
 
   Future<void> attachLogs() async {
     try {
-      emit(state.copyWith(errorPermissionDenied: ''));
+      emit(state.copyWith(errorCode: null));
 
       final attachment = await _createLogAttachmentUsecase.execute();
 
@@ -305,11 +300,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          errorPermissionDenied: 'Failed to attach logs. Please try again.',
-        ),
-      );
+      emit(state.copyWith(errorCode: SupportChatErrorCode.attachLogsFailed));
     }
   }
 
@@ -336,7 +327,7 @@ class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
         emit(
           state.copyWith(
             loadingAttachmentId: null,
-            errorLoadingAttachment: 'Failed to fetch file data',
+            errorCode: SupportChatErrorCode.fetchFileDataFailed,
           ),
         );
         return;
