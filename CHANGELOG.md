@@ -2,10 +2,67 @@
 
 All notable changes to Bull Bitcoin Mobile will be documented in this file.
 
-## [X.X.X] - To be released
+---
+
+## [6.11.0] - 2026-06-06
+
+### New Features
+
+#### Your Transactions
+- **Export your transaction history to CSV**: You can now download your transaction history as a CSV file, filtered by a date range — handy for your own records and accounting. The export covers your on-chain, Lightning, swap, and payjoin activity.
+- **Clearer transaction and receive details**: The confirmation screen before you broadcast a transaction now shows the full amount and fees, even for transactions signed on a separate device. Addresses and transaction IDs can be tapped to expand and long-pressed to copy, with quick links to a block explorer. When you receive on-chain, the wallet now correctly uses the exact amount you asked for.
+
+#### Payments & Exchange
+- **Add a note to a payment**: When you send a payment, you can now add a description so you remember what it was for.
+- **More access with light verification**: If you have light or limited identity verification, you can now use the exchange in Canada, Costa Rica, and Argentina. The SEPA bank transfer limit has also been raised from €20,000 to €30,000.
+
+#### Swaps
+- **Swap expiry reminder**: When you start a swap, the app now reminds you to finish it within 24 hours so you don't miss the window and trigger an automatic refund.
+- **Swaps finish on their own**: The unreliable "retry swap claim" button is gone — the app now retries claiming your swap automatically in the background.
+
+#### Wallet & Display
+- **Bitcoin price loading placeholder**: While the home screen is still fetching the Bitcoin price, you now see a loading placeholder instead of a misleading "0".
+- **Notifications stay out of your way**: In-app notifications now appear at the top of the screen and can be swiped away in any direction, so they no longer cover the buttons you're trying to tap.
+- **Easier number entry on iPhone**: Number keypads now have a "Done" button across the send, receive, buy, sell, swap, fee, and settings screens, so you can dismiss the keyboard easily.
+
+#### Privacy
+- **Your custom Electrum server is always respected**: If you've set your own Electrum server, the wallet now always uses it and clearly tells you when it can't connect, instead of quietly falling back to the default servers behind your back.
+
+#### Platform
+- **Smaller app download**: The app is noticeably smaller to download and update — roughly 270 MB instead of 340 MB.
+- **Android beta tester channel**: Android users can now install a separate "Bull Beta" app, with its own icon and a BETA banner, to try upcoming features without affecting their main wallet.
+- **Linux desktop (experimental)**: BULL can now run on Linux desktop computers, including pull-to-refresh with a mouse or trackpad. This is an early preview aimed at testers.
+
+#### Languages
+- **New and improved translations**: Added Assamese and improved Hindi, Bengali, and Hinglish. Updated German throughout. Improved Simplified Chinese across the wallet, payment, onboarding, backup, deletion, and import screens. Filled in missing translations so more of the app shows in your chosen language.
+- **Suggest translation fixes on GitHub**: If you spot a wording issue, the app now points you to GitHub to propose a fix.
 
 ### Bug Fixes
-- **Transaction note now saved to database** ([#1173](https://github.com/SatoshiPortal/bullbitcoin-mobile/issues/1173)): Fixed an issue where notes added during a send were stored in state but never persisted. Notes embedded in Bolt11 invoice descriptions or BIP21 label parameters are also automatically pre-populated if the user has not set one manually
+
+#### Sending & Receiving
+- **Your chosen wallet stays chosen**: Selecting your cold wallet to send from no longer silently switches back to your hot wallet once you enter an amount.
+- **Send your full balance through a swap**: Fixed an error that prevented sending your entire balance when converting Liquid Bitcoin to on-chain Bitcoin.
+- **Expired Lightning invoices are caught early**: If a Lightning invoice has already expired, the app now tells you right away instead of letting you try to pay it.
+- **Clear messages when a send fails**: If broadcasting a transaction fails (for example, it was already confirmed, the fee is too low, or the network is unreachable), you now see a clear error instead of the button silently resetting. The action buttons also stay pinned at the bottom of the screen.
+- **Smoother transfers**: You can now choose to receive an exact amount when transferring with Liquid, you get clearer messages when your balance is too low, and the Continue button stays disabled until everything is filled in correctly.
+- **QR codes scan reliably**: QR codes are now readable by a Jade hardware wallet even in dark mode, and Lightning invoice QR codes are shown in uppercase so scanners read them more reliably.
+- **No accidental duplicate wallets**: If you try to import a recovery phrase you've already added, the app now warns you instead of creating a second copy.
+
+#### Exchange & Payouts
+- **Better payouts**: SINPE phone numbers are now checked instantly with clearer error messages, recipient ID fields have clearer labels, and referral payouts now show their correct amount instead of 0 sats.
+- **More reliable buying, selling, and withdrawals**: Fixed cases where these could show an error or hang, and added a timeout so they fail gracefully instead of getting stuck.
+- **Cleaner transaction filters**: Removed the "balance adjustment" option that wasn't useful to filter by.
+
+#### Wallet Sync & Status
+- **More reliable refreshing**: Your balances and transactions now refresh more dependably — you see a spinner when the app opens and after actions like sending or swapping, the wallet updates automatically when you return to the home screen, and it no longer wastes data syncing in the background.
+- **Autoswap shows as active**: When you turn on autoswap, the home screen now correctly shows that it's active.
+- **Consistent payjoin status**: A payjoin transaction's status in the list now matches the status shown on its details screen.
+- **Steadier startup**: Fixed startup issues that could cause settings or connections to load incorrectly, and an initialization error that could make some actions fail.
+
+#### Appearance & Layout
+- **Send and Receive buttons sit correctly** at the bottom of the home and wallet screens.
+- **Dark mode fix**: The "View details" button text is no longer invisible in dark mode while a payment is in progress.
+- **Cleaner startup screen**: Removed an error caused by a button tooltip and fixed grammar in the startup error message.
 
 ---
 
