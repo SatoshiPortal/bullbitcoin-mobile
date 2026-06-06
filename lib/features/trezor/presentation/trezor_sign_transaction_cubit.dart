@@ -1,0 +1,27 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/trezor/application/usecases/sign_psbt_trezor_usecase.dart';
+import 'package:bb_mobile/features/trezor/presentation/trezor_operation_base_cubit.dart';
+
+class TrezorSignTransactionCubit extends TrezorOperationBaseCubit<String> {
+  final SignPsbtTrezorUsecase _signPsbt;
+
+  TrezorSignTransactionCubit({required SignPsbtTrezorUsecase signPsbt})
+    : _signPsbt = signPsbt;
+
+  Future<void> sign({
+    required String psbt,
+    required bool isTestnet,
+    required ScriptType scriptType,
+  }) {
+    return runOperation(() async {
+      final signed = await _signPsbt.execute(
+        psbtBase64: psbt,
+        isTestnet: isTestnet,
+        scriptType: scriptType,
+      );
+      // Project to the broadcast-ready hex String — that's what
+      // SendCubit.updateSignedBitcoinTx expects.
+      return signed.serializedTxHex;
+    });
+  }
+}

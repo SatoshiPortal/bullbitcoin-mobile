@@ -3,20 +3,17 @@ import 'package:bb_mobile/features/trezor/application/application_errors.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TrezorOperationCubit extends Cubit<TrezorOperationState> {
-  TrezorOperationCubit() : super(const TrezorOperationState());
+abstract class TrezorOperationBaseCubit<T>
+    extends Cubit<TrezorOperationState<T>> {
+  TrezorOperationBaseCubit() : super(TrezorOperationState<T>());
 
-  /// Runs an async operation that triggers a Trezor Connect deeplink and
-  /// awaits the callback. Transitions: launching -> waitingForSuite ->
-  /// (success | error).
-  Future<void> executeOperation(Future<dynamic> Function() operation) async {
+  Future<void> runOperation(Future<T> Function() operation) async {
     emit(
       state.copyWith(
         status: TrezorOperationStatus.launching,
         errorMessage: null,
       ),
     );
-
     try {
       emit(state.copyWith(status: TrezorOperationStatus.waitingForSuite));
       final result = await operation();
@@ -24,7 +21,6 @@ class TrezorOperationCubit extends Cubit<TrezorOperationState> {
         state.copyWith(status: TrezorOperationStatus.success, result: result),
       );
     } on TrezorApplicationError catch (e) {
-      // Expected paths (user rejected, suite not installed, timeout)
       log.warning('Trezor operation failed', error: e);
       emit(
         state.copyWith(
@@ -49,7 +45,7 @@ class TrezorOperationCubit extends Cubit<TrezorOperationState> {
     }
   }
 
-  void reset() => emit(const TrezorOperationState());
+  void reset() => emit(TrezorOperationState<T>());
 
   /// Maps an application-layer error to a user-facing message.
   ///

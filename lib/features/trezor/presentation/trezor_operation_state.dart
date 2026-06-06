@@ -12,14 +12,14 @@ enum TrezorOperationStatus {
 }
 
 @freezed
-sealed class TrezorOperationState with _$TrezorOperationState {
+abstract class TrezorOperationState<T> with _$TrezorOperationState<T> {
+  const TrezorOperationState._();
+
   const factory TrezorOperationState({
     @Default(TrezorOperationStatus.initial) TrezorOperationStatus status,
     String? errorMessage,
-    dynamic result,
-  }) = _TrezorOperationState;
-
-  const TrezorOperationState._();
+    T? result,
+  }) = _TrezorOperationState<T>;
 
   bool get isInitial => status == TrezorOperationStatus.initial;
   bool get isLaunching => status == TrezorOperationStatus.launching;

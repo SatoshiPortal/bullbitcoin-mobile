@@ -3,9 +3,8 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/verify_address_trezor_usecase.dart';
-import 'package:bb_mobile/features/trezor/presentation/trezor_operation_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
+import 'package:bb_mobile/features/trezor/presentation/trezor_verify_address_cubit.dart';
 import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +27,8 @@ class TrezorVerifyAddressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => locator<TrezorOperationCubit>(),
+    return BlocProvider<TrezorVerifyAddressCubit>(
+      create: (_) => locator<TrezorVerifyAddressCubit>(),
       child: _VerifyAddressView(params: params),
     );
   }
@@ -52,7 +51,7 @@ class _VerifyAddressView extends StatelessWidget {
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
-      body: BlocConsumer<TrezorOperationCubit, TrezorOperationState>(
+      body: BlocConsumer<TrezorVerifyAddressCubit, TrezorOperationState<bool>>(
         listener: (context, state) {
           if (state.isSuccess) {
             SnackBarUtils.showSnackBar(context, 'Address verified on Trezor');
@@ -152,7 +151,7 @@ class _VerifyAddressView extends StatelessWidget {
           ),
         if (state.isError)
           BBButton.big(
-            onPressed: () => context.read<TrezorOperationCubit>().reset(),
+            onPressed: () => context.read<TrezorVerifyAddressCubit>().reset(),
             label: 'Try Again',
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
@@ -228,19 +227,16 @@ class _VerifyAddressView extends StatelessWidget {
   // ───────────────────────── Actions ─────────────────────────
 
   Future<void> _onVerify(BuildContext context) async {
-    final cubit = context.read<TrezorOperationCubit>();
     try {
-      await cubit.executeOperation(() async {
-        final p = params;
-        if (p == null) {
-          throw Exception('Missing address parameters');
-        }
-        return await locator<VerifyAddressTrezorUsecase>().execute(
-          address: p.address,
-          derivationPath: p.derivationPath,
-          scriptType: p.scriptType,
-        );
-      });
+      final p = params;
+      if (p == null) {
+        throw Exception('Missing address parameters');
+      }
+      await context.read<TrezorVerifyAddressCubit>().verify(
+        address: p.address,
+        derivationPath: p.derivationPath,
+        scriptType: p.scriptType,
+      );
     } catch (_) {
       // Cubit already emitted an error state; BlocConsumer listener
       // shows the snackbar. Swallow to prevent uncaught futures.

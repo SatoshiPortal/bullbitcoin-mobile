@@ -7,9 +7,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/public/import_watch_only_facade.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/get_trezor_accounts_usecase.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/prepare_trezor_import_usecase.dart';
-import 'package:bb_mobile/features/trezor/presentation/trezor_operation_cubit.dart';
+import 'package:bb_mobile/features/trezor/presentation/trezor_import_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +28,8 @@ class TrezorImportLandingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => locator<TrezorOperationCubit>(),
+    return BlocProvider<TrezorImportCubit>(
+      create: (_) => locator<TrezorImportCubit>(),
       child: const _TrezorImportLandingView(),
     );
   }
@@ -61,41 +59,45 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
-      body: BlocConsumer<TrezorOperationCubit, TrezorOperationState>(
-        listener: (context, state) {
-          if (state.isSuccess && state.result is WatchOnlyDescriptorEntity) {
-            // Reset BEFORE navigating so a back-nav + retry starts fresh
-            // and the pushed-onto screen never observes a stale "success"
-            // state from this cubit. Matches `LedgerActionScreen`'s order.
-            context.read<TrezorOperationCubit>().reset();
-            context.pushNamed(
-              ImportWatchOnlyWalletRoutes.import.name,
-              extra: state.result as WatchOnlyDescriptorEntity,
-            );
-          } else if (state.isError) {
-            SnackBarUtils.showSnackBar(
-              context,
-              _getErrorMessage(context, state.errorMessage),
-            );
-          }
-        },
-        builder: (context, state) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: Center(
-              child: Column(
-                children: [
-                  const Gap(32),
-                  _buildMainContent(context, state),
-                  const Gap(32),
-                  _buildActionButtons(context, state),
-                ],
+      body:
+          BlocConsumer<
+            TrezorImportCubit,
+            TrezorOperationState<WatchOnlyDescriptorEntity>
+          >(
+            listener: (context, state) {
+              if (state.isSuccess && state.result != null) {
+                // Reset BEFORE navigating so a back-nav + retry starts fresh
+                // and the pushed-onto screen never observes a stale "success"
+                // state from this cubit. Matches `LedgerActionScreen`'s order.
+                context.read<TrezorImportCubit>().reset();
+                context.pushNamed(
+                  ImportWatchOnlyWalletRoutes.import.name,
+                  extra: state.result as WatchOnlyDescriptorEntity,
+                );
+              } else if (state.isError) {
+                SnackBarUtils.showSnackBar(
+                  context,
+                  _getErrorMessage(context, state.errorMessage),
+                );
+              }
+            },
+            builder: (context, state) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const Gap(32),
+                      _buildMainContent(context, state),
+                      const Gap(32),
+                      _buildActionButtons(context, state),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
     );
   }
 
@@ -171,7 +173,7 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
           ),
         if (state.isError)
           BBButton.big(
-            onPressed: () => context.read<TrezorOperationCubit>().reset(),
+            onPressed: () => context.read<TrezorImportCubit>().reset(),
             label: 'Try Again',
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
@@ -339,25 +341,10 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
   }
 
   Future<void> _startImport(BuildContext context) async {
-    final cubit = context.read<TrezorOperationCubit>();
-    final scriptType = _selectedScriptType;
     try {
-      await cubit.executeOperation(() async {
-        // Fetch account 0 for the selected derivation family. The master
-        // fingerprint is parsed from the returned descriptor — no second
-        // deeplink call for path "m" (Trezor refuses that).
-        final accounts = await locator<GetTrezorAccountsUsecase>().execute(
-          startIndex: 0,
-          count: 1,
-          scriptType: scriptType,
-        );
-        if (accounts.isEmpty) {
-          throw Exception('Trezor returned no accounts');
-        }
-        return await locator<PrepareTrezorImportUsecase>().execute(
-          account: accounts.first,
-        );
-      });
+      await context.read<TrezorImportCubit>().startImport(
+        scriptType: _selectedScriptType,
+      );
     } catch (_) {
       // Cubit already emitted an error state; the BlocConsumer listener
       // shows the snackbar. Swallow here to prevent uncaught futures.

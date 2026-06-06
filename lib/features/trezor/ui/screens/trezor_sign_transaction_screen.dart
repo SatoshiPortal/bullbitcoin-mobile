@@ -3,9 +3,8 @@ import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/sign_psbt_trezor_usecase.dart';
-import 'package:bb_mobile/features/trezor/presentation/trezor_operation_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
+import 'package:bb_mobile/features/trezor/presentation/trezor_sign_transaction_cubit.dart';
 import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -29,8 +28,8 @@ class TrezorSignTransactionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => locator<TrezorOperationCubit>(),
+    return BlocProvider<TrezorSignTransactionCubit>(
+      create: (_) => locator<TrezorSignTransactionCubit>(),
       child: _SignTransactionView(params: params),
     );
   }
@@ -53,34 +52,38 @@ class _SignTransactionView extends StatelessWidget {
           onBack: () => Navigator.of(context).pop(),
         ),
       ),
-      body: BlocConsumer<TrezorOperationCubit, TrezorOperationState>(
-        listener: (context, state) {
-          if (state.isSuccess && state.result is String) {
-            context.pop(state.result as String);
-          } else if (state.isError) {
-            SnackBarUtils.showSnackBar(
-              context,
-              state.errorMessage ?? 'Signing failed',
-            );
-          }
-        },
-        builder: (context, state) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: Center(
-              child: Column(
-                children: [
-                  const Gap(32),
-                  _buildMainContent(context, state),
-                  const Gap(32),
-                  _buildActionButtons(context, state),
-                ],
+      body:
+          BlocConsumer<
+            TrezorSignTransactionCubit,
+            TrezorOperationState<String>
+          >(
+            listener: (context, state) {
+              if (state.isSuccess && state.result != null) {
+                context.pop(state.result as String);
+              } else if (state.isError) {
+                SnackBarUtils.showSnackBar(
+                  context,
+                  state.errorMessage ?? 'Signing failed',
+                );
+              }
+            },
+            builder: (context, state) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const Gap(32),
+                      _buildMainContent(context, state),
+                      const Gap(32),
+                      _buildActionButtons(context, state),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
     );
   }
 
@@ -147,7 +150,7 @@ class _SignTransactionView extends StatelessWidget {
           ),
         if (state.isError)
           BBButton.big(
-            onPressed: () => context.read<TrezorOperationCubit>().reset(),
+            onPressed: () => context.read<TrezorSignTransactionCubit>().reset(),
             label: 'Try Again',
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
@@ -188,22 +191,16 @@ class _SignTransactionView extends StatelessWidget {
   // ───────────────────────── Actions ─────────────────────────
 
   Future<void> _onStartSigning(BuildContext context) async {
-    final cubit = context.read<TrezorOperationCubit>();
     try {
-      await cubit.executeOperation(() async {
-        final p = params;
-        if (p == null) {
-          throw Exception('Missing transaction parameters');
-        }
-        final signed = await locator<SignPsbtTrezorUsecase>().execute(
-          psbtBase64: p.psbt,
-          isTestnet: p.isTestnet,
-          scriptType: p.scriptType,
-        );
-        // Project to the broadcast-ready hex String — that's what
-        // SendCubit.updateSignedBitcoinTx expects.
-        return signed.serializedTxHex;
-      });
+      final p = params;
+      if (p == null) {
+        throw Exception('Missing transaction parameters');
+      }
+      context.read<TrezorSignTransactionCubit>().sign(
+        psbt: p.psbt,
+        isTestnet: p.isTestnet,
+        scriptType: p.scriptType,
+      );
     } catch (_) {
       // Cubit already emitted error state; listener shows snackbar.
     }
