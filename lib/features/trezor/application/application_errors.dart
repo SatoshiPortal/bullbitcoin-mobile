@@ -4,6 +4,8 @@ sealed class TrezorApplicationError implements Exception {
   const factory TrezorApplicationError.userRejected() = TrezorUserRejected;
   const factory TrezorApplicationError.suiteNotInstalled() =
       TrezorSuiteNotInstalled;
+  const factory TrezorApplicationError.suiteUnresponsive() =
+      TrezorSuiteUnresponsive;
   const factory TrezorApplicationError.timeout() = TrezorTimeout;
   const factory TrezorApplicationError.addressMismatch({
     required String expected,
@@ -20,6 +22,10 @@ final class TrezorUserRejected extends TrezorApplicationError {
 
 final class TrezorSuiteNotInstalled extends TrezorApplicationError {
   const TrezorSuiteNotInstalled();
+}
+
+final class TrezorSuiteUnresponsive extends TrezorApplicationError {
+  const TrezorSuiteUnresponsive();
 }
 
 final class TrezorTimeout extends TrezorApplicationError {
