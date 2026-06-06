@@ -8,19 +8,29 @@ abstract class TrezorOperationBaseCubit<T>
   TrezorOperationBaseCubit() : super(TrezorOperationState<T>());
 
   Future<void> runOperation(Future<T> Function() operation) async {
+    if (isClosed) return;
     emit(
       state.copyWith(
         status: TrezorOperationStatus.launching,
         errorMessage: null,
       ),
     );
+
     try {
+      if (isClosed) return;
       emit(state.copyWith(status: TrezorOperationStatus.waitingForSuite));
+
       final result = await operation();
+
+      // Cubit may have been closed during the await (user navigated
+      // back, app backgrounded, etc.). Don't emit on a dead cubit —
+      // there's no UI listening anyway.
+      if (isClosed) return;
       emit(
         state.copyWith(status: TrezorOperationStatus.success, result: result),
       );
     } on TrezorApplicationError catch (e) {
+      if (isClosed) return;
       log.warning('Trezor operation failed', error: e);
       emit(
         state.copyWith(
@@ -35,6 +45,7 @@ abstract class TrezorOperationBaseCubit<T>
         error: e,
         trace: t,
       );
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: TrezorOperationStatus.error,
