@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/import_watch_only_wallet/watch_only_wallet_entity.dart';
+import 'package:bb_mobile/features/import_watch_only_wallet/public/import_watch_only_facade.dart';
 import 'package:bb_mobile/features/trezor/application/usecases/prepare_trezor_import_usecase.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
 
