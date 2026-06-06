@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se:",
+  "backupWarningLoseReasonLostPhone": "Perder o telefone",
+  "backupWarningLoseReasonDeletedApp": "Excluir o aplicativo",
+  "backupWarningLoseReasonCriticalIssue": "Ocorrer um problema crítico relacionado ao aplicativo ou ao dispositivo",
+  "backupWarningLoseReasonKeystore": "O seu dispositivo invalida o keystore ao alterar a autenticação do ecrã de bloqueio ou do dispositivo",
+  "backupWarningLoseReasonCloudRestore": "Restaurar o seu dispositivo a partir de uma cópia de segurança na nuvem",
+  "backupWarningNoRecovery": "Não há como recuperar sua carteira sem um backup.",
   "translationWarningTitle": "Traduções geradas por IA",
   "translationWarningDescription": "A maioria das traduções neste aplicativo foram geradas usando IA e podem conter imprecisões. Se notar erros ou quiser ajudar a melhorar as traduções, pode submeter uma correção no nosso repositório GitHub.",
   "translationWarningContributeButton": "Ajudar a melhorar traduções",
@@ -190,6 +197,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Receber quantidade exata",
+  "swapInsufficientFunds": "Fundos insuficientes",
   "arkContinueButton": "Continue",
   "ledgerImportButton": "Importação de início",
   "dcaActivate": "Ativar a recuperação",
@@ -218,7 +226,7 @@
   "payServiceFee": "Taxa de serviço",
   "transactionStatusSwapExpired": "Swap Expirou",
   "swapAmountPlaceholder": "0",
-  "fundExchangeMethodInstantSepaSubtitle": "Mais rápido - Apenas para transações abaixo de €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Mais rápido - Apenas para transações abaixo de €30,000",
   "dcaConfirmError": "Algo correu mal",
   "@dcaConfirmError": {
     "placeholders": {
@@ -1587,7 +1595,7 @@
     }
   },
   "dcaFrequencyWeekly": "semana",
-  "fundExchangeMethodRegularSepaSubtitle": "Somente uso para transações maiores acima de €20.000",
+  "fundExchangeMethodRegularSepaSubtitle": "Somente uso para transações maiores acima de €30.000",
   "settingsTelegramLabel": "Telegrama",
   "walletDetailsSignerDeviceNotSupported": "Não suportado",
   "exchangeLandingDisclaimerLegal": "O acesso aos serviços de câmbio será restrito a países onde o Bull Bitcoin pode funcionar legalmente e pode exigir KYC.",
@@ -3972,6 +3980,7 @@
   "swapProgressPendingMessage": "A transferência está em andamento. As transações Bitcoin podem demorar um pouco para confirmar. Podes voltar para casa e esperar.",
   "walletDetailsNetworkLabel": "Rede",
   "broadcastSignedTxBroadcasting": "Transmissão...",
+  "broadcastSignedTxBroadcastError": "Falha ao transmitir a transação",
   "recoverbullSelectRecoverWallet": "Recuperar Carteira",
   "receivePayjoinActivated": "Payjoin ativado",
   "importMnemonicContinue": "Continue",
@@ -4487,10 +4496,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Sem um backup, você perderá o acesso ao seu bitcoin se perder o telefone, excluir o aplicativo ou encontrar um problema crítico relacionado ao aplicativo ou ao dispositivo. Não há como recuperar sua carteira sem um backup.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "SIM",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -4827,5 +4832,39 @@
   "recipientsValidationSinpePhoneCountryCode": "Remova o indicativo do país (+506). Insira apenas o número de 8 dígitos",
   "recipientsValidationSinpePhoneInvalidChars": "Use apenas dígitos (sem letras ou símbolos)",
   "recipientsValidationSinpePhoneTooShort": "Insira os 8 dígitos do número de telefone",
-  "transactionStatusPayjoinCompleted": "Payjoin concluído"
+  "transactionStatusPayjoinCompleted": "Payjoin concluído",
+  "homeActionBuy": "Comprar",
+  "homeActionSell": "Vender",
+  "homeActionPay": "Pagar",
+  "homeActionTransfer": "Transferir",
+  "backupCardTitle": "Proteja os seus bitcoins.",
+  "backupCardSubtitle": "Faça uma cópia de segurança da sua carteira agora.",
+  "mempoolCustomServerNoSsl": "Sem SSL",
+  "autoswapTargetBalanceLabel": "Saldo-alvo da carteira instantânea",
+  "autoswapMaximumBalanceLabel": "Saldo máximo da carteira instantânea",
+  "recoverbullServerConfirmTitle": "Servidor de recuperação do cofre",
+  "recoverbullServerUsingDefault": "A usar o servidor predefinido",
+  "recoverbullServerUsingCustom": "A usar um servidor personalizado",
+  "recoverbullServerUrlLabel": "URL do servidor:",
+  "recoverbullServerCustomWarning": "Está a usar um servidor Recoverbull personalizado. Certifique-se de que confia neste servidor.",
+  "recoverbullServerTorNotice": "Vamos ligar-nos a este servidor através do Tor",
+  "recoverbullLearnMore": "Saber mais sobre o Recoverbull",
+  "recoverbullSettingsTitle": "Definições do Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL do servidor de chaves",
+  "recoverbullSettingsEdit": "Editar",
+  "recoverbullSettingsCancel": "Cancelar",
+  "recoverbullSettingsSave": "Guardar",
+  "recoverbullSettingsUrlRequired": "O URL é obrigatório",
+  "recoverbullSettingsUrlInvalid": "O URL não é válido",
+  "recoverbullSettingsUrlMustBeHttp": "O URL deve ser HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "O URL deve terminar em .onion",
+  "onboardingAdvancedOptionsTitle": "Opções avançadas",
+  "onboardingAdvancedOptionsDescription": "Configure as definições avançadas antes de criar ou recuperar a sua carteira",
+  "onboardingAdvancedOptionsCustomElectrum": "Servidor Electrum personalizado",
+  "onboardingAdvancedOptionsCustomMempool": "Servidor Mempool personalizado",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Servidor Recoverbull personalizado",
+  "onboardingAdvancedOptionsFooter": "Pode alterar estas definições mais tarde nas definições da aplicação",
+  "onboardingAdvancedOptionsDone": "Concluído",
+  "appStartupContactSupportMessage": "Contacte o suporte em app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "A BitBox só é suportada no Android"
 }

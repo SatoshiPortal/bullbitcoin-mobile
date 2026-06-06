@@ -16,7 +16,8 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
   - `make setup` — full first-time setup (clean + deps + build-runner + translations + hooks + ios pods on macOS)
   - `make unit-test` / `make integration-test` / `make test`
   - `make drift-migrations` — after changing Drift schema
-  - `make apk` / `make apk release` — reproducible build
+  - `make android` / `make android release` — reproducible build
+  - `make android beta` — beta tester channel APK (`.beta` applicationId, installs alongside production)
   - `make verify` — verify a built APK matches a published release
   - `make build-runner-watch` — codegen in watch mode during dev
 - **Analyze the whole project, never specific files.** `fvm flutter analyze` (no path arg). CI runs `--fatal-warnings --fatal-infos` ([analyze_and_test.yml](.github/workflows/analyze_and_test.yml)) — match it locally.
@@ -187,6 +188,7 @@ This applies equally to architectural suggestions, tooling, CI tricks, command f
 - Don't put business logic in BLoCs or `/lib/core`.
 - Don't reinvent a widget that already exists in `lib/core/widgets/`.
 - Don't hardcode user-facing strings — use `AppLocalizations`.
+- Don't hard-wrap prose mid-sentence in markdown, comments, PR descriptions, or commit bodies — write each sentence on one continuous line and let the editor soft-wrap. Manual line breaks belong only between paragraphs or list items.
 - Don't add `path:` deps to pubspec.
 - Don't amend or force-push without explicit ask.
 - Don't add `Co-Authored-By`.

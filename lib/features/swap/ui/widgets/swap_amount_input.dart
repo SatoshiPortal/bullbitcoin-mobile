@@ -34,6 +34,9 @@ class SwapAmountInput extends StatelessWidget {
     final amountValidationError = context.select(
       (TransferBloc bloc) => bloc.state.amountValidationError,
     );
+    final isInsufficientBalance = context.select(
+      (TransferBloc bloc) => bloc.state.isInsufficientBalance,
+    );
 
     return Column(
       crossAxisAlignment: .start,
@@ -103,10 +106,10 @@ class SwapAmountInput extends StatelessWidget {
             ),
           ),
         ),
-        if (amountValidationError != null) ...[
+        if (amountValidationError != null || isInsufficientBalance) ...[
           const Gap(8),
           Text(
-            amountValidationError,
+            amountValidationError ?? context.loc.swapInsufficientFunds,
             style: context.font.labelLarge?.copyWith(
               color: context.appColors.error,
             ),

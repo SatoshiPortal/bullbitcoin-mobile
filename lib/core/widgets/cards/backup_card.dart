@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
@@ -34,12 +35,12 @@ class BackupCard extends StatelessWidget {
               crossAxisAlignment: .start,
               children: [
                 BBText(
-                  'Protect your bitcoin.',
+                  context.loc.backupCardTitle,
                   style: context.font.bodyMedium,
                   color: context.appColors.onSecondary,
                 ),
                 BBText(
-                  'Back up your wallet now.',
+                  context.loc.backupCardSubtitle,
                   style: context.font.bodyMedium,
                   color: context.appColors.onSecondary,
                 ),

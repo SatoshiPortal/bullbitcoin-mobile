@@ -31,7 +31,6 @@ import 'package:gap/gap.dart';
 /// - [fiatAmount] — fiat equivalent shown next to the send amount
 /// - [feePriorityWidget] — fee priority selector (e.g. fastest/medium/slow)
 /// - [topWidget] — custom widget shown above the transaction details
-/// - [bottomActions] — action buttons (confirm, broadcast, etc.)
 class TransactionReviewView extends StatelessWidget {
   const TransactionReviewView({
     super.key,
@@ -41,7 +40,6 @@ class TransactionReviewView extends StatelessWidget {
     this.fiatAmount,
     this.feePriorityWidget,
     this.topWidget,
-    this.bottomActions,
   });
 
   /// Optional title displayed at the top.
@@ -64,10 +62,6 @@ class TransactionReviewView extends StatelessWidget {
   /// Optional widget shown above the transaction details (e.g. top area icon).
   final Widget? topWidget;
 
-  /// Widget slot for action buttons (confirm, broadcast, etc.)
-  /// placed at the bottom of the screen.
-  final Widget? bottomActions;
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionReviewCubit, TransactionReviewState>(
@@ -83,7 +77,6 @@ class TransactionReviewView extends StatelessWidget {
             fiatAmount: fiatAmount,
             feePriorityWidget: feePriorityWidget,
             topWidget: topWidget,
-            bottomActions: bottomActions,
           ),
           TransactionReviewErrorState(:final error) => _ErrorView(error: error),
         };
@@ -171,7 +164,6 @@ class _LoadedView extends StatelessWidget {
     this.fiatAmount,
     this.feePriorityWidget,
     this.topWidget,
-    this.bottomActions,
   });
 
   final ReviewableTransaction transaction;
@@ -181,7 +173,6 @@ class _LoadedView extends StatelessWidget {
   final String? fiatAmount;
   final Widget? feePriorityWidget;
   final Widget? topWidget;
-  final Widget? bottomActions;
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +189,6 @@ class _LoadedView extends StatelessWidget {
             fiatAmount: fiatAmount,
             feePriorityWidget: feePriorityWidget,
           ),
-          if (bottomActions != null) ...[const Gap(24), bottomActions!],
         ],
       ),
     );

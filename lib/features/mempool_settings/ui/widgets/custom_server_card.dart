@@ -75,7 +75,9 @@ class CustomServerCard extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              customServer!.enableSsl ? 'SSL' : 'No SSL',
+                              customServer!.enableSsl
+                                  ? context.loc.mempoolCustomServerSsl
+                                  : context.loc.mempoolCustomServerNoSsl,
                               style: context.font.bodySmall?.copyWith(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,

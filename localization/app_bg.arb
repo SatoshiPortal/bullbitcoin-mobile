@@ -1,4 +1,12 @@
 {
+  "backupWarningDescription": "Без резервно копие ще загубите достъп до своите биткоини, ако:",
+  "backupWarningLoseReasonLostPhone": "Загубите телефона си",
+  "backupWarningLoseReasonDeletedApp": "Изтриете приложението",
+  "backupWarningLoseReasonCriticalIssue": "Възникне критичен проблем с приложението или устройството",
+  "backupWarningLoseReasonKeystore": "Устройството анулира keystore при смяна на заключения екран или удостоверяването на устройството",
+  "backupWarningLoseReasonCloudRestore": "Възстановяване на устройството от резервно копие в облака",
+  "backupWarningNoRecovery": "Без резервно копие няма начин да възстановите портфейла си.",
+  "broadcastSignedTxBroadcastError": "Неуспешно излъчване на транзакцията",
   "translationWarningTitle": "Преводи, генерирани от ИИ",
   "@translationWarningTitle": {
     "description": "Title for the AI translation warning bottom sheet"
@@ -682,6 +690,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Получете точната сума",
+  "swapInsufficientFunds": "Недостатъчни средства",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -746,7 +755,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Най-бързият - само за транзакции до €20 000",
+  "fundExchangeMethodInstantSepaSubtitle": "Най-бързият - само за транзакции до €30 000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -3866,7 +3875,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €20 000",
+  "fundExchangeMethodRegularSepaSubtitle": "Използвайте само за по-големи транзакции над €30 000",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -9766,5 +9775,39 @@
   "recipientsValidationSinpePhoneCountryCode": "Премахнете кода на държавата (+506). Въведете само 8-цифрения номер",
   "recipientsValidationSinpePhoneInvalidChars": "Използвайте само цифри (без букви или символи)",
   "recipientsValidationSinpePhoneTooShort": "Въведете всичките 8 цифри на телефонния номер",
-  "transactionStatusPayjoinCompleted": "Payjoin завършен"
+  "transactionStatusPayjoinCompleted": "Payjoin завършен",
+  "homeActionBuy": "Купи",
+  "homeActionSell": "Продай",
+  "homeActionPay": "Плати",
+  "homeActionTransfer": "Прехвърли",
+  "backupCardTitle": "Защитете своите биткойни.",
+  "backupCardSubtitle": "Архивирайте портфейла си сега.",
+  "mempoolCustomServerNoSsl": "Без SSL",
+  "autoswapTargetBalanceLabel": "Целеви баланс на незабавния портфейл",
+  "autoswapMaximumBalanceLabel": "Максимален баланс на незабавния портфейл",
+  "recoverbullServerConfirmTitle": "Сървър за възстановяване на трезора",
+  "recoverbullServerUsingDefault": "Използва се сървърът по подразбиране",
+  "recoverbullServerUsingCustom": "Използва се персонализиран сървър",
+  "recoverbullServerUrlLabel": "URL на сървъра:",
+  "recoverbullServerCustomWarning": "Използвате персонализиран сървър Recoverbull. Уверете се, че се доверявате на този сървър.",
+  "recoverbullServerTorNotice": "Ще се свържем с този сървър чрез Tor",
+  "recoverbullLearnMore": "Научете повече за Recoverbull",
+  "recoverbullSettingsTitle": "Настройки на Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL на сървъра за ключове",
+  "recoverbullSettingsEdit": "Редактирай",
+  "recoverbullSettingsCancel": "Отказ",
+  "recoverbullSettingsSave": "Запази",
+  "recoverbullSettingsUrlRequired": "URL е задължителен",
+  "recoverbullSettingsUrlInvalid": "URL не е валиден",
+  "recoverbullSettingsUrlMustBeHttp": "URL трябва да е HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL трябва да завършва на .onion",
+  "onboardingAdvancedOptionsTitle": "Разширени опции",
+  "onboardingAdvancedOptionsDescription": "Конфигурирайте разширените настройки преди да създадете или възстановите портфейла си",
+  "onboardingAdvancedOptionsCustomElectrum": "Персонализиран сървър Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Персонализиран сървър Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Персонализиран сървър Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Можете да промените тези настройки по-късно в настройките на приложението",
+  "onboardingAdvancedOptionsDone": "Готово",
+  "appStartupContactSupportMessage": "Свържете се с поддръжката на app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox се поддържа само на Android"
 }

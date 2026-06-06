@@ -34,7 +34,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         'id': '0',
         'method': fundingMethod is CopBankTransfer
             ? 'getCopPaymentLink'
-            : 'getFundingDetails',
+            : 'getUserPaymentProcessorCode',
         'params': params.toJson(),
       },
     );
@@ -42,7 +42,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     if (resp.statusCode != 200) {
       final method = fundingMethod is CopBankTransfer
           ? 'getCopPaymentLink'
-          : 'getFundingDetails';
+          : 'getUserPaymentProcessorCode';
       log.severe(
         message: '$method failed: unexpected status code ${resp.statusCode}',
         error: FetchFundingDetailsFailed(
@@ -57,7 +57,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     if (error != null) {
       final method = fundingMethod is CopBankTransfer
           ? 'getCopPaymentLink'
-          : 'getFundingDetails';
+          : 'getUserPaymentProcessorCode';
       final apiError = error['data']?['apiError'];
       final errorCode = apiError?['code']?.toString() ?? '';
       final errorMessage =
@@ -89,8 +89,10 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         );
       }
       final element = result['element'] as Map<String, dynamic>;
+      final ppExtraData =
+          (result['ppExtraData'] as Map<String, dynamic>?) ?? {};
       return GetFundingDetailsResponseModel.fromJson(
-        element,
+        {...element, ...ppExtraData},
       ).toDomain(method: fundingMethod);
     } catch (e, stackTrace) {
       log.severe(

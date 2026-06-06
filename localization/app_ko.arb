@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "백업이 없으면 다음과 같은 경우 비트코인에 접근할 수 없습니다:",
+  "backupWarningLoseReasonLostPhone": "휴대폰을 분실한 경우",
+  "backupWarningLoseReasonDeletedApp": "앱을 삭제한 경우",
+  "backupWarningLoseReasonCriticalIssue": "앱이나 기기에 심각한 문제가 발생한 경우",
+  "backupWarningLoseReasonKeystore": "잠금화면/기기 인증 방식을 변경하면 기기가 키스토어를 무효화합니다",
+  "backupWarningLoseReasonCloudRestore": "클라우드 백업으로 기기를 복원하는 경우",
+  "backupWarningNoRecovery": "백업이 없으면 지갑을 복구할 방법이 없습니다.",
   "bitboxErrorMultipleDevicesFound": "발견되는 다수 BitBox 장치. 한 기기만 연결됩니다.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "정확한 금액",
+  "swapInsufficientFunds": "잔액 부족",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -616,7 +624,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Fastest - € 20,000 미만의 거래 만",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - € 30,000 미만의 거래 만",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4867,7 +4875,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "만 € 20,000 이상의 거래에 사용",
+  "fundExchangeMethodRegularSepaSubtitle": "만 € 30,000 이상의 거래에 사용",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -12004,6 +12012,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "방송...",
+  "broadcastSignedTxBroadcastError": "거래 전송에 실패했습니다",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12637,5 +12646,39 @@
   "recipientsValidationSinpePhoneTooShort": "전화번호 8자리를 모두 입력하세요",
   "recipientsFieldDocumentType": "수신자 신분증 유형",
   "recipientsFieldDocumentNumberHint": "수신자 신분증 번호 입력",
-  "recipientsValidationSinpePhone": "국가 코드 없이 8자리 코스타리카 전화번호를 입력하세요"
+  "recipientsValidationSinpePhone": "국가 코드 없이 8자리 코스타리카 전화번호를 입력하세요",
+  "homeActionBuy": "구매",
+  "homeActionSell": "판매",
+  "homeActionPay": "결제",
+  "homeActionTransfer": "이체",
+  "backupCardTitle": "비트코인을 보호하세요.",
+  "backupCardSubtitle": "지금 지갑을 백업하세요.",
+  "mempoolCustomServerNoSsl": "SSL 없음",
+  "autoswapTargetBalanceLabel": "목표 즉시 지갑 잔액",
+  "autoswapMaximumBalanceLabel": "최대 즉시 지갑 잔액",
+  "recoverbullServerConfirmTitle": "볼트 복구 서버",
+  "recoverbullServerUsingDefault": "기본 서버 사용 중",
+  "recoverbullServerUsingCustom": "사용자 지정 서버 사용 중",
+  "recoverbullServerUrlLabel": "서버 URL:",
+  "recoverbullServerCustomWarning": "사용자 지정 Recoverbull 서버를 사용하고 있습니다. 이 서버를 신뢰할 수 있는지 확인하세요.",
+  "recoverbullServerTorNotice": "Tor를 통해 이 서버에 연결합니다",
+  "recoverbullLearnMore": "Recoverbull에 대해 자세히 알아보기",
+  "recoverbullSettingsTitle": "Recoverbull 설정",
+  "recoverbullSettingsKeyServerUrl": "키 서버 URL",
+  "recoverbullSettingsEdit": "편집",
+  "recoverbullSettingsCancel": "취소",
+  "recoverbullSettingsSave": "저장",
+  "recoverbullSettingsUrlRequired": "URL이 필요합니다",
+  "recoverbullSettingsUrlInvalid": "URL이 유효하지 않습니다",
+  "recoverbullSettingsUrlMustBeHttp": "URL은 HTTP여야 합니다",
+  "recoverbullSettingsUrlMustBeOnion": "URL은 .onion으로 끝나야 합니다",
+  "onboardingAdvancedOptionsTitle": "고급 옵션",
+  "onboardingAdvancedOptionsDescription": "지갑을 생성하거나 복구하기 전에 고급 설정을 구성하세요",
+  "onboardingAdvancedOptionsCustomElectrum": "사용자 지정 Electrum 서버",
+  "onboardingAdvancedOptionsCustomMempool": "사용자 지정 Mempool 서버",
+  "onboardingAdvancedOptionsCustomRecoverbull": "사용자 지정 Recoverbull 서버",
+  "onboardingAdvancedOptionsFooter": "이 설정은 나중에 앱 설정에서 변경할 수 있습니다",
+  "onboardingAdvancedOptionsDone": "완료",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support에서 지원팀에 문의하세요",
+  "importWalletBitboxAndroidOnly": "BitBox는 Android에서만 지원됩니다"
 }

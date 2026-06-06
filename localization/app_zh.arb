@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "如果没有备份，在以下情况下您将无法访问您的比特币：",
+  "backupWarningLoseReasonLostPhone": "您丢失手机",
+  "backupWarningLoseReasonDeletedApp": "您删除应用程序",
+  "backupWarningLoseReasonCriticalIssue": "应用程序或设备出现严重问题",
+  "backupWarningLoseReasonKeystore": "更改锁屏密码/设备验证方式时，您的设备会使密钥库（Keystore）失效",
+  "backupWarningLoseReasonCloudRestore": "通过云端备份恢复您的设备",
+  "backupWarningNoRecovery": "没有备份，就无法恢复您的钱包。",
   "translationWarningTitle": "AI生成的翻译",
   "translationWarningDescription": "此应用中的大多数翻译是使用AI生成的，可能存在不准确之处。如果您发现任何错误或想帮助改进翻译，可以在我们的GitHub仓库中提交修复。",
   "translationWarningContributeButton": "帮助改进翻译",
@@ -192,6 +199,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "收到确切数额",
+  "swapInsufficientFunds": "资金不足",
   "arkContinueButton": "继续",
   "ledgerImportButton": "开始导入",
   "dcaActivate": "主动同意",
@@ -220,7 +228,7 @@
   "payServiceFee": "Service Fee",
   "transactionStatusSwapExpired": "页: 1",
   "swapAmountPlaceholder": "页: 1",
-  "fundExchangeMethodInstantSepaSubtitle": "最长――只有不到20 000欧元的交易",
+  "fundExchangeMethodInstantSepaSubtitle": "最长――只有不到30 000欧元的交易",
   "dcaConfirmError": "有些错误:{error}",
   "@dcaConfirmError": {
     "placeholders": {
@@ -1590,7 +1598,7 @@
     }
   },
   "dcaFrequencyWeekly": "每周",
-  "fundExchangeMethodRegularSepaSubtitle": "只使用20 000欧元以上的大宗交易",
+  "fundExchangeMethodRegularSepaSubtitle": "只使用30 000欧元以上的大宗交易",
   "settingsTelegramLabel": "电报",
   "walletDetailsSignerDeviceNotSupported": "未获得支持",
   "exchangeLandingDisclaimerLegal": "进入交换服务将仅限于“鹿特丹”能够合法运作并且可能需要“科索沃”的国家.",
@@ -3997,6 +4005,7 @@
   "swapProgressPendingMessage": "移交工作正在进行之中。 交易可在确认时进行。 你可以回家,等待.",
   "walletDetailsNetworkLabel": "网络",
   "broadcastSignedTxBroadcasting": "广播.",
+  "broadcastSignedTxBroadcastError": "广播交易失败",
   "recoverbullSelectRecoverWallet": "恢复钱包",
   "receivePayjoinActivated": "Payjoin",
   "importMnemonicContinue": "继续",
@@ -4432,10 +4441,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "如果没有备份，一旦您丢失手机、删除应用程序或遇到与应用程序或设备相关的严重问题，您将无法访问您的比特币。没有备份，就无法恢复您的钱包。",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "是",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -4654,5 +4659,39 @@
   "recipientsValidationSinpePhoneTooShort": "请输入完整的8位电话号码",
   "recipientsFieldDocumentType": "收件人证件类型",
   "recipientsFieldDocumentNumberHint": "输入收件人证件号码",
-  "recipientsValidationSinpePhone": "请输入有效的8位哥斯达黎加电话号码（不含国家代码）"
+  "recipientsValidationSinpePhone": "请输入有效的8位哥斯达黎加电话号码（不含国家代码）",
+  "homeActionBuy": "购买",
+  "homeActionSell": "出售",
+  "homeActionPay": "支付",
+  "homeActionTransfer": "转账",
+  "backupCardTitle": "保护您的比特币。",
+  "backupCardSubtitle": "立即备份您的钱包。",
+  "mempoolCustomServerNoSsl": "无 SSL",
+  "autoswapTargetBalanceLabel": "目标即时钱包余额",
+  "autoswapMaximumBalanceLabel": "最大即时钱包余额",
+  "recoverbullServerConfirmTitle": "保险库恢复服务器",
+  "recoverbullServerUsingDefault": "使用默认服务器",
+  "recoverbullServerUsingCustom": "使用自定义服务器",
+  "recoverbullServerUrlLabel": "服务器 URL：",
+  "recoverbullServerCustomWarning": "您正在使用自定义的 Recoverbull 服务器。请确保您信任此服务器。",
+  "recoverbullServerTorNotice": "我们将通过 Tor 连接到此服务器",
+  "recoverbullLearnMore": "了解更多关于 Recoverbull 的信息",
+  "recoverbullSettingsTitle": "Recoverbull 设置",
+  "recoverbullSettingsKeyServerUrl": "密钥服务器 URL",
+  "recoverbullSettingsEdit": "编辑",
+  "recoverbullSettingsCancel": "取消",
+  "recoverbullSettingsSave": "保存",
+  "recoverbullSettingsUrlRequired": "URL 为必填项",
+  "recoverbullSettingsUrlInvalid": "URL 无效",
+  "recoverbullSettingsUrlMustBeHttp": "URL 必须为 HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL 必须以 .onion 结尾",
+  "onboardingAdvancedOptionsTitle": "高级选项",
+  "onboardingAdvancedOptionsDescription": "在创建或恢复钱包前配置高级设置",
+  "onboardingAdvancedOptionsCustomElectrum": "自定义 Electrum 服务器",
+  "onboardingAdvancedOptionsCustomMempool": "自定义 Mempool 服务器",
+  "onboardingAdvancedOptionsCustomRecoverbull": "自定义 Recoverbull 服务器",
+  "onboardingAdvancedOptionsFooter": "您可以稍后在应用设置中更改这些设置",
+  "onboardingAdvancedOptionsDone": "完成",
+  "appStartupContactSupportMessage": "请通过 app.bullbitcoin.com/support 联系支持",
+  "importWalletBitboxAndroidOnly": "BitBox 仅支持 Android"
 }

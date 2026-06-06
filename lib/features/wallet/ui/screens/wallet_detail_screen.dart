@@ -72,15 +72,15 @@ class WalletDetailScreen extends StatelessWidget {
                   const SliverToBoxAdapter(child: Gap(16)),
                   const WalletDetailTxsList(sliver: true),
                 ],
-                bottomChild: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 13.0,
-                    vertical: 40,
-                  ),
-                  child: WalletBottomButtons(wallet: wallet),
-                ),
               ),
             ),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 16),
+          child: WalletBottomButtons(wallet: wallet),
+        ),
+      ),
     );
   }
 }

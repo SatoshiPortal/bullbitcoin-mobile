@@ -81,8 +81,6 @@ sealed class WalletState with _$WalletState {
   }
 
   bool showAutoSwapActiveStatus() {
-    return autoSwapSettings != null &&
-        autoSwapSettings!.enabled &&
-        !autoSwapSettings!.showWarning;
+    return autoSwapSettings != null && autoSwapSettings!.enabled;
   }
 }

@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "بدون نسخة احتياطية، ستفقد إمكانية الوصول إلى عملات البيتكوين الخاصة بك في الحالات التالية:",
+  "backupWarningLoseReasonLostPhone": "فقدان هاتفك",
+  "backupWarningLoseReasonDeletedApp": "حذف التطبيق",
+  "backupWarningLoseReasonCriticalIssue": "حدوث مشكلة خطيرة في التطبيق أو الجهاز",
+  "backupWarningLoseReasonKeystore": "يقوم جهازك بإبطال مخزن المفاتيح (keystore) عند تغيير طريقة قفل الشاشة أو مصادقة الجهاز",
+  "backupWarningLoseReasonCloudRestore": "استعادة جهازك من نسخة احتياطية على السحابة",
+  "backupWarningNoRecovery": "لا توجد طريقة لاستعادة محفظتك بدون نسخة احتياطية.",
   "ledgerHelpTitle": "Ledger Troubleshooting",
   "@ledgerHelpTitle": {
     "description": "Title for Ledger troubleshooting help modal"
@@ -500,6 +507,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "المبلغ المستلم",
+  "swapInsufficientFunds": "أموال غير كافية",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -592,7 +600,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "Fastest - only for transactions below 20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Fastest - only for transactions below 30,000",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4600,7 +4608,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 20 يورو",
+  "fundExchangeMethodRegularSepaSubtitle": "الاستخدام الوحيد للمعاملات الكبيرة التي تتجاوز 000 30 يورو",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -11251,6 +11259,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "البث...",
+  "broadcastSignedTxBroadcastError": "فشل بث المعاملة",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12640,5 +12649,39 @@
   "recipientsValidationSinpePhoneTooShort": "أدخل جميع الأرقام الثمانية لرقم الهاتف",
   "recipientsFieldDocumentType": "نوع هوية المستلم",
   "recipientsFieldDocumentNumberHint": "أدخل رقم هوية المستلم",
-  "recipientsValidationSinpePhone": "أدخل رقم هاتف كوستاريكي صالح من 8 أرقام بدون رمز الدولة"
+  "recipientsValidationSinpePhone": "أدخل رقم هاتف كوستاريكي صالح من 8 أرقام بدون رمز الدولة",
+  "homeActionBuy": "شراء",
+  "homeActionSell": "بيع",
+  "homeActionPay": "دفع",
+  "homeActionTransfer": "تحويل",
+  "backupCardTitle": "احمِ بيتكوين الخاص بك.",
+  "backupCardSubtitle": "انسخ محفظتك احتياطيًا الآن.",
+  "mempoolCustomServerNoSsl": "بدون SSL",
+  "autoswapTargetBalanceLabel": "الرصيد المستهدف للمحفظة الفورية",
+  "autoswapMaximumBalanceLabel": "الحد الأقصى لرصيد المحفظة الفورية",
+  "recoverbullServerConfirmTitle": "خادم استرداد الخزنة",
+  "recoverbullServerUsingDefault": "استخدام الخادم الافتراضي",
+  "recoverbullServerUsingCustom": "استخدام خادم مخصص",
+  "recoverbullServerUrlLabel": "رابط الخادم:",
+  "recoverbullServerCustomWarning": "أنت تستخدم خادم Recoverbull مخصصًا. تأكد من أنك تثق بهذا الخادم.",
+  "recoverbullServerTorNotice": "سنتصل بهذا الخادم عبر Tor",
+  "recoverbullLearnMore": "اعرف المزيد عن Recoverbull",
+  "recoverbullSettingsTitle": "إعدادات Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL خادم المفاتيح",
+  "recoverbullSettingsEdit": "تعديل",
+  "recoverbullSettingsCancel": "إلغاء",
+  "recoverbullSettingsSave": "حفظ",
+  "recoverbullSettingsUrlRequired": "الرابط مطلوب",
+  "recoverbullSettingsUrlInvalid": "الرابط غير صالح",
+  "recoverbullSettingsUrlMustBeHttp": "يجب أن يكون الرابط من نوع HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "يجب أن ينتهي الرابط بـ .onion",
+  "onboardingAdvancedOptionsTitle": "خيارات متقدمة",
+  "onboardingAdvancedOptionsDescription": "اضبط الإعدادات المتقدمة قبل إنشاء محفظتك أو استردادها",
+  "onboardingAdvancedOptionsCustomElectrum": "خادم Electrum مخصص",
+  "onboardingAdvancedOptionsCustomMempool": "خادم Mempool مخصص",
+  "onboardingAdvancedOptionsCustomRecoverbull": "خادم Recoverbull مخصص",
+  "onboardingAdvancedOptionsFooter": "يمكنك تغيير هذه الإعدادات لاحقًا في إعدادات التطبيق",
+  "onboardingAdvancedOptionsDone": "تم",
+  "appStartupContactSupportMessage": "تواصل مع الدعم على app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox مدعوم على Android فقط"
 }

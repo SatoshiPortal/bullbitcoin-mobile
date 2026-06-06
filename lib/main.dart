@@ -36,6 +36,7 @@ import 'package:bull_sdk/bull_sdk.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show appFlavor;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:payjoin_flutter/common.dart';
@@ -286,7 +287,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                           ? AppThemeType.dark
                           : AppThemeType.light;
                   }
-
                   return TrezorDeeplinkListener(
                     child: MaterialApp.router(
                       title: 'BullBitcoin Wallet',
@@ -297,8 +297,18 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                       localizationsDelegates:
                           AppLocalizations.localizationsDelegates,
                       supportedLocales: AppLocalizations.supportedLocales,
-                      builder: (_, child) {
-                        return AppStartupWidget(app: child!);
+                      builder: (context, child) {
+                        final app = AppStartupWidget(app: child!);
+                        // Mark beta-channel builds (`make android beta`) with a
+                        // corner banner. Release mode drops the Flutter debug
+                        // banner, so this is how testers tell beta from production.
+                        if (appFlavor != 'beta') return app;
+                        return Banner(
+                          message: 'BETA',
+                          location: BannerLocation.topEnd,
+                          color: Theme.of(context).colorScheme.error,
+                          child: app,
+                        );
                       },
                     ),
                   );

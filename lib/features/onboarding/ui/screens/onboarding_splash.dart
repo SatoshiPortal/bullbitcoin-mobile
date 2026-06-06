@@ -142,7 +142,7 @@ class _Actions extends StatelessWidget {
                 );
               },
               child: Text(
-                'Advanced Options',
+                context.loc.onboardingAdvancedOptionsTitle,
                 style: context.font.bodyMedium?.copyWith(
                   color: context.appColors.onPrimaryFixed.withValues(
                     alpha: 0.9,

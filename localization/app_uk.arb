@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо:",
+  "backupWarningLoseReasonLostPhone": "Втратите телефон",
+  "backupWarningLoseReasonDeletedApp": "Видалите застосунок",
+  "backupWarningLoseReasonCriticalIssue": "Зіткнетеся з критичною проблемою застосунку чи пристрою",
+  "backupWarningLoseReasonKeystore": "Пристрій анулює keystore під час зміни блокування екрана або способу автентифікації пристрою",
+  "backupWarningLoseReasonCloudRestore": "Відновлення пристрою з резервної копії у хмарі",
+  "backupWarningNoRecovery": "Відновити гаманець без резервної копії неможливо.",
   "translationWarningTitle": "Переклади, створені ШІ",
   "translationWarningDescription": "Більшість перекладів у цьому додатку були створені за допомогою ШІ і можуть містити неточності. Якщо ви помітили помилки або хочете допомогти покращити переклади, ви можете надіслати виправлення в наш репозиторій на GitHub.",
   "translationWarningContributeButton": "Допомогти покращити переклади",
@@ -1274,6 +1281,7 @@
   "importQrDeviceJadeStep7": "Щоб змінити тип адреси",
   "sendBroadcastingTransaction": "Трансляція угоди.",
   "swapReceiveExactAmountLabel": "Отримати точний розмір",
+  "swapInsufficientFunds": "Недостатньо коштів",
   "arkContinueButton": "Продовжити",
   "ledgerImportButton": "Імпорт",
   "dcaActivate": "Активувати продаж",
@@ -1295,7 +1303,7 @@
   "appUnlockButton": "Розблокувати",
   "payServiceFee": "Плата за обслуговування",
   "swapAmountPlaceholder": "0 р",
-  "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €20,000",
+  "fundExchangeMethodInstantSepaSubtitle": "Найшвидший - Тільки для операцій нижче €30,000",
   "dcaConfirmError": "Хтось пішов неправильно: {error}",
   "@dcaConfirmError": {
     "placeholders": {
@@ -2231,7 +2239,7 @@
     }
   },
   "dcaFrequencyWeekly": "тиждень",
-  "fundExchangeMethodRegularSepaSubtitle": "Тільки для збільшення операцій над €20,000",
+  "fundExchangeMethodRegularSepaSubtitle": "Тільки для збільшення операцій над €30,000",
   "exchangeLandingDisclaimerLegal": "Доступ до обмінних послуг буде обмежений для країн, де Біткойн може легально працювати і може вимагати KYC.",
   "backupWalletEncryptedVaultTitle": "Зашифрована сорочка",
   "mempoolNetworkLiquidMainnet": "Головна",
@@ -4026,6 +4034,7 @@
   "dcaPaymentMethodLabel": "Спосіб оплати",
   "swapProgressPendingMessage": "Передача здійснюється в процесі. Біткойн-транзакції можуть зайняти під час підтвердження. Ви можете повернутися додому і чекати.",
   "broadcastSignedTxBroadcasting": "Трансляція...",
+  "broadcastSignedTxBroadcastError": "Не вдалося транслювати транзакцію",
   "recoverbullSelectRecoverWallet": "Відновлення гаманця",
   "importMnemonicContinue": "Продовжити",
   "psbtFlowMoveLaser": "Перемістити червоному лазеру вгору і вниз по QR-коду",
@@ -4429,10 +4438,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Без резервної копії ви втратите доступ до своїх біткоїнів, якщо втратите телефон, видалите застосунок або зіткнетеся з критичною проблемою застосунку чи пристрою. Відновити гаманець без резервної копії неможливо.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "ТАК",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -4769,5 +4774,39 @@
   "recipientsValidationSinpePhoneCountryCode": "Видаліть код країни (+506). Введіть лише 8-значний номер",
   "recipientsValidationSinpePhoneInvalidChars": "Використовуйте лише цифри (без літер чи символів)",
   "recipientsValidationSinpePhoneTooShort": "Введіть усі 8 цифр номера телефону",
-  "transactionStatusPayjoinCompleted": "Payjoin завершено"
+  "transactionStatusPayjoinCompleted": "Payjoin завершено",
+  "homeActionBuy": "Купити",
+  "homeActionSell": "Продати",
+  "homeActionPay": "Сплатити",
+  "homeActionTransfer": "Переказати",
+  "backupCardTitle": "Захистіть свої біткоїни.",
+  "backupCardSubtitle": "Створіть резервну копію гаманця зараз.",
+  "mempoolCustomServerNoSsl": "Без SSL",
+  "autoswapTargetBalanceLabel": "Цільовий баланс миттєвого гаманця",
+  "autoswapMaximumBalanceLabel": "Максимальний баланс миттєвого гаманця",
+  "recoverbullServerConfirmTitle": "Сервер відновлення сховища",
+  "recoverbullServerUsingDefault": "Використовується сервер за замовчуванням",
+  "recoverbullServerUsingCustom": "Використовується власний сервер",
+  "recoverbullServerUrlLabel": "URL сервера:",
+  "recoverbullServerCustomWarning": "Ви використовуєте власний сервер Recoverbull. Переконайтеся, що ви довіряєте цьому серверу.",
+  "recoverbullServerTorNotice": "Ми підключимося до цього сервера через Tor",
+  "recoverbullLearnMore": "Дізнатися більше про Recoverbull",
+  "recoverbullSettingsTitle": "Налаштування Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL сервера ключів",
+  "recoverbullSettingsEdit": "Редагувати",
+  "recoverbullSettingsCancel": "Скасувати",
+  "recoverbullSettingsSave": "Зберегти",
+  "recoverbullSettingsUrlRequired": "URL обовʼязковий",
+  "recoverbullSettingsUrlInvalid": "URL недійсний",
+  "recoverbullSettingsUrlMustBeHttp": "URL має бути HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "URL має закінчуватися на .onion",
+  "onboardingAdvancedOptionsTitle": "Розширені параметри",
+  "onboardingAdvancedOptionsDescription": "Налаштуйте розширені параметри перед створенням або відновленням гаманця",
+  "onboardingAdvancedOptionsCustomElectrum": "Власний сервер Electrum",
+  "onboardingAdvancedOptionsCustomMempool": "Власний сервер Mempool",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Власний сервер Recoverbull",
+  "onboardingAdvancedOptionsFooter": "Ви можете змінити ці налаштування пізніше в налаштуваннях додатка",
+  "onboardingAdvancedOptionsDone": "Готово",
+  "appStartupContactSupportMessage": "Звʼяжіться з підтримкою за адресою app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox підтримується лише на Android"
 }

@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "ব্যাকআপ ছাড়া, নিচের ক্ষেত্রে আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন:",
+  "backupWarningLoseReasonLostPhone": "আপনি আপনার ফোন হারালে",
+  "backupWarningLoseReasonDeletedApp": "আপনি অ্যাপ মুছলে",
+  "backupWarningLoseReasonCriticalIssue": "কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যা হলে",
+  "backupWarningLoseReasonKeystore": "আপনি লকস্ক্রিন বা ডিভাইস অথেন্টিকেশন পরিবর্তন করলে আপনার ডিভাইস কীস্টোর (keystore) বাতিল করে দেয়",
+  "backupWarningLoseReasonCloudRestore": "ক্লাউড ব্যাকআপ থেকে আপনার ডিভাইস রিস্টোর করা",
+  "backupWarningNoRecovery": "ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
   "@@locale": "bn",
   "settingsTelegramLabel": "Telegram",
   "@settingsTelegramLabel": {
@@ -532,6 +539,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "নির্দিষ্ট পরিমাণ গ্রহণ করুন",
+  "swapInsufficientFunds": "অপর্যাপ্ত তহবিল",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -624,7 +632,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "সবচেয়ে দ্রুততম - কেবল €20,000-এর নিচে লেনদেনের জন্য",
+  "fundExchangeMethodInstantSepaSubtitle": "সবচেয়ে দ্রুততম - কেবল €30,000-এর নিচে লেনদেনের জন্য",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4742,7 +4750,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "শুধু €20,000-এর বেশি লেনদেনের জন্য ব্যবহার করুন",
+  "fundExchangeMethodRegularSepaSubtitle": "শুধু €30,000-এর বেশি লেনদেনের জন্য ব্যবহার করুন",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -11688,6 +11696,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "ব্রডকাস্টিং..।",
+  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্রচার করতে ব্যর্থ হয়েছে",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12797,10 +12806,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "ব্যাকআপ ছাড়া, আপনার ফোন হারালে, অ্যাপ মুছলে বা কোনো গুরুতর অ্যাপ্লিকেশন বা ডিভাইস সম্পর্কিত সমস্যায় আপনি আপনার বিটকয়েনে প্রবেশাধিকার হারাবেন। ব্যাকআপ ছাড়া আপনার ওয়ালেট পুনরুদ্ধার করার কোনো উপায় নেই।",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "হ্যাঁ",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -12921,5 +12926,39 @@
   "recipientsValidationSinpePhoneTooShort": "ফোন নম্বরের সব 8 সংখ্যা লিখুন",
   "recipientsFieldDocumentType": "প্রাপকের আইডির ধরন",
   "recipientsFieldDocumentNumberHint": "প্রাপকের আইডি নম্বর লিখুন",
-  "recipientsValidationSinpePhone": "দেশের কোড ছাড়া একটি বৈধ 8-সংখ্যার কোস্টা রিকান ফোন নম্বর লিখুন"
+  "recipientsValidationSinpePhone": "দেশের কোড ছাড়া একটি বৈধ 8-সংখ্যার কোস্টা রিকান ফোন নম্বর লিখুন",
+  "homeActionBuy": "কিনুন",
+  "homeActionSell": "বিক্রি করুন",
+  "homeActionPay": "পেমেন্ট করুন",
+  "homeActionTransfer": "ট্রান্সফার করুন",
+  "backupCardTitle": "আপনার বিটকয়েন সুরক্ষিত করুন।",
+  "backupCardSubtitle": "এখনই আপনার ওয়ালেট ব্যাকআপ করুন।",
+  "mempoolCustomServerNoSsl": "কোনো SSL নেই",
+  "autoswapTargetBalanceLabel": "লক্ষ্য Instant Wallet ব্যালেন্স",
+  "autoswapMaximumBalanceLabel": "সর্বোচ্চ Instant Wallet ব্যালেন্স",
+  "recoverbullServerConfirmTitle": "Vault রিকভারি সার্ভার",
+  "recoverbullServerUsingDefault": "ডিফল্ট সার্ভার ব্যবহার করছেন",
+  "recoverbullServerUsingCustom": "কাস্টম সার্ভার ব্যবহার করছেন",
+  "recoverbullServerUrlLabel": "সার্ভার URL:",
+  "recoverbullServerCustomWarning": "আপনি একটি কাস্টম Recoverbull সার্ভার ব্যবহার করছেন। নিশ্চিত করুন যে আপনি এই সার্ভারকে বিশ্বাস করেন।",
+  "recoverbullServerTorNotice": "আমরা Tor এর মাধ্যমে এই সার্ভারে সংযোগ করব",
+  "recoverbullLearnMore": "Recoverbull সম্পর্কে আরও জানুন",
+  "recoverbullSettingsTitle": "Recoverbull সেটিংস",
+  "recoverbullSettingsKeyServerUrl": "কী সার্ভার URL",
+  "recoverbullSettingsEdit": "সম্পাদনা করুন",
+  "recoverbullSettingsCancel": "বাতিল করুন",
+  "recoverbullSettingsSave": "সংরক্ষণ করুন",
+  "recoverbullSettingsUrlRequired": "URL প্রয়োজন",
+  "recoverbullSettingsUrlInvalid": "URL বৈধ নয়",
+  "recoverbullSettingsUrlMustBeHttp": "URL অবশ্যই HTTP হতে হবে",
+  "recoverbullSettingsUrlMustBeOnion": "URL অবশ্যই .onion দিয়ে শেষ হতে হবে",
+  "onboardingAdvancedOptionsTitle": "উন্নত বিকল্প",
+  "onboardingAdvancedOptionsDescription": "আপনার ওয়ালেট তৈরি বা পুনরুদ্ধার করার আগে উন্নত সেটিংস কনফিগার করুন",
+  "onboardingAdvancedOptionsCustomElectrum": "কাস্টম Electrum সার্ভার",
+  "onboardingAdvancedOptionsCustomMempool": "কাস্টম Mempool সার্ভার",
+  "onboardingAdvancedOptionsCustomRecoverbull": "কাস্টম Recoverbull সার্ভার",
+  "onboardingAdvancedOptionsFooter": "আপনি পরে App Settings এ এই সেটিংস পরিবর্তন করতে পারেন",
+  "onboardingAdvancedOptionsDone": "সম্পন্ন",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support এ সাপোর্টের সাথে যোগাযোগ করুন",
+  "importWalletBitboxAndroidOnly": "BitBox শুধুমাত্র Android এ সমর্থিত"
 }

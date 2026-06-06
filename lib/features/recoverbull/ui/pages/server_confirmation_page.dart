@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/usecases/allow_permission_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_recoverbull_url_usecase.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -74,7 +75,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
           icon: const Icon(Icons.arrow_back),
         ),
         title: BBText(
-          'Vault Recovery Server',
+          context.loc.recoverbullServerConfirmTitle,
           style: context.font.headlineMedium,
           color: context.appColors.onSurface,
         ),
@@ -101,8 +102,8 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     const Gap(32),
                     BBText(
                       _isUsingDefaultServer
-                          ? 'Using Default Server'
-                          : 'Using Custom Server',
+                          ? context.loc.recoverbullServerUsingDefault
+                          : context.loc.recoverbullServerUsingCustom,
                       style: context.font.headlineMedium,
                       textAlign: .center,
                     ),
@@ -121,7 +122,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                         crossAxisAlignment: .start,
                         children: [
                           BBText(
-                            'Server URL:',
+                            context.loc.recoverbullServerUrlLabel,
                             style: context.font.labelSmall?.copyWith(
                               color: context.appColors.textMuted,
                             ),
@@ -139,15 +140,14 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     const Gap(24),
                     if (!_isUsingDefaultServer) ...[
                       InfoCard(
-                        description:
-                            'You are using a custom Recoverbull server. Make sure you trust this server.',
+                        description: context.loc.recoverbullServerCustomWarning,
                         tagColor: context.appColors.error,
                         bgColor: context.appColors.errorContainer,
                       ),
                       const Gap(24),
                     ],
                     BBText(
-                      'We will connect to this server through Tor',
+                      context.loc.recoverbullServerTorNotice,
                       style: context.font.bodyMedium?.copyWith(
                         color: context.appColors.textMuted,
                       ),
@@ -155,7 +155,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                     ),
                     const Spacer(),
                     BBButton.big(
-                      label: 'Continue',
+                      label: context.loc.recoverbullContinue,
                       onPressed: () async {
                         await _allowPermissionUsecase.execute(true);
                         if (!context.mounted) return;
@@ -184,7 +184,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage> {
                           ),
                           const Gap(8),
                           BBText(
-                            'Learn more about Recoverbull',
+                            context.loc.recoverbullLearnMore,
                             style: context.font.bodyMedium,
                             color: context.appColors.primary,
                           ),

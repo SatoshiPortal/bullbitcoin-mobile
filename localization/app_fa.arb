@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "بدون نسخه پشتیبان، در صورت وقوع موارد زیر دسترسی خود به بیت‌کوین‌هایتان را از دست می‌دهید:",
+  "backupWarningLoseReasonLostPhone": "گوشی‌تان را گم کنید",
+  "backupWarningLoseReasonDeletedApp": "برنامه را حذف کنید",
+  "backupWarningLoseReasonCriticalIssue": "مشکل جدی در برنامه یا دستگاه رخ دهد",
+  "backupWarningLoseReasonKeystore": "دستگاه شما هنگام تغییر قفل صفحه یا روش احراز هویت دستگاه، کی‌استور (keystore) را باطل می‌کند",
+  "backupWarningLoseReasonCloudRestore": "بازیابی دستگاه شما از یک نسخه پشتیبان ابری",
+  "backupWarningNoRecovery": "بدون نسخه پشتیبان هیچ راهی برای بازیابی کیف پول شما وجود ندارد.",
   "settingsTelegramLabel": "تلگرام",
   "@settingsTelegramLabel": {
     "description": "Label for the Telegram link in settings"
@@ -1727,6 +1734,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "دریافت مقدار دقیق",
+  "swapInsufficientFunds": "وجوه ناکافی",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -1799,7 +1807,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "سریع ترین - فقط برای معاملات زیر 20،000 یورو",
+  "fundExchangeMethodInstantSepaSubtitle": "سریع ترین - فقط برای معاملات زیر 30،000 یورو",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -5375,7 +5383,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "فقط برای معاملات بزرگتر بالای 20،000 یورو استفاده کنید",
+  "fundExchangeMethodRegularSepaSubtitle": "فقط برای معاملات بزرگتر بالای 30،000 یورو استفاده کنید",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -11209,6 +11217,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "پخش ...",
+  "broadcastSignedTxBroadcastError": "ارسال تراکنش ناموفق بود",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12637,5 +12646,39 @@
   "recipientsValidationSinpePhoneTooShort": "تمام ۸ رقم شماره تلفن را وارد کنید",
   "recipientsFieldDocumentType": "نوع شناسه گیرنده",
   "recipientsFieldDocumentNumberHint": "شماره شناسه گیرنده را وارد کنید",
-  "recipientsValidationSinpePhone": "یک شماره تلفن ۸ رقمی معتبر کاستاریکا بدون کد کشور وارد کنید"
+  "recipientsValidationSinpePhone": "یک شماره تلفن ۸ رقمی معتبر کاستاریکا بدون کد کشور وارد کنید",
+  "homeActionBuy": "خرید",
+  "homeActionSell": "فروش",
+  "homeActionPay": "پرداخت",
+  "homeActionTransfer": "انتقال",
+  "backupCardTitle": "از بیت‌کوین خود محافظت کنید.",
+  "backupCardSubtitle": "همین حالا از کیف پول خود پشتیبان بگیرید.",
+  "mempoolCustomServerNoSsl": "بدون SSL",
+  "autoswapTargetBalanceLabel": "موجودی هدف کیف پول فوری",
+  "autoswapMaximumBalanceLabel": "حداکثر موجودی کیف پول فوری",
+  "recoverbullServerConfirmTitle": "سرور بازیابی والت",
+  "recoverbullServerUsingDefault": "استفاده از سرور پیش‌فرض",
+  "recoverbullServerUsingCustom": "استفاده از سرور سفارشی",
+  "recoverbullServerUrlLabel": "آدرس سرور:",
+  "recoverbullServerCustomWarning": "شما در حال استفاده از یک سرور Recoverbull سفارشی هستید. مطمئن شوید که به این سرور اعتماد دارید.",
+  "recoverbullServerTorNotice": "ما از طریق Tor به این سرور متصل می‌شویم",
+  "recoverbullLearnMore": "درباره Recoverbull بیشتر بدانید",
+  "recoverbullSettingsTitle": "تنظیمات Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL سرور کلید",
+  "recoverbullSettingsEdit": "ویرایش",
+  "recoverbullSettingsCancel": "لغو",
+  "recoverbullSettingsSave": "ذخیره",
+  "recoverbullSettingsUrlRequired": "آدرس الزامی است",
+  "recoverbullSettingsUrlInvalid": "آدرس معتبر نیست",
+  "recoverbullSettingsUrlMustBeHttp": "آدرس باید HTTP باشد",
+  "recoverbullSettingsUrlMustBeOnion": "آدرس باید به .onion ختم شود",
+  "onboardingAdvancedOptionsTitle": "گزینه‌های پیشرفته",
+  "onboardingAdvancedOptionsDescription": "پیش از ساخت یا بازیابی کیف پول خود، تنظیمات پیشرفته را پیکربندی کنید",
+  "onboardingAdvancedOptionsCustomElectrum": "سرور Electrum سفارشی",
+  "onboardingAdvancedOptionsCustomMempool": "سرور Mempool سفارشی",
+  "onboardingAdvancedOptionsCustomRecoverbull": "سرور Recoverbull سفارشی",
+  "onboardingAdvancedOptionsFooter": "می‌توانید بعداً این تنظیمات را در تنظیمات برنامه تغییر دهید",
+  "onboardingAdvancedOptionsDone": "انجام شد",
+  "appStartupContactSupportMessage": "با پشتیبانی در app.bullbitcoin.com/support تماس بگیرید",
+  "importWalletBitboxAndroidOnly": "BitBox فقط در Android پشتیبانی می‌شود"
 }

@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "বেকআপ অবিহনে, তলত উল্লেখ কৰা ক্ষেত্ৰত আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব:",
+  "backupWarningLoseReasonLostPhone": "আপুনি আপোনাৰ ফোন হেৰুৱালে",
+  "backupWarningLoseReasonDeletedApp": "আপুনি এপটো মচিলে",
+  "backupWarningLoseReasonCriticalIssue": "কোনো গুৰুতৰ এপ্প বা ডিভাইচ সম্পৰ্কীয় সমস্যা হ'লে",
+  "backupWarningLoseReasonKeystore": "আপুনি লকস্ক্ৰীন বা ডিভাইচ অথেণ্টিকেশ্বন সলালে আপোনাৰ ডিভাইচে কীষ্টোৰ (keystore) অবৈধ কৰি দিয়ে",
+  "backupWarningLoseReasonCloudRestore": "ক্লাউড বেকআপৰ পৰা আপোনাৰ ডিভাইচ ৰিষ্টোৰ কৰা",
+  "backupWarningNoRecovery": "বেকআপ অবিহনে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰাৰ কোনো উপায় নাই।",
   "appInitErrorTitle": "এপটো আৰম্ভ হোৱাত ব্যৰ্থ হ'ল",
   "@appInitErrorTitle": {
     "description": "Title shown on the fatal init error screen in main.dart"
@@ -1161,9 +1168,9 @@
   "fundExchangeMethodCanadaPost": "Canada Post-ত ব্যক্তিগতভাৱে নগদ বা ডেবিটেৰে",
   "fundExchangeMethodCanadaPostSubtitle": "যিসকলে ব্যক্তিগতভাৱে পৰিশোধ কৰিব পছন্দ কৰে তেওঁলোকৰ বাবে সৰ্বোত্তম",
   "fundExchangeMethodInstantSepa": "Instant SEPA",
-  "fundExchangeMethodInstantSepaSubtitle": "দ্ৰুততম - কেৱল €20,000-ৰ তলৰ লেনদেনৰ বাবে",
+  "fundExchangeMethodInstantSepaSubtitle": "দ্ৰুততম - কেৱল €30,000-ৰ তলৰ লেনদেনৰ বাবে",
   "fundExchangeMethodRegularSepa": "Regular SEPA",
-  "fundExchangeMethodRegularSepaSubtitle": "কেৱল €20,000-ৰ ওপৰৰ বৃহত্তৰ লেনদেনৰ বাবে ব্যৱহাৰ কৰক",
+  "fundExchangeMethodRegularSepaSubtitle": "কেৱল €30,000-ৰ ওপৰৰ বৃহত্তৰ লেনদেনৰ বাবে ব্যৱহাৰ কৰক",
   "fundExchangeMethodSpeiTransfer": "SPEI transfer",
   "fundExchangeMethodSpeiTransferSubtitle": "আপোনাৰ CLABE ব্যৱহাৰ কৰি ধন transfer কৰক",
   "fundExchangeMethodSinpeTransfer": "SINPE Transfer",
@@ -1929,6 +1936,7 @@
     "description": "Label for amount input section"
   },
   "swapReceiveExactAmountLabel": "নিৰ্দিষ্ট পৰিমাণ গ্ৰহণ কৰক",
+  "swapInsufficientFunds": "অপৰ্যাপ্ত পুঁজি",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -6775,6 +6783,7 @@
     "description": "Button to broadcast signed transaction"
   },
   "broadcastSignedTxBroadcasting": "প্ৰচাৰ হৈ আছে...",
+  "broadcastSignedTxBroadcastError": "লেনদেন সম্প্ৰচাৰ কৰিবলৈ విఫల হ’ল",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -9603,10 +9612,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "বেকআপ অবিহনে, আপোনাৰ ফোন হেৰুৱালে, এপটো মচিলে, বা গুৰুতৰ এপ্প বা ডিভাইচ সম্পৰ্কীয় সমস্যাত পৰিলে আপুনি আপোনাৰ bitcoin-লৈ প্ৰৱেশ হেৰুৱাব। বেকআপ অবিহনে আপোনাৰ wallet পুনৰুদ্ধাৰ কৰাৰ কোনো উপায় নাই।",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "হয়",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -9728,5 +9733,39 @@
   "recipientsValidationSinpePhoneTooShort": "ফোন নম্বৰৰ সকলো 8 ডিজিট দিয়ক",
   "recipientsFieldDocumentType": "প্ৰাপকৰ আইডিৰ ধৰণ",
   "recipientsFieldDocumentNumberHint": "প্ৰাপকৰ আইডি নম্বৰ দিয়ক",
-  "recipientsValidationSinpePhone": "দেশৰ ক'ড অবিহনে এটা বৈধ 8-অংকৰ কোষ্টা ৰিকান ফোন নম্বৰ দিয়ক"
+  "recipientsValidationSinpePhone": "দেশৰ ক'ড অবিহনে এটা বৈধ 8-অংকৰ কোষ্টা ৰিকান ফোন নম্বৰ দিয়ক",
+  "homeActionBuy": "কিনক",
+  "homeActionSell": "বিক্ৰী কৰক",
+  "homeActionPay": "পৰিশোধ কৰক",
+  "homeActionTransfer": "ট্ৰান্সফাৰ কৰক",
+  "backupCardTitle": "আপোনাৰ বিটক'ইন সুৰক্ষিত কৰক।",
+  "backupCardSubtitle": "এতিয়াই আপোনাৰ ৱালেট বেকআপ কৰক।",
+  "mempoolCustomServerNoSsl": "কোনো SSL নাই",
+  "autoswapTargetBalanceLabel": "লক্ষ্য Instant Wallet বেলেন্স",
+  "autoswapMaximumBalanceLabel": "সৰ্বাধিক Instant Wallet বেলেন্স",
+  "recoverbullServerConfirmTitle": "Vault ৰিকভাৰী চাৰ্ভাৰ",
+  "recoverbullServerUsingDefault": "ডিফল্ট চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে",
+  "recoverbullServerUsingCustom": "কাষ্টম চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে",
+  "recoverbullServerUrlLabel": "চাৰ্ভাৰ URL:",
+  "recoverbullServerCustomWarning": "আপুনি এটা কাষ্টম Recoverbull চাৰ্ভাৰ ব্যৱহাৰ কৰি আছে। নিশ্চিত কৰক যে আপুনি এই চাৰ্ভাৰক বিশ্বাস কৰে।",
+  "recoverbullServerTorNotice": "আমি Tor ৰ জৰিয়তে এই চাৰ্ভাৰৰ সৈতে সংযোগ কৰিম",
+  "recoverbullLearnMore": "Recoverbull ৰ বিষয়ে অধিক জানক",
+  "recoverbullSettingsTitle": "Recoverbull ছেটিংছ",
+  "recoverbullSettingsKeyServerUrl": "কী চাৰ্ভাৰ URL",
+  "recoverbullSettingsEdit": "সম্পাদনা কৰক",
+  "recoverbullSettingsCancel": "বাতিল কৰক",
+  "recoverbullSettingsSave": "সংৰক্ষণ কৰক",
+  "recoverbullSettingsUrlRequired": "URL প্ৰয়োজন",
+  "recoverbullSettingsUrlInvalid": "URL বৈধ নহয়",
+  "recoverbullSettingsUrlMustBeHttp": "URL অৱশ্যে HTTP হ'ব লাগিব",
+  "recoverbullSettingsUrlMustBeOnion": "URL অৱশ্যে .onion ৰে শেষ হ'ব লাগিব",
+  "onboardingAdvancedOptionsTitle": "উন্নত বিকল্প",
+  "onboardingAdvancedOptionsDescription": "আপোনাৰ ৱালেট সৃষ্টি বা পুনৰুদ্ধাৰ কৰাৰ আগতে উন্নত ছেটিংছ কনফিগাৰ কৰক",
+  "onboardingAdvancedOptionsCustomElectrum": "কাষ্টম Electrum চাৰ্ভাৰ",
+  "onboardingAdvancedOptionsCustomMempool": "কাষ্টম Mempool চাৰ্ভাৰ",
+  "onboardingAdvancedOptionsCustomRecoverbull": "কাষ্টম Recoverbull চাৰ্ভাৰ",
+  "onboardingAdvancedOptionsFooter": "আপুনি পিছত App Settings ত এই ছেটিংছ সলনি কৰিব পাৰে",
+  "onboardingAdvancedOptionsDone": "সম্পূৰ্ণ",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support ত সহায়ৰ সৈতে যোগাযোগ কৰক",
+  "importWalletBitboxAndroidOnly": "BitBox কেৱল Android ত সমৰ্থিত"
 }

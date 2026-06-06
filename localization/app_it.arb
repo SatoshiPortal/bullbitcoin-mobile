@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se:",
+  "backupWarningLoseReasonLostPhone": "Perdi il telefono",
+  "backupWarningLoseReasonDeletedApp": "Elimini l'app",
+  "backupWarningLoseReasonCriticalIssue": "Si verifica un problema critico legato all'applicazione o al dispositivo",
+  "backupWarningLoseReasonKeystore": "Il dispositivo invalida il keystore quando modifichi l'autenticazione della schermata di blocco o del dispositivo",
+  "backupWarningLoseReasonCloudRestore": "Ripristinare il dispositivo da un backup sul cloud",
+  "backupWarningNoRecovery": "Non c'è modo di recuperare il portafoglio senza un backup.",
   "translationWarningTitle": "Traduzioni generate dall'IA",
   "translationWarningDescription": "La maggior parte delle traduzioni in questa app sono state generate utilizzando l'IA e potrebbero contenere imprecisioni. Se noti errori o desideri aiutare a migliorare le traduzioni, puoi inviare una correzione sul nostro repository GitHub.",
   "translationWarningContributeButton": "Aiuta a migliorare le traduzioni",
@@ -192,6 +199,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Ricevi la quantità esatta",
+  "swapInsufficientFunds": "Fondi insufficienti",
   "arkContinueButton": "Continua",
   "ledgerImportButton": "Inizio Importazione",
   "dcaActivate": "Attivare l'acquisto ricorrente",
@@ -220,7 +228,7 @@
   "payServiceFee": "Costo del servizio",
   "transactionStatusSwapExpired": "Scambio scaduto",
   "swapAmountPlaceholder": "0",
-  "fundExchangeMethodInstantSepaSubtitle": "Più veloce - Solo per operazioni inferiori a €20.000",
+  "fundExchangeMethodInstantSepaSubtitle": "Più veloce - Solo per operazioni inferiori a €30.000",
   "dcaConfirmError": "Qualcosa non andava: {error}",
   "@dcaConfirmError": {
     "placeholders": {
@@ -1590,7 +1598,7 @@
     }
   },
   "dcaFrequencyWeekly": "settimana",
-  "fundExchangeMethodRegularSepaSubtitle": "Utilizzare solo per operazioni più grandi superiori a €20.000",
+  "fundExchangeMethodRegularSepaSubtitle": "Utilizzare solo per operazioni più grandi superiori a €30.000",
   "settingsTelegramLabel": "Telegramma",
   "walletDetailsSignerDeviceNotSupported": "Non supportato",
   "exchangeLandingDisclaimerLegal": "L'accesso ai servizi di scambio sarà limitato ai paesi in cui Bull Bitcoin può operare legalmente e può richiedere KYC.",
@@ -3999,6 +4007,7 @@
   "swapProgressPendingMessage": "Il trasferimento è in corso. Le transazioni Bitcoin possono richiedere un po' di tempo per confermare. Puoi tornare a casa e aspettare.",
   "walletDetailsNetworkLabel": "Rete di rete",
   "broadcastSignedTxBroadcasting": "Trasmissione...",
+  "broadcastSignedTxBroadcastError": "Trasmissione della transazione non riuscita",
   "recoverbullSelectRecoverWallet": "Recuperare Wallet",
   "receivePayjoinActivated": "Payjoin attivato",
   "importMnemonicContinue": "Continua",
@@ -4432,10 +4441,6 @@
   "@backupWarningTitle": {
     "description": "Title for the backup warning bottom sheet"
   },
-  "backupWarningDescription": "Senza un backup, perderai l'accesso ai tuoi bitcoin se perdi il telefono, elimini l'app o incontri un problema critico legato all'applicazione o al dispositivo. Non c'è modo di recuperare il portafoglio senza un backup.",
-  "@backupWarningDescription": {
-    "description": "Description explaining why backup is important"
-  },
   "backupWarningBackupNow": "SÌ",
   "@backupWarningBackupNow": {
     "description": "Button to navigate to backup options"
@@ -4772,5 +4777,39 @@
   "recipientsValidationSinpePhoneCountryCode": "Rimuovi il prefisso internazionale (+506). Inserisci solo il numero a 8 cifre",
   "recipientsValidationSinpePhoneInvalidChars": "Usa solo cifre (no lettere o simboli)",
   "recipientsValidationSinpePhoneTooShort": "Inserisci tutte le 8 cifre del numero di telefono",
-  "transactionStatusPayjoinCompleted": "Payjoin completato"
+  "transactionStatusPayjoinCompleted": "Payjoin completato",
+  "homeActionBuy": "Acquista",
+  "homeActionSell": "Vendi",
+  "homeActionPay": "Paga",
+  "homeActionTransfer": "Trasferisci",
+  "backupCardTitle": "Proteggi i tuoi bitcoin.",
+  "backupCardSubtitle": "Esegui ora il backup del tuo portafoglio.",
+  "mempoolCustomServerNoSsl": "Senza SSL",
+  "autoswapTargetBalanceLabel": "Saldo obiettivo del portafoglio istantaneo",
+  "autoswapMaximumBalanceLabel": "Saldo massimo del portafoglio istantaneo",
+  "recoverbullServerConfirmTitle": "Server di recupero del caveau",
+  "recoverbullServerUsingDefault": "In uso il server predefinito",
+  "recoverbullServerUsingCustom": "In uso un server personalizzato",
+  "recoverbullServerUrlLabel": "URL del server:",
+  "recoverbullServerCustomWarning": "Stai usando un server Recoverbull personalizzato. Assicurati di fidarti di questo server.",
+  "recoverbullServerTorNotice": "Ci collegheremo a questo server tramite Tor",
+  "recoverbullLearnMore": "Scopri di più su Recoverbull",
+  "recoverbullSettingsTitle": "Impostazioni Recoverbull",
+  "recoverbullSettingsKeyServerUrl": "URL del server delle chiavi",
+  "recoverbullSettingsEdit": "Modifica",
+  "recoverbullSettingsCancel": "Annulla",
+  "recoverbullSettingsSave": "Salva",
+  "recoverbullSettingsUrlRequired": "L'URL è obbligatorio",
+  "recoverbullSettingsUrlInvalid": "L'URL non è valido",
+  "recoverbullSettingsUrlMustBeHttp": "L'URL deve essere HTTP",
+  "recoverbullSettingsUrlMustBeOnion": "L'URL deve terminare con .onion",
+  "onboardingAdvancedOptionsTitle": "Opzioni avanzate",
+  "onboardingAdvancedOptionsDescription": "Configura le impostazioni avanzate prima di creare o recuperare il tuo portafoglio",
+  "onboardingAdvancedOptionsCustomElectrum": "Server Electrum personalizzato",
+  "onboardingAdvancedOptionsCustomMempool": "Server Mempool personalizzato",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Server Recoverbull personalizzato",
+  "onboardingAdvancedOptionsFooter": "Puoi modificare queste impostazioni in seguito nelle impostazioni dell'app",
+  "onboardingAdvancedOptionsDone": "Fatto",
+  "appStartupContactSupportMessage": "Contatta il supporto su app.bullbitcoin.com/support",
+  "importWalletBitboxAndroidOnly": "BitBox è supportato solo su Android"
 }

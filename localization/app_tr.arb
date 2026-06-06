@@ -1,4 +1,11 @@
 {
+  "backupWarningDescription": "Yedek olmadan, şu durumlarda bitcoin'lerinize erişimi kaybedersiniz:",
+  "backupWarningLoseReasonLostPhone": "Telefonunuzu kaybederseniz",
+  "backupWarningLoseReasonDeletedApp": "Uygulamayı silerseniz",
+  "backupWarningLoseReasonCriticalIssue": "Kritik bir uygulama veya cihaz sorunu oluşursa",
+  "backupWarningLoseReasonKeystore": "Kilit ekranını veya cihaz kimlik doğrulamasını değiştirdiğinizde cihazınız keystore'u geçersiz kılar",
+  "backupWarningLoseReasonCloudRestore": "Cihazınızı bir bulut yedeğinden geri yüklerseniz",
+  "backupWarningNoRecovery": "Yedek olmadan cüzdanınızı kurtarmanın hiçbir yolu yoktur.",
   "bitboxErrorMultipleDevicesFound": "Birçok BitBox cihazı bulundu. Lütfen sadece bir cihazın bağlantılı olmasını sağlayın.",
   "@bitboxErrorMultipleDevicesFound": {
     "description": "Error when multiple BitBox devices are connected"
@@ -524,6 +531,7 @@
     }
   },
   "swapReceiveExactAmountLabel": "Tam miktar alın",
+  "swapInsufficientFunds": "Yetersiz bakiye",
   "@swapReceiveExactAmountLabel": {
     "description": "Label when receive exact amount toggle is on"
   },
@@ -616,7 +624,7 @@
   "@swapAmountPlaceholder": {
     "description": "Placeholder for amount input fields"
   },
-  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 20.000 € Aşağıdaki işlemler için",
+  "fundExchangeMethodInstantSepaSubtitle": "En Hızlı - Sadece 30.000 € Aşağıdaki işlemler için",
   "@fundExchangeMethodInstantSepaSubtitle": {
     "description": "Subtitle for Instant SEPA payment method"
   },
@@ -4847,7 +4855,7 @@
   "@dcaFrequencyWeekly": {
     "description": "Weekly DCA frequency"
   },
-  "fundExchangeMethodRegularSepaSubtitle": "Sadece 20.000 € üzerinde daha büyük işlemler için kullanın",
+  "fundExchangeMethodRegularSepaSubtitle": "Sadece 30.000 € üzerinde daha büyük işlemler için kullanın",
   "@fundExchangeMethodRegularSepaSubtitle": {
     "description": "Subtitle for Regular SEPA payment method"
   },
@@ -11895,6 +11903,7 @@
     "description": "Label for the network field in wallet details"
   },
   "broadcastSignedTxBroadcasting": "Yayınlama...",
+  "broadcastSignedTxBroadcastError": "İşlem yayınlanamadı",
   "@broadcastSignedTxBroadcasting": {
     "description": "Loading message while broadcasting"
   },
@@ -12637,5 +12646,39 @@
   "recipientsValidationSinpePhoneTooShort": "Telefon numarasının 8 hanesini de girin",
   "recipientsFieldDocumentType": "Alıcı kimlik türü",
   "recipientsFieldDocumentNumberHint": "Alıcının kimlik numarasını girin",
-  "recipientsValidationSinpePhone": "Ülke kodu olmadan geçerli 8 haneli bir Kosta Rika telefon numarası girin"
+  "recipientsValidationSinpePhone": "Ülke kodu olmadan geçerli 8 haneli bir Kosta Rika telefon numarası girin",
+  "homeActionBuy": "Satın Al",
+  "homeActionSell": "Sat",
+  "homeActionPay": "Öde",
+  "homeActionTransfer": "Aktar",
+  "backupCardTitle": "Bitcoin'inizi koruyun.",
+  "backupCardSubtitle": "Cüzdanınızı şimdi yedekleyin.",
+  "mempoolCustomServerNoSsl": "SSL Yok",
+  "autoswapTargetBalanceLabel": "Hedef Anlık Cüzdan Bakiyesi",
+  "autoswapMaximumBalanceLabel": "Maksimum Anlık Cüzdan Bakiyesi",
+  "recoverbullServerConfirmTitle": "Kasa Kurtarma Sunucusu",
+  "recoverbullServerUsingDefault": "Varsayılan Sunucu Kullanılıyor",
+  "recoverbullServerUsingCustom": "Özel Sunucu Kullanılıyor",
+  "recoverbullServerUrlLabel": "Sunucu URL'si:",
+  "recoverbullServerCustomWarning": "Özel bir Recoverbull sunucusu kullanıyorsunuz. Bu sunucuya güvendiğinizden emin olun.",
+  "recoverbullServerTorNotice": "Bu sunucuya Tor üzerinden bağlanacağız",
+  "recoverbullLearnMore": "Recoverbull hakkında daha fazla bilgi edinin",
+  "recoverbullSettingsTitle": "Recoverbull Ayarları",
+  "recoverbullSettingsKeyServerUrl": "Anahtar Sunucu URL'si",
+  "recoverbullSettingsEdit": "Düzenle",
+  "recoverbullSettingsCancel": "İptal",
+  "recoverbullSettingsSave": "Kaydet",
+  "recoverbullSettingsUrlRequired": "URL gereklidir",
+  "recoverbullSettingsUrlInvalid": "URL geçerli değil",
+  "recoverbullSettingsUrlMustBeHttp": "URL, HTTP olmalıdır",
+  "recoverbullSettingsUrlMustBeOnion": "URL, .onion ile bitmelidir",
+  "onboardingAdvancedOptionsTitle": "Gelişmiş Seçenekler",
+  "onboardingAdvancedOptionsDescription": "Cüzdanınızı oluşturmadan veya kurtarmadan önce gelişmiş ayarları yapılandırın",
+  "onboardingAdvancedOptionsCustomElectrum": "Özel Electrum Sunucusu",
+  "onboardingAdvancedOptionsCustomMempool": "Özel Mempool Sunucusu",
+  "onboardingAdvancedOptionsCustomRecoverbull": "Özel Recoverbull Sunucusu",
+  "onboardingAdvancedOptionsFooter": "Bu ayarları daha sonra Uygulama Ayarları'ndan değiştirebilirsiniz",
+  "onboardingAdvancedOptionsDone": "Tamam",
+  "appStartupContactSupportMessage": "app.bullbitcoin.com/support adresinden destek ile iletişime geçin",
+  "importWalletBitboxAndroidOnly": "BitBox yalnızca Android'de desteklenir"
 }
