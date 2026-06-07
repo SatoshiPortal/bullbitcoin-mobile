@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -47,7 +48,7 @@ class _VerifyAddressView extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Verify Address on Trezor',
+          title: context.loc.trezorVerifyTitle,
           color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
         ),
@@ -55,12 +56,15 @@ class _VerifyAddressView extends StatelessWidget {
       body: BlocConsumer<TrezorVerifyAddressCubit, TrezorOperationState<bool>>(
         listener: (context, state) {
           if (state.isSuccess) {
-            SnackBarUtils.showSnackBar(context, 'Address verified on Trezor');
+            SnackBarUtils.showSnackBar(
+              context,
+              context.loc.trezorVerifySuccessSnackbar,
+            );
             context.pop();
           } else if (state.isError) {
             SnackBarUtils.showSnackBar(
               context,
-              state.errorMessage ?? 'Verification failed',
+              state.errorMessage ?? context.loc.trezorVerifyErrorSnackbarFallback,
             );
           }
         },
@@ -92,13 +96,13 @@ class _VerifyAddressView extends StatelessWidget {
         _buildIconForState(context, state),
         const Gap(24),
         BBText(
-          _getMainTextForState(state),
+          _getMainTextForState(context, state),
           textAlign: TextAlign.center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
-          _getSubTextForState(state),
+          _getSubTextForState(context, state),
           textAlign: TextAlign.center,
           color: context.appColors.textMuted,
           style: context.font.bodyMedium,
@@ -139,14 +143,14 @@ class _VerifyAddressView extends StatelessWidget {
         if (state.isInitial)
           BBButton.big(
             onPressed: () => _onVerify(context),
-            label: 'Verify Address',
+            label: context.loc.trezorVerifyStartButton,
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
         if (state.isError)
           BBButton.big(
             onPressed: () => context.read<TrezorVerifyAddressCubit>().reset(),
-            label: 'Try Again',
+            label: context.loc.trezorTryAgain,
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
@@ -162,7 +166,7 @@ class _VerifyAddressView extends StatelessWidget {
     return Column(
       children: [
         BBText(
-          'Compare with the address shown on your Trezor device:',
+          context.loc.trezorVerifyAddressDisplayLabel,
           style: context.font.bodyMedium,
           color: context.appColors.textMuted,
           textAlign: TextAlign.center,
@@ -201,7 +205,7 @@ class _VerifyAddressView extends StatelessWidget {
                     ),
                     const Gap(4),
                     BBText(
-                      'Long-press to copy',
+                      context.loc.trezorVerifyCopyHint,
                       style: context.font.bodySmall,
                       color: context.appColors.textMuted,
                     ),
@@ -217,28 +221,24 @@ class _VerifyAddressView extends StatelessWidget {
 
   // ───────────────────────── Helpers ─────────────────────────
 
-  // TODO: localize all of these once ARB keys are added.
-
-  String _getMainTextForState(TrezorOperationState state) {
+  String _getMainTextForState(BuildContext context, TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Confirm on your Trezor device';
+      return context.loc.trezorVerifyWaitingTitle;
     }
     if (state.isError) {
-      return 'Verification Failed';
+      return context.loc.trezorVerifyFailedTitle;
     }
-    return 'Verify Receive Address';
+    return context.loc.trezorVerifyInitialTitle;
   }
 
-  String _getSubTextForState(TrezorOperationState state) {
+  String _getSubTextForState(BuildContext context, TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Compare the address shown on your Trezor device with '
-          'the one shown here, then confirm on the device.';
+      return context.loc.trezorVerifyWaitingSubtitle;
     }
     if (state.isError) {
-      return state.errorMessage ?? 'Tap Try Again to retry verification.';
+      return state.errorMessage ?? context.loc.trezorVerifyFailedFallback;
     }
-    return 'Tap "Verify Address" to display this address on your '
-        'Trezor device and confirm it matches.';
+    return context.loc.trezorVerifyInitialSubtitle;
   }
 
   // ───────────────────────── Actions ─────────────────────────

@@ -760,7 +760,7 @@ class VerifyAddressOnTrezorButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: BBButton.big(
-        label: 'Verify Address on Trezor',
+        label: context.loc.receiveVerifyAddressTrezor,
         onPressed: () {
           final state = context.read<ReceiveBloc>().state;
           if (state.wallet == null || state.bitcoinAddress == null) {

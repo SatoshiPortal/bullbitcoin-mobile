@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/widgets/bottom_sheet/x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -58,7 +59,7 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Import Trezor Wallet',
+          title: context.loc.trezorImportTitle,
           color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
         ),
@@ -113,13 +114,13 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
         _buildIconForState(context, state),
         const Gap(24),
         BBText(
-          _getMainTextForState(state),
+          _getMainTextForState(context, state),
           textAlign: TextAlign.center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
-          _getSubTextForState(state),
+          _getSubTextForState(context, state),
           textAlign: TextAlign.center,
           color: context.appColors.textMuted,
           style: context.font.bodyMedium,
@@ -167,14 +168,14 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
         if (state.isInitial)
           BBButton.big(
             onPressed: () => _startImport(context),
-            label: 'Start Import',
+            label: context.loc.trezorImportStartButton,
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
         if (state.isError)
           BBButton.big(
             onPressed: () => context.read<TrezorImportCubit>().reset(),
-            label: 'Try Again',
+            label: context.loc.trezorTryAgain,
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
@@ -186,7 +187,7 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
     return Column(
       children: [
         BBText(
-          'Wallet Type:',
+          context.loc.trezorImportWalletTypeLabel,
           style: context.font.bodyMedium,
           color: context.appColors.textMuted,
         ),
@@ -213,7 +214,7 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
                   children: [
                     Expanded(
                       child: BBText(
-                        _getScriptTypeDisplayName(_selectedScriptType),
+                        _getScriptTypeDisplayName(context, _selectedScriptType),
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -236,41 +237,38 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
 
   // ───────────────────────── Helpers ─────────────────────────
 
-  // TODO: all of these resolve hardcoded English. Migrate
-  // once ARB keys are added.
-
-  String _getMainTextForState(TrezorOperationState state) {
+  String _getMainTextForState(BuildContext context, TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Confirm in Trezor Suite';
+      return context.loc.trezorImportWaitingTitle;
     }
     if (state.isError) {
-      return 'Import Failed';
+      return context.loc.trezorImportFailedTitle;
     }
-    return 'Connect Your Trezor';
+    return context.loc.trezorImportInitialTitle;
   }
 
-  String _getSubTextForState(TrezorOperationState state) {
+  String _getSubTextForState(BuildContext context, TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Confirm the export request in Trezor Suite '
-          'to share your account public key.';
+      return context.loc.trezorImportWaitingSubtitle;
     }
     if (state.isError) {
-      return state.errorMessage ?? 'Tap Try Again to start over.';
+      return state.errorMessage ?? context.loc.trezorImportFailedFallback;
     }
-    return 'Make sure Trezor Suite is installed on this device. '
-        "You'll be redirected to authorize exporting your public key.";
+    return context.loc.trezorImportInitialSubtitle;
   }
 
-  String _getScriptTypeDisplayName(ScriptType scriptType) =>
-      switch (scriptType) {
-        ScriptType.bip84 => 'Segwit (BIP84)',
-        ScriptType.bip49 => 'Nested Segwit (BIP49)',
-        ScriptType.bip44 => 'Legacy (BIP44)',
-      };
+  String _getScriptTypeDisplayName(
+    BuildContext context,
+    ScriptType scriptType,
+  ) => switch (scriptType) {
+    ScriptType.bip84 => context.loc.trezorScriptTypeBip84Title,
+    ScriptType.bip49 => context.loc.trezorScriptTypeBip49Title,
+    ScriptType.bip44 => context.loc.trezorScriptTypeBip44Title,
+  };
 
   String _getErrorMessage(BuildContext context, String? errorMessage) {
     if (errorMessage == null || errorMessage.isEmpty) {
-      return 'Something went wrong. Try again.';
+      return context.loc.trezorImportErrorSnackbarFallback;
     }
     return errorMessage;
   }
@@ -284,24 +282,24 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
   Future<void> _showScriptTypeSelection(BuildContext context) async {
     final scriptTypeItems = <SelectableListItem>[
       if (kTrezorSupportedScriptTypes.contains(ScriptType.bip84))
-        const SelectableListItem(
+        SelectableListItem(
           value: 'bip84',
-          title: 'Segwit (BIP84)',
-          subtitle1: 'Native SegWit — Recommended',
+          title: context.loc.trezorScriptTypeBip84Title,
+          subtitle1: context.loc.trezorScriptTypeBip84Subtitle,
           subtitle2: '',
         ),
       if (kTrezorSupportedScriptTypes.contains(ScriptType.bip49))
-        const SelectableListItem(
+        SelectableListItem(
           value: 'bip49',
-          title: 'Nested Segwit (BIP49)',
-          subtitle1: 'P2WPKH-nested-in-P2SH',
+          title: context.loc.trezorScriptTypeBip49Title,
+          subtitle1: context.loc.trezorScriptTypeBip49Subtitle,
           subtitle2: '',
         ),
       if (kTrezorSupportedScriptTypes.contains(ScriptType.bip44))
-        const SelectableListItem(
+        SelectableListItem(
           value: 'bip44',
-          title: 'Legacy (BIP44)',
-          subtitle1: 'P2PKH — Older format',
+          title: context.loc.trezorScriptTypeBip44Title,
+          subtitle1: context.loc.trezorScriptTypeBip44Subtitle,
           subtitle2: '',
         ),
     ];
@@ -317,7 +315,7 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
               children: [
                 const Gap(16),
                 BBText(
-                  'Select Wallet Type',
+                  context.loc.trezorImportWalletTypeBottomSheetTitle,
                   style: context.font.headlineMedium,
                 ),
                 const Gap(16),

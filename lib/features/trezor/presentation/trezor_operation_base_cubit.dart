@@ -136,7 +136,14 @@ abstract class TrezorOperationBaseCubit<T>
 
   /// Maps an application-layer error to a user-facing message.
   ///
-  /// TODO: swap these hardcoded strings for ARB keys
+  /// These strings deliberately stay hardcoded English (matching the
+  /// existing Ledger / BitBox cubits in this repo) because the cubit
+  /// does not have BuildContext access — localizing requires either
+  /// passing context into the cubit (anti-pattern), or restructuring
+  /// TrezorOperationState to carry the typed TrezorApplicationError
+  /// itself and resolving it via context.loc in each screen. The
+  /// state-shape refactor is meaningful scope; defer to a follow-up
+  /// alongside the same Ledger/BitBox cleanup.
   String _messageFor(TrezorApplicationError e) => switch (e) {
     TrezorUserRejected() => 'Request rejected in Trezor Suite',
     TrezorSuiteNotInstalled() =>

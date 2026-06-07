@@ -1941,7 +1941,7 @@ class SignTrezorButton extends StatelessWidget {
     );
 
     return BBButton.big(
-      label: 'Sign with Trezor',
+      label: context.loc.sendSignWithTrezor,
       onPressed: () async {
         if (unsignedPsbt == null || scriptType == null) {
           return;

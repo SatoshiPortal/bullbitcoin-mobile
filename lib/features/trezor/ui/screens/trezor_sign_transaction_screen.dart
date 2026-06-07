@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
+import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
@@ -47,7 +48,7 @@ class _SignTransactionView extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Sign Transaction',
+          title: context.loc.trezorSignTitle,
           color: context.appColors.background,
           onBack: () => Navigator.of(context).pop(),
         ),
@@ -63,7 +64,7 @@ class _SignTransactionView extends StatelessWidget {
               } else if (state.isError) {
                 SnackBarUtils.showSnackBar(
                   context,
-                  state.errorMessage ?? 'Signing failed',
+                  state.errorMessage ?? context.loc.trezorSignErrorSnackbarFallback,
                 );
               }
             },
@@ -95,13 +96,13 @@ class _SignTransactionView extends StatelessWidget {
         _buildIconForState(context, state),
         const Gap(24),
         BBText(
-          _getMainTextForState(state),
+          _getMainTextForState(context, state),
           textAlign: TextAlign.center,
           style: context.font.bodyLarge,
         ),
         const Gap(16),
         BBText(
-          _getSubTextForState(state),
+          _getSubTextForState(context, state),
           textAlign: TextAlign.center,
           color: context.appColors.textMuted,
           style: context.font.bodyMedium,
@@ -141,14 +142,14 @@ class _SignTransactionView extends StatelessWidget {
         if (state.isInitial)
           BBButton.big(
             onPressed: () => _onStartSigning(context),
-            label: 'Start Signing',
+            label: context.loc.trezorSignStartButton,
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
         if (state.isError)
           BBButton.big(
             onPressed: () => context.read<TrezorSignTransactionCubit>().reset(),
-            label: 'Try Again',
+            label: context.loc.trezorTryAgain,
             bgColor: context.appColors.primary,
             textColor: context.appColors.onPrimary,
           ),
@@ -158,27 +159,22 @@ class _SignTransactionView extends StatelessWidget {
 
   // ───────────────────────── Helpers ─────────────────────────
 
-  // TODO: localize all of these once ARB keys are added.
-
-  String _getMainTextForState(TrezorOperationState state) {
+  String _getMainTextForState(BuildContext context, TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Confirm in Trezor Suite';
+      return context.loc.trezorSignWaitingTitle;
     }
-    if (state.isError) return 'Signing Failed';
-    return 'Sign Transaction';
+    if (state.isError) return context.loc.trezorSignFailedTitle;
+    return context.loc.trezorSignTitle;
   }
 
-  String _getSubTextForState(TrezorOperationState state) {
+  String _getSubTextForState(BuildContext context, TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Your Trezor device will show the transaction details. '
-          'Review the destination, amount, and fee, then confirm '
-          'on the device.';
+      return context.loc.trezorSignWaitingSubtitle;
     }
     if (state.isError) {
-      return state.errorMessage ?? 'Tap Try Again to start over.';
+      return state.errorMessage ?? context.loc.trezorSignFailedFallback;
     }
-    return 'Tap "Start Signing" to review and confirm the transaction '
-        'on your Trezor device.';
+    return context.loc.trezorSignInitialSubtitle;
   }
 
   // ───────────────────────── Actions ─────────────────────────

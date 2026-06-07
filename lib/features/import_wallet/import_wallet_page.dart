@@ -123,7 +123,7 @@ class ImportWalletPage extends StatelessWidget {
                 ),
                 const Gap(16),
                 TabMenuVerticalButton(
-                  title: 'Trezor',
+                  title: context.loc.importWalletTrezor,
                   onTap: () => context.pushNamed(TrezorRoute.importTrezor.name),
                 ),
               ],
