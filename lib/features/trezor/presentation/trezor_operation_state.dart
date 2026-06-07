@@ -6,7 +6,6 @@ enum TrezorOperationStatus {
   initial,
   launching,
   waitingForSuite,
-  processing,
   success,
   error,
 }
@@ -24,7 +23,6 @@ abstract class TrezorOperationState<T> with _$TrezorOperationState<T> {
   bool get isInitial => status == TrezorOperationStatus.initial;
   bool get isLaunching => status == TrezorOperationStatus.launching;
   bool get isWaiting => status == TrezorOperationStatus.waitingForSuite;
-  bool get isProcessing => status == TrezorOperationStatus.processing;
   bool get isSuccess => status == TrezorOperationStatus.success;
   bool get isError => status == TrezorOperationStatus.error;
 }

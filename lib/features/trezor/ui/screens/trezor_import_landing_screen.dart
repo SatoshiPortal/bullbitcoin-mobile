@@ -153,10 +153,6 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
       );
     }
 
-    if (state.isProcessing) {
-      return Icon(Icons.download, size: 80, color: context.appColors.primary);
-    }
-
     if (state.isError) {
       return Icon(Icons.error, size: 80, color: context.appColors.error);
     }
@@ -247,9 +243,6 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
     if (state.isLaunching || state.isWaiting) {
       return 'Confirm in Trezor Suite';
     }
-    if (state.isProcessing) {
-      return 'Importing…';
-    }
     if (state.isError) {
       return 'Import Failed';
     }
@@ -260,9 +253,6 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
     if (state.isLaunching || state.isWaiting) {
       return 'Confirm the export request in Trezor Suite '
           'to share your account public key.';
-    }
-    if (state.isProcessing) {
-      return 'Preparing your wallet…';
     }
     if (state.isError) {
       return state.errorMessage ?? 'Tap Try Again to start over.';

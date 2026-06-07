@@ -128,9 +128,6 @@ class _SignTransactionView extends StatelessWidget {
         ),
       );
     }
-    if (state.isProcessing) {
-      return Icon(Icons.edit, size: 80, color: context.appColors.primary);
-    }
     if (state.isError) {
       return Icon(Icons.error, size: 80, color: context.appColors.error);
     }
@@ -167,7 +164,6 @@ class _SignTransactionView extends StatelessWidget {
     if (state.isLaunching || state.isWaiting) {
       return 'Confirm in Trezor Suite';
     }
-    if (state.isProcessing) return 'Signing Transaction';
     if (state.isError) return 'Signing Failed';
     return 'Sign Transaction';
   }
@@ -177,9 +173,6 @@ class _SignTransactionView extends StatelessWidget {
       return 'Your Trezor device will show the transaction details. '
           'Review the destination, amount, and fee, then confirm '
           'on the device.';
-    }
-    if (state.isProcessing) {
-      return "You'll be redirected back to your wallet…";
     }
     if (state.isError) {
       return state.errorMessage ?? 'Tap Try Again to start over.';

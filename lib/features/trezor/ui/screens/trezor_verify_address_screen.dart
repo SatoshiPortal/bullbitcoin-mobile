@@ -126,13 +126,6 @@ class _VerifyAddressView extends StatelessWidget {
         ),
       );
     }
-    if (state.isProcessing) {
-      return Icon(
-        Icons.verified_user,
-        size: 80,
-        color: context.appColors.primary,
-      );
-    }
     if (state.isError) {
       return Icon(Icons.error, size: 80, color: context.appColors.error);
     }
@@ -230,9 +223,6 @@ class _VerifyAddressView extends StatelessWidget {
     if (state.isLaunching || state.isWaiting) {
       return 'Confirm on your Trezor device';
     }
-    if (state.isProcessing) {
-      return 'Verifying…';
-    }
     if (state.isError) {
       return 'Verification Failed';
     }
@@ -243,9 +233,6 @@ class _VerifyAddressView extends StatelessWidget {
     if (state.isLaunching || state.isWaiting) {
       return 'Compare the address shown on your Trezor device with '
           'the one shown here, then confirm on the device.';
-    }
-    if (state.isProcessing) {
-      return 'Returning to your wallet…';
     }
     if (state.isError) {
       return state.errorMessage ?? 'Tap Try Again to retry verification.';
