@@ -208,9 +208,14 @@ class TrezorConnectDatasource {
           ),
         );
       } else {
-        // External destination: derive the address from scriptPubkey
-        // and byte-detect the script type — we don't know what kind of
-        // wallet the recipient uses, so we infer from the on-chain shape.
+        // External destination: Trezor's protocol expects
+        //   script_type: 'PAYTOADDRESS'
+        // whenever the output is identified by `address` (vs. an
+        // own-change `address_n`). Suite parses the address string
+        // itself to determine the actual on-chain script type
+        // (P2WPKH, P2TR, P2SH, etc.); the script_type field is only
+        // semantically meaningful when address_n is set (for change
+        // outputs).
         final address = bdk.Address.fromScript(
           script: txOut.scriptPubkey,
           network: network,
@@ -219,7 +224,7 @@ class TrezorConnectDatasource {
           TrezorTxOutput(
             amount: amount,
             address: address.toString(),
-            scriptType: detectOutputScriptType(txOut.scriptPubkey.toBytes()),
+            scriptType: 'PAYTOADDRESS',
           ),
         );
       }
@@ -249,46 +254,12 @@ String inputScriptTypeFor(ScriptType scriptType) => switch (scriptType) {
 
 /// Maps wallet ScriptType to Trezor's output-script-type label for
 /// CHANGE outputs (where the wallet's derivation family is known).
-/// External outputs use [detectOutputScriptType] (byte detection) — we
-/// can't know the recipient's wallet type from on-chain script alone.
 @visibleForTesting
 String changeOutputScriptTypeFor(ScriptType scriptType) => switch (scriptType) {
   ScriptType.bip84 => 'PAYTOWITNESS',
   ScriptType.bip49 => 'PAYTOP2SHWITNESS',
   ScriptType.bip44 => 'PAYTOADDRESS',
 };
-
-/// Detects Trezor's output script-type label from raw scriptPubkey bytes.
-/// Used for EXTERNAL outputs only — wallet-owned change outputs use
-/// [changeOutputScriptTypeFor] which knows the wallet's ScriptType.
-///
-/// P2SH-P2WPKH is indistinguishable from plain P2SH at the byte level,
-/// so external P2SH outputs always get PAYTOSCRIPTHASH here.
-@visibleForTesting
-String detectOutputScriptType(List<int> bytes) {
-  if (bytes.length == 22 && bytes[0] == 0x00 && bytes[1] == 0x14) {
-    return 'PAYTOWITNESS'; // P2WPKH (BIP84)
-  }
-  if (bytes.length == 34 && bytes[0] == 0x00 && bytes[1] == 0x20) {
-    return 'PAYTOWITNESS'; // P2WSH
-  }
-  if (bytes.length == 25 &&
-      bytes[0] == 0x76 &&
-      bytes[1] == 0xa9 &&
-      bytes[2] == 0x14) {
-    return 'PAYTOADDRESS'; // P2PKH
-  }
-  if (bytes.length == 23 &&
-      bytes[0] == 0xa9 &&
-      bytes[1] == 0x14 &&
-      bytes[22] == 0x87) {
-    return 'PAYTOSCRIPTHASH'; // P2SH
-  }
-  if (bytes.length == 34 && bytes[0] == 0x51 && bytes[1] == 0x20) {
-    return 'PAYTOTAPROOT'; // P2TR
-  }
-  return 'PAYTOWITNESS'; // default for first-pass BIP84 wallets
-}
 
 @visibleForTesting
 String trezorCoinLabelFor({required bool isTestnet}) =>
