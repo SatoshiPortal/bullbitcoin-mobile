@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
-import 'package:bb_mobile/features/trezor/domain/entities/trezor_signed_psbt.dart';
 
 abstract class TrezorDeviceRepository {
   Future<List<TrezorAccount>> getAccounts({
@@ -10,7 +9,7 @@ abstract class TrezorDeviceRepository {
     required bool isTestnet,
   });
 
-  Future<TrezorSignedPsbt> signPsbt({
+  Future<String> signPsbt({
     required String psbtBase64,
     required bool isTestnet,
     required ScriptType scriptType,

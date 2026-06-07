@@ -13,15 +13,12 @@ class TrezorSignTransactionCubit extends TrezorOperationBaseCubit<String> {
     required bool isTestnet,
     required ScriptType scriptType,
   }) {
-    return runOperation(() async {
-      final signed = await _signPsbt.execute(
+    return runOperation(
+      () => _signPsbt.execute(
         psbtBase64: psbt,
         isTestnet: isTestnet,
         scriptType: scriptType,
-      );
-      // Project to the broadcast-ready hex String — that's what
-      // SendCubit.updateSignedBitcoinTx expects.
-      return signed.serializedTxHex;
-    });
+      ),
+    );
   }
 }

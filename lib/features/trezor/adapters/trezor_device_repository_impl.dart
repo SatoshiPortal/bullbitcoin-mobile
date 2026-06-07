@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/trezor/application/application_errors.dart';
 import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
 import 'package:bb_mobile/features/trezor/domain/entities/trezor_account.dart';
-import 'package:bb_mobile/features/trezor/domain/entities/trezor_signed_psbt.dart';
 import 'package:bb_mobile/features/trezor/frameworks/framework_errors.dart';
 import 'package:bb_mobile/features/trezor/frameworks/trezor_connect_datasource.dart';
 import 'package:trezor_connect/models.dart';
@@ -73,7 +72,7 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
   }
 
   @override
-  Future<TrezorSignedPsbt> signPsbt({
+  Future<String> signPsbt({
     required String psbtBase64,
     required bool isTestnet,
     required ScriptType scriptType,
@@ -84,10 +83,7 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
         isTestnet: isTestnet,
         scriptType: scriptType,
       );
-      return TrezorSignedPsbt(
-        serializedTxHex: signed.serializedTx,
-        txid: signed.txid,
-      );
+      return signed.serializedTx;
     } on Exception catch (e) {
       throw _mapError(e);
     }

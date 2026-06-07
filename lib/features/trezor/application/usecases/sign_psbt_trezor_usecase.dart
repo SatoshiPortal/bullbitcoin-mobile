@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/trezor/application/application_errors.dart';
 import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
-import 'package:bb_mobile/features/trezor/domain/entities/trezor_signed_psbt.dart';
 
 class SignPsbtTrezorUsecase {
   final TrezorDeviceRepository _repository;
@@ -9,7 +8,7 @@ class SignPsbtTrezorUsecase {
   SignPsbtTrezorUsecase({required TrezorDeviceRepository repository})
     : _repository = repository;
 
-  Future<TrezorSignedPsbt> execute({
+  Future<String> execute({
     required String psbtBase64,
     required bool isTestnet,
     required ScriptType scriptType,
