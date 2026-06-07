@@ -164,7 +164,7 @@ class _VerifyAddressView extends StatelessWidget {
     return Column(
       children: [
         BBText(
-          'Compare with the address shown in Trezor Suite:',
+          'Compare with the address shown on your Trezor device:',
           style: context.font.bodyMedium,
           color: context.appColors.textMuted,
           textAlign: TextAlign.center,
@@ -196,7 +196,7 @@ class _VerifyAddressView extends StatelessWidget {
 
   String _getMainTextForState(TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Confirm in Trezor Suite';
+      return 'Confirm on your Trezor device';
     }
     if (state.isProcessing) {
       return 'Verifying…';
@@ -209,8 +209,8 @@ class _VerifyAddressView extends StatelessWidget {
 
   String _getSubTextForState(TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Trezor Suite will display this address. Compare it with '
-          'the one shown here and confirm on your device.';
+      return 'Compare the address shown on your Trezor device with '
+          'the one shown here, then confirm on the device.';
     }
     if (state.isProcessing) {
       return 'Returning to your wallet…';
@@ -218,8 +218,8 @@ class _VerifyAddressView extends StatelessWidget {
     if (state.isError) {
       return state.errorMessage ?? 'Tap Try Again to retry verification.';
     }
-    return 'Tap "Verify Address" to display this address in Trezor '
-        'Suite and confirm it matches.';
+    return 'Tap "Verify Address" to display this address on your '
+        'Trezor device and confirm it matches.';
   }
 
   // ───────────────────────── Actions ─────────────────────────

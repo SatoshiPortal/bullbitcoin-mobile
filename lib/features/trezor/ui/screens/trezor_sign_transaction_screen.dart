@@ -174,9 +174,9 @@ class _SignTransactionView extends StatelessWidget {
 
   String _getSubTextForState(TrezorOperationState state) {
     if (state.isLaunching || state.isWaiting) {
-      return 'Trezor Suite will show the transaction details. '
+      return 'Your Trezor device will show the transaction details. '
           'Review the destination, amount, and fee, then confirm '
-          'on your device.';
+          'on the device.';
     }
     if (state.isProcessing) {
       return "You'll be redirected back to your wallet…";
@@ -185,7 +185,7 @@ class _SignTransactionView extends StatelessWidget {
       return state.errorMessage ?? 'Tap Try Again to start over.';
     }
     return 'Tap "Start Signing" to review and confirm the transaction '
-        'in Trezor Suite.';
+        'on your Trezor device.';
   }
 
   // ───────────────────────── Actions ─────────────────────────
