@@ -3,9 +3,7 @@ import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
 abstract class BullnymClientPort {
   Future<BullnymRegisterResult> register(BullnymRegisterRequest request);
 
-  Future<BullnymDeleteResult> deleteRegistration(
-    BullnymDeleteRegistrationRequest request,
-  );
+  Future<void> deleteRegistration(BullnymDeleteRegistrationRequest request);
 
   Future<BullnymLookupResult> lookupRegistration({required String npubHex});
 }

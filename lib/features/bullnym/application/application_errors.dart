@@ -6,14 +6,12 @@ enum BullnymErrorKind {
   emptyResponse,
   invalidServerResponse,
   signingFailed,
-  unknown,
 }
 
 class BullnymException implements Exception {
   final BullnymErrorKind kind;
   final String code;
   final String diagnosticReason;
-  final Map<String, dynamic>? diagnosticDetails;
   final int? statusCode;
   final bool retryable;
 
@@ -21,7 +19,6 @@ class BullnymException implements Exception {
     required this.kind,
     required this.code,
     required this.diagnosticReason,
-    this.diagnosticDetails,
     this.statusCode,
     required this.retryable,
   });

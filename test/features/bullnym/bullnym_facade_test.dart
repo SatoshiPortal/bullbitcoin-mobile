@@ -209,7 +209,36 @@ void main() {
               'diagnosticReason',
               'reserved nym',
             )
+            .having((e) => e.retryable, 'retryable', false)
             .having((e) => e.statusCode, 'statusCode', 409),
+      ),
+    );
+  });
+
+  test('marks transient backend error envelopes retryable', () async {
+    final stub = _stubDio(
+      [
+        {
+          'status': 'ERROR',
+          'code': 'TemporarilyUnavailable',
+          'reason': 'try later',
+        },
+      ],
+      statuses: [503],
+    );
+    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+
+    expect(
+      () => facade.lookupRegistration(npubHex: 'aa' * 32),
+      throwsA(
+        isA<BullnymException>()
+            .having(
+              (e) => e.kind,
+              'kind',
+              BullnymErrorKind.serverRejectedRequest,
+            )
+            .having((e) => e.retryable, 'retryable', true)
+            .having((e) => e.statusCode, 'statusCode', 503),
       ),
     );
   });

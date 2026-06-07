@@ -17,14 +17,14 @@ It does not own Lightning Address UI, wallet materialization, wallet manifest
 publishing or recovery, NIP-05 registration, relay publishing, invoices, payment
 pages, DMs, local storage, or autosweep behavior.
 
-## Verified Protocol Contract
+## PR9 Protocol Subset
 
-The current wire contract is grounded in the local Bullnym harness:
+The current PR9 subset is grounded in the local Bullnym harness:
 
 - `bullnym-tests/src/client/registration.rs`
 - `bullnym-tests/src/wallet/la_v2.rs`
 
-PR9 implements only the fields evidenced there:
+PR9 implements only the fields needed by this foundation slice:
 
 - `POST /register` with `nym`, `ct_descriptor`, `npub`, `signature`, and
   `timestamp`;
@@ -34,9 +34,10 @@ PR9 implements only the fields evidenced there:
 - Bullpay LA v2 signing layout:
   `bullpay-la-v2\0action\0npub_hex\0nym\0(payload\0)*timestamp`.
 
-This PR intentionally does not send an extra public verification key field,
-parse quota/history fields, or expose derived Lightning Address behavior beyond
-returning the server's register response field.
+This PR intentionally does not send an extra public verification key field or
+expose derived Lightning Address behavior beyond returning the server's register
+response field. Server quota/history fields are not part of this minimal public
+facade yet; they need an owning follow-up before product UI consumes Bullnym.
 
 ## Signing
 
@@ -63,6 +64,6 @@ The intended dependency direction is:
 The HTTP adapter owns Dio and JSON decoding. Domain models are stable Bullnym
 operation results, not backend DTOs, and contain no JSON parsing.
 
-Server `reason` and `details` fields are diagnostic-only. Future UI must map
-stable Bullnym error categories to localized user-facing copy instead of
-displaying backend text directly.
+Server `reason` fields are diagnostic-only. Future UI must map stable Bullnym
+error categories to localized user-facing copy instead of displaying backend
+text directly.

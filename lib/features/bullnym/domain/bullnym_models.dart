@@ -8,10 +8,6 @@ class BullnymRegisterResult {
   });
 }
 
-class BullnymDeleteResult {
-  const BullnymDeleteResult();
-}
-
 class BullnymLookupResult {
   final String nym;
   final bool active;

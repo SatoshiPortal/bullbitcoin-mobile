@@ -40,7 +40,7 @@ class BullnymHttpClient implements BullnymClientPort {
   }
 
   @override
-  Future<BullnymDeleteResult> deleteRegistration(
+  Future<void> deleteRegistration(
     BullnymDeleteRegistrationRequest request,
   ) async {
     await _deleteMap(
@@ -52,7 +52,6 @@ class BullnymHttpClient implements BullnymClientPort {
         'timestamp': request.timestamp,
       },
     );
-    return const BullnymDeleteResult();
   }
 
   @override
@@ -150,7 +149,6 @@ class BullnymHttpClient implements BullnymClientPort {
     if (data is Map<String, dynamic> && data['status'] == 'ERROR') {
       final code = data['code'];
       final reason = data['reason'];
-      final details = data['details'];
       if (reason is! String) {
         return BullnymException.invalidServerResponse(
           diagnosticReason: 'Server error response is missing reason',
@@ -161,9 +159,8 @@ class BullnymHttpClient implements BullnymClientPort {
         kind: BullnymErrorKind.serverRejectedRequest,
         code: code is String ? code : 'ServerRejectedRequest',
         diagnosticReason: reason,
-        diagnosticDetails: details is Map<String, dynamic> ? details : null,
         statusCode: response.statusCode,
-        retryable: false,
+        retryable: _isRetryableStatus(response.statusCode),
       );
     }
     return BullnymException(
@@ -173,6 +170,11 @@ class BullnymHttpClient implements BullnymClientPort {
       statusCode: response.statusCode,
       retryable: true,
     );
+  }
+
+  bool _isRetryableStatus(int? statusCode) {
+    if (statusCode == null) return true;
+    return statusCode == 408 || statusCode == 429 || statusCode >= 500;
   }
 
   BullnymException _httpExceptionFromResponse(Response<dynamic> response) {
