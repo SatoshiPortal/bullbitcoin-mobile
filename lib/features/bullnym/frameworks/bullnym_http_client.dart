@@ -3,7 +3,11 @@ import 'package:bb_mobile/features/bullnym/application/ports/bullnym_client_port
 import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
 import 'package:dio/dio.dart';
 
-const bullnymDefaultBaseUrl = 'https://bullpay.ca';
+const bullnymBaseUrlEnvironmentKey = 'BULLNYM_BASE_URL';
+const bullnymDefaultBaseUrl = String.fromEnvironment(
+  bullnymBaseUrlEnvironmentKey,
+  defaultValue: 'https://bullpay.ca',
+);
 const Duration bullnymConnectTimeout = Duration(seconds: 10);
 const Duration bullnymReceiveTimeout = Duration(seconds: 15);
 
@@ -12,6 +16,8 @@ class BullnymHttpClient implements BullnymClientPort {
     : _dio = dio ?? _newDio(baseUrl);
 
   final Dio _dio;
+
+  String get baseUrl => _dio.options.baseUrl;
 
   static Dio _newDio(String baseUrl) {
     return Dio(

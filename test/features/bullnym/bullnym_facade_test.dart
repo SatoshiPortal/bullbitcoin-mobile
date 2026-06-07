@@ -89,6 +89,12 @@ void main() {
     expect(dio.options.validateStatus(200), isFalse);
   });
 
+  test('uses caller-supplied Bullnym base URL', () {
+    final client = BullnymHttpClient(baseUrl: 'https://custom.bullnym.test');
+
+    expect(client.baseUrl, 'https://custom.bullnym.test');
+  });
+
   test('posts signed register requests using the proven contract', () async {
     final stub = _stubDio([
       {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},

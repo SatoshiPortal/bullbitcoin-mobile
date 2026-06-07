@@ -64,6 +64,11 @@ The intended dependency direction is:
 The HTTP adapter owns Dio and JSON decoding. Domain models are stable Bullnym
 operation results, not backend DTOs, and contain no JSON parsing.
 
+The Bullnym server URL is configurable. `BullnymHttpClient` accepts an explicit
+`baseUrl` from DI/callers, and its default comes from the `BULLNYM_BASE_URL`
+`--dart-define` with a production fallback. Product wiring must not hardcode a
+single Bullnym server URL outside this adapter boundary.
+
 Server `reason` fields are diagnostic-only. Future UI must map stable Bullnym
 error categories to localized user-facing copy instead of displaying backend
 text directly.
