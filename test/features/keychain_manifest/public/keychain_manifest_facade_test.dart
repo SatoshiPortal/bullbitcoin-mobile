@@ -5,6 +5,7 @@ import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.d
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/usecases/parse_keychain_manifest_file_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/record_keychain_manifest_entry_usecase.dart';
 import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -21,6 +22,7 @@ void main() {
         bip85Registry: const Bip85RegistryFacade(),
       ),
       buildManifestFile: BuildKeychainManifestFileUsecase(repository: store),
+      parseManifestFile: const ParseKeychainManifestFileUsecase(),
     );
   });
 
@@ -244,6 +246,17 @@ void main() {
           'Frozen v1 manifest materialization-level key set changed '
           '(decision [F]).',
     );
+  });
+
+  test('parses manifest file payloads into import plans', () {
+    final plan = facade.parseManifestFilePayload(_manifestPayload);
+
+    expect(plan.parentFingerprint, 'fedcba98');
+    expect(plan.entries, hasLength(1));
+    expect(plan.entries.single.reservationId, 'btcpay_wallet_seed');
+    expect(plan.walletMaterializations, hasLength(2));
+    expect(plan.walletMaterializations.first.walletId, 'btc-wallet');
+    expect(plan.walletMaterializations.last.walletId, 'lbtc-wallet');
   });
 }
 

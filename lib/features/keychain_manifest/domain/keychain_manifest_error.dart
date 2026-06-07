@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 enum KeychainManifestExceptionType {
   invalidEntry,
   emptyInventory,
+  fileParse,
   reservationMismatch,
   conflict,
   duplicate,
@@ -41,6 +42,16 @@ final class KeychainManifestEmptyInventoryException
     : super._(
         KeychainManifestExceptionType.emptyInventory,
         'keychain manifest inventory is empty',
+      );
+}
+
+final class KeychainManifestFileParseException
+    extends KeychainManifestException {
+  KeychainManifestFileParseException({Object? cause})
+    : super._(
+        KeychainManifestExceptionType.fileParse,
+        'keychain manifest file parse failed',
+        cause: cause,
       );
 }
 

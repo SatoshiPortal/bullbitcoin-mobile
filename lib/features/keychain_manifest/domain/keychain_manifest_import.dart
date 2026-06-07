@@ -1,0 +1,126 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
+
+class KeychainManifestImportPlan {
+  final String parentFingerprint;
+  final List<KeychainManifestImportEntryIntent> entries;
+
+  KeychainManifestImportPlan({
+    required String parentFingerprint,
+    required List<KeychainManifestImportEntryIntent> entries,
+  }) : parentFingerprint = KeychainManifestFingerprint.normalize(
+         parentFingerprint,
+       ),
+       entries = List.unmodifiable(entries);
+
+  List<KeychainManifestWalletMaterializationIntent>
+  get walletMaterializations => entries
+      .expand((entry) => entry.walletMaterializations)
+      .toList(growable: false);
+}
+
+class KeychainManifestImportEntryIntent {
+  final String entryId;
+  final String parentFingerprint;
+  final String bip85DerivationPath;
+  final String reservationId;
+  final String entryType;
+  final String ownerFeature;
+  final int bip85Application;
+  final int bip85Index;
+  final List<KeychainManifestWalletMaterializationIntent>
+  walletMaterializations;
+
+  KeychainManifestImportEntryIntent({
+    required this.entryId,
+    required String parentFingerprint,
+    required String bip85DerivationPath,
+    required this.reservationId,
+    required this.entryType,
+    required this.ownerFeature,
+    required this.bip85Application,
+    required this.bip85Index,
+    required List<KeychainManifestWalletMaterializationIntent>
+    walletMaterializations,
+  }) : parentFingerprint = KeychainManifestFingerprint.normalize(
+         parentFingerprint,
+       ),
+       bip85DerivationPath = KeychainManifestBip85Path.normalize(
+         bip85DerivationPath,
+       ),
+       walletMaterializations = List.unmodifiable(walletMaterializations) {
+    if (this.walletMaterializations.isEmpty) {
+      throw KeychainManifestInvalidEntryException(
+        'manifest import entry requires wallet materializations',
+      );
+    }
+  }
+
+  factory KeychainManifestImportEntryIntent.fromFileEntry(
+    KeychainManifestFileEntry entry, {
+    required List<KeychainManifestWalletMaterializationIntent>
+    walletMaterializations,
+  }) {
+    return KeychainManifestImportEntryIntent(
+      entryId: entry.entryId,
+      parentFingerprint: entry.parentFingerprint,
+      bip85DerivationPath: entry.bip85DerivationPath,
+      reservationId: entry.reservationId,
+      entryType: entry.entryType,
+      ownerFeature: entry.ownerFeature,
+      bip85Application: entry.bip85Application,
+      bip85Index: entry.bip85Index,
+      walletMaterializations: walletMaterializations,
+    );
+  }
+}
+
+class KeychainManifestWalletMaterializationIntent {
+  final String entryId;
+  final String reservationId;
+  final String bip85DerivationPath;
+  final String walletId;
+  final String childSeedFingerprint;
+  final Network network;
+  final ScriptType scriptType;
+
+  KeychainManifestWalletMaterializationIntent({
+    required this.entryId,
+    required this.reservationId,
+    required String bip85DerivationPath,
+    required this.walletId,
+    required String childSeedFingerprint,
+    required this.network,
+    required this.scriptType,
+  }) : bip85DerivationPath = KeychainManifestBip85Path.normalize(
+         bip85DerivationPath,
+       ),
+       childSeedFingerprint = KeychainManifestFingerprint.normalize(
+         childSeedFingerprint,
+       ) {
+    if (entryId.trim().isEmpty ||
+        reservationId.trim().isEmpty ||
+        walletId.trim().isEmpty) {
+      throw KeychainManifestInvalidEntryException(
+        'manifest import wallet materialization metadata is required',
+      );
+    }
+  }
+
+  factory KeychainManifestWalletMaterializationIntent.fromFileMaterialization({
+    required KeychainManifestFileEntry entry,
+    required KeychainManifestFileWalletMaterialization materialization,
+  }) {
+    return KeychainManifestWalletMaterializationIntent(
+      entryId: entry.entryId,
+      reservationId: entry.reservationId,
+      bip85DerivationPath: entry.bip85DerivationPath,
+      walletId: materialization.walletId,
+      childSeedFingerprint: materialization.childSeedFingerprint,
+      network: Network.fromName(materialization.network),
+      scriptType: ScriptType.fromName(materialization.scriptType),
+    );
+  }
+}
