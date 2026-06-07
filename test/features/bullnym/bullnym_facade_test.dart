@@ -2,6 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
+import 'package:bb_mobile/features/bullnym/application/usecases/delete_bullnym_registration_usecase.dart';
+import 'package:bb_mobile/features/bullnym/application/usecases/lookup_bullnym_registration_usecase.dart';
+import 'package:bb_mobile/features/bullnym/application/usecases/register_bullnym_usecase.dart';
+import 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart';
 import 'package:bb_mobile/features/bullnym/frameworks/bullnym_http_client.dart';
 import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 import 'package:bip32_keys/bip32_keys.dart' as bip32;
@@ -20,7 +24,7 @@ class _Captured {
 }
 
 ({Dio dio, _Captured captured}) _stubDio(
-  List<Map<String, dynamic>> responses, {
+  List<Object?> responses, {
   List<int>? statuses,
 }) {
   final captured = _Captured();
@@ -40,7 +44,7 @@ class _Captured {
     final status = statuses == null ? 200 : statuses[index];
     index += 1;
     return ResponseBody.fromString(
-      jsonEncode(body),
+      body == null ? '' : jsonEncode(body),
       status,
       headers: {
         'content-type': ['application/json'],
@@ -85,22 +89,19 @@ void main() {
     expect(dio.options.validateStatus(200), isFalse);
   });
 
-  test('posts signed register requests with verification npub', () async {
+  test('posts signed register requests using the proven contract', () async {
     final stub = _stubDio([
-      {
-        'nym': 'alice',
-        'lightning_address': 'alice@bullpay.ca',
-        'quota': {'used': 1, 'cap': 5, 'remaining': 4},
-      },
+      {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
     ]);
-    final facade = BullnymFacade(client: BullnymHttpClient(dio: stub.dio));
+    final facade = _facadeForClient(
+      BullnymHttpClient(dio: stub.dio),
+      nowSecs: () => timestamp,
+    );
 
     final response = await facade.register(
       handle: handle,
       nym: 'alice',
       ctDescriptor: 'ct-desc',
-      verificationNpubHex: '03' * 32,
-      timestampSecs: timestamp,
     );
 
     expect(response.nym, 'alice');
@@ -111,41 +112,48 @@ void main() {
     expect(request.data, {
       'nym': 'alice',
       'ct_descriptor': 'ct-desc',
-      'verification_npub': '03' * 32,
       'npub': handle.publicKeyHex,
       'signature': isA<String>().having((s) => s.length, 'length', 128),
       'timestamp': timestamp,
     });
+    expect(
+      (request.data as Map<String, dynamic>).containsKey(
+        'verification'
+        '_npub',
+      ),
+      isFalse,
+    );
     _expectSignatureValid(
       handle: handle,
       signatureHex:
           (request.data as Map<String, dynamic>)['signature'] as String,
       action: bullpayActionRegister,
       nymOrEmpty: 'alice',
-      payloadFields: ['ct-desc', '03' * 32],
+      payloadFields: const ['ct-desc'],
       timestampSecs: timestamp,
     );
   });
 
   test('deletes registration with a signed delete action', () async {
     final stub = _stubDio([
-      {
-        'quota': {'used': 1, 'cap': 5, 'remaining': 4},
-      },
+      {'ok': true},
     ]);
-    final facade = BullnymFacade(client: BullnymHttpClient(dio: stub.dio));
-
-    final response = await facade.deleteRegistration(
-      handle: handle,
-      nym: 'alice',
-      timestampSecs: timestamp,
+    final facade = _facadeForClient(
+      BullnymHttpClient(dio: stub.dio),
+      nowSecs: () => timestamp,
     );
 
-    expect(response.quota.remaining, 4);
+    await facade.deleteRegistration(handle: handle, nym: 'alice');
+
     final request = stub.captured.requests.single;
     expect(request.method, 'DELETE');
     expect(request.path, '/register');
-    expect((request.data as Map<String, dynamic>)['nym'], 'alice');
+    expect(request.data, {
+      'nym': 'alice',
+      'npub': handle.publicKeyHex,
+      'signature': isA<String>().having((s) => s.length, 'length', 128),
+      'timestamp': timestamp,
+    });
     expect(
       (request.data as Map<String, dynamic>).containsKey('purge'),
       isFalse,
@@ -161,48 +169,96 @@ void main() {
     );
   });
 
-  test('parses backend lookup response shape', () async {
+  test('parses proven lookup response shape', () async {
     final stub = _stubDio([
-      {
-        'nym': 'alice',
-        'active': false,
-        'quota': {'used': 2, 'cap': 5, 'remaining': 3},
-        'previous_nyms': [
-          {'nym': 'alice', 'created_at': '2026-05-10T12:00:00Z'},
-        ],
-      },
+      {'nym': 'alice', 'active': false},
     ]);
-    final facade = BullnymFacade(client: BullnymHttpClient(dio: stub.dio));
+    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
 
     final response = await facade.lookupRegistration(npubHex: 'aa' * 32);
 
+    expect(response.nym, 'alice');
     expect(response.active, isFalse);
-    expect(response.quota.used, 2);
-    expect(response.previousNyms.single.nym, 'alice');
     final request = stub.captured.requests.single;
     expect(request.method, 'GET');
     expect(request.path, '/register/lookup');
     expect(request.queryParameters['npub'], 'aa' * 32);
   });
 
-  test('throws backend error responses with status', () async {
+  test('maps backend error responses with diagnostics', () async {
     final stub = _stubDio(
       [
         {'status': 'ERROR', 'code': 'NymReserved', 'reason': 'reserved nym'},
       ],
       statuses: [409],
     );
-    final facade = BullnymFacade(client: BullnymHttpClient(dio: stub.dio));
+    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
 
     expect(
       () => facade.lookupRegistration(npubHex: 'aa' * 32),
       throwsA(
         isA<BullnymException>()
+            .having(
+              (e) => e.kind,
+              'kind',
+              BullnymErrorKind.serverRejectedRequest,
+            )
             .having((e) => e.code, 'code', 'NymReserved')
+            .having(
+              (e) => e.diagnosticReason,
+              'diagnosticReason',
+              'reserved nym',
+            )
             .having((e) => e.statusCode, 'statusCode', 409),
       ),
     );
   });
+
+  test('maps malformed success responses to typed invalid response', () async {
+    final stub = _stubDio([
+      {'nym': 'alice'},
+    ]);
+    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+
+    expect(
+      () => facade.register(
+        handle: handle,
+        nym: 'alice',
+        ctDescriptor: 'ct-desc',
+      ),
+      throwsA(
+        isA<BullnymException>().having(
+          (e) => e.kind,
+          'kind',
+          BullnymErrorKind.invalidServerResponse,
+        ),
+      ),
+    );
+  });
+
+  test(
+    'maps malformed backend error envelopes to typed invalid response',
+    () async {
+      final stub = _stubDio(
+        [
+          {'status': 'ERROR', 'code': 'NymReserved'},
+        ],
+        statuses: [409],
+      );
+      final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+
+      expect(
+        () => facade.lookupRegistration(npubHex: 'aa' * 32),
+        throwsA(
+          isA<BullnymException>().having(
+            (e) => e.kind,
+            'kind',
+            BullnymErrorKind.invalidServerResponse,
+          ),
+        ),
+      );
+    },
+  );
 
   test('builds deployed Bullnym signing message with null separators', () {
     final expected = <int>[];
@@ -216,7 +272,6 @@ void main() {
     addField('npub');
     addField('alice');
     addField('ct-desc');
-    addField('03');
     expected.addAll(utf8.encode(timestamp.toString()));
 
     expect(
@@ -224,12 +279,26 @@ void main() {
         action: bullpayActionRegister,
         npubHex: 'npub',
         nymOrEmpty: 'alice',
-        payloadFields: const ['ct-desc', '03'],
+        payloadFields: const ['ct-desc'],
         timestampSecs: timestamp,
       ),
       expected,
     );
   });
+}
+
+BullnymFacade _facadeForClient(
+  BullnymHttpClient client, {
+  BullnymNowSecs nowSecs = currentBullpayTimestampSecs,
+}) {
+  return BullnymFacade(
+    register: RegisterBullnymUsecase(client: client, nowSecs: nowSecs),
+    deleteRegistration: DeleteBullnymRegistrationUsecase(
+      client: client,
+      nowSecs: nowSecs,
+    ),
+    lookupRegistration: LookupBullnymRegistrationUsecase(client: client),
+  );
 }
 
 NostrKeychainHandle _bullnymAuthHandle() {

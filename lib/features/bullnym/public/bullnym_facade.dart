@@ -1,54 +1,46 @@
 import 'package:bb_mobile/core/nostr/nostr_keychain_handle.dart';
+import 'package:bb_mobile/features/bullnym/application/usecases/delete_bullnym_registration_usecase.dart';
+import 'package:bb_mobile/features/bullnym/application/usecases/lookup_bullnym_registration_usecase.dart';
+import 'package:bb_mobile/features/bullnym/application/usecases/register_bullnym_usecase.dart';
 import 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
-import 'package:bb_mobile/features/bullnym/frameworks/bullnym_http_client.dart';
 
-export 'package:bb_mobile/features/bullnym/domain/bullnym_constants.dart';
-export 'package:bb_mobile/features/bullnym/domain/bullnym_errors.dart';
+export 'package:bb_mobile/features/bullnym/application/application_errors.dart';
 export 'package:bb_mobile/features/bullnym/domain/bullnym_models.dart';
-export 'package:bb_mobile/features/bullnym/domain/bullpay_signing.dart'
-    show
-        buildBullpaySchnorrMessage,
-        bullpayActionDelete,
-        bullpayActionRegister,
-        bullpayWireDomain;
 
 class BullnymFacade {
-  final BullnymHttpClient _client;
+  final RegisterBullnymUsecase _register;
+  final DeleteBullnymRegistrationUsecase _deleteRegistration;
+  final LookupBullnymRegistrationUsecase _lookupRegistration;
 
-  BullnymFacade({BullnymHttpClient? client})
-    : _client = client ?? BullnymHttpClient();
+  const BullnymFacade({
+    required this._register,
+    required this._deleteRegistration,
+    required this._lookupRegistration,
+  });
 
-  Future<BullnymRegisterResponseDto> register({
+  Future<BullnymRegisterResult> register({
     required NostrKeychainHandle handle,
     required String nym,
     required String ctDescriptor,
-    required String verificationNpubHex,
-    int? timestampSecs,
   }) {
-    return _client.register(
+    return _register.execute(
       handle: handle,
       nym: nym,
       ctDescriptor: ctDescriptor,
-      verificationNpubHex: verificationNpubHex,
-      timestampSecs: timestampSecs,
     );
   }
 
-  Future<BullnymDeleteResponseDto> deleteRegistration({
+  Future<BullnymDeleteResult> deleteRegistration({
     required NostrKeychainHandle handle,
     required String nym,
-    int? timestampSecs,
   }) {
-    return _client.deleteRegistration(
-      handle: handle,
-      nym: nym,
-      timestampSecs: timestampSecs,
-    );
+    return _deleteRegistration.execute(handle: handle, nym: nym);
   }
 
-  Future<BullnymLookupResponseDto> lookupRegistration({
-    required String npubHex,
-  }) {
-    return _client.lookupRegistration(npubHex: npubHex);
+  Future<BullnymLookupResult> lookupRegistration({required String npubHex}) {
+    return _lookupRegistration.execute(npubHex: npubHex);
   }
+
+  @override
+  String toString() => 'BullnymFacade';
 }
