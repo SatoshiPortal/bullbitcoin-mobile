@@ -47,6 +47,7 @@ Restore returns one outcome per wallet materialization:
 - `skippedUnsupported`
 - `failedParentFingerprintMismatch`
 - `failedChildSeedFingerprintMismatch`
+- `failedInvalidImportPlan`
 - `failedWalletCreation`
 - `failedManifestRecord`
 - `failedConflict`
@@ -59,4 +60,6 @@ Unsupported wallet networks do not invalidate the whole manifest file or the
 whole entry; supported wallet materializations continue and unsupported ones are
 reported per wallet. Invalid manifest file structure, duplicate wallet
 materializations, and reservation mismatches are rejected before recovery by
-`keychain_manifest`.
+`keychain_manifest`. Because import-plan DTOs cross a public facade boundary,
+`keychain_recovery` also revalidates reservation identity, derivation path,
+entry identity, and wallet membership before materializing wallets.

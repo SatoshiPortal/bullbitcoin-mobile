@@ -7,6 +7,7 @@ enum KeychainRecoveryWalletRestoreStatus {
   skippedUnsupported,
   failedParentFingerprintMismatch,
   failedChildSeedFingerprintMismatch,
+  failedInvalidImportPlan,
   failedWalletCreation,
   failedManifestRecord,
   failedConflict,

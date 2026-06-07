@@ -18,25 +18,20 @@ class RestoreKeychainManifestWalletsUsecase {
     KeychainManifestImportPlan importPlan,
   ) async {
     final outcomes = <KeychainRecoveryWalletRestoreOutcome>[];
+    final entryIds = <String>{};
+    final walletIds = <String>{};
     for (final entry in importPlan.entries) {
-      final reservation = _registry.reservationById(entry.reservationId);
-      if (reservation == null) {
-        outcomes.addAll(
-          entry.walletMaterializations.map(
-            (intent) => KeychainRecoveryWalletRestoreOutcome(
-              intent: _walletIntent(intent),
-              status: KeychainRecoveryWalletRestoreStatus.failedWalletCreation,
-              walletId: intent.walletId,
-            ),
-          ),
-        );
-        continue;
-      }
-      final batch = _materializationBatch(
+      final validationFailure = _validateEntry(
         importPlan: importPlan,
         entry: entry,
-        reservation: reservation,
+        entryIds: entryIds,
+        walletIds: walletIds,
       );
+      if (validationFailure != null) {
+        outcomes.addAll(validationFailure);
+        continue;
+      }
+      final batch = _materializationBatch(importPlan: importPlan, entry: entry);
       final materializationResult = await _materialize(batch);
       outcomes.addAll(materializationResult.failedOutcomes);
       outcomes.addAll(
@@ -50,11 +45,49 @@ class RestoreKeychainManifestWalletsUsecase {
     return KeychainRecoveryResult(walletOutcomes: outcomes);
   }
 
+  List<KeychainRecoveryWalletRestoreOutcome>? _validateEntry({
+    required KeychainManifestImportPlan importPlan,
+    required KeychainManifestImportEntryIntent entry,
+    required Set<String> entryIds,
+    required Set<String> walletIds,
+  }) {
+    final reservation = _registry.reservationById(entry.reservationId);
+    if (reservation == null ||
+        entryIds.contains(entry.entryId) ||
+        entry.parentFingerprint != importPlan.parentFingerprint ||
+        entry.entryId !=
+            _entryId(importPlan.parentFingerprint, entry.bip85DerivationPath) ||
+        !reservation.scope.matchesExactPath(entry.bip85DerivationPath)) {
+      return _failedInvalidImportPlan(entry.walletMaterializations);
+    }
+
+    final walletKeys = <String>{};
+    for (final intent in entry.walletMaterializations) {
+      if (intent.entryId != entry.entryId ||
+          intent.reservationId != entry.reservationId ||
+          intent.bip85DerivationPath != entry.bip85DerivationPath ||
+          !walletKeys.add(
+            _materializationKey(
+              entryId: intent.entryId,
+              walletId: intent.walletId,
+            ),
+          ) ||
+          walletIds.contains(intent.walletId)) {
+        return _failedInvalidImportPlan(entry.walletMaterializations);
+      }
+    }
+    entryIds.add(entry.entryId);
+    walletIds.addAll(
+      entry.walletMaterializations.map((intent) => intent.walletId),
+    );
+    return null;
+  }
+
   KeychainRecoveryWalletMaterializationBatch _materializationBatch({
     required KeychainManifestImportPlan importPlan,
     required KeychainManifestImportEntryIntent entry,
-    required Bip85Reservation reservation,
   }) {
+    final reservation = _registry.reservationById(entry.reservationId)!;
     return KeychainRecoveryWalletMaterializationBatch(
       parentFingerprint: importPlan.parentFingerprint,
       reservationId: entry.reservationId,
@@ -78,6 +111,31 @@ class RestoreKeychainManifestWalletsUsecase {
       network: intent.network,
       scriptType: intent.scriptType,
     );
+  }
+
+  List<KeychainRecoveryWalletRestoreOutcome> _failedInvalidImportPlan(
+    List<KeychainManifestWalletMaterializationIntent> intents,
+  ) {
+    return intents
+        .map(
+          (intent) => KeychainRecoveryWalletRestoreOutcome(
+            intent: _walletIntent(intent),
+            status: KeychainRecoveryWalletRestoreStatus.failedInvalidImportPlan,
+            walletId: intent.walletId,
+          ),
+        )
+        .toList(growable: false);
+  }
+
+  String _entryId(String parentFingerprint, String bip85DerivationPath) {
+    return '$parentFingerprint:$bip85DerivationPath';
+  }
+
+  String _materializationKey({
+    required String entryId,
+    required String walletId,
+  }) {
+    return '$entryId:$walletId';
   }
 
   Future<KeychainRecoveryWalletMaterializationResult> _materialize(

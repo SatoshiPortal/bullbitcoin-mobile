@@ -122,6 +122,38 @@ void main() {
       expect(result.walletOutcomes.single.status, _alreadyPresent);
     },
   );
+
+  test('rejects forged import plans before wallet materialization', () async {
+    final intent = _intent();
+    final forgedIntent = KeychainManifestWalletMaterializationIntent(
+      entryId: "fedcba98:39'/0'/12'/101'",
+      reservationId: intent.reservationId,
+      bip85DerivationPath: "39'/0'/12'/101'",
+      walletId: intent.walletId,
+      childSeedFingerprint: intent.childSeedFingerprint,
+      network: intent.network,
+      scriptType: intent.scriptType,
+    );
+    final forgedPlan = KeychainManifestImportPlan(
+      parentFingerprint: 'fedcba98',
+      entries: [
+        KeychainManifestImportEntryIntent(
+          entryId: "fedcba98:39'/0'/12'/101'",
+          parentFingerprint: 'fedcba98',
+          bip85DerivationPath: "39'/0'/12'/101'",
+          reservationId: 'btcpay_wallet_seed',
+          walletMaterializations: [forgedIntent],
+        ),
+      ],
+    );
+
+    final result = await usecase.execute(forgedPlan);
+
+    expect(result.hasFailures, true);
+    expect(result.walletOutcomes.single.status, _invalidImportPlan);
+    expect(materializer.batches, isEmpty);
+    expect(keychainManifest.recordRequests, isEmpty);
+  });
 }
 
 KeychainManifestImportPlan _plan(
@@ -202,4 +234,6 @@ class _FakeKeychainManifestFacade implements KeychainManifestFacade {
 const _created = KeychainRecoveryWalletRestoreStatus.created;
 const _alreadyPresent = KeychainRecoveryWalletRestoreStatus.alreadyPresent;
 const _skipped = KeychainRecoveryWalletRestoreStatus.skippedUnsupported;
+const _invalidImportPlan =
+    KeychainRecoveryWalletRestoreStatus.failedInvalidImportPlan;
 const _recordFailed = KeychainRecoveryWalletRestoreStatus.failedManifestRecord;
