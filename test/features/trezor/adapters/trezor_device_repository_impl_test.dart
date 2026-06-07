@@ -98,7 +98,7 @@ void main() {
     );
   });
 
-  group('getAccounts — master fingerprint', () {
+  group('getDefaultAccount — master fingerprint', () {
     test('extracts master fingerprint per-account from descriptor', () async {
       when(
         () => datasource.getPublicKeyBundle(
@@ -114,15 +114,11 @@ void main() {
         ],
       );
 
-      final accounts = await repo.getAccounts(
-        startIndex: 0,
-        count: 1,
+      final account = await repo.getDefaultAccount(
         scriptType: ScriptType.bip84,
         isTestnet: false,
       );
-
-      expect(accounts, hasLength(1));
-      expect(accounts.first.masterFingerprint, '4126b8c0');
+      expect(account.masterFingerprint, '4126b8c0');
     });
 
     test('does not share fingerprint across separate device sessions '
@@ -140,13 +136,11 @@ void main() {
           ),
         ],
       );
-      final first = await repo.getAccounts(
-        startIndex: 0,
-        count: 1,
+      final first = await repo.getDefaultAccount(
         scriptType: ScriptType.bip84,
         isTestnet: false,
       );
-      expect(first.first.masterFingerprint, 'aaaaaaaa');
+      expect(first.masterFingerprint, 'aaaaaaaa');
 
       // Second device returns fingerprint BBBBBBBB — must NOT leak
       // the first fingerprint into the second account.
@@ -162,14 +156,12 @@ void main() {
           ),
         ],
       );
-      final second = await repo.getAccounts(
-        startIndex: 0,
-        count: 1,
+      final second = await repo.getDefaultAccount(
         scriptType: ScriptType.bip84,
         isTestnet: false,
       );
-      expect(second.first.masterFingerprint, 'bbbbbbbb');
-      expect(second.first.masterFingerprint, isNot('aaaaaaaa'));
+      expect(second.masterFingerprint, 'bbbbbbbb');
+      expect(second.masterFingerprint, isNot('aaaaaaaa'));
     });
 
     test('throws TrezorMissingDescriptor when descriptor is null '
@@ -182,9 +174,7 @@ void main() {
       ).thenAnswer((_) async => [_fakeAccount(descriptor: null)]);
 
       expect(
-        () => repo.getAccounts(
-          startIndex: 0,
-          count: 1,
+        () => repo.getDefaultAccount(
           scriptType: ScriptType.bip84,
           isTestnet: false,
         ),
@@ -207,9 +197,7 @@ void main() {
         );
 
         expect(
-          () => repo.getAccounts(
-            startIndex: 0,
-            count: 1,
+          () => repo.getDefaultAccount(
             scriptType: ScriptType.bip84,
             isTestnet: false,
           ),
@@ -219,7 +207,7 @@ void main() {
     );
   });
 
-  group('getAccounts — network threading (review #9)', () {
+  group('getDefaultAccount — network threading', () {
     test('builds mainnet path with coin-type 0 when not isTestnet', () async {
       final capturedPaths = <List<String>>[];
       when(
@@ -236,9 +224,7 @@ void main() {
         ];
       });
 
-      await repo.getAccounts(
-        startIndex: 0,
-        count: 1,
+      await repo.getDefaultAccount(
         scriptType: ScriptType.bip84,
         isTestnet: false,
       );
@@ -262,9 +248,7 @@ void main() {
         ];
       });
 
-      await repo.getAccounts(
-        startIndex: 0,
-        count: 1,
+      await repo.getDefaultAccount(
         scriptType: ScriptType.bip84,
         isTestnet: true,
       );
@@ -288,9 +272,7 @@ void main() {
         ];
       });
 
-      await repo.getAccounts(
-        startIndex: 0,
-        count: 1,
+      await repo.getDefaultAccount(
         scriptType: ScriptType.bip84,
         isTestnet: true,
       );
@@ -321,30 +303,27 @@ void main() {
       );
     });
 
-    test(
-      'TrezorLaunchException → TrezorSuiteNotInstalled '
-      '(regression: review #12 fast-fail on launch failure)',
-      () async {
-        when(
-          () => datasource.verifyAddress(
-            address: any(named: 'address'),
-            derivationPath: any(named: 'derivationPath'),
-            scriptType: any(named: 'scriptType'),
-            isTestnet: any(named: 'isTestnet'),
-          ),
-        ).thenThrow(const TrezorLaunchException());
+    test('TrezorLaunchException → TrezorSuiteNotInstalled '
+        '(regression: review #12 fast-fail on launch failure)', () async {
+      when(
+        () => datasource.verifyAddress(
+          address: any(named: 'address'),
+          derivationPath: any(named: 'derivationPath'),
+          scriptType: any(named: 'scriptType'),
+          isTestnet: any(named: 'isTestnet'),
+        ),
+      ).thenThrow(const TrezorLaunchException());
 
-        expect(
-          () => repo.verifyAddress(
-            address: 'bc1q',
-            derivationPath: 'm',
-            scriptType: ScriptType.bip84,
-            isTestnet: false,
-          ),
-          throwsA(isA<TrezorSuiteNotInstalled>()),
-        );
-      },
-    );
+      expect(
+        () => repo.verifyAddress(
+          address: 'bc1q',
+          derivationPath: 'm',
+          scriptType: ScriptType.bip84,
+          isTestnet: false,
+        ),
+        throwsA(isA<TrezorSuiteNotInstalled>()),
+      );
+    });
 
     test('"not installed" string → TrezorSuiteNotInstalled', () async {
       when(

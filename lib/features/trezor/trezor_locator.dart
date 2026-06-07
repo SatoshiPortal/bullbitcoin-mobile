@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/trezor/adapters/trezor_callback_dispatcher_im
 import 'package:bb_mobile/features/trezor/adapters/trezor_device_repository_impl.dart';
 import 'package:bb_mobile/features/trezor/application/trezor_callback_dispatcher.dart';
 import 'package:bb_mobile/features/trezor/application/trezor_device_repository.dart';
-import 'package:bb_mobile/features/trezor/application/usecases/get_trezor_accounts_usecase.dart';
+import 'package:bb_mobile/features/trezor/application/usecases/get_default_trezor_account_usecase.dart';
 import 'package:bb_mobile/features/trezor/application/usecases/prepare_trezor_import_usecase.dart';
 import 'package:bb_mobile/features/trezor/application/usecases/sign_psbt_trezor_usecase.dart';
 import 'package:bb_mobile/features/trezor/application/usecases/verify_address_trezor_usecase.dart';
@@ -49,8 +49,8 @@ class TrezorLocator {
   }
 
   static void _registerUsecases(GetIt locator) {
-    locator.registerFactory<GetTrezorAccountsUsecase>(
-      () => GetTrezorAccountsUsecase(
+    locator.registerFactory<GetDefaultTrezorAccountUsecase>(
+      () => GetDefaultTrezorAccountUsecase(
         repository: locator<TrezorDeviceRepository>(),
       ),
     );
@@ -79,7 +79,7 @@ class TrezorLocator {
   static void _registerCubits(GetIt locator) {
     locator.registerFactory<TrezorImportCubit>(
       () => TrezorImportCubit(
-        getAccounts: locator<GetTrezorAccountsUsecase>(),
+        getDefaultAccount: locator<GetDefaultTrezorAccountUsecase>(),
         prepareImport: locator<PrepareTrezorImportUsecase>(),
       ),
     );

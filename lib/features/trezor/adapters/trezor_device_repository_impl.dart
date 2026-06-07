@@ -14,28 +14,27 @@ class TrezorDeviceRepositoryImpl implements TrezorDeviceRepository {
     : _datasource = datasource;
 
   @override
-  Future<List<TrezorAccount>> getAccounts({
-    required int startIndex,
-    required int count,
+  Future<TrezorAccount> getDefaultAccount({
     required ScriptType scriptType,
     required bool isTestnet,
   }) async {
-    final indices = List.generate(count, (i) => startIndex + i);
-    // BIP-44/49/84 share the same shape `m/<purpose>'/0'/<account>'`.
-    // The purpose ID is what Trezor Suite uses to label the account family
-    // ("Standard wallet" for 84, "SegWit account" for 49, "Legacy account"
-    // for 44) and what determines the SLIP-0132 magic bytes on the returned
-    // zpub/ypub/xpub.
+    // BIP-44/49/84 share `m/<purpose>'/<coinType>'/<account>'`. Bull
+    // only consumes account 0 today.
     final purpose = scriptType.purpose;
     final coinType = isTestnet ? 1 : 0;
-    final paths = indices.map((i) => "m/$purpose'/$coinType'/$i'").toList();
+    final path = "m/$purpose'/$coinType'/0'";
 
     try {
-      final raw = await _datasource.getPublicKeyBundle(
-        paths,
-        isTestnet: isTestnet,
-      );
-      return raw.map(_toAccount).toList();
+      final raw = await _datasource.getPublicKeyBundle([
+        path,
+      ], isTestnet: isTestnet);
+      if (raw.isEmpty) {
+        // The datasource is plural-shaped; in practice it returns
+        // one entry for one path. Guard defensively against a stub
+        // that ever returns empty.
+        throw Exception('Trezor returned no account for $path');
+      }
+      return _toAccount(raw.first);
     } on Exception catch (e) {
       throw _mapError(e);
     }
