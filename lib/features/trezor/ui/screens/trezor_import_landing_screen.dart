@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/snackbar_utils.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/public/import_watch_only_facade.dart';
+import 'package:bb_mobile/features/trezor/application/trezor_capabilities.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_import_cubit.dart';
 import 'package:bb_mobile/features/trezor/presentation/trezor_operation_state.dart';
 import 'package:bb_mobile/locator.dart';
@@ -44,7 +45,10 @@ class _TrezorImportLandingView extends StatefulWidget {
 }
 
 class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
-  ScriptType _selectedScriptType = ScriptType.bip84;
+  ScriptType _selectedScriptType =
+      kTrezorSupportedScriptTypes.contains(ScriptType.bip84)
+      ? ScriptType.bip84
+      : kTrezorSupportedScriptTypes.first;
 
   @override
   Widget build(BuildContext context) {
@@ -283,26 +287,33 @@ class __TrezorImportLandingViewState extends State<_TrezorImportLandingView> {
 
   // ───────────────────────── Actions ─────────────────────────
 
+  // Build the dropdown from kTrezorSupportedScriptTypes so adding or
+  // removing a Trezor-supported script type happens in one place
+  // (lib/features/trezor/application/trezor_capabilities.dart) and
+  // automatically updates the visible options here.
   Future<void> _showScriptTypeSelection(BuildContext context) async {
-    final scriptTypeItems = const [
-      SelectableListItem(
-        value: 'bip84',
-        title: 'Segwit (BIP84)',
-        subtitle1: 'Native SegWit — Recommended',
-        subtitle2: '',
-      ),
-      SelectableListItem(
-        value: 'bip49',
-        title: 'Nested Segwit (BIP49)',
-        subtitle1: 'P2WPKH-nested-in-P2SH',
-        subtitle2: '',
-      ),
-      SelectableListItem(
-        value: 'bip44',
-        title: 'Legacy (BIP44)',
-        subtitle1: 'P2PKH — Older format',
-        subtitle2: '',
-      ),
+    final scriptTypeItems = <SelectableListItem>[
+      if (kTrezorSupportedScriptTypes.contains(ScriptType.bip84))
+        const SelectableListItem(
+          value: 'bip84',
+          title: 'Segwit (BIP84)',
+          subtitle1: 'Native SegWit — Recommended',
+          subtitle2: '',
+        ),
+      if (kTrezorSupportedScriptTypes.contains(ScriptType.bip49))
+        const SelectableListItem(
+          value: 'bip49',
+          title: 'Nested Segwit (BIP49)',
+          subtitle1: 'P2WPKH-nested-in-P2SH',
+          subtitle2: '',
+        ),
+      if (kTrezorSupportedScriptTypes.contains(ScriptType.bip44))
+        const SelectableListItem(
+          value: 'bip44',
+          title: 'Legacy (BIP44)',
+          subtitle1: 'P2PKH — Older format',
+          subtitle2: '',
+        ),
     ];
 
     final selected = await BlurredBottomSheet.show<String>(
