@@ -30,13 +30,11 @@ class TrezorVerifyAddressRouteParams {
 
 class TrezorSignTransactionRouteParams {
   final String psbt;
-  final String derivationPath;
   final bool isTestnet;
   final ScriptType scriptType;
 
   const TrezorSignTransactionRouteParams({
     required this.psbt,
-    required this.derivationPath,
     required this.isTestnet,
     required this.scriptType,
   });

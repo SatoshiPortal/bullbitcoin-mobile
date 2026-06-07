@@ -1932,9 +1932,6 @@ class SignTrezorButton extends StatelessWidget {
     final unsignedPsbt = context.select(
       (SendCubit cubit) => cubit.state.unsignedPsbt,
     );
-    final derivationPath = context.select(
-      (SendCubit cubit) => cubit.state.selectedWallet?.derivationPath,
-    );
     final scriptType = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet?.scriptType,
     );
@@ -1946,9 +1943,7 @@ class SignTrezorButton extends StatelessWidget {
     return BBButton.big(
       label: 'Sign with Trezor',
       onPressed: () async {
-        if (unsignedPsbt == null ||
-            derivationPath == null ||
-            scriptType == null) {
+        if (unsignedPsbt == null || scriptType == null) {
           return;
         }
 
@@ -1956,7 +1951,6 @@ class SignTrezorButton extends StatelessWidget {
           TrezorRoute.trezorSignTransaction.name,
           extra: TrezorSignTransactionRouteParams(
             psbt: unsignedPsbt,
-            derivationPath: derivationPath,
             isTestnet: isTestnet,
             scriptType: scriptType,
           ),
