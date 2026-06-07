@@ -28,7 +28,9 @@ When materialization fails, only wallets created during that attempt are
 deleted. The child seed is deleted only when that attempt stored it, no wallet
 was reused, and every created wallet was deleted successfully. A cleanup
 failure retains the seed and returns a rollback failure. Explicit rollback uses
-the same rule.
+the same rule. It is only for same-operation aborts before a caller accepts
+materialization; consumers keep accepted wallets and repair later product state
+instead.
 
 The static BIP85 registry selects reserved indices; this feature intentionally
 does not choose product reservations itself.

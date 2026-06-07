@@ -43,7 +43,7 @@ are out of scope for v1.
 - The public boundary may build a manifest file payload, but file operations
   must not mutate local manifest inventory.
 - `keychain_manifest` must not import BTCPay, Get Paid, external receive
-  wallets, Nostr, UI features, or wallet creation/restoration features.
+  wallets, keychain recovery, Nostr, or UI features.
 
 ## Entry Identity
 
@@ -179,7 +179,7 @@ Rules:
   metadata into import intents in `domain/usecases`. Public import parsing
   requires the caller's expected parent fingerprint and rejects files from a
   different wallet before returning a plan. Wallet creation and restore semantics
-  belong to later consumer features.
+  belong to `keychain_recovery`.
 - Import parsing refuses an empty plan unless the caller explicitly opts in,
   mirroring the empty-export gate: silently returning a plan with nothing to
   recover would be indistinguishable from a successful import.
