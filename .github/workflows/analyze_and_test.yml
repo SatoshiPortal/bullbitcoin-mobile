@@ -57,14 +57,8 @@ jobs:
                   echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
                   echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
 
-            - name: Linter shouldn't raise errors, warnings or infos
-              run: fvm flutter analyze --fatal-warnings --fatal-infos
-
-            - name: dart fix should have nothing to suggest
-              run: |
-                  output=$(fvm dart fix --dry-run)
-                  echo "$output"
-                  echo "$output" | grep -q "Nothing to fix!"
+            - name: Analyze and dart fix across the workspace
+              run: make analyze
 
             - name: Unit tests must pass
               run: make unit-test

@@ -1,0 +1,11 @@
+name: bull_labels
+description: Labels capability module (BIP329) for Bull Bitcoin Mobile.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.10.0 <4.0.0"
+
+# Member of the bb_mobile pub workspace — dependencies resolve against the
+# shared workspace lockfile at the repo root.
+resolution: workspace

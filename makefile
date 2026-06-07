@@ -1,4 +1,4 @@
-.PHONY: all setup clean deps deps-update build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test fvm-check
+.PHONY: all setup clean deps deps-update build-runner translations hooks ios-pod-update drift-migrations devcontainer container-tools container-app android release debug beta verify test unit-test integration-test analyze fvm-check
 
 fvm-check:
 	@echo "🔍 Checking FVM"
@@ -33,8 +33,8 @@ deps-update:
 	@fvm flutter pub get
 
 build-runner:
-	@echo "🏗️ Build runner for json_serializable and flutter_gen"
-	@fvm dart run build_runner build --force-jit
+	@echo "🏗️ Build runner across all workspace packages (melos fan-out)"
+	@fvm dart run melos exec --order-dependents --depends-on="build_runner" -- "fvm dart run build_runner build --force-jit"
 
 build-runner-watch:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
@@ -173,11 +173,17 @@ devcontainer: container-tools
 	@echo "🏗️ Building Dev Container"
 	@devcontainer up --workspace-folder . --config ./.devcontainer/devcontainer.json
 
+analyze:
+	@echo "🔍 Analyze + dart fix check across all workspace packages"
+	@fvm dart run melos exec -- "fvm flutter analyze --fatal-infos --fatal-warnings"
+	@fvm dart run melos exec -- "fvm dart fix --dry-run | grep -q 'Nothing to fix!'"
+
 test: unit-test integration-test
 
 unit-test:
-	@echo "🏃‍ running unit tests"
-	@fvm flutter test test/ --reporter=compact
+	@echo "🏃‍ running unit tests across all workspace packages"
+	@fvm dart run melos exec --flutter --dir-exists=test -- "fvm flutter test --reporter=compact"
+	@fvm dart run melos exec --no-flutter --dir-exists=test -- "fvm dart test"
 
 # integration_test/all_test.dart is a single aggregator entrypoint: it runs
 # Bull.init() once, then every test file's main(isInitialized: true). On the

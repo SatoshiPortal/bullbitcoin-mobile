@@ -5,6 +5,13 @@ version: 6.11.0+185
 
 environment:
   sdk: ">=3.10.0 <4.0.0"
+
+# Dart pub workspace. Members resolve together with the root (bb_mobile) under
+# one shared lockfile. Listed explicitly — globs are not supported in the pub
+# `workspace:` key yet (the melos `packages:` glob below is separate).
+workspace:
+  - packages/bull_labels
+
 dependencies:
   flutter:
     sdk: flutter
