@@ -56,12 +56,20 @@ class RestoreKeychainManifestWalletsUsecase {
     required Set<String> walletIds,
   }) {
     final reservation = _registry.reservationById(entry.reservationId);
-    if (reservation == null ||
+    // V1 recovery is limited to wallet-seed reservations, so the shape check
+    // (which also covers an unknown reservation) proves the typed wallet
+    // index before it is compared against the file-claimed one.
+    if (reservation is! Bip85WalletSeedReservation ||
         entryIds.contains(entry.entryId) ||
         entry.parentFingerprint != importPlan.parentFingerprint ||
         entry.entryId !=
             _entryId(importPlan.parentFingerprint, entry.bip85DerivationPath) ||
-        !reservation.scope.matchesExactPath(entry.bip85DerivationPath)) {
+        !reservation.scope.matchesExactPath(entry.bip85DerivationPath) ||
+        !_supportsWalletManifestRecovery(reservation) ||
+        reservation.owner.name != entry.ownerFeature ||
+        reservation.purpose.name != entry.entryType ||
+        reservation.application.number != entry.bip85Application ||
+        reservation.walletIndex != entry.bip85Index) {
       return _failedInvalidImportPlan(entry.walletMaterializations);
     }
 
@@ -87,11 +95,21 @@ class RestoreKeychainManifestWalletsUsecase {
     return null;
   }
 
+  bool _supportsWalletManifestRecovery(Bip85Reservation reservation) {
+    return KeychainManifestReservationSupport.supportsV1WalletManifestFile(
+      reservation,
+    );
+  }
+
   KeychainRecoveryWalletMaterializationBatch _materializationBatch({
     required KeychainManifestImportPlan importPlan,
     required KeychainManifestImportEntryIntent entry,
   }) {
-    final reservation = _registry.reservationById(entry.reservationId)!;
+    // _validateEntry already proved the reservation resolves to the
+    // wallet-seed shape for every entry that reaches materialization.
+    final reservation =
+        _registry.reservationById(entry.reservationId)!
+            as Bip85WalletSeedReservation;
     return KeychainRecoveryWalletMaterializationBatch(
       parentFingerprint: importPlan.parentFingerprint,
       bip85Index: reservation.walletIndex,

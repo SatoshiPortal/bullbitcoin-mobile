@@ -22,7 +22,10 @@ void main() {
         repository: store,
         bip85Registry: const Bip85RegistryFacade(),
       ),
-      buildManifestFile: BuildKeychainManifestFileUsecase(repository: store),
+      buildManifestFile: BuildKeychainManifestFileUsecase(
+        repository: store,
+        registry: const Bip85RegistryFacade(),
+      ),
       parseManifestFile: const ParseKeychainManifestFileUsecase(
         codec: KeychainManifestFileCodec(),
         bip85Registry: Bip85RegistryFacade(),

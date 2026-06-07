@@ -28,6 +28,14 @@ later consumer flows. Import parsing does not persist, delete, create wallets,
 publish, fetch, or restore product state, and non-wallet materialization types
 are out of scope for v1.
 
+V1 local recording accepts registry-owned wallet-seed reservations, because
+manifest inventory is generic metadata for app-created BIP85 materializations.
+V1 file export/import/recovery support is narrower: only the BTCPay wallet seed
+reservation is exportable/importable/recoverable until each owning runtime flow
+explicitly adds restore semantics. Other reserved wallet-seed paths may be
+recorded as local inventory, but they are omitted from v1 file payloads and must
+not be presented as importable or recoverable yet.
+
 ## Boundaries
 
 - `keychain_manifest` owns local keychain manifest entries, typed
@@ -81,8 +89,10 @@ Current-device source of truth:
 - `bip85_registry` defines reserved paths and purposes.
 - `keychain_manifest` database records define which app-created BIP85 material
   has been recorded for recovery/retry inventory.
-- The manifest file payload is the latest projection of those records at the
-  moment a caller builds it.
+- The manifest file payload is the latest compatible v1 projection of those
+  records at the moment a caller builds it. Unsupported local reservations remain
+  in Drift inventory but are omitted from v1 payloads until their owning flows
+  add file/recovery support.
 - The payload does not prove that every recorded wallet still exists locally.
   A future consumer that needs current wallet-existence guarantees must join
   against wallet inventory and define missing-wallet behavior explicitly.

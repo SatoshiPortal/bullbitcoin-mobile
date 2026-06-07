@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_error.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/usecases/build_keychain_manifest_file_usecase.dart';
@@ -10,7 +11,10 @@ void main() {
 
   setUp(() {
     store = _InMemoryKeychainManifestStore();
-    usecase = BuildKeychainManifestFileUsecase(repository: store);
+    usecase = BuildKeychainManifestFileUsecase(
+      repository: store,
+      registry: const Bip85RegistryFacade(),
+    );
   });
 
   test('builds an empty manifest file for a parent fingerprint', () async {
@@ -60,24 +64,57 @@ void main() {
       ),
     );
   });
+
+  test('excludes unsupported wallet reservations from v1 export', () async {
+    store.records.addAll([
+      _record(walletId: 'btc-wallet', network: 'bitcoinMainnet', updatedAt: 10),
+      _record(
+        reservationId: 'lightning_address_wallet_seed',
+        ownerFeature: 'lightningAddress',
+        bip85DerivationPath: "39'/0'/12'/101'",
+        bip85Index: 101,
+        walletId: 'lightning-address-wallet',
+        network: 'liquidMainnet',
+        updatedAt: 13,
+      ),
+    ]);
+
+    final manifestFile = await usecase.execute(
+      'fedcba98',
+      now: DateTime.fromMillisecondsSinceEpoch(20000, isUtc: true),
+    );
+
+    expect(manifestFile.entries, hasLength(1));
+    expect(manifestFile.entries.single.reservationId, 'btcpay_wallet_seed');
+    expect(
+      manifestFile.entries.single.materializations.single.walletId,
+      'btc-wallet',
+    );
+    expect(manifestFile.inventoryUpdatedAt, 12);
+  });
 }
 
 KeychainManifestWalletMaterializationRecord _record({
   String walletId = 'btc-wallet',
   String parentFingerprint = 'fedcba98',
   String childSeedFingerprint = '0123abcd',
+  String reservationId = 'btcpay_wallet_seed',
+  String entryType = 'walletSeed',
+  String ownerFeature = 'btcpay',
   String bip85DerivationPath = "39'/0'/12'/100'",
+  int bip85Application = 39,
+  int bip85Index = 100,
   String network = 'bitcoinMainnet',
   int updatedAt = 10,
 }) {
   final entry = KeychainManifestEntry(
     parentFingerprint: parentFingerprint,
     bip85DerivationPath: bip85DerivationPath,
-    reservationId: 'btcpay_wallet_seed',
-    entryType: 'walletSeed',
-    ownerFeature: 'btcpay',
-    bip85Application: 39,
-    bip85Index: 100,
+    reservationId: reservationId,
+    entryType: entryType,
+    ownerFeature: ownerFeature,
+    bip85Application: bip85Application,
+    bip85Index: bip85Index,
     createdAt: 10,
     updatedAt: 12,
   );

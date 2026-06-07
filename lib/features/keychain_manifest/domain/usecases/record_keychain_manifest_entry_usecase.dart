@@ -22,7 +22,9 @@ class RecordKeychainManifestEntryUsecase {
     DateTime? now,
   }) async {
     final reservation = _reservationFor(request.reservationId);
-    if (reservation.purpose != Bip85ReservationPurpose.walletSeed) {
+    // Wallet materializations may only be recorded against the wallet-seed
+    // reservation shape; key reservations carry no wallet index at all.
+    if (reservation is! Bip85WalletSeedReservation) {
       throw KeychainManifestReservationMismatchException(
         'wallet materialization does not match BIP85 reservation purpose',
       );
@@ -51,7 +53,7 @@ class RecordKeychainManifestEntryUsecase {
       entryType: reservation.purpose.name,
       ownerFeature: reservation.owner.name,
       bip85Application: reservation.application.number,
-      bip85Index: reservation.scope.segmentValue('index'),
+      bip85Index: reservation.walletIndex,
       createdAt: timestamp,
       updatedAt: timestamp,
     );

@@ -27,6 +27,7 @@ class KeychainManifestLocator {
     locator.registerFactory<BuildKeychainManifestFileUsecase>(
       () => BuildKeychainManifestFileUsecase(
         repository: locator<KeychainManifestEntryRepository>(),
+        registry: locator<Bip85RegistryFacade>(),
         clock: locator<Clock>(),
       ),
     );

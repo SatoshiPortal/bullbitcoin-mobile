@@ -12,6 +12,11 @@ It does not decode manifest files, own manifest persistence, publish or fetch
 remote manifests, submit product descriptors, mark product accounts connected,
 or expose UI.
 
+V1 recovery is limited to wallet materializations whose reservation is already
+manifest-enabled. Lightning Address, Payment Page, and Nostr reservations are
+not recovered or activated by this feature until their owning flows explicitly
+add support.
+
 ## Boundaries
 
 - `keychain_manifest` owns manifest records, file encode/decode validation, and

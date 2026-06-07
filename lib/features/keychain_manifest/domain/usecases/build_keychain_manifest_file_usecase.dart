@@ -1,14 +1,19 @@
 import 'package:bb_mobile/core/utils/clock.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/bip85_registry/public/bip85_registry_facade.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/repositories/keychain_manifest_entry_repository.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_entry.dart';
 import 'package:bb_mobile/features/keychain_manifest/domain/entities/keychain_manifest_file.dart';
+import 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_reservation_support.dart';
 
 class BuildKeychainManifestFileUsecase {
   final KeychainManifestEntryRepository repository;
+  final Bip85RegistryFacade registry;
   final Clock _clock;
 
   const BuildKeychainManifestFileUsecase({
     required this.repository,
+    required this.registry,
     this._clock = const SystemClock(),
   });
 
@@ -24,7 +29,7 @@ class BuildKeychainManifestFileUsecase {
         .fetchWalletMaterializationRecordsByParentFingerprint(
           normalizedParentFingerprint,
         );
-    final entries = _entriesFromRecords(records);
+    final entries = _entriesFromRecords(_exportableRecords(records));
     return KeychainManifestFile(
       parentFingerprint: normalizedParentFingerprint,
       generatedAt: generatedAt,
@@ -60,6 +65,35 @@ class BuildKeychainManifestFileUsecase {
       return left.entryId.compareTo(right.entryId);
     });
     return entries;
+  }
+
+  List<KeychainManifestWalletMaterializationRecord> _exportableRecords(
+    List<KeychainManifestWalletMaterializationRecord> records,
+  ) {
+    final exportable = <KeychainManifestWalletMaterializationRecord>[];
+    final dropped = <String, int>{};
+    for (final record in records) {
+      final reservation = registry.reservationById(record.entry.reservationId);
+      if (reservation != null &&
+          KeychainManifestReservationSupport.supportsV1Export(reservation)) {
+        exportable.add(record);
+      } else {
+        // Last-line tripwire (KC-3/R2-KC3b): should be dead after AD-4 classifies
+        // every wallet-seed reservation. A drop here means a recordable product
+        // wallet would be silently excluded from backup - surface it loudly.
+        dropped.update(
+          record.entry.reservationId,
+          (count) => count + 1,
+          ifAbsent: () => 1,
+        );
+      }
+    }
+    if (dropped.isNotEmpty) {
+      log.warning(
+        'Keychain manifest export dropped unexportable reservations: $dropped',
+      );
+    }
+    return List.unmodifiable(exportable);
   }
 
   int _compareRecordsForMaterializationOrder(

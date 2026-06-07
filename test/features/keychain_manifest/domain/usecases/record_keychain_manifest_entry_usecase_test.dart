@@ -123,6 +123,53 @@ void main() {
     );
   });
 
+  test('records Lightning Address reserved wallet metadata', () async {
+    await usecase.execute(
+      _command(
+        reservationId: 'lightning_address_wallet_seed',
+        derivationPath: "39'/0'/12'/101'",
+        walletId: 'lightning-address-wallet',
+        network: Network.liquidMainnet,
+      ),
+    );
+
+    expect(store.entries.single.reservationId, 'lightning_address_wallet_seed');
+    expect(store.entries.single.ownerFeature, 'lightningAddress');
+    expect(store.entries.single.bip85DerivationPath, "39'/0'/12'/101'");
+    expect(store.entries.single.bip85Index, 101);
+  });
+
+  test('records Payment Page reserved wallet metadata', () async {
+    await usecase.execute(
+      _command(
+        reservationId: 'payment_page_wallet_seed',
+        derivationPath: "39'/0'/12'/102'",
+        walletId: 'payment-page-wallet',
+        network: Network.liquidMainnet,
+      ),
+    );
+
+    expect(store.entries.single.reservationId, 'payment_page_wallet_seed');
+    expect(store.entries.single.ownerFeature, 'paymentPage');
+    expect(store.entries.single.bip85DerivationPath, "39'/0'/12'/102'");
+    expect(store.entries.single.bip85Index, 102);
+  });
+
+  test('rejects key reservations for wallet materializations', () async {
+    await expectLater(
+      usecase.execute(
+        _command(
+          reservationId: 'nostr_wallet_manifest_key',
+          derivationPath: "9000'/1'/1'",
+        ),
+      ),
+      throwsA(isA<KeychainManifestReservationMismatchException>()),
+    );
+
+    expect(store.entries, isEmpty);
+    expect(store.records, isEmpty);
+  });
+
   test('records when the derived path matches the reservation path', () async {
     await usecase.execute(_command(derivationPath: "39'/0'/12'/100'"));
 
@@ -195,6 +242,22 @@ void main() {
       expect(store.entries.single.reservationId, 'btcpay_wallet_seed');
     });
 
+    test('frozen wire value: registry reservation ids', () {
+      expect(
+        const Bip85RegistryFacade().reservations.map(
+          (reservation) => reservation.id,
+        ),
+        [
+          'btcpay_wallet_seed',
+          'lightning_address_wallet_seed',
+          'payment_page_wallet_seed',
+          'nostr_wallet_manifest_key',
+          'nostr_bullnym_server_auth_key',
+          'nostr_nip05_public_nym_verification_key',
+        ],
+      );
+    });
+
     test('frozen wire value: entry type walletSeed', () async {
       await usecase.execute(_command());
 
@@ -221,15 +284,28 @@ void main() {
     });
 
     test('frozen wire value: BIP85 reservation owner names', () {
-      expect(Bip85ReservationOwner.values, [Bip85ReservationOwner.btcpay]);
+      expect(Bip85ReservationOwner.values, [
+        Bip85ReservationOwner.btcpay,
+        Bip85ReservationOwner.lightningAddress,
+        Bip85ReservationOwner.paymentPage,
+        Bip85ReservationOwner.nostr,
+      ]);
       expect(Bip85ReservationOwner.btcpay.name, 'btcpay');
+      expect(Bip85ReservationOwner.lightningAddress.name, 'lightningAddress');
+      expect(Bip85ReservationOwner.paymentPage.name, 'paymentPage');
+      expect(Bip85ReservationOwner.nostr.name, 'nostr');
     });
 
     test('frozen wire value: BIP85 reservation purpose names', () {
       expect(Bip85ReservationPurpose.values, [
         Bip85ReservationPurpose.walletSeed,
+        Bip85ReservationPurpose.nonWalletNostrKey,
       ]);
       expect(Bip85ReservationPurpose.walletSeed.name, 'walletSeed');
+      expect(
+        Bip85ReservationPurpose.nonWalletNostrKey.name,
+        'nonWalletNostrKey',
+      );
     });
 
     test('frozen wire value: wallet materialization type constant', () {

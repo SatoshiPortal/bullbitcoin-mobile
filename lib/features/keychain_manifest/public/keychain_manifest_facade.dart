@@ -15,6 +15,8 @@ export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_im
         KeychainManifestImportPlan,
         KeychainManifestImportEntryIntent,
         KeychainManifestWalletMaterializationIntent;
+export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_reservation_support.dart'
+    show KeychainManifestReservationSupport;
 export 'package:bb_mobile/features/keychain_manifest/domain/keychain_manifest_request.dart'
     show
         KeychainManifestReservedDerivationRequest,
