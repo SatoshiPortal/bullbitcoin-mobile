@@ -157,6 +157,7 @@ dev_dependencies:
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
+  melos: ^7.8.1
 
 flutter:
   # Android product flavors live in android/app/build.gradle (production | beta).
@@ -203,3 +204,25 @@ flutter_launcher_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "assets/logos/icon-black-red.png"
   adaptive_icon_foreground: "assets/logos/icon-black-red.png"
+
+# ── melos workspace ────────────────────────────────────────────────
+# The repo root IS the bb_mobile app (useRootAsPackage). Feature packages
+# will be added under packages/ and auto-discovered by the glob below. The
+# pub `workspace:`/`resolution:` keys are introduced with the first extracted
+# package (labels), not here, so this commit changes no dependency resolution.
+melos:
+  useRootAsPackage: true
+  packages:
+    - packages/**
+  scripts:
+    analyze:
+      description: Analyze every package (fails on infos/warnings, like CI)
+      exec: fvm flutter analyze --fatal-infos --fatal-warnings
+    test:
+      description: Run unit tests in every package that has a test/ dir
+      exec: fvm flutter test
+      packageFilters:
+        dirExists: test
+    format:
+      description: Format Dart sources in every package
+      exec: fvm dart format .
