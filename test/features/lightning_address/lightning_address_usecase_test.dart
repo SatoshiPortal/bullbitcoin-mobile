@@ -82,7 +82,7 @@ void main() {
 
       final status = await usecase.execute(xprvBase58: xprv);
 
-      expect(status.kind, LightningAddressStatusKind.active);
+      expect(status.active, true);
       expect(status.nym, 'alice');
       expect(
         bullnym.lookupNpubHex,
@@ -105,10 +105,59 @@ void main() {
 
       final status = await usecase.execute(xprvBase58: xprv);
 
-      expect(status.kind, LightningAddressStatusKind.inactive);
+      expect(status.active, false);
       expect(status.nym, 'alice');
     },
   );
+
+  test(
+    'register rejects blank nym before deriving or calling Bullnym',
+    () async {
+      final usecase = RegisterLightningAddressUsecase(
+        bullnym: bullnym,
+        nostrIdentity: nostrIdentity,
+      );
+
+      expect(
+        () => usecase.execute(
+          RegisterLightningAddressCommand(
+            xprvBase58: xprv,
+            nym: '   ',
+            ctDescriptor: 'ct-desc',
+          ),
+        ),
+        throwsA(
+          isA<LightningAddressException>().having(
+            (e) => e.kind,
+            'kind',
+            LightningAddressErrorKind.invalidNym,
+          ),
+        ),
+      );
+      expect(bullnym.registerNym, isNull);
+    },
+  );
+
+  test('delete rejects blank nym before deriving or calling Bullnym', () async {
+    final usecase = DeleteLightningAddressRegistrationUsecase(
+      bullnym: bullnym,
+      nostrIdentity: nostrIdentity,
+    );
+
+    expect(
+      () => usecase.execute(
+        DeleteLightningAddressRegistrationCommand(xprvBase58: xprv, nym: ''),
+      ),
+      throwsA(
+        isA<LightningAddressException>().having(
+          (e) => e.kind,
+          'kind',
+          LightningAddressErrorKind.invalidNym,
+        ),
+      ),
+    );
+    expect(bullnym.deleteNym, isNull);
+  });
 
   test('maps Bullnym errors without leaking diagnostics', () async {
     bullnym.registerError = const BullnymException.timeout(

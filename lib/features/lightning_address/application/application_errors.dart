@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/bullnym/public/bullnym_facade.dart';
 
 enum LightningAddressErrorKind {
   invalidRegistrationInput,
+  invalidNym,
   network,
   timeout,
   serverRejectedRequest,
@@ -41,6 +42,13 @@ class LightningAddressException implements Exception {
       retryable: error.retryable,
     );
   }
+
+  const LightningAddressException.invalidNym()
+    : this(
+        kind: LightningAddressErrorKind.invalidNym,
+        code: 'InvalidNym',
+        retryable: false,
+      );
 
   factory LightningAddressException.unexpected(Object error) {
     return LightningAddressException(

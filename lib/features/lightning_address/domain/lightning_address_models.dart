@@ -8,17 +8,9 @@ class LightningAddressRegistration {
   });
 }
 
-enum LightningAddressStatusKind { active, inactive }
-
 class LightningAddressStatus {
-  final LightningAddressStatusKind kind;
   final String nym;
+  final bool active;
 
-  const LightningAddressStatus._({required this.kind, required this.nym});
-
-  const LightningAddressStatus.active({required String nym})
-    : this._(kind: LightningAddressStatusKind.active, nym: nym);
-
-  const LightningAddressStatus.inactive({required String nym})
-    : this._(kind: LightningAddressStatusKind.inactive, nym: nym);
+  const LightningAddressStatus({required this.nym, required this.active});
 }
