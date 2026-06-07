@@ -31,6 +31,7 @@ import 'package:bb_mobile/features/keychain_manifest/keychain_manifest_locator.d
 import 'package:bb_mobile/features/keychain_recovery/keychain_recovery_locator.dart';
 import 'package:bb_mobile/features/ledger/ledger_locator.dart';
 import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
+import 'package:bb_mobile/features/nostr_identity/nostr_identity_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pay/pay_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
@@ -89,6 +90,7 @@ class AppLocator {
     WalletLocator.setup(locator);
     TransactionsLocator.registerAdapters(locator);
     Bip85RegistryLocator.setup(locator);
+    NostrIdentityLocator.setup(locator);
     DeterministicWalletsLocator.setup(locator);
     KeychainManifestLocator.setup(locator);
     KeychainRecoveryLocator.setup(locator);
