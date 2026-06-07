@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/trezor/presentation/trezor_verify_address_cub
 import 'package:bb_mobile/features/trezor/ui/trezor_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -161,6 +162,10 @@ class _VerifyAddressView extends StatelessWidget {
   }
 
   Widget _buildAddressDisplay(BuildContext context) {
+    final spacedForDisplay = params.address
+        .replaceAllMapped(RegExp('.{1,4}'), (m) => '${m.group(0)} ')
+        .trim();
+
     return Column(
       children: [
         BBText(
@@ -170,20 +175,47 @@ class _VerifyAddressView extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const Gap(8),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: context.appColors.surface,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: context.appColors.border, width: 1),
-          ),
-          child: SelectableText(
-            params.address
-                .replaceAllMapped(RegExp('.{1,4}'), (m) => '${m.group(0)} ')
-                .trim(),
-            style: context.font.bodyLarge?.copyWith(fontSize: 18),
-            textAlign: TextAlign.center,
+        InkWell(
+          onLongPress: () {
+            Clipboard.setData(ClipboardData(text: params.address));
+            SnackBarUtils.showCopiedSnackBar(context);
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: context.appColors.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: context.appColors.border, width: 1),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  spacedForDisplay,
+                  style: context.font.bodyLarge?.copyWith(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.copy,
+                      size: 12,
+                      color: context.appColors.textMuted,
+                    ),
+                    const Gap(4),
+                    BBText(
+                      'Long-press to copy',
+                      style: context.font.bodySmall,
+                      color: context.appColors.textMuted,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ],
