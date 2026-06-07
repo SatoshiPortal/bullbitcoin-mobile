@@ -53,6 +53,7 @@ class Bip85ReservationScope {
 
 class Bip85Reservation {
   final String id;
+  final String deterministicAlias;
   final Bip85ReservationOwner owner;
   final Bip85ReservationPurpose purpose;
   final Bip85ApplicationSpec application;
@@ -60,6 +61,7 @@ class Bip85Reservation {
 
   Bip85Reservation({
     required this.id,
+    required this.deterministicAlias,
     required this.owner,
     required this.purpose,
     required this.application,

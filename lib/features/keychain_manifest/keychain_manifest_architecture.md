@@ -71,8 +71,9 @@ redundant string into the persisted schema and the manifest file contract.
 
 The manifest file is a serialized projection generated from local
 `keychain_manifest` records. It is not the current-device source of truth, is
-not maintained as a separate local file, and does not become a recovery artifact
-until a later restore flow defines those semantics.
+not maintained as a separate local file, and does not create wallets. Validated
+import plans may be consumed by `keychain_recovery`, which owns local wallet
+restore semantics.
 
 Current-device source of truth:
 
@@ -183,6 +184,8 @@ Rules:
 - Import parsing refuses an empty plan unless the caller explicitly opts in,
   mirroring the empty-export gate: silently returning a plan with nothing to
   recover would be indistinguishable from a successful import.
+- V1 decode rejects duplicate entry ids and duplicate wallet materialization ids
+  before recovery can perform wallet side effects.
 
 ### Consumer obligations
 

@@ -6,7 +6,7 @@ BTCPay owns the SamRock pairing surface exposed from Bitcoin Settings.
 
 - Entry point: Bitcoin Settings -> BTCPay.
 - This feature pairs a BTCPay Server store with dedicated BTCPay Bitcoin and Liquid wallets.
-- Both wallets use the registry-owned BTCPay reservation at BIP39 English 12-word path `39'/0'/12'/100'`. BTCPay obtains the typed wallet index through the registry facade and supplies product policy as a deterministic-wallet request; it does not own reservation or wallet materialization machinery.
+- Both wallets use the registry-owned BTCPay reservation at BIP39 English 12-word path `39'/0'/12'/100'`. BTCPay obtains the typed wallet index and canonical deterministic alias through the registry facade and supplies product policy as a deterministic-wallet request; it does not own reservation or wallet materialization machinery.
 - SamRock `btc-ln` is supported as Lightning via Liquid/Boltz descriptor setup. It does not expose the later Get Paid Lightning Address flow.
 - BTCPay records one local Keychain Manifest reserved derivation with Bitcoin and Liquid wallet materializations after deterministic wallets are prepared and before payload construction or descriptor submission. If that local record step fails, descriptors are not shared and prepared wallets are kept for retry.
 - BTCPay applies wallet-owned behavior defaults best-effort after server acceptance. BTCPay Liquid is hidden from Home and auto-sweep enabled by default; BTCPay Bitcoin is visible and auto-sweep disabled by default. Those settings remain editable from the BTCPay details screen.

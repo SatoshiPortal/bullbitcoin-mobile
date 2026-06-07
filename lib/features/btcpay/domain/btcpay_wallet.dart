@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class BtcpayWalletConstants {
   const BtcpayWalletConstants._();
 
-  static const bip85Alias = 'BTCPay';
   static const bitcoinSpecId = 'btcpay-bitcoin';
   static const liquidSpecId = 'btcpay-liquid';
   static const bitcoinLabel = 'BTCPay Bitcoin';

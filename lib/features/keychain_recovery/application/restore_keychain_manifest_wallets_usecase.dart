@@ -6,25 +6,25 @@ import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_re
 class RestoreKeychainManifestWalletsUsecase {
   final KeychainRecoveryWalletMaterializerPort _walletMaterializer;
   final KeychainManifestFacade _keychainManifest;
-  final Bip85RegistryFacade _bip85Registry;
+  final Bip85RegistryFacade _registry;
 
   const RestoreKeychainManifestWalletsUsecase({
     required this._walletMaterializer,
     required this._keychainManifest,
-    required this._bip85Registry,
-  });
+    required Bip85RegistryFacade bip85Registry,
+  }) : _registry = bip85Registry;
 
   Future<KeychainRecoveryResult> execute(
     KeychainManifestImportPlan importPlan,
   ) async {
     final outcomes = <KeychainRecoveryWalletRestoreOutcome>[];
     for (final entry in importPlan.entries) {
-      final reservation = _bip85Registry.reservationById(entry.reservationId);
+      final reservation = _registry.reservationById(entry.reservationId);
       if (reservation == null) {
         outcomes.addAll(
           entry.walletMaterializations.map(
             (intent) => KeychainRecoveryWalletRestoreOutcome(
-              intent: intent,
+              intent: _walletIntent(intent),
               status: KeychainRecoveryWalletRestoreStatus.failedWalletCreation,
               walletId: intent.walletId,
             ),
@@ -32,15 +32,12 @@ class RestoreKeychainManifestWalletsUsecase {
         );
         continue;
       }
-      final materializationResult = await _walletMaterializer.materialize(
-        KeychainRecoveryWalletMaterializationBatch(
-          parentFingerprint: importPlan.parentFingerprint,
-          reservationId: entry.reservationId,
-          bip85DerivationPath: entry.bip85DerivationPath,
-          bip85Index: reservation.walletIndex,
-          intents: entry.walletMaterializations,
-        ),
+      final batch = _materializationBatch(
+        importPlan: importPlan,
+        entry: entry,
+        reservation: reservation,
       );
+      final materializationResult = await _materialize(batch);
       outcomes.addAll(materializationResult.failedOutcomes);
       outcomes.addAll(
         await _recordMaterializedWallets(
@@ -51,6 +48,58 @@ class RestoreKeychainManifestWalletsUsecase {
       );
     }
     return KeychainRecoveryResult(walletOutcomes: outcomes);
+  }
+
+  KeychainRecoveryWalletMaterializationBatch _materializationBatch({
+    required KeychainManifestImportPlan importPlan,
+    required KeychainManifestImportEntryIntent entry,
+    required Bip85Reservation reservation,
+  }) {
+    return KeychainRecoveryWalletMaterializationBatch(
+      parentFingerprint: importPlan.parentFingerprint,
+      reservationId: entry.reservationId,
+      bip85Index: reservation.walletIndex,
+      deterministicAlias: reservation.deterministicAlias,
+      intents: entry.walletMaterializations
+          .map(_walletIntent)
+          .toList(growable: false),
+    );
+  }
+
+  KeychainRecoveryWalletIntent _walletIntent(
+    KeychainManifestWalletMaterializationIntent intent,
+  ) {
+    return KeychainRecoveryWalletIntent(
+      entryId: intent.entryId,
+      reservationId: intent.reservationId,
+      bip85DerivationPath: intent.bip85DerivationPath,
+      walletId: intent.walletId,
+      childSeedFingerprint: intent.childSeedFingerprint,
+      network: intent.network,
+      scriptType: intent.scriptType,
+    );
+  }
+
+  Future<KeychainRecoveryWalletMaterializationResult> _materialize(
+    KeychainRecoveryWalletMaterializationBatch batch,
+  ) async {
+    try {
+      return await _walletMaterializer.materialize(batch);
+    } catch (_) {
+      return KeychainRecoveryWalletMaterializationResult(
+        materializedWallets: const [],
+        failedOutcomes: batch.intents
+            .map(
+              (intent) => KeychainRecoveryWalletRestoreOutcome(
+                intent: intent,
+                status:
+                    KeychainRecoveryWalletRestoreStatus.failedWalletCreation,
+                walletId: intent.walletId,
+              ),
+            )
+            .toList(growable: false),
+      );
+    }
   }
 
   Future<List<KeychainRecoveryWalletRestoreOutcome>>
@@ -84,14 +133,20 @@ class RestoreKeychainManifestWalletsUsecase {
           .map((wallet) {
             return KeychainRecoveryWalletRestoreOutcome(
               intent: wallet.intent,
-              status: wallet.created
-                  ? KeychainRecoveryWalletRestoreStatus.created
-                  : KeychainRecoveryWalletRestoreStatus.alreadyPresent,
+              status: _successStatus(wallet),
               walletId: wallet.walletId,
             );
           })
           .toList(growable: false);
     } on KeychainManifestException {
+      final rollback = materializationResult.rollbackCreatedWallets;
+      if (rollback != null) {
+        try {
+          await rollback();
+        } catch (_) {
+          // Preserve the recovery failure result; rollback is best effort here.
+        }
+      }
       return wallets
           .map((wallet) {
             return KeychainRecoveryWalletRestoreOutcome(
@@ -102,5 +157,12 @@ class RestoreKeychainManifestWalletsUsecase {
           })
           .toList(growable: false);
     }
+  }
+
+  KeychainRecoveryWalletRestoreStatus _successStatus(
+    KeychainRecoveryMaterializedWallet wallet,
+  ) {
+    if (wallet.created) return KeychainRecoveryWalletRestoreStatus.created;
+    return KeychainRecoveryWalletRestoreStatus.alreadyPresent;
   }
 }

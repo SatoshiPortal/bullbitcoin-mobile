@@ -5,6 +5,7 @@ class Bip85Reservations {
 
   static final btcpayWalletSeed = Bip85Reservation(
     id: 'btcpay_wallet_seed',
+    deterministicAlias: 'BTCPay',
     owner: Bip85ReservationOwner.btcpay,
     purpose: Bip85ReservationPurpose.walletSeed,
     application: const Bip85ApplicationSpec(number: 39),

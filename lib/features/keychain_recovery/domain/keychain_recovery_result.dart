@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 enum KeychainRecoveryWalletRestoreStatus {
   created,
@@ -6,13 +6,36 @@ enum KeychainRecoveryWalletRestoreStatus {
   metadataRepaired,
   skippedUnsupported,
   failedParentFingerprintMismatch,
+  failedChildSeedFingerprintMismatch,
   failedWalletCreation,
   failedManifestRecord,
   failedConflict,
 }
 
+class KeychainRecoveryWalletIntent {
+  final String entryId;
+  final String reservationId;
+  final String bip85DerivationPath;
+  final String walletId;
+  final String childSeedFingerprint;
+  final Network network;
+  final ScriptType scriptType;
+
+  const KeychainRecoveryWalletIntent({
+    required this.entryId,
+    required this.reservationId,
+    required this.bip85DerivationPath,
+    required this.walletId,
+    required this.childSeedFingerprint,
+    required this.network,
+    required this.scriptType,
+  });
+
+  String get materializationKey => '$entryId:$walletId';
+}
+
 class KeychainRecoveryWalletRestoreOutcome {
-  final KeychainManifestWalletMaterializationIntent intent;
+  final KeychainRecoveryWalletIntent intent;
   final KeychainRecoveryWalletRestoreStatus status;
   final String? walletId;
 

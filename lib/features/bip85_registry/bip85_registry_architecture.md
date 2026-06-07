@@ -11,6 +11,9 @@ created secrets, wallets, recovery-manifest entries, or allocation history.
 - The composition root may register the stateless facade for consumers.
 - The registry owns no database, repository, datasource, UI, allocator, or
   runtime manifest writer.
+- Reservation metadata includes the canonical deterministic alias used when
+  deriving or reusing the reserved BIP85 child. Product features and recovery
+  use that alias through the registry instead of duplicating product constants.
 
 ## Current Reservation
 
