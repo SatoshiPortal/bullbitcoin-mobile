@@ -78,7 +78,7 @@ void main() {
       ),
     );
 
-    final client = BullnymHttpClient(dio: dio);
+    final client = BullnymHttpClient.withDio(dio);
 
     expect(client, isA<BullnymHttpClient>());
     expect(dio.options.baseUrl, 'https://bullpay.test');
@@ -95,12 +95,24 @@ void main() {
     expect(client.baseUrl, 'https://custom.bullnym.test');
   });
 
+  test('rejects invalid Bullnym base URLs', () {
+    expect(() => BullnymHttpClient(baseUrl: ''), throwsArgumentError);
+    expect(
+      () => BullnymHttpClient(baseUrl: 'custom.bullnym.test'),
+      throwsArgumentError,
+    );
+    expect(
+      () => BullnymHttpClient(baseUrl: 'ftp://custom.bullnym.test'),
+      throwsArgumentError,
+    );
+  });
+
   test('posts signed register requests using the proven contract', () async {
     final stub = _stubDio([
       {'nym': 'alice', 'lightning_address': 'alice@bullpay.ca'},
     ]);
     final facade = _facadeForClient(
-      BullnymHttpClient(dio: stub.dio),
+      BullnymHttpClient.withDio(stub.dio),
       nowSecs: () => timestamp,
     );
 
@@ -145,7 +157,7 @@ void main() {
       {'ok': true},
     ]);
     final facade = _facadeForClient(
-      BullnymHttpClient(dio: stub.dio),
+      BullnymHttpClient.withDio(stub.dio),
       nowSecs: () => timestamp,
     );
 
@@ -179,7 +191,7 @@ void main() {
     final stub = _stubDio([
       {'nym': 'alice', 'active': false},
     ]);
-    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+    final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
     final response = await facade.lookupRegistration(npubHex: 'aa' * 32);
 
@@ -198,7 +210,7 @@ void main() {
       ],
       statuses: [409],
     );
-    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+    final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
     expect(
       () => facade.lookupRegistration(npubHex: 'aa' * 32),
@@ -232,7 +244,7 @@ void main() {
       ],
       statuses: [503],
     );
-    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+    final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
     expect(
       () => facade.lookupRegistration(npubHex: 'aa' * 32),
@@ -253,7 +265,7 @@ void main() {
     final stub = _stubDio([
       {'nym': 'alice'},
     ]);
-    final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+    final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
     expect(
       () => facade.register(
@@ -280,7 +292,7 @@ void main() {
         ],
         statuses: [409],
       );
-      final facade = _facadeForClient(BullnymHttpClient(dio: stub.dio));
+      final facade = _facadeForClient(BullnymHttpClient.withDio(stub.dio));
 
       expect(
         () => facade.lookupRegistration(npubHex: 'aa' * 32),

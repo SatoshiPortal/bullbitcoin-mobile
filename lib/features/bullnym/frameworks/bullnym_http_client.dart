@@ -12,22 +12,38 @@ const Duration bullnymConnectTimeout = Duration(seconds: 10);
 const Duration bullnymReceiveTimeout = Duration(seconds: 15);
 
 class BullnymHttpClient implements BullnymClientPort {
-  BullnymHttpClient({Dio? dio, String baseUrl = bullnymDefaultBaseUrl})
-    : _dio = dio ?? _newDio(baseUrl);
+  BullnymHttpClient({String baseUrl = bullnymDefaultBaseUrl})
+    : _dio = _newDio(baseUrl);
+
+  BullnymHttpClient.withDio(Dio dio) : _dio = dio;
 
   final Dio _dio;
 
   String get baseUrl => _dio.options.baseUrl;
 
   static Dio _newDio(String baseUrl) {
+    final normalizedBaseUrl = _validateBaseUrl(baseUrl);
     return Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: normalizedBaseUrl,
         connectTimeout: bullnymConnectTimeout,
         receiveTimeout: bullnymReceiveTimeout,
         validateStatus: (status) => status != null && status < 600,
       ),
     );
+  }
+
+  static String _validateBaseUrl(String baseUrl) {
+    final normalized = baseUrl.trim();
+    final uri = Uri.tryParse(normalized);
+    if (normalized.isEmpty ||
+        uri == null ||
+        !uri.hasScheme ||
+        (uri.scheme != 'http' && uri.scheme != 'https') ||
+        uri.host.isEmpty) {
+      throw ArgumentError.value(baseUrl, 'baseUrl', 'Invalid Bullnym base URL');
+    }
+    return normalized;
   }
 
   @override
