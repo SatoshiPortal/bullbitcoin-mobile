@@ -23,8 +23,8 @@ import 'package:go_router/go_router.dart';
 ///      snackbar and forwards the hex to `SendCubit.updateSignedBitcoinTx`.
 ///   4. On rejection / timeout: snackbar + inline error + Try Again.
 class TrezorSignTransactionScreen extends StatelessWidget {
-  final TrezorSignTransactionRouteParams? params;
-  const TrezorSignTransactionScreen({super.key, this.params});
+  final TrezorSignTransactionRouteParams params;
+  const TrezorSignTransactionScreen({super.key, required this.params});
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +36,8 @@ class TrezorSignTransactionScreen extends StatelessWidget {
 }
 
 class _SignTransactionView extends StatelessWidget {
-  final TrezorSignTransactionRouteParams? params;
-  const _SignTransactionView({this.params});
+  final TrezorSignTransactionRouteParams params;
+  const _SignTransactionView({required this.params});
 
   @override
   Widget build(BuildContext context) {
@@ -192,14 +192,10 @@ class _SignTransactionView extends StatelessWidget {
 
   Future<void> _onStartSigning(BuildContext context) async {
     try {
-      final p = params;
-      if (p == null) {
-        throw Exception('Missing transaction parameters');
-      }
-      context.read<TrezorSignTransactionCubit>().sign(
-        psbt: p.psbt,
-        isTestnet: p.isTestnet,
-        scriptType: p.scriptType,
+      await context.read<TrezorSignTransactionCubit>().sign(
+        psbt: params.psbt,
+        isTestnet: params.isTestnet,
+        scriptType: params.scriptType,
       );
     } catch (_) {
       // Cubit already emitted error state; listener shows snackbar.

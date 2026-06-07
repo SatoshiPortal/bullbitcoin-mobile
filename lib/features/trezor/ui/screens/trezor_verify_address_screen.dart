@@ -22,8 +22,8 @@ import 'package:go_router/go_router.dart';
 ///   4. On confirmation: snackbar + pop back to Receive.
 ///   5. On rejection / timeout: inline error + Try Again.
 class TrezorVerifyAddressScreen extends StatelessWidget {
-  final TrezorVerifyAddressRouteParams? params;
-  const TrezorVerifyAddressScreen({super.key, this.params});
+  final TrezorVerifyAddressRouteParams params;
+  const TrezorVerifyAddressScreen({super.key, required this.params});
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +35,8 @@ class TrezorVerifyAddressScreen extends StatelessWidget {
 }
 
 class _VerifyAddressView extends StatelessWidget {
-  final TrezorVerifyAddressRouteParams? params;
-  const _VerifyAddressView({this.params});
+  final TrezorVerifyAddressRouteParams params;
+  const _VerifyAddressView({required this.params});
 
   @override
   Widget build(BuildContext context) {
@@ -161,8 +161,6 @@ class _VerifyAddressView extends StatelessWidget {
   }
 
   Widget _buildAddressDisplay(BuildContext context) {
-    final p = params;
-    if (p == null) return const SizedBox.shrink();
     return Column(
       children: [
         BBText(
@@ -181,7 +179,7 @@ class _VerifyAddressView extends StatelessWidget {
             border: Border.all(color: context.appColors.border, width: 1),
           ),
           child: SelectableText(
-            p.address
+            params.address
                 .replaceAllMapped(RegExp('.{1,4}'), (m) => '${m.group(0)} ')
                 .trim(),
             style: context.font.bodyLarge?.copyWith(fontSize: 18),
@@ -228,15 +226,11 @@ class _VerifyAddressView extends StatelessWidget {
 
   Future<void> _onVerify(BuildContext context) async {
     try {
-      final p = params;
-      if (p == null) {
-        throw Exception('Missing address parameters');
-      }
       await context.read<TrezorVerifyAddressCubit>().verify(
-        address: p.address,
-        derivationPath: p.derivationPath,
-        scriptType: p.scriptType,
-        isTestnet: p.isTestnet,
+        address: params.address,
+        derivationPath: params.derivationPath,
+        scriptType: params.scriptType,
+        isTestnet: params.isTestnet,
       );
     } catch (_) {
       // Cubit already emitted an error state; BlocConsumer listener
