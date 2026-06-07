@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/bb_pullable_body.dart';
+import 'package:bb_mobile/core/widgets/disclosure_bottom_sheet.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_box_content.dart';
 import 'package:bb_mobile/core/widgets/loading/loading_line_content.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -75,6 +76,19 @@ class WalletDetailScreen extends StatelessWidget {
                     const SliverToBoxAdapter(child: Gap(8)),
                     SliverToBoxAdapter(child: _CoinsEntryTile(wallet: wallet)),
                   ],
+                  if (wallet.isLiquid)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                        child: DisclosureLink(
+                          label: context.loc.walletLiquidRiskDisclosureLabel,
+                          semanticLabel:
+                              context.loc.liquidRiskDisclosureSemanticLabel,
+                          title: context.loc.liquidRiskDisclosureTitle,
+                          body: context.loc.liquidRiskDisclosureBody,
+                        ),
+                      ),
+                    ),
                   const SliverToBoxAdapter(child: Gap(16)),
                   const WalletDetailTxsList(sliver: true),
                 ],
