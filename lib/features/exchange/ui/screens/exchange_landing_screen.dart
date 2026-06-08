@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/themes/fonts.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -150,7 +151,9 @@ class ExchangeLandingScreen extends StatelessWidget {
                 child: BBButton.big(
                   label: context.loc.exchangeLoginButton,
                   onPressed: () {
-                    context.goNamed(ExchangeRoute.exchangeAuth.name);
+                    StagingExchangeGuard.tryProceed(context, () {
+                      context.goNamed(ExchangeRoute.exchangeAuth.name);
+                    });
                   },
                   bgColor: context.appColors.primary,
                   textColor: context.appColors.onPrimary,

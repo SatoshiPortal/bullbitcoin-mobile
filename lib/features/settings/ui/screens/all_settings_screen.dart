@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -202,17 +203,19 @@ class _AllSettingsScreenState extends State<AllSettingsScreen> {
                     ),
                     InkWell(
                       onTap: () {
-                        final notLoggedIn =
-                            context.read<ExchangeCubit>().state.notLoggedIn;
-                        if (notLoggedIn) {
-                          context.goNamed(
-                            ExchangeRoute.exchangeLoginForSupport.name,
-                          );
-                        } else {
-                          context.goNamed(
-                            ExchangeSupportChatRoute.supportChat.name,
-                          );
-                        }
+                        StagingExchangeGuard.tryProceed(context, () {
+                          final notLoggedIn =
+                              context.read<ExchangeCubit>().state.notLoggedIn;
+                          if (notLoggedIn) {
+                            context.goNamed(
+                              ExchangeRoute.exchangeLoginForSupport.name,
+                            );
+                          } else {
+                            context.goNamed(
+                              ExchangeSupportChatRoute.supportChat.name,
+                            );
+                          }
+                        });
                       },
                       child: Column(
                         mainAxisSize: .min,

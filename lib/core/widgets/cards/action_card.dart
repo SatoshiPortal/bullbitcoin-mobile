@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -51,18 +52,20 @@ class _ActionRow extends StatelessWidget {
                 icon: Assets.icons.btc.path,
                 label: context.loc.homeActionBuy,
                 onPressed: () {
-                  if (Platform.isIOS) {
-                    final isSuperuser =
-                        context.read<SettingsCubit>().state.isSuperuser ??
-                        false;
-                    if (isSuperuser) {
-                      context.pushNamed(BuyRoute.buy.name);
+                  StagingExchangeGuard.tryProceed(context, () {
+                    if (Platform.isIOS) {
+                      final isSuperuser =
+                          context.read<SettingsCubit>().state.isSuperuser ??
+                          false;
+                      if (isSuperuser) {
+                        context.pushNamed(BuyRoute.buy.name);
+                      } else {
+                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      }
                     } else {
-                      context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      context.pushNamed(BuyRoute.buy.name);
                     }
-                  } else {
-                    context.pushNamed(BuyRoute.buy.name);
-                  }
+                  });
                 },
                 position: _ButtonPosition.first,
                 disabled: false,
@@ -72,18 +75,20 @@ class _ActionRow extends StatelessWidget {
                 icon: Assets.icons.dollar.path,
                 label: context.loc.homeActionSell,
                 onPressed: () {
-                  if (Platform.isIOS) {
-                    final isSuperuser =
-                        context.read<SettingsCubit>().state.isSuperuser ??
-                        false;
-                    if (isSuperuser) {
-                      context.pushNamed(SellRoute.sell.name);
+                  StagingExchangeGuard.tryProceed(context, () {
+                    if (Platform.isIOS) {
+                      final isSuperuser =
+                          context.read<SettingsCubit>().state.isSuperuser ??
+                          false;
+                      if (isSuperuser) {
+                        context.pushNamed(SellRoute.sell.name);
+                      } else {
+                        context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      }
                     } else {
-                      context.goNamed(ExchangeRoute.exchangeLanding.name);
+                      context.pushNamed(SellRoute.sell.name);
                     }
-                  } else {
-                    context.pushNamed(SellRoute.sell.name);
-                  }
+                  });
                 },
                 position: _ButtonPosition.middle,
                 disabled: false,
@@ -93,27 +98,29 @@ class _ActionRow extends StatelessWidget {
                 icon: Assets.icons.rightArrow.path,
                 label: context.loc.homeActionPay,
                 onPressed: () {
-                  final notLoggedIn = context
-                      .read<ExchangeCubit>()
-                      .state
-                      .notLoggedIn;
+                  StagingExchangeGuard.tryProceed(context, () {
+                    final notLoggedIn = context
+                        .read<ExchangeCubit>()
+                        .state
+                        .notLoggedIn;
 
-                  if (notLoggedIn) {
-                    context.goNamed(ExchangeRoute.exchangeLanding.name);
-                  } else {
-                    if (Platform.isIOS) {
-                      final isSuperuser =
-                          context.read<SettingsCubit>().state.isSuperuser ??
-                          false;
-                      if (isSuperuser) {
-                        context.pushNamed(PayRoute.pay.name);
-                      } else {
-                        context.goNamed(ExchangeRoute.exchangeLanding.name);
-                      }
+                    if (notLoggedIn) {
+                      context.goNamed(ExchangeRoute.exchangeLanding.name);
                     } else {
-                      context.pushNamed(PayRoute.pay.name);
+                      if (Platform.isIOS) {
+                        final isSuperuser =
+                            context.read<SettingsCubit>().state.isSuperuser ??
+                            false;
+                        if (isSuperuser) {
+                          context.pushNamed(PayRoute.pay.name);
+                        } else {
+                          context.goNamed(ExchangeRoute.exchangeLanding.name);
+                        }
+                      } else {
+                        context.pushNamed(PayRoute.pay.name);
+                      }
                     }
-                  }
+                  });
                 },
                 position: _ButtonPosition.middle,
                 disabled: false,

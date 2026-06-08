@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/cubit/price_chart_cubit.dart';
@@ -92,19 +93,21 @@ class _WalletHomeAppBarState extends State<WalletHomeAppBar> {
                         size: 24,
                       ),
                       onPressed: () {
-                        final notLoggedIn = context
-                            .read<ExchangeCubit>()
-                            .state
-                            .notLoggedIn;
-                        if (notLoggedIn) {
-                          context.pushNamed(
-                            ExchangeRoute.exchangeLoginForSupport.name,
-                          );
-                        } else {
-                          context.pushNamed(
-                            ExchangeSupportChatRoute.supportChat.name,
-                          );
-                        }
+                        StagingExchangeGuard.tryProceed(context, () {
+                          final notLoggedIn = context
+                              .read<ExchangeCubit>()
+                              .state
+                              .notLoggedIn;
+                          if (notLoggedIn) {
+                            context.pushNamed(
+                              ExchangeRoute.exchangeLoginForSupport.name,
+                            );
+                          } else {
+                            context.pushNamed(
+                              ExchangeSupportChatRoute.supportChat.name,
+                            );
+                          }
+                        });
                       },
                     ),
                   ],

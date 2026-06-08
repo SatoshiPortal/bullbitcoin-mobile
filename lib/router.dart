@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/core/screens/route_error_screen.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
@@ -98,28 +99,29 @@ class AppRouter {
                               if (index == 0) {
                                 context.goNamed(WalletRoute.walletHome.name);
                               } else {
-                                // Exchange tab
-                                if (Platform.isIOS) {
-                                  final isSuperuser =
-                                      context
-                                          .read<SettingsCubit>()
-                                          .state
-                                          .isSuperuser ??
-                                      false;
-                                  if (isSuperuser) {
+                                StagingExchangeGuard.tryProceed(context, () {
+                                  if (Platform.isIOS) {
+                                    final isSuperuser =
+                                        context
+                                            .read<SettingsCubit>()
+                                            .state
+                                            .isSuperuser ??
+                                        false;
+                                    if (isSuperuser) {
+                                      context.goNamed(
+                                        ExchangeRoute.exchangeHome.name,
+                                      );
+                                    } else {
+                                      context.goNamed(
+                                        ExchangeRoute.exchangeLanding.name,
+                                      );
+                                    }
+                                  } else {
                                     context.goNamed(
                                       ExchangeRoute.exchangeHome.name,
                                     );
-                                  } else {
-                                    context.goNamed(
-                                      ExchangeRoute.exchangeLanding.name,
-                                    );
                                   }
-                                } else {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeHome.name,
-                                  );
-                                }
+                                });
                               }
                             },
                             items: [

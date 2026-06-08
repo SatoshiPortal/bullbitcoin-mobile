@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/staging_env.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +32,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
     final isTestnet =
         context.read<SettingsCubit>().state.environment == Environment.testnet;
     _bbKycUrl = isTestnet
-        ? ApiServiceConstants.bbKycTestUrl
+        ? (StagingEnv.kycUrl ?? '')
         : ApiServiceConstants.bbKycUrl;
 
     _controller
@@ -91,14 +92,19 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
               return NavigationDecision.prevent;
             }
           },
-          onHttpAuthRequest: (HttpAuthRequest request) {
-            request.onProceed(
-              WebViewCredential(
-                user: ApiServiceConstants.basicAuthUsername,
-                password: ApiServiceConstants.basicAuthPassword,
-              ),
-            );
-          },
+          onHttpAuthRequest: isTestnet
+              ? (HttpAuthRequest request) {
+                  final username = StagingEnv.basicAuthUsername;
+                  final password = StagingEnv.basicAuthPassword;
+                  if (username == null || password == null) {
+                    request.onCancel();
+                    return;
+                  }
+                  request.onProceed(
+                    WebViewCredential(user: username, password: password),
+                  );
+                }
+              : null,
           onPageStarted: (String url) {},
           onPageFinished: (String url) async {
             // Even though the onPageFinished callback is called when the

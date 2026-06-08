@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
@@ -112,10 +113,12 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                               child: BBButton.big(
                                 label: context.loc.exchangeLoginButton,
                                 onPressed: () {
-                                  context.goNamed(
-                                    ExchangeRoute.exchangeAuth.name,
-                                    queryParameters: {'from': 'support'},
-                                  );
+                                  StagingExchangeGuard.tryProceed(context, () {
+                                    context.goNamed(
+                                      ExchangeRoute.exchangeAuth.name,
+                                      queryParameters: {'from': 'support'},
+                                    );
+                                  });
                                 },
                                 bgColor: context.appColors.primary,
                                 textColor: context.appColors.onPrimary,

@@ -41,6 +41,7 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/staging_env.dart';
 import 'package:bb_mobile/features/buy/domain/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/features/buy/domain/create_buy_order_usecase.dart';
@@ -87,7 +88,7 @@ class ExchangeLocator {
       () => BullbitcoinApiDatasource(
         bullbitcoinApiHttpClient: Dio(
           BaseOptions(
-            baseUrl: ApiServiceConstants.bbApiTestUrl,
+            baseUrl: StagingEnv.apiUrl ?? '',
             connectTimeout: orderApiTimeout,
             receiveTimeout: orderApiTimeout,
             sendTimeout: orderApiTimeout,
@@ -121,7 +122,7 @@ class ExchangeLocator {
     locator.registerLazySingleton<ExchangeSupportChatDatasource>(
       () => ExchangeSupportChatDatasource(
         bullbitcoinApiHttpClient: Dio(
-          BaseOptions(baseUrl: ApiServiceConstants.bbApiTestUrl),
+          BaseOptions(baseUrl: StagingEnv.apiUrl ?? ''),
         ),
       ),
       instanceName: 'testnetExchangeSupportChatDatasource',
@@ -139,7 +140,7 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeNotificationDatasource>(
       () => ExchangeNotificationDatasource(
-        baseUrl: ApiServiceConstants.bbApiTestUrl,
+        baseUrl: StagingEnv.apiUrl ?? '',
         apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: true,
       ),
