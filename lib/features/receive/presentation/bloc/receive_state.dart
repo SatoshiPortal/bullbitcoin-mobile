@@ -111,7 +111,7 @@ abstract class ReceiveState with _$ReceiveState {
           scheme: 'bitcoin',
           path: bitcoinAddress!.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (confirmedAmountBtc > 0) 'amount': formatBtcAmount(confirmedAmountBtc),
             if (note.isNotEmpty) 'message': note,
           },
         );
@@ -128,7 +128,7 @@ abstract class ReceiveState with _$ReceiveState {
           scheme: 'liquidnetwork',
           path: liquidAddress!.address,
           queryParameters: {
-            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
+            if (confirmedAmountBtc > 0) 'amount': formatBtcAmount(confirmedAmountBtc),
             if (note.isNotEmpty) 'message': note,
             'assetid':
                 wallet != null && wallet!.network == Network.liquidMainnet
@@ -163,11 +163,24 @@ abstract class ReceiveState with _$ReceiveState {
     final base = pjUri.substring(0, q); // bitcoin:<address>
     final pdkQuery = pjUri.substring(q + 1); // [pjos=0&]pj=...
     final extras = <String>[
-      if (amountBtc > 0) 'amount=$amountBtc',
+      if (amountBtc > 0) 'amount=${formatBtcAmount(amountBtc)}',
       if (note.isNotEmpty) 'message=${Uri.encodeQueryComponent(note)}',
       if (!pdkQuery.contains('pjos=')) 'pjos=0',
     ];
     return extras.isEmpty ? pjUri : '$base?${extras.join('&')}&$pdkQuery';
+  }
+
+  /// Formats a BTC amount as a plain decimal for a BIP21 `amount` parameter.
+  ///
+  /// `double.toString()` switches to scientific notation below 1e-6 (e.g.
+  /// `1e-8` for 1 sat), which is not a valid BIP21 amount. Format with 8
+  /// decimals (sat precision) and trim trailing zeros.
+  static String formatBtcAmount(double amountBtc) {
+    var s = amountBtc.toStringAsFixed(8);
+    if (s.contains('.')) {
+      s = s.replaceAll(RegExp(r'0+$'), '').replaceAll(RegExp(r'\.$'), '');
+    }
+    return s;
   }
 
   String get addressOrInvoiceOnly {

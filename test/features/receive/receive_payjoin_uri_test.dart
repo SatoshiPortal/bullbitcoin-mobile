@@ -75,6 +75,47 @@ void main() {
     });
   });
 
+  group('formatBtcAmount', () {
+    test('never uses scientific notation for small amounts', () {
+      // 1 sat and 10 sats would render as 1e-8 / 1e-7 via double.toString().
+      expect(ReceiveState.formatBtcAmount(0.00000001), equals('0.00000001'));
+      expect(ReceiveState.formatBtcAmount(0.0000001), equals('0.0000001'));
+      expect(ReceiveState.formatBtcAmount(0.000001), equals('0.000001'));
+    });
+
+    test('trims trailing zeros', () {
+      expect(ReceiveState.formatBtcAmount(0.001), equals('0.001'));
+      expect(ReceiveState.formatBtcAmount(1.0), equals('1'));
+      expect(ReceiveState.formatBtcAmount(0.00666666), equals('0.00666666'));
+    });
+  });
+
+  group('regression: the previous dart:core Uri reconstruction', () {
+    // Reproduces the old implementation to document precisely why it was
+    // replaced: round-tripping the PDK pjUri through dart:core Uri
+    // percent-encoded the :// and dropped pjos.
+    test('over-encoded :// and dropped pjos', () {
+      final pjUri = Uri.parse(pdkPjUri);
+      var bip21Uri = Uri(
+        scheme: 'bitcoin',
+        path: 'tb1q6q6de88mj8qkg0q5lupmpfexwnqjsr4d2gvx2p',
+        queryParameters: {'amount': '0.001'},
+      );
+      bip21Uri = bip21Uri.replace(
+        queryParameters: {
+          ...bip21Uri.queryParameters,
+          if (pjUri.queryParameters['pjos'] != null)
+            'pjos': pjUri.queryParameters['pjos']!,
+          'pj': pjUri.queryParameters['pj']!,
+        },
+      );
+      final old = bip21Uri.toString();
+      expect(old.contains('%3A%2F%2F'), isTrue, reason: ':// over-encoded');
+      expect(old.contains('HTTPS://'), isFalse);
+      expect(old.contains('pjos'), isFalse, reason: 'pjos dropped');
+    });
+  });
+
   group('generated URI is consumable by the bip21_uri decoder', () {
     test('the pj endpoint survives a decode round-trip', () {
       final generated = ReceiveState.buildPayjoinPaymentRequest(
