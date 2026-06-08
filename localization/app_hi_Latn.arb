@@ -3145,6 +3145,10 @@
     "description": "Label for CVU (Clave Virtual Uniforme) number in Argentina"
   },
   "fundExchangeErrorLoadingDetails": "Payment ki jaankari abhi load nahi ho saki. Wapas jao aur dobara koshish karo, doosra payment tarika chuniye ya baad mein aao.",
+  "fundExchangeErrorOrdPo404": "Koi payment option uplabdh nahin hai",
+  "fundExchangeErrorRcpPo404": "Is funding option tak pahunchne ke liye aapke paas zaroori permissions nahin hain. Ya to aapka KYC aparyaapt hai ya yeh option aapke account ke liye uplabdh nahin hai",
+  "fundExchangeErrorRcpPosinpe404": "Is funding option tak pahunchne ke liye, aapka phone number Costa Rica mein SINPE network par registered hona chahiye.",
+  "fundExchangeErrorFetchingBankCodes": "Bank codes lane mein error hua. Kripya baad mein dubara koshish karein.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

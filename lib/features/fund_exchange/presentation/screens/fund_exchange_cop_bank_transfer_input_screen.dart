@@ -315,7 +315,7 @@ class _FundExchangeCopBankTransferInputScreenState
                     const Gap(32.0),
                     if (_fundingDetailsError != null) ...[
                       BBText(
-                        context.loc.fundExchangeErrorLoadingDetails,
+                        _fundingDetailsError!.displayMessage(context.loc),
                         style: theme.textTheme.bodyMedium,
                         color: theme.colorScheme.error,
                         textAlign: TextAlign.center,

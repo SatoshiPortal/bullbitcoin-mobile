@@ -8516,6 +8516,10 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "รายละเอียดการชําระเงินไม่สามารถโหลดได้ โปรดกลับไปและลองอีกครั้งเลือกวิธีการชําระเงินอื่น ๆ หรือกลับมา.",
+  "fundExchangeErrorOrdPo404": "ไม่มีตัวเลือกการชำระเงิน",
+  "fundExchangeErrorRcpPo404": "คุณไม่มีสิทธิ์ที่จำเป็นในการเข้าถึงตัวเลือกการเติมเงินนี้ KYC ของคุณไม่เพียงพอหรือตัวเลือกนี้ไม่พร้อมใช้งานสำหรับบัญชีของคุณ",
+  "fundExchangeErrorRcpPosinpe404": "หากต้องการเข้าถึงตัวเลือกการเติมเงินนี้ หมายเลขโทรศัพท์ของคุณต้องลงทะเบียนในเครือข่าย SINPE ในCosta Rica",
+  "fundExchangeErrorFetchingBankCodes": "เกิดข้อผิดพลาดในการดึงรหัสธนาคาร โปรดลองอีกครั้งในภายหลัง",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

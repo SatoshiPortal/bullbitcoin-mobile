@@ -8520,6 +8520,10 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "इस समय भुगतान विवरण लोड नहीं किया जा सकता है। कृपया वापस जाएं और फिर से कोशिश करें, एक अन्य भुगतान विधि चुनें या बाद में वापस आ जाएं।।",
+  "fundExchangeErrorOrdPo404": "कोई भुगतान विकल्प उपलब्ध नहीं है",
+  "fundExchangeErrorRcpPo404": "इस फंडिंग विकल्प तक पहुँचने के लिए आपके पास आवश्यक अनुमतियाँ नहीं हैं। या तो आपका KYC अपर्याप्त है या यह विकल्प आपके खाते के लिए उपलब्ध नहीं है",
+  "fundExchangeErrorRcpPosinpe404": "इस फंडिंग विकल्प तक पहुँचने के लिए, आपका फ़ोन नंबर कोस्टा रिका में SINPE नेटवर्क पर पंजीकृत होना चाहिए।",
+  "fundExchangeErrorFetchingBankCodes": "बैंक कोड लाने में त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

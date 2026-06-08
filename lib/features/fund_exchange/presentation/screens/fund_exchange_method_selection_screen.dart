@@ -132,8 +132,15 @@ class _FundExchangeMethodSelectionScreenState
                   FundExchangeJurisdictionDropdown(
                     initialValue: jurisdiction!,
                     onChanged: (value) {
+                      context.read<FundExchangeBloc>().add(
+                        const FundExchangeEvent.fundingDetailsErrorCleared(
+                          resetInstitutions: true,
+                        ),
+                      );
                       setState(() {
                         jurisdiction = value;
+                        _fundingDetailsError = null;
+                        _institutionsError = null;
                       });
                     },
                   ),
@@ -182,10 +189,12 @@ class _FundExchangeMethodSelectionScreenState
                       },
                     ),
                   },
-                if (_fundingDetailsError != null || _institutionsError != null) ...[
+                if (_fundingDetailsError != null ||
+                    _institutionsError != null) ...[
                   const Gap(16.0),
                   BBText(
-                    context.loc.fundExchangeErrorLoadingDetails,
+                    (_fundingDetailsError ?? _institutionsError!)
+                        .displayMessage(context.loc),
                     style: theme.textTheme.bodyMedium,
                     color: theme.colorScheme.error,
                     textAlign: TextAlign.center,

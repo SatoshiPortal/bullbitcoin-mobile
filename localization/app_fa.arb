@@ -8321,6 +8321,10 @@
     "description": "Troubleshooting step 3"
   },
   "fundExchangeErrorLoadingDetails": "جزئیات پرداخت را نمی توان در این لحظه بارگذاری کرد. لطفاً برگردید و دوباره امتحان کنید، روش پرداخت دیگری را انتخاب کنید یا بعداً برگردید.",
+  "fundExchangeErrorOrdPo404": "گزینه پرداختی در دسترس نیست",
+  "fundExchangeErrorRcpPo404": "شما مجوزهای لازم برای دسترسی به این گزینه تأمین مالی را ندارید. یا KYC شما کافی نیست یا این گزینه برای حساب شما در دسترس نیست",
+  "fundExchangeErrorRcpPosinpe404": "برای دسترسی به این گزینه تأمین مالی، شماره تلفن شما باید در شبکه SINPE در کاستاریکا ثبت شده باشد.",
+  "fundExchangeErrorFetchingBankCodes": "خطا در دریافت کدهای بانکی. لطفاً بعداً دوباره تلاش کنید.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

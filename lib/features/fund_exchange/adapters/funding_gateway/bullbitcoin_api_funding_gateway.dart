@@ -64,12 +64,12 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
           apiError?['en']?.toString() ??
           error['message']?.toString() ??
           'Unknown API error';
-      log.severe(
-        message: '$method API error [$errorCode]: $errorMessage',
-        error: FetchFundingDetailsFailed(message: errorMessage),
+      log.warning(
+        '$method API error [$errorCode]: $errorMessage',
+        error: FetchFundingDetailsFailed(code: errorCode, message: errorMessage),
         trace: StackTrace.current,
       );
-      throw FetchFundingDetailsFailed(message: errorMessage);
+      throw FetchFundingDetailsFailed(code: errorCode, message: errorMessage);
     }
 
     try {
@@ -88,19 +88,30 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
           message: 'Missing funding details in response',
         );
       }
-      final element = result['element'] as Map<String, dynamic>;
+      final element = (result['element'] as Map<String, dynamic>?) ?? {};
       final ppExtraData =
           (result['ppExtraData'] as Map<String, dynamic>?) ?? {};
+      final merged = {...element, ...ppExtraData}.map(
+        (key, value) =>
+            MapEntry(key, value is num ? value.toString() : value),
+      );
+      merged['numTelefono'] ??=
+          merged['NUM TELEFONO'] ??
+          merged['NUM_TELEFONO'] ??
+          merged['PHONE NUMBER'] ??
+          merged['phoneNumber'];
       return GetFundingDetailsResponseModel.fromJson(
-        {...element, ...ppExtraData},
+        merged,
       ).toDomain(method: fundingMethod);
+    } on FetchFundingDetailsFailed {
+      rethrow;
     } catch (e, stackTrace) {
-      log.severe(
-        message: 'Error parsing funding details response',
+      log.warning(
+        'Error parsing funding details response',
         error: e,
         trace: stackTrace,
       );
-      rethrow;
+      throw const FetchFundingDetailsFailed(message: 'Could not parse details');
     }
   }
 
@@ -124,15 +135,22 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
 
     final error = resp.data['error'];
     if (error != null) {
-      throw FetchInstitutionsFailed(
-        message: error['message']?.toString() ?? 'Unknown API error',
-      );
+      final apiError = error['data']?['apiError'];
+      final errorMessage =
+          apiError?['en']?.toString() ??
+          error['message']?.toString() ??
+          'Unknown API error';
+      throw FetchInstitutionsFailed(message: errorMessage);
     }
 
     final result = resp.data['result'];
-    if (result is! Map<String, dynamic>) return [];
+    if (result is! Map<String, dynamic>) {
+      throw const FetchInstitutionsFailed.emptyList();
+    }
     final elements = result['elements'] as List<dynamic>?;
-    if (elements == null) return [];
+    if (elements == null || elements.isEmpty) {
+      throw const FetchInstitutionsFailed.emptyList();
+    }
 
     return elements
         .map((e) {

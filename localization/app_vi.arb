@@ -295,5 +295,9 @@
   "onboardingAdvancedOptionsFooter": "Bạn có thể thay đổi các cài đặt này sau trong Cài đặt ứng dụng",
   "onboardingAdvancedOptionsDone": "Xong",
   "appStartupContactSupportMessage": "Liên hệ hỗ trợ tại app.bullbitcoin.com/support",
-  "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android"
+  "importWalletBitboxAndroidOnly": "BitBox chỉ được hỗ trợ trên Android",
+  "fundExchangeErrorOrdPo404": "Không có phương thức thanh toán nào",
+  "fundExchangeErrorRcpPo404": "Bạn không có quyền cần thiết để truy cập tùy chọn nạp tiền này. KYC của bạn không đủ hoặc tùy chọn này không khả dụng cho tài khoản của bạn",
+  "fundExchangeErrorRcpPosinpe404": "Để truy cập tùy chọn nạp tiền này, số điện thoại của bạn phải được đăng ký trên mạng SINPE tại Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "Lỗi khi lấy mã ngân hàng. Vui lòng thử lại sau."
 }

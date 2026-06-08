@@ -294,5 +294,9 @@
   "onboardingAdvancedOptionsFooter": "Այս կարգավորումները կարող եք փոխել ավելի ուշ Հավելվածի կարգավորումներում",
   "onboardingAdvancedOptionsDone": "Պատրաստ է",
   "appStartupContactSupportMessage": "Կապվեք աջակցության հետ app.bullbitcoin.com/support հասցեով",
-  "importWalletBitboxAndroidOnly": "BitBox-ը աջակցվում է միայն Android-ում"
+  "importWalletBitboxAndroidOnly": "BitBox-ը աջակցվում է միայն Android-ում",
+  "fundExchangeErrorOrdPo404": "Վճարման տարբերակ հասանելի չէ",
+  "fundExchangeErrorRcpPo404": "Դուք չունեք այս ֆինանսավորման տարբերակին մուտք գործելու անհրաժեշտ թույլտվություններ։ Կամ ձեր KYC-ն բավարար չէ, կամ այս տարբերակը հասանելի չէ ձեր հաշվի համար",
+  "fundExchangeErrorRcpPosinpe404": "Այս ֆինանսավորման տարբերակին մուտք գործելու համար ձեր հեռախոսահամարը պետք է գրանցված լինի SINPE ցանցում Costa Rica-ում։",
+  "fundExchangeErrorFetchingBankCodes": "Բանկային կոդերը ստանալիս սխալ է տեղի ունեցել։ Խնդրում ենք փորձել ավելի ուշ։"
 }

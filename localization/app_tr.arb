@@ -8453,6 +8453,10 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Ödeme detayları bu anda yüklenemez. Lütfen geri dön ve tekrar deneyin, başka bir ödeme yöntemi seçin veya daha sonra geri dönün.",
+  "fundExchangeErrorOrdPo404": "Kullanılabilir ödeme seçeneği yok",
+  "fundExchangeErrorRcpPo404": "Bu fonlama seçeneğine erişmek için gerekli izinlere sahip değilsiniz. KYC'niz yetersiz veya bu seçenek hesabınız için kullanılamıyor",
+  "fundExchangeErrorRcpPosinpe404": "Bu fonlama seçeneğine erişmek için telefon numaranız Kostarika'daki SINPE ağına kayıtlı olmalıdır.",
+  "fundExchangeErrorFetchingBankCodes": "Banka kodları alınırken hata oluştu. Lütfen daha sonra tekrar deneyin.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

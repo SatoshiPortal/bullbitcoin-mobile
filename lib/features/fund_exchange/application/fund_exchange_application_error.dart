@@ -30,14 +30,28 @@ class UnsupportedJurisdiction extends FundExchangeApplicationError {
 
 class FetchFundingDetailsFailed extends FundExchangeApplicationError {
   final String message;
+  final String? code;
 
-  const FetchFundingDetailsFailed({required this.message});
+  const FetchFundingDetailsFailed({required this.message, this.code});
+
+  bool get isOptionUnavailable =>
+      code == 'ERR_RCP_PO404' ||
+      code == 'ERR_RCP_POSINPE404' ||
+      code == 'ERR_ORD_PO404';
 }
 
 class FetchInstitutionsFailed extends FundExchangeApplicationError {
   final String message;
+  final bool emptyList;
 
-  const FetchInstitutionsFailed({required this.message});
+  const FetchInstitutionsFailed({
+    required this.message,
+    this.emptyList = false,
+  });
+
+  const FetchInstitutionsFailed.emptyList()
+    : message = '',
+      emptyList = true;
 }
 
 class FundExchangeUnknownError extends FundExchangeApplicationError {

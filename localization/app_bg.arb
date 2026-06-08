@@ -6507,6 +6507,10 @@
     "description": "Troubleshooting step 3"
   },
   "fundExchangeErrorLoadingDetails": "Детайлите за плащането не могат да се заредят в момента. Моля върнете се назад и опитайте отново, изберете друг метод на плащане или се върнете по-късно.",
+  "fundExchangeErrorOrdPo404": "Няма налична опция за плащане",
+  "fundExchangeErrorRcpPo404": "Нямате необходимите разрешения за достъп до тази опция за финансиране. Или KYC ви е недостатъчен, или тази опция не е налична за вашия акаунт",
+  "fundExchangeErrorRcpPosinpe404": "За достъп до тази опция за финансиране телефонният ви номер трябва да е регистриран в мрежата SINPE в Коста Рика.",
+  "fundExchangeErrorFetchingBankCodes": "Грешка при извличане на банкови кодове. Моля, опитайте отново по-късно.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

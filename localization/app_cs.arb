@@ -8404,6 +8404,10 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Údaje o platbě nelze načíst v tomto okamžiku. Prosím, přejděte zpět a zkuste to znovu, vyzvednout další způsob platby nebo vrátit později.",
+  "fundExchangeErrorOrdPo404": "Není k dispozici žádná platební možnost",
+  "fundExchangeErrorRcpPo404": "Nemáte požadovaná oprávnění pro přístup k této možnosti financování. Buď je váš KYC nedostatečný, nebo tato možnost není pro váš účet dostupná",
+  "fundExchangeErrorRcpPosinpe404": "Pro přístup k této možnosti financování musí být vaše telefonní číslo registrováno v síti SINPE v Kostarice.",
+  "fundExchangeErrorFetchingBankCodes": "Chyba při načítání bankovních kódů. Zkuste to prosím později znovu.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

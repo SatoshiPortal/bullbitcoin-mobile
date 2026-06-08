@@ -7068,6 +7068,10 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "Οι λεπτομέρειες πληρωμής δεν θα μπορούσαν να φορτωθούν αυτή τη στιγμή. Παρακαλούμε να επιστρέψετε και να προσπαθήσετε ξανά, επιλέξτε μια άλλη μέθοδο πληρωμής ή να επιστρέψετε αργότερα.",
+  "fundExchangeErrorOrdPo404": "Δεν υπάρχει διαθέσιμη επιλογή πληρωμής",
+  "fundExchangeErrorRcpPo404": "Δεν έχετε τα απαιτούμενα δικαιώματα για πρόσβαση σε αυτή την επιλογή χρηματοδότησης. Είτε το KYC σας είναι ανεπαρκές είτε αυτή η επιλογή δεν είναι διαθέσιμη για τον λογαριασμό σας",
+  "fundExchangeErrorRcpPosinpe404": "Για πρόσβαση σε αυτή την επιλογή χρηματοδότησης, ο αριθμός τηλεφώνου σας πρέπει να είναι εγγεγραμμένος στο δίκτυο SINPE στην Κόστα Ρίκα.",
+  "fundExchangeErrorFetchingBankCodes": "Σφάλμα κατά τη λήψη τραπεζικών κωδικών. Δοκιμάστε ξανά αργότερα.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

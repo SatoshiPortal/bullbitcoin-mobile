@@ -8003,6 +8003,10 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "ولا يمكن تحميل تفاصيل الدفع في هذه اللحظة. الرجاء العودة ومحاولة مرة أخرى، اختيار طريقة أخرى للدفع أو العودة في وقت لاحق.",
+  "fundExchangeErrorOrdPo404": "لا يوجد خيار دفع متاح",
+  "fundExchangeErrorRcpPo404": "ليس لديك الأذونات المطلوبة للوصول إلى خيار التمويل هذا. إما أن KYC الخاص بك غير كافٍ أو أن هذا الخيار غير متاح لحسابك",
+  "fundExchangeErrorRcpPosinpe404": "للوصول إلى خيار التمويل هذا، يجب تسجيل رقم هاتفك في شبكة SINPE في Costa Rica.",
+  "fundExchangeErrorFetchingBankCodes": "حدث خطأ أثناء جلب رموز البنوك. يرجى المحاولة مرة أخرى لاحقًا.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
