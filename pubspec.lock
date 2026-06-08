@@ -91,7 +91,7 @@ packages:
     source: git
     version: "2.3.0-alpha.0"
   bech32:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bech32
       sha256: "156cbace936f7720c79a79d16a03efad343b1ef17106716e04b8b8e39f99f7f7"

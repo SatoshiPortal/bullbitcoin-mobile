@@ -7241,6 +7241,10 @@
   "@sendErrorInvalidAddressOrInvoice": {
     "description": "Error when payment request is invalid"
   },
+  "sendErrorLnurlPaymentDetailsUnavailable": "Could not load LNURL payment details. Check your connection and try again.",
+  "@sendErrorLnurlPaymentDetailsUnavailable": {
+    "description": "Error when LNURL payment metadata cannot be loaded"
+  },
   "sendErrorBuildFailed": "Build Failed",
   "@sendErrorBuildFailed": {
     "description": "Error title when transaction build fails"

@@ -25,6 +25,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/send/application/lnurl_pay_metadata_repository.dart';
+import 'package:bb_mobile/features/send/application/resolve_lnurl_pay_limits_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
@@ -35,6 +37,7 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
+import 'package:bb_mobile/features/send/frameworks/lnurl_pay_metadata_datasource.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -89,6 +92,17 @@ class SendLocator {
     );
     locator.registerFactory<SelectBestWalletUsecase>(
       () => SelectBestWalletUsecase(),
+    );
+    locator.registerFactory<LnurlPayMetadataRepository>(
+      () => LnurlPayMetadataDatasource(
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
+        torDatasource: locator(),
+      ),
+    );
+    locator.registerFactory<ResolveLnurlPayLimitsUsecase>(
+      () => ResolveLnurlPayLimitsUsecase(
+        metadataRepository: locator<LnurlPayMetadataRepository>(),
+      ),
     );
     locator.registerFactory<CalculateBitcoinAbsoluteFeesUsecase>(
       () => CalculateBitcoinAbsoluteFeesUsecase(
@@ -167,6 +181,7 @@ class SendLocator {
             locator<UpdateSendSwapLockupFeesUsecase>(),
         verifyChainSwapAmountSendUsecase:
             locator<VerifyChainSwapAmountSendUsecase>(),
+        resolveLnurlPayLimitsUsecase: locator<ResolveLnurlPayLimitsUsecase>(),
       ),
     );
   }

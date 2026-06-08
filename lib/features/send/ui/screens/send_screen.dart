@@ -231,6 +231,9 @@ class AddressErrorSection extends StatelessWidget {
     final swapError = context.select(
       (SendCubit cubit) => cubit.state.swapCreationException,
     );
+    final lnurlPayMetadataError = context.select(
+      (SendCubit cubit) => cubit.state.lnurlPayMetadataException,
+    );
     final invalidAddress = context.select(
       (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
     );
@@ -253,6 +256,15 @@ class AddressErrorSection extends StatelessWidget {
             : swapError is ExpiredInvoiceException
             ? context.loc.sendErrorInvoiceExpired
             : swapError.message,
+        style: context.font.bodyMedium,
+        color: context.appColors.error,
+        textAlign: .center,
+        maxLines: 2,
+      );
+    }
+    if (lnurlPayMetadataError != null) {
+      return BBText(
+        context.loc.sendErrorLnurlPaymentDetailsUnavailable,
         style: context.font.bodyMedium,
         color: context.appColors.error,
         textAlign: .center,
@@ -386,6 +398,9 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                     final inputCurrency = context.select(
                       (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
                     );
+                    final hasFixedLnurlAmount = context.select(
+                      (SendCubit cubit) => cubit.state.hasFixedLnurlAmount,
+                    );
 
                     final availableInputCurrencies = context
                         .select<SendCubit, List<String>>(
@@ -452,12 +467,14 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                   state.formattedAmountInputEquivalent,
                               availableCurrencies: availableInputCurrencies,
                               amountController: _amountController,
-                              onCurrencyChanged: (currencyCode) {
-                                _setIsMax(false);
-                                context.read<SendCubit>().onCurrencyChanged(
-                                  currencyCode,
-                                );
-                              },
+                              onCurrencyChanged: hasFixedLnurlAmount
+                                  ? null
+                                  : (currencyCode) {
+                                      _setIsMax(false);
+                                      context
+                                          .read<SendCubit>()
+                                          .onCurrencyChanged(currencyCode);
+                                    },
                               error: balanceError != null
                                   ? context
                                         .loc
@@ -477,7 +494,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                     )
                                   : null,
                               focusNode: _amountFocusNode,
-                              readOnly: _isMax,
+                              readOnly: _isMax || hasFixedLnurlAmount,
                               isMax: _isMax,
                             ),
                             if (swapLimitsError?.suggestInstantPayments == true)
@@ -553,7 +570,10 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 balance: state.formattedWalletBalance(),
                                 currencyCode: '',
                                 isMax: _isMax,
-                                onMaxToggled: !isLightning && !isChainSwap
+                                onMaxToggled:
+                                    !isLightning &&
+                                        !isChainSwap &&
+                                        !hasFixedLnurlAmount
                                     ? (value) {
                                         _setIsMax(value);
                                         context.read<SendCubit>().amountChanged(
