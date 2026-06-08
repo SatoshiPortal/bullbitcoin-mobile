@@ -1559,7 +1559,7 @@
   "@receiveLightningInvoice": {
     "description": "Label for a Lightning Network invoice"
   },
-  "receiveLiquidRiskDisclosureLabel": "Payments will be converted to L-BTC. Learn more.",
+  "receiveLiquidRiskDisclosureLabel": "Payments will be converted to Liquid L-BTC (not BTC). Learn more.",
   "@receiveLiquidRiskDisclosureLabel": {
     "description": "Small link label opening the Liquid Bitcoin risk disclosure on the Lightning receive screen"
   },
@@ -3453,7 +3453,7 @@
   "@globalDefaultLiquidWalletLabel": {
     "description": "Default label for Liquid/instant payments wallets when used as the default wallet"
   },
-  "walletLiquidRiskDisclosureLabel": "These funds are L-BTC, not BTC. Learn more.",
+  "walletLiquidRiskDisclosureLabel": "These funds are Liquid L-BTC (not BTC). Learn more.",
   "@walletLiquidRiskDisclosureLabel": {
     "description": "Small link label opening the Liquid Bitcoin risk disclosure on Liquid wallet detail pages"
   },
