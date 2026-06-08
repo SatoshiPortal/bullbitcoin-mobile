@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Android
 
 on:
   workflow_dispatch:
@@ -7,6 +7,10 @@ on:
         type: choice
         options: [release, debug, beta]
         default: release
+      format:
+        type: choice
+        options: [apk, aab]
+        default: apk
 
 jobs:
   build:
@@ -55,12 +59,12 @@ jobs:
           keyPassword=$BETA_KEY_PASSWORD
           EOF
 
-      - name: Build APK
+      - name: Build
         # makefile uses `podman` directly; ubuntu-24.04 ships podman 4.9.3 preinstalled.
-        run: make android ${{ inputs.mode }}
+        run: make android ${{ inputs.mode }} FORMAT=${{ inputs.format }}
 
       - uses: actions/upload-artifact@v7
         with:
-          name: BULL-${{ inputs.mode }}
-          path: BULL-${{ inputs.mode }}.apk
+          name: BULL-${{ inputs.mode }}-${{ inputs.format }}
+          path: BULL-${{ inputs.mode }}.${{ inputs.format }}
           retention-days: 30
