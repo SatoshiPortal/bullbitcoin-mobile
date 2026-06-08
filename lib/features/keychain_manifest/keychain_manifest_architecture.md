@@ -28,13 +28,15 @@ later consumer flows. Import parsing does not persist, delete, create wallets,
 publish, fetch, or restore product state, and non-wallet materialization types
 are out of scope for v1.
 
-V1 local recording accepts registry-owned wallet-seed reservations, because
-manifest inventory is generic metadata for app-created BIP85 materializations.
-V1 file export/import/recovery support is narrower: only the BTCPay wallet seed
-reservation is exportable/importable/recoverable until each owning runtime flow
-explicitly adds restore semantics. Other reserved wallet-seed paths may be
-recorded as local inventory, but they are omitted from v1 file payloads and must
-not be presented as importable or recoverable yet.
+V1 local recording accepts manifest-enabled registry-owned wallet-seed
+reservations, because manifest inventory is generic metadata for app-created
+BIP85 materializations. V1 file export/import/recovery currently supports the
+BTCPay and Lightning Address wallet seed reservations. Lightning Address local
+wallet materializations are recoverable, but the owning Lightning Address flow
+must reactivate or verify Bullnym server state after recovery. Other reserved
+wallet-seed paths may be recorded only after their owning runtime flow explicitly
+adds manifest support; until then, they are omitted from v1 file payloads and
+must not be presented as importable or recoverable.
 
 ## Boundaries
 

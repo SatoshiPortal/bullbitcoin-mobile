@@ -13459,6 +13459,14 @@
   "@lightningAddressInvalidRegistrationInputError": {
     "description": "Error shown when Bullnym rejects Lightning Address registration input that is not specifically local name validation"
   },
+  "lightningAddressLocalPreparationFailedError": "Could not prepare the Lightning Address wallet. Please try again.",
+  "@lightningAddressLocalPreparationFailedError": {
+    "description": "Error shown when the app fails to prepare the dedicated Lightning Address receive wallet locally"
+  },
+  "lightningAddressLocalPreparationNotRetryableError": "Could not prepare the Lightning Address wallet. Contact support before trying again.",
+  "@lightningAddressLocalPreparationNotRetryableError": {
+    "description": "Error shown when the app cannot prepare the dedicated Lightning Address receive wallet because local recovery metadata has a durable conflict"
+  },
   "btcpayPairingRejectedError": "BTCPay Server rejected the pairing request. Dedicated BTCPay wallets were kept. Check the pairing URL or create a new pairing request in BTCPay, then retry.",
   "@btcpayPairingRejectedError": {
     "description": "Error shown when BTCPay Server rejects the SamRock pairing setup"

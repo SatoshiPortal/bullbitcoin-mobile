@@ -6,7 +6,7 @@ derivation, BIP340 hash signing, and public-key access through the existing
 
 Feature-specific protocol semantics stay outside this package. Bullnym actions,
 Lightning Address message fields, wallet manifest events, profile content,
-NIP-05 registration, DMs, and UI policy belong to feature layers.
+public identity registration, DMs, and UI policy belong to feature layers.
 
 ## BIP85 Derivation
 

@@ -113,9 +113,26 @@ class RestoreKeychainManifestWalletsUsecase {
             as Bip85WalletSeedReservation;
     return KeychainRecoveryWalletMaterializationBatch(
       parentFingerprint: importPlan.parentFingerprint,
+      reservationId: entry.reservationId,
       bip85Index: reservation.walletIndex,
       deterministicAlias: reservation.deterministicAlias,
-      intents: entry.walletMaterializations,
+      intents: entry.walletMaterializations
+          .map(_walletIntent)
+          .toList(growable: false),
+    );
+  }
+
+  KeychainRecoveryWalletIntent _walletIntent(
+    KeychainManifestWalletMaterializationIntent intent,
+  ) {
+    return KeychainRecoveryWalletIntent(
+      entryId: intent.entryId,
+      reservationId: intent.reservationId,
+      bip85DerivationPath: intent.bip85DerivationPath,
+      walletId: intent.walletId,
+      childSeedFingerprint: intent.childSeedFingerprint,
+      network: intent.network,
+      scriptType: intent.scriptType,
     );
   }
 
@@ -125,8 +142,9 @@ class RestoreKeychainManifestWalletsUsecase {
     return intents
         .map(
           (intent) => KeychainRecoveryWalletRestoreOutcome(
-            intent: intent,
+            intent: _walletIntent(intent),
             status: KeychainRecoveryWalletRestoreStatus.failedInvalidImportPlan,
+            materializedWalletId: intent.walletId,
           ),
         )
         .toList(growable: false);
@@ -157,6 +175,7 @@ class RestoreKeychainManifestWalletsUsecase {
                 intent: intent,
                 status:
                     KeychainRecoveryWalletRestoreStatus.failedWalletCreation,
+                materializedWalletId: intent.walletId,
               ),
             )
             .toList(growable: false),
@@ -182,10 +201,10 @@ class RestoreKeychainManifestWalletsUsecase {
           materializations: wallets
               .map(
                 (wallet) => KeychainManifestWalletMaterializationRequest(
-                  walletId: wallet.intent.walletId,
+                  walletId: wallet.walletId,
                   childSeedFingerprint: wallet.childSeedFingerprint,
-                  network: wallet.intent.network,
-                  scriptType: wallet.intent.scriptType,
+                  network: wallet.network,
+                  scriptType: wallet.scriptType,
                 ),
               )
               .toList(growable: false),
@@ -201,15 +220,25 @@ class RestoreKeychainManifestWalletsUsecase {
             return KeychainRecoveryWalletRestoreOutcome(
               intent: wallet.intent,
               status: _successStatus(wallet),
+              materializedWalletId: wallet.walletId,
             );
           })
           .toList(growable: false);
     } on KeychainManifestException {
+      final rollback = materializationResult.rollbackCreatedWallets;
+      if (rollback != null) {
+        try {
+          await rollback();
+        } catch (_) {
+          // Preserve the recovery failure result; rollback is best effort here.
+        }
+      }
       return wallets
           .map((wallet) {
             return KeychainRecoveryWalletRestoreOutcome(
               intent: wallet.intent,
               status: KeychainRecoveryWalletRestoreStatus.failedManifestRecord,
+              materializedWalletId: wallet.walletId,
             );
           })
           .toList(growable: false);
@@ -242,7 +271,33 @@ class RestoreKeychainManifestWalletsUsecase {
   KeychainRecoveryWalletRestoreStatus _successStatus(
     KeychainRecoveryMaterializedWallet wallet,
   ) {
-    if (wallet.created) return KeychainRecoveryWalletRestoreStatus.created;
-    return KeychainRecoveryWalletRestoreStatus.alreadyPresent;
+    if (wallet.created) {
+      return _successfulRestoreStatus(
+        intent: wallet.intent,
+        defaultStatus: KeychainRecoveryWalletRestoreStatus.created,
+      );
+    }
+    return _successfulRestoreStatus(
+      intent: wallet.intent,
+      defaultStatus: KeychainRecoveryWalletRestoreStatus.alreadyPresent,
+    );
+  }
+
+  KeychainRecoveryWalletRestoreStatus _successfulRestoreStatus({
+    required KeychainRecoveryWalletIntent intent,
+    required KeychainRecoveryWalletRestoreStatus defaultStatus,
+  }) {
+    if (_requiresProductReactivation(intent.reservationId)) {
+      return KeychainRecoveryWalletRestoreStatus.requiresProductReactivation;
+    }
+    return defaultStatus;
+  }
+
+  bool _requiresProductReactivation(String reservationId) {
+    final reservation = _registry.reservationById(reservationId);
+    if (reservation == null) return false;
+    return KeychainManifestReservationSupport.requiresProductReactivationOnRecovery(
+      reservation,
+    );
   }
 }

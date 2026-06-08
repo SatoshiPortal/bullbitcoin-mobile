@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/result.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/deterministic_wallets/public/deterministic_wallets_facade.dart';
-import 'package:bb_mobile/features/keychain_manifest/public/keychain_manifest_facade.dart';
 import 'package:bb_mobile/features/keychain_recovery/data/deterministic_wallet_recovery_materializer.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_result.dart';
 import 'package:bb_mobile/features/keychain_recovery/domain/keychain_recovery_wallet_materializer_port.dart';
@@ -55,6 +54,9 @@ void main() {
       expect(result.materializedWallets.single.intent.walletId, 'btc-wallet');
       expect(result.failedOutcomes.single.intent.walletId, 'testnet-wallet');
       expect(result.failedOutcomes.single.status, _skipped);
+
+      await result.rollbackCreatedWallets!();
+      expect(deterministicWallets.rollbackCalls, 1);
     },
   );
 
@@ -181,21 +183,22 @@ void main() {
 }
 
 KeychainRecoveryWalletMaterializationBatch _batch({
-  required List<KeychainManifestWalletMaterializationIntent> intents,
+  required List<KeychainRecoveryWalletIntent> intents,
 }) {
   return KeychainRecoveryWalletMaterializationBatch(
     parentFingerprint: 'fedcba98',
+    reservationId: 'btcpay_wallet_seed',
     bip85Index: 100,
     deterministicAlias: 'BTCPay',
     intents: intents,
   );
 }
 
-KeychainManifestWalletMaterializationIntent _intent({
+KeychainRecoveryWalletIntent _intent({
   String walletId = 'btc-wallet',
   Network network = Network.bitcoinMainnet,
 }) {
-  return KeychainManifestWalletMaterializationIntent(
+  return KeychainRecoveryWalletIntent(
     entryId: "fedcba98:39'/0'/12'/100'",
     reservationId: 'btcpay_wallet_seed',
     bip85DerivationPath: "39'/0'/12'/100'",
@@ -206,8 +209,8 @@ KeychainManifestWalletMaterializationIntent _intent({
   );
 }
 
-String _materializationKey(KeychainManifestWalletMaterializationIntent intent) {
-  return '${intent.entryId}:${intent.walletId}';
+String _materializationKey(KeychainRecoveryWalletIntent intent) {
+  return intent.materializationKey;
 }
 
 PreparedDeterministicWallets _prepared({

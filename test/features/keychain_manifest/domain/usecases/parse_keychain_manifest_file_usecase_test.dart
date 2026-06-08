@@ -311,25 +311,27 @@ void main() {
     );
   });
 
-  test('parses Lightning Address wallet manifests into import plans', () {
+  test('parses Lightning Address wallet manifests after activation', () {
     final payload = _manifestPayloadForReservation(
       reservationId: 'lightning_address_wallet_seed',
       path: "39'/0'/12'/101'",
       ownerFeature: 'lightningAddress',
       bip85Application: 39,
       bip85Index: 101,
+      materializations: _lightningAddressMaterialization,
     );
 
-    // Exportable products round-trip through the frozen v1 format; the import
-    // plan carries them even though their RECOVERY (materialization) is
-    // deferred to PR23. Parse covers export; restore gates recovery
-    // (ruling A/B, R2-KC3/F1b).
+    // LN is exportable (pr07) and, from pr11, recoverable: the import plan
+    // carries it and restore materializes it flagged requiresProductReactivation
+    // (R2-KC3/F1b; recovery added by this PR).
     final plan = usecase.execute(
       payload,
       expectedParentFingerprint: 'fedcba98',
     );
     expect(plan.entries.single.reservationId, 'lightning_address_wallet_seed');
+    expect(plan.entries.single.ownerFeature, 'lightningAddress');
     expect(plan.entries.single.bip85DerivationPath, "39'/0'/12'/101'");
+    expect(plan.entries.single.bip85Index, 101);
   });
 
   test('parses Payment Page wallet manifests into import plans', () {
@@ -339,6 +341,7 @@ void main() {
       ownerFeature: 'paymentPage',
       bip85Application: 39,
       bip85Index: 102,
+      materializations: _lightningAddressMaterialization,
     );
 
     final plan = usecase.execute(
@@ -537,14 +540,21 @@ const _manifestPayload =
     '"network":"liquidMainnet","scriptType":"bip84",'
     '"createdAt":11,"updatedAt":11}]}]}';
 
+const _lightningAddressMaterialization =
+    '{"type":"wallet","walletId":"lightning-address-wallet",'
+    '"childSeedFingerprint":"0123abcd","network":"liquidMainnet",'
+    '"scriptType":"bip84",'
+    '"createdAt":10,"updatedAt":10}';
+
 String _manifestPayloadForReservation({
   required String reservationId,
   required String path,
   required String ownerFeature,
   required int bip85Application,
   required int bip85Index,
+  String? materializations,
 }) {
-  return _manifestPayload
+  final payload = _manifestPayload
       .replaceFirst("fedcba98:39'/0'/12'/100'", 'fedcba98:$path')
       .replaceFirst("39'/0'/12'/100'", path)
       .replaceFirst('btcpay_wallet_seed', reservationId)
@@ -554,4 +564,13 @@ String _manifestPayloadForReservation({
         '"bip85Application":$bip85Application',
       )
       .replaceFirst('"bip85Index":100', '"bip85Index":$bip85Index');
+  if (materializations == null) return payload;
+  // The base payload carries two materializations; replacing them with a
+  // single one keeps the declared materialization count consistent.
+  return payload
+      .replaceFirst('"materializationCount":2', '"materializationCount":1')
+      .replaceFirst(
+        RegExp(r'"materializations":\[[^\]]+\]'),
+        '"materializations":[$materializations]',
+      );
 }

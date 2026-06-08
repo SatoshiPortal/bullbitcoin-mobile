@@ -2,20 +2,14 @@
 
 ## Scope
 
-`keychain_recovery` restores supported wallet materializations from validated
-`keychain_manifest` import plans. Its domain use case coordinates local wallet
-creation/reuse through deterministic wallet public APIs and records restored
-materializations through `keychain_manifest/public`; its data implementation
-adapts deterministic wallet materialization.
+`keychain_recovery` restores supported wallet materializations from validated `keychain_manifest` import plans.
+Its domain use case coordinates local wallet creation/reuse through deterministic wallet public APIs and records restored materializations through `keychain_manifest/public`; its data implementation adapts deterministic wallet materialization.
 
-It does not decode manifest files, own manifest persistence, publish or fetch
-remote manifests, submit product descriptors, mark product accounts connected,
-or expose UI.
+It does not decode manifest files, own manifest persistence, publish or fetch remote manifests, submit product descriptors, mark product accounts connected, or expose UI.
 
-V1 recovery is limited to wallet materializations whose reservation is already
-manifest-enabled. Lightning Address, Payment Page, and Nostr reservations are
-not recovered or activated by this feature until their owning flows explicitly
-add support.
+V1 recovery is limited to wallet materializations whose reservation is already manifest-enabled.
+BTCPay and Lightning Address wallet materializations can be recovered locally.
+Payment Page and Nostr reservations are not recovered or activated by this feature until their owning flows explicitly add support.
 
 Which reserved seeds are exportable vs recoverable at this stack level is the
 `KeychainManifestReservationSupport` classification (`supportsV1Export` vs
@@ -29,14 +23,13 @@ newly recoverable products. See the classification file for details.
 
 ## Boundaries
 
-- `keychain_manifest` owns manifest records, file encode/decode validation, and
-  import plans.
-- `bip85_registry` owns reserved derivation aliases used to reproduce product
-  BIP85 children without importing product features.
+- `keychain_manifest` owns manifest records, file encode/decode validation, and import plans.
+- `bip85_registry` owns reserved derivation aliases used to reproduce product BIP85 children without importing product features.
 - `keychain_recovery` owns local wallet materialization restore orchestration.
 - `deterministic_wallets` owns BIP85 child mnemonic wallet creation/reuse.
-- Product features own product state. Restoring a BTCPay wallet materialization
-  restores local wallets only; it does not restore SamRock pairing.
+- Product features own product state.
+Restoring a BTCPay wallet materialization restores local wallets only; it does not restore SamRock pairing.
+Restoring a Lightning Address wallet materialization restores local wallets only; its reservation is marked as `requiresProductReactivation` because Bullnym registration must be checked or recreated by Lightning Address.
 
 Allowed dependencies:
 
@@ -62,6 +55,7 @@ Restore returns one outcome per wallet materialization:
 
 - `created`
 - `alreadyPresent`
+- `requiresProductReactivation`
 - `skippedUnsupported`
 - `failedParentFingerprintMismatch`
 - `failedChildSeedFingerprintMismatch`
@@ -70,18 +64,10 @@ Restore returns one outcome per wallet materialization:
 - `failedManifestRecord`
 - `failedConflict`
 
-Unsupported wallet networks do not invalidate the whole manifest file or the
-whole entry; supported wallet materializations continue and unsupported ones are
-reported per wallet. Invalid manifest file structure, duplicate wallet
-materializations, and reservation mismatches are rejected before recovery by
-`keychain_manifest`. Because import-plan DTOs cross a public facade boundary,
-`keychain_recovery` also revalidates reservation identity, derivation path,
-entry identity, and wallet membership before materializing wallets.
+Unsupported wallet networks do not invalidate the whole manifest file or the whole entry; supported wallet materializations continue and unsupported ones are reported per wallet.
+Invalid manifest file structure, duplicate wallet materializations, and reservation mismatches are rejected before recovery by `keychain_manifest`.
+Because import-plan DTOs cross a public facade boundary, `keychain_recovery` also revalidates reservation identity, derivation path, entry identity, and wallet membership before materializing wallets.
 
-Once a wallet materialization is returned as `created` or `alreadyPresent`, it
-is treated as current local wallet inventory. If manifest recording then fails,
-recovery returns `failedManifestRecord` for those wallets and leaves local wallet
-state intact for retry. Rollback is only allowed inside the deterministic wallet
-materializer before any wallet is reported as successfully materialized, for
-batch-level validation failures such as fingerprint mismatch or wallet-id
-conflict.
+Once a wallet materialization is returned as `created`, `alreadyPresent`, or `requiresProductReactivation`, it is treated as current local wallet inventory.
+If manifest recording then fails, recovery returns `failedManifestRecord` for those wallets and rolls back newly created deterministic wallets best-effort when the materializer supplies a rollback callback.
+Rollback is only allowed inside the deterministic wallet materializer or through its explicit rollback callback; keychain recovery never edits manifest files directly.

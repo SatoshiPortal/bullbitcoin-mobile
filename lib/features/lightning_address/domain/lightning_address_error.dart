@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 enum LightningAddressErrorKind {
   invalidNym,
   invalidRegistrationInput,
+  localPreparationFailed,
   network,
   timeout,
   serverRejectedRequest,
@@ -31,6 +32,11 @@ sealed class LightningAddressException implements Exception {
     required bool retryable,
   }) = LightningAddressInvalidRegistrationInputException;
 
+  const factory LightningAddressException.localPreparationFailed({
+    required String code,
+    required bool retryable,
+  }) = LightningAddressLocalPreparationFailedException;
+
   const factory LightningAddressException.unexpected() =
       LightningAddressUnexpectedException;
 
@@ -39,6 +45,10 @@ sealed class LightningAddressException implements Exception {
       context.loc.lightningAddressInvalidNymError,
     LightningAddressErrorKind.invalidRegistrationInput =>
       context.loc.lightningAddressInvalidRegistrationInputError,
+    LightningAddressErrorKind.localPreparationFailed when retryable =>
+      context.loc.lightningAddressLocalPreparationFailedError,
+    LightningAddressErrorKind.localPreparationFailed =>
+      context.loc.lightningAddressLocalPreparationNotRetryableError,
     LightningAddressErrorKind.network =>
       context.loc.lightningAddressErrorConnectionFailed,
     LightningAddressErrorKind.timeout =>
@@ -73,6 +83,14 @@ final class LightningAddressInvalidRegistrationInputException
     required super.code,
     required super.retryable,
   }) : super._(kind: LightningAddressErrorKind.invalidRegistrationInput);
+}
+
+final class LightningAddressLocalPreparationFailedException
+    extends LightningAddressException {
+  const LightningAddressLocalPreparationFailedException({
+    required super.code,
+    required super.retryable,
+  }) : super._(kind: LightningAddressErrorKind.localPreparationFailed);
 }
 
 final class LightningAddressNetworkException extends LightningAddressException {
