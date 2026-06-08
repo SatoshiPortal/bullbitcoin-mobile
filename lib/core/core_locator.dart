@@ -97,6 +97,7 @@ class CoreLocator {
 
   static void registerFacades(GetIt locator) {
     LabelsLocator.registerFacade(locator);
+    ElectrumLocator.registerFacades(locator);
   }
 
   static void registerFrameworks(GetIt locator) {

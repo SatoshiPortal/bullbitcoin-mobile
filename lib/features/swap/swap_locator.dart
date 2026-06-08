@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/electrum_settings_port.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
@@ -94,6 +95,7 @@ class SwapLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
+        electrumSettingsPort: locator<ElectrumSettingsPort>(),
       ),
     );
   }

@@ -176,6 +176,7 @@ class BoltzDatasource {
     required String claimAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
@@ -184,6 +185,7 @@ class BoltzDatasource {
         outAddress: claimAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: electrumSettings,
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -257,6 +259,7 @@ class BoltzDatasource {
     required String claimAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
@@ -265,6 +268,7 @@ class BoltzDatasource {
         outAddress: claimAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: electrumSettings,
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -279,13 +283,17 @@ class BoltzDatasource {
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
 
       return broadcastViaBoltz
           ? btcLnSwap.broadcastBoltz(signedHex: signedTxHex)
-          : btcLnSwap.broadcastLocal(signedHex: signedTxHex);
+          : btcLnSwap.broadcastLocal(
+              signedHex: signedTxHex,
+              electrumSettings: electrumSettings,
+            );
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -299,13 +307,17 @@ class BoltzDatasource {
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
 
       return broadcastViaBoltz
           ? lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex)
-          : lbtcLnSwap.broadcastLocal(signedHex: signedTxHex);
+          : lbtcLnSwap.broadcastLocal(
+              signedHex: signedTxHex,
+              electrumSettings: electrumSettings,
+            );
     } catch (e) {
       if (e is BoltzError) {
         throw e.message;
@@ -464,6 +476,7 @@ class BoltzDatasource {
     required String refundAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
@@ -471,6 +484,7 @@ class BoltzDatasource {
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: electrumSettings,
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -486,6 +500,7 @@ class BoltzDatasource {
     required String refundAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
@@ -493,6 +508,7 @@ class BoltzDatasource {
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        electrumSettings: electrumSettings,
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -654,6 +670,7 @@ class BoltzDatasource {
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -665,6 +682,7 @@ class BoltzDatasource {
           : chainSwap.broadcastLocal(
               signedHex: signedTxHex,
               kind: SwapTxKind.refund,
+              electrumSettings: electrumSettings,
             ));
       return txId;
     } catch (e) {
@@ -681,6 +699,7 @@ class BoltzDatasource {
     required String claimLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -688,6 +707,7 @@ class BoltzDatasource {
         outAddress: claimLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        lbtcElectrumSettings: electrumSettings,
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -703,6 +723,7 @@ class BoltzDatasource {
     required String claimBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -710,6 +731,7 @@ class BoltzDatasource {
         outAddress: claimBitcoinAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: electrumSettings,
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -724,6 +746,7 @@ class BoltzDatasource {
     required String swapId,
     required String signedTxHex,
     required bool broadcastViaBoltz,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -735,6 +758,7 @@ class BoltzDatasource {
           : chainSwap.broadcastLocal(
               signedHex: signedTxHex,
               kind: SwapTxKind.claim,
+              electrumSettings: electrumSettings,
             ));
     } catch (e) {
       if (e is BoltzError) {
@@ -750,6 +774,7 @@ class BoltzDatasource {
     required String refundBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -757,6 +782,7 @@ class BoltzDatasource {
         refundAddress: refundBitcoinAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        btcElectrumSettings: electrumSettings,
       );
     } catch (e) {
       if (e is BoltzError) {
@@ -772,6 +798,7 @@ class BoltzDatasource {
     required String refundLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    ElectrumSettings? electrumSettings,
   }) async {
     try {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
@@ -780,6 +807,7 @@ class BoltzDatasource {
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
+        lbtcElectrumSettings: electrumSettings,
       );
       return signedTxHex;
     } catch (e) {

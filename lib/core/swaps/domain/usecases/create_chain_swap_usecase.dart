@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/ports/electrum_settings_port.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository.dart';
 
@@ -9,14 +10,17 @@ class CreateChainSwapUsecase {
   final WalletRepository _walletRepository;
   final BoltzSwapRepository _swapRepository;
   final SeedRepository _seedRepository;
+  final ElectrumSettingsPort _electrumSettingsPort;
 
   CreateChainSwapUsecase({
     required WalletRepository walletRepository,
     required BoltzSwapRepository swapRepository,
     required SeedRepository seedRepository,
+    required ElectrumSettingsPort electrumSettingsPort,
   }) : _walletRepository = walletRepository,
        _swapRepository = swapRepository,
-       _seedRepository = seedRepository;
+       _seedRepository = seedRepository,
+       _electrumSettingsPort = electrumSettingsPort;
 
   Future<ChainSwap> execute({
     required String bitcoinWalletId,
@@ -26,11 +30,10 @@ class CreateChainSwapUsecase {
     int? amountSat,
   }) async {
     try {
-      final (bitcoinWallet, liquidWallet) =
-          await (
-            _walletRepository.getWallet(bitcoinWalletId),
-            _walletRepository.getWallet(liquidWalletId),
-          ).wait;
+      final (bitcoinWallet, liquidWallet) = await (
+        _walletRepository.getWallet(bitcoinWalletId),
+        _walletRepository.getWallet(liquidWalletId),
+      ).wait;
 
       if (bitcoinWallet == null || liquidWallet == null) {
         throw Exception('One or both wallets not found');
@@ -49,14 +52,22 @@ class CreateChainSwapUsecase {
       final swapRepository = _swapRepository;
 
       final btcElectrumUrl =
-          bitcoinWallet.network.isTestnet
+          (await _electrumSettingsPort.getPreferredServer(
+            isTestnet: bitcoinWallet.network.isTestnet,
+            isLiquid: false,
+          ))?.url ??
+          (bitcoinWallet.network.isTestnet
               ? ApiServiceConstants.publicElectrumTestUrl
-              : ApiServiceConstants.bbElectrumUrl;
+              : ApiServiceConstants.bbElectrumUrl);
 
       final lbtcElectrumUrl =
-          liquidWallet.network.isTestnet
+          (await _electrumSettingsPort.getPreferredServer(
+            isTestnet: liquidWallet.network.isTestnet,
+            isLiquid: true,
+          ))?.url ??
+          (liquidWallet.network.isTestnet
               ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-              : ApiServiceConstants.bbLiquidElectrumUrlPath;
+              : ApiServiceConstants.bbLiquidElectrumUrlPath);
 
       switch (type) {
         case SwapType.bitcoinToLiquid:

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/electrum/application/usecases/set_custom_servers_
 import 'package:bb_mobile/core/electrum/domain/ports/electrum_servers_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/environment_port.dart';
 import 'package:bb_mobile/core/electrum/domain/ports/server_status_port.dart';
+import 'package:bb_mobile/core/electrum/electrum_facade.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_settings_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_transaction_repository.dart';
@@ -114,6 +115,15 @@ class ElectrumLocator {
     );
     locator.registerFactory<SetAdvancedElectrumOptionsUsecase>(
       () => SetAdvancedElectrumOptionsUsecase(
+        electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
+      ),
+    );
+  }
+
+  static void registerFacades(GetIt locator) {
+    locator.registerLazySingleton<ElectrumFacade>(
+      () => ElectrumFacade(
+        electrumServerRepository: locator<ElectrumServerRepository>(),
         electrumSettingsRepository: locator<ElectrumSettingsRepository>(),
       ),
     );
