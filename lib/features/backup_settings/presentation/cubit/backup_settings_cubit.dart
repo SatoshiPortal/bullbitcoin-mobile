@@ -9,12 +9,9 @@ part 'backup_settings_state.dart';
 
 class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   BackupSettingsCubit({
-    required GetWalletsUsecase getWalletsUsecase,
-    required SettingsRepository settingsRepository,
-  }) : _getWalletsUsecase = getWalletsUsecase,
-       _settingsRepository = settingsRepository,
-
-       super(BackupSettingsState());
+    required this._getWalletsUsecase,
+    required this._settingsRepository,
+  }) : super(BackupSettingsState());
 
   final GetWalletsUsecase _getWalletsUsecase;
   final SettingsRepository _settingsRepository;

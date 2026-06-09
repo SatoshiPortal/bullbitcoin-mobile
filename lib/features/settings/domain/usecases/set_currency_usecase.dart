@@ -4,8 +4,8 @@ class SetCurrencyUsecase {
   final SettingsRepository _settingsRepository;
 
   SetCurrencyUsecase({
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  });
 
   Future<void> execute(String currencyCode) async {
     await _settingsRepository.setCurrency(currencyCode);

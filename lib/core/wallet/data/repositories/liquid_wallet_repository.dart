@@ -12,11 +12,10 @@ class LiquidWalletRepository {
   final LwkWalletDatasource _lwkWallet;
 
   LiquidWalletRepository({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-  }) : _walletMetadataDatasource = walletMetadataDatasource,
-       _seed = seedDatasource,
+  }) : _seed = seedDatasource,
        _lwkWallet = lwkWalletDatasource;
 
   Future<String> buildPset({

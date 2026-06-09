@@ -17,14 +17,11 @@ class SetDcaUsecase {
   SetDcaUsecase({
     required ExchangeOrderRepository mainnetExchangeOrderRepository,
     required ExchangeOrderRepository testnetExchangeOrderRepository,
-    required WalletRepository wallet,
-    required SettingsRepository settingsRepository,
-    required WalletAddressRepository walletAddressRepository,
+    required this._wallet,
+    required this._settingsRepository,
+    required this._walletAddressRepository,
   }) : _mainnetDcaRepository = mainnetExchangeOrderRepository,
-       _testnetDcaRepository = testnetExchangeOrderRepository,
-       _wallet = wallet,
-       _settingsRepository = settingsRepository,
-       _walletAddressRepository = walletAddressRepository;
+       _testnetDcaRepository = testnetExchangeOrderRepository;
 
   Future<Dca> execute({
     required double amount,

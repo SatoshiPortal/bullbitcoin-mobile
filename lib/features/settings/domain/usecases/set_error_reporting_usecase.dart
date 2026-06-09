@@ -4,8 +4,8 @@ class SetErrorReportingUsecase {
   final SettingsRepository _settingsRepository;
 
   SetErrorReportingUsecase({
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  });
 
   Future<void> execute(bool enabled) async {
     await _settingsRepository.setErrorReportingEnabled(enabled);

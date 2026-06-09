@@ -8,8 +8,7 @@ import 'package:bb_mobile/features/labels/domain/new_label.dart';
 class StoreLabelUsecase {
   final LabelsRepositoryPort _labelRepository;
 
-  StoreLabelUsecase({required LabelsRepositoryPort labelRepository})
-    : _labelRepository = labelRepository;
+  StoreLabelUsecase({required this._labelRepository});
 
   Future<ApplicationLabel> execute(NewApplicationLabel label) async {
     try {

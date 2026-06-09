@@ -26,33 +26,18 @@ part 'transaction_details_state.dart';
 
 class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   TransactionDetailsCubit({
-    required GetWalletUsecase getWalletUsecase,
-    required GetTransactionsByTxIdUsecase getTransactionsByTxIdUsecase,
-    required WatchWalletTransactionByTxIdUsecase
-    watchWalletTransactionByTxIdUsecase,
-    required GetSwapUsecase getSwapUsecase,
-    required GetPayjoinByIdUsecase getPayjoinByIdUsecase,
-    required GetOrderUsecase getOrderUsecase,
-    required WatchSwapUsecase watchSwapUsecase,
-    required WatchPayjoinUsecase watchPayjoinUsecase,
-    required LabelsFacade labelsFacade,
-    required BroadcastOriginalTransactionUsecase
-    broadcastOriginalTransactionUsecase,
-    required ProcessSwapUsecase processSwapUsecase,
-  }) : _getWalletUsecase = getWalletUsecase,
-       _getTransactionsByTxIdUsecase = getTransactionsByTxIdUsecase,
-       _watchWalletTransactionByTxIdUsecase =
-           watchWalletTransactionByTxIdUsecase,
-       _getSwapUsecase = getSwapUsecase,
-       _getPayjoinByIdUsecase = getPayjoinByIdUsecase,
-       _getOrderUsecase = getOrderUsecase,
-       _watchSwapUsecase = watchSwapUsecase,
-       _watchPayjoinUsecase = watchPayjoinUsecase,
-       _labelsFacade = labelsFacade,
-       _broadcastOriginalTransactionUsecase =
-           broadcastOriginalTransactionUsecase,
-       _processSwapUsecase = processSwapUsecase,
-       super(const TransactionDetailsState());
+    required this._getWalletUsecase,
+    required this._getTransactionsByTxIdUsecase,
+    required this._watchWalletTransactionByTxIdUsecase,
+    required this._getSwapUsecase,
+    required this._getPayjoinByIdUsecase,
+    required this._getOrderUsecase,
+    required this._watchSwapUsecase,
+    required this._watchPayjoinUsecase,
+    required this._labelsFacade,
+    required this._broadcastOriginalTransactionUsecase,
+    required this._processSwapUsecase,
+  }) : super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
   final GetTransactionsByTxIdUsecase _getTransactionsByTxIdUsecase;

@@ -12,9 +12,8 @@ class PrepareBitcoinSendUsecase {
 
   PrepareBitcoinSendUsecase({
     required PayjoinRepository payjoinRepository,
-    required BitcoinWalletRepository bitcoinWalletRepository,
-  }) : _payjoin = payjoinRepository,
-       _bitcoinWalletRepository = bitcoinWalletRepository;
+    required this._bitcoinWalletRepository,
+  }) : _payjoin = payjoinRepository;
 
   Future<({String unsignedPsbt, int txSize, bool isToSelf})> execute({
     required String walletId,

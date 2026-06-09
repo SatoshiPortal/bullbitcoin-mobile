@@ -9,11 +9,9 @@ class ServiceStatusCubit extends Cubit<ServiceStatusState> {
   final GetWalletsUsecase _getWalletsUsecase;
 
   ServiceStatusCubit({
-    required CheckAllServiceStatusUsecase checkAllServiceStatusUsecase,
-    required GetWalletsUsecase getWalletsUsecase,
-  }) : _checkAllServiceStatusUsecase = checkAllServiceStatusUsecase,
-       _getWalletsUsecase = getWalletsUsecase,
-       super(const ServiceStatusState());
+    required this._checkAllServiceStatusUsecase,
+    required this._getWalletsUsecase,
+  }) : super(const ServiceStatusState());
 
   Future<void> checkStatus() async {
     try {

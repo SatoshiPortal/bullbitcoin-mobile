@@ -16,8 +16,7 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
   final String _recipientsPath = '/ak/api-recipients';
   final String _usersPath = '/ak/api-users';
 
-  BullBitcoinApiFundingGateway({required Dio authenticatedApiClient})
-    : _authenticatedApiClient = authenticatedApiClient;
+  BullBitcoinApiFundingGateway({required this._authenticatedApiClient});
 
   @override
   Future<FundingDetails> getFundingDetails({

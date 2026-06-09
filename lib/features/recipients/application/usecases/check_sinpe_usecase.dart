@@ -21,10 +21,9 @@ class CheckSinpeUsecase {
   final SettingsRepository _settingsRepository;
 
   CheckSinpeUsecase({
-    required RecipientsGatewayPort recipientsGateway,
-    required SettingsRepository settingsRepository,
-  }) : _recipientsGateway = recipientsGateway,
-       _settingsRepository = settingsRepository;
+    required this._recipientsGateway,
+    required this._settingsRepository,
+  });
 
   Future<CheckSinpeResult> execute(CheckSinpeParams params) async {
     final settings = await _settingsRepository.fetch();

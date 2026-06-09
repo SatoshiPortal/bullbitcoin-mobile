@@ -14,9 +14,8 @@ class BitcoinBlockchainRepository {
 
   const BitcoinBlockchainRepository({
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
-    required ElectrumServersPort serversPort,
-  }) : _blockchain = blockchainDatasource,
-       _serversPort = serversPort;
+    required this._serversPort,
+  }) : _blockchain = blockchainDatasource;
 
   Future<String> broadcastPsbt(
     String finalizedPsbt, {

@@ -14,12 +14,10 @@ class LoadMempoolServerDataUsecase {
   final MempoolEnvironmentPort _environmentPort;
 
   LoadMempoolServerDataUsecase({
-    required MempoolServerRepository serverRepository,
-    required MempoolSettingsRepository settingsRepository,
-    required MempoolEnvironmentPort environmentPort,
-  }) : _serverRepository = serverRepository,
-       _settingsRepository = settingsRepository,
-       _environmentPort = environmentPort;
+    required this._serverRepository,
+    required this._settingsRepository,
+    required this._environmentPort,
+  });
 
   Future<LoadMempoolServerDataResponse> execute(
     LoadMempoolServerDataRequest request,

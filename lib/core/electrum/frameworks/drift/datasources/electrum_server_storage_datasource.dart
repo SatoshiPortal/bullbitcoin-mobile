@@ -7,8 +7,7 @@ import 'package:drift/drift.dart';
 class ElectrumServerStorageDatasource {
   final SqliteDatabase _sqlite;
 
-  const ElectrumServerStorageDatasource({required SqliteDatabase sqlite})
-    : _sqlite = sqlite;
+  const ElectrumServerStorageDatasource({required this._sqlite});
 
   Future<void> store(ElectrumServerModel server) async {
     try {

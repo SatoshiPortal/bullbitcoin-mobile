@@ -19,19 +19,13 @@ import 'package:share_plus/share_plus.dart';
 
 class ExchangeSupportChatCubit extends Cubit<ExchangeSupportChatState> {
   ExchangeSupportChatCubit({
-    required GetSupportChatMessagesUsecase getMessagesUsecase,
-    required SendSupportChatMessageUsecase sendMessageUsecase,
-    required GetSupportChatMessageAttachmentUsecase getAttachmentUsecase,
-    required GetExchangeUserSummaryUsecase getUserSummaryUsecase,
-    required CreateLogAttachmentUsecase createLogAttachmentUsecase,
-    required ExchangeNotificationService exchangeNotificationService,
-  }) : _getMessagesUsecase = getMessagesUsecase,
-       _sendMessageUsecase = sendMessageUsecase,
-       _getAttachmentUsecase = getAttachmentUsecase,
-       _getUserSummaryUsecase = getUserSummaryUsecase,
-       _createLogAttachmentUsecase = createLogAttachmentUsecase,
-       _exchangeNotificationService = exchangeNotificationService,
-       super(const ExchangeSupportChatState()) {
+    required this._getMessagesUsecase,
+    required this._sendMessageUsecase,
+    required this._getAttachmentUsecase,
+    required this._getUserSummaryUsecase,
+    required this._createLogAttachmentUsecase,
+    required this._exchangeNotificationService,
+  }) : super(const ExchangeSupportChatState()) {
     _notificationSubscription = _exchangeNotificationService.messageStream
         .where((message) => message.type == 'message')
         .listen((_) => loadMessages(page: 1));

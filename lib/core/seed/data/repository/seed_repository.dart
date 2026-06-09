@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 class SeedRepository {
   final SeedDatasource _source;
 
-  const SeedRepository({required SeedDatasource source}) : _source = source;
+  const SeedRepository({required this._source});
 
   Future<MnemonicSeed> createFromMnemonic({
     required List<String> mnemonicWords,

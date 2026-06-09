@@ -18,16 +18,11 @@ part 'bitcoin_price_state.dart';
 
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
-    required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
-    required GetSettingsUsecase getSettingsUsecase,
-    required ConvertSatsToCurrencyAmountUsecase
-    convertSatsToCurrencyAmountUsecase,
-    required WatchCurrencyChangesUsecase watchCurrencyChangesUsecase,
-  }) : _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
-       _watchCurrencyChangesUsecase = watchCurrencyChangesUsecase,
-       super(const BitcoinPriceState()) {
+    required this._getAvailableCurrenciesUsecase,
+    required this._getSettingsUsecase,
+    required this._convertSatsToCurrencyAmountUsecase,
+    required this._watchCurrencyChangesUsecase,
+  }) : super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
     on<BitcoinPriceFetched>(_onFetched);
     on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);

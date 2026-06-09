@@ -71,8 +71,7 @@ class GetFundingDetailsResult {
 class GetFundingDetailsUsecase {
   final FundingGatewayPort _fundingGateway;
 
-  const GetFundingDetailsUsecase({required FundingGatewayPort fundingGateway})
-    : _fundingGateway = fundingGateway;
+  const GetFundingDetailsUsecase({required this._fundingGateway});
 
   Future<GetFundingDetailsResult> execute(GetFundingDetailsQuery query) async {
     try {

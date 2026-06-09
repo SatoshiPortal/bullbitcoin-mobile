@@ -18,13 +18,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     String? walletId,
     bool exchangeOnly = false,
-    required GetTransactionsUsecase getTransactionsUsecase,
-    required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
-    required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
-  }) : _getTransactionsUsecase = getTransactionsUsecase,
-       _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
-       _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-       super(TransactionsState(walletId: walletId, exchangeOnly: exchangeOnly)) {
+    required this._getTransactionsUsecase,
+    required this._watchStartedWalletSyncsUsecase,
+    required this._watchFinishedWalletSyncsUsecase,
+  }) : super(TransactionsState(walletId: walletId, exchangeOnly: exchangeOnly)) {
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));

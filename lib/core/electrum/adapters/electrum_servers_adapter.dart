@@ -17,12 +17,10 @@ class ElectrumServersAdapter implements ElectrumServersPort {
   final SettingsRepository _appSettingsRepository;
 
   ElectrumServersAdapter({
-    required ElectrumServerRepository serverRepository,
-    required ElectrumSettingsRepository settingsRepository,
-    required SettingsRepository appSettingsRepository,
-  }) : _serverRepository = serverRepository,
-       _settingsRepository = settingsRepository,
-       _appSettingsRepository = appSettingsRepository;
+    required this._serverRepository,
+    required this._settingsRepository,
+    required this._appSettingsRepository,
+  });
 
   @override
   Future<T> runWithFallback<T>({

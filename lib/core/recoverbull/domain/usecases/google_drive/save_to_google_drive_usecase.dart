@@ -5,8 +5,8 @@ class SaveVaultToGoogleDriveUsecase {
   final GoogleDriveRepository _driveRepository;
 
   SaveVaultToGoogleDriveUsecase({
-    required GoogleDriveRepository driveRepository,
-  }) : _driveRepository = driveRepository;
+    required this._driveRepository,
+  });
 
   Future<void> execute(EncryptedVault vault) async {
     try {

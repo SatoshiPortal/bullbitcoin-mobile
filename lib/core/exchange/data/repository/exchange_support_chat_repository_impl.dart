@@ -15,14 +15,11 @@ class ExchangeSupportChatRepositoryImpl
   final bool _isTestnet;
 
   ExchangeSupportChatRepositoryImpl({
-    required ExchangeSupportChatDatasource datasource,
-    required BullbitcoinApiKeyDatasource apiKeyDatasource,
-    required BullbitcoinApiDatasource bullbitcoinApiDatasource,
-    required bool isTestnet,
-  }) : _datasource = datasource,
-       _apiKeyDatasource = apiKeyDatasource,
-       _bullbitcoinApiDatasource = bullbitcoinApiDatasource,
-       _isTestnet = isTestnet;
+    required this._datasource,
+    required this._apiKeyDatasource,
+    required this._bullbitcoinApiDatasource,
+    required this._isTestnet,
+  });
 
   @override
   Future<List<SupportChatMessage>> getMessages({

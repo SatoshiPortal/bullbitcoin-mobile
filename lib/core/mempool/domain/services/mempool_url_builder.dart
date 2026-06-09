@@ -4,8 +4,8 @@ class MempoolUrlBuilder {
   final GetActiveMempoolServerUsecase _getActiveMempoolServerUsecase;
 
   const MempoolUrlBuilder({
-    required GetActiveMempoolServerUsecase getActiveMempoolServerUsecase,
-  }) : _getActiveMempoolServerUsecase = getActiveMempoolServerUsecase;
+    required this._getActiveMempoolServerUsecase,
+  });
 
   Future<String> bitcoinTxid(String txid, {required bool isTestnet}) async {
     final server = await _getActiveMempoolServerUsecase.execute(

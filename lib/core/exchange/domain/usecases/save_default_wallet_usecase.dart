@@ -8,12 +8,10 @@ class SaveDefaultWalletUsecase {
   final SettingsRepository _settingsRepository;
 
   SaveDefaultWalletUsecase({
-    required ExchangeRecipientRepository mainnetRepository,
-    required ExchangeRecipientRepository testnetRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetRepository = mainnetRepository,
-       _testnetRepository = testnetRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetRepository,
+    required this._testnetRepository,
+    required this._settingsRepository,
+  });
 
   Future<DefaultWallet> execute({
     required WalletAddressType walletType,

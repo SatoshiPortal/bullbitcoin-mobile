@@ -9,10 +9,9 @@ class ReceiveWithPayjoinUsecase {
   final SettingsRepository _settingsRepository;
 
   const ReceiveWithPayjoinUsecase({
-    required PayjoinRepository payjoinRepository,
-    required SettingsRepository settingsRepository,
-  }) : _payjoinRepository = payjoinRepository,
-       _settingsRepository = settingsRepository;
+    required this._payjoinRepository,
+    required this._settingsRepository,
+  });
 
   Future<PayjoinReceiver> execute({
     required String walletId,

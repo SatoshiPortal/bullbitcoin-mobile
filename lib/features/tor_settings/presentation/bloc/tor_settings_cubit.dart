@@ -12,13 +12,10 @@ part 'tor_settings_state.dart';
 
 class TorSettingsCubit extends Cubit<TorSettingsState> {
   TorSettingsCubit({
-    required GetSettingsUsecase getSettingsUsecase,
-    required UpdateTorSettingsUsecase updateTorSettingsUsecase,
-    required CheckTorProxyConnectionUsecase checkTorConnectionUsecase,
-  }) : _getSettingsUsecase = getSettingsUsecase,
-       _updateTorSettingsUsecase = updateTorSettingsUsecase,
-       _checkTorConnectionUsecase = checkTorConnectionUsecase,
-       super(const TorSettingsState());
+    required this._getSettingsUsecase,
+    required this._updateTorSettingsUsecase,
+    required this._checkTorConnectionUsecase,
+  }) : super(const TorSettingsState());
 
   final GetSettingsUsecase _getSettingsUsecase;
   final UpdateTorSettingsUsecase _updateTorSettingsUsecase;

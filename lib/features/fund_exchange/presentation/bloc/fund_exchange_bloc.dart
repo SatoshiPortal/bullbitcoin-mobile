@@ -20,17 +20,11 @@ part 'fund_exchange_bloc.freezed.dart';
 
 class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
   FundExchangeBloc({
-    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
-    required GetFundingDetailsUsecase getFundingDetailsUsecase,
-    required ListFundingInstitutionsUsecase listFundingInstitutionsUsecase,
-    required RegisterResponsibilityConsentUsecase
-    registerResponsibilityConsentUsecase,
-  }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
-       _getFundingDetailsUsecase = getFundingDetailsUsecase,
-       _listFundingInstitutionsUsecase = listFundingInstitutionsUsecase,
-       _registerResponsibilityConsentUsecase =
-           registerResponsibilityConsentUsecase,
-       super(const FundExchangeState()) {
+    required this._getExchangeUserSummaryUsecase,
+    required this._getFundingDetailsUsecase,
+    required this._listFundingInstitutionsUsecase,
+    required this._registerResponsibilityConsentUsecase,
+  }) : super(const FundExchangeState()) {
     on<FundExchangeStarted>(_onStarted);
     on<FundExchangeFundingInstitutionsRequested>(
       _onFundingInstitutionsRequested,

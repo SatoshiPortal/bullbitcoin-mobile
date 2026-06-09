@@ -8,7 +8,7 @@ import 'package:convert/convert.dart';
 class ElectrumRemoteDatasource {
   final SqliteDatabase _sqlite;
 
-  ElectrumRemoteDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
+  ElectrumRemoteDatasource({required this._sqlite});
 
   Future<TransactionModel> fetch({
     required String serverUrl,

@@ -40,18 +40,12 @@ class ElectrumSettingsBloc
   final SetAdvancedElectrumOptionsUsecase _setAdvancedElectrumOptionsUsecase;
 
   ElectrumSettingsBloc({
-    required LoadElectrumServerDataUsecase loadElectrumServerDataUsecase,
-    required AddCustomServerUsecase addCustomServerUsecase,
-    required SetCustomServersPriorityUsecase setCustomServersPriorityUsecase,
-    required DeleteCustomServerUsecase deleteCustomServerUsecase,
-    required SetAdvancedElectrumOptionsUsecase
-    setAdvancedElectrumOptionsUsecase,
-  }) : _loadElectrumServerDataUsecase = loadElectrumServerDataUsecase,
-       _addCustomServerUsecase = addCustomServerUsecase,
-       _setCustomServersPriorityUsecase = setCustomServersPriorityUsecase,
-       _deleteCustomServerUsecase = deleteCustomServerUsecase,
-       _setAdvancedElectrumOptionsUsecase = setAdvancedElectrumOptionsUsecase,
-       super(const ElectrumSettingsState()) {
+    required this._loadElectrumServerDataUsecase,
+    required this._addCustomServerUsecase,
+    required this._setCustomServersPriorityUsecase,
+    required this._deleteCustomServerUsecase,
+    required this._setAdvancedElectrumOptionsUsecase,
+  }) : super(const ElectrumSettingsState()) {
     on<ElectrumSettingsLoaded>(_onLoaded);
     on<ElectrumCustomServerAdded>(_onCustomServerAdded);
     on<ElectrumCustomServersPrioritized>(_onCustomServersPrioritized);

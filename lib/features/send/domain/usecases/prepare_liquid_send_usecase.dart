@@ -7,8 +7,8 @@ class PrepareLiquidSendUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
 
   PrepareLiquidSendUsecase({
-    required LiquidWalletRepository liquidWalletRepository,
-  }) : _liquidWalletRepository = liquidWalletRepository;
+    required this._liquidWalletRepository,
+  });
 
   Future<String> execute({
     required String walletId,

@@ -19,16 +19,12 @@ class LoadElectrumServerDataUsecase {
   final SettingsRepository _settingsRepository;
 
   const LoadElectrumServerDataUsecase({
-    required ElectrumServerRepository electrumServerRepository,
-    required ElectrumSettingsRepository electrumSettingsRepository,
-    required EnvironmentPort environmentPort,
-    required ServerStatusPort serverStatusPort,
-    required SettingsRepository settingsRepository,
-  }) : _electrumServerRepository = electrumServerRepository,
-       _electrumSettingsRepository = electrumSettingsRepository,
-       _environmentPort = environmentPort,
-       _serverStatusPort = serverStatusPort,
-       _settingsRepository = settingsRepository;
+    required this._electrumServerRepository,
+    required this._electrumSettingsRepository,
+    required this._environmentPort,
+    required this._serverStatusPort,
+    required this._settingsRepository,
+  });
 
   Future<LoadElectrumServerDataResponse> execute(
     LoadElectrumServerDataRequest request,

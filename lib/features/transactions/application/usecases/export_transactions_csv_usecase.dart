@@ -10,10 +10,9 @@ class ExportTransactionsCsvUsecase {
   final TransactionExportFormatter _formatter;
 
   ExportTransactionsCsvUsecase({
-    required GetTransactionsUsecase getTransactionsUsecase,
-    required TransactionExportFormatter formatter,
-  }) : _getTransactionsUsecase = getTransactionsUsecase,
-       _formatter = formatter;
+    required this._getTransactionsUsecase,
+    required this._formatter,
+  });
 
   Future<String> execute({DateTime? start, DateTime? end}) async {
     if (start != null && end != null && start.isAfter(end)) {

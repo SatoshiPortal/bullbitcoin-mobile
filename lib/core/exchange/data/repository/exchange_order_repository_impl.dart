@@ -17,12 +17,10 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final bool _isTestnet;
 
   ExchangeOrderRepositoryImpl({
-    required BullbitcoinApiDatasource bullbitcoinApiDatasource,
-    required BullbitcoinApiKeyDatasource bullbitcoinApiKeyDatasource,
-    required bool isTestnet,
-  }) : _bullbitcoinApiDatasource = bullbitcoinApiDatasource,
-       _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource,
-       _isTestnet = isTestnet;
+    required this._bullbitcoinApiDatasource,
+    required this._bullbitcoinApiKeyDatasource,
+    required this._isTestnet,
+  });
 
   @override
   Future<Order> getOrder(String orderId) async {

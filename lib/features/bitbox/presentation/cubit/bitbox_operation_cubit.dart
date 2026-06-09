@@ -15,11 +15,9 @@ class BitBoxOperationCubit extends Cubit<BitBoxOperationState> {
   bool _isDisposed = false;
 
   BitBoxOperationCubit({
-    required ScanBitBoxDevicesUsecase scanBitBoxDevicesUsecase,
-    required ConnectBitBoxDeviceUsecase connectBitBoxDeviceUsecase,
-  }) : _scanBitBoxDevicesUsecase = scanBitBoxDevicesUsecase,
-       _connectBitBoxDeviceUsecase = connectBitBoxDeviceUsecase,
-       _repository = locator<BitBoxDeviceRepository>(),
+    required this._scanBitBoxDevicesUsecase,
+    required this._connectBitBoxDeviceUsecase,
+  }) : _repository = locator<BitBoxDeviceRepository>(),
        super(const BitBoxOperationState());
 
   BitBoxDeviceEntity? get connectedDevice => state.connectedDevice;

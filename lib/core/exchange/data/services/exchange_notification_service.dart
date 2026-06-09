@@ -23,12 +23,10 @@ class ExchangeNotificationService {
   bool _isTestnet = false;
 
   ExchangeNotificationService({
-    required ExchangeNotificationDatasource mainnetDatasource,
-    required ExchangeNotificationDatasource testnetDatasource,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetDatasource = mainnetDatasource,
-       _testnetDatasource = testnetDatasource,
-       _settingsRepository = settingsRepository {
+    required this._mainnetDatasource,
+    required this._testnetDatasource,
+    required this._settingsRepository,
+  }) {
     _setupInternalListeners();
   }
 

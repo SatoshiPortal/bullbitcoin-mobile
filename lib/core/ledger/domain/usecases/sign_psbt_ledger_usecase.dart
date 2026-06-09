@@ -6,8 +6,8 @@ class SignPsbtLedgerUsecase {
   final LedgerDeviceRepository _repository;
 
   SignPsbtLedgerUsecase({
-    required LedgerDeviceRepository repository,
-  }) : _repository = repository;
+    required this._repository,
+  });
 
   Future<String> execute(
     LedgerDeviceEntity device, {

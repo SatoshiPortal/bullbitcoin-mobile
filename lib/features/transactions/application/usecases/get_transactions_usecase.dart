@@ -20,20 +20,14 @@ class GetTransactionsUsecase {
   final LabelExchangeOrdersUsecase _labelExchangeOrdersUsecase;
 
   GetTransactionsUsecase({
-    required SettingsRepository settingsRepository,
-    required WalletTransactionRepository walletTransactionRepository,
-    required BoltzSwapRepository boltzSwapRepository,
-    required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository mainnetExchangeOrderRepository,
-    required ExchangeOrderRepository testnetExchangeOrderRepository,
-    required LabelExchangeOrdersUsecase labelExchangeOrdersUsecase,
-  }) : _settingsRepository = settingsRepository,
-       _walletTransactionRepository = walletTransactionRepository,
-       _boltzSwapRepository = boltzSwapRepository,
-       _payjoinRepository = payjoinRepository,
-       _mainnetExchangeOrderRepository = mainnetExchangeOrderRepository,
-       _testnetExchangeOrderRepository = testnetExchangeOrderRepository,
-       _labelExchangeOrdersUsecase = labelExchangeOrdersUsecase;
+    required this._settingsRepository,
+    required this._walletTransactionRepository,
+    required this._boltzSwapRepository,
+    required this._payjoinRepository,
+    required this._mainnetExchangeOrderRepository,
+    required this._testnetExchangeOrderRepository,
+    required this._labelExchangeOrdersUsecase,
+  });
 
   Future<List<Transaction>> execute({
     String? walletId,

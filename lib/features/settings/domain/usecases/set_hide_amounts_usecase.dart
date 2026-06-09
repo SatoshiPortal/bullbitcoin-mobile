@@ -4,8 +4,8 @@ class SetHideAmountsUsecase {
   final SettingsRepository _settingsRepository;
 
   SetHideAmountsUsecase({
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  });
 
   Future<void> execute(bool hide) async {
     await _settingsRepository.setHideAmounts(hide);

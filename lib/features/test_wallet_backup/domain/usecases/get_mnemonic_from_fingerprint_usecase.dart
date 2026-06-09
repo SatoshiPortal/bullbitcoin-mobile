@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class GetMnemonicFromFingerprintUsecase {
   final SeedRepository _seedRepository;
 
-  GetMnemonicFromFingerprintUsecase({required SeedRepository seedRepository})
-    : _seedRepository = seedRepository;
+  GetMnemonicFromFingerprintUsecase({required this._seedRepository});
 
   Future<(List<String>, String?)> execute(String fingerprint) async {
     try {

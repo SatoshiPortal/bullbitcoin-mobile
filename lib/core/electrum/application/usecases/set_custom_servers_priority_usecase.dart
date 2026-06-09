@@ -8,8 +8,8 @@ class SetCustomServersPriorityUsecase {
   final ElectrumServerRepository _electrumServerRepository;
 
   const SetCustomServersPriorityUsecase({
-    required ElectrumServerRepository electrumServerRepository,
-  }) : _electrumServerRepository = electrumServerRepository;
+    required this._electrumServerRepository,
+  });
 
   Future<SetCustomServersPriorityResponse> execute(
     SetCustomServersPriorityRequest request,

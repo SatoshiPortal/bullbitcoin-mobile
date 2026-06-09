@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class VerifyAddressLedgerUsecase {
   final LedgerDeviceRepository _repository;
 
-  VerifyAddressLedgerUsecase({required LedgerDeviceRepository repository})
-    : _repository = repository;
+  VerifyAddressLedgerUsecase({required this._repository});
 
   Future<bool> execute({
     required LedgerDeviceEntity device,

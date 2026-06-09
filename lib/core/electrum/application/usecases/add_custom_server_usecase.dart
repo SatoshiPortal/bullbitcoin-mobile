@@ -14,12 +14,10 @@ class AddCustomServerUsecase {
   final SettingsRepository _settingsRepository;
 
   AddCustomServerUsecase({
-    required ElectrumServerRepository electrumServerRepository,
-    required ServerStatusPort serverStatusPort,
-    required SettingsRepository settingsRepository,
-  }) : _electrumServerRepository = electrumServerRepository,
-       _serverStatusPort = serverStatusPort,
-       _settingsRepository = settingsRepository;
+    required this._electrumServerRepository,
+    required this._serverStatusPort,
+    required this._settingsRepository,
+  });
 
   Future<ElectrumServerStatus> execute(AddCustomServerRequest request) async {
     final server = ElectrumServer.createCustom(

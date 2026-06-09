@@ -25,26 +25,17 @@ part 'app_startup_state.dart';
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState>
     with WidgetsBindingObserver {
   AppStartupBloc({
-    required ResetAppDataUsecase resetAppDataUsecase,
-    required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
-    required CheckForExistingDefaultWalletsUsecase
-    checkForExistingDefaultWalletsUsecase,
+    required this._resetAppDataUsecase,
+    required this._checkPinCodeExistsUsecase,
+    required this._checkForExistingDefaultWalletsUsecase,
     required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
-    required RequiresMigrationUsecase requiresMigrationUsecase,
-    required CheckBackupUsecase checkBackupUsecase,
-    required IsTorRequiredUsecase isTorRequiredUsecase,
-    required InitTorUsecase initTorUsecase,
-  }) : _resetAppDataUsecase = resetAppDataUsecase,
-       _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
-       _checkForExistingDefaultWalletsUsecase =
-           checkForExistingDefaultWalletsUsecase,
-       _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
+    required this._requiresMigrationUsecase,
+    required this._checkBackupUsecase,
+    required this._isTorRequiredUsecase,
+    required this._initTorUsecase,
+  }) : _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
-       _requiresMigrationUsecase = requiresMigrationUsecase,
-       _checkBackupUsecase = checkBackupUsecase,
-       _isTorRequiredUsecase = isTorRequiredUsecase,
-       _initTorUsecase = initTorUsecase,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
     WidgetsBinding.instance.addObserver(this);

@@ -7,8 +7,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
   final BitBoxDeviceDatasource _datasource;
 
-  BitBoxDeviceRepositoryImpl({required BitBoxDeviceDatasource datasource})
-      : _datasource = datasource;
+  BitBoxDeviceRepositoryImpl({required this._datasource});
 
   @override
   Future<List<BitBoxDeviceEntity>> scanDevices() async {

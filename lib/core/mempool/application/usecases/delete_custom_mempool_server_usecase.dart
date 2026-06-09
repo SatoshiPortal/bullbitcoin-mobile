@@ -9,10 +9,9 @@ class DeleteCustomMempoolServerUsecase {
   final MempoolEnvironmentPort _environmentPort;
 
   DeleteCustomMempoolServerUsecase({
-    required MempoolServerRepository serverRepository,
-    required MempoolEnvironmentPort environmentPort,
-  }) : _serverRepository = serverRepository,
-       _environmentPort = environmentPort;
+    required this._serverRepository,
+    required this._environmentPort,
+  });
 
   Future<void> execute(DeleteCustomMempoolServerRequest request) async {
     final environment = await _environmentPort.getEnvironment();
