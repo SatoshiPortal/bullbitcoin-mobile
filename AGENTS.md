@@ -11,6 +11,8 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 - **Always `fvm flutter` / `fvm dart`.** Never bare `flutter`/`dart`. The pinned SDK lives in [`.fvmrc`](.fvmrc); using a global SDK silently breaks builds.
 - **Use the makefile.** Don't reinvent commands:
   - `make deps` — `fvm flutter pub get`
+  - `make analyze` — `fvm flutter analyze --fatal-warnings --fatal-infos` (matches CI; same check the pre-commit hook runs)
+  - `make bootstrap` — melos workspace bootstrap (wraps `fvm dart run melos bootstrap`)
   - `make build-runner` — codegen (freezed, json_serializable, drift, flutter_gen)
   - `make translations` — `fvm flutter gen-l10n`
   - `make setup` — full first-time setup (clean + deps + build-runner + translations + hooks + ios pods on macOS)
@@ -28,7 +30,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 
 The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. Today the Flutter app is a single package at the repo root, kept there via `useRootAsPackage: true` in the `melos:` block of [`pubspec.yaml`](pubspec.yaml). There are no workspace members yet, so melos is a skeleton — the makefile and build chain behave exactly as before.
 
-- **Always invoke melos as `fvm dart run melos <cmd>`** so the pinned SDK ([`.fvmrc`](.fvmrc)) is used — never bare `melos`.
+- **Run melos through the makefile** (`make bootstrap`), which wraps `fvm dart run melos` so the pinned SDK ([`.fvmrc`](.fvmrc)) is used. Never type bare `melos` (wrong SDK). For melos subcommands without a make target yet, use `fvm dart run melos <cmd>` — and add a make wrapper if it becomes routine.
 - **The makefile stays canonical** for daily commands. melos does not replace it: `make deps` is still `fvm flutter pub get --enforce-lockfile`, and the reproducible build chain ([Containerfile.app](Containerfile.app), [build-android.yml](.github/workflows/build-android.yml)) does not run melos. melos is a `dev_dependency` only — never compiled into the app, so the reproducible APK is unaffected.
 - **`packages/` and `features/` are reserved homes** for the migration (exception to rule #14 below): core/infrastructure packages in `packages/`, feature modules in `features/`. As code is extracted, each new package gets `resolution: workspace` and is added to a `workspace:` key in the root pubspec; the root keeps `useRootAsPackage: true` (this combination is supported — see melos PR #927).
 - **When the first real member lands**, re-verify that `fvm flutter analyze` (and the pre-commit hook) still cover all members in one pass. Pub workspaces share a single analyzer context, so they should — confirm rather than assume. Also note: `enforceLockfile: true` makes `melos bootstrap` pass `--enforce-lockfile` to every member, which fails for a member that has no committed `pubspec.lock` — commit each member's lock, or bootstrap with `--no-enforce-lockfile` until locks exist.
