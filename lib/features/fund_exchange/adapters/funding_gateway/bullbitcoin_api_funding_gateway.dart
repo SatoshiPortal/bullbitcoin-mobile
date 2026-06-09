@@ -64,12 +64,21 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
           apiError?['en']?.toString() ??
           error['message']?.toString() ??
           'Unknown API error';
+      final messageData = _parseMessageData(apiError?['messageData']);
       log.warning(
         '$method API error [$errorCode]: $errorMessage',
-        error: FetchFundingDetailsFailed(code: errorCode, message: errorMessage),
+        error: FetchFundingDetailsFailed(
+          code: errorCode,
+          message: errorMessage,
+          messageData: messageData,
+        ),
         trace: StackTrace.current,
       );
-      throw FetchFundingDetailsFailed(code: errorCode, message: errorMessage);
+      throw FetchFundingDetailsFailed(
+        code: errorCode,
+        message: errorMessage,
+        messageData: messageData,
+      );
     }
 
     try {
@@ -136,11 +145,16 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
     final error = resp.data['error'];
     if (error != null) {
       final apiError = error['data']?['apiError'];
+      final errorCode = apiError?['code']?.toString() ?? '';
       final errorMessage =
           apiError?['en']?.toString() ??
           error['message']?.toString() ??
           'Unknown API error';
-      throw FetchInstitutionsFailed(message: errorMessage);
+      throw FetchInstitutionsFailed(
+        message: errorMessage,
+        code: errorCode.isEmpty ? null : errorCode,
+        messageData: _parseMessageData(apiError?['messageData']),
+      );
     }
 
     final result = resp.data['result'];
@@ -169,6 +183,13 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
         })
         .whereType<FundingInstitution>()
         .toList();
+  }
+
+  Map<String, String>? _parseMessageData(dynamic data) {
+    if (data is! Map) return null;
+    return data.map(
+      (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
+    );
   }
 
   @override

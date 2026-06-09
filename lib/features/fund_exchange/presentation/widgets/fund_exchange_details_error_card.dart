@@ -15,6 +15,7 @@ class FundExchangeDetailsErrorCard extends StatelessWidget {
     );
 
     return InfoCard(
+      title: error?.displayTitle(context.loc),
       description:
           error?.displayMessage(context.loc) ??
           context.loc.fundExchangeErrorLoadingDetails,

@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/widgets/text/text.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/primitives/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/value_objects/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_error_text.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/fund_exchange_presentation_error.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_canada_methods.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/widgets/fund_exchange_costa_rica_methods.dart';
@@ -192,12 +193,8 @@ class _FundExchangeMethodSelectionScreenState
                 if (_fundingDetailsError != null ||
                     _institutionsError != null) ...[
                   const Gap(16.0),
-                  BBText(
-                    (_fundingDetailsError ?? _institutionsError!)
-                        .displayMessage(context.loc),
-                    style: theme.textTheme.bodyMedium,
-                    color: theme.colorScheme.error,
-                    textAlign: TextAlign.center,
+                  FundExchangeErrorText(
+                    error: _fundingDetailsError ?? _institutionsError!,
                   ),
                 ],
               ],
