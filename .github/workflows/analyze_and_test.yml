@@ -54,6 +54,7 @@ jobs:
 
             - name: Create .env file
               run: |
+                  cp .env.example .env
                   echo "TEST_ALICE_MNEMONIC=${{ secrets.ENV_TEST_ALICE_MNEMONIC }}" >> .env
                   echo "TEST_BOB_MNEMONIC=${{ secrets.ENV_TEST_BOB_MNEMONIC }}" >> .env
 

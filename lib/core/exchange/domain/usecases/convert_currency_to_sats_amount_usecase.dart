@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/errors/bull_exception.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/staging_env.dart';
 
 class ConvertCurrencyToSatsAmountUsecase {
   final ExchangeRateRepository _mainnetExchangeRateRepository;
@@ -23,10 +24,9 @@ class ConvertCurrencyToSatsAmountUsecase {
       final settings = await _settingsRepository.fetch();
       final currency = settings.currencyCode;
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeRateRepository
-              : _mainnetExchangeRateRepository;
+      final repo = StagingEnv.useTestnetExchange(isTestnet)
+          ? _testnetExchangeRateRepository
+          : _mainnetExchangeRateRepository;
       final availableCurrencies = await repo.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {

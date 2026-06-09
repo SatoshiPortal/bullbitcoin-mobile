@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/features/address_view/presentation/address_view_bloc.dart';
 import 'package:bb_mobile/features/address_view/ui/screens/addresses_screen.dart';
@@ -95,80 +96,96 @@ class SettingsRouter {
       GoRoute(
         name: SettingsRoute.exchangeAccount.name,
         path: SettingsRoute.exchangeAccount.path,
-        builder: (context, state) => const ExchangeAccountScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeAccountScreen()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeSettings.name,
         path: SettingsRoute.exchangeSettings.path,
 
-        builder: (context, state) => BlocListener<ExchangeCubit, ExchangeState>(
-          listenWhen: (previous, current) =>
-              !previous.notLoggedIn && current.notLoggedIn,
-          listener: (context, state) {
-            // Redirect to landing page if the user logged out
-            context.goNamed(ExchangeRoute.exchangeLanding.name);
-          },
-          child: const ExchangeSettingsScreen(),
+        builder: (context, state) => StagingExchangeGuard.wrap(
+          BlocListener<ExchangeCubit, ExchangeState>(
+            listenWhen: (previous, current) =>
+                !previous.notLoggedIn && current.notLoggedIn,
+            listener: (context, state) {
+              // Redirect to landing page if the user logged out
+              context.goNamed(ExchangeRoute.exchangeLanding.name);
+            },
+            child: const ExchangeSettingsScreen(),
+          ),
         ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAccountInfo.name,
         path: SettingsRoute.exchangeAccountInfo.path,
-        builder: (context, state) => const ExchangeAccountInfoScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeAccountInfoScreen()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeSecurity.name,
         path: SettingsRoute.exchangeSecurity.path,
-        builder: (context, state) => const ExchangeSecurityScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeSecurityScreen()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeBitcoinWallets.name,
         path: SettingsRoute.exchangeBitcoinWallets.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<DefaultWalletsCubit>(),
-          child: const ExchangeBitcoinWalletsScreen(),
+        builder: (context, state) => StagingExchangeGuard.wrap(
+          BlocProvider(
+            create: (_) => locator<DefaultWalletsCubit>(),
+            child: const ExchangeBitcoinWalletsScreen(),
+          ),
         ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeAppSettings.name,
         path: SettingsRoute.exchangeAppSettings.path,
-        builder: (context, state) => const ExchangeAppSettingsScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeAppSettingsScreen()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeFileUpload.name,
         path: SettingsRoute.exchangeFileUpload.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<FileUploadCubit>(),
-          child: const ExchangeFileUploadScreen(),
+        builder: (context, state) => StagingExchangeGuard.wrap(
+          BlocProvider(
+            create: (_) => locator<FileUploadCubit>(),
+            child: const ExchangeFileUploadScreen(),
+          ),
         ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeStatistics.name,
         path: SettingsRoute.exchangeStatistics.path,
-        builder: (context, state) => BlocProvider(
-          create: (_) => locator<StatisticsCubit>(),
-          child: const ExchangeStatisticsScreen(),
+        builder: (context, state) => StagingExchangeGuard.wrap(
+          BlocProvider(
+            create: (_) => locator<StatisticsCubit>(),
+            child: const ExchangeStatisticsScreen(),
+          ),
         ),
       ),
       GoRoute(
         name: SettingsRoute.exchangeTransactions.name,
         path: SettingsRoute.exchangeTransactions.path,
-        builder: (context, state) => const ExchangeTransactionsScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeTransactionsScreen()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeLegacyTransactions.name,
         path: SettingsRoute.exchangeLegacyTransactions.path,
-        builder: (context, state) => const ExchangeLegacyTransactionsScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeLegacyTransactionsScreen()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeReferrals.name,
         path: SettingsRoute.exchangeReferrals.path,
-        builder: (context, state) => const ExchangeReferralsScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeReferralsScreen()),
       ),
       GoRoute(
         name: SettingsRoute.exchangeLogout.name,
         path: SettingsRoute.exchangeLogout.path,
-        builder: (context, state) => const ExchangeLogoutScreen(),
+        builder: (context, state) =>
+            StagingExchangeGuard.wrap(const ExchangeLogoutScreen()),
       ),
       GoRoute(
         name: SettingsRoute.bitcoinSettings.name,

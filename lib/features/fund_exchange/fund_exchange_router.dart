@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/screens/fund_exchange_cop_bank_transfer_input_screen.dart';
@@ -74,6 +75,9 @@ void _goToFundingScreen(
 
 class FundExchangeRouter {
   static final routes = [
+    ShellRoute(
+      builder: (context, state, child) => StagingExchangeGuard.wrap(child),
+      routes: [
     GoRoute(
       name: FundExchangeRoute.fundExchange.name,
       path: FundExchangeRoute.fundExchange.path,
@@ -262,6 +266,8 @@ class FundExchangeRouter {
         value: state.extra! as FundExchangeBloc,
         child: const FundExchangeCopBankTransferScreen(),
       ),
+    ),
+      ],
     ),
   ];
 }

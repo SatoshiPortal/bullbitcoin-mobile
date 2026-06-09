@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/themes/app_theme.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/staging_env.dart';
 import 'package:bb_mobile/core/widgets/buttons/button.dart';
 import 'package:bb_mobile/core/widgets/navbar/top_bar.dart';
 import 'package:bb_mobile/core/widgets/text/text.dart';
@@ -19,12 +20,11 @@ class ExchangeSecurityScreen extends StatelessWidget {
   const ExchangeSecurityScreen({super.key});
 
   void _openSecurityWebView(BuildContext context) {
-    final isTestnet =
-        context.read<SettingsCubit>().state.environment == Environment.testnet;
-    final baseUrl =
-        isTestnet
-            ? ApiServiceConstants.bbAuthTestUrl
-            : ApiServiceConstants.bbAuthUrl;
+    final environment = context.read<SettingsCubit>().state.environment;
+    final isTestnet = environment == Environment.testnet;
+    final baseUrl = isTestnet
+        ? StagingEnv.authUrl
+        : ApiServiceConstants.bbAuthUrl;
     final securityUrl = '$baseUrl/settings';
 
     Navigator.of(context).push(

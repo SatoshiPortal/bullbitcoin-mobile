@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/widgets/dialog/blurred_dialog.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/core/utils/staging_env.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -37,10 +38,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
     final isTestnet =
         context.read<SettingsCubit>().state.environment == Environment.testnet;
-    _bbAuthUrl =
-        isTestnet
-            ? ApiServiceConstants.bbAuthTestUrl
-            : ApiServiceConstants.bbAuthUrl;
+    _bbAuthUrl = isTestnet ? StagingEnv.authUrl : ApiServiceConstants.bbAuthUrl;
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -177,14 +175,16 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
             return NavigationDecision.prevent;
           },
-          onHttpAuthRequest: (HttpAuthRequest request) {
-            request.onProceed(
-              WebViewCredential(
-                user: ApiServiceConstants.basicAuthUsername,
-                password: ApiServiceConstants.basicAuthPassword,
-              ),
-            );
-          },
+          onHttpAuthRequest: isTestnet
+              ? (HttpAuthRequest request) {
+                  request.onProceed(
+                    WebViewCredential(
+                      user: StagingEnv.basicAuthUsername,
+                      password: StagingEnv.basicAuthPassword,
+                    ),
+                  );
+                }
+              : null,
         ),
       )
       // TODO: Is this user agent necessary?
