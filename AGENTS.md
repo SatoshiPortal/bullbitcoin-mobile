@@ -10,7 +10,7 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 
 - **Always `fvm flutter` / `fvm dart`.** Never bare `flutter`/`dart`. The pinned SDK lives in [`.fvmrc`](.fvmrc); using a global SDK silently breaks builds.
 - **Use the makefile.** Don't reinvent commands:
-  - `make deps` — `fvm flutter pub get`
+  - `make deps` — `fvm flutter pub get --enforce-lockfile`
   - `make analyze` — `fvm flutter analyze --fatal-warnings --fatal-infos` (matches CI; same check the pre-commit hook runs)
   - `make bootstrap` — melos workspace bootstrap (wraps `fvm dart run melos bootstrap`)
   - `make build-runner` — codegen (freezed, json_serializable, drift, flutter_gen)
