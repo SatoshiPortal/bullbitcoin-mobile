@@ -151,6 +151,27 @@ While the architecture described above represents our current standards, the cod
 - **Impact**: Makes state management unpredictable and harder to test
 - **Solution**: Use local widget state (StatefulWidget) for UI-only concerns; use BLoC only for business state
 
+## 📦 Monorepo Migration (melos workspace)
+
+The codebase is migrating, incrementally, from a single Flutter package to a [melos](https://melos.invertase.dev/) pub-workspace. This is an organizational change layered on top of the architecture above — it does not alter the feature-based / layered rules, it gives them a stronger, compile-time boundary.
+
+**Current state (skeleton).** The app remains a single package at the repo root, declared as the workspace package via `useRootAsPackage: true` in the `melos:` block of `pubspec.yaml`. No code has moved yet. `packages/` and `features/` exist as reserved, empty homes.
+
+**Target layout.** As modules are extracted (one at a time, never a big-bang), they become pub-workspace members:
+
+- `packages/` — shared infrastructure extracted from `lib/core/` (storage, blockchain, electrum, primitives, …). These are the low-level, business-agnostic packages.
+- `features/` — feature modules extracted from `lib/features/`, each owning its domain behind its `public/` facade.
+
+Each extracted package gets `resolution: workspace` and is listed under a `workspace:` key in the root `pubspec.yaml`; the root app keeps `useRootAsPackage: true` and consumes the members.
+
+**Why it matters for architecture.** Package boundaries turn the existing rules into *enforced* ones rather than conventions:
+
+- The **Dependency Rule** and **acyclic feature graph** become compile errors when violated — a `packages/` infrastructure package physically cannot import a `features/` module, and a feature cannot reach into another feature's internals (only its published API is importable).
+- **Core-as-infrastructure-only** (rule #7) is enforced by construction: `packages/` members declare no dependency on `features/`.
+- The **facade-only cross-feature** rule (rule #1) is backed by Dart's package privacy — only what a feature package exports is reachable.
+
+This is a slow, deliberate migration. Until a module is extracted, it stays in `lib/` and follows the same rules it does today. Do not move code into `packages/`/`features/` opportunistically — extraction is its own scoped, reviewed change with the security/bitcoin/build implications considered per module.
+
 ## 🤖 Rules for AI
 
 See [AGENTS.md](AGENTS.md) — architecture enforcement, theme-only colors, refuse-and-suggest on rule breaks, and unit-test requirements for use cases and entities are documented there alongside the rest of the agent contract.

@@ -24,6 +24,15 @@ Bull Bitcoin Mobile: self-custodial Bitcoin + Liquid + Lightning wallet. Flutter
 - **`fvm dart fix --dry-run` must print `Nothing to fix!`** before commit. If not, run `fvm dart fix --apply` and stage the result.
 - **Pre-commit hook is the floor.** It runs analyze + dart fix dry-run ([`.git_hooks/pre-commit`](.git_hooks/pre-commit)). **Never `--no-verify`.** If it fails, fix the cause.
 
+## Monorepo / melos
+
+The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) pub-workspace. Today the Flutter app is a single package at the repo root, kept there via `useRootAsPackage: true` in the `melos:` block of [`pubspec.yaml`](pubspec.yaml). There are no workspace members yet, so melos is a skeleton — the makefile and build chain behave exactly as before.
+
+- **Always invoke melos as `fvm dart run melos <cmd>`** so the pinned SDK ([`.fvmrc`](.fvmrc)) is used — never bare `melos`.
+- **The makefile stays canonical** for daily commands. melos does not replace it: `make deps` is still `fvm flutter pub get`, and the reproducible build chain ([Containerfile.app](Containerfile.app), [build-android.yml](.github/workflows/build-android.yml)) does not run melos. melos is a `dev_dependency` only — never compiled into the app, so the reproducible APK is unaffected.
+- **`packages/` and `features/` are reserved homes** for the migration (exception to rule #14 below): core/infrastructure packages in `packages/`, feature modules in `features/`. As code is extracted, each new package gets `resolution: workspace` and is added to a `workspace:` key in the root pubspec; the root keeps `useRootAsPackage: true` (this combination is supported — see melos PR #927).
+- **When the first real member lands**, re-verify that `fvm flutter analyze` (and the pre-commit hook) still cover all members in one pass. Pub workspaces share a single analyzer context, so they should — confirm rather than assume.
+
 ## Architecture — enforce, don't drift
 
 Read [ARCHITECTURE.md](ARCHITECTURE.md) and [FEATURES.md](FEATURES.md) before adding or moving code. **The repo is in active migration**: at audit time, only 3 of ~55 features have `application/`, none have `public/` or `watchers/`. The target structure described below is what new code must follow. Existing code may violate these rules — do not replicate violations, but don't refactor unrelated legacy in the same PR either.
@@ -56,6 +65,8 @@ Hard rules:
     - One datasource → `<feature>/frameworks/<noun>_datasource.dart`. Don't create `frameworks/datasources/` for a single file.
 
     Create the folder the moment a **second** file of that kind appears (or you know it's imminent in the same PR). Don't pre-create empty folders or use `.gitkeep`. Suffix carries the role; path carries the layer.
+
+    **Exception (melos migration):** `packages/` and `features/` are intentionally pre-created with `.gitkeep` as reserved workspace homes for the in-progress monorepo migration — do not remove them or treat them as a rule-#14 violation. See the Monorepo / melos section.
 
 When a request would break these rules, explain why and propose a compliant alternative. Don't silently comply.
 
