@@ -3898,6 +3898,81 @@
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },
+  "fundExchangeErrorTitleOrdPo404": "Payment Option Unavailable",
+  "@fundExchangeErrorTitleOrdPo404": {
+    "description": "bb-exchange errorTitleOrdPo404"
+  },
+  "fundExchangeErrorOrdPo404": "No payment option available",
+  "@fundExchangeErrorOrdPo404": {
+    "description": "bb-exchange errorMsgOrdPo404"
+  },
+  "fundExchangeErrorTitleRcpPo404": "Payment Option Not Available",
+  "@fundExchangeErrorTitleRcpPo404": {
+    "description": "bb-exchange errorTitleRcpPo404"
+  },
+  "fundExchangeErrorRcpPo404": "You do not have the required permissions to access this funding option. Either your KYC is insufficient or this option is not available for your account",
+  "@fundExchangeErrorRcpPo404": {
+    "description": "bb-exchange errorMsgRcpPo404"
+  },
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE Not Available",
+  "@fundExchangeErrorTitleRcpPosinpe404": {
+    "description": "bb-exchange errorTitleRcpPosinpe404"
+  },
+  "fundExchangeErrorRcpPosinpe404": "To access this funding option, your phone number must be registered with the SINPE network in Costa Rica.",
+  "@fundExchangeErrorRcpPosinpe404": {
+    "description": "bb-exchange errorMsgRcpPosinpe404"
+  },
+  "fundExchangeErrorTitleOrdKyc400": "KYC Requirements Missing",
+  "@fundExchangeErrorTitleOrdKyc400": {
+    "description": "bb-exchange errorTitleOrdKyc400"
+  },
+  "fundExchangeErrorOrdKyc400": "You do not have the KYC requirements for this action: {missingFields}",
+  "@fundExchangeErrorOrdKyc400": {
+    "description": "bb-exchange errorMsgOrdKyc400",
+    "placeholders": {
+      "missingFields": {
+        "type": "String"
+      }
+    }
+  },
+  "fundExchangeErrorTitleOrdCop400": "Invalid COP Funding Data",
+  "@fundExchangeErrorTitleOrdCop400": {
+    "description": "bb-exchange errorTitleOrdCop400"
+  },
+  "fundExchangeErrorOrdCop400": "Invalid request data for COP funding: {error}",
+  "@fundExchangeErrorOrdCop400": {
+    "description": "bb-exchange errorMsgOrdCop400",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fundExchangeErrorTitleOrdCsrcp400": "Virtual Payment Not Activated",
+  "@fundExchangeErrorTitleOrdCsrcp400": {
+    "description": "bb-exchange errorTitleOrdCsrcp400"
+  },
+  "fundExchangeErrorOrdCsrcp400": "Please activate virtual payment option for the SEPA recipient with IBAN: {iban}",
+  "@fundExchangeErrorOrdCsrcp400": {
+    "description": "bb-exchange errorMsgOrdCsrcp400",
+    "placeholders": {
+      "iban": {
+        "type": "String"
+      }
+    }
+  },
+  "fundExchangeErrorTitleRcp400": "Invalid Request",
+  "@fundExchangeErrorTitleRcp400": {
+    "description": "bb-exchange errorTitleRcp400"
+  },
+  "fundExchangeErrorRcp400": "Invalid request",
+  "@fundExchangeErrorRcp400": {
+    "description": "bb-exchange errorMsgRcp400"
+  },
+  "fundExchangeErrorFetchingBankCodes": "Error fetching bank codes. Please try again later.",
+  "@fundExchangeErrorFetchingBankCodes": {
+    "description": "bb-exchange FundingCubit._loadBankCodesCopBitso empty-list error"
+  },
   "fundExchangeSinpeDescriptionBold": "it will be rejected.",
   "@fundExchangeSinpeDescriptionBold": {
     "description": "Bold text warning that payment from wrong number will be rejected"

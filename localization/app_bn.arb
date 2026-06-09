@@ -8295,6 +8295,21 @@
     "description": "Title for Tor proxy port settings"
   },
   "fundExchangeErrorLoadingDetails": "এই মুহূর্তে পেমেন্ট বিবরণ লোড করা যায়নি। ফিরে যান এবং পুনরায় চেষ্টা করুন, অন্য কোনো পেমেন্ট পদ্ধতি বেছে নিন বা পরে ফিরে আসুন।",
+    "fundExchangeErrorTitleOrdPo404": "পেমেন্ট অপশন অনুপলব্ধ",
+  "fundExchangeErrorTitleRcpPo404": "পেমেন্ট অপশন উপলব্ধ নেই",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE উপলব্ধ নেই",
+  "fundExchangeErrorTitleOrdKyc400": "KYC প্রয়োজনীয়তা অনুপস্থিত",
+  "fundExchangeErrorOrdKyc400": "এই কাজের জন্য আপনার প্রয়োজনীয় KYC প্রয়োজনীয়তা নেই: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "অবৈধ COP ফান্ডিং ডেটা",
+  "fundExchangeErrorOrdCop400": "COP ফান্ডিংয়ের জন্য অবৈধ অনুরোধ ডেটা: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "ভার্চুয়াল পেমেন্ট সক্রিয় নয়",
+  "fundExchangeErrorOrdCsrcp400": "অনুগ্রহ করে IBAN: {iban} সহ SEPA প্রাপকের জন্য ভার্চুয়াল পেমেন্ট অপশন সক্রিয় করুন",
+  "fundExchangeErrorTitleRcp400": "অবৈধ অনুরোধ",
+  "fundExchangeErrorRcp400": "অবৈধ অনুরোধ",
+"fundExchangeErrorOrdPo404": "কোনো পেমেন্ট অপশন উপলব্ধ নেই",
+  "fundExchangeErrorRcpPo404": "এই ফান্ডিং অপশনে অ্যাক্সেস করার জন্য আপনার প্রয়োজনীয় অনুমতি নেই। হয় আপনার KYC অপর্যাপ্ত, নয়তো এই অপশন আপনার অ্যাকাউন্টের জন্য উপলব্ধ নয়",
+  "fundExchangeErrorRcpPosinpe404": "এই ফান্ডিং অপশনে অ্যাক্সেস করতে, আপনার ফোন নম্বর কোস্টা রিকার SINPE নেটওয়ার্কে নিবন্ধিত থাকতে হবে।",
+  "fundExchangeErrorFetchingBankCodes": "ব্যাংক কোড আনতে ত্রুটি হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

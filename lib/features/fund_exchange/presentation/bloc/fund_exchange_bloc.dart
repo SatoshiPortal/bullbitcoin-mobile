@@ -83,6 +83,10 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
         ListFundingInstitutionsQuery(jurisdictionCode: event.jurisdiction.code),
       );
 
+      if (result.institutions.isEmpty) {
+        throw const FetchInstitutionsFailed.emptyList();
+      }
+
       emit(state.copyWith(fundingInstitutions: result.institutions));
     } on FundExchangeApplicationError catch (e) {
       emit(
@@ -245,6 +249,12 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     FundExchangeFundingDetailsErrorCleared event,
     Emitter<FundExchangeState> emit,
   ) async {
-    emit(state.copyWith(getExchangeFundingDetailsException: null));
+    emit(
+      state.copyWith(
+        getExchangeFundingDetailsException: null,
+        listFundingInstitutionsException: null,
+        fundingInstitutions: event.resetInstitutions ? null : state.fundingInstitutions,
+      ),
+    );
   }
 }
