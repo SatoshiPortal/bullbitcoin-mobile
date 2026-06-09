@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/ledger/domain/repositories/ledger_device_reposito
 class ScanLedgerDevicesUsecase {
   final LedgerDeviceRepository _repository;
 
-  ScanLedgerDevicesUsecase({required LedgerDeviceRepository repository})
-    : _repository = repository;
+  ScanLedgerDevicesUsecase({required this._repository});
 
   Future<List<LedgerDeviceEntity>> execute({
     SignerDeviceEntity? deviceType,

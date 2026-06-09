@@ -15,16 +15,12 @@ class CreateReceiveSwapUsecase {
   final LabelsFacade _labelsFacade;
 
   CreateReceiveSwapUsecase({
-    required WalletRepository walletRepository,
-    required BoltzSwapRepository swapRepository,
-    required SeedRepository seedRepository,
-    required GetReceiveAddressUsecase getReceiveAddressUsecase,
-    required LabelsFacade labelsFacade,
-  }) : _walletRepository = walletRepository,
-       _swapRepository = swapRepository,
-       _seedRepository = seedRepository,
-       _getReceiveAddressUsecase = getReceiveAddressUsecase,
-       _labelsFacade = labelsFacade;
+    required this._walletRepository,
+    required this._swapRepository,
+    required this._seedRepository,
+    required this._getReceiveAddressUsecase,
+    required this._labelsFacade,
+  });
 
   Future<LnReceiveSwap> execute({
     required String walletId,

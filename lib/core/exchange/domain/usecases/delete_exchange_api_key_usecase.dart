@@ -8,10 +8,9 @@ class DeleteExchangeApiKeyUsecase {
   final SettingsRepository _settingsRepository;
 
   DeleteExchangeApiKeyUsecase({
-    required ExchangeApiKeyRepository exchangeApiKeyRepository,
-    required SettingsRepository settingsRepository,
-  }) : _exchangeApiKeyRepository = exchangeApiKeyRepository,
-       _settingsRepository = settingsRepository;
+    required this._exchangeApiKeyRepository,
+    required this._settingsRepository,
+  });
 
   Future<void> execute() async {
     try {

@@ -13,14 +13,11 @@ class ImportWalletUsecase {
   final WalletRepository _wallet;
 
   ImportWalletUsecase({
-    required CheckDuplicateMnemonicUsecase checkDuplicateMnemonicUsecase,
-    required SeedRepository seedRepository,
-    required SettingsRepository settingsRepository,
+    required this._checkDuplicateMnemonicUsecase,
+    required this._seedRepository,
+    required this._settingsRepository,
     required WalletRepository walletRepository,
-  }) : _checkDuplicateMnemonicUsecase = checkDuplicateMnemonicUsecase,
-       _seedRepository = seedRepository,
-       _settingsRepository = settingsRepository,
-       _wallet = walletRepository;
+  }) : _wallet = walletRepository;
 
   Future<Wallet> execute({
     required List<String> mnemonicWords,

@@ -9,9 +9,8 @@ class BroadcastBitcoinTransactionUsecase {
 
   BroadcastBitcoinTransactionUsecase({
     required BitcoinBlockchainRepository bitcoinBlockchainRepository,
-    required SettingsRepository settingsRepository,
-  }) : _bitcoinBlockchain = bitcoinBlockchainRepository,
-       _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  }) : _bitcoinBlockchain = bitcoinBlockchainRepository;
 
   Future<String> execute(String transaction, {required bool isPsbt}) async {
     try {

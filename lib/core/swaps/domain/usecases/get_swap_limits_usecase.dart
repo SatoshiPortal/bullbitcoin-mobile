@@ -6,8 +6,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class GetSwapLimitsUsecase {
   final BoltzSwapRepository _boltzSwapRepository;
 
-  GetSwapLimitsUsecase({required BoltzSwapRepository boltzSwapRepository})
-    : _boltzSwapRepository = boltzSwapRepository;
+  GetSwapLimitsUsecase({required this._boltzSwapRepository});
 
   Future<(SwapLimits, SwapFees)> execute({
     required SwapType type,

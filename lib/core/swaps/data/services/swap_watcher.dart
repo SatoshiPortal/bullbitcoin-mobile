@@ -23,14 +23,11 @@ class SwapWatcherService {
   final Set<String> _processingSwapIds = {};
 
   SwapWatcherService({
-    required BoltzSwapRepository boltzRepo,
-    required WalletAddressRepository walletAddressRepository,
-    required FeesRepository feesRepository,
-    required SettingsRepository settingsRepository,
-  }) : _boltzRepo = boltzRepo,
-       _walletAddressRepository = walletAddressRepository,
-       _feesRepository = feesRepository,
-       _settingsRepository = settingsRepository {
+    required this._boltzRepo,
+    required this._walletAddressRepository,
+    required this._feesRepository,
+    required this._settingsRepository,
+  }) {
     unawaited(startWatching());
   }
 

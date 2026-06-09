@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 class GetSwapsUsecase {
   final BoltzSwapRepository _boltzSwapRepository;
 
-  GetSwapsUsecase({required BoltzSwapRepository boltzSwapRepository})
-    : _boltzSwapRepository = boltzSwapRepository;
+  GetSwapsUsecase({required this._boltzSwapRepository});
 
   Future<List<Swap>> execute({String? walletId}) async {
     try {

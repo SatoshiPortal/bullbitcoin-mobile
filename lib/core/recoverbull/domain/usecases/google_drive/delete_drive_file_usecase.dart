@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_reposito
 class DeleteDriveFileUsecase {
   final GoogleDriveRepository _driveRepository;
 
-  DeleteDriveFileUsecase({required GoogleDriveRepository driveRepository})
-    : _driveRepository = driveRepository;
+  DeleteDriveFileUsecase({required this._driveRepository});
 
   Future<void> execute(String fileId) async {
     try {

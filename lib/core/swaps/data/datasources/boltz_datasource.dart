@@ -29,9 +29,8 @@ class BoltzDatasource {
 
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
-    required BoltzStorageDatasource boltzStore,
-  }) : _baseUrl = url,
-       _boltzStore = boltzStore {
+    required this._boltzStore,
+  }) : _baseUrl = url {
     _httpsUrl = 'https://$_baseUrl';
     _initializeBoltzWebSocket();
   }

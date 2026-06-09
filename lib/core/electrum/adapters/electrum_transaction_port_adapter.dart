@@ -21,12 +21,10 @@ class ElectrumTransactionPortAdapter implements TransactionPort {
   final EnvironmentPort _environmentPort;
 
   const ElectrumTransactionPortAdapter({
-    required ElectrumServersPort serversPort,
-    required ElectrumTransactionRepository repository,
-    required EnvironmentPort environmentPort,
-  }) : _serversPort = serversPort,
-       _repository = repository,
-       _environmentPort = environmentPort;
+    required this._serversPort,
+    required this._repository,
+    required this._environmentPort,
+  });
 
   @override
   Future<Transaction> fetch({required String txid}) async {

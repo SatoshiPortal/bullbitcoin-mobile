@@ -2,8 +2,7 @@ import 'package:bb_mobile/features/wizard/domain/entity/wizard_choices.dart';
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 
 class ReadPendingWizardChoicesUsecase {
-  ReadPendingWizardChoicesUsecase({required WizardRepository repository})
-    : _repository = repository;
+  ReadPendingWizardChoicesUsecase({required this._repository});
 
   final WizardRepository _repository;
 

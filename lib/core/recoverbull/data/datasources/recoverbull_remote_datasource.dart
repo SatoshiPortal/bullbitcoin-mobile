@@ -10,10 +10,9 @@ class RecoverBullRemoteDatasource {
   final TorDatasource _torDatasource;
 
   RecoverBullRemoteDatasource({
-    required RecoverbullSettingsDatasource recoverbullSettingsDatasource,
-    required TorDatasource torDatasource,
-  }) : _recoverbullSettingsDatasource = recoverbullSettingsDatasource,
-       _torDatasource = torDatasource;
+    required this._recoverbullSettingsDatasource,
+    required this._torDatasource,
+  });
 
   Future<void> info({TorProxyConfig? externalProxy}) async {
     final client = _torDatasource.httpClient(externalProxy: externalProxy);

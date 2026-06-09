@@ -5,8 +5,8 @@ class SignBitcoinTxUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
 
   SignBitcoinTxUsecase({
-    required BitcoinWalletRepository bitcoinWalletRepository,
-  }) : _bitcoinWalletRepository = bitcoinWalletRepository;
+    required this._bitcoinWalletRepository,
+  });
   Future<({String signedPsbt, int txSize})> execute({
     required String psbt,
     required String walletId,

@@ -7,10 +7,9 @@ class DeleteSeedUsecase {
   final WalletRepository _walletRepository;
 
   DeleteSeedUsecase({
-    required SeedRepository seedRepository,
-    required WalletRepository walletRepository,
-  }) : _seedRepository = seedRepository,
-       _walletRepository = walletRepository;
+    required this._seedRepository,
+    required this._walletRepository,
+  });
 
   Future<void> execute(String fingerprint) async {
     try {

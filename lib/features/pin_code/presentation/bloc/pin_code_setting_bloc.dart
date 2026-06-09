@@ -15,17 +15,13 @@ part 'pin_code_setting_state.dart';
 class PinCodeSettingBloc
     extends Bloc<PinCodeSettingEvent, PinCodeSettingState> {
   PinCodeSettingBloc({
-    required SetPinCodeUsecase setPinCodeUsecase,
-    required DeletePinCodeUsecase deletePinCodeUsecase,
-    required IsPinCodeSetUsecase isPinCodeSetUsecase,
-    required CheckBackupUsecase checkBackupUsecase,
+    required this._setPinCodeUsecase,
+    required this._deletePinCodeUsecase,
+    required this._isPinCodeSetUsecase,
+    required this._checkBackupUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
-  }) : _setPinCodeUsecase = setPinCodeUsecase,
-       _deletePinCodeUsecase = deletePinCodeUsecase,
-       _isPinCodeSetUsecase = isPinCodeSetUsecase,
-       _checkBackupUsecase = checkBackupUsecase,
-       super(
+  }) : super(
          PinCodeSettingState(
            choosePinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
            confirmPinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),

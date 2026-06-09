@@ -5,8 +5,8 @@ class CalculateBitcoinAbsoluteFeesUsecase {
   final BitcoinWalletRepository _bitcoinWalletRepository;
 
   CalculateBitcoinAbsoluteFeesUsecase({
-    required BitcoinWalletRepository bitcoinWalletRepository,
-  }) : _bitcoinWalletRepository = bitcoinWalletRepository;
+    required this._bitcoinWalletRepository,
+  });
 
   /// Returns (amount, absFees)
   Future<int> execute({required String psbt}) async {

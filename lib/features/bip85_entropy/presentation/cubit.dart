@@ -25,25 +25,14 @@ class Bip85EntropyCubit extends Cubit<Bip85EntropyState> {
   final ActivateBip85DerivationUsecase _activateBip85DerivationUsecase;
 
   Bip85EntropyCubit({
-    required FetchAllBip85DerivationsUsecase fetchAllBip85DerivationsUsecase,
-    required DeriveNextBip85MnemonicFromDefaultWalletUsecase
-    deriveNextBip85MnemonicFromDefaultWalletUsecase,
-    required DeriveNextBip85HexFromDefaultWalletUsecase
-    deriveNextBip85HexFromDefaultWalletUsecase,
-    required GetDefaultSeedUsecase getDefaultSeedUsecase,
-    required AliasBip85DerivationUsecase aliasBip85DerivationUsecase,
-    required RevokeBip85DerivationUsecase revokeBip85DerivationUsecase,
-    required ActivateBip85DerivationUsecase activateBip85DerivationUsecase,
-  }) : _fetchAllBip85DerivationsUsecase = fetchAllBip85DerivationsUsecase,
-       _deriveNextBip85MnemonicFromDefaultWalletUsecase =
-           deriveNextBip85MnemonicFromDefaultWalletUsecase,
-       _deriveNextBip85HexFromDefaultWalletUsecase =
-           deriveNextBip85HexFromDefaultWalletUsecase,
-       _getDefaultSeedUsecase = getDefaultSeedUsecase,
-       _aliasBip85DerivationUsecase = aliasBip85DerivationUsecase,
-       _revokeBip85DerivationUsecase = revokeBip85DerivationUsecase,
-       _activateBip85DerivationUsecase = activateBip85DerivationUsecase,
-       super(const Bip85EntropyState()) {
+    required this._fetchAllBip85DerivationsUsecase,
+    required this._deriveNextBip85MnemonicFromDefaultWalletUsecase,
+    required this._deriveNextBip85HexFromDefaultWalletUsecase,
+    required this._getDefaultSeedUsecase,
+    required this._aliasBip85DerivationUsecase,
+    required this._revokeBip85DerivationUsecase,
+    required this._activateBip85DerivationUsecase,
+  }) : super(const Bip85EntropyState()) {
     init();
   }
 

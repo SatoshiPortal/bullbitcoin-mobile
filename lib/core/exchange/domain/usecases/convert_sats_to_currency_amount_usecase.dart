@@ -9,12 +9,10 @@ class ConvertSatsToCurrencyAmountUsecase {
   final SettingsRepository _settingsRepository;
 
   ConvertSatsToCurrencyAmountUsecase({
-    required ExchangeRateRepository mainnetExchangeRateRepository,
-    required ExchangeRateRepository testnetExchangeRateRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetExchangeRateRepository = mainnetExchangeRateRepository,
-       _testnetExchangeRateRepository = testnetExchangeRateRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetExchangeRateRepository,
+    required this._testnetExchangeRateRepository,
+    required this._settingsRepository,
+  });
 
   Future<double> execute({BigInt? amountSat, String? currencyCode}) async {
     try {

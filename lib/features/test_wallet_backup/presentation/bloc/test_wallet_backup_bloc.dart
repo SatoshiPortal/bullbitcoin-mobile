@@ -14,16 +14,10 @@ part 'test_wallet_backup_state.dart';
 class TestWalletBackupBloc
     extends Bloc<TestWalletBackupEvent, TestWalletBackupState> {
   TestWalletBackupBloc({
-    required CompletePhysicalBackupVerificationUsecase
-    completePhysicalBackupVerificationUsecase,
-    required LoadWalletsForNetworkUsecase loadWalletsForNetworkUsecase,
-    required GetMnemonicFromFingerprintUsecase
-    getMnemonicFromFingerprintUsecase,
-  }) : _completePhysicalBackupVerificationUsecase =
-           completePhysicalBackupVerificationUsecase,
-       _loadWalletsForNetworkUsecase = loadWalletsForNetworkUsecase,
-       _getMnemonicFromFingerprintUsecase = getMnemonicFromFingerprintUsecase,
-       super(const TestWalletBackupState()) {
+    required this._completePhysicalBackupVerificationUsecase,
+    required this._loadWalletsForNetworkUsecase,
+    required this._getMnemonicFromFingerprintUsecase,
+  }) : super(const TestWalletBackupState()) {
     on<OnWordsSelected>(_onWordsSelected);
     on<VerifyPhysicalBackup>(_verifyPhysicalBackup);
     on<StartPhysicalBackupVerification>((event, emit) {});

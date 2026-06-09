@@ -16,13 +16,10 @@ class LedgerOperationCubit extends Cubit<LedgerOperationState> {
   final SignerDeviceEntity? _requestedDeviceType;
 
   LedgerOperationCubit({
-    required ScanLedgerDevicesUsecase scanLedgerDevicesUsecase,
-    required ConnectLedgerDeviceUsecase connectLedgerDeviceUsecase,
-    SignerDeviceEntity? requestedDeviceType,
-  }) : _scanLedgerDevicesUsecase = scanLedgerDevicesUsecase,
-       _connectLedgerDeviceUsecase = connectLedgerDeviceUsecase,
-       _repository = locator<LedgerDeviceRepository>(),
-       _requestedDeviceType = requestedDeviceType,
+    required this._scanLedgerDevicesUsecase,
+    required this._connectLedgerDeviceUsecase,
+    this._requestedDeviceType,
+  }) : _repository = locator<LedgerDeviceRepository>(),
        super(const LedgerOperationState());
 
   LedgerDeviceEntity? get connectedDevice => state.connectedDevice;

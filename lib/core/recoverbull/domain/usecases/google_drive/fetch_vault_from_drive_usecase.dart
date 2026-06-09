@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/encrypted_vault.dart';
 class FetchVaultFromDriveUsecase {
   final GoogleDriveRepository _driveRepository;
 
-  FetchVaultFromDriveUsecase({required GoogleDriveRepository driveRepository})
-    : _driveRepository = driveRepository;
+  FetchVaultFromDriveUsecase({required this._driveRepository});
 
   Future<EncryptedVault> execute(DriveFileMetadata driveFileMetadata) async {
     try {

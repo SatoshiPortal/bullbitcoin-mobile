@@ -7,7 +7,7 @@ import 'package:drift/drift.dart';
 class LocalPayjoinDatasource {
   final SqliteDatabase _db;
 
-  LocalPayjoinDatasource({required SqliteDatabase db}) : _db = db;
+  LocalPayjoinDatasource({required this._db});
 
   Future<void> storeReceiver(PayjoinReceiverModel receiver) async {
     try {

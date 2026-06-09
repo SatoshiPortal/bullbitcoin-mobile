@@ -17,13 +17,10 @@ class PriceHistoryLoadException implements Exception {
 
 class PriceChartCubit extends Cubit<PriceChartState> {
   PriceChartCubit({
-    required GetPriceHistoryUsecase getPriceHistoryUsecase,
-    required RefreshPriceHistoryUsecase refreshPriceHistoryUsecase,
-    required GetSettingsUsecase getSettingsUsecase,
-  }) : _getPriceHistoryUsecase = getPriceHistoryUsecase,
-       _refreshPriceHistoryUsecase = refreshPriceHistoryUsecase,
-       _getSettingsUsecase = getSettingsUsecase,
-       super(const PriceChartState());
+    required this._getPriceHistoryUsecase,
+    required this._refreshPriceHistoryUsecase,
+    required this._getSettingsUsecase,
+  }) : super(const PriceChartState());
 
   final GetPriceHistoryUsecase _getPriceHistoryUsecase;
   final RefreshPriceHistoryUsecase _refreshPriceHistoryUsecase;

@@ -30,26 +30,17 @@ class CheckAllServiceStatusUsecase {
   final TorStatusUsecase _torStatusUsecase;
 
   CheckAllServiceStatusUsecase({
-    required ElectrumConnectivityPort electrumConnectivityPort,
-    required BoltzSwapRepository boltzSwapRepository,
-    required ExchangeRateRepository exchangeRateRepository,
-    required PayjoinRepository payjoinRepository,
-    required FeesRepository feesRepository,
-    required RecoverBullRepository recoverBullRepository,
-    required WalletRepository walletRepository,
-    required SettingsRepository settingsRepository,
-    required FetchArkSecretUsecase fetchArkSecretUsecase,
-    required TorStatusUsecase torStatusUsecase,
-  }) : _electrumConnectivityPort = electrumConnectivityPort,
-       _boltzSwapRepository = boltzSwapRepository,
-       _exchangeRateRepository = exchangeRateRepository,
-       _payjoinRepository = payjoinRepository,
-       _feesRepository = feesRepository,
-       _recoverBullRepository = recoverBullRepository,
-       _walletRepository = walletRepository,
-       _settingsRepository = settingsRepository,
-       _fetchArkSecretUsecase = fetchArkSecretUsecase,
-       _torStatusUsecase = torStatusUsecase;
+    required this._electrumConnectivityPort,
+    required this._boltzSwapRepository,
+    required this._exchangeRateRepository,
+    required this._payjoinRepository,
+    required this._feesRepository,
+    required this._recoverBullRepository,
+    required this._walletRepository,
+    required this._settingsRepository,
+    required this._fetchArkSecretUsecase,
+    required this._torStatusUsecase,
+  });
 
   Future<AllServicesStatus> execute({required Network network}) async {
     final now = DateTime.now();

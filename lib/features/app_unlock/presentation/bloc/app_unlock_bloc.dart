@@ -13,15 +13,12 @@ part 'app_unlock_state.dart';
 
 class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
   AppUnlockBloc({
-    required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
-    required GetLatestUnlockAttemptUsecase getLatestUnlockAttemptUsecase,
-    required AttemptUnlockWithPinCodeUsecase attemptUnlockWithPinCodeUsecase,
+    required this._checkPinCodeExistsUsecase,
+    required this._getLatestUnlockAttemptUsecase,
+    required this._attemptUnlockWithPinCodeUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
-  }) : _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
-       _getLatestUnlockAttemptUsecase = getLatestUnlockAttemptUsecase,
-       _attemptUnlockWithPinCodeUsecase = attemptUnlockWithPinCodeUsecase,
-       super(
+  }) : super(
          AppUnlockState(
            keyboardNumbers: List.generate(10, (i) => i)..shuffle(),
            minPinCodeLength: minPinCodeLength,

@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/utils/logger.dart';
 class GetAllSeedsUsecase {
   final SeedRepository _seedRepository;
 
-  GetAllSeedsUsecase({required SeedRepository seedRepository})
-    : _seedRepository = seedRepository;
+  GetAllSeedsUsecase({required this._seedRepository});
 
   Future<List<MnemonicSeed>> execute() async {
     try {

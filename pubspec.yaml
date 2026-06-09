@@ -4,7 +4,8 @@ publish_to: "none"
 version: 6.11.0+185
 
 environment:
-  sdk: ">=3.10.0 <4.0.0"
+  sdk: "3.12.1"
+  flutter: "3.44.1"
 dependencies:
   flutter:
     sdk: flutter
@@ -99,7 +100,7 @@ dependencies:
   drift_flutter: ^0.2.7
   package_info_plus: ^9.0.0
   share_plus: ^12.0.1
-  font_awesome_flutter: ^10.12.0
+  font_awesome_flutter: ^11.0.0
   bolt11_decoder:
     git:
       url: https://github.com/fusion44/dart_bolt11_decoder

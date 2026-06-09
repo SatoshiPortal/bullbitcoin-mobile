@@ -6,8 +6,7 @@ class ExportDriveFileUsecase {
   final GoogleDriveRepository _driveRepository;
   final _fileSystemRepository = FileSystemRepository();
 
-  ExportDriveFileUsecase({required GoogleDriveRepository driveRepository})
-    : _driveRepository = driveRepository;
+  ExportDriveFileUsecase({required this._driveRepository});
 
   Future<void> execute(DriveFileMetadata fileMetadata) async {
     try {

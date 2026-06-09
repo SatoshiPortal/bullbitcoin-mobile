@@ -3,8 +3,7 @@ import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository.dart'
 class UpdatePaidChainSwapUsecase {
   final BoltzSwapRepository _swapRepository;
 
-  UpdatePaidChainSwapUsecase({required BoltzSwapRepository swapRepository})
-    : _swapRepository = swapRepository;
+  UpdatePaidChainSwapUsecase({required this._swapRepository});
 
   Future<void> execute({required String txid, required String swapId}) async {
     try {

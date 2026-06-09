@@ -19,14 +19,11 @@ class RecoverBullGoogleDriveBloc
 
   RecoverBullGoogleDriveBloc({
     required this.flow,
-    required FetchAllDriveFileMetadataUsecase fetchAllDriveFileMetadataUsecase,
+    required this._fetchAllDriveFileMetadataUsecase,
     required FetchVaultFromDriveUsecase fetchDriveBackupUsecase,
-    required DeleteDriveFileUsecase deleteDriveFileUsecase,
-    required ExportDriveFileUsecase exportDriveFileUsecase,
-  }) : _fetchAllDriveFileMetadataUsecase = fetchAllDriveFileMetadataUsecase,
-       _fetchDriveVaultUsecase = fetchDriveBackupUsecase,
-       _deleteDriveFileUsecase = deleteDriveFileUsecase,
-       _exportDriveFileUsecase = exportDriveFileUsecase,
+    required this._deleteDriveFileUsecase,
+    required this._exportDriveFileUsecase,
+  }) : _fetchDriveVaultUsecase = fetchDriveBackupUsecase,
        super(const RecoverBullGoogleDriveState()) {
     on<OnFetchDriveVaults>(_onFetchDriveVaults);
     on<OnSelectDriveFileMetadata>(_onSelectDriveFileMetadata);

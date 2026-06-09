@@ -6,7 +6,7 @@ import 'package:drift/drift.dart';
 class SettingsDatasource {
   final SqliteDatabase _sqlite;
 
-  SettingsDatasource({required SqliteDatabase sqlite}) : _sqlite = sqlite;
+  SettingsDatasource({required this._sqlite});
 
   Future<void> store(SettingsModel model) async {
     await _sqlite.into(_sqlite.settings).insert(model.toSqlite());

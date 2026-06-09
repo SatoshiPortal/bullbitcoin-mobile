@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class WatchStartedWalletSyncsUsecase {
   final WalletRepository _walletRepository;
 
-  WatchStartedWalletSyncsUsecase({required WalletRepository walletRepository})
-    : _walletRepository = walletRepository;
+  WatchStartedWalletSyncsUsecase({required this._walletRepository});
 
   Stream<Wallet> execute({String? walletId}) {
     try {

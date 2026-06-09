@@ -18,11 +18,10 @@ class BitcoinWalletRepository {
   final BdkWalletDatasource _bdkWallet;
 
   BitcoinWalletRepository({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required this._walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
-  }) : _walletMetadataDatasource = walletMetadataDatasource,
-       _seed = seedDatasource,
+  }) : _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource;
 
   Future<String> buildPsbt({

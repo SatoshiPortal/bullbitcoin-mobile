@@ -8,10 +8,9 @@ class LabelExchangeOrdersUsecase {
   final ListAllOrdersUsecase _listAllOrdersUsecase;
 
   LabelExchangeOrdersUsecase({
-    required LabelsFacade labelsFacade,
-    required ListAllOrdersUsecase listAllOrdersUsecase,
-  }) : _labelsFacade = labelsFacade,
-       _listAllOrdersUsecase = listAllOrdersUsecase;
+    required this._labelsFacade,
+    required this._listAllOrdersUsecase,
+  });
 
   Future<void> execute() async {
     try {

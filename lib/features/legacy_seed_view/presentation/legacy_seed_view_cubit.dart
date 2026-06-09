@@ -7,9 +7,8 @@ part 'legacy_seed_view_cubit.freezed.dart';
 part 'legacy_seed_view_state.dart';
 
 class LegacySeedViewCubit extends Cubit<LegacySeedViewState> {
-  LegacySeedViewCubit({required GetOldSeedsUsecase getOldSeedsUsecase})
-    : _getOldSeedsUsecase = getOldSeedsUsecase,
-      super(const LegacySeedViewState());
+  LegacySeedViewCubit({required this._getOldSeedsUsecase})
+    : super(const LegacySeedViewState());
 
   final GetOldSeedsUsecase _getOldSeedsUsecase;
 

@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.
 class EnvironmentAdapter implements EnvironmentPort {
   final SettingsRepository _settingsRepository;
 
-  EnvironmentAdapter({required SettingsRepository settingsRepository})
-    : _settingsRepository = settingsRepository;
+  EnvironmentAdapter({required this._settingsRepository});
 
   @override
   Future<ElectrumEnvironment> getEnvironment() async {

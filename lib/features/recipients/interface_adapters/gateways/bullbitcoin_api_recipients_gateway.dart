@@ -12,8 +12,7 @@ class BullbitcoinApiRecipientsGateway implements RecipientsGatewayPort {
   final Dio _authenticatedApiClient;
   final String _recipientsPath = '/ak/api-recipients';
 
-  BullbitcoinApiRecipientsGateway({required Dio authenticatedApiClient})
-    : _authenticatedApiClient = authenticatedApiClient;
+  BullbitcoinApiRecipientsGateway({required this._authenticatedApiClient});
 
   // These methods ignore `isTestnet` because this instance is bound to one environment
   // and the Dio client is already authenticated via interceptor.

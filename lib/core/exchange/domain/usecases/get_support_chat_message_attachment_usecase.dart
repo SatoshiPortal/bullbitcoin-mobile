@@ -9,12 +9,10 @@ class GetSupportChatMessageAttachmentUsecase {
   final SettingsRepository _settingsRepository;
 
   GetSupportChatMessageAttachmentUsecase({
-    required ExchangeSupportChatRepository mainnetRepository,
-    required ExchangeSupportChatRepository testnetRepository,
-    required SettingsRepository settingsRepository,
-  }) : _mainnetRepository = mainnetRepository,
-       _testnetRepository = testnetRepository,
-       _settingsRepository = settingsRepository;
+    required this._mainnetRepository,
+    required this._testnetRepository,
+    required this._settingsRepository,
+  });
 
   Future<SupportChatMessageAttachment> execute(String attachmentId) async {
     try {

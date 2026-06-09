@@ -6,8 +6,8 @@ class GetAddressListUsecase {
   final WalletAddressRepository _walletAddressRepository;
 
   const GetAddressListUsecase({
-    required WalletAddressRepository walletAddressRepository,
-  }) : _walletAddressRepository = walletAddressRepository;
+    required this._walletAddressRepository,
+  });
 
   Future<List<WalletAddress>> execute({
     required String walletId,

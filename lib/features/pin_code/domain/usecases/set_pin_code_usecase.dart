@@ -3,8 +3,7 @@ import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repositor
 class SetPinCodeUsecase {
   final PinCodeRepository _pinCodeRepository;
 
-  SetPinCodeUsecase({required PinCodeRepository pinCodeRepository})
-    : _pinCodeRepository = pinCodeRepository;
+  SetPinCodeUsecase({required this._pinCodeRepository});
 
   Future<void> execute(String pinCode) async {
     await _pinCodeRepository.setPinCode(pinCode);

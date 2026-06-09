@@ -1,8 +1,7 @@
 import 'package:bb_mobile/features/wizard/domain/repository/wizard_repository.dart';
 
 class IsWizardCompleteUsecase {
-  IsWizardCompleteUsecase({required WizardRepository repository})
-    : _repository = repository;
+  IsWizardCompleteUsecase({required this._repository});
 
   final WizardRepository _repository;
 

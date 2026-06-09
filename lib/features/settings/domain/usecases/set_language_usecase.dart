@@ -5,8 +5,8 @@ class SetLanguageUsecase {
   final SettingsRepository _settingsRepository;
 
   SetLanguageUsecase({
-    required SettingsRepository settingsRepository,
-  }) : _settingsRepository = settingsRepository;
+    required this._settingsRepository,
+  });
 
   Future<void> execute(Language language) async {
     await _settingsRepository.setLanguage(language);

@@ -32,10 +32,9 @@ class GetRecipientsUsecase {
   final SettingsRepository _settingsRepository;
 
   GetRecipientsUsecase({
-    required RecipientsGatewayPort recipientsGateway,
-    required SettingsRepository settingsRepository,
-  }) : _recipientsGateway = recipientsGateway,
-       _settingsRepository = settingsRepository;
+    required this._recipientsGateway,
+    required this._settingsRepository,
+  });
 
   Future<GetRecipientsResult> execute(GetRecipientsParams params) async {
     final settings = await _settingsRepository.fetch();

@@ -8,10 +8,9 @@ class GetDefaultSeedUsecase {
   final SeedRepository _seedRepository;
 
   GetDefaultSeedUsecase({
-    required WalletRepository walletRepository,
-    required SeedRepository seedRepository,
-  }) : _walletRepository = walletRepository,
-       _seedRepository = seedRepository;
+    required this._walletRepository,
+    required this._seedRepository,
+  });
 
   Future<Seed> execute() async {
     try {
