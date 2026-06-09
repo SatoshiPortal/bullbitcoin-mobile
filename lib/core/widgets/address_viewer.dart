@@ -107,14 +107,19 @@ class AddressViewer extends StatelessWidget {
     final builder = locator<MempoolUrlBuilder>();
     final parsed = await Satoshifier.tryParse(data);
     return switch (parsed) {
-      BitcoinAddress(:final address, :final network) =>
-        builder.bitcoinAddress(address, isTestnet: network.isTestnet),
-      LiquidAddress(:final address, :final network) =>
-        builder.liquidAddress(address, isTestnet: network.isTestnet),
+      BitcoinAddress(:final address, :final network) => builder.bitcoinAddress(
+        address,
+        isTestnet: network.isTestnet,
+      ),
+      LiquidAddress(:final address, :final network) => builder.liquidAddress(
+        address,
+        isTestnet: network.isTestnet,
+      ),
       // BIP21 URI: route by inner network, use the embedded bare address.
-      Bip21(:final address, :final network) => network.isLiquid
-          ? builder.liquidAddress(address, isTestnet: network.isTestnet)
-          : builder.bitcoinAddress(address, isTestnet: network.isTestnet),
+      Bip21(:final address, :final network) =>
+        network.isLiquid
+            ? builder.liquidAddress(address, isTestnet: network.isTestnet)
+            : builder.bitcoinAddress(address, isTestnet: network.isTestnet),
       _ => null,
     };
   }
@@ -169,8 +174,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
     _showUri = _hasBip21;
   }
 
-  String get _activeText =>
-      _showUri ? widget.clipboardText : widget.data;
+  String get _activeText => _showUri ? widget.clipboardText : widget.data;
 
   List<String> _groupsOf(String text) {
     final groups = <String>[];
@@ -245,8 +249,7 @@ class _AddressDetailSheetState extends State<_AddressDetailSheet> {
         TextSpan(
           style: baseStyle,
           children: [
-            if (addressIdx > 0)
-              TextSpan(text: uri.substring(0, addressIdx)),
+            if (addressIdx > 0) TextSpan(text: uri.substring(0, addressIdx)),
             TextSpan(
               text: address,
               style: const TextStyle(fontWeight: FontWeight.w700),

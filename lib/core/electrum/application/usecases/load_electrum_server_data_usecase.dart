@@ -37,20 +37,19 @@ class LoadElectrumServerDataUsecase {
     final environment = await _environmentPort.getEnvironment();
 
     // Fetch servers, settings, and app settings in parallel
-    final (servers, settings, appSettings) =
-        await (
-          _electrumServerRepository.fetchAll(
-            isTestnet: environment.isTestnet,
-            isLiquid: isLiquid,
-          ),
-          _electrumSettingsRepository.fetchByNetwork(
-            ElectrumServerNetwork.fromEnvironment(
-              isTestnet: environment.isTestnet,
-              isLiquid: isLiquid,
-            ),
-          ),
-          _settingsRepository.fetch(),
-        ).wait;
+    final (servers, settings, appSettings) = await (
+      _electrumServerRepository.fetchAll(
+        isTestnet: environment.isTestnet,
+        isLiquid: isLiquid,
+      ),
+      _electrumSettingsRepository.fetchByNetwork(
+        ElectrumServerNetwork.fromEnvironment(
+          isTestnet: environment.isTestnet,
+          isLiquid: isLiquid,
+        ),
+      ),
+      _settingsRepository.fetch(),
+    ).wait;
 
     if (servers.isEmpty) {
       throw Exception('No Electrum servers found');

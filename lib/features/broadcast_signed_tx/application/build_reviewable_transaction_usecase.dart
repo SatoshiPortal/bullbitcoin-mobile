@@ -56,11 +56,10 @@ class BuildReviewableTransactionUsecase {
     );
   }
 
-  TransactionReviewError _mapPortError(TransactionPortError e) =>
-      switch (e) {
-        TransactionPortFetchFailed(:final txid, :final message) =>
-          TransactionReviewError.fetchFailed(txid: txid, message: message),
-        TransactionPortNoServersAvailable(:final network) =>
-          TransactionReviewError.noServersAvailable(network: network),
-      };
+  TransactionReviewError _mapPortError(TransactionPortError e) => switch (e) {
+    TransactionPortFetchFailed(:final txid, :final message) =>
+      TransactionReviewError.fetchFailed(txid: txid, message: message),
+    TransactionPortNoServersAvailable(:final network) =>
+      TransactionReviewError.noServersAvailable(network: network),
+  };
 }

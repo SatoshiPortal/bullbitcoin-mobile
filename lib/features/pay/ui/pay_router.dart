@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/features/pay/presentation/pay_bloc.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_amount_screen.dart';
 import 'package:bb_mobile/features/pay/ui/screens/pay_external_wallet_network_selection_screen.dart';
@@ -34,19 +35,21 @@ class PayRouter {
     path: PayRoute.pay.path,
     name: PayRoute.pay.name,
     builder: (context, state) {
-      return BlocProvider(
-        create: (_) => locator<PayBloc>()..add(const PayEvent.started()),
-        child: BlocListener<PayBloc, PayState>(
-          listenWhen: (previous, current) =>
-              previous is PayRecipientSelectionState &&
-              current is PayAmountInputState,
-          listener: (context, state) {
-            context.pushNamed(
-              PayRoute.payAmount.name,
-              extra: context.read<PayBloc>(),
-            );
-          },
-          child: const PayRecipientScreen(),
+      return StagingExchangeGuard.wrap(
+        BlocProvider(
+          create: (_) => locator<PayBloc>()..add(const PayEvent.started()),
+          child: BlocListener<PayBloc, PayState>(
+            listenWhen: (previous, current) =>
+                previous is PayRecipientSelectionState &&
+                current is PayAmountInputState,
+            listener: (context, state) {
+              context.pushNamed(
+                PayRoute.payAmount.name,
+                extra: context.read<PayBloc>(),
+              );
+            },
+            child: const PayRecipientScreen(),
+          ),
         ),
       );
     },

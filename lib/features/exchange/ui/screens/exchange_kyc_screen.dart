@@ -31,9 +31,7 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
 
     final isTestnet =
         context.read<SettingsCubit>().state.environment == Environment.testnet;
-    _bbKycUrl = isTestnet
-        ? (StagingEnv.kycUrl ?? '')
-        : ApiServiceConstants.bbKycUrl;
+    _bbKycUrl = isTestnet ? StagingEnv.kycUrl : ApiServiceConstants.bbKycUrl;
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -94,14 +92,11 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
           },
           onHttpAuthRequest: isTestnet
               ? (HttpAuthRequest request) {
-                  final username = StagingEnv.basicAuthUsername;
-                  final password = StagingEnv.basicAuthPassword;
-                  if (username == null || password == null) {
-                    request.onCancel();
-                    return;
-                  }
                   request.onProceed(
-                    WebViewCredential(user: username, password: password),
+                    WebViewCredential(
+                      user: StagingEnv.basicAuthUsername,
+                      password: StagingEnv.basicAuthPassword,
+                    ),
                   );
                 }
               : null,

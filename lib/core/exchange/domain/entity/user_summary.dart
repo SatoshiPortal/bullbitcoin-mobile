@@ -156,7 +156,7 @@ sealed class UserSummary with _$UserSummary {
   bool get isLimitedKycLevel => groups.contains('KYC_LIMITED_VERIFICATION');
   bool get hasConsentedScamWarning => groups.contains('CONSENT_SCAM_WARNING');
 
- static const _lightKycCurrencies = {
+  static const _lightKycCurrencies = {
     FiatCurrency.cad,
     FiatCurrency.crc,
     FiatCurrency.ars,

@@ -180,7 +180,9 @@ class BroadcastSignedTxCubit extends Cubit<BroadcastSignedTxState> {
         error: e,
         trace: st,
       );
-      emit(state.copyWith(error: BroadcastFailedError(), isBroadcasting: false));
+      emit(
+        state.copyWith(error: BroadcastFailedError(), isBroadcasting: false),
+      );
     }
   }
 }

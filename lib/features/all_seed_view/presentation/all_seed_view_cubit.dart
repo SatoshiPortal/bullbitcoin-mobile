@@ -34,8 +34,9 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
       final wallets = await _getWalletsUsecase.execute();
 
       // Map wallets to their master fingerprints
-      final existingFingerprints =
-          wallets.map((wallet) => wallet.masterFingerprint).toSet();
+      final existingFingerprints = wallets
+          .map((wallet) => wallet.masterFingerprint)
+          .toSet();
 
       // Process and separate seeds into existing and old wallets
       final result = _processAndSeparateSeedsUsecase.execute(
@@ -70,14 +71,12 @@ class AllSeedViewCubit extends Cubit<AllSeedViewState> {
       await _deleteSeedUsecase.execute(fingerprint);
 
       // Remove the seed from state instead of reloading all seeds
-      final updatedExistingWallets =
-          state.existingWallets
-              .where((seed) => seed.masterFingerprint != fingerprint)
-              .toList();
-      final updatedOldWallets =
-          state.oldWallets
-              .where((seed) => seed.masterFingerprint != fingerprint)
-              .toList();
+      final updatedExistingWallets = state.existingWallets
+          .where((seed) => seed.masterFingerprint != fingerprint)
+          .toList();
+      final updatedOldWallets = state.oldWallets
+          .where((seed) => seed.masterFingerprint != fingerprint)
+          .toList();
 
       emit(
         state.copyWith(

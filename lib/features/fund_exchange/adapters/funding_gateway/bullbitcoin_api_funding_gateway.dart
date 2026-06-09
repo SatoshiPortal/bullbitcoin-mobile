@@ -91,9 +91,10 @@ class BullBitcoinApiFundingGateway implements FundingGatewayPort {
       final element = result['element'] as Map<String, dynamic>;
       final ppExtraData =
           (result['ppExtraData'] as Map<String, dynamic>?) ?? {};
-      return GetFundingDetailsResponseModel.fromJson(
-        {...element, ...ppExtraData},
-      ).toDomain(method: fundingMethod);
+      return GetFundingDetailsResponseModel.fromJson({
+        ...element,
+        ...ppExtraData,
+      }).toDomain(method: fundingMethod);
     } catch (e, stackTrace) {
       log.severe(
         message: 'Error parsing funding details response',

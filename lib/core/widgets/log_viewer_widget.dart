@@ -117,10 +117,9 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
               outlined: true,
               onPressed: _selectDateRange,
               iconData: Icons.date_range,
-              label:
-                  _startDate != null && _endDate != null
-                      ? '${_formatDate(_startDate!)} - ${_formatDate(_endDate!)}'
-                      : 'Filter by Date',
+              label: _startDate != null && _endDate != null
+                  ? '${_formatDate(_startDate!)} - ${_formatDate(_endDate!)}'
+                  : 'Filter by Date',
             ),
             const Gap(8),
             Row(
@@ -160,8 +159,12 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   Color iconColor = context.appColors.secondary;
                   if (parts.length > 1) {
                     final colorForLevel = switch (parts[1]) {
-                      'FINEST' => context.appColors.success.withValues(alpha: 0.5),
-                      'FINER' => context.appColors.success.withValues(alpha: 0.7),
+                      'FINEST' => context.appColors.success.withValues(
+                        alpha: 0.5,
+                      ),
+                      'FINER' => context.appColors.success.withValues(
+                        alpha: 0.7,
+                      ),
                       'FINE' => context.appColors.success,
                       'CONFIG' => context.appColors.textMuted,
                       'INFO' => context.appColors.info,
@@ -188,9 +191,8 @@ class _LogsViewerScreenState extends State<LogsViewerWidget> {
                   return Row(
                     children: [
                       IconButton(
-                        onPressed:
-                            () =>
-                                Clipboard.setData(ClipboardData(text: logLine)),
+                        onPressed: () =>
+                            Clipboard.setData(ClipboardData(text: logLine)),
                         icon: Icon(Icons.copy, color: iconColor),
                       ),
                       SelectableText(

@@ -19,8 +19,9 @@ class DriftElectrumServerRepository implements ElectrumServerRepository {
 
   @override
   Future<void> batchSave(List<ElectrumServer> servers) {
-    final models =
-        servers.map((e) => ElectrumServerModel.fromEntity(e)).toList();
+    final models = servers
+        .map((e) => ElectrumServerModel.fromEntity(e))
+        .toList();
     return _datasource.storeBatch(models);
   }
 

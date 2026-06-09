@@ -8,7 +8,7 @@ class BitBoxDeviceRepositoryImpl implements BitBoxDeviceRepository {
   final BitBoxDeviceDatasource _datasource;
 
   BitBoxDeviceRepositoryImpl({required BitBoxDeviceDatasource datasource})
-      : _datasource = datasource;
+    : _datasource = datasource;
 
   @override
   Future<List<BitBoxDeviceEntity>> scanDevices() async {

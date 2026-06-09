@@ -23,4 +23,3 @@ class GetOrderStatsUsecase {
     return repository.getOrderStats();
   }
 }
-

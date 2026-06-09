@@ -13,8 +13,8 @@ class GetLatestUnlockAttemptUsecase {
        _timeoutCalculator = timeoutCalculator;
 
   Future<UnlockAttempt> execute() async {
-    final attempts =
-        await _failedUnlockAttemptsRepository.getFailedUnlockAttempts();
+    final attempts = await _failedUnlockAttemptsRepository
+        .getFailedUnlockAttempts();
 
     final timeout = _timeoutCalculator.calculateTimeout(attempts);
 

@@ -14,10 +14,9 @@ class WalletMetadataDatasource {
   }
 
   Future<WalletMetadataModel?> fetch(String walletId) async {
-    final row =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final row = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (row == null) return null;
     return WalletMetadataModelMapper.fromSqlite(row);

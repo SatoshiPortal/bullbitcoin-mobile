@@ -12,9 +12,8 @@ enum SeedStorageLibrary {
 abstract class SeedStoreType with _$SeedStoreType {
   const SeedStoreType._();
 
-  const factory SeedStoreType({
-    required SeedStorageLibrary storageLibrary,
-  }) = _SeedStoreType;
+  const factory SeedStoreType({required SeedStorageLibrary storageLibrary}) =
+      _SeedStoreType;
 
   /// Currently fss9. Will include fss10 once oubliette is available.
   bool get isLegacyStorage => storageLibrary == SeedStorageLibrary.fss9;

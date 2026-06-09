@@ -106,8 +106,9 @@ sealed class UserDcaModel with _$UserDcaModel {
         'monthly' => DcaBuyFrequency.monthly,
         _ => null,
       },
-      currency:
-          currencyCode != null ? FiatCurrency.fromCode(currencyCode!) : null,
+      currency: currencyCode != null
+          ? FiatCurrency.fromCode(currencyCode!)
+          : null,
       amount: amount,
       network: switch (recipientType) {
         'OUT_BITCOIN_ADDRESS' => DcaNetwork.bitcoin,

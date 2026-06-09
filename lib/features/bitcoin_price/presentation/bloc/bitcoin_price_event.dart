@@ -19,7 +19,5 @@ class BitcoinPriceFetched extends BitcoinPriceEvent {
 class BitcoinPriceCurrencyChanged extends BitcoinPriceEvent {
   final String currencyCode;
 
-  const BitcoinPriceCurrencyChanged({
-    required this.currencyCode,
-  });
+  const BitcoinPriceCurrencyChanged({required this.currencyCode});
 }

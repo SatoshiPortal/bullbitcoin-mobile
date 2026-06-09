@@ -95,10 +95,9 @@ class _SelectableRow extends StatelessWidget {
               const Gap(8),
               Icon(
                 Icons.radio_button_checked_outlined,
-                color:
-                    isSelected
-                        ? context.appColors.primary
-                        : context.appColors.textMuted,
+                color: isSelected
+                    ? context.appColors.primary
+                    : context.appColors.textMuted,
               ),
             ],
           ),

@@ -8,8 +8,7 @@ class DriftMempoolSettingsRepository implements MempoolSettingsRepository {
   final MempoolSettingsStorageDatasource _datasource;
 
   DriftMempoolSettingsRepository({
-    required MempoolSettingsStorageDatasource
-        mempoolSettingsStorageDatasource,
+    required MempoolSettingsStorageDatasource mempoolSettingsStorageDatasource,
   }) : _datasource = mempoolSettingsStorageDatasource;
 
   @override

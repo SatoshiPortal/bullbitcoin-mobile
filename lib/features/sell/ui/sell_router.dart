@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/sell/presentation/bloc/sell_bloc.dart';
@@ -27,9 +28,11 @@ enum SellRoute {
 class SellRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
-      return BlocProvider(
-        create: (_) => locator<SellBloc>()..add(const SellEvent.started()),
-        child: child,
+      return StagingExchangeGuard.wrap(
+        BlocProvider(
+          create: (_) => locator<SellBloc>()..add(const SellEvent.started()),
+          child: child,
+        ),
       );
     },
     routes: [

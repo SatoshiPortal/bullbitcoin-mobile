@@ -30,9 +30,8 @@ class TransactionsScreen extends StatelessWidget {
             context.pop();
           },
           actionIcon: Icons.file_download,
-          onAction: () => context.pushNamed(
-            TransactionsRoute.exportTransactions.name,
-          ),
+          onAction: () =>
+              context.pushNamed(TransactionsRoute.exportTransactions.name),
         ),
         backgroundColor: context.appColors.onPrimary,
         elevation: 0,

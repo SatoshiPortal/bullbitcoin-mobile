@@ -109,10 +109,9 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
 
       emit(
         state.copyWith(
-          status:
-              attemptResult.success
-                  ? AppUnlockStatus.success
-                  : AppUnlockStatus.inProgress,
+          status: attemptResult.success
+              ? AppUnlockStatus.success
+              : AppUnlockStatus.inProgress,
           isVerifying: false,
           failedAttempts: attemptResult.failedAttempts,
           timeoutSeconds: attemptResult.timeout,

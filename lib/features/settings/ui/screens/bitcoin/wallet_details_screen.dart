@@ -33,90 +33,88 @@ class WalletDetailsScreen extends StatelessWidget {
         actions: [
           if (wallet != null && wallet.isDefault == false)
             IconButton(
-              onPressed:
-                  isDeletingWallet
-                      ? null
-                      : () => BlurredDialog.show(
-                        context: context,
-                        builder: (_) =>
-                                WalletDeletionConfirmationAlertDialog(
-                                  walletId: wallet.id,
-                                ),
+              onPressed: isDeletingWallet
+                  ? null
+                  : () => BlurredDialog.show(
+                      context: context,
+                      builder: (_) => WalletDeletionConfirmationAlertDialog(
+                        walletId: wallet.id,
                       ),
+                    ),
               icon: const Icon(CupertinoIcons.delete),
             ),
         ],
       ),
       body: SafeArea(
-        child:
-            isDeletingWallet
-                ? Center(
-                  child: Column(
-                    mainAxisAlignment: .center,
-                    children: [
-                      const CircularProgressIndicator(),
-                      const Gap(16),
-                      BBText(
-                        context.loc.walletDetailsDeletingMessage,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.appColors.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-                : wallet == null
-                ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
-                : ListView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 24,
-                  ),
+        child: isDeletingWallet
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: .center,
                   children: [
-                    _InfoField(
-                      label: context.loc.walletDetailsWalletFingerprintLabel,
-                      value: wallet.masterFingerprint,
-                    ),
-                    const SizedBox(height: 18),
-                    _CopyField(
-                      label: context.loc.walletDetailsPubkeyLabel,
-                      value: wallet.xpub,
-                      copyLabel: context.loc.walletDetailsCopyButton,
-                    ),
-                    const SizedBox(height: 18),
-                    _CopyField(
-                      label: context.loc.walletDetailsDescriptorLabel,
-                      value: wallet.externalPublicDescriptor,
-                      copyLabel: context.loc.walletDetailsCopyButton,
-                    ),
-                    const SizedBox(height: 18),
-                    _InfoField(
-                      label: context.loc.walletDetailsAddressTypeLabel,
-                      value: wallet.addressType,
-                    ),
-                    const SizedBox(height: 18),
-                    _InfoField(
-                      label: context.loc.walletDetailsNetworkLabel,
-                      value: wallet.networkString,
-                    ),
-                    const SizedBox(height: 18),
-                    _InfoField(
-                      label: context.loc.walletDetailsDerivationPathLabel,
-                      value: wallet.derivationPath,
-                    ),
-                    const SizedBox(height: 18),
-                    _InfoField(
-                      label: context.loc.walletDetailsSignerLabel,
-                      value: wallet.signer.displayName,
-                    ),
-                    const SizedBox(height: 18),
-                    _InfoField(
-                      label: context.loc.walletDetailsSignerDeviceLabel,
-                      value: wallet.signerDevice?.displayName ??
-                          context.loc.walletDetailsSignerDeviceNotSupported,
+                    const CircularProgressIndicator(),
+                    const Gap(16),
+                    BBText(
+                      context.loc.walletDetailsDeletingMessage,
+                      style: context.font.bodyMedium?.copyWith(
+                        color: context.appColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
+              )
+            : wallet == null
+            ? Center(child: Text(context.loc.walletDeletionErrorWalletNotFound))
+            : ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
+                children: [
+                  _InfoField(
+                    label: context.loc.walletDetailsWalletFingerprintLabel,
+                    value: wallet.masterFingerprint,
+                  ),
+                  const SizedBox(height: 18),
+                  _CopyField(
+                    label: context.loc.walletDetailsPubkeyLabel,
+                    value: wallet.xpub,
+                    copyLabel: context.loc.walletDetailsCopyButton,
+                  ),
+                  const SizedBox(height: 18),
+                  _CopyField(
+                    label: context.loc.walletDetailsDescriptorLabel,
+                    value: wallet.externalPublicDescriptor,
+                    copyLabel: context.loc.walletDetailsCopyButton,
+                  ),
+                  const SizedBox(height: 18),
+                  _InfoField(
+                    label: context.loc.walletDetailsAddressTypeLabel,
+                    value: wallet.addressType,
+                  ),
+                  const SizedBox(height: 18),
+                  _InfoField(
+                    label: context.loc.walletDetailsNetworkLabel,
+                    value: wallet.networkString,
+                  ),
+                  const SizedBox(height: 18),
+                  _InfoField(
+                    label: context.loc.walletDetailsDerivationPathLabel,
+                    value: wallet.derivationPath,
+                  ),
+                  const SizedBox(height: 18),
+                  _InfoField(
+                    label: context.loc.walletDetailsSignerLabel,
+                    value: wallet.signer.displayName,
+                  ),
+                  const SizedBox(height: 18),
+                  _InfoField(
+                    label: context.loc.walletDetailsSignerDeviceLabel,
+                    value:
+                        wallet.signerDevice?.displayName ??
+                        context.loc.walletDetailsSignerDeviceNotSupported,
+                  ),
+                ],
+              ),
       ),
     );
   }

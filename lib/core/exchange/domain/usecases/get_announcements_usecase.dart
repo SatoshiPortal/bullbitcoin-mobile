@@ -21,10 +21,9 @@ class GetAnnouncementsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet
-              ? _testnetExchangeUserRepository
-              : _mainnetExchangeUserRepository;
+      final repo = isTestnet
+          ? _testnetExchangeUserRepository
+          : _mainnetExchangeUserRepository;
       final announcements = await repo.listAnnouncements();
       return announcements;
     } catch (e) {
@@ -39,4 +38,3 @@ class GetAnnouncementsUsecase {
 class GetAnnouncementsException extends BullException {
   GetAnnouncementsException(super.message);
 }
-

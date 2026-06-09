@@ -12,4 +12,3 @@ sealed class Announcement with _$Announcement {
 
   const Announcement._();
 }
-

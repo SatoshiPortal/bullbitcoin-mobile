@@ -5,7 +5,7 @@ class ConnectLedgerDeviceUsecase {
   final LedgerDeviceRepository _repository;
 
   ConnectLedgerDeviceUsecase({required LedgerDeviceRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   Future<void> execute(LedgerDeviceEntity device) async {
     await _repository.connectDevice(device);

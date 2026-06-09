@@ -5,9 +5,8 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class FeesRepository {
   final FeesDatasource _feesDatasource;
 
-  const FeesRepository({
-    required FeesDatasource feesDatasource,
-  }) : _feesDatasource = feesDatasource;
+  const FeesRepository({required FeesDatasource feesDatasource})
+    : _feesDatasource = feesDatasource;
 
   Future<FeeOptions> getNetworkFees({required Network network}) async {
     FeeOptions feeOptions;

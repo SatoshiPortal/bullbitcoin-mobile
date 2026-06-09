@@ -343,12 +343,11 @@ abstract class OldSwapTx with _$OldSwapTx {
       uninitiatedOnchain() ||
       settledOnchain();
 
-  bool failed() =>
-      isChainSwap()
-          ? isChainSwapFailed()
-          : isReverse()
-          ? reverseSwapAction() == ReverseSwapActions.failed
-          : submarineSwapAction() == SubmarineSwapActions.failed;
+  bool failed() => isChainSwap()
+      ? isChainSwapFailed()
+      : isReverse()
+      ? reverseSwapAction() == ReverseSwapActions.failed
+      : submarineSwapAction() == SubmarineSwapActions.failed;
 
   //TODO:Onchain
   bool isChainSwapFailed() {
@@ -478,16 +477,15 @@ abstract class OldSwapTx with _$OldSwapTx {
   }
 
   OldTransaction toNewTransaction() {
-    final txId =
-        isLnSwap()
-            ? (lnSwapDetails!.swapType == SwapType.submarine
-                ? lockupTxid
-                : claimTxid)
-            : isChainSwap()
-            ? lockupTxid
-            : isChainReceive()
-            ? claimTxid
-            : lockupTxid;
+    final txId = isLnSwap()
+        ? (lnSwapDetails!.swapType == SwapType.submarine
+              ? lockupTxid
+              : claimTxid)
+        : isChainSwap()
+        ? lockupTxid
+        : isChainReceive()
+        ? claimTxid
+        : lockupTxid;
     final newTx = OldTransaction(
       txid: txId ?? id,
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -833,10 +831,9 @@ extension LnSwapExt on OldSwapTx {
       boltzUrl: tx.boltzUrl,
       kind: tx.lnSwapDetails!.swapType,
       keyIndex: BigInt.from(tx.lnSwapDetails!.keyIndex),
-      network:
-          network == OldBBNetwork.Testnet
-              ? Chain.bitcoinTestnet
-              : Chain.bitcoin,
+      network: network == OldBBNetwork.Testnet
+          ? Chain.bitcoinTestnet
+          : Chain.bitcoin,
       keys: KeyPair(
         secretKey: sensitive.secretKey,
         publicKey: sensitive.publicKey,
@@ -849,15 +846,13 @@ extension LnSwapExt on OldSwapTx {
       swapScript: BtcSwapScriptStr(
         swapType: tx.lnSwapDetails!.swapType,
         hashlock: sensitive.hash160,
-        receiverPubkey:
-            tx.isSubmarine()
-                ? tx.lnSwapDetails!.boltzPubKey
-                : tx.lnSwapDetails!.myPublicKey,
+        receiverPubkey: tx.isSubmarine()
+            ? tx.lnSwapDetails!.boltzPubKey
+            : tx.lnSwapDetails!.myPublicKey,
         locktime: tx.lnSwapDetails!.locktime,
-        senderPubkey:
-            tx.isSubmarine()
-                ? tx.lnSwapDetails!.myPublicKey
-                : tx.lnSwapDetails!.boltzPubKey,
+        senderPubkey: tx.isSubmarine()
+            ? tx.lnSwapDetails!.myPublicKey
+            : tx.lnSwapDetails!.boltzPubKey,
         fundingAddrs: tx.scriptAddress,
       ),
     );
@@ -874,8 +869,9 @@ extension LnSwapExt on OldSwapTx {
       boltzUrl: tx.boltzUrl,
       kind: tx.lnSwapDetails!.swapType,
       keyIndex: BigInt.from(tx.lnSwapDetails!.keyIndex),
-      network:
-          network == OldBBNetwork.Testnet ? Chain.liquidTestnet : Chain.liquid,
+      network: network == OldBBNetwork.Testnet
+          ? Chain.liquidTestnet
+          : Chain.liquid,
       keys: KeyPair(
         secretKey: sensitive.secretKey,
         publicKey: sensitive.publicKey,
@@ -889,15 +885,13 @@ extension LnSwapExt on OldSwapTx {
       swapScript: LBtcSwapScriptStr(
         swapType: tx.lnSwapDetails!.swapType,
         hashlock: sensitive.hash160,
-        receiverPubkey:
-            tx.isSubmarine()
-                ? tx.lnSwapDetails!.boltzPubKey
-                : tx.lnSwapDetails!.myPublicKey,
+        receiverPubkey: tx.isSubmarine()
+            ? tx.lnSwapDetails!.boltzPubKey
+            : tx.lnSwapDetails!.myPublicKey,
         locktime: tx.lnSwapDetails!.locktime,
-        senderPubkey:
-            tx.isSubmarine()
-                ? tx.lnSwapDetails!.myPublicKey
-                : tx.lnSwapDetails!.boltzPubKey,
+        senderPubkey: tx.isSubmarine()
+            ? tx.lnSwapDetails!.myPublicKey
+            : tx.lnSwapDetails!.boltzPubKey,
         fundingAddrs: tx.scriptAddress,
         blindingKey: sensitive.blindingKey ?? '',
       ),
@@ -912,29 +906,25 @@ extension BtcLnSwapExt on BtcLnSwap {
       lnSwapDetails: OldLnSwapDetails(
         swapType: kind,
         invoice: invoice,
-        boltzPubKey:
-            kind == SwapType.submarine
-                ? swapScript.receiverPubkey
-                : swapScript.senderPubkey,
+        boltzPubKey: kind == SwapType.submarine
+            ? swapScript.receiverPubkey
+            : swapScript.senderPubkey,
         keyIndex:
             0, // this is an issue, we should probably also save the keyIndex in BtcLnSwap
-        myPublicKey:
-            kind == SwapType.submarine
-                ? swapScript.senderPubkey
-                : swapScript.receiverPubkey,
+        myPublicKey: kind == SwapType.submarine
+            ? swapScript.senderPubkey
+            : swapScript.receiverPubkey,
         sha256: '',
         electrumUrl: electrumUrl,
         locktime: swapScript.locktime,
       ),
       // network: network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
-      network:
-          network == Chain.liquidTestnet
-              ? OldBBNetwork.Testnet
-              : OldBBNetwork.Mainnet,
-      walletType:
-          (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
-              ? OldBaseWalletType.Bitcoin
-              : OldBaseWalletType.Liquid,
+      network: network == Chain.liquidTestnet
+          ? OldBBNetwork.Testnet
+          : OldBBNetwork.Mainnet,
+      walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
+          ? OldBaseWalletType.Bitcoin
+          : OldBaseWalletType.Liquid,
       outAmount: outAmount.toInt(),
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,
@@ -950,10 +940,9 @@ extension BtcLnSwapExt on BtcLnSwap {
       hash160: preimage.hash160,
       publicKey: keys.publicKey,
       secretKey: keys.secretKey,
-      boltzPubkey:
-          kind == SwapType.submarine
-              ? swapScript.receiverPubkey
-              : swapScript.senderPubkey,
+      boltzPubkey: kind == SwapType.submarine
+          ? swapScript.receiverPubkey
+          : swapScript.senderPubkey,
       locktime: swapScript.locktime,
       isSubmarine: kind == SwapType.submarine,
     );
@@ -967,30 +956,26 @@ extension LbtcLnSwapExt on LbtcLnSwap {
       lnSwapDetails: OldLnSwapDetails(
         swapType: kind,
         invoice: invoice,
-        boltzPubKey:
-            kind == SwapType.submarine
-                ? swapScript.receiverPubkey
-                : swapScript.senderPubkey,
+        boltzPubKey: kind == SwapType.submarine
+            ? swapScript.receiverPubkey
+            : swapScript.senderPubkey,
         keyIndex:
             0, // this is an issue, we should probably also save the keyIndex in BtcLnSwap
-        myPublicKey:
-            kind == SwapType.submarine
-                ? swapScript.senderPubkey
-                : swapScript.receiverPubkey,
+        myPublicKey: kind == SwapType.submarine
+            ? swapScript.senderPubkey
+            : swapScript.receiverPubkey,
         sha256: '',
         electrumUrl: electrumUrl,
         locktime: swapScript.locktime,
         blindingKey: swapScript.blindingKey,
       ),
       // network: network == Chain.Testnet ? BBNetwork.Testnet : BBNetwork.LTestnet,
-      network:
-          network == Chain.liquidTestnet
-              ? OldBBNetwork.Testnet
-              : OldBBNetwork.Mainnet,
-      walletType:
-          (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
-              ? OldBaseWalletType.Bitcoin
-              : OldBaseWalletType.Liquid,
+      network: network == Chain.liquidTestnet
+          ? OldBBNetwork.Testnet
+          : OldBBNetwork.Mainnet,
+      walletType: (network == Chain.bitcoin || network == Chain.bitcoinTestnet)
+          ? OldBaseWalletType.Bitcoin
+          : OldBaseWalletType.Liquid,
       outAmount: outAmount.toInt(),
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,
@@ -1007,10 +992,9 @@ extension LbtcLnSwapExt on LbtcLnSwap {
       publicKey: keys.publicKey,
       secretKey: keys.secretKey,
       blindingKey: blindingKey,
-      boltzPubkey:
-          kind == SwapType.submarine
-              ? swapScript.receiverPubkey
-              : swapScript.senderPubkey,
+      boltzPubkey: kind == SwapType.submarine
+          ? swapScript.receiverPubkey
+          : swapScript.senderPubkey,
       locktime: swapScript.locktime,
       isSubmarine: kind == SwapType.submarine,
     );
@@ -1043,31 +1027,27 @@ extension ChSwapExt on OldSwapTx {
         hashlock: sensitive.hash160,
         fundingAddrs: chainSwapDetails!.btcFundingAddress,
         receiverPubkey: chainSwapDetails!.btcScriptReceiverPublicKey,
-        locktime:
-            chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
-                ? chainSwapDetails!.lockupLocktime
-                : chainSwapDetails!.claimLocktime,
+        locktime: chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
+            ? chainSwapDetails!.lockupLocktime
+            : chainSwapDetails!.claimLocktime,
         senderPubkey: chainSwapDetails!.btcScriptSenderPublicKey,
-        side:
-            chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
-                ? Side.lockup
-                : Side.claim,
+        side: chainSwapDetails!.direction == ChainSwapDirection.btcToLbtc
+            ? Side.lockup
+            : Side.claim,
       ),
       lbtcScriptStr: LBtcSwapScriptStr(
         swapType: SwapType.chain,
         hashlock: sensitive.hash160,
         fundingAddrs: chainSwapDetails!.lbtcFundingAddress,
         receiverPubkey: chainSwapDetails!.lbtcScriptReceiverPublicKey,
-        locktime:
-            chainSwapDetails!.direction == ChainSwapDirection.lbtcToBtc
-                ? chainSwapDetails!.lockupLocktime
-                : chainSwapDetails!.claimLocktime,
+        locktime: chainSwapDetails!.direction == ChainSwapDirection.lbtcToBtc
+            ? chainSwapDetails!.lockupLocktime
+            : chainSwapDetails!.claimLocktime,
         senderPubkey: chainSwapDetails!.lbtcScriptSenderPublicKey,
         blindingKey: sensitive.blindingKey,
-        side:
-            chainSwapDetails!.direction == ChainSwapDirection.lbtcToBtc
-                ? Side.lockup
-                : Side.claim,
+        side: chainSwapDetails!.direction == ChainSwapDirection.lbtcToBtc
+            ? Side.lockup
+            : Side.claim,
       ),
       scriptAddress: scriptAddress,
       outAmount: BigInt.from(outAmount),
@@ -1095,14 +1075,12 @@ extension ChainSwapExt on ChainSwap {
         refundSecretKey: refundKeys.secretKey,
         claimPublicKey: claimKeys.publicKey,
         claimSecretKey: claimKeys.secretKey,
-        lockupLocktime:
-            direction == ChainSwapDirection.btcToLbtc
-                ? btcScriptStr.locktime
-                : lbtcScriptStr.locktime,
-        claimLocktime:
-            direction == ChainSwapDirection.lbtcToBtc
-                ? btcScriptStr.locktime
-                : lbtcScriptStr.locktime,
+        lockupLocktime: direction == ChainSwapDirection.btcToLbtc
+            ? btcScriptStr.locktime
+            : lbtcScriptStr.locktime,
+        claimLocktime: direction == ChainSwapDirection.lbtcToBtc
+            ? btcScriptStr.locktime
+            : lbtcScriptStr.locktime,
         blindingKey: blindingKey,
         btcElectrumUrl: btcElectrumUrl,
         // 'electrum.blockstream.info:60002', // btcElectrumUrl, // TODO:chainswap // TODO:Onchain
@@ -1116,10 +1094,9 @@ extension ChainSwapExt on ChainSwap {
         toWalletId: toWalletId,
       ),
       network: isTestnet ? OldBBNetwork.Testnet : OldBBNetwork.Mainnet,
-      walletType:
-          direction == ChainSwapDirection.btcToLbtc
-              ? OldBaseWalletType.Bitcoin
-              : OldBaseWalletType.Liquid,
+      walletType: direction == ChainSwapDirection.btcToLbtc
+          ? OldBaseWalletType.Bitcoin
+          : OldBaseWalletType.Liquid,
       outAmount: outAmount.toInt(),
       scriptAddress: scriptAddress,
       boltzUrl: boltzUrl,

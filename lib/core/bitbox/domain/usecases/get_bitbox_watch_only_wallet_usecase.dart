@@ -59,7 +59,7 @@ class GetBitBoxWatchOnlyWalletUsecase {
       watchOnlyDescriptor: watchOnly,
       signer: SignerEntity.remote,
       label: label,
-      signerDevice: deviceType
+      signerDevice: deviceType,
     );
 
     return watchOnlyWallet;

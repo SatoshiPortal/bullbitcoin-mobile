@@ -23,8 +23,8 @@ class AttemptUnlockWithPinCodeUsecase {
 
     if (!isCorrectPinCode) {
       // Get the current number of failed attempts
-      final currentNrOfAttempts =
-          await _failedUnlockAttemptsRepository.getFailedUnlockAttempts();
+      final currentNrOfAttempts = await _failedUnlockAttemptsRepository
+          .getFailedUnlockAttempts();
 
       // Increment the failed attempts
       attempts = currentNrOfAttempts + 1;

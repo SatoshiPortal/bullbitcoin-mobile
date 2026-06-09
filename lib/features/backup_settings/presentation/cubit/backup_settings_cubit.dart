@@ -44,14 +44,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         isLiquid: false,
       );
 
-      final lastPhysicalBackup =
-          defaultWallets
-              .firstWhere((e) => e.network == network)
-              .latestPhysicalBackup;
-      final lastEncryptedBackup =
-          defaultWallets
-              .firstWhere((e) => e.network == network)
-              .latestEncryptedBackup;
+      final lastPhysicalBackup = defaultWallets
+          .firstWhere((e) => e.network == network)
+          .latestPhysicalBackup;
+      final lastEncryptedBackup = defaultWallets
+          .firstWhere((e) => e.network == network)
+          .latestEncryptedBackup;
       emit(
         state.copyWith(
           isDefaultPhysicalBackupTested: isDefaultPhysicalBackupTested,

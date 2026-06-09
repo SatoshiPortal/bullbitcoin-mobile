@@ -4,13 +4,12 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
 
-typedef Mnemonic =
-    ({
-      String label,
-      String passphrase,
-      List<String> words,
-      bip39.Language language,
-    });
+typedef Mnemonic = ({
+  String label,
+  String passphrase,
+  List<String> words,
+  bip39.Language language,
+});
 
 @freezed
 sealed class ImportMnemonicState with _$ImportMnemonicState {

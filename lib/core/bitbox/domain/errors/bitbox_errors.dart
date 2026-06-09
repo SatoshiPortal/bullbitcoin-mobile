@@ -9,10 +9,13 @@ part 'bitbox_errors.freezed.dart';
 sealed class BitBoxError with _$BitBoxError {
   const factory BitBoxError.permissionDenied() = PermissionDeniedBitBoxError;
   const factory BitBoxError.noDevicesFound() = NoDevicesFoundBitBoxError;
-  const factory BitBoxError.multipleDevicesFound() = MultipleDevicesFoundBitBoxError;
+  const factory BitBoxError.multipleDevicesFound() =
+      MultipleDevicesFoundBitBoxError;
   const factory BitBoxError.deviceNotFound() = DeviceNotFoundBitBoxError;
-  const factory BitBoxError.connectionTypeNotInitialized() = ConnectionTypeNotInitializedBitBoxError;
-  const factory BitBoxError.noActiveConnection() = NoActiveConnectionBitBoxError;
+  const factory BitBoxError.connectionTypeNotInitialized() =
+      ConnectionTypeNotInitializedBitBoxError;
+  const factory BitBoxError.noActiveConnection() =
+      NoActiveConnectionBitBoxError;
   const factory BitBoxError.deviceMismatch() = DeviceMismatchBitBoxError;
   const factory BitBoxError.invalidMagicBytes() = InvalidMagicBytesBitBoxError;
   const factory BitBoxError.deviceNotPaired() = DeviceNotPairedBitBoxError;
@@ -20,8 +23,10 @@ sealed class BitBoxError with _$BitBoxError {
   const factory BitBoxError.operationTimeout() = OperationTimeoutBitBoxError;
   const factory BitBoxError.connectionFailed() = ConnectionFailedBitBoxError;
   const factory BitBoxError.invalidResponse() = InvalidResponseBitBoxError;
-  const factory BitBoxError.operationCancelled() = OperationCancelledBitBoxError;
-  const factory BitBoxError.operationFailed({required String message}) = OperationFailedBitBoxError;
+  const factory BitBoxError.operationCancelled() =
+      OperationCancelledBitBoxError;
+  const factory BitBoxError.operationFailed({required String message}) =
+      OperationFailedBitBoxError;
 
   const BitBoxError._();
 

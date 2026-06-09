@@ -317,12 +317,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
     TransferAmountChanged event,
     Emitter<TransferState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        amount: event.amount,
-        swapCreationException: null,
-      ),
-    );
+    emit(state.copyWith(amount: event.amount, swapCreationException: null));
   }
 
   Future<void> _onSwapCreated(
@@ -658,9 +653,7 @@ class TransferBloc extends Bloc<TransferEvent, TransferState> {
       final swapCreationException = _isInsufficientFundsException(e)
           ? InsufficientFundsSwapException()
           : SwapCreationException(e.toString());
-      emit(
-        state.copyWith(swapCreationException: swapCreationException),
-      );
+      emit(state.copyWith(swapCreationException: swapCreationException));
     } finally {
       emit(state.copyWith(isCreatingSwap: false, continueClicked: false));
     }

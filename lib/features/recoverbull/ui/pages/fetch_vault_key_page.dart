@@ -74,14 +74,12 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
         ],
       ),
       body: BlocConsumer<RecoverBullBloc, RecoverBullState>(
-        listenWhen:
-            (previous, current) =>
-                previous.error != current.error ||
-                current.decryptedVault != null &&
-                    previous.decryptedVault != current.decryptedVault ||
-                current.vaultKey != null &&
-                    previous.vaultKey != current.vaultKey ||
-                previous.isFlowFinished != current.isFlowFinished,
+        listenWhen: (previous, current) =>
+            previous.error != current.error ||
+            current.decryptedVault != null &&
+                previous.decryptedVault != current.decryptedVault ||
+            current.vaultKey != null && previous.vaultKey != current.vaultKey ||
+            previous.isFlowFinished != current.isFlowFinished,
         listener: (context, state) {
           if (state.error != null) {
             SnackBarUtils.showSnackBar(
@@ -103,9 +101,8 @@ class _FetchVaultKeyPageState extends State<FetchVaultKeyPage> {
               case RecoverBullFlow.viewVaultKey:
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder:
-                        (context) =>
-                            ViewVaultKeyPage(vaultKey: state.vaultKey!),
+                    builder: (context) =>
+                        ViewVaultKeyPage(vaultKey: state.vaultKey!),
                   ),
                 );
               case RecoverBullFlow.testVault:

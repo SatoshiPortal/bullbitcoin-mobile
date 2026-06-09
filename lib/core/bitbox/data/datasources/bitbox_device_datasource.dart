@@ -12,17 +12,23 @@ class BitBoxDeviceDatasource {
   Future<List<BitBoxDeviceModel>> scanDevices() async {
     try {
       if (!Platform.isAndroid) {
-        throw const BitBoxError.operationFailed(message: 'BitBox is only supported on Android');
+        throw const BitBoxError.operationFailed(
+          message: 'BitBox is only supported on Android',
+        );
       }
-      
+
       final devices = await BitBoxApi.scanDevices();
-      
-      return devices.map((device) => BitBoxDeviceModel.fromBitBoxDevice(
-        deviceName: device.deviceName,
-        serialNumber: device.serialNumber,
-        product: device.product,
-        connectionType: BitBoxConnectionType.usb,
-      )).toList();
+
+      return devices
+          .map(
+            (device) => BitBoxDeviceModel.fromBitBoxDevice(
+              deviceName: device.deviceName,
+              serialNumber: device.serialNumber,
+              product: device.product,
+              connectionType: BitBoxConnectionType.usb,
+            ),
+          )
+          .toList();
     } catch (e) {
       if (e is BitBoxError) rethrow;
       throw BitBoxError.operationFailed(message: e.toString());
@@ -32,22 +38,28 @@ class BitBoxDeviceDatasource {
   Future<BitBoxDeviceModel> connectDevice(BitBoxDeviceModel device) async {
     try {
       if (!Platform.isAndroid) {
-        throw const BitBoxError.operationFailed(message: 'BitBox is only supported on Android');
+        throw const BitBoxError.operationFailed(
+          message: 'BitBox is only supported on Android',
+        );
       }
-      
-      final hasPermission = await BitBoxApi.requestPermission(device.deviceName);
+
+      final hasPermission = await BitBoxApi.requestPermission(
+        device.deviceName,
+      );
       if (!hasPermission) {
         throw const BitBoxError.permissionDenied();
       }
-      
+
       final opened = await BitBoxApi.openDevice(
-        device.deviceName, 
+        device.deviceName,
         device.serialNumber,
       );
       if (!opened) {
-        throw const BitBoxError.operationFailed(message: 'Failed to open device');
+        throw const BitBoxError.operationFailed(
+          message: 'Failed to open device',
+        );
       }
-      
+
       _connectedDevices.add(device.serialNumber);
       _cachedDevice = device;
       return device;
@@ -60,7 +72,7 @@ class BitBoxDeviceDatasource {
   Future<String> unlockDevice(BitBoxDeviceModel device) async {
     try {
       final pairingCode = await BitBoxApi.startPairing(device.serialNumber);
-      
+
       if (pairingCode != null && pairingCode.isNotEmpty) {
         return pairingCode;
       } else {
@@ -74,11 +86,13 @@ class BitBoxDeviceDatasource {
   Future<String> pairDevice(BitBoxDeviceModel device) async {
     try {
       final confirmed = await BitBoxApi.confirmPairing(device.serialNumber);
-      
+
       if (!confirmed) {
-        throw const BitBoxError.operationFailed(message: 'Pairing confirmation failed');
+        throw const BitBoxError.operationFailed(
+          message: 'Pairing confirmation failed',
+        );
       }
-      
+
       return await BitBoxApi.getRootFingerprint(device.serialNumber);
     } catch (e) {
       throw BitBoxError.operationFailed(message: e.toString());
@@ -93,7 +107,7 @@ class BitBoxDeviceDatasource {
   }) async {
     try {
       final xpubType = isTestnet ? 'tpub' : 'xpub';
-      
+
       final xpub = await BitBoxApi.getBtcXpub(
         serialNumber: device.serialNumber,
         keypath: derivationPath,
@@ -140,8 +154,10 @@ class BitBoxDeviceDatasource {
     required bool isTestnet,
   }) async {
     try {
-      final String bitboxScriptType = scriptType == ScriptType.bip49 ? 'p2wpkhp2sh' : 'p2wpkh';
-      
+      final String bitboxScriptType = scriptType == ScriptType.bip49
+          ? 'p2wpkhp2sh'
+          : 'p2wpkh';
+
       final verifiedAddress = await BitBoxApi.verifyAddress(
         serialNumber: device.serialNumber,
         keypath: derivationPath,
@@ -157,7 +173,7 @@ class BitBoxDeviceDatasource {
   Future<void> disconnectConnection(BitBoxDeviceModel device) async {
     try {
       await BitBoxApi.closeDevice(device.serialNumber);
-      
+
       _connectedDevices.remove(device.serialNumber);
       if (_cachedDevice?.serialNumber == device.serialNumber) {
         _cachedDevice = null;
@@ -180,7 +196,7 @@ class BitBoxDeviceDatasource {
           // Ignore individual device close errors during disposal
         }
       }
-      
+
       _connectedDevices.clear();
       _cachedDevice = null;
     } catch (e) {

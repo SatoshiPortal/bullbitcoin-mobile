@@ -5,7 +5,7 @@ class PairBitBoxDeviceUsecase {
   final BitBoxDeviceRepository _repository;
 
   PairBitBoxDeviceUsecase({required BitBoxDeviceRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   Future<String> execute(BitBoxDeviceEntity device) async {
     return await _repository.pairDevice(device);

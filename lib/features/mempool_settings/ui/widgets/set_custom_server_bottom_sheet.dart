@@ -257,7 +257,10 @@ class _SetCustomServerBottomSheetState
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(context.loc.mempoolCustomServerUseSsl, style: context.font.bodyMedium),
+                            Text(
+                              context.loc.mempoolCustomServerUseSsl,
+                              style: context.font.bodyMedium,
+                            ),
                             if (_sslAutoDetected) ...[
                               const Gap(2),
                               Text(

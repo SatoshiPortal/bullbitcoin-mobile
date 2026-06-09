@@ -313,14 +313,13 @@ sealed class Swap with _$Swap {
   bool get isChainSwapExternal =>
       this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
 
-  String swapAction(BuildContext context) =>
-      status == SwapStatus.claimable
-          ? context.loc.coreSwapsActionClaim
-          : status == SwapStatus.canCoop
-          ? context.loc.coreSwapsActionClose
-          : status == SwapStatus.refundable
-          ? context.loc.coreSwapsActionRefund
-          : '';
+  String swapAction(BuildContext context) => status == SwapStatus.claimable
+      ? context.loc.coreSwapsActionClaim
+      : status == SwapStatus.canCoop
+      ? context.loc.coreSwapsActionClose
+      : status == SwapStatus.refundable
+      ? context.loc.coreSwapsActionRefund
+      : '';
 
   bool get swapCompleted => status == SwapStatus.completed;
 

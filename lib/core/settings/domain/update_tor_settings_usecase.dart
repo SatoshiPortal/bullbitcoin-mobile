@@ -4,7 +4,7 @@ class UpdateTorSettingsUsecase {
   final SettingsRepository _settingsRepository;
 
   UpdateTorSettingsUsecase({required SettingsRepository settingsRepository})
-      : _settingsRepository = settingsRepository;
+    : _settingsRepository = settingsRepository;
 
   Future<void> execute({
     required bool useTorProxy,

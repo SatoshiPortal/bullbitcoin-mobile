@@ -182,7 +182,8 @@ class _FundExchangeMethodSelectionScreenState
                       },
                     ),
                   },
-                if (_fundingDetailsError != null || _institutionsError != null) ...[
+                if (_fundingDetailsError != null ||
+                    _institutionsError != null) ...[
                   const Gap(16.0),
                   BBText(
                     context.loc.fundExchangeErrorLoadingDetails,

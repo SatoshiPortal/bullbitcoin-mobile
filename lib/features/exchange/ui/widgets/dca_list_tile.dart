@@ -98,15 +98,11 @@ class _DcaListTileState extends State<DcaListTile> {
                     backgroundColor: context.appColors.surfaceFixed,
                     title: Text(
                       context.loc.exchangeDcaCancelDialogTitle,
-                      style: TextStyle(
-                        color: context.appColors.onSurfaceFixed,
-                      ),
+                      style: TextStyle(color: context.appColors.onSurfaceFixed),
                     ),
                     content: Text(
                       context.loc.exchangeDcaCancelDialogMessage,
-                      style: TextStyle(
-                        color: context.appColors.onSurfaceFixed,
-                      ),
+                      style: TextStyle(color: context.appColors.onSurfaceFixed),
                     ),
                     actions: [
                       TextButton(

@@ -26,10 +26,9 @@ class DcaRouter {
       return BlocProvider<DcaBloc>(
         create: (_) => locator<DcaBloc>()..add(const DcaEvent.started()),
         child: BlocListener<DcaBloc, DcaState>(
-          listenWhen:
-              (previous, current) =>
-                  previous is DcaBuyInputState &&
-                  current is DcaWalletSelectionState,
+          listenWhen: (previous, current) =>
+              previous is DcaBuyInputState &&
+              current is DcaWalletSelectionState,
           listener: (context, state) {
             context.pushNamed(
               DcaRoute.dcaWalletSelection.name,
@@ -49,10 +48,9 @@ class DcaRouter {
           return BlocProvider.value(
             value: dcaBloc,
             child: BlocListener<DcaBloc, DcaState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is DcaWalletSelectionState &&
-                      current is DcaConfirmationState,
+              listenWhen: (previous, current) =>
+                  previous is DcaWalletSelectionState &&
+                  current is DcaConfirmationState,
               listener: (context, state) {
                 context.pushNamed(
                   DcaRoute.dcaConfirmation.name,
@@ -72,10 +70,9 @@ class DcaRouter {
           return BlocProvider.value(
             value: dcaBloc,
             child: BlocListener<DcaBloc, DcaState>(
-              listenWhen:
-                  (previous, current) =>
-                      previous is DcaConfirmationState &&
-                      current is DcaSuccessState,
+              listenWhen: (previous, current) =>
+                  previous is DcaConfirmationState &&
+                  current is DcaSuccessState,
               listener: (context, state) {
                 context.pushNamed(
                   DcaRoute.dcaSuccess.name,

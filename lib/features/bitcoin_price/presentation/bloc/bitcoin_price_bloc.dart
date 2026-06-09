@@ -61,11 +61,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
 
     try {
       emit(
-        state.copyWith(
-          loadingPrice: true,
-          startupFailed: false,
-          error: null,
-        ),
+        state.copyWith(loadingPrice: true, startupFailed: false, error: null),
       );
 
       final settings = await _getSettingsUsecase.execute();
@@ -80,11 +76,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       if (price <= 0) {
         log.warning('Fiat rate invalid or zero for $currency');
         emit(
-          state.copyWith(
-            loadingPrice: false,
-            startupFailed: true,
-            error: null,
-          ),
+          state.copyWith(loadingPrice: false, startupFailed: true, error: null),
         );
         return;
       }
@@ -101,13 +93,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       );
     } catch (e) {
       log.severe(error: e, trace: StackTrace.current);
-      emit(
-        state.copyWith(
-          error: e,
-          startupFailed: true,
-          loadingPrice: false,
-        ),
-      );
+      emit(state.copyWith(error: e, startupFailed: true, loadingPrice: false));
     }
   }
 
@@ -165,7 +151,9 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       );
 
       if (price <= 0) {
-        log.warning('Fiat rate invalid or zero after currency change to $currency');
+        log.warning(
+          'Fiat rate invalid or zero after currency change to $currency',
+        );
         emit(
           state.copyWith(
             bitcoinPrice: null,

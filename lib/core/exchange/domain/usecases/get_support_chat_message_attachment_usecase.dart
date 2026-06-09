@@ -20,8 +20,7 @@ class GetSupportChatMessageAttachmentUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
-      final repo =
-          isTestnet ? _testnetRepository : _mainnetRepository;
+      final repo = isTestnet ? _testnetRepository : _mainnetRepository;
 
       return await repo.getMessageAttachment(attachmentId);
     } catch (e) {
@@ -33,4 +32,3 @@ class GetSupportChatMessageAttachmentUsecase {
 class GetSupportChatMessageAttachmentException extends BullException {
   GetSupportChatMessageAttachmentException(super.message);
 }
-

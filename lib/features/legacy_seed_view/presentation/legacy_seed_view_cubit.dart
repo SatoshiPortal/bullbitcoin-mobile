@@ -25,12 +25,11 @@ class LegacySeedViewCubit extends Cubit<LegacySeedViewState> {
             passphrases: [
               ...existing.passphrases,
               ...seed.passphrases.where(
-                (p) =>
-                    !existing.passphrases.any(
-                      (ep) =>
-                          ep.passphrase == p.passphrase &&
-                          ep.sourceFingerprint == p.sourceFingerprint,
-                    ),
+                (p) => !existing.passphrases.any(
+                  (ep) =>
+                      ep.passphrase == p.passphrase &&
+                      ep.sourceFingerprint == p.sourceFingerprint,
+                ),
               ),
             ],
           );

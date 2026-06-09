@@ -26,17 +26,16 @@ class ReplaceByFeeRouter {
       final tx = state.extra! as WalletTransaction;
 
       return BlocProvider(
-        create:
-            (_) => ReplaceByFeeCubit(
-              originalTransaction: tx,
-              bumpFeeUsecase: locator<BumpFeeUsecase>(),
-              broadcastBitcoinTransactionUsecase:
-                  locator<BroadcastBitcoinTransactionUsecase>(),
-              getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-            ),
+        create: (_) => ReplaceByFeeCubit(
+          originalTransaction: tx,
+          bumpFeeUsecase: locator<BumpFeeUsecase>(),
+          broadcastBitcoinTransactionUsecase:
+              locator<BroadcastBitcoinTransactionUsecase>(),
+          getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        ),
         child: BlocListener<ReplaceByFeeCubit, ReplaceByFeeState>(
-          listenWhen:
-              (previous, state) => previous.txid == null && state.txid != null,
+          listenWhen: (previous, state) =>
+              previous.txid == null && state.txid != null,
           listener: (context, state) =>
               context.goNamed(WalletRoute.walletHome.name),
           child: ReplaceByFeeHomePage(tx: tx),

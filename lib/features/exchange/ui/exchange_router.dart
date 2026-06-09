@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
@@ -47,7 +48,7 @@ class ExchangeRouter {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const ExchangeHomeScreen(),
+          child: StagingExchangeGuard.wrap(const ExchangeHomeScreen()),
         );
       },
       routes: [
@@ -55,7 +56,7 @@ class ExchangeRouter {
           name: ExchangeRoute.exchangeKyc.name,
           path: ExchangeRoute.exchangeKyc.path,
           builder: (context, state) {
-            return const ExchangeKycScreen();
+            return StagingExchangeGuard.wrap(const ExchangeKycScreen());
           },
         ),
       ],
@@ -78,7 +79,10 @@ class ExchangeRouter {
           landingScreen = const ExchangeLandingScreen();
         }
 
-        return NoTransitionPage(key: state.pageKey, child: landingScreen);
+        return NoTransitionPage(
+          key: state.pageKey,
+          child: StagingExchangeGuard.wrap(landingScreen),
+        );
       },
     ),
     GoRoute(
@@ -87,7 +91,7 @@ class ExchangeRouter {
       pageBuilder: (context, state) {
         return NoTransitionPage(
           key: state.pageKey,
-          child: const ExchangeSupportLoginScreen(),
+          child: StagingExchangeGuard.wrap(const ExchangeSupportLoginScreen()),
         );
       },
     ),
@@ -96,8 +100,7 @@ class ExchangeRouter {
       name: ExchangeRoute.exchangeAuth.name,
       path: ExchangeRoute.exchangeAuth.path,
       pageBuilder: (context, state) {
-        final fromSupport =
-            state.uri.queryParameters['from'] == 'support';
+        final fromSupport = state.uri.queryParameters['from'] == 'support';
         return NoTransitionPage(
           key: state.pageKey,
           child: BlocListener<ExchangeCubit, ExchangeState>(
@@ -105,12 +108,14 @@ class ExchangeRouter {
                 previous.notLoggedIn && !current.notLoggedIn,
             listener: (context, exchangeState) {
               if (fromSupport) {
-                final isIOSNonSuperuser = Platform.isIOS &&
+                final isIOSNonSuperuser =
+                    Platform.isIOS &&
                     !(context.read<SettingsCubit>().state.isSuperuser ?? false);
                 context.goNamed(
                   ExchangeSupportChatRoute.supportChat.name,
-                  queryParameters:
-                      isIOSNonSuperuser ? {} : {'from': 'exchange'},
+                  queryParameters: isIOSNonSuperuser
+                      ? {}
+                      : {'from': 'exchange'},
                 );
                 return;
               }
@@ -122,7 +127,7 @@ class ExchangeRouter {
               }
               context.goNamed(ExchangeRoute.exchangeHome.name);
             },
-            child: const ExchangeAuthScreen(),
+            child: StagingExchangeGuard.wrap(const ExchangeAuthScreen()),
           ),
         );
       },

@@ -39,7 +39,8 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                         isUser: false,
                         widthFraction: 0.65,
                         height: 48,
-                        color: Color.lerp(
+                        color:
+                            Color.lerp(
                               context.appColors.primary,
                               context.appColors.secondaryFixed,
                               0.2,
@@ -58,7 +59,8 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                         isUser: false,
                         widthFraction: 0.7,
                         height: 64,
-                        color: Color.lerp(
+                        color:
+                            Color.lerp(
                               context.appColors.primary,
                               context.appColors.secondaryFixed,
                               0.2,
@@ -87,8 +89,9 @@ class ExchangeSupportLoginScreen extends StatelessWidget {
                           color: context.appColors.surfaceContainer,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: context.appColors.outline
-                                .withValues(alpha: 0.3),
+                            color: context.appColors.outline.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
                         ),
                         child: Column(
@@ -157,8 +160,9 @@ class _FakeMessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment:
-          isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: isUser
+          ? MainAxisAlignment.end
+          : MainAxisAlignment.start,
       children: [
         Container(
           width: MediaQuery.of(context).size.width * widthFraction,
@@ -181,12 +185,7 @@ class _DisabledMessageInput extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        padding: const EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 8,
-          bottom: 24,
-        ),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 24),
         decoration: BoxDecoration(
           color: context.appColors.background,
           border: Border(

@@ -11,5 +11,5 @@ class BullBitcoinApiDioFactory {
       Dio(BaseOptions(baseUrl: ApiServiceConstants.bbApiUrl));
 
   static Dio _buildBullbitcoinTestnetDio() =>
-      Dio(BaseOptions(baseUrl: StagingEnv.apiUrl ?? ''));
+      Dio(BaseOptions(baseUrl: StagingEnv.apiUrl));
 }

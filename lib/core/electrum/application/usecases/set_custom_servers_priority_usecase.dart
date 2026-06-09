@@ -15,18 +15,17 @@ class SetCustomServersPriorityUsecase {
     SetCustomServersPriorityRequest request,
   ) async {
     // Update each server's priority based on its position in the list
-    final servers =
-        request.servers.indexed.map((record) {
-          final (index, dto) = record;
-          final server = ElectrumServer.existing(
-            url: dto.url,
-            network: dto.network,
-            isCustom: dto.isCustom,
-            priority: dto.priority,
-          );
-          server.updatePriority(index);
-          return server;
-        }).toList();
+    final servers = request.servers.indexed.map((record) {
+      final (index, dto) = record;
+      final server = ElectrumServer.existing(
+        url: dto.url,
+        network: dto.network,
+        isCustom: dto.isCustom,
+        priority: dto.priority,
+      );
+      server.updatePriority(index);
+      return server;
+    }).toList();
 
     // Save the updated servers to the repository
     await _electrumServerRepository.batchSave(servers);

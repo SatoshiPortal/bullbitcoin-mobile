@@ -37,9 +37,7 @@ class ProgressScreen extends StatelessWidget {
             BBText(
               title!,
               textAlign: .center,
-              style: context.font.headlineLarge?.copyWith(
-                fontWeight: .bold,
-              ),
+              style: context.font.headlineLarge?.copyWith(fontWeight: .bold),
             ),
           ],
           if (description != null) ...[

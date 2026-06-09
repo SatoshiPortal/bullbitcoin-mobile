@@ -70,16 +70,14 @@ class _SendRecipientPageState extends State<SendRecipientPage> {
             preferredSize: const Size.fromHeight(3),
             child: BlocSelector<ArkCubit, ArkState, bool>(
               selector: (state) => state.isLoading,
-              builder:
-                  (context, isLoading) =>
-                      isLoading
-                          ? FadingLinearProgress(
-                            height: 3,
-                            trigger: isLoading,
-                            backgroundColor: context.appColors.surface,
-                            foregroundColor: context.appColors.primary,
-                          )
-                          : const SizedBox(height: 3),
+              builder: (context, isLoading) => isLoading
+                  ? FadingLinearProgress(
+                      height: 3,
+                      trigger: isLoading,
+                      backgroundColor: context.appColors.surface,
+                      foregroundColor: context.appColors.primary,
+                    )
+                  : const SizedBox(height: 3),
             ),
           ),
         ),

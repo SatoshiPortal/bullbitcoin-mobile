@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_accelerate_success_screen.dart';
@@ -26,9 +27,11 @@ class BuyRouter {
   static final routes = [
     ShellRoute(
       builder: (context, state, child) {
-        return BlocProvider(
-          create: (_) => locator<BuyBloc>()..add(const BuyEvent.started()),
-          child: child,
+        return StagingExchangeGuard.wrap(
+          BlocProvider(
+            create: (_) => locator<BuyBloc>()..add(const BuyEvent.started()),
+            child: child,
+          ),
         );
       },
       routes: [
@@ -87,21 +90,23 @@ class BuyRouter {
       name: BuyRoute.buyAccelerate.name,
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
-        return BlocProvider(
-          create: (context) =>
-              locator<BuyBloc>()
-                ..add(BuyEvent.accelerateTransactionPressed(orderId)),
-          child: BlocListener<BuyBloc, BuyState>(
-            listenWhen: (previous, current) =>
-                previous.buyOrder?.unbatchedBuyOnchainFees == null &&
-                current.buyOrder?.unbatchedBuyOnchainFees != null,
-            listener: (context, state) {
-              context.pushReplacementNamed(
-                BuyRoute.buyAccelerateSuccess.name,
-                pathParameters: {'orderId': orderId},
-              );
-            },
-            child: const BuyAccelerateScreen(),
+        return StagingExchangeGuard.wrap(
+          BlocProvider(
+            create: (context) =>
+                locator<BuyBloc>()
+                  ..add(BuyEvent.accelerateTransactionPressed(orderId)),
+            child: BlocListener<BuyBloc, BuyState>(
+              listenWhen: (previous, current) =>
+                  previous.buyOrder?.unbatchedBuyOnchainFees == null &&
+                  current.buyOrder?.unbatchedBuyOnchainFees != null,
+              listener: (context, state) {
+                context.pushReplacementNamed(
+                  BuyRoute.buyAccelerateSuccess.name,
+                  pathParameters: {'orderId': orderId},
+                );
+              },
+              child: const BuyAccelerateScreen(),
+            ),
           ),
         );
       },
@@ -112,10 +117,13 @@ class BuyRouter {
       builder: (context, state) {
         final orderId = state.pathParameters['orderId']!;
 
-        return BlocProvider(
-          create: (context) =>
-              locator<BuyBloc>()..add(BuyEvent.refreshOrder(orderId: orderId)),
-          child: const BuyAccelerateSuccessScreen(),
+        return StagingExchangeGuard.wrap(
+          BlocProvider(
+            create: (context) =>
+                locator<BuyBloc>()
+                  ..add(BuyEvent.refreshOrder(orderId: orderId)),
+            child: const BuyAccelerateSuccessScreen(),
+          ),
         );
       },
     ),

@@ -224,10 +224,9 @@ sealed class SwapModel with _$SwapModel {
             lockupFee: lockupFees,
             claimFee: claimFees,
           ),
-          completionTime:
-              completionTime != null
-                  ? DateTime.fromMillisecondsSinceEpoch(completionTime)
-                  : null,
+          completionTime: completionTime != null
+              ? DateTime.fromMillisecondsSinceEpoch(completionTime)
+              : null,
         ),
       LnSendSwapModel(
         :final id,
@@ -265,10 +264,9 @@ sealed class SwapModel with _$SwapModel {
             lockupFee: lockupFees,
             claimFee: claimFees,
           ),
-          completionTime:
-              completionTime != null
-                  ? DateTime.fromMillisecondsSinceEpoch(completionTime)
-                  : null,
+          completionTime: completionTime != null
+              ? DateTime.fromMillisecondsSinceEpoch(completionTime)
+              : null,
         ),
       ChainSwapModel(
         :final id,
@@ -310,10 +308,9 @@ sealed class SwapModel with _$SwapModel {
             claimFee: claimFees,
             serverNetworkFees: serverNetworkFees,
           ),
-          completionTime:
-              completionTime != null
-                  ? DateTime.fromMillisecondsSinceEpoch(completionTime)
-                  : null,
+          completionTime: completionTime != null
+              ? DateTime.fromMillisecondsSinceEpoch(completionTime)
+              : null,
         ),
     };
   }

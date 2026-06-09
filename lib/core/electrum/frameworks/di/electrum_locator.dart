@@ -62,9 +62,8 @@ class ElectrumLocator {
 
   static void registerPorts(GetIt locator) {
     locator.registerLazySingleton<EnvironmentPort>(
-      () => EnvironmentAdapter(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () =>
+          EnvironmentAdapter(settingsRepository: locator<SettingsRepository>()),
     );
     locator.registerLazySingleton<ServerStatusPort>(
       () => const ServerStatusAdapter(),

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/staging_exchange_guard.dart';
 import 'package:bb_mobile/features/exchange_support_chat/ui/screens/exchange_support_chat_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,8 +16,9 @@ class ExchangeSupportChatRouter {
     path: ExchangeSupportChatRoute.supportChat.path,
     builder: (context, state) {
       final fromExchange = state.uri.queryParameters['from'] == 'exchange';
-      return ExchangeSupportChatScreen(fromExchange: fromExchange);
+      return StagingExchangeGuard.wrap(
+        ExchangeSupportChatScreen(fromExchange: fromExchange),
+      );
     },
   );
 }
-

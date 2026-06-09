@@ -472,7 +472,8 @@ class AmountlessInvoiceException extends SwapCreationException {
 }
 
 class HardwareWalletSwapException extends SwapCreationException {
-  HardwareWalletSwapException() : super('Hardware wallets cannot be used for swaps');
+  HardwareWalletSwapException()
+    : super('Hardware wallets cannot be used for swaps');
 }
 
 class ExpiredInvoiceException extends SwapCreationException {

@@ -46,32 +46,35 @@ class DriveVaultsListPage extends StatelessWidget {
             height: 2.0,
           ),
           Expanded(
-            child:
-                error != null
-                    ? Center(child: Text(error.toTranslated(context)))
-                    : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            if (!state.isLoading && driveMetadata.isEmpty)
-                              Center(child: Text(context.loc.recoverbullGoogleDriveNoBackupsFound)),
+            child: error != null
+                ? Center(child: Text(error.toTranslated(context)))
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          if (!state.isLoading && driveMetadata.isEmpty)
+                            Center(
+                              child: Text(
+                                context
+                                    .loc
+                                    .recoverbullGoogleDriveNoBackupsFound,
+                              ),
+                            ),
 
-                            ...List.generate(driveMetadata.length, (index) {
-                              final driveBackupMetadata = driveMetadata[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 8,
-                                ),
-                                child: _DriveFileMetadataItem(
-                                  driveFileMetadata: driveBackupMetadata,
-                                ),
-                              );
-                            }),
-                          ],
-                        ),
+                          ...List.generate(driveMetadata.length, (index) {
+                            final driveBackupMetadata = driveMetadata[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: _DriveFileMetadataItem(
+                                driveFileMetadata: driveBackupMetadata,
+                              ),
+                            );
+                          }),
+                        ],
                       ),
                     ),
+                  ),
           ),
         ],
       ),
@@ -150,7 +153,10 @@ class _DriveFileMetadataItem extends StatelessWidget {
           child: Column(
             mainAxisSize: .min,
             children: [
-              BBText(context.loc.recoverbullGoogleDriveDeleteVaultTitle, style: context.font.headlineMedium),
+              BBText(
+                context.loc.recoverbullGoogleDriveDeleteVaultTitle,
+                style: context.font.headlineMedium,
+              ),
               const Gap(16),
               BBText(
                 context.loc.recoverbullGoogleDriveDeleteConfirmation,
@@ -201,10 +207,8 @@ class _DriveFileMetadataItem extends StatelessWidget {
         maxLines: 2,
         overflow: .ellipsis,
       ),
-      onTap:
-          () => bloc.add(
-            OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata),
-          ),
+      onTap: () =>
+          bloc.add(OnSelectDriveFileMetadata(fileMetadata: driveFileMetadata)),
       onLongPress: () => _showActionsBottomSheet(context),
       enabled: !state.isLoading,
     );

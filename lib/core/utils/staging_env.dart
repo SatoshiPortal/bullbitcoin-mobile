@@ -6,8 +6,12 @@ class StagingEnv {
   static const _apiUrl = String.fromEnvironment('STAGING_API_URL');
   static const _authUrl = String.fromEnvironment('STAGING_AUTH_URL');
   static const _kycUrl = String.fromEnvironment('STAGING_KYC_URL');
-  static const _username = String.fromEnvironment('STAGING_BASIC_AUTH_USERNAME');
-  static const _password = String.fromEnvironment('STAGING_BASIC_AUTH_PASSWORD');
+  static const _username = String.fromEnvironment(
+    'STAGING_BASIC_AUTH_USERNAME',
+  );
+  static const _password = String.fromEnvironment(
+    'STAGING_BASIC_AUTH_PASSWORD',
+  );
 
   static bool get isConfigured {
     if (kReleaseMode) return false;
@@ -18,13 +22,15 @@ class StagingEnv {
         _password.trim().isNotEmpty;
   }
 
-  static String? get apiUrl => isConfigured ? _apiUrl.trim() : null;
+  static bool useTestnetExchange(bool isTestnet) => isTestnet && isConfigured;
 
-  static String? get authUrl => isConfigured ? _authUrl.trim() : null;
+  static String get apiUrl => _apiUrl.trim();
 
-  static String? get kycUrl => isConfigured ? _kycUrl.trim() : null;
+  static String get authUrl => _authUrl.trim();
 
-  static String? get basicAuthUsername => isConfigured ? _username.trim() : null;
+  static String get kycUrl => _kycUrl.trim();
 
-  static String? get basicAuthPassword => isConfigured ? _password.trim() : null;
+  static String get basicAuthUsername => _username.trim();
+
+  static String get basicAuthPassword => _password.trim();
 }

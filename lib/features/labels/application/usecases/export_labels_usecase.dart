@@ -16,10 +16,7 @@ class ExportLabelsUsecase {
   Future<String> call(LabelFormat format) async {
     final labels = await _labelRepository.fetchAll();
     final converter = _converterRegistry.getConverter(format);
-    final formattedLabels = converter.convertTo(
-      format: format,
-      labels: labels,
-    );
+    final formattedLabels = converter.convertTo(format: format, labels: labels);
     return _getExportString(formattedLabels);
   }
 

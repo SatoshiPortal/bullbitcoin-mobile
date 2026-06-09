@@ -5,7 +5,7 @@ class UnlockBitBoxDeviceUsecase {
   final BitBoxDeviceRepository _repository;
 
   UnlockBitBoxDeviceUsecase({required BitBoxDeviceRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   Future<String> execute(BitBoxDeviceEntity device) async {
     return await _repository.unlockDevice(device);

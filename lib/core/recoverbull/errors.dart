@@ -51,10 +51,9 @@ class RateLimitedError extends ServerError {
     if (seconds < 60) {
       formattedTime = context.loc.durationSeconds(seconds.toString());
     } else {
-      formattedTime =
-          minutes == 1
-              ? context.loc.durationMinute(minutes.toString())
-              : context.loc.durationMinutes(minutes.toString());
+      formattedTime = minutes == 1
+          ? context.loc.durationMinute(minutes.toString())
+          : context.loc.durationMinutes(minutes.toString());
     }
 
     return context.loc.recoverbullErrorRateLimited(formattedTime);
@@ -70,7 +69,8 @@ class KeyServerErrorRejected extends ServerError {
 }
 
 class KeyServerErrorServiceUnavailable extends ServerError {
-  KeyServerErrorServiceUnavailable() : super('KeyServerErrorServiceUnavailable');
+  KeyServerErrorServiceUnavailable()
+    : super('KeyServerErrorServiceUnavailable');
 
   @override
   String toTranslated(BuildContext context) =>

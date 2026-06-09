@@ -109,16 +109,13 @@ class SwapProgressIndicator extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       color: indicatorColor,
                                       shape: .circle,
-                                      border:
-                                          isCurrent
-                                              ? Border.all(
-                                                color:
-                                                    context
-                                                        .appColors
-                                                        .secondary,
-                                                width: 2,
-                                              )
-                                              : null,
+                                      border: isCurrent
+                                          ? Border.all(
+                                              color:
+                                                  context.appColors.secondary,
+                                              width: 2,
+                                            )
+                                          : null,
                                     ),
                                     child: Center(child: indicatorChild),
                                   ),
@@ -134,10 +131,7 @@ class SwapProgressIndicator extends StatelessWidget {
                                     currentStep,
                                   ),
                                   fontSize: 11,
-                                  fontWeight:
-                                      isCompleted
-                                          ? .w600
-                                          : .normal,
+                                  fontWeight: isCompleted ? .w600 : .normal,
                                 ),
                                 textAlign: .center,
                                 maxLines: 2,
@@ -213,9 +207,7 @@ class SwapProgressIndicator extends StatelessWidget {
         swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
 
     if (isFailedOrExpired) {
-      return index == 0
-          ? context.appColors.error
-          : context.appColors.outline;
+      return index == 0 ? context.appColors.error : context.appColors.outline;
     }
 
     if (index <= currentStep) {

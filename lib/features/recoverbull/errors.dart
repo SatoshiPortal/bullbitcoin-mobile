@@ -103,10 +103,9 @@ class VaultRateLimitedError extends RecoverBullError {
     if (seconds < 60) {
       formattedTime = context.loc.durationSeconds(seconds.toString());
     } else {
-      formattedTime =
-          minutes == 1
-              ? context.loc.durationMinute(minutes.toString())
-              : context.loc.durationMinutes(minutes.toString());
+      formattedTime = minutes == 1
+          ? context.loc.durationMinute(minutes.toString())
+          : context.loc.durationMinutes(minutes.toString());
     }
 
     return context.loc.recoverbullErrorRateLimited(formattedTime);

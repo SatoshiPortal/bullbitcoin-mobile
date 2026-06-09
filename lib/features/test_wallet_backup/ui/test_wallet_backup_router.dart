@@ -27,15 +27,13 @@ class TestWalletBackupRouter {
           TestPhysicalBackupFlow.backup;
 
       return BlocProvider(
-        create:
-            (context) => TestWalletBackupBloc(
-              loadWalletsForNetworkUsecase:
-                  locator<LoadWalletsForNetworkUsecase>(),
-              getMnemonicFromFingerprintUsecase:
-                  locator<GetMnemonicFromFingerprintUsecase>(),
-              completePhysicalBackupVerificationUsecase:
-                  locator<CompletePhysicalBackupVerificationUsecase>(),
-            )..add(const LoadWallets()),
+        create: (context) => TestWalletBackupBloc(
+          loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
+          getMnemonicFromFingerprintUsecase:
+              locator<GetMnemonicFromFingerprintUsecase>(),
+          completePhysicalBackupVerificationUsecase:
+              locator<CompletePhysicalBackupVerificationUsecase>(),
+        )..add(const LoadWallets()),
         child: TestPhysicalBackupFlowNavigator(flow: flow),
       );
     },

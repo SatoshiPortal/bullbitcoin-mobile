@@ -105,7 +105,9 @@ class FundExchangeBloc extends Bloc<FundExchangeEvent, FundExchangeState> {
     if (state.shouldShowScamWarningConsent) {
       emit(
         state.copyWith(
-          pendingConsentAction: PendingFundingDetailsAction(event.fundingMethod),
+          pendingConsentAction: PendingFundingDetailsAction(
+            event.fundingMethod,
+          ),
         ),
       );
       return;

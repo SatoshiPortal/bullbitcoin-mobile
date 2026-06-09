@@ -38,7 +38,9 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
   final MarkWizardCompleteUsecase _markComplete;
 
   void _onThemePicked(_WizardThemePicked event, Emitter<WizardState> emit) {
-    emit(state.copyWith(choices: state.choices.copyWith(themeMode: event.mode)));
+    emit(
+      state.copyWith(choices: state.choices.copyWith(themeMode: event.mode)),
+    );
   }
 
   void _onLanguagePicked(
@@ -46,9 +48,7 @@ class WizardBloc extends Bloc<WizardEvent, WizardState> {
     Emitter<WizardState> emit,
   ) {
     emit(
-      state.copyWith(
-        choices: state.choices.copyWith(language: event.language),
-      ),
+      state.copyWith(choices: state.choices.copyWith(language: event.language)),
     );
   }
 

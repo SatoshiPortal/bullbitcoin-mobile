@@ -36,7 +36,9 @@ class UseForFeeEstimationToggle extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        context.loc.mempoolSettingsUseForFeeEstimationDescription,
+                        context
+                            .loc
+                            .mempoolSettingsUseForFeeEstimationDescription,
                         style: context.font.bodySmall?.copyWith(
                           color: context.appColors.textMuted,
                         ),

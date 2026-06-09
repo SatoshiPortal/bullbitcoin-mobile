@@ -20,10 +20,9 @@ class ElectrumSettingsRouter {
       return MultiBlocProvider(
         providers: [
           BlocProvider<ElectrumSettingsBloc>(
-            create:
-                (context) =>
-                    locator<ElectrumSettingsBloc>()
-                      ..add(const ElectrumSettingsLoaded(isLiquid: false)),
+            create: (context) =>
+                locator<ElectrumSettingsBloc>()
+                  ..add(const ElectrumSettingsLoaded(isLiquid: false)),
           ),
           BlocProvider<TorSettingsCubit>(
             create: (context) => locator<TorSettingsCubit>()..init(),

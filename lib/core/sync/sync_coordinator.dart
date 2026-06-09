@@ -46,9 +46,10 @@ class SyncCoordinator {
     // the brief startup window before the first lifecycle event arrives
     // (lifecycleState is null then) so the cold-start sync isn't gated off.
     _isAppResumed =
-        lifecycleState == null ||
-        lifecycleState == AppLifecycleState.resumed;
-    _lifecycleListener = AppLifecycleListener(onStateChange: _onLifecycleChange);
+        lifecycleState == null || lifecycleState == AppLifecycleState.resumed;
+    _lifecycleListener = AppLifecycleListener(
+      onStateChange: _onLifecycleChange,
+    );
   }
 
   /// Minimum time between successful syncs of the same kind. A second
@@ -134,8 +135,7 @@ class SyncCoordinator {
     if (!_isAppResumed) return 'gated';
     if (!force) {
       final last = _lastSuccessAt[kind];
-      if (last != null &&
-          DateTime.now().difference(last) < _minSyncInterval) {
+      if (last != null && DateTime.now().difference(last) < _minSyncInterval) {
         return 'throttled';
       }
     }

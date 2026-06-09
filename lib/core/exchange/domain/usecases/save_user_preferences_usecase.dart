@@ -25,10 +25,9 @@ class SaveUserPreferencesUsecase {
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
 
-      final repository =
-          isTestnet
-              ? _testnetExchangeUserRepository
-              : _mainnetExchangeUserRepository;
+      final repository = isTestnet
+          ? _testnetExchangeUserRepository
+          : _mainnetExchangeUserRepository;
 
       await repository.saveUserPreference(
         language: language,

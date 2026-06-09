@@ -296,7 +296,9 @@ class SendCubit extends Cubit<SendState> {
           emit(
             state.copyWith(
               loadingBestWallet: false,
-              swapCreationException: AmountlessInvoiceException('Invoice has no amount'),
+              swapCreationException: AmountlessInvoiceException(
+                'Invoice has no amount',
+              ),
             ),
           );
           return;
@@ -947,9 +949,7 @@ class SendCubit extends Cubit<SendState> {
 
     if (state.blocksSwapDueToBitcoinHardwareWallet) {
       emit(
-        state.copyWith(
-          swapCreationException: HardwareWalletSwapException(),
-        ),
+        state.copyWith(swapCreationException: HardwareWalletSwapException()),
       );
       return;
     }
@@ -1814,10 +1814,7 @@ class SendCubit extends Cubit<SendState> {
   /// `manual: true` locks the pick so [updateBestWallet]'s auto-switching
   /// (used as the user types an amount) doesn't override the user's choice —
   /// the silent override regressed cold-wallet sends. See #1918.
-  Future<void> _setSelectedWallet(
-    Wallet wallet, {
-    required bool manual,
-  }) async {
+  Future<void> _setSelectedWallet(Wallet wallet, {required bool manual}) async {
     emit(
       state.copyWith(
         selectedWallet: wallet,

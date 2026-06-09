@@ -78,8 +78,7 @@ class TransactionDetailsTable extends StatelessWidget {
                     txId,
                     style: TextStyle(color: context.appColors.primary),
                     isTestnet: isTestnet,
-                    unblindedUrl:
-                        transaction?.walletTransaction?.unblindedUrl,
+                    unblindedUrl: transaction?.walletTransaction?.unblindedUrl,
                   )
                 : TransactionViewer.bitcoin(
                     txId,

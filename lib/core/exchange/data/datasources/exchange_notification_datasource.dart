@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
+import 'package:bb_mobile/core/utils/staging_env.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -56,6 +57,10 @@ class ExchangeNotificationDatasource {
   Future<void> connect() async {
     if (_isConnected || _isConnecting) {
       log.info('WebSocket already connected or connecting');
+      return;
+    }
+    if (_isTestnet && !StagingEnv.isConfigured) {
+      log.fine('WebSocket connection skipped: staging env not configured');
       return;
     }
     _isConnecting = true;

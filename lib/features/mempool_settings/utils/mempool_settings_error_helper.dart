@@ -48,7 +48,6 @@ String _getValidationErrorMessage(
       context.loc.mempoolErrorServerError,
     MempoolValidationErrorType.invalidResponse =>
       context.loc.mempoolErrorInvalidResponse,
-    MempoolValidationErrorType.unexpected =>
-      context.loc.mempoolErrorUnexpected,
+    MempoolValidationErrorType.unexpected => context.loc.mempoolErrorUnexpected,
   };
 }

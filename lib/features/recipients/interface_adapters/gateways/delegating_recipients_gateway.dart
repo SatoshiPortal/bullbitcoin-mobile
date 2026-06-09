@@ -23,15 +23,15 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.saveRecipient(
-          recipientDetails,
-          isFiatRecipient: isFiatRecipient,
-          isTestnet: isTestnet,
-        )
+            recipientDetails,
+            isFiatRecipient: isFiatRecipient,
+            isTestnet: isTestnet,
+          )
         : _bullbitcoinApiClient.saveRecipient(
-          recipientDetails,
-          isFiatRecipient: isFiatRecipient,
-          isTestnet: isTestnet,
-        );
+            recipientDetails,
+            isFiatRecipient: isFiatRecipient,
+            isTestnet: isTestnet,
+          );
   }
 
   @override
@@ -43,17 +43,17 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.listRecipients(
-          fiatOnly: fiatOnly,
-          isTestnet: isTestnet,
-          page: page,
-          pageSize: pageSize,
-        )
+            fiatOnly: fiatOnly,
+            isTestnet: isTestnet,
+            page: page,
+            pageSize: pageSize,
+          )
         : _bullbitcoinApiClient.listRecipients(
-          fiatOnly: fiatOnly,
-          isTestnet: isTestnet,
-          page: page,
-          pageSize: pageSize,
-        );
+            fiatOnly: fiatOnly,
+            isTestnet: isTestnet,
+            page: page,
+            pageSize: pageSize,
+          );
   }
 
   @override
@@ -63,13 +63,13 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.checkSinpe(
-          phoneNumber: phoneNumber,
-          isTestnet: isTestnet,
-        )
+            phoneNumber: phoneNumber,
+            isTestnet: isTestnet,
+          )
         : _bullbitcoinApiClient.checkSinpe(
-          phoneNumber: phoneNumber,
-          isTestnet: isTestnet,
-        );
+            phoneNumber: phoneNumber,
+            isTestnet: isTestnet,
+          );
   }
 
   @override
@@ -79,12 +79,12 @@ class DelegatingRecipientsGateway implements RecipientsGatewayPort {
   }) {
     return isTestnet
         ? _bullBitcoinTestnetApiClient.listCadBillers(
-          searchTerm: searchTerm,
-          isTestnet: isTestnet,
-        )
+            searchTerm: searchTerm,
+            isTestnet: isTestnet,
+          )
         : _bullbitcoinApiClient.listCadBillers(
-          searchTerm: searchTerm,
-          isTestnet: isTestnet,
-        );
+            searchTerm: searchTerm,
+            isTestnet: isTestnet,
+          );
   }
 }

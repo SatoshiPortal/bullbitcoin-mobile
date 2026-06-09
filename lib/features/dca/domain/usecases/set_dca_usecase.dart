@@ -63,18 +63,18 @@ class SetDcaUsecase {
 
     return environment.isMainnet
         ? _mainnetDcaRepository.createDca(
-          amount: amount,
-          currency: currency,
-          frequency: frequency,
-          network: network,
-          address: address,
-        )
+            amount: amount,
+            currency: currency,
+            frequency: frequency,
+            network: network,
+            address: address,
+          )
         : _testnetDcaRepository.createDca(
-          amount: amount,
-          currency: currency,
-          frequency: frequency,
-          network: network,
-          address: address,
-        );
+            amount: amount,
+            currency: currency,
+            frequency: frequency,
+            network: network,
+            address: address,
+          );
   }
 }

@@ -23,4 +23,3 @@ class GetDefaultWalletsUsecase {
     return repository.getDefaultWallets();
   }
 }
-

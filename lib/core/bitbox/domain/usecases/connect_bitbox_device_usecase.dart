@@ -5,7 +5,7 @@ class ConnectBitBoxDeviceUsecase {
   final BitBoxDeviceRepository _repository;
 
   ConnectBitBoxDeviceUsecase({required BitBoxDeviceRepository repository})
-      : _repository = repository;
+    : _repository = repository;
 
   Future<void> execute(BitBoxDeviceEntity device) async {
     await _repository.connectDevice(device);

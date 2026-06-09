@@ -289,5 +289,4 @@ class _WalletAddressField extends StatelessWidget {
       ],
     );
   }
-
 }

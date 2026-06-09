@@ -18,15 +18,15 @@ class DraggableServerList extends StatelessWidget {
     ElectrumServersException error,
   ) {
     return switch (error) {
-      LoadFailedException(reason: final r) => context.loc
-          .electrumLoadFailedError(r != null ? ': $r' : ''),
-      SavePriorityFailedException(reason: final r) => context.loc
-          .electrumSavePriorityFailedError(r != null ? ': $r' : ''),
+      LoadFailedException(reason: final r) =>
+        context.loc.electrumLoadFailedError(r != null ? ': $r' : ''),
+      SavePriorityFailedException(reason: final r) =>
+        context.loc.electrumSavePriorityFailedError(r != null ? ': $r' : ''),
       AddFailedException(reason: final r) => context.loc.electrumAddFailedError(
         r != null ? ': $r' : '',
       ),
-      DeleteFailedException(reason: final r) => context.loc
-          .electrumDeleteFailedError(r != null ? ': $r' : ''),
+      DeleteFailedException(reason: final r) =>
+        context.loc.electrumDeleteFailedError(r != null ? ': $r' : ''),
       ElectrumServerAlreadyExistsException() =>
         context.loc.electrumServerAlreadyExists,
     };

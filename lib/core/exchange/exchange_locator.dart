@@ -88,7 +88,7 @@ class ExchangeLocator {
       () => BullbitcoinApiDatasource(
         bullbitcoinApiHttpClient: Dio(
           BaseOptions(
-            baseUrl: StagingEnv.apiUrl ?? '',
+            baseUrl: StagingEnv.apiUrl,
             connectTimeout: orderApiTimeout,
             receiveTimeout: orderApiTimeout,
             sendTimeout: orderApiTimeout,
@@ -121,9 +121,7 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeSupportChatDatasource>(
       () => ExchangeSupportChatDatasource(
-        bullbitcoinApiHttpClient: Dio(
-          BaseOptions(baseUrl: StagingEnv.apiUrl ?? ''),
-        ),
+        bullbitcoinApiHttpClient: Dio(BaseOptions(baseUrl: StagingEnv.apiUrl)),
       ),
       instanceName: 'testnetExchangeSupportChatDatasource',
     );
@@ -140,7 +138,7 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeNotificationDatasource>(
       () => ExchangeNotificationDatasource(
-        baseUrl: StagingEnv.apiUrl ?? '',
+        baseUrl: StagingEnv.apiUrl,
         apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
         isTestnet: true,
       ),

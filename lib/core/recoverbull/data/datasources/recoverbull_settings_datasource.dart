@@ -20,8 +20,9 @@ class RecoverbullSettingsDatasource {
   }
 
   Future<Uri> fetch() async {
-    final row =
-        await _sqlite.managers.recoverbull.filter((f) => f.id(1)).getSingle();
+    final row = await _sqlite.managers.recoverbull
+        .filter((f) => f.id(1))
+        .getSingle();
     return Uri.parse(row.url);
   }
 
@@ -32,8 +33,9 @@ class RecoverbullSettingsDatasource {
   }
 
   Future<bool> fetchPermission() async {
-    final row =
-        await _sqlite.managers.recoverbull.filter((f) => f.id(1)).getSingle();
+    final row = await _sqlite.managers.recoverbull
+        .filter((f) => f.id(1))
+        .getSingle();
     return row.isPermissionGranted;
   }
 }

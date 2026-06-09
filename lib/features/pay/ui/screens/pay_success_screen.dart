@@ -17,10 +17,9 @@ class PaySuccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final order = context.select(
-      (PayBloc bloc) =>
-          bloc.state is PaySuccessState
-              ? (bloc.state as PaySuccessState).payOrder
-              : null,
+      (PayBloc bloc) => bloc.state is PaySuccessState
+          ? (bloc.state as PaySuccessState).payOrder
+          : null,
     );
 
     return PopScope(

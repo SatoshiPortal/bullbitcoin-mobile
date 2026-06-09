@@ -18,10 +18,9 @@ class ConnectingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<RecoverBullBloc, RecoverBullState>(
-      listenWhen:
-          (previous, current) =>
-              previous.torStatus != current.torStatus ||
-              previous.keyServerStatus != current.keyServerStatus,
+      listenWhen: (previous, current) =>
+          previous.torStatus != current.torStatus ||
+          previous.keyServerStatus != current.keyServerStatus,
       listener: (context, state) {
         if (state.torStatus == TorStatus.online &&
             state.keyServerStatus == KeyServerStatus.online) {
@@ -195,8 +194,9 @@ class _StatusRow extends StatelessWidget {
   }
 
   Color _getStatusColor(BuildContext context) {
-    final statusEnum =
-        isKeyServer ? (status as KeyServerStatus) : (status as TorStatus);
+    final statusEnum = isKeyServer
+        ? (status as KeyServerStatus)
+        : (status as TorStatus);
 
     return switch (statusEnum.toString().split('.').last) {
       'online' => context.appColors.success,
@@ -207,8 +207,9 @@ class _StatusRow extends StatelessWidget {
   }
 
   IconData _getIcon() {
-    final statusEnum =
-        isKeyServer ? (status as KeyServerStatus) : (status as TorStatus);
+    final statusEnum = isKeyServer
+        ? (status as KeyServerStatus)
+        : (status as TorStatus);
 
     return switch (statusEnum.toString().split('.').last) {
       'online' => Icons.check_circle,

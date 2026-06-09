@@ -102,16 +102,12 @@ class _BBInputTextState extends State<BBInputText> {
       onChanged: widget.onChanged,
       focusNode: widget.focusNode,
       enabled: !widget.disabled,
-      keyboardType:
-          widget.onlyPaste
-              ? TextInputType.none
-              : widget.onlyNumbers
-              ? const TextInputType.numberWithOptions(decimal: true)
-              : TextInputType.multiline,
-      textInputAction:
-          shouldPreventNewlines
-              ? .done
-              : .newline,
+      keyboardType: widget.onlyPaste
+          ? TextInputType.none
+          : widget.onlyNumbers
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.multiline,
+      textInputAction: shouldPreventNewlines ? .done : .newline,
       inputFormatters: [
         if (shouldPreventNewlines)
           FilteringTextInputFormatter.deny(RegExp(r'\n')),
@@ -137,30 +133,28 @@ class _BBInputTextState extends State<BBInputText> {
         hintText: widget.hint,
         hintStyle:
             widget.hintStyle ?? TextStyle(color: context.appColors.textMuted),
-        prefixIcon:
-            widget.fixedPrefix != null
-                ? Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
+        prefixIcon: widget.fixedPrefix != null
+            ? Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 16,
+                ),
+                child: Text(
+                  widget.fixedPrefix!,
+                  style: context.font.bodyLarge?.copyWith(
+                    color: context.appColors.onSurface,
+                    fontWeight: .w500,
                   ),
-                  child: Text(
-                    widget.fixedPrefix!,
-                    style: context.font.bodyLarge?.copyWith(
-                      color: context.appColors.onSurface,
-                      fontWeight: .w500,
-                    ),
-                  ),
-                )
-                : null,
-        suffixIcon:
-            widget.rightIcon != null
-                ? IconButton(
-                  padding: const EdgeInsets.all(5),
-                  icon: widget.rightIcon!,
-                  onPressed: () => widget.onRightTap?.call(),
-                )
-                : null,
+                ),
+              )
+            : null,
+        suffixIcon: widget.rightIcon != null
+            ? IconButton(
+                padding: const EdgeInsets.all(5),
+                icon: widget.rightIcon!,
+                onPressed: () => widget.onRightTap?.call(),
+              )
+            : null,
         border: _getBorder(context),
         enabledBorder: _getBorder(context),
         focusedBorder: _getBorder(context),
