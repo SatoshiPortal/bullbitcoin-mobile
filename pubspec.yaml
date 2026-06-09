@@ -158,6 +158,21 @@ dev_dependencies:
   test: ^1.26.3
   flutter_gen_runner: any
   drift_dev: ^2.29.0
+  melos: ^7.8.1
+
+# Melos monorepo workspace. Today the app is a single package living at the repo
+# root (useRootAsPackage), so this is a skeleton: no workspace members yet. As
+# core/feature code is extracted incrementally into packages/ and features/,
+# each becomes a `resolution: workspace` member listed under a `workspace:` key.
+# Always invoke via `fvm dart run melos` so the pinned SDK (.fvmrc) is used.
+melos:
+  useRootAsPackage: true
+  ide:
+    intellij:
+      enabled: false
+  command:
+    bootstrap:
+      enforceLockfile: true
 
 flutter:
   # Android product flavors live in android/app/build.gradle (production | beta).
