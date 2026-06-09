@@ -6507,6 +6507,21 @@
     "description": "Troubleshooting step 3"
   },
   "fundExchangeErrorLoadingDetails": "Детайлите за плащането не могат да се заредят в момента. Моля върнете се назад и опитайте отново, изберете друг метод на плащане или се върнете по-късно.",
+    "fundExchangeErrorTitleOrdPo404": "Опцията за плащане не е налична",
+  "fundExchangeErrorTitleRcpPo404": "Опцията за плащане не е налична",
+  "fundExchangeErrorTitleRcpPosinpe404": "SINPE не е наличен",
+  "fundExchangeErrorTitleOrdKyc400": "Липсващи изисквания за KYC",
+  "fundExchangeErrorOrdKyc400": "Нямате необходимите изисквания за KYC за това действие: {missingFields}",
+  "fundExchangeErrorTitleOrdCop400": "Невалидни данни за финансиране в COP",
+  "fundExchangeErrorOrdCop400": "Невалидни данни за заявка за финансиране в COP: {error}",
+  "fundExchangeErrorTitleOrdCsrcp400": "Виртуалното плащане не е активирано",
+  "fundExchangeErrorOrdCsrcp400": "Моля, активирайте опцията за виртуално плащане за получателя по SEPA с IBAN: {iban}",
+  "fundExchangeErrorTitleRcp400": "Невалидна заявка",
+  "fundExchangeErrorRcp400": "Невалидна заявка",
+"fundExchangeErrorOrdPo404": "Няма налична опция за плащане",
+  "fundExchangeErrorRcpPo404": "Нямате необходимите разрешения за достъп до тази опция за финансиране. Или KYC ви е недостатъчен, или тази опция не е налична за вашия акаунт",
+  "fundExchangeErrorRcpPosinpe404": "За достъп до тази опция за финансиране телефонният ви номер трябва да е регистриран в мрежата SINPE в Коста Рика.",
+  "fundExchangeErrorFetchingBankCodes": "Грешка при извличане на банкови кодове. Моля, опитайте отново по-късно.",
   "@fundExchangeErrorLoadingDetails": {
     "description": "Error message when funding details fail to load"
   },

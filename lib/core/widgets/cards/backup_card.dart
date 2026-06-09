@@ -23,6 +23,7 @@ class BackupCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(2),
         ),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset(
               Assets.misc.passwordbook.path,
@@ -31,22 +32,24 @@ class BackupCard extends StatelessWidget {
               color: context.appColors.onSecondary,
             ),
             const Gap(16),
-            Column(
-              crossAxisAlignment: .start,
-              children: [
-                BBText(
-                  context.loc.backupCardTitle,
-                  style: context.font.bodyMedium,
-                  color: context.appColors.onSecondary,
-                ),
-                BBText(
-                  context.loc.backupCardSubtitle,
-                  style: context.font.bodyMedium,
-                  color: context.appColors.onSecondary,
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: .start,
+                children: [
+                  BBText(
+                    context.loc.backupCardTitle,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.onSecondary,
+                  ),
+                  BBText(
+                    context.loc.backupCardSubtitle,
+                    style: context.font.bodyMedium,
+                    color: context.appColors.onSecondary,
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
+            const Gap(8),
             Icon(Icons.arrow_forward, color: context.appColors.onSecondary),
           ],
         ),
