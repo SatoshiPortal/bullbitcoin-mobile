@@ -12,96 +12,155 @@ When other features need to interact with a domain, the feature should expose a 
 
 This approach enables clear ownership, strong encapsulation, and independent development and testing of features. It also helps in maintaining a well-defined, acyclic dependency graph between features, preventing circular dependencies as visualized in the [Features Dependency Diagram](FEATURES.md).
 
-## 🎯 Layered Architecture
+## 🧭 How the codebase actually looks today
 
-The layers that can be encountered in the architecture are highly inspired by [**Clean Architecture**](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) and [**Hexagonal Architecture (Ports and Adapters)**](https://alistair.cockburn.us/hexagonal-architecture) principles.
-They overlap and complement each other well, as Clean Architecture focuses on separation of concerns and dependency rules between layers, while Hexagonal Architecture emphasizes isolating the application’s business logic from external systems through well-defined ports and adapters.
+> Honest snapshot (directory census, 2026-06). Read this before assuming the sections below describe what already exists — they describe where we are heading. Numbers are approximate (`≈`) and will drift.
 
-We use the `Entities` and `Use Cases` concepts from Clean Architecture which together form the `Application` boundary in Hexagonal Architecture. They represent the pure business logic of the application and include domain models, business rules, and the orchestration of operations to achieve specific business goals.
+The codebase has **two coexisting patterns**, which is expected mid-migration:
 
-From Hexagonal Architecture we use the concept of `Ports` (interfaces defined by the Application) and `Adapters` (concrete implementations) to isolate the Application from external systems such as databases, APIs, or UI frameworks.
+**1. The dominant pattern — `ui → bloc → usecase → repository → datasource`** (calls flow down; data flows back up). Most shared *data + domain* lives in `lib/core/<domain>/` (≈30 domains, ≈20 datasources, ≈26 repositories, ≈167 use-case files app-wide — most in `lib/core`, ≈21 features carry their own — ~80% under `domain/usecases/`). Most *features* in `lib/features/<feature>/` are **presentation + ui** (bloc/cubit in ≈44 of 48 features) that consume `lib/core`. The shape: a datasource per external system, an abstract repository with its implementation, use-cases, a bloc on top, `get_it` for wiring. It is simple, uniform, and well understood — **this is the pattern we consolidate on.**
 
-More specifically, we consider `BLoC/Cubits`, feature `Facades`, and event watchers to be **Primary (Driving) Adapters**, as they drive the application by invoking `Use Cases` through inbound `Ports`.
+**2. A minority drifted to a heavier hexagonal split (≈6 modules: `labels`, `electrum_settings`, `fund_exchange`, `recipients`, `transactions`, `broadcast_signed_tx`).** Extra rings — `application/` (use-cases + ports), `adapters/`, `frameworks/`, `interface_adapters/` — plus per-layer error types and several model+mapper hops. More files, more vocabulary, no extra capability. **We converge these back** onto pattern 1 (see "Convergence" below).
 
-Persistence implementations (e.g. repository or store implementations), external API clients, or other concrete infrastructure concerns are considered **Secondary (Driven) Adapters**, as they are invoked by the `Application` through outbound ports to perform operations on external systems (e.g. databases or APIs) or with concrete implementations (either with or without external dependencies). `Ports` define the needs of the `Application`, while Adapters fulfill those needs. What and how are thus clearly separated and the how is easily replaceable without affecting the business logic.
+**Two things barely exist yet:** the `public/` facade (≈1 feature) and `watchers/` (≈1 feature). So "facade-only cross-feature" is currently aspiration, not reality — features still reach into each other directly in places, which we are fixing.
 
-A simple example with one persistence outbound port looks like this:
+This split maps almost 1:1 onto the melos target (see Monorepo Migration): `lib/core/<domain>` → `packages/<domain>` (shared data + domain, no UI), `lib/features/<feature>` → `features/<feature>` (presentation + ui). The migration is mostly a **relocation**, not a rewrite.
 
-               UI Adapter (Controller / BLoC)
-                     |
-             Inbound Port (Use Case)
-                     |
-               the Application
-                     |
-            Outbound Port (Repository)
-                     |
-         DB Adapter (Drift / SQL implementation)
-                     |
-                  Database
+## 🎯 The architecture we tend toward
 
-The adapters in Hexagonal Architecture map to the `Interface Adapters` and `Frameworks & Drivers` layers in Clean Architecture.
+One pattern, everywhere: **`ui → bloc → usecase → repository → datasource`.** The vocabulary stays the one the team already uses — `datasource`, `repository`, `usecase`, `bloc` — with **no `port` / `adapter` / `application` / `framework` renaming**.
 
-## 🗂️ Concrete Structure
+This is the same spine Google's official [Flutter app-architecture guide](https://docs.flutter.dev/app-architecture) *strongly recommends*: a repository-based **data layer** and an MVVM **UI layer** ([recommendations](https://docs.flutter.dev/app-architecture/recommendations)). Our **bloc/cubit plays the ViewModel role** — this mapping is ours; the official docs are state-management-agnostic and never name BLoC. We also adopt its other *strongly recommend* items: **abstract repository classes**, **immutable models**, **unidirectional data flow**, **dependency injection**, **no logic in widgets**, and **fakes for testing**.
 
-Now how does all of the above concepts map to the actual structure and terminology used in this codebase?
+### The rule that matters most: where does logic live?
 
-Each feature folder (e.g. `/secrets`, `/labels`, `/settings`, `/wallets`) represents a self-contained feature module with the following structure:
+"Too much logic in use-cases" is the symptom of logic sitting in the wrong layer. There are **three homes**, and the fix is to put each kind where it belongs — not to push everything into repositories (that just makes god-repositories):
 
-- `domain/` contains domain models & business rules (Entities, Value Objects).
-- `application/` contains use cases, ports and optionally services for code repeated in different use cases (orchestration, workflows).
+| Home | What lives here | Litmus test |
+|---|---|---|
+| **Domain** (entities, value objects) | invariants **intrinsic** to one type, always true | "True regardless of the use-case?" → `Amount` ≥ 0, address format, xpub validity |
+| **Repository** | **data** logic for one type: combine datasources, cache, map model↔entity, single source of truth | "Depends on *how we store/fetch* this type?" → "fetch UTXOs by merging Electrum + local DB and map to `Utxo`" |
+| **Use-case** | **orchestration**: coordinate multiple repositories, multi-step workflow, flow decisions | "Coordinates several repositories / describes one user goal?" → coin-selection + build PSBT + sign + broadcast |
 
-> [!NOTE]
-> Together, `domain/ + application/` form what many texts call the "inside" of Clean/Hex (i.e., the business logic isolated from frameworks).
+So: **rich domain models**, **repositories that own data-shaping**, and **thin use-cases that only orchestrate**. A 100-line use-case coordinating several repositories with rollback is fine — that *is* orchestration. A use-case that maps one model to another, or re-checks an invariant the entity already guarantees, is misplaced logic — push it down. This three-way split is the single biggest improvement we are making.
 
-- `adapters/` contains secondary/driven adapters (e.g., repository implementations).
-- `frameworks/` contains external dependencies and infrastructure code (e.g., datasources, API clients, drivers) generally used by the secondary adapters if it makes sense to keep them separate for better organization, reusability or further abstraction if needed.
-- `presentation/` contains the primary (driving) UI adapters namely BLoCs/Cubits and View Models if any.
-- `ui/` contains UI widgets and screens that compose the visual parts of the feature. They depend on the BLoCs/Cubits from the `presentation/` layer to get their state and invoke actions.
-- `public/` contains the Facade/API of the feature for cross-feature interaction.
-- `watchers/` optionally contains event watchers or listeners that listen to events or data streams from external systems and invoke use cases accordingly.
+### Use-cases: always present, kept thin
 
-Something to note is that all secondary adapters are grouped together in the `adapters/` folder, while the primary adapters have their own dedicated folder, like `presentation/`, `public/` and `watchers/`. This is mostly just for clarity, organization and ease of navigation.
+Every call from the UI goes `bloc → usecase → repository`. **A bloc never imports a repository or a datasource directly** — the use-case is the stable, testable seam between presentation and data, and the place where data-layer errors are mapped to feature errors. This uniformity is deliberate: one shape to learn, one shape to review, across all 48 features.
 
-In the end, these folders can be mapped to the layers of Clean/Hexagonal Architecture and their interactions can be visualized like this:
+Keeping the use-case *thin* (per the table above) is what prevents the "use-cases are overhead" trap Google warns about — the overhead is logic with no home, not the seam itself. Google rates a dedicated domain/use-case layer *Conditional* ("in most apps they add unnecessary overhead", [recommendations](https://docs.flutter.dev/app-architecture/recommendations)); we knowingly accept that small, uniform cost in exchange for one predictable pattern, and we pay it back by keeping use-cases thin.
 
-```mermaid
-graph TD
-    UI[UI] --> PL[Presentation]
-    OF[Other Features] --> PF[Public]
-    PL --> AL
-    PF --> AL
-    W[Watchers] --> AL
+### Repositories: abstract interface in `domain/`, implementation in `data/`
 
-    subgraph AL[Application]
-        UC[Use Cases]
-        P[Ports]
-        UC --> P
-    end
+The repository is the data **seam** and the single source of truth for one data type ([data-layer](https://docs.flutter.dev/app-architecture/case-study/data-layer)). Declare it as an **`abstract interface class`** so the compiler enforces the contract and implementations can be swapped (regtest / mock / production).
 
-    AL --> D[Domain]
-    IA[Interface Adapters] -.implements.-> P
-    IA --> FD[Frameworks]
-```
+- **Interface (the contract):** `domain/repositories/<noun>_repository.dart` — the single `repositories/` folder. It imports only domain types, so `domain` never depends on `data`. This is the Dependency Inversion Principle: the contract belongs with its consumer, the use-case.
+- **Implementation:** `data/<noun>_repository_impl.dart`, next to the datasources it wraps. There is **no second folder named `repositories`**.
 
-As can be seen, the `Dependency Rule` and `Ports and Adapters` concepts are followed strictly.
+> **Source / trade-off.** Google's case study puts the abstract class *and* its implementations together in `data/repositories/<entity>/` and keeps `domain/` for models only — `BookingRepository` + `BookingRepositoryRemote` + `BookingRepositoryLocal` all in `data/` ([data-layer](https://docs.flutter.dev/app-architecture/case-study/data-layer), folder tree in the [case study](https://docs.flutter.dev/app-architecture/case-study)). We deviate on purpose: because we keep a real use-case layer in `domain/`, the interface lives in `domain/` so the dependency rule holds. It is the same Ports-&-Adapters idea — interface = port, impl = adapter — expressed in our vocabulary and without a duplicate `repositories/` folder.
 
-### Special Note on Core Module
+### Datasources: one external system each, private to the repository
 
-`/lib/core` is a shared technical module of low level primitives/drivers/helpers, not the “core” business logic. Core should be completely independent of any business/feature specific logic.
+A `datasource` wraps exactly one external system (Drift, BDK, an Electrum socket, an HTTP API), is stateless, and is a **private member of its repository** — bloc and UI can never reach it directly ([data-layer](https://docs.flutter.dev/app-architecture/case-study/data-layer): *"the service is a private member, so that the UI layer can't bypass the repository"*).
+
+### Models: at most two per entity
+
+A **wire/persistence model** and a **domain entity**, and only when the stored/wire shape genuinely diverges from the domain. Google rates separate models *Conditional* — "adds verbosity… Use in large apps" ([recommendations](https://docs.flutter.dev/app-architecture/recommendations)). The five-types-per-record shape (entity / value-object / primitive / request-DTO / response-DTO + a mapper between each) is verbosity to collapse. Value objects are for correctness-critical primitives — amount/sats, address, fee rate — not every field.
 
 ### Error handling
 
-Each layer and feature should handle errors appropriately according to its responsibility. It should define its own error types and only propagate its own errors to other layers or features that depend on it. This also means every layer should make sure it catches and maps all errors from other layers it depends on to its own error types before propagating them further.
+- **One sealed error family per feature** by default (`<feature>_error.dart`). Most features are not deep enough to justify an error file per layer. Map foreign errors at every boundary; never leak another layer's or feature's error type.
+- **Prefer a `Result` at the repository boundary** for expected, recoverable failures; `throw` for programmer errors. Dart exceptions are unchecked — callers aren't forced to handle them ([dart.dev](https://dart.dev/language/error-handling)) — so a `Result` makes failure explicit in the signature. Google offers `Result` but explicitly as *"a recommendation, but not a requirement"* ([data-layer](https://docs.flutter.dev/app-architecture/case-study/data-layer)). Adopt where it pays; don't mass-migrate existing exception code.
 
-A simple convention to follow is to just create an error file per layer:
+### Convergence (the ≈6 hexagonal modules)
 
-- `domain/` → `domain_errors.dart`
-- `application/` → `application_errors.dart`
-- `presentation/` → `presentation_errors.dart`
+Map the heavier vocabulary back onto the consolidated one — opportunistically, never a big-bang, never in an unrelated PR:
 
-The feature name is already implied by the path (`lib/features/<feature>/<layer>/`), so the filename stays short.
+| Hexagonal (today) | Consolidated (target) |
+|---|---|
+| `application/usecases/` | `domain/usecases/` |
+| `application/` ports | `domain/repositories/` (or `domain/` for non-repo ports) |
+| `adapters/` (repo impls) | `data/<noun>_repository_impl.dart` |
+| `frameworks/` (datasources, drivers) | `data/datasources/` |
+| `interface_adapters/` | `presentation/` + `ui/` |
 
-You can add a sealed class with different error types or exceptions as needed. As well as mappers from errors from the used layers to the layer's error types. This way each layer has its own clearly defined error types and can handle errors appropriately without leaking implementation details or error types from other layers.
+What is deprecated is the hexagonal **folders** above, not the word "port". A non-repository domain interface — an abstraction over a capability, e.g. `BlockchainPort` — keeps the `Port` suffix and lives in `domain/`. The repository's own interface is the canonical port (the Ports-&-Adapters analogy in "Repositories" above); we just name it `<Noun>Repository`, not `<Noun>Port`.
+
+## 🗂️ Layer glossary (our terms)
+
+- `domain/entities/` — entities and value objects; **rich** models that enforce their own invariants, never anemic DB mirrors.
+- `domain/repositories/` — the **abstract** repository interfaces (the contracts use-cases depend on).
+- `domain/usecases/` — one per user intent; **thin orchestration** only.
+- `domain/<feature>_error.dart` — the feature's sealed error family.
+- `data/datasources/` — stateless wrappers around one external system each; private to their repository.
+- `data/<noun>_repository_impl.dart` — the concrete repository implementation.
+- `data/models/` — wire/persistence models (at most one extra model beyond the entity, and only if the stored shape diverges); `data/mappers/` optional.
+- `presentation/` — bloc/cubit + state + event. The ViewModel: holds UI state, exposes intents, calls use-cases. Thin — no business decisions.
+- `ui/` — screens + widgets; depend on the bloc only.
+- `public/` — the feature's facade: the only entry point other features may import.
+- `watchers/` — optional event listeners that drive use-cases (never repositories directly).
+
+## 🧩 Feature & package templates
+
+**Canonical feature (self-contained, owns its data):**
+
+```
+<feature>/
+  domain/
+    entities/         # (+ value objects) — rich models
+    repositories/     # abstract interfaces (the contracts)
+    usecases/         # one per intent, thin orchestration
+    <feature>_error.dart
+  data/
+    datasources/      # one external system each, private to the repo
+    models/           # one extra model beyond the entity, only if it diverges
+    <noun>_repository_impl.dart
+  presentation/       # <feature>_bloc.dart + state + event
+  ui/
+    screens/
+    widgets/
+  public/             # <feature>_facade.dart — only if consumed cross-feature
+  <feature>_locator.dart
+```
+
+The canonical flow, end to end:
+
+```mermaid
+graph LR
+    UI[ui · screens/widgets] --> P[presentation · bloc/cubit]
+    OF[other features] --> F[public · facade]
+    P --> UC[domain · usecase]
+    F --> UC
+    W[watchers] --> UC
+    UC --> R[domain · repository interface]
+    UC --> E[domain · entities / value objects]
+    R -.implemented by.-> IMPL[data · repository impl]
+    IMPL --> DS[data · datasource]
+```
+
+A feature whose data is **shared** does not hold `domain/` + `data/` itself — it consumes a package (below). A feature with **private** data keeps the full stack. The dividing line is one question: *is this data used by more than one feature?*
+
+**Package (shared foundation — `packages/<name>`):** the `domain/` + `data/` half of the *same* shape, **with no `presentation/` and no `ui/`**. It exposes its repository interfaces, domain types, and shared use-cases through its public API (`lib/<name>.dart`); everything else stays under `lib/src/`. The single Flutter exception is a package that owns a sealed UI widget (see the "Sealed UI" note under Monorepo Migration).
+
+> The one hard line between the two shapes: **a package never exports a bloc or a full screen** (the sole exception is the sealed-UI widget — e.g. `MnemonicView` — described under Monorepo Migration). Everything else — datasource, repository, domain, shared use-case — can live in either.
+
+### Enforcing the rules (turn conventions into compile/lint errors)
+
+| Rule | Lever |
+|---|---|
+| Repository is a contract | `abstract interface class <Noun>Repository` (Dart class modifiers) — the compiler forbids `extends`, forces `implements` |
+| Exhaustive error/state handling | `sealed class <Feature>Error` / sealed states — a missing `switch` case is a compile error |
+| A returned `Result` must be handled | `@useResult` (`package:meta`) on repo methods — the analyzer warns if the result is discarded |
+| Cross-feature facade-only | melos package boundaries + the `implementation_imports` lint (a package's `src/` is unreachable from outside); an analyzer-plugin or `custom_lint` rule for in-`lib/` features |
+| Bloc never imports `data/` | an analyzer-plugin or `custom_lint` rule banning `data/` imports from `presentation/` + `ui/` |
+| Lock a contract's capabilities | `@Deprecated.implement()` / `.instantiate()` / `.extend()` on a base class (Dart 3.10+) — analyzer warns on the forbidden capability |
+| Whole-project gate | `analysis_options.yaml` + `flutter analyze --fatal-infos` in CI and the pre-commit hook |
+
+The pairing that does the heavy lifting: **`abstract interface class` + `sealed` + `@useResult` + a layering lint + melos boundaries** — all available in the current toolchain (Flutter 3.41/3.44 bundle Dart 3.11/3.12), none requiring a specific point release. Two of these landed in **Dart 3.10** and are simply available to us now: the first-party **analyzer plugin system** — author a layering rule (e.g. ban `data/` imports from `presentation/`) that also ships IDE quick-fixes, the supported successor to third-party `custom_lint`; and fine-grained **`@Deprecated.*`** capability annotations to lock a contract (implementable but not extendable, etc.). Nothing in 3.41/3.44 itself is *required* — they introduce no new architecture-enforcement capability beyond what 3.10 already gave us.
+
+### Special Note on Core Module
+
+`/lib/core` is a shared technical module of low-level primitives/drivers/helpers, not the "core" business logic; it must stay independent of any feature-specific logic. Historically `lib/core` also accreted shared *domain* modules (e.g. `wallet`, `secrets`) — those are exactly what graduate into `packages/<domain>` under the melos migration. What remains in `lib/core` stays infrastructure-only.
 
 ## 🔺 Common Architectural Pitfalls
 
@@ -118,14 +177,14 @@ While the architecture described above represents our current standards, the cod
 - **Problem**: BLoCs/Cubits contain orchestration logic, decision-making, or complex transformations that belong in use cases
 - **Impact**: Makes business logic untestable in isolation, duplicates logic across features, and indicates poorly defined or too coarse-grained use cases
 - **Root Cause**: Often happens when directly using other features' use cases instead of creating feature-specific orchestration
-- **Solution**: Keep BLoCs thin—they should only transform between UI state and use case calls
+- **Solution**: Keep BLoCs thin—they should only transform between UI state and use-case calls; a BLoC never calls a repository or datasource directly
 
-**Bypassing the Application Layer**
+**Bypassing the use-case layer**
 
-- **Problem**: Watchers or other primary adapters directly invoke repositories, creating flows like `watcher ↔ repository ↔ datasource`
-- **Impact**: Mixes primary and secondary adapter responsibilities, bypassing business rules
+- **Problem**: Watchers (or other UI-side drivers) invoke repositories directly, creating flows like `watcher → repository → datasource` that skip the use-case seam
+- **Impact**: Business rules and error-mapping that belong in the use-case get bypassed
 - **Example**: Payjoin and swap datasources managing event streams with watchers listening directly
-- **Solution**: Watchers should invoke use cases, which then use repositories: `watcher → use case → repository`
+- **Solution**: Watchers invoke use-cases, which then use repositories: `watcher → use-case → repository`
 
 **Core Module Bloat**
 
@@ -139,7 +198,7 @@ While the architecture described above represents our current standards, the cod
 - **Impact**: Business logic scatters into services/use cases instead of living in the domain where it belongs
 - **Solution**: Entities should encapsulate business rules and be independent of persistence concerns
 
-**Over-Abstraction in Adapters**
+**Over-Abstraction (repository + datasource for trivial CRUD)**
 
 - **Problem**: Unnecessary layers (e.g., both repository AND datasource for simple CRUD operations)
 - **Impact**: Adds complexity and indirection without meaningful benefit
@@ -168,8 +227,8 @@ Each extracted package gets `resolution: workspace` and is listed under a `works
 **Why it matters for architecture.** Package boundaries turn the existing rules into *enforced* ones rather than conventions:
 
 - The **Dependency Rule** and **acyclic feature graph** become compile errors when violated — a `packages/` infrastructure package physically cannot import a `features/` module, and a feature cannot reach into another feature's internals (only its published API is importable).
-- **Core-as-infrastructure-only** (rule #7) is enforced by construction: `packages/` members declare no dependency on `features/`.
-- The **facade-only cross-feature** rule (rule #1) is backed by Dart's package privacy — only what a feature package exports is reachable.
+- **Core-as-infrastructure-only** (AGENTS.md rule #7) is enforced by construction: `packages/` members declare no dependency on `features/`.
+- The **facade-only cross-feature** rule (AGENTS.md rule #1) is backed by Dart's package privacy — only what a feature package exports is reachable.
 
 **Encapsulation is enforced, not conventional.** Each package exposes a curated public API in `lib/<name>.dart` (`export 'src/…' show …`); everything under `lib/src/` is package-internal. Importing another package's `src/` trips the `implementation_imports` lint, which CI (`flutter analyze --fatal-infos`) and the pre-commit hook turn into a failure — and CI forbids bypassing it with `// ignore`. The most sensitive internals stay library-private (`_`) so they are not in any importable library at all.
 

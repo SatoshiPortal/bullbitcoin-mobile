@@ -37,38 +37,35 @@ The repo is migrating incrementally to a [melos](https://melos.invertase.dev/) p
 
 ## Architecture — enforce, don't drift
 
-Read [ARCHITECTURE.md](ARCHITECTURE.md) and [FEATURES.md](FEATURES.md) before adding or moving code. **The repo is in active migration**: at audit time, only 3 of ~55 features have `application/`, none have `public/` or `watchers/`. The target structure described below is what new code must follow. Existing code may violate these rules — do not replicate violations, but don't refactor unrelated legacy in the same PR either.
+Read [ARCHITECTURE.md](ARCHITECTURE.md) ("How the codebase actually looks today" + "The architecture we tend toward") and [FEATURES.md](FEATURES.md) before adding or moving code. **The repo is in active migration.** Census (2026-06, 48 features): the dominant shape is `ui → bloc → usecase → repository → datasource` with most shared data + domain in `lib/core/<domain>` (≈30 domains, ≈26 repositories) and features mostly presentation + ui (bloc/cubit in ≈44); ≈21 features carry use-cases; ≈6 went fuller hexagonal (`application/` + `adapters/` + `frameworks/` + `interface_adapters/`); `public/` and `watchers/` are barely used (≈1 each). The target below is what new code must follow. Existing code may violate these rules — do not replicate violations, but don't refactor unrelated legacy in the same PR either.
 
 Some rules below are canonical (textbook Clean/Hex Arch), others are deliberate project conventions. Both are binding here, but knowing which is which helps when an external source contradicts a rule — the project rules win inside this repo, but cite the canonical source if the conversation moves to *why*. Project rules are explicitly labeled.
 
 Hard rules:
 
-1. **Feature isolation — facade is our chosen pattern.** Modular Flutter has several valid options (facade, abstract use-case interfaces, event bus, mediator); this codebase picks facade. **Target location** (per ARCHITECTURE.md): `<feature>/public/<feature>_facade.dart`. **Current legacy** (e.g. [`labels_facade.dart`](lib/features/labels/labels_facade.dart)): facade at feature root. New facades use the target location; don't move legacy ones in unrelated PRs. Never import another feature's `domain/`, `application/`, `adapters/`, `interface_adapters/`, or `frameworks/`.
-2. **Layer direction.** UI → Presentation (BLoC/Cubit) → Application (use cases + ports) → Domain. Adapters depend on ports; never the reverse. (Note: Uncle Bob calls the use-case ring "Interactors"; we use `application/` — both are valid, this is our naming.) The inward-only dependency rule itself is [hexagonal-canonical](https://alistair.cockburn.us/hexagonal-architecture).
+1. **Feature isolation — facade is our chosen pattern.** Modular Flutter has several valid options (facade, abstract use-case interfaces, event bus, mediator); this codebase picks facade. **Target location** (per ARCHITECTURE.md): `<feature>/public/<feature>_facade.dart`. **Current legacy** (e.g. [`labels_facade.dart`](lib/features/labels/labels_facade.dart)): facade at feature root. New facades use the target location; don't move legacy ones in unrelated PRs. Never import another feature's internals (`domain/`, `data/`, `presentation/`) — the `public/` facade is the only importable surface.
+2. **Layer direction — one chain, always.** `ui → presentation (bloc/cubit) → usecase (domain) → repository (domain interface → data impl) → datasource (data)`. **A bloc never imports a repository or a datasource** — it always goes through a use-case, the testable seam where data-layer errors are mapped to feature errors. **Use-cases are always present but stay thin: orchestration only.** Put each kind of logic in its home — **invariants in domain entities/value objects; data-shaping (mapping, aggregation, caching) in the repository; orchestration in the use-case**. Pushing data-shaping or invariants into a use-case is the "fat use-case" smell — move it down. The inward-only dependency rule is [hexagonal-canonical](https://alistair.cockburn.us/hexagonal-architecture); the MVVM-spine + repository is the official [Flutter guide](https://docs.flutter.dev/app-architecture/recommendations). See ARCHITECTURE.md "The architecture we tend toward".
 3. **Watchers go through use cases**, not repositories. `watcher → use case → repository`.
-4. **BLoCs are thin — in our architecture.** No orchestration, no business decisions, no complex transforms; those live in use cases. (Note: [bloclibrary.dev](https://bloclibrary.dev/architecture/) treats the bloc layer itself as the business-logic layer above repositories — our "BLoC is thin, use case below it" stance is a deliberate Clean-Arch refinement, not bloclibrary canon.) **Project convention**: never call another feature's facade directly from a BLoC — wrap it in your own feature's use case (in `application/usecases/`), and the BLoC calls that wrapper. This is the cure for "business logic in presentation" that ARCHITECTURE.md flags as the most common pitfall.
+4. **BLoCs are thin — in our architecture.** No orchestration, no business decisions, no complex transforms; those live in use cases. (Note: [bloclibrary.dev](https://bloclibrary.dev/architecture/) treats the bloc layer itself as the business-logic layer above repositories — our "BLoC is thin, use case below it" stance is a deliberate Clean-Arch refinement, not bloclibrary canon.) **Project convention**: never call another feature's facade directly from a BLoC — wrap it in your own feature's use case (in `domain/usecases/`), and the BLoC calls that wrapper. This is the cure for "business logic in presentation" that ARCHITECTURE.md flags as the most common pitfall.
 5. **Local widget state stays in `StatefulWidget`.** BLoC/Cubit is for business state only — what other layers care about. Form-field focus, animation controllers, expanded/collapsed panels, scroll positions: keep them in widget state. Mixing the two makes BLoC tests flaky and bloats state classes.
-6. **Don't over-abstract adapters — project pragmatism.** A single repository is enough for trivial CRUD. Add a separate datasource layer only when there's meaningful transformation, multiple backends, or clear logic to separate. Two layers that forward-call each other are noise. (Note: textbook Clean Architecture for Android/Flutter typically *pairs* Repository + DataSource by default; we deliberately deviate on YAGNI grounds.)
+6. **Repository: abstract interface in `domain/`, impl in `data/` — don't over-abstract the rest.** Declare the contract as `abstract interface class <Noun>Repository` in `domain/repositories/<noun>_repository.dart` (the single `repositories/` folder); put the implementation in `data/<noun>_repository_impl.dart` next to its datasources — **no second `repositories/` folder**. A datasource wraps one external system and is a **private member** of its repository (bloc/UI can't reach it). One repository is enough for trivial CRUD; add a separate datasource only for real transformation, multiple backends, or clear logic to separate — two layers that forward-call each other are noise. **Cap models per entity at two** (wire/persistence + domain), only when the stored shape diverges. The five-types-per-record pattern (entity / value-object / primitive / request-DTO / response-DTO + a mapper between each) is verbosity Google flags ("separate models adds verbosity… Use in large apps", [recommendations](https://docs.flutter.dev/app-architecture/recommendations)); collapse it. Value objects are for correctness-critical primitives (amount/sats, address, fee rate), not every field.
 7. **`/lib/core` is infrastructure only.** No feature/business logic. Generic primitives, drivers, helpers.
 8. **Shared value objects go in `lib/core/primitives/`** (planned per [FEATURES.md](FEATURES.md) — folder doesn't exist yet at audit time, and `Secret`/`Address`/`Amount`/`Fingerprint` are not yet extracted as primitives). When you create a value object that more than one feature would reasonably use, put it in `lib/core/primitives/` from the start — that's how the primitives layer gets built. Before creating one, grep `lib/` for an existing class with the same intent.
 9. **Prefer rich domain models** — methods that enforce invariants, not anemic DTOs mirroring DB rows. (Note: [Fowler's anemic-domain anti-pattern](https://www.martinfowler.com/bliki/AnemicDomainModel.html) is widely cited but [not universal](https://blog.inf.ed.ac.uk/sapm/2014/02/04/the-anaemic-domain-model-is-no-anti-pattern-its-a-solid-design/). This is our preference, aligned with ARCHITECTURE.md's "Anemic Domain Models" pitfall.)
 10. **No raw colors.** Always pull from the theme. If the user describes a color in plain language, pick the closest theme color that works in both light and dark mode. Don't edit theme files unprompted.
-11. **Errors per layer.** Naming per ARCHITECTURE.md:
-    - `domain/` → `domain_errors.dart` (plural)
-    - `application/` → `application_errors.dart` (plural)
-    - `presentation/` → `presentation_errors.dart` (plural)
-
-    The feature name is already implied by the path (`lib/features/<feature>/<layer>/`); don't repeat it in the filename. Caveat: the `fund_exchange` feature (the only feature today with all three error files) uses `fund_exchange_<layer>_error.dart` — feature-prefixed and singular. Legacy divergence; reconcile over time, don't replicate. Map foreign errors at every layer boundary; never leak another layer's error type.
+11. **Errors — one sealed family per feature.** Define a sealed `<feature>_error.dart` in `domain/`. Map foreign errors at every boundary; never leak another layer's or feature's error type. Prefer returning a `Result`/sealed outcome for expected, recoverable errors at the repository boundary (`throw` only for programmer errors) — officially "a recommendation, but not a requirement" ([data-layer case study](https://docs.flutter.dev/app-architecture/case-study/data-layer)); don't mass-migrate existing exception code. **Legacy (don't replicate):** some hexagonal features split errors per layer (`domain_errors.dart` / `application_errors.dart` / `presentation_errors.dart`), and `fund_exchange` uses feature-prefixed singular (`fund_exchange_<layer>_error.dart`). Converge to one family per feature over time.
 12. **Acyclic feature graph.** Check [FEATURES.md](FEATURES.md) before adding a dependency.
 13. **Keep the dependency graph live.** Any PR that adds a feature, removes a feature, or changes which other features it consumes via `public/` facades **must** update the mermaid graph in [FEATURES.md](FEATURES.md) in the same commit. The graph is documentation only if it matches the code — if you change one without the other, both become useless.
 14. **Folders justify their existence — files don't justify folders.** A tiny piece of code is one file with a role suffix, not a folder of one file:
-    - One use case → `<feature>/application/<verb>_<noun>_usecase.dart`. Don't create `application/usecases/` for a single file.
+    - One use case → `<feature>/domain/<verb>_<noun>_usecase.dart`. Don't create `domain/usecases/` for a single file.
     - One entity → `<feature>/domain/<noun>.dart`. Don't create `domain/entities/` for a single file.
-    - One datasource → `<feature>/frameworks/<noun>_datasource.dart`. Don't create `frameworks/datasources/` for a single file.
+    - One datasource → `<feature>/data/<noun>_datasource.dart`. Don't create `data/datasources/` for a single file.
 
     Create the folder the moment a **second** file of that kind appears (or you know it's imminent in the same PR). Don't pre-create empty folders or use `.gitkeep`. Suffix carries the role; path carries the layer.
 
     **Exception (melos migration):** `packages/` and `features/` are intentionally pre-created with `.gitkeep` as reserved workspace homes for the in-progress monorepo migration — do not remove them or treat them as a rule-#14 violation. See the Monorepo / melos section.
+
+15. **Enforce with the compiler, not hope.** Repository contracts → `abstract interface class` (forbids `extends`, forces `implements`); lock finer capabilities with `@Deprecated.implement()` / `.instantiate()` / `.extend()` (Dart 3.10+). Error families and multi-case states → `sealed` (a missing `switch` case is a compile error). `Result`-returning repo methods → annotate `@useResult` (`package:meta`) so a discarded result warns. Cross-feature and `data/`-from-`presentation/` bans → a rule in the first-party analyzer plugin system (Dart 3.10+, the supported successor to `custom_lint`); under melos, package boundaries + the `implementation_imports` lint make them hard errors. All available in the current toolchain (Flutter 3.41/3.44 bundle Dart 3.11/3.12) — no point-release dependency; nothing new in 3.41/3.44 is required.
 
 When a request would break these rules, explain why and propose a compliant alternative. Don't silently comply.
 
@@ -80,28 +77,27 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 
 | Folder | Convention | Notes |
 |---|---|---|
-| `domain/entities/` | plural | 12 dirs vs 7 using `entity/` — prefer plural |
-| `domain/usecases/` | plural, no underscore | 28 dirs vs 2 using `usecase/` — prefer plural |
-| `application/usecases/` | plural, no underscore | New target location (3 features today) |
-| `application/ports/` | plural | |
-| `application/services/` | plural, optional | |
-| `adapters/` | (folder name itself) | replaces older `interface_adapters/` |
-| `frameworks/datasources/` | plural, no underscore | not `data_sources/` |
-| `presentation/` | — | |
-| `presentation/view_models/` | snake_case, optional | |
+| `domain/entities/` | plural | rich models + value objects |
+| `domain/repositories/` | plural | the single `repositories/` folder — **abstract** interfaces (contracts) |
+| `domain/usecases/` | plural, no underscore | the canonical use-case home (~80% already here) |
+| `data/datasources/` | plural, no underscore | not `data_sources/`; one external system each |
+| `data/models/` | plural, optional | wire/persistence models (≤ 1 per entity) |
+| `data/` (repo impl) | — | `<noun>_repository_impl.dart` lives directly here — no `data/repositories/` folder |
+| `presentation/` | — | bloc/cubit + state + event |
 | `ui/screens/`, `ui/widgets/` | plural | |
 | `public/` | — | facade lives directly inside |
-| `watchers/` | plural, optional | |
+| `watchers/` | plural, optional | drives use-cases, never repositories |
+
+> Deprecated — converge away (see ARCHITECTURE.md "Convergence"): `application/`, `adapters/`, `interface_adapters/`, `frameworks/`.
 
 **Files** — `snake_case`, singular suffix:
 
 | Kind | Pattern | Example |
 |---|---|---|
 | Use case | `<verb>_<noun>_usecase.dart` | `broadcast_bitcoin_transaction_usecase.dart` |
-| Repository port | `<noun>_repository.dart` | `bitcoin_wallet_repository.dart` |
-| Repository impl | `<noun>_repository_impl.dart` **or** `<tech>_<noun>_repository.dart` | `exchange_rate_repository_impl.dart`, `drift_electrum_server_repository.dart` |
-| Datasource port | `<noun>_datasource.dart` | `electrum_remote_datasource.dart` |
-| Datasource impl | `<tech>_<noun>_datasource.dart` | `bdk_wallet_datasource.dart` |
+| Repository interface (abstract) | `<noun>_repository.dart` in `domain/repositories/` | `bitcoin_wallet_repository.dart` |
+| Repository impl | `<noun>_repository_impl.dart` **or** `<tech>_<noun>_repository.dart`, in `data/` | `exchange_rate_repository_impl.dart`, `drift_electrum_server_repository.dart` |
+| Datasource | `<noun>_datasource.dart` **or** `<tech>_<noun>_datasource.dart`, in `data/datasources/` | `electrum_remote_datasource.dart`, `bdk_wallet_datasource.dart` |
 | Entity / value object | `<noun>.dart` | `wallet.dart`, `auto_swap.dart` |
 | Bloc | `<feature>_bloc.dart` | `send_bloc.dart` |
 | Cubit | `<feature>_cubit.dart` | `settings_cubit.dart` |
@@ -115,14 +111,14 @@ Codified from a sweep of the actual codebase. ARCHITECTURE.md is silent on most 
 
 - **Use cases**: `<Verb><Noun>Usecase` — **lowercase 'case'**, never `UseCase`. Codebase-wide convention (`GetSettingsUsecase`, `UpdateTorSettingsUsecase`, `BroadcastBitcoinTransactionUsecase`).
 - **Datasources**: `<Name>Datasource` — **lowercase 's'**, never `DataSource`. Codebase-wide (`BdkWalletDatasource`, `BoltzDatasource`).
-- **Repositories**: abstract port = `<Name>Repository`; concrete impl = `<Name>RepositoryImpl` or `<Tech><Name>Repository`. Pick the technology prefix when the backing tech is meaningful (Drift, Bdk, Boltz, GoogleDrive, Bullbitcoin); use `Impl` when the technology label would be awkward.
+- **Repositories**: abstract interface = `<Name>Repository` (`abstract interface class`, in `domain/repositories/`); concrete impl = `<Name>RepositoryImpl` or `<Tech><Name>Repository` (in `data/`). Pick the technology prefix when the backing tech is meaningful (Drift, Bdk, Boltz, GoogleDrive, Bullbitcoin); use `Impl` when the technology label would be awkward.
 - **Entities & value objects**: bare noun, **no `Entity` suffix** (`Wallet`, `WalletUtxo`, `TransactionOutput`). Two legacy outliers (`BitboxDeviceEntity`, `LedgerDeviceEntity`) — don't replicate.
-- **Ports** that aren't repositories: `<Name>Port` (`BlockchainPort`, `ElectrumConnectivityPort`).
+- **Non-repository domain interfaces**: `<Name>Port` (`BlockchainPort`, `ElectrumConnectivityPort`) — a capability abstraction that is not a repository; lives in `domain/`. Repository interfaces use `<Name>Repository`, never `Port`. (The `Port` *suffix* stays for these; only the hexagonal *folders* `application/`/`adapters/`/`frameworks/` are deprecated.)
 - **Bloc/Cubit**: `<Feature>Bloc` / `<Feature>Cubit` (`SendBloc`, `SettingsCubit`).
 - **State / Event**: `<Feature>State` / `<Feature>Event`, sealed with freezed when there are multiple cases.
 - **Facade**: `<Feature>Facade` (`LabelsFacade`).
 - **Watcher** (when introduced): `<Subject>Watcher`.
-- **Error**: `<Feature><Layer>Error` for a single class, or a sealed `<Feature><Layer>Errors` family — match ARCHITECTURE.md rule #11.
+- **Error**: one sealed `<Feature>Error` family per feature (see rule #11).
 
 When the same role exists with two names in the codebase, use the dominant one and flag the outlier as legacy. Don't rename outliers in unrelated PRs — that breaks atomic commits.
 

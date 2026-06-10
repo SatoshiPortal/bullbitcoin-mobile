@@ -127,7 +127,7 @@ graph TB
 1. **No Cyclic Dependencies**: Features must not create circular dependency chains
 2. **Core Independence**: Core must not depend on any feature
 3. **Feature Isolation**: Features should communicate through well-defined facades/interfaces
-4. **Layered Dependencies**: Dependencies should generally flow in one direction
+4. **Layered Dependencies**: Dependencies flow one way — `shell → features → packages` across modules, and `ui → presentation → domain → data` within a feature. Under the melos migration each `lib/core/<domain>` becomes a `packages/<domain>` and these turn into compile-time boundaries. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Core Dependencies
 
@@ -147,10 +147,12 @@ graph TB
    - PIN encrypted storage
 
 2. **Core Primitives**:
-   - Located in `/lib/core/primitives/`
+   - Intended location: `/lib/core/primitives/` — the primitives layer is still being extracted (see AGENTS.md); not all of these types live there yet.
    - Examples: `Secret`, `SecretUsagePurpose`, `Fingerprint`, `Address`, `Amount`, etc.
    - Shared types used across multiple features, avoiding redundant definitions
    - Immutable, validated value objects that ensure domain integrity
+
+> Migration note: `lib/core` is shared infrastructure (no business logic). Shared *domain* modules that historically landed in `lib/core/<domain>` (e.g. `wallet`, `secrets`) graduate into `packages/<domain>` under the melos workspace — each exposing its repository interfaces + domain types + shared use-cases through a public API, never a bloc or screen. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Key Dependency Patterns
 
@@ -158,7 +160,7 @@ graph TB
 
 - **Core**: Foundation for all features
 - **Wallets**: Used by Send, UTXO Management, Transaction History, Backups, App Startup
-- **Secrets**: Used by Wallets, BIP85, Hardware Wallets
+- **Secrets**: Used by Wallets, BIP85
 - **Settings**: Used by Wallets, Exchange, BIP85, Bitcoin Price
 - **Recipients**: Used by Pay, Withdrawal
 - **UTXO Management**: Used by Send, Swaps, Payjoin
@@ -167,8 +169,8 @@ graph TB
 
 - **Send**: Depends on Fees, Network, Payjoin, Swaps, UTXO Management, Wallets
 - **Receive**: Depends on Payjoin, Swaps
-- **AutoSwaps**: Depends on Receive, Swaps
-- **Backups**: Depends on BIP85, Wallets
+- **AutoSwaps**: Depends on Transfer
+- **Backups**: Depends on BIP85, Tor, Wallets
 
 ### Exchange-Related Features
 
@@ -189,4 +191,4 @@ To verify no cyclic dependencies exist, you can:
 - Document which specific APIs each feature exposes
 - Add dependency cardinality (required vs optional dependencies)
 - Include compile-time vs runtime dependency distinction
-- Add layer groupings (presentation, application, domain, infrastructure)
+- Add layer groupings (ui, presentation, domain, data) per [ARCHITECTURE.md](ARCHITECTURE.md)
