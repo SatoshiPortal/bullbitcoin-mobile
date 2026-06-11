@@ -1238,6 +1238,13 @@ class SendCubit extends Cubit<SendState>
     // The typed rate just changed — the cached custom-slot PSBT is for
     // the old rate and would broadcast the wrong fee. Clear it; the
     // next debounced previewBitcoinCustomFee will rebuild.
+    //
+    // Bump the epoch too: a previewBitcoinCustomFee for the PRIOR rate may
+    // still be in flight (it captured the old epoch before its await). If
+    // it lands after this clear it must be discarded — otherwise a slower
+    // stale build could overwrite the slot for the new rate and stage the
+    // wrong (or below-floor) PSBT for broadcast.
+    _bitcoinPreviewEpoch++;
     final cleared = state.feePreviewCache.withSlot(
       FeeSelection.custom,
       const BitcoinFeePreviewSlot(),

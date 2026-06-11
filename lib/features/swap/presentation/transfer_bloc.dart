@@ -927,6 +927,11 @@ class TransferBloc extends Bloc<TransferEvent, TransferState>
     // it. Without this, dismissing within the debounce window would
     // broadcast the previous rate's PSBT while showing the new rate.
     // Same divergence class the PR fixes elsewhere.
+    //
+    // Bump the epoch so an in-flight preview for the prior rate (which
+    // captured the old epoch) is discarded on return instead of
+    // overwriting the slot for the new rate.
+    _bitcoinPreviewEpoch++;
     final cleared = state.feePreviewCache.withSlot(
       FeeSelection.custom,
       const BitcoinFeePreviewSlot(),
